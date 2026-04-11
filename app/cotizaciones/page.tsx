@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import ActualizarCotizacionModal from "./ActualizarCotizacionModal";
 
 interface CotizacionItem {
   label: string;
@@ -18,6 +19,9 @@ interface Proveedor {
   contacto_email: string | null;
   monedas: string[] | null;
   servicios: string[] | null;
+  compra_usd: number | null;
+  venta_usd: number | null;
+  actualizado_cot: string | null;
 }
 
 interface Publicacion {
@@ -34,21 +38,7 @@ interface Publicacion {
   created_at: string;
   perfiles?: { nombre: string; apellido: string; matricula: string | null };
 }
-// Agregá al inicio del archivo
-import ActualizarCotizacionModal from "./ActualizarCotizacionModal";
 
-// Agregá estos estados
-const [provActualizar, setProvActualizar] = useState<any>(null);
-
-// En la card de cada proveedor, agregá el botón:
-<button 
-  style={{padding:"6px 14px",background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#cc0000",fontFamily:"'Montserrat',sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
-  onClick={() => setProvActualizar(p)}
->
-  📊 Actualizar cotización
-</button>
-
-)}
 const MONEDAS = ["USD", "EUR", "GBP", "BRL", "USDT", "USDC"];
 const MONEDA_FLAG: Record<string, string> = { USD: "🇺🇸", EUR: "🇪🇺", GBP: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", BRL: "🇧🇷", USDT: "🔷", USDC: "🔷" };
 
@@ -66,18 +56,16 @@ export default function CotizacionesPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [ultimaAct, setUltimaAct] = useState("");
 
-  // Mercado
   const [dolares, setDolares] = useState<CotizacionItem[]>([]);
   const [euro, setEuro] = useState<CotizacionItem | null>(null);
   const [brl, setBrl] = useState<CotizacionItem | null>(null);
   const [cripto, setCripto] = useState<CotizacionItem[]>([]);
   const [loadingMercado, setLoadingMercado] = useState(true);
 
-  // Proveedores
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [loadingProv, setLoadingProv] = useState(true);
+  const [provActualizar, setProvActualizar] = useState<Proveedor | null>(null);
 
-  // Match
   const [publicaciones, setPublicaciones] = useState<Publicacion[]>([]);
   const [loadingMatch, setLoadingMatch] = useState(true);
   const [mostrarForm, setMostrarForm] = useState(false);
@@ -188,6 +176,8 @@ export default function CotizacionesPage() {
     return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) + " · " + d.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" });
   };
 
+  const formatHora = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) + " · " + new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" }) : null;
+
   return (
     <>
       <style>{`
@@ -204,23 +194,18 @@ export default function CotizacionesPage() {
         .cot-actualizar { padding: 7px 14px; background: transparent; border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .cot-actualizar:hover { background: rgba(200,0,0,0.1); }
         .cot-hora { font-size: 11px; color: rgba(255,255,255,0.25); }
-
         .cot-content { flex: 1; padding: 32px; max-width: 1100px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
         .cot-header { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .cot-header h1 { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; }
         .cot-header h1 span { color: #cc0000; }
         .cot-header p { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
-
         .cot-tabs { display: flex; gap: 10px; }
         .cot-tab { padding: 9px 22px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
         .cot-tab:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
         .cot-tab.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
-
-        /* MERCADO */
         .cot-seccion { display: flex; flex-direction: column; gap: 12px; }
         .cot-seccion-titulo { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; }
         .cot-seccion-titulo::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
-
         .cot-tabla-wrap { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; }
         .cot-tabla { width: 100%; border-collapse: collapse; }
         .cot-tabla thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
@@ -236,15 +221,12 @@ export default function CotizacionesPage() {
         .td-c { color: #60a5fa; }
         .td-v { color: #f87171; }
         .td-p { color: #22c55e; }
-
         .cot-grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
         .cot-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px 20px; }
         .cot-card-label { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
         .cot-vals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .cot-val-label { font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-family: 'Montserrat', sans-serif; }
         .cot-val-num { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; margin-top: 3px; }
-
-        /* PROVEEDORES */
         .prov-grid { display: flex; flex-direction: column; gap: 12px; }
         .prov-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 20px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; transition: border-color 0.2s; }
         .prov-card:hover { border-color: rgba(200,0,0,0.2); }
@@ -253,12 +235,19 @@ export default function CotizacionesPage() {
         .prov-monedas { display: flex; gap: 6px; flex-wrap: wrap; }
         .prov-moneda-tag { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 3px 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: rgba(255,255,255,0.6); }
         .prov-servicios { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; }
+        .prov-cot { display: flex; gap: 16px; flex-wrap: wrap; }
+        .prov-cot-item { font-size: 12px; color: rgba(255,255,255,0.4); }
+        .prov-cot-item strong { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; }
+        .prov-cot-item.compra strong { color: #60a5fa; }
+        .prov-cot-item.venta strong { color: #f87171; }
+        .prov-cot-item.prom strong { color: #22c55e; }
+        .prov-hora { font-size: 10px; color: rgba(255,255,255,0.25); }
         .prov-acciones { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
         .prov-btn-wa { padding: 8px 18px; background: rgba(37,211,102,0.12); border: 1px solid rgba(37,211,102,0.3); border-radius: 3px; color: #25d366; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; transition: all 0.2s; }
         .prov-btn-wa:hover { background: rgba(37,211,102,0.2); }
+        .prov-btn-act { padding: 8px 18px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .prov-btn-act:hover { background: rgba(200,0,0,0.2); color: #fff; }
         .prov-empty { padding: 48px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
-
-        /* MATCH */
         .match-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .match-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
         .match-filtro { padding: 6px 14px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
@@ -266,12 +255,10 @@ export default function CotizacionesPage() {
         .match-filtro.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
         .match-btn-pub { padding: 9px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .match-btn-pub:hover { background: #e60000; }
-
         .match-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .match-col-titulo { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px 4px 0 0; }
         .match-col-titulo.venta { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); border-bottom: none; }
         .match-col-titulo.compra { background: rgba(200,0,0,0.08); color: #cc0000; border: 1px solid rgba(200,0,0,0.2); border-bottom: none; }
-
         .match-lista { display: flex; flex-direction: column; gap: 8px; }
         .match-pub { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 0 0 6px 6px; padding: 14px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
         .match-pub + .match-pub { border-radius: 6px; margin-top: 0; }
@@ -287,11 +274,8 @@ export default function CotizacionesPage() {
         .match-btn-eliminar { padding: 6px 10px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; transition: all 0.2s; }
         .match-btn-eliminar:hover { border-color: rgba(200,0,0,0.4); color: #ff4444; }
         .match-costo { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 4px; text-align: right; }
-        .match-empty { padding: 24px 16px; text-align: center; color: rgba(255,255,255,0.2); font-size: 12px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 0 0 6px 6px; }
-
         .match-nota { font-size: 11px; color: rgba(255,255,255,0.2); text-align: center; padding: 8px; background: rgba(200,0,0,0.05); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; }
-
-        /* MODAL */
+        .match-empty { padding: 24px 16px; text-align: center; color: rgba(255,255,255,0.2); font-size: 12px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 0 0 6px 6px; }
         .fn-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
         .fn-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 36px; width: 100%; max-width: 460px; position: relative; }
         .fn-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
@@ -309,11 +293,9 @@ export default function CotizacionesPage() {
         .fn-btn-guardar { padding: 10px 24px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .fn-btn-guardar:hover { background: #e60000; }
         .fn-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
-
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 4px; animation: pulse 1.5s ease-in-out infinite; display: inline-block; }
         @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
         .cot-nota { font-size: 11px; color: rgba(255,255,255,0.2); text-align: center; font-style: italic; }
-
         @media (max-width: 900px) { .cot-grid3 { grid-template-columns: 1fr 1fr; } .match-columnas { grid-template-columns: 1fr; } }
         @media (max-width: 600px) { .cot-content { padding: 16px; } .cot-grid3 { grid-template-columns: 1fr; } }
       `}</style>
@@ -401,7 +383,7 @@ export default function CotizacionesPage() {
               {loadingProv ? (
                 <div className="prov-empty">Cargando proveedores...</div>
               ) : proveedores.length === 0 ? (
-                <div className="prov-empty">No hay proveedores cargados todavía. El administrador los agrega desde el panel.</div>
+                <div className="prov-empty">No hay proveedores cargados todavía.</div>
               ) : proveedores.map(p => (
                 <div key={p.id} className="prov-card">
                   <div className="prov-info">
@@ -411,6 +393,14 @@ export default function CotizacionesPage() {
                         {p.monedas.map((m, i) => <span key={i} className="prov-moneda-tag">{MONEDA_FLAG[m] ?? ""} {m}</span>)}
                       </div>
                     )}
+                    {(p.compra_usd || p.venta_usd) && (
+                      <div className="prov-cot">
+                        {p.compra_usd && <div className="prov-cot-item compra">Compra: <strong>{formatARS(p.compra_usd)}</strong></div>}
+                        {p.venta_usd && <div className="prov-cot-item venta">Venta: <strong>{formatARS(p.venta_usd)}</strong></div>}
+                        {p.compra_usd && p.venta_usd && <div className="prov-cot-item prom">Promedio: <strong>{formatARS((p.compra_usd + p.venta_usd) / 2)}</strong></div>}
+                      </div>
+                    )}
+                    {p.actualizado_cot && <div className="prov-hora">Actualizado: {formatHora(p.actualizado_cot)}</div>}
                     {p.servicios && p.servicios.length > 0 && (
                       <div className="prov-servicios">{p.servicios.join(" · ")}</div>
                     )}
@@ -421,10 +411,13 @@ export default function CotizacionesPage() {
                         📱 WhatsApp
                       </a>
                     )}
+                    <button className="prov-btn-act" onClick={() => setProvActualizar(p)}>
+                      📊 Actualizar cotización
+                    </button>
                   </div>
                 </div>
               ))}
-              <div className="cot-nota">Proveedores verificados por GFI® · Consultá antes de cerrar una operación · Las cotizaciones pueden variar</div>
+              <div className="cot-nota">Proveedores verificados por GFI® · Consultá antes de cerrar · Las cotizaciones pueden variar</div>
             </div>
           )}
 
@@ -453,60 +446,45 @@ export default function CotizacionesPage() {
               <div className="match-columnas">
                 <div>
                   <div className="match-col-titulo venta">✅ Venden ({ventas.length})</div>
-                  {loadingMatch ? (
-                    <div className="match-empty">Cargando...</div>
-                  ) : ventas.length === 0 ? (
-                    <div className="match-empty">No hay ofertas de venta ahora</div>
-                  ) : ventas.map(p => (
+                  {loadingMatch ? <div className="match-empty">Cargando...</div>
+                   : ventas.length === 0 ? <div className="match-empty">No hay ofertas de venta ahora</div>
+                   : ventas.map(p => (
                     <div key={p.id} className={`match-pub${p.perfil_id === userId ? " propia" : ""}`} style={{marginTop:8,borderRadius:6}}>
                       <div className="match-pub-info">
                         <div className="match-pub-monto">{MONEDA_FLAG[p.moneda]} {p.monto.toLocaleString("es-AR")} <span>{p.moneda}</span></div>
                         {p.precio_referencia && <div className="match-pub-precio">Al {p.precio_referencia}</div>}
                         {p.zona && <div className="match-pub-meta">📍 {p.zona}</div>}
                         {p.notas && <div className="match-pub-meta">💬 {p.notas}</div>}
-                        <div className="match-pub-corredor">
-                          {p.perfil_id === userId ? "📌 Tu publicación" : `C.I. ${p.perfiles?.apellido ?? ""}, ${p.perfiles?.nombre ?? ""} · Mat. ${p.perfiles?.matricula ?? "—"}`}
-                        </div>
+                        <div className="match-pub-corredor">{p.perfil_id === userId ? "📌 Tu publicación" : `C.I. ${p.perfiles?.apellido ?? ""}, ${p.perfiles?.nombre ?? ""} · Mat. ${p.perfiles?.matricula ?? "—"}`}</div>
                         <div className="match-pub-meta">{formatFecha(p.created_at)}</div>
                       </div>
-                      {p.perfil_id === userId ? (
-                        <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
-                      ) : (
-                        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                      {p.perfil_id === userId ? <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
+                       : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
                           <button className="match-btn-contactar">Contactar</button>
                           <div className="match-costo">Costo: {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}</div>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                   ))}
                 </div>
-
                 <div>
                   <div className="match-col-titulo compra">🔴 Compran ({compras.length})</div>
-                  {loadingMatch ? (
-                    <div className="match-empty">Cargando...</div>
-                  ) : compras.length === 0 ? (
-                    <div className="match-empty">No hay pedidos de compra ahora</div>
-                  ) : compras.map(p => (
+                  {loadingMatch ? <div className="match-empty">Cargando...</div>
+                   : compras.length === 0 ? <div className="match-empty">No hay pedidos de compra ahora</div>
+                   : compras.map(p => (
                     <div key={p.id} className={`match-pub${p.perfil_id === userId ? " propia" : ""}`} style={{marginTop:8,borderRadius:6}}>
                       <div className="match-pub-info">
                         <div className="match-pub-monto">{MONEDA_FLAG[p.moneda]} {p.monto.toLocaleString("es-AR")} <span>{p.moneda}</span></div>
                         {p.precio_referencia && <div className="match-pub-precio">Al {p.precio_referencia}</div>}
                         {p.zona && <div className="match-pub-meta">📍 {p.zona}</div>}
                         {p.notas && <div className="match-pub-meta">💬 {p.notas}</div>}
-                        <div className="match-pub-corredor">
-                          {p.perfil_id === userId ? "📌 Tu publicación" : `C.I. ${p.perfiles?.apellido ?? ""}, ${p.perfiles?.nombre ?? ""} · Mat. ${p.perfiles?.matricula ?? "—"}`}
-                        </div>
+                        <div className="match-pub-corredor">{p.perfil_id === userId ? "📌 Tu publicación" : `C.I. ${p.perfiles?.apellido ?? ""}, ${p.perfiles?.nombre ?? ""} · Mat. ${p.perfiles?.matricula ?? "—"}`}</div>
                         <div className="match-pub-meta">{formatFecha(p.created_at)}</div>
                       </div>
-                      {p.perfil_id === userId ? (
-                        <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
-                      ) : (
-                        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                      {p.perfil_id === userId ? <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
+                       : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
                           <button className="match-btn-contactar">Contactar</button>
                           <div className="match-costo">Costo: {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}</div>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                   ))}
                 </div>
@@ -554,9 +532,7 @@ export default function CotizacionesPage() {
               <label className="fn-label">Notas adicionales</label>
               <input className="fn-input" placeholder="recibo transferencia, efectivo..." value={formPub.notas} onChange={e => setFormPub(p => ({ ...p, notas: e.target.value }))} />
             </div>
-            <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:8}}>
-              ⏱ La publicación vence en 24 horas automáticamente.
-            </div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:8}}>⏱ La publicación vence en 24 horas automáticamente.</div>
             <div className="fn-modal-actions">
               <button className="fn-btn-cancelar" onClick={() => setMostrarForm(false)}>Cancelar</button>
               <button className="fn-btn-guardar" onClick={publicar} disabled={guardando || !formPub.monto}>
@@ -566,29 +542,16 @@ export default function CotizacionesPage() {
           </div>
         </div>
       )}
+
+      {/* MODAL ACTUALIZAR COTIZACIÓN */}
+      {provActualizar && userId && (
+        <ActualizarCotizacionModal
+          proveedor={provActualizar}
+          userId={userId}
+          onClose={() => setProvActualizar(null)}
+          onGuardado={() => { setProvActualizar(null); cargarProveedores(); }}
+        />
+      )}
     </>
   );
-  // Agregá al inicio del archivo
-import ActualizarCotizacionModal from "./ActualizarCotizacionModal";
-
-// Agregá estos estados
-const [provActualizar, setProvActualizar] = useState<any>(null);
-
-// En la card de cada proveedor, agregá el botón:
-<button 
-  style={{padding:"6px 14px",background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#cc0000",fontFamily:"'Montserrat',sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
-  onClick={() => setProvActualizar(p)}
->
-  📊 Actualizar cotización
-</button>
-
-// Al final del JSX, antes del cierre:
-{provActualizar && userId && (
-  <ActualizarCotizacionModal
-    proveedor={provActualizar}
-    userId={userId}
-    onClose={() => setProvActualizar(null)}
-    onGuardado={() => { setProvActualizar(null); cargarProveedores(); }}
-  />
-)}
 }
