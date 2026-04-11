@@ -129,8 +129,10 @@ export default function DashboardPage() {
       .catch(() => setIpc({ valor: "Sin datos", sub: "INDEC", loading: false }));
 
     supabase.from("indicadores").select("valor").eq("clave", "valor_jus").single()
-      .then(({ data }) => { if (data?.valor) setJus({ valor: new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(data.valor), loading: false }); else setJus({ valor: "Sin datos", loading: false }); })
-      .catch(() => setJus({ valor: "Sin datos", loading: false }));
+  .then(({ data, error }) => {
+    if (error || !data?.valor) setJus({ valor: "Sin datos", loading: false });
+    else setJus({ valor: new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(data.valor), loading: false });
+  });
 
     return () => clearInterval(interval);
   }, []);
