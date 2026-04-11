@@ -82,20 +82,13 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
     setError("");
     try {
       const base64 = preview.split(",")[1];
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/api/extraer-cotizacion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: [
-              { type: "image", source: { type: "base64", media_type: mimeType as "image/jpeg"|"image/png"|"image/webp", data: base64 } },
-              { type: "text", text: `Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Si hay múltiples cotizaciones, tomá la del dólar blue o informal. Los valores deben ser números enteros sin puntos ni comas.` }
-            ]
-          }]
-        })
+          imageBase64: base64,
+          mediaType: mimeType,
+        }),
       });
       const data = await response.json();
       const texto = data.content?.[0]?.text ?? "";
