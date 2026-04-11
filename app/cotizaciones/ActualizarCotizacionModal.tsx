@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 
 interface Props {
@@ -12,32 +12,76 @@ interface Props {
 
 export default function ActualizarCotizacionModal({ proveedor, userId, onClose, onGuardado }: Props) {
   const [modo, setModo] = useState<"imagen"|"manual">("imagen");
-  const [imagen, setImagen] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [mimeType, setMimeType] = useState<string>("image/png");
   const [analizando, setAnalizando] = useState(false);
   const [compra, setCompra] = useState(proveedor.compra_usd?.toString() ?? "");
   const [venta, setVenta] = useState(proveedor.venta_usd?.toString() ?? "");
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const [extraido, setExtraido] = useState(false);
+  const [pegando, setPegando] = useState(false);
 
-  const handleImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImagen(file);
+  const procesarArchivo = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setError("El archivo no es una imagen válida.");
+      return;
+    }
+    setMimeType(file.type);
     setExtraido(false);
+    setError("");
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result as string);
     reader.readAsDataURL(file);
   };
 
+  const handleArchivo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) procesarArchivo(file);
+  };
+
+  const handlePegar = useCallback(async () => {
+    setPegando(true);
+    setError("");
+    try {
+      const items = await navigator.clipboard.read();
+      let encontrado = false;
+      for (const item of items) {
+        const imageType = item.types.find(t => t.startsWith("image/"));
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          const file = new File([blob], "cotizacion.png", { type: imageType });
+          procesarArchivo(file);
+          encontrado = true;
+          break;
+        }
+      }
+      if (!encontrado) {
+        setError("No hay una imagen en el portapapeles. Copiá una imagen primero (screenshot de la cotización).");
+      }
+    } catch {
+      setError("No se pudo acceder al portapapeles. Usá el botón de subir archivo o presioná Ctrl+V en el área de imagen.");
+    }
+    setPegando(false);
+  }, []);
+
+  const handlePasteEvent = useCallback((e: React.ClipboardEvent) => {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith("image/")) {
+        const file = items[i].getAsFile();
+        if (file) { procesarArchivo(file); return; }
+      }
+    }
+    setError("No hay imagen en el portapapeles.");
+  }, []);
+
   const analizarImagen = async () => {
-    if (!imagen || !preview) return;
+    if (!preview) return;
     setAnalizando(true);
     setError("");
     try {
       const base64 = preview.split(",")[1];
-      const mediaType = imagen.type as "image/jpeg" | "image/png" | "image/webp";
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -47,8 +91,8 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
           messages: [{
             role: "user",
             content: [
-              { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
-              { type: "text", text: `Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Si hay múltiples cotizaciones, tomá la del dólar blue o informal. Los valores deben ser números sin puntos ni comas.` }
+              { type: "image", source: { type: "base64", media_type: mimeType as "image/jpeg"|"image/png"|"image/webp", data: base64 } },
+              { type: "text", text: `Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Si hay múltiples cotizaciones, tomá la del dólar blue o informal. Los valores deben ser números enteros sin puntos ni comas.` }
             ]
           }]
         })
@@ -61,11 +105,10 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
         if (parsed.venta) setVenta(parsed.venta.toString());
         setExtraido(true);
       } catch {
-        setError("No se pudieron extraer los valores. Cargalos manualmente.");
-        setModo("manual");
+        setError("No se pudieron extraer los valores. Revisalos y cargalos manualmente.");
       }
     } catch {
-      setError("Error al analizar la imagen. Intentá de nuevo o cargá manualmente.");
+      setError("Error al analizar la imagen. Intentá de nuevo.");
     }
     setAnalizando(false);
   };
@@ -91,7 +134,7 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
     <>
       <style>{`
         .act-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 24px; }
-        .act-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 32px; width: 100%; max-width: 480px; position: relative; }
+        .act-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 32px; width: 100%; max-width: 480px; position: relative; max-height: 90vh; overflow-y: auto; }
         .act-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
         .act-titulo { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; margin-bottom: 4px; }
         .act-titulo span { color: #cc0000; }
@@ -103,12 +146,20 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
         .act-modo-icon { font-size: 22px; margin-bottom: 6px; }
         .act-modo-label { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
         .act-modo-btn.activo .act-modo-label { color: #fff; }
-        .act-upload-area { border: 2px dashed rgba(255,255,255,0.12); border-radius: 6px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 14px; position: relative; overflow: hidden; }
-        .act-upload-area:hover { border-color: rgba(200,0,0,0.4); }
-        .act-upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-        .act-upload-icon { font-size: 28px; margin-bottom: 8px; }
-        .act-upload-text { font-size: 12px; color: rgba(255,255,255,0.4); }
-        .act-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 4px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.07); }
+        .act-upload-zone { border: 2px dashed rgba(255,255,255,0.12); border-radius: 6px; padding: 20px; text-align: center; margin-bottom: 12px; transition: border-color 0.2s; }
+        .act-upload-zone:hover { border-color: rgba(200,0,0,0.3); }
+        .act-upload-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+        .act-btn-file { position: relative; overflow: hidden; padding: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.6); font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .act-btn-file:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+        .act-btn-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .act-btn-paste { padding: 10px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.25); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .act-btn-paste:hover:not(:disabled) { background: rgba(200,0,0,0.16); color: #fff; }
+        .act-btn-paste:disabled { opacity: 0.5; cursor: not-allowed; }
+        .act-paste-hint { font-size: 10px; color: rgba(255,255,255,0.2); text-align: center; margin-top: 4px; }
+        .act-preview-wrap { position: relative; margin-bottom: 12px; }
+        .act-preview { width: 100%; max-height: 180px; object-fit: contain; border-radius: 4px; border: 1px solid rgba(255,255,255,0.07); display: block; }
+        .act-preview-clear { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; color: rgba(255,255,255,0.6); font-size: 11px; padding: 3px 8px; cursor: pointer; }
+        .act-preview-clear:hover { color: #fff; }
         .act-btn-analizar { width: 100%; padding: 11px; background: rgba(200,0,0,0.12); border: 1px solid rgba(200,0,0,0.35); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-bottom: 14px; }
         .act-btn-analizar:hover:not(:disabled) { background: rgba(200,0,0,0.2); color: #fff; }
         .act-btn-analizar:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -121,7 +172,7 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
         .act-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .act-actual { font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
         .act-error { font-size: 12px; color: #ff4444; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 14px; }
-        .act-actions { display: flex; gap: 12px; justify-content: flex-end; }
+        .act-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 4px; }
         .act-btn-cancel { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .act-btn-save { padding: 10px 24px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .act-btn-save:hover:not(:disabled) { background: #e60000; }
@@ -131,9 +182,9 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
       `}</style>
 
       <div className="act-bg" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-        <div className="act-modal">
+        <div className="act-modal" onPaste={handlePasteEvent}>
           <div className="act-titulo">Actualizar cotización — <span>{proveedor.nombre}</span></div>
-          <div className="act-subtitulo">Subí una foto o cargá los valores manualmente</div>
+          <div className="act-subtitulo">Subí una foto, pegá del portapapeles o cargá manualmente</div>
 
           {(proveedor.compra_usd || proveedor.venta_usd) && (
             <div className="act-actual">Valores actuales: Compra {formatARS(proveedor.compra_usd)} · Venta {formatARS(proveedor.venta_usd)}</div>
@@ -142,7 +193,7 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
           <div className="act-modos">
             <button className={`act-modo-btn${modo === "imagen" ? " activo" : ""}`} onClick={() => setModo("imagen")}>
               <div className="act-modo-icon">📷</div>
-              <div className="act-modo-label">Subir foto</div>
+              <div className="act-modo-label">Imagen</div>
             </button>
             <button className={`act-modo-btn${modo === "manual" ? " activo" : ""}`} onClick={() => setModo("manual")}>
               <div className="act-modo-icon">✏️</div>
@@ -153,14 +204,24 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
           {modo === "imagen" && (
             <>
               {!preview ? (
-                <div className="act-upload-area">
-                  <input className="act-upload-input" type="file" accept="image/*" onChange={handleImagen} />
-                  <div className="act-upload-icon">🖼️</div>
-                  <div className="act-upload-text">Tocá para subir una foto de la cotización</div>
+                <div className="act-upload-zone">
+                  <div className="act-upload-btns">
+                    <div className="act-btn-file">
+                      📁 Subir archivo
+                      <input type="file" accept="image/*" onChange={handleArchivo} />
+                    </div>
+                    <button className="act-btn-paste" onClick={handlePegar} disabled={pegando}>
+                      {pegando ? <><span className="act-spinner" />...</> : "📋 Pegar imagen"}
+                    </button>
+                  </div>
+                  <div className="act-paste-hint">También podés presionar Ctrl+V con el modal abierto</div>
                 </div>
               ) : (
                 <>
-                  <img className="act-preview" src={preview} alt="Cotización" />
+                  <div className="act-preview-wrap">
+                    <img className="act-preview" src={preview} alt="Cotización" />
+                    <button className="act-preview-clear" onClick={() => { setPreview(null); setExtraido(false); setError(""); }}>✕ Cambiar</button>
+                  </div>
                   <button className="act-btn-analizar" onClick={analizarImagen} disabled={analizando}>
                     {analizando ? <><span className="act-spinner" />Analizando con IA...</> : "🤖 Extraer valores con IA"}
                   </button>
