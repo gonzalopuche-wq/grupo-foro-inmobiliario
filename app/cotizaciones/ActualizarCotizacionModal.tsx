@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../lib/supabase";
 
 interface Props {
   proveedor: { id: string; nombre: string; compra_usd: number | null; venta_usd: number | null; };
@@ -35,11 +35,9 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
     if (!imagen || !preview) return;
     setAnalizando(true);
     setError("");
-
     try {
       const base64 = preview.split(",")[1];
       const mediaType = imagen.type as "image/jpeg" | "image/png" | "image/webp";
-
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -49,29 +47,14 @@ export default function ActualizarCotizacionModal({ proveedor, userId, onClose, 
           messages: [{
             role: "user",
             content: [
-              {
-                type: "image",
-                source: { type: "base64", media_type: mediaType, data: base64 }
-              },
-              {
-                type: "text",
-                text: `Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). 
-                
-Respondé SOLO con un JSON con este formato exacto, sin texto adicional:
-{"compra": 1380, "venta": 1420}
-
-Si no podés determinar algún valor con certeza, ponelo como null.
-Si hay múltiples cotizaciones, tomá la del dólar blue o informal.
-Los valores deben ser números sin puntos ni comas.`
-              }
+              { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+              { type: "text", text: `Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Si hay múltiples cotizaciones, tomá la del dólar blue o informal. Los valores deben ser números sin puntos ni comas.` }
             ]
           }]
         })
       });
-
       const data = await response.json();
       const texto = data.content?.[0]?.text ?? "";
-      
       try {
         const parsed = JSON.parse(texto.replace(/```json|```/g, "").trim());
         if (parsed.compra) setCompra(parsed.compra.toString());
@@ -93,8 +76,7 @@ Los valores deben ser números sin puntos ni comas.`
     const c = compra ? parseFloat(compra.replace(",", ".")) : null;
     const v = venta ? parseFloat(venta.replace(",", ".")) : null;
     await supabase.from("divisas_proveedores").update({
-      compra_usd: c,
-      venta_usd: v,
+      compra_usd: c, venta_usd: v,
       actualizado_cot: new Date().toISOString(),
       actualizado_por: userId,
     }).eq("id", proveedor.id);
@@ -154,9 +136,7 @@ Los valores deben ser números sin puntos ni comas.`
           <div className="act-subtitulo">Subí una foto o cargá los valores manualmente</div>
 
           {(proveedor.compra_usd || proveedor.venta_usd) && (
-            <div className="act-actual">
-              Valores actuales: Compra {formatARS(proveedor.compra_usd)} · Venta {formatARS(proveedor.venta_usd)}
-            </div>
+            <div className="act-actual">Valores actuales: Compra {formatARS(proveedor.compra_usd)} · Venta {formatARS(proveedor.venta_usd)}</div>
           )}
 
           <div className="act-modos">
