@@ -34,7 +34,21 @@ interface Publicacion {
   created_at: string;
   perfiles?: { nombre: string; apellido: string; matricula: string | null };
 }
+// Agregá al inicio del archivo
+import ActualizarCotizacionModal from "./ActualizarCotizacionModal";
 
+// Agregá estos estados
+const [provActualizar, setProvActualizar] = useState<any>(null);
+
+// En la card de cada proveedor, agregá el botón:
+<button 
+  style={{padding:"6px 14px",background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#cc0000",fontFamily:"'Montserrat',sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
+  onClick={() => setProvActualizar(p)}
+>
+  📊 Actualizar cotización
+</button>
+
+)}
 const MONEDAS = ["USD", "EUR", "GBP", "BRL", "USDT", "USDC"];
 const MONEDA_FLAG: Record<string, string> = { USD: "🇺🇸", EUR: "🇪🇺", GBP: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", BRL: "🇧🇷", USDT: "🔷", USDC: "🔷" };
 
@@ -554,4 +568,27 @@ export default function CotizacionesPage() {
       )}
     </>
   );
+  // Agregá al inicio del archivo
+import ActualizarCotizacionModal from "./ActualizarCotizacionModal";
+
+// Agregá estos estados
+const [provActualizar, setProvActualizar] = useState<any>(null);
+
+// En la card de cada proveedor, agregá el botón:
+<button 
+  style={{padding:"6px 14px",background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#cc0000",fontFamily:"'Montserrat',sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
+  onClick={() => setProvActualizar(p)}
+>
+  📊 Actualizar cotización
+</button>
+
+// Al final del JSX, antes del cierre:
+{provActualizar && userId && (
+  <ActualizarCotizacionModal
+    proveedor={provActualizar}
+    userId={userId}
+    onClose={() => setProvActualizar(null)}
+    onGuardado={() => { setProvActualizar(null); cargarProveedores(); }}
+  />
+)}
 }
