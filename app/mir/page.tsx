@@ -17,7 +17,6 @@ const OPS_BUSQUEDA = [
   { value: "permuta", label: "Permuta" },
 ];
 
-// Match: venta↔compra, alquiler↔alquiler, temporario↔temporario, permuta↔permuta
 const MATCH_OP: Record<string, string> = {
   venta: "compra", alquiler: "alquiler", temporario: "temporario", permuta: "permuta",
 };
@@ -125,12 +124,28 @@ export default function MirPage() {
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
-      if (!data.user) { window.location.href = "/"; return; }
+      if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
+
+      // Leer parámetro de URL para abrir modal automáticamente
+      const params = new URLSearchParams(window.location.search);
+      const nuevo = params.get("nuevo");
+      const vistaParam = params.get("vista");
+
+      if (nuevo === "ofrecido") {
+        setMostrarFormO(true);
+      } else if (nuevo === "busqueda") {
+        setVista("busquedas");
+        setMostrarFormB(true);
+      } else if (vistaParam === "matches") {
+        setVista("matches");
+      }
     };
     init();
+
     supabase.from("indicadores").select("valor").eq("clave", "costo_match_mir").single()
       .then(({ data }) => { if (data?.valor) setCostoMatch(data.valor); });
+
     cargarDatos();
   }, []);
 
@@ -197,7 +212,7 @@ export default function MirPage() {
   const guardarOfrecido = async () => {
     if (!userId || !formO.ciudad) return;
     setGuardando(true);
-    const { data: nuevo } = await supabase.from("mir_ofrecidos").insert({
+    const { data: nuevo, error } = await supabase.from("mir_ofrecidos").insert({
       perfil_id: userId, operacion: formO.operacion, tipo_propiedad: formO.tipo_propiedad,
       zona: formO.zona || null, ciudad: formO.ciudad,
       precio: n(formO.precio), moneda: formO.moneda,
@@ -207,6 +222,7 @@ export default function MirPage() {
       barrio_cerrado: formO.barrio_cerrado, acepta_mascotas: formO.acepta_mascotas,
       acepta_bitcoin: formO.acepta_bitcoin, descripcion: formO.descripcion || null,
     }).select().single();
+    if (error) { console.error("Error guardando ofrecido:", error); setGuardando(false); return; }
     if (nuevo) await matchearOfrecido(nuevo as Ofrecido);
     setGuardando(false);
     setMostrarFormO(false);
@@ -217,7 +233,7 @@ export default function MirPage() {
   const guardarBusqueda = async () => {
     if (!userId || !formB.ciudad) return;
     setGuardando(true);
-    const { data: nueva } = await supabase.from("mir_busquedas").insert({
+    const { data: nueva, error } = await supabase.from("mir_busquedas").insert({
       perfil_id: userId, operacion: formB.operacion, tipo_propiedad: formB.tipo_propiedad,
       zona: formB.zona || null, ciudad: formB.ciudad,
       presupuesto_min: n(formB.presupuesto_min), presupuesto_max: n(formB.presupuesto_max),
@@ -230,6 +246,7 @@ export default function MirPage() {
       acepta_mascotas: formB.acepta_mascotas, acepta_bitcoin: formB.acepta_bitcoin,
       descripcion: formB.descripcion || null,
     }).select().single();
+    if (error) { console.error("Error guardando búsqueda:", error); setGuardando(false); return; }
     if (nueva) await matchearBusqueda(nueva as Busqueda);
     setGuardando(false);
     setMostrarFormB(false);

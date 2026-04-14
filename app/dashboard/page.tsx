@@ -4,8 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "../lib/supabase";
 
 const accesosRapidos = [
-  { icon: "🔍", label: "Publicar búsqueda", href: "#", primary: true },
-  { icon: "🏠", label: "Publicar ofrecido", href: "#", primary: true },
+  { icon: "🔍", label: "Publicar búsqueda", href: "/mir?nuevo=busqueda", primary: true },
+  { icon: "🏠", label: "Publicar ofrecido", href: "/mir?nuevo=ofrecido", primary: true },
   { icon: "💵", label: "Cotizaciones", href: "/cotizaciones", primary: false },
   { icon: "📅", label: "Eventos", href: "/eventos", primary: false },
   { icon: "💬", label: "Foro", href: "#", primary: false },
@@ -76,12 +76,15 @@ export default function DashboardPage() {
   useEffect(() => {
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = "/"; return; }
+      if (!session) { window.location.href = "/login"; return; }
       setEmail(session.user.email ?? "");
-      const n = session.user.email?.split("@")[0] ?? "";
-      setNombre(n.charAt(0).toUpperCase() + n.slice(1));
-      const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", session.user.id).single();
+      const { data: perfil } = await supabase.from("perfiles").select("tipo, nombre, apellido").eq("id", session.user.id).single();
       if (perfil?.tipo === "admin") setEsAdmin(true);
+      if (perfil?.nombre) setNombre(perfil.nombre);
+      else {
+        const n = session.user.email?.split("@")[0] ?? "";
+        setNombre(n.charAt(0).toUpperCase() + n.slice(1));
+      }
     };
     getUser();
 
@@ -129,15 +132,15 @@ export default function DashboardPage() {
       .catch(() => setIpc({ valor: "Sin datos", sub: "INDEC", loading: false }));
 
     supabase.from("indicadores").select("valor").eq("clave", "valor_jus").single()
-  .then(({ data, error }) => {
-    if (error || !data?.valor) setJus({ valor: "Sin datos", loading: false });
-    else setJus({ valor: new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(data.valor), loading: false });
-  });
+      .then(({ data, error }) => {
+        if (error || !data?.valor) setJus({ valor: "Sin datos", loading: false });
+        else setJus({ valor: new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(data.valor), loading: false });
+      });
 
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = "/"; };
+  const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = "/login"; };
   const abrirClima = () => { if (clima) window.open(`https://weather.com/es-AR/tiempo/hoy/l/${clima.lat},${clima.lon}`, "_blank"); };
   const hoy = new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const formatPeso = (n: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
@@ -363,7 +366,7 @@ export default function DashboardPage() {
             <div className="db-panel-base">
               <div className="db-panel-titulo">
                 Matches recientes
-                <span style={{fontSize:9,padding:"3px 8px",background:"rgba(200,0,0,0.15)",border:"1px solid rgba(200,0,0,0.3)",borderRadius:"20px",color:"#cc0000",fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase" as const}}>0 nuevos</span>
+                <a href="/mir?vista=matches" className="db-link-badge">Ver todos</a>
               </div>
               <div className="db-empty">No hay matches todavía</div>
             </div>
