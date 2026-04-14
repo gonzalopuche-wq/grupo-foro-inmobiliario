@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 
 type Paso = "tipo" | "datos" | "enviado";
 type TipoUsuario = "corredor" | "colaborador";
+type EstadoMatricula = "idle" | "verificando" | "ok" | "error";
 
 const ESPECIALIDADES = [
   { id: "alquileres", label: "Alquileres", icon: "🔑" },
@@ -29,10 +30,85 @@ export default function RegistroPage() {
   const [dni, setDni] = useState("");
   const [especialidades, setEspecialidades] = useState<string[]>([]);
 
+  // Validación COCIR
+  const [estadoMatricula, setEstadoMatricula] = useState<EstadoMatricula>("idle");
+  const [mensajeMatricula, setMensajeMatricula] = useState("");
+  const [matriculaVerificada, setMatriculaVerificada] = useState(false);
+  const [datoscocir, setDatosCocir] = useState<{ nombre: string; apellido: string; inmobiliaria: string } | null>(null);
+
   const toggleEspecialidad = (id: string) => {
     setEspecialidades(prev =>
       prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]
     );
+  };
+
+  // Resetear verificación si el usuario edita la matrícula
+  const handleMatriculaChange = (val: string) => {
+    setMatricula(val);
+    if (matriculaVerificada) {
+      setMatriculaVerificada(false);
+      setEstadoMatricula("idle");
+      setMensajeMatricula("");
+      setDatosCocir(null);
+      setNombre("");
+      setApellido("");
+      setInmobiliaria("");
+    }
+  };
+
+  const verificarMatricula = async () => {
+    const mat = matricula.trim();
+    if (!mat) {
+      setMensajeMatricula("Ingresá tu número de matrícula.");
+      setEstadoMatricula("error");
+      return;
+    }
+
+    setEstadoMatricula("verificando");
+    setMensajeMatricula("");
+
+    const { data, error: dbError } = await supabase
+      .from("cocir_padron")
+      .select("nombre, apellido, inmobiliaria, estado")
+      .eq("matricula", mat)
+      .single();
+
+    if (dbError || !data) {
+      setEstadoMatricula("error");
+      setMensajeMatricula("Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado.");
+      setMatriculaVerificada(false);
+      return;
+    }
+
+    if (data.estado && data.estado.toLowerCase() !== "activo" && data.estado.toLowerCase() !== "habilitado") {
+      setEstadoMatricula("error");
+      setMensajeMatricula(`Matrícula encontrada pero con estado: ${data.estado}. Solo se aceptan corredores habilitados.`);
+      setMatriculaVerificada(false);
+      return;
+    }
+
+    // Verificar que no esté ya registrado
+    const { data: perfilExistente } = await supabase
+      .from("perfiles")
+      .select("id")
+      .eq("matricula", mat)
+      .maybeSingle();
+
+    if (perfilExistente) {
+      setEstadoMatricula("error");
+      setMensajeMatricula("Esta matrícula ya tiene una cuenta registrada. Si es tuya, ingresá con tu email.");
+      setMatriculaVerificada(false);
+      return;
+    }
+
+    // Todo OK — pre-llenar datos
+    setEstadoMatricula("ok");
+    setMensajeMatricula(`✓ ${data.apellido}, ${data.nombre} — matrícula válida`);
+    setMatriculaVerificada(true);
+    setDatosCocir({ nombre: data.nombre, apellido: data.apellido, inmobiliaria: data.inmobiliaria ?? "" });
+    setNombre(data.nombre ?? "");
+    setApellido(data.apellido ?? "");
+    setInmobiliaria(data.inmobiliaria ?? "");
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -43,9 +119,15 @@ export default function RegistroPage() {
       setError("Completá todos los campos obligatorios.");
       return;
     }
-    if (tipo === "corredor" && !matricula) {
-      setError("La matrícula es obligatoria para corredores.");
-      return;
+    if (tipo === "corredor") {
+      if (!matricula) {
+        setError("La matrícula es obligatoria para corredores.");
+        return;
+      }
+      if (!matriculaVerificada) {
+        setError("Verificá tu matrícula COCIR antes de continuar.");
+        return;
+      }
     }
     if (tipo === "colaborador" && !dni) {
       setError("El DNI es obligatorio para colaboradores.");
@@ -190,19 +272,86 @@ export default function RegistroPage() {
           border-color: rgba(200,0,0,0.6);
           box-shadow: 0 0 0 3px rgba(200,0,0,0.1);
         }
+        .reg-input.ok {
+          border-color: rgba(0,200,100,0.5);
+          background: rgba(0,200,100,0.04);
+        }
+        .reg-input.err { border-color: rgba(200,0,0,0.5); }
         .reg-input:-webkit-autofill,
         .reg-input:-webkit-autofill:focus {
           -webkit-box-shadow: 0 0 0 1000px #141414 inset;
           -webkit-text-fill-color: #ffffff;
         }
+        .reg-input:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
         .reg-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* MATRÍCULA CON BOTÓN VERIFICAR */
+        .mat-row { display: flex; gap: 8px; align-items: flex-end; }
+        .mat-row .reg-input { flex: 1; }
+        .mat-verificar {
+          padding: 12px 16px;
+          background: rgba(200,0,0,0.15);
+          border: 1px solid rgba(200,0,0,0.35);
+          border-radius: 3px;
+          color: #fff;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 10px; font-weight: 700;
+          letter-spacing: 0.12em; text-transform: uppercase;
+          cursor: pointer; white-space: nowrap;
+          transition: all 0.2s; flex-shrink: 0;
+        }
+        .mat-verificar:hover:not(:disabled) {
+          background: rgba(200,0,0,0.3);
+          border-color: rgba(200,0,0,0.6);
+        }
+        .mat-verificar:disabled { opacity: 0.5; cursor: not-allowed; }
+        .mat-verificar.ok {
+          background: rgba(0,200,100,0.12);
+          border-color: rgba(0,200,100,0.4);
+          color: #4ade80;
+        }
+        .mat-msg {
+          margin-top: 7px;
+          font-size: 11px;
+          line-height: 1.5;
+          padding: 8px 12px;
+          border-radius: 3px;
+        }
+        .mat-msg.ok {
+          color: #4ade80;
+          background: rgba(0,200,100,0.07);
+          border: 1px solid rgba(0,200,100,0.2);
+        }
+        .mat-msg.err {
+          color: #ff6b6b;
+          background: rgba(200,0,0,0.07);
+          border: 1px solid rgba(200,0,0,0.2);
+        }
+        .mat-msg.loading {
+          color: rgba(255,255,255,0.4);
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* DATOS PRELLENADOS */
+        .reg-prellenado {
+          background: rgba(0,200,100,0.04);
+          border: 1px solid rgba(0,200,100,0.15);
+          border-radius: 3px;
+          padding: 12px 14px;
+          margin-bottom: 14px;
+          font-size: 11px;
+          color: rgba(255,255,255,0.4);
+        }
+        .reg-prellenado strong { color: rgba(255,255,255,0.65); }
 
         /* ESPECIALIDADES */
         .reg-especialidades-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          margin-bottom: 14px;
+          display: grid; grid-template-columns: 1fr 1fr;
+          gap: 10px; margin-bottom: 14px;
         }
         .reg-esp-btn {
           padding: 12px 10px;
@@ -223,18 +372,13 @@ export default function RegistroPage() {
         }
         .reg-esp-btn.activo .reg-esp-label { color: #fff; }
         .reg-esp-check {
-          margin-left: auto;
-          width: 16px; height: 16px;
-          border: 1px solid rgba(255,255,255,0.2);
-          border-radius: 3px;
+          margin-left: auto; width: 16px; height: 16px;
+          border: 1px solid rgba(255,255,255,0.2); border-radius: 3px;
           display: flex; align-items: center; justify-content: center;
-          font-size: 10px;
-          flex-shrink: 0;
+          font-size: 10px; flex-shrink: 0;
         }
         .reg-esp-btn.activo .reg-esp-check {
-          background: #cc0000;
-          border-color: #cc0000;
-          color: #fff;
+          background: #cc0000; border-color: #cc0000; color: #fff;
         }
 
         .reg-error {
@@ -277,7 +421,6 @@ export default function RegistroPage() {
           font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5;
         }
         .reg-nota strong { color: rgba(255,255,255,0.7); }
-
         .reg-enviado {
           text-align: center; display: flex; flex-direction: column;
           align-items: center; gap: 16px; padding: 12px 0;
@@ -327,6 +470,44 @@ export default function RegistroPage() {
               )}
 
               <form onSubmit={handleSubmit} noValidate>
+
+                {/* MATRÍCULA CON VERIFICACIÓN COCIR */}
+                {tipo === "corredor" && (
+                  <div className="reg-field">
+                    <label className="reg-label">Matrícula COCIR <span>*</span></label>
+                    <div className="mat-row">
+                      <input
+                        className={`reg-input${estadoMatricula === "ok" ? " ok" : estadoMatricula === "error" ? " err" : ""}`}
+                        type="text"
+                        placeholder="Ej: 2540"
+                        value={matricula}
+                        onChange={e => handleMatriculaChange(e.target.value)}
+                        disabled={loading || estadoMatricula === "verificando"}
+                      />
+                      <button
+                        type="button"
+                        className={`mat-verificar${estadoMatricula === "ok" ? " ok" : ""}`}
+                        onClick={verificarMatricula}
+                        disabled={loading || estadoMatricula === "verificando" || matriculaVerificada}
+                      >
+                        {estadoMatricula === "verificando" ? "..." : matriculaVerificada ? "✓ OK" : "Verificar"}
+                      </button>
+                    </div>
+                    {mensajeMatricula && (
+                      <div className={`mat-msg ${estadoMatricula === "ok" ? "ok" : estadoMatricula === "verificando" ? "loading" : "err"}`}>
+                        {estadoMatricula === "verificando" ? "Verificando en el padrón COCIR..." : mensajeMatricula}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* DATOS PRELLENADOS DESDE COCIR */}
+                {tipo === "corredor" && matriculaVerificada && datoscocir && (
+                  <div className="reg-prellenado">
+                    Datos cargados desde el padrón COCIR. Podés editarlos si es necesario.
+                  </div>
+                )}
+
                 <div className="reg-fila">
                   <div className="reg-field">
                     <label className="reg-label">Nombre <span>*</span></label>
@@ -341,25 +522,18 @@ export default function RegistroPage() {
                 </div>
 
                 {tipo === "corredor" && (
-                  <>
-                    <div className="reg-fila">
-                      <div className="reg-field">
-                        <label className="reg-label">Matrícula COCIR <span>*</span></label>
-                        <input className="reg-input" type="text" placeholder="2540"
-                          value={matricula} onChange={e => setMatricula(e.target.value)} disabled={loading} />
-                      </div>
-                      <div className="reg-field">
-                        <label className="reg-label">Teléfono</label>
-                        <input className="reg-input" type="text" placeholder="3416806480"
-                          value={telefono} onChange={e => setTelefono(e.target.value)} disabled={loading} />
-                      </div>
+                  <div className="reg-fila">
+                    <div className="reg-field">
+                      <label className="reg-label">Teléfono</label>
+                      <input className="reg-input" type="text" placeholder="3416806480"
+                        value={telefono} onChange={e => setTelefono(e.target.value)} disabled={loading} />
                     </div>
                     <div className="reg-field">
                       <label className="reg-label">Inmobiliaria</label>
-                      <input className="reg-input" type="text" placeholder="Mario Puche Propiedades"
+                      <input className="reg-input" type="text" placeholder="Nombre de la inmobiliaria"
                         value={inmobiliaria} onChange={e => setInmobiliaria(e.target.value)} disabled={loading} />
                     </div>
-                  </>
+                  </div>
                 )}
 
                 {tipo === "colaborador" && (
@@ -369,7 +543,6 @@ export default function RegistroPage() {
                       <input className="reg-input" type="text" placeholder="25750876"
                         value={dni} onChange={e => setDni(e.target.value)} disabled={loading} />
                     </div>
-
                     <div className="reg-field">
                       <label className="reg-label">Especialidades <span>*</span></label>
                       <div className="reg-especialidades-grid">
@@ -383,9 +556,7 @@ export default function RegistroPage() {
                           >
                             <span className="reg-esp-icon">{esp.icon}</span>
                             <span className="reg-esp-label">{esp.label}</span>
-                            <span className="reg-esp-check">
-                              {especialidades.includes(esp.id) ? "✓" : ""}
-                            </span>
+                            <span className="reg-esp-check">{especialidades.includes(esp.id) ? "✓" : ""}</span>
                           </button>
                         ))}
                       </div>
@@ -407,14 +578,18 @@ export default function RegistroPage() {
 
                 {error && <div className="reg-error" role="alert">{error}</div>}
 
-                <button className="reg-btn" type="submit" disabled={loading}>
+                <button
+                  className="reg-btn"
+                  type="submit"
+                  disabled={loading || (tipo === "corredor" && !matriculaVerificada)}
+                >
                   {loading && <span className="reg-spinner" />}
-                  {loading ? "Enviando..." : "Enviar solicitud"}
+                  {loading ? "Enviando..." : tipo === "corredor" && !matriculaVerificada ? "Verificá tu matrícula primero" : "Enviar solicitud"}
                 </button>
               </form>
 
               <div className="reg-footer">
-                ¿Ya tenés cuenta? <a href="/">Ingresá acá</a>
+                ¿Ya tenés cuenta? <a href="/login">Ingresá acá</a>
               </div>
               <div className="reg-divider" />
               <div className="reg-brand">Grupo Foro Inmobiliario · Rosario</div>
