@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 
 interface Props {
   proveedor: { id: string; nombre: string; compra_usd: number | null; venta_usd: number | null; };
