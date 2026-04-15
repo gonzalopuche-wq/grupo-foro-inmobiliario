@@ -106,9 +106,9 @@ export default function ForoPage() {
       setUserId(data.user.id);
       const { data: perfil } = await supabase.from("perfiles").select("id,nombre,apellido,matricula").eq("id", data.user.id).single();
       if (perfil) setUserProfile(perfil as Author);
-      await Promise.all([loadCategories(), loadTags(), loadTopics(), loadSaved(data.user.id), loadFaq()]);
+      await Promise.all([loadCategories(), loadTags(), loadSaved(data.user.id), loadFaq()]);
+      await loadTopics({ cat: "todas", status: "todas", q: "" });
       await loadChat();
-      setLoading(false);
       subscribeChat();
     };
     init();
