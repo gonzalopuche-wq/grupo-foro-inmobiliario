@@ -129,18 +129,24 @@ export default function ForoPage() {
 
   const loadTopics = async (opts?: { cat?: string; status?: string; q?: string }) => {
     setLoading(true);
-    let q = supabase.from("forum_topics")
+    const cat = opts?.cat !== undefined ? opts.cat : "todas";
+    const st = opts?.status !== undefined ? opts.status : "todas";
+    const sq = opts?.q !== undefined ? opts.q : "";
+    let query = supabase.from("forum_topics")
       .select("*, forum_categories(name,slug), perfiles(nombre,apellido,matricula), forum_topic_tags(forum_tags(id,name,slug))")
       .order("is_pinned", { ascending: false })
       .order("last_activity_at", { ascending: false });
-    const cat = opts?.cat ?? catFilter;
-    const st = opts?.status ?? statusFilter;
-    const sq = opts?.q ?? search;
-    if (cat !== "todas") { const found = categories.find(c => c.id === cat); if (found) q = q.eq("category_id", found.id); }
-    if (st !== "todas") q = q.eq("status", st);
-    const { data } = await q;
+    if (cat !== "todas") {
+      const found = categories.find(c => c.id === cat);
+      if (found) query = query.eq("category_id", found.id);
+    }
+    if (st !== "todas") query = query.eq("status", st);
+    const { data } = await query;
     let result = (data as unknown as Topic[]) ?? [];
-    if (sq.trim()) { const lower = sq.toLowerCase(); result = result.filter(t => t.title.toLowerCase().includes(lower) || t.body.toLowerCase().includes(lower)); }
+    if (sq.trim()) {
+      const lower = sq.toLowerCase();
+      result = result.filter(t => t.title.toLowerCase().includes(lower) || t.body.toLowerCase().includes(lower));
+    }
     setTopics(result);
     setLoading(false);
   };
