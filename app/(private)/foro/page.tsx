@@ -207,7 +207,10 @@ export default function ForoPage() {
     if (nTags.length > 0) await supabase.from("forum_topic_tags").insert(nTags.map(tid => ({ topic_id: nuevo.id, tag_id: tid })));
     setNLoading(false);
     setNTitle(""); setNBody(""); setNCat(""); setNTags([]); setNUrgent(false);
-    await loadTopics();
+    setCatFilter("todas");
+    setStatusFilter("todas");
+    setSearch("");
+    await loadTopics({ cat: "todas", status: "todas", q: "" });
     setVista("lista");
   };
 
