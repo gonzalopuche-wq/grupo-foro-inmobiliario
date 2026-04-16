@@ -11,6 +11,35 @@ interface Clima {
   lat: number; lon: number; gpsActivo: boolean;
 }
 
+interface MatchReciente {
+  id: string;
+  created_at: string;
+  mir_ofrecidos: { operacion: string; tipo_propiedad: string; ciudad: string } | null;
+  mir_busquedas: { operacion: string; tipo_propiedad: string; ciudad: string } | null;
+}
+
+interface EventoProximo {
+  id: string;
+  titulo: string;
+  fecha: string;
+  lugar: string | null;
+  tipo: string;
+  gratuito: boolean;
+}
+
+const OP_COLOR: Record<string, string> = {
+  venta: "#22c55e", compra: "#22c55e",
+  alquiler: "#60a5fa", temporario: "#eab308",
+  permuta: "#c084fc", comercial: "#f97316",
+  fondo_comercio: "#fb7185", campo: "#84cc16",
+};
+
+const OP_LABEL: Record<string, string> = {
+  venta: "Venta", compra: "Compra", alquiler: "Alquiler",
+  temporario: "Temp.", permuta: "Permuta",
+  comercial: "Comercial", fondo_comercio: "F. Comercio", campo: "Campo",
+};
+
 const OWM_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_KEY;
 
 export default function DashboardPage() {
@@ -26,6 +55,9 @@ export default function DashboardPage() {
   const [ipc, setIpc] = useState<{ valor: string; sub: string; loading: boolean }>({ valor: "", sub: "", loading: true });
   const [jus, setJus] = useState<{ valor: string; loading: boolean }>({ valor: "", loading: true });
   const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0 });
+  const [matchesRecientes, setMatchesRecientes] = useState<MatchReciente[]>([]);
+  const [proximosEventos, setProximosEventos] = useState<EventoProximo[]>([]);
+  const [loadingBottom, setLoadingBottom] = useState(true);
   const ciudadRef = useRef<HTMLInputElement>(null);
 
   const fetchClimaPorCoords = async (lat: number, lon: number, gpsActivo: boolean) => {
@@ -68,6 +100,24 @@ export default function DashboardPage() {
       supabase.from("mir_matches").select("id", { count: "exact", head: true }),
     ]).then(([b, o, m]) => {
       setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0 });
+    });
+
+    // Matches recientes y próximos eventos
+    Promise.all([
+      supabase.from("mir_matches")
+        .select("id, created_at, mir_ofrecidos(operacion, tipo_propiedad, ciudad), mir_busquedas(operacion, tipo_propiedad, ciudad)")
+        .order("created_at", { ascending: false })
+        .limit(5),
+      supabase.from("eventos")
+        .select("id, titulo, fecha, lugar, tipo, gratuito")
+        .eq("estado", "publicado")
+        .gte("fecha", new Date().toISOString())
+        .order("fecha", { ascending: true })
+        .limit(3),
+    ]).then(([mRes, eRes]) => {
+      setMatchesRecientes((mRes.data ?? []) as unknown as MatchReciente[]);
+      setProximosEventos((eRes.data ?? []) as unknown as EventoProximo[]);
+      setLoadingBottom(false);
     });
 
     // Clima
@@ -312,14 +362,66 @@ export default function DashboardPage() {
             Matches recientes
             <a href="/mir?vista=matches" className="db-link-badge">Ver todos</a>
           </div>
-          <div className="db-empty">No hay matches todavía</div>
+          {loadingBottom ? (
+            <div className="db-empty" style={{padding:"12px 0"}}>Cargando...</div>
+          ) : matchesRecientes.length === 0 ? (
+            <div className="db-empty">No hay matches todavía</div>
+          ) : (
+            <div>
+              {matchesRecientes.map((m, i) => {
+                const op = m.mir_ofrecidos?.operacion ?? "";
+                const bop = m.mir_busquedas?.operacion ?? "";
+                return (
+                  <div key={m.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom: i < matchesRecientes.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none"}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:12,color:"#fff",fontWeight:600}}>
+                        {m.mir_ofrecidos?.tipo_propiedad ?? "Propiedad"}{m.mir_ofrecidos?.ciudad ? ` · ${m.mir_ofrecidos.ciudad}` : ""}
+                      </div>
+                      <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:2}}>
+                        <span style={{color: OP_COLOR[op] ?? "rgba(255,255,255,0.4)"}}>{OP_LABEL[op] ?? op}</span>
+                        <span style={{color:"rgba(255,255,255,0.2)"}}> → </span>
+                        <span style={{color: OP_COLOR[bop] ?? "rgba(255,255,255,0.4)"}}>{OP_LABEL[bop] ?? bop}</span>
+                      </div>
+                    </div>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",whiteSpace:"nowrap"}}>
+                      {new Date(m.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"2-digit"})}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
         <div className="db-panel">
           <div className="db-panel-titulo">
             Próximos eventos
             <a href="/eventos" className="db-link-badge">Ver todos</a>
           </div>
-          <div className="db-empty">No hay eventos programados</div>
+          {loadingBottom ? (
+            <div className="db-empty" style={{padding:"12px 0"}}>Cargando...</div>
+          ) : proximosEventos.length === 0 ? (
+            <div className="db-empty">No hay eventos programados</div>
+          ) : (
+            <div>
+              {proximosEventos.map((ev, i) => {
+                const d = new Date(ev.fecha);
+                return (
+                  <a key={ev.id} href="/eventos" style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom: i < proximosEventos.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",textDecoration:"none"}}>
+                    <div style={{background:"rgba(200,0,0,0.08)",border:"1px solid rgba(200,0,0,0.18)",borderRadius:4,padding:"5px 9px",textAlign:"center",flexShrink:0,minWidth:40}}>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:18,fontWeight:800,color:"#cc0000",lineHeight:1}}>{d.getDate()}</div>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:8,fontWeight:700,letterSpacing:"0.1em",color:"rgba(255,255,255,0.4)",marginTop:1}}>
+                        {d.toLocaleDateString("es-AR",{month:"short"}).toUpperCase().replace(".","")}
+                      </div>
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:12,color:"#fff",fontWeight:600,lineHeight:1.3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ev.titulo}</div>
+                      {ev.lugar && <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>📍 {ev.lugar}</div>}
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </>
