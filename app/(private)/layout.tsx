@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { icon: "📚", label: "Biblioteca", href: "/biblioteca", section: "Recursos" },
   { icon: "💰", label: "Suscripción", href: "/suscripcion", section: "Recursos" },
   { icon: "🔗", label: "Enlaces Útiles", href: "/enlaces", section: "Recursos" },
+  { icon: "👤", label: "Mi Perfil", href: "/perfil", section: "Cuenta" },
 ];
 
 const ADMIN_ITEMS = [
