@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { icon: "📅", label: "Eventos", href: "/eventos", section: "Comunidad" },
   { icon: "📚", label: "Biblioteca", href: "/biblioteca", section: "Recursos" },
   { icon: "💰", label: "Suscripción", href: "/suscripcion", section: "Recursos" },
+  { icon: "🔗", label: "Enlaces Útiles", href: "/enlaces", section: "Recursos" },
 ];
 
 const ADMIN_ITEMS = [
