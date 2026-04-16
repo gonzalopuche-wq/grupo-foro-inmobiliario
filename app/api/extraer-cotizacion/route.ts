@@ -33,11 +33,26 @@ export async function POST(req: NextRequest) {
       // Modo texto libre
       content.push({
         type: "text",
-        text: `Analizá este texto que contiene información sobre una cotización de divisas y extraé los valores de compra y venta del dólar en pesos argentinos (ARS). El texto puede estar en cualquier formato informal.
+        text: `Sos un experto en cotizaciones de casas de cambio argentinas.
+Analizá el siguiente texto y extraé los valores de compra y venta del dólar (USD) en pesos argentinos (ARS).
 
-Texto: "${texto}"
+El texto puede venir en cualquier formato informal de WhatsApp, por ejemplo:
+- "USD 1400/1450"
+- "compra 1400 venta 1450"
+- "dólar: c $1.400 v $1.450"
+- mensajes de catálogo con listas de precios
+- textos con emojis, viñetas, formato libre
+- puede tener muchas otras cotizaciones (EUR, BRL, etc.) — solo extraé USD/ARS
+- puede llamarlo "blue", "informal", "paralelo", "billete", o simplemente "dólar"
 
-Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Los valores deben ser números enteros sin puntos ni comas.`,
+TEXTO A ANALIZAR:
+"""
+${texto}
+"""
+
+Respondé ÚNICAMENTE con un JSON, sin texto adicional, sin markdown, sin explicaciones:
+{"compra": 1400, "venta": 1450}
+Si no podés determinar un valor con certeza, usá null. Los valores son números enteros sin puntos ni comas.`,
       });
     }
 
