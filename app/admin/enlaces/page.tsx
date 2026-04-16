@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../../../lib/supabase";
+import { supabase } from "../../lib/supabase";
 
 interface Enlace {
   id: string;
@@ -50,7 +50,14 @@ export default function AdminEnlacesPage() {
   const [filtroActivo, setFiltroActivo] = useState("todos");
 
   useEffect(() => {
-    cargarTodo();
+    const verificar = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!data.user) { window.location.href = "/"; return; }
+      const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
+      if (!perfil || perfil.tipo !== "admin") { window.location.href = "/dashboard"; return; }
+      cargarTodo();
+    };
+    verificar();
   }, []);
 
   const cargarTodo = async () => {
@@ -129,6 +136,16 @@ export default function AdminEnlacesPage() {
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { min-height: 100%; background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; }
+        .enladm-root { min-height: 100vh; display: flex; flex-direction: column; }
+        .enladm-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 60px; background: rgba(14,14,14,0.98); border-bottom: 1px solid rgba(180,0,0,0.2); position: sticky; top: 0; z-index: 100; }
+        .enladm-topbar-logo { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 800; }
+        .enladm-topbar-logo span { color: #cc0000; }
+        .enladm-btn-back { padding: 7px 16px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .enladm-btn-back:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+        .enladm-content { flex: 1; padding: 32px; max-width: 1100px; width: 100%; margin: 0 auto; }
         .admenl-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
         .admenl-tab { padding: 8px 20px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; position: relative; }
         .admenl-tab.active { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
@@ -165,7 +182,6 @@ export default function AdminEnlacesPage() {
         .admenl-btn-dest { background: transparent; font-size: 13px; border: none; cursor: pointer; padding: 2px 4px; }
         .admenl-btn-del { background: transparent; border-color: rgba(200,0,0,0.25); color: rgba(200,0,0,0.5); }
         .admenl-btn-del:hover { border-color: rgba(200,0,0,0.5); color: #ff4444; background: rgba(200,0,0,0.08); }
-        /* SUGERENCIAS */
         .admenl-sug-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px 20px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
         .admenl-sug-nombre { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
         .admenl-sug-url { font-size: 11px; color: #60a5fa; margin-bottom: 4px; word-break: break-all; }
@@ -174,7 +190,6 @@ export default function AdminEnlacesPage() {
         .admenl-sug-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: flex-start; }
         .admenl-btn-aprobar { padding: 7px 14px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #22c55e; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .admenl-btn-rechazar { padding: 7px 14px; background: transparent; border: 1px solid rgba(200,0,0,0.25); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        /* MODAL */
         .admenl-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 24px; overflow-y: auto; }
         .admenl-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.25); border-radius: 6px; padding: 28px 32px; width: 100%; max-width: 520px; position: relative; margin: auto; }
         .admenl-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
@@ -197,103 +212,112 @@ export default function AdminEnlacesPage() {
         .admenl-empty { padding: 32px; text-align: center; color: rgba(255,255,255,0.2); font-size: 12px; font-style: italic; }
       `}</style>
 
-      <div className="admenl-tabs">
-        <button className={`admenl-tab${vista === "enlaces" ? " active" : ""}`} onClick={() => setVista("enlaces")}>
-          🔗 Links ({enlaces.length})
-        </button>
-        <button className={`admenl-tab${vista === "sugerencias" ? " active" : ""}`} onClick={() => setVista("sugerencias")}>
-          💡 Sugerencias
-          {sugerenciasPendientes.length > 0 && <span className="admenl-badge">{sugerenciasPendientes.length}</span>}
-        </button>
-      </div>
+      <div className="enladm-root">
+        <header className="enladm-topbar">
+          <div className="enladm-topbar-logo"><span>GFI</span>® · Admin · Links</div>
+          <a className="enladm-btn-back" href="/admin">← Panel Admin</a>
+        </header>
 
-      {vista === "enlaces" && (
-        <>
-          <div className="admenl-topbar">
-            <div className="admenl-search">
-              <input placeholder="Buscar por nombre..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
-            </div>
-            {["todos","activos","inactivos"].map(f => (
-              <button key={f} className={`admenl-filtro${filtroActivo === f ? " active" : ""}`} onClick={() => setFiltroActivo(f)}>
-                {f.charAt(0).toUpperCase() + f.slice(1)}
-              </button>
-            ))}
-            <span className="admenl-count">{enlacesFiltrados.length} links</span>
-            <button className="admenl-btn-nuevo" onClick={abrirNuevo}>+ Nuevo enlace</button>
+        <main className="enladm-content">
+          <div className="admenl-tabs">
+            <button className={`admenl-tab${vista === "enlaces" ? " active" : ""}`} onClick={() => setVista("enlaces")}>
+              🔗 Links ({enlaces.length})
+            </button>
+            <button className={`admenl-tab${vista === "sugerencias" ? " active" : ""}`} onClick={() => setVista("sugerencias")}>
+              💡 Sugerencias
+              {sugerenciasPendientes.length > 0 && <span className="admenl-badge">{sugerenciasPendientes.length}</span>}
+            </button>
           </div>
 
-          <div className="admenl-tabla-wrap">
-            <table className="admenl-tabla">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>URL</th>
-                  <th>Categoría</th>
-                  <th>Localidad</th>
-                  <th>Orden</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={6} style={{textAlign:"center",padding:32,color:"rgba(255,255,255,0.2)"}}>Cargando...</td></tr>
-                ) : enlacesFiltrados.length === 0 ? (
-                  <tr><td colSpan={6}><div className="admenl-empty">No hay enlaces.</div></td></tr>
-                ) : enlacesFiltrados.map(e => (
-                  <tr key={e.id} className={!e.activo ? "inactivo" : ""}>
-                    <td>
-                      <div className="admenl-nombre">{e.nombre}</div>
-                      <div className="admenl-cat-badge" style={{marginTop:3}}>{CATEGORIAS.find(c => c.id === e.categoria)?.label}</div>
-                    </td>
-                    <td><div className="admenl-url">{e.url}</div></td>
-                    <td><span className="admenl-cat-badge">{e.categoria}</span></td>
-                    <td style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>{e.localidad ?? "—"}</td>
-                    <td style={{fontSize:11,color:"rgba(255,255,255,0.4)",textAlign:"center"}}>{e.orden}</td>
-                    <td>
-                      <div className="admenl-actions">
-                        <button className="admenl-btn-dest" onClick={() => toggleDestacado(e)} title={e.destacado ? "Quitar destacado" : "Destacar"}>
-                          {e.destacado ? "⭐" : "☆"}
-                        </button>
-                        <button className={`admenl-btn-sm admenl-btn-toggle ${e.activo ? "on" : "off"}`} onClick={() => toggleActivo(e)}>
-                          {e.activo ? "Activo" : "Inactivo"}
-                        </button>
-                        <button className="admenl-btn-sm admenl-btn-edit" onClick={() => abrirEditar(e)}>Editar</button>
-                        <button className="admenl-btn-sm admenl-btn-del" onClick={() => eliminar(e.id)}>✕</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-
-      {vista === "sugerencias" && (
-        <>
-          {sugerenciasPendientes.length === 0 ? (
-            <div className="admenl-empty" style={{background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6}}>
-              No hay sugerencias pendientes.
-            </div>
-          ) : sugerenciasPendientes.map(s => (
-            <div key={s.id} className="admenl-sug-card">
-              <div style={{flex:1}}>
-                <div className="admenl-sug-nombre">{s.nombre}</div>
-                <div className="admenl-sug-url">{s.url}</div>
-                {s.descripcion && <div className="admenl-sug-desc">{s.descripcion}</div>}
-                {s.categoria && <span className="admenl-cat-badge">{CATEGORIAS.find(c => c.id === s.categoria)?.label ?? s.categoria}</span>}
-                <div className="admenl-sug-corredor" style={{marginTop:6}}>
-                  Sugerido por: {s.perfiles?.apellido}, {s.perfiles?.nombre} · Mat. {s.perfiles?.matricula ?? "—"}
+          {vista === "enlaces" && (
+            <>
+              <div className="admenl-topbar">
+                <div className="admenl-search">
+                  <input placeholder="Buscar por nombre..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
                 </div>
+                {["todos","activos","inactivos"].map(f => (
+                  <button key={f} className={`admenl-filtro${filtroActivo === f ? " active" : ""}`} onClick={() => setFiltroActivo(f)}>
+                    {f.charAt(0).toUpperCase() + f.slice(1)}
+                  </button>
+                ))}
+                <span className="admenl-count">{enlacesFiltrados.length} links</span>
+                <button className="admenl-btn-nuevo" onClick={abrirNuevo}>+ Nuevo enlace</button>
               </div>
-              <div className="admenl-sug-actions">
-                <button className="admenl-btn-aprobar" onClick={() => aprobarSugerencia(s)}>✓ Aprobar y agregar</button>
-                <button className="admenl-btn-rechazar" onClick={() => rechazarSugerencia(s.id)}>✕ Rechazar</button>
+
+              <div className="admenl-tabla-wrap">
+                <table className="admenl-tabla">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>URL</th>
+                      <th>Categoría</th>
+                      <th>Localidad</th>
+                      <th>Orden</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr><td colSpan={6} style={{textAlign:"center",padding:32,color:"rgba(255,255,255,0.2)"}}>Cargando...</td></tr>
+                    ) : enlacesFiltrados.length === 0 ? (
+                      <tr><td colSpan={6}><div className="admenl-empty">No hay enlaces.</div></td></tr>
+                    ) : enlacesFiltrados.map(e => (
+                      <tr key={e.id} className={!e.activo ? "inactivo" : ""}>
+                        <td>
+                          <div className="admenl-nombre">{e.nombre}</div>
+                          <div className="admenl-cat-badge" style={{marginTop:3}}>{CATEGORIAS.find(c => c.id === e.categoria)?.label}</div>
+                        </td>
+                        <td><div className="admenl-url">{e.url}</div></td>
+                        <td><span className="admenl-cat-badge">{e.categoria}</span></td>
+                        <td style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>{e.localidad ?? "—"}</td>
+                        <td style={{fontSize:11,color:"rgba(255,255,255,0.4)",textAlign:"center"}}>{e.orden}</td>
+                        <td>
+                          <div className="admenl-actions">
+                            <button className="admenl-btn-dest" onClick={() => toggleDestacado(e)} title={e.destacado ? "Quitar destacado" : "Destacar"}>
+                              {e.destacado ? "⭐" : "☆"}
+                            </button>
+                            <button className={`admenl-btn-sm admenl-btn-toggle ${e.activo ? "on" : "off"}`} onClick={() => toggleActivo(e)}>
+                              {e.activo ? "Activo" : "Inactivo"}
+                            </button>
+                            <button className="admenl-btn-sm admenl-btn-edit" onClick={() => abrirEditar(e)}>Editar</button>
+                            <button className="admenl-btn-sm admenl-btn-del" onClick={() => eliminar(e.id)}>✕</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </div>
-          ))}
-        </>
-      )}
+            </>
+          )}
+
+          {vista === "sugerencias" && (
+            <>
+              {sugerenciasPendientes.length === 0 ? (
+                <div className="admenl-empty" style={{background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6}}>
+                  No hay sugerencias pendientes.
+                </div>
+              ) : sugerenciasPendientes.map(s => (
+                <div key={s.id} className="admenl-sug-card">
+                  <div style={{flex:1}}>
+                    <div className="admenl-sug-nombre">{s.nombre}</div>
+                    <div className="admenl-sug-url">{s.url}</div>
+                    {s.descripcion && <div className="admenl-sug-desc">{s.descripcion}</div>}
+                    {s.categoria && <span className="admenl-cat-badge">{CATEGORIAS.find(c => c.id === s.categoria)?.label ?? s.categoria}</span>}
+                    <div className="admenl-sug-corredor" style={{marginTop:6}}>
+                      Sugerido por: {s.perfiles?.apellido}, {s.perfiles?.nombre} · Mat. {s.perfiles?.matricula ?? "—"}
+                    </div>
+                  </div>
+                  <div className="admenl-sug-actions">
+                    <button className="admenl-btn-aprobar" onClick={() => aprobarSugerencia(s)}>✓ Aprobar y agregar</button>
+                    <button className="admenl-btn-rechazar" onClick={() => rechazarSugerencia(s.id)}>✕ Rechazar</button>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+        </main>
+      </div>
 
       {mostrando && (
         <div className="admenl-modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrando(false); }}>

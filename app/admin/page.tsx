@@ -230,8 +230,47 @@ export default function AdminPage() {
 
         <main className="adm-content">
 
-          {/* PAGOS */}
+          {/* NAV HUB */}
           <div>
+            <div style={{marginBottom:14}}>
+              <div className="adm-ind-titulo" style={{fontSize:16,marginBottom:4}}>Módulos <span>de administración</span></div>
+              <div style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>Accedé a cada sección del panel.</div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:12}}>
+              {[
+                { icon:"💳", label:"Pagos y suscripciones", sub:"Confirmaciones", href:"#pagos" },
+                { icon:"👥", label:"Registro de usuarios", sub:"Aprobaciones", href:"#solicitudes" },
+                { icon:"📊", label:"Indicadores", sub:"Precios y valores", href:"#indicadores" },
+                { icon:"💱", label:"Proveedores divisas", sub:"Cotizaciones", href:"#proveedores" },
+                { icon:"📋", label:"Padrón COCIR", sub:"Alertas y verificación", href:"/admin/padron" },
+                { icon:"📅", label:"Eventos", sub:"Publicar y aprobar", href:"/admin/eventos" },
+                { icon:"✅", label:"Asistencia", sub:"Control de asistentes", href:"/admin/asistencia" },
+                { icon:"💰", label:"Finanzas", sub:"Ingresos y egresos", href:"/admin/finanzas" },
+                { icon:"🔗", label:"Enlaces útiles", sub:"Gestionar links", href:"/admin/enlaces" },
+                { icon:"📚", label:"Biblioteca", sub:"Documentos y recursos", href:"/admin/biblioteca" },
+                { icon:"🏦", label:"Proveedores v2", sub:"Gestión avanzada", href:"/admin/proveedores" },
+              ].map(({ icon, label, sub, href }) => (
+                <a
+                  key={href}
+                  href={href}
+                  style={{
+                    background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6,
+                    padding:"14px 16px",display:"flex",flexDirection:"column",gap:4,
+                    textDecoration:"none",transition:"all 0.2s",cursor:"pointer",
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor="rgba(200,0,0,0.3)"; (e.currentTarget as HTMLElement).style.background="rgba(200,0,0,0.05)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor="rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.background="rgba(14,14,14,0.9)"; }}
+                >
+                  <div style={{fontSize:22}}>{icon}</div>
+                  <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:12,fontWeight:700,color:"#fff",marginTop:4}}>{label}</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,0.35)"}}>{sub}</div>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* PAGOS */}
+          <div id="pagos">
             <div className="adm-header"><h1>Gestión de <span>pagos</span></h1><p>Confirmá o rechazá los pagos declarados.</p></div>
             <div className="adm-filtros">
               {(["pendiente","activa","todos"] as const).map(f => (
@@ -265,7 +304,7 @@ export default function AdminPage() {
           </div>
 
           {/* PROVEEDORES */}
-          <div>
+          <div id="proveedores">
             <div className="prov-header">
               <div>
                 <div className="adm-ind-titulo">Proveedores <span>de divisas</span></div>
@@ -303,7 +342,7 @@ export default function AdminPage() {
           </div>
 
           {/* SOLICITUDES */}
-          <div>
+          <div id="solicitudes">
             <div className="adm-header"><h1>Solicitudes de <span>registro</span></h1><p>Revisá y aprobá o rechazá cada solicitud manualmente.</p></div>
             <div className="adm-filtros">
               {(["pendiente","aprobado","rechazado","todos"] as const).map(f => (
@@ -336,7 +375,7 @@ export default function AdminPage() {
           </div>
 
           {/* INDICADORES */}
-          <div>
+          <div id="indicadores">
             <div className="adm-ind-titulo">Indicadores <span>y precios</span></div>
             <div className="adm-ind-subtitulo">Actualizá los valores del dashboard y los precios de suscripción.</div>
             <div className="adm-ind-grid">
