@@ -247,6 +247,7 @@ export default function AdminPage() {
                 { icon:"✅", label:"Asistencia", sub:"Control de asistentes", href:"/admin/asistencia" },
                 { icon:"💰", label:"Finanzas", sub:"Ingresos y egresos", href:"/admin/finanzas" },
                 { icon:"🔗", label:"Enlaces útiles", sub:"Gestionar links", href:"/admin/enlaces" },
+                { icon:"📚", label:"Biblioteca", sub:"Documentos y recursos", href:"/admin/biblioteca" },
                 { icon:"🏦", label:"Proveedores v2", sub:"Gestión avanzada", href:"/admin/proveedores" },
               ].map(({ icon, label, sub, href }) => (
                 <a
