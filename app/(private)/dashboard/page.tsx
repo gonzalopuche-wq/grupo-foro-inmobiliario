@@ -54,7 +54,7 @@ export default function DashboardPage() {
   const [icl, setIcl] = useState<{ valor: string; sub: string; loading: boolean }>({ valor: "", sub: "", loading: true });
   const [ipc, setIpc] = useState<{ valor: string; sub: string; loading: boolean }>({ valor: "", sub: "", loading: true });
   const [jus, setJus] = useState<{ valor: string; loading: boolean }>({ valor: "", loading: true });
-  const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0 });
+  const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0, miembros: 0 });
   const [matchesRecientes, setMatchesRecientes] = useState<MatchReciente[]>([]);
   const [proximosEventos, setProximosEventos] = useState<EventoProximo[]>([]);
   const [loadingBottom, setLoadingBottom] = useState(true);
@@ -93,13 +93,14 @@ export default function DashboardPage() {
     tick();
     const interval = setInterval(tick, 1000);
 
-    // Stats MIR
+    // Stats MIR + miembros activos
     Promise.all([
       supabase.from("mir_busquedas").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_ofrecidos").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_matches").select("id", { count: "exact", head: true }),
-    ]).then(([b, o, m]) => {
-      setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0 });
+      supabase.from("perfiles").select("id", { count: "exact", head: true }).eq("estado", "aprobado"),
+    ]).then(([b, o, m, p]) => {
+      setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0, miembros: p.count ?? 0 });
     });
 
     // Matches recientes y próximos eventos
@@ -256,7 +257,7 @@ export default function DashboardPage() {
               [stats.busquedas.toString(), "Búsquedas activas"],
               [stats.ofrecidos.toString(), "Ofrecidos activos"],
               [stats.matches.toString(), "Matches totales"],
-              ["0", "Miembros activos"],
+              [stats.miembros.toString(), "Miembros activos"],
             ].map(([n,l],i) => (
               <div key={i}>
                 <div className="db-hoy-num">{n}</div>
