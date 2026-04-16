@@ -2,13 +2,43 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { imageBase64, mediaType } = await req.json();
+    const body = await req.json();
+    const { imageBase64, mediaType, texto } = body;
 
-    if (!imageBase64 || !mediaType) {
+    // Debe venir imagen O texto
+    if (!imageBase64 && !texto) {
       return NextResponse.json(
-        { error: "Faltan parámetros: imageBase64 y mediaType son requeridos." },
+        { error: "Falta imageBase64 o texto." },
         { status: 400 }
       );
+    }
+
+    // Construir el contenido del mensaje según el modo
+    const content: object[] = [];
+
+    if (imageBase64 && mediaType) {
+      content.push({
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: mediaType,
+          data: imageBase64,
+        },
+      });
+      content.push({
+        type: "text",
+        text: `Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Si hay múltiples cotizaciones, tomá la del dólar blue o informal. Los valores deben ser números enteros sin puntos ni comas.`,
+      });
+    } else {
+      // Modo texto libre
+      content.push({
+        type: "text",
+        text: `Analizá este texto que contiene información sobre una cotización de divisas y extraé los valores de compra y venta del dólar en pesos argentinos (ARS). El texto puede estar en cualquier formato informal.
+
+Texto: "${texto}"
+
+Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Los valores deben ser números enteros sin puntos ni comas.`,
+      });
     }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -20,26 +50,8 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "image",
-                source: {
-                  type: "base64",
-                  media_type: mediaType,
-                  data: imageBase64,
-                },
-              },
-              {
-                type: "text",
-                text: `Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Si hay múltiples cotizaciones, tomá la del dólar blue o informal. Los valores deben ser números enteros sin puntos ni comas.`,
-              },
-            ],
-          },
-        ],
+        max_tokens: 256,
+        messages: [{ role: "user", content }],
       }),
     });
 
