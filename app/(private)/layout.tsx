@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { icon: "💰", label: "Suscripción", href: "/suscripcion", section: "Recursos" },
   { icon: "🔗", label: "Enlaces Útiles", href: "/enlaces", section: "Recursos" },
   { icon: "🤝", label: "Proveedores", href: "/proveedores", section: "Recursos" },
+  { icon: "👤", label: "Mi perfil", href: "/perfil", section: "Recursos" },
 ];
 
 const ADMIN_ITEMS = [
