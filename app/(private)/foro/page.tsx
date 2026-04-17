@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 import PerfilRapidoModal from "./PerfilRapidoModal";
 
-// ── TYPES ──────────────────────────────────────────────────────────────
 interface Category { id: string; name: string; slug: string; description: string; }
 interface Tag { id: string; name: string; slug: string; }
 interface Author { id: string; nombre: string; apellido: string; matricula: string | null; }
@@ -31,7 +30,6 @@ interface ChatMsg {
 type MainTab = "temas" | "chat" | "faq";
 type Vista = "lista" | "detalle" | "nuevo";
 
-// ── HELPERS ─────────────────────────────────────────────────────────────
 const timeAgo = (iso: string) => {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
@@ -44,7 +42,6 @@ const timeAgo = (iso: string) => {
 const initials = (p?: Author) => p ? `${p.nombre?.charAt(0) ?? ""}${p.apellido?.charAt(0) ?? ""}`.toUpperCase() : "?";
 const fullName = (p?: Author) => p ? `${p.apellido ?? ""}, ${p.nombre ?? ""}` : "—";
 
-// ── WA / TG GROUPS ──────────────────────────────────────────────────────
 const WA_GROUPS = [
   { name: "Foro Inmobiliario", sub: "1025 miembros", url: "https://chat.whatsapp.com/CShHa28oS2P2OWJrotLp3j", main: true },
   { name: "Ventas — Búsqueda", sub: "", url: "https://chat.whatsapp.com/KfqcLrP6GprKPDSzgwd8MG", main: false },
@@ -62,7 +59,6 @@ const TG_GROUPS = [
   { name: "Alquileres — Ofrecidos", sub: "", url: "https://t.me/alquileresofrecidos", main: false },
 ];
 
-// ── COMPONENT ────────────────────────────────────────────────────────────
 export default function ForoPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<Author | null>(null);
@@ -79,8 +75,8 @@ export default function ForoPage() {
   const [catFilter, setCatFilter] = useState("todas");
   const [statusFilter, setStatusFilter] = useState("todas");
   const [search, setSearch] = useState("");
+  const [perfilRapidoId, setPerfilRapidoId] = useState<string | null>(null);
 
-  // Nuevo tema
   const [nTitle, setNTitle] = useState("");
   const [nBody, setNBody] = useState("");
   const [nCat, setNCat] = useState("");
@@ -89,19 +85,12 @@ export default function ForoPage() {
   const [nError, setNError] = useState("");
   const [nLoading, setNLoading] = useState(false);
   const [replyBody, setReplyBody] = useState("");
-  const [perfilRapidoId, setPerfilRapidoId] = useState<string | null>(null);
 
-  // Chat
   const [chatMsgs, setChatMsgs] = useState<ChatMsg[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  <div className="f-chat-avatar" style={{cursor:"pointer"}} onClick={() => setPerfilRapidoId(m.user_id)}>
-  {initials(m.perfiles)}
-</div>
-
-  // FAQ
   const [faqTopics, setFaqTopics] = useState<Topic[]>([]);
 
   useEffect(() => {
@@ -218,9 +207,7 @@ export default function ForoPage() {
     if (nTags.length > 0) await supabase.from("forum_topic_tags").insert(nTags.map(tid => ({ topic_id: nuevo.id, tag_id: tid })));
     setNLoading(false);
     setNTitle(""); setNBody(""); setNCat(""); setNTags([]); setNUrgent(false);
-    setCatFilter("todas");
-    setStatusFilter("todas");
-    setSearch("");
+    setCatFilter("todas"); setStatusFilter("todas"); setSearch("");
     await loadTopics({ cat: "todas", status: "todas", q: "" });
     setVista("lista");
   };
@@ -293,7 +280,9 @@ export default function ForoPage() {
       </div>
       <div className="f-topic-body">{t.body}</div>
       <div className="f-topic-footer">
-        <span className="f-meta">👤 {fullName(t.perfiles)}</span>
+        <span className="f-meta" style={{cursor:"pointer",textDecoration:"underline dotted"}} onClick={e => { e.stopPropagation(); setPerfilRapidoId(t.author_id); }}>
+          👤 {fullName(t.perfiles)}
+        </span>
         <span className="f-meta">💬 {t.replies_count}</span>
         <span className="f-meta">👁 {t.view_count}</span>
         <span className="f-meta">{timeAgo(t.last_activity_at)}</span>
@@ -308,9 +297,7 @@ export default function ForoPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
-        /* LAYOUT */
         .f-layout { display: grid; grid-template-columns: 180px 1fr 240px; gap: 20px; align-items: start; }
-        /* LEFT SIDEBAR */
         .f-left { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 80px; }
         .f-side-box { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; }
         .f-side-title { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -318,14 +305,11 @@ export default function ForoPage() {
         .f-side-item:last-child { border-bottom: none; }
         .f-side-item:hover { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.8); }
         .f-side-item.active { background: rgba(200,0,0,0.08); color: #fff; border-left: 2px solid #cc0000; }
-        /* CENTER */
         .f-center { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-        /* TABS */
         .f-tabs { display: flex; gap: 4px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 4px; }
         .f-tab { flex: 1; padding: 9px; border: none; border-radius: 4px; background: transparent; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .f-tab:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.04); }
         .f-tab.active { background: rgba(200,0,0,0.15); color: #fff; border: 1px solid rgba(200,0,0,0.3); }
-        /* TOPBAR */
         .f-topbar { display: flex; align-items: center; gap: 10px; }
         .f-search { flex: 1; position: relative; }
         .f-search input { width: 100%; padding: 9px 14px 9px 34px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: 'Inter',sans-serif; }
@@ -335,12 +319,10 @@ export default function ForoPage() {
         .f-btn-nuevo { padding: 9px 18px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .f-btn-nuevo:hover { background: #e60000; }
         .f-btn-urgente { padding: 9px 14px; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); border-radius: 4px; color: #eab308; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
-        /* FILTROS */
         .f-filtros { display: flex; gap: 6px; flex-wrap: wrap; }
         .f-filtro { padding: 5px 11px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-size: 10px; cursor: pointer; transition: all 0.15s; font-family: 'Inter',sans-serif; }
         .f-filtro:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
         .f-filtro.active { border-color: #cc0000; background: rgba(200,0,0,0.1); color: #fff; }
-        /* TOPIC CARDS */
         .f-topic { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 18px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
         .f-topic:hover { border-color: rgba(200,0,0,0.25); }
         .f-topic.urgent { border-color: rgba(234,179,8,0.25); }
@@ -362,7 +344,6 @@ export default function ForoPage() {
         .f-tag { font-size: 9px; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); padding: 2px 6px; border-radius: 10px; }
         .f-save { background: none; border: none; font-size: 13px; cursor: pointer; color: rgba(255,255,255,0.25); transition: color 0.15s; padding: 2px; flex-shrink: 0; }
         .f-save.saved { color: #cc0000; }
-        /* CHAT */
         .f-chat { display: flex; flex-direction: column; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; height: calc(100vh - 200px); min-height: 400px; }
         .f-chat-header { padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 8px; }
         .f-chat-header-title { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
@@ -373,9 +354,11 @@ export default function ForoPage() {
         .f-chat-msgs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
         .f-chat-msg { display: flex; gap: 10px; align-items: flex-start; }
         .f-chat-msg.mine { flex-direction: row-reverse; }
-        .f-chat-avatar { width: 28px; height: 28px; border-radius: 5px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; color: #cc0000; flex-shrink: 0; }
+        .f-chat-avatar { width: 28px; height: 28px; border-radius: 5px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; color: #cc0000; flex-shrink: 0; cursor: pointer; transition: border-color 0.15s; }
+        .f-chat-avatar:hover { border-color: #cc0000; }
         .f-chat-bubble { max-width: 75%; }
-        .f-chat-name { font-size: 10px; color: rgba(255,255,255,0.35); margin-bottom: 3px; font-family: 'Montserrat',sans-serif; font-weight: 600; }
+        .f-chat-name { font-size: 10px; color: rgba(255,255,255,0.35); margin-bottom: 3px; font-family: 'Montserrat',sans-serif; font-weight: 600; cursor: pointer; }
+        .f-chat-name:hover { color: rgba(255,255,255,0.7); }
         .f-chat-msg.mine .f-chat-name { text-align: right; }
         .f-chat-text { padding: 8px 12px; border-radius: 8px; font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); word-break: break-word; }
         .f-chat-msg.mine .f-chat-text { background: rgba(200,0,0,0.12); border-color: rgba(200,0,0,0.2); }
@@ -388,14 +371,14 @@ export default function ForoPage() {
         .f-chat-send { padding: 9px 16px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .f-chat-send:hover { background: #e60000; }
         .f-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
-        /* DETALLE */
         .f-detalle { display: flex; flex-direction: column; gap: 16px; }
         .f-back { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 12px; cursor: pointer; padding: 0; font-family: 'Inter',sans-serif; display: flex; align-items: center; gap: 5px; }
         .f-back:hover { color: #fff; }
         .f-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 22px 26px; }
         .f-card-title { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 12px; line-height: 1.3; }
         .f-card-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
-        .f-avatar { width: 30px; height: 30px; border-radius: 5px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; color: #cc0000; flex-shrink: 0; }
+        .f-avatar { width: 30px; height: 30px; border-radius: 5px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; color: #cc0000; flex-shrink: 0; cursor: pointer; transition: border-color 0.15s; }
+        .f-avatar:hover { border-color: #cc0000; }
         .f-card-body { font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.75); white-space: pre-wrap; }
         .f-replies-title { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 10px; }
         .f-reply { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px 20px; margin-bottom: 10px; position: relative; }
@@ -416,7 +399,6 @@ export default function ForoPage() {
         .f-submit { margin-top: 9px; padding: 9px 22px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
         .f-submit:hover:not(:disabled) { background: #e60000; }
         .f-submit:disabled { opacity: 0.55; cursor: not-allowed; }
-        /* NUEVO */
         .f-nuevo { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 24px 28px; max-width: 680px; }
         .f-nuevo-title { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
         .f-nuevo-title span { color: #cc0000; }
@@ -441,7 +423,6 @@ export default function ForoPage() {
         .fn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
         .fn-spinner { display: inline-block; width: 11px; height: 11px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        /* RIGHT SIDEBAR */
         .f-right { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 80px; }
         .f-right-box { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; }
         .f-right-title { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 6px; }
@@ -462,15 +443,12 @@ export default function ForoPage() {
         .f-faq-item:hover { background: rgba(255,255,255,0.03); }
         .f-faq-title { font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.4; margin-bottom: 3px; }
         .f-faq-meta { font-size: 9px; color: rgba(255,255,255,0.25); }
-        /* EMPTY */
         .f-empty { padding: 48px 24px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; }
-        /* RESPONSIVE */
         @media (max-width: 1100px) { .f-layout { grid-template-columns: 160px 1fr; } .f-right { display: none; } }
         @media (max-width: 700px) { .f-layout { grid-template-columns: 1fr; } .f-left { position: static; flex-direction: row; overflow-x: auto; } .f-side-box { min-width: 160px; } }
       `}</style>
 
       <div className="f-layout">
-        {/* ── LEFT SIDEBAR ── */}
         <aside className="f-left">
           <div className="f-side-box">
             <div className="f-side-title">Categorías</div>
@@ -487,18 +465,13 @@ export default function ForoPage() {
           </div>
         </aside>
 
-        {/* ── CENTER ── */}
         <div className="f-center">
-          {/* Tabs */}
           <div className="f-tabs">
             <button className={`f-tab${mainTab === "temas" ? " active" : ""}`} onClick={() => { setMainTab("temas"); setVista("lista"); }}>💬 Temas</button>
             <button className={`f-tab${mainTab === "chat" ? " active" : ""}`} onClick={() => setMainTab("chat")}>⚡ Chat en vivo</button>
             <button className={`f-tab${mainTab === "faq" ? " active" : ""}`} onClick={() => setMainTab("faq")}>✓ Resueltos</button>
           </div>
-<div className="f-avatar" style={{cursor:"pointer"}} onClick={() => setPerfilRapidoId(r.author_id)}>
-  {initials(r.perfiles)}
-</div>
-          {/* ── TAB TEMAS ── */}
+
           {mainTab === "temas" && vista === "lista" && (
             <>
               <div className="f-topbar">
@@ -521,7 +494,6 @@ export default function ForoPage() {
             </>
           )}
 
-          {/* ── DETALLE TEMA ── */}
           {mainTab === "temas" && vista === "detalle" && topic && (
             <div className="f-detalle">
               <button className="f-back" onClick={() => { setVista("lista"); loadTopics(); }}>← Volver</button>
@@ -533,8 +505,8 @@ export default function ForoPage() {
                 </div>
                 <div className="f-card-title">{topic.title}</div>
                 <div className="f-card-meta">
-                  <div className="f-avatar">{initials(topic.perfiles)}</div>
-                  <div>
+                  <div className="f-avatar" onClick={() => setPerfilRapidoId(topic.author_id)}>{initials(topic.perfiles)}</div>
+                  <div style={{cursor:"pointer"}} onClick={() => setPerfilRapidoId(topic.author_id)}>
                     <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.7)"}}>{fullName(topic.perfiles)}</div>
                     {topic.perfiles?.matricula && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'Montserrat',sans-serif"}}>Mat. {topic.perfiles.matricula}</div>}
                   </div>
@@ -555,8 +527,8 @@ export default function ForoPage() {
                   {[...replies].sort((a,b) => (b.is_accepted?1:0)-(a.is_accepted?1:0)).map(r => (
                     <div key={r.id} className={`f-reply${r.is_accepted?" accepted":""}`}>
                       <div className="f-reply-meta">
-                        <div className="f-avatar">{initials(r.perfiles)}</div>
-                        <div>
+                        <div className="f-avatar" onClick={() => setPerfilRapidoId(r.author_id)}>{initials(r.perfiles)}</div>
+                        <div style={{cursor:"pointer"}} onClick={() => setPerfilRapidoId(r.author_id)}>
                           <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.7)"}}>{fullName(r.perfiles)}</div>
                           {r.perfiles?.matricula && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'Montserrat',sans-serif"}}>Mat. {r.perfiles.matricula}</div>}
                         </div>
@@ -586,16 +558,8 @@ export default function ForoPage() {
                 <div style={{padding:"12px 16px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6,fontSize:12,color:"rgba(255,255,255,0.3)",textAlign:"center"}}>🔒 Tema cerrado</div>
               )}
             </div>
-            {perfilRapidoId && (
-  <PerfilRapidoModal
-    perfilId={perfilRapidoId}
-    miUserId={userId}
-    onClose={() => setPerfilRapidoId(null)}
-  />
-)}
           )}
 
-          {/* ── NUEVO TEMA ── */}
           {mainTab === "temas" && vista === "nuevo" && (
             <div className="f-nuevo">
               <div className="f-nuevo-title">Nueva <span>consulta</span></div>
@@ -641,7 +605,6 @@ export default function ForoPage() {
             </div>
           )}
 
-          {/* ── TAB CHAT ── */}
           {mainTab === "chat" && (
             <div className="f-chat">
               <div className="f-chat-header">
@@ -653,9 +616,9 @@ export default function ForoPage() {
                 {chatMsgs.length === 0 && <div style={{textAlign:"center",color:"rgba(255,255,255,0.2)",fontSize:13,fontStyle:"italic",marginTop:32}}>No hay mensajes todavía. ¡Sé el primero!</div>}
                 {chatMsgs.map(m => (
                   <div key={m.id} className={`f-chat-msg${m.user_id === userId ? " mine" : ""}`}>
-                    <div className="f-chat-avatar">{initials(m.perfiles)}</div>
+                    <div className="f-chat-avatar" onClick={() => setPerfilRapidoId(m.user_id)}>{initials(m.perfiles)}</div>
                     <div className="f-chat-bubble">
-                      <div className="f-chat-name">{fullName(m.perfiles)}{m.perfiles?.matricula ? ` · Mat. ${m.perfiles.matricula}` : ""}</div>
+                      <div className="f-chat-name" onClick={() => setPerfilRapidoId(m.user_id)}>{fullName(m.perfiles)}{m.perfiles?.matricula ? ` · Mat. ${m.perfiles.matricula}` : ""}</div>
                       <div className="f-chat-text">{m.body}</div>
                       <div className="f-chat-time">{timeAgo(m.created_at)}</div>
                     </div>
@@ -676,7 +639,6 @@ export default function ForoPage() {
             </div>
           )}
 
-          {/* ── TAB FAQ / RESUELTOS ── */}
           {mainTab === "faq" && (
             <>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
@@ -690,9 +652,7 @@ export default function ForoPage() {
           )}
         </div>
 
-        {/* ── RIGHT SIDEBAR ── */}
         <aside className="f-right">
-          {/* WhatsApp */}
           <div className="f-right-box">
             <div className="f-right-title wa">💬 Grupos WhatsApp</div>
             {WA_GROUPS.map(g => (
@@ -703,7 +663,6 @@ export default function ForoPage() {
               </a>
             ))}
           </div>
-          {/* Telegram */}
           <div className="f-right-box">
             <div className="f-right-title tg">✈️ Grupos Telegram</div>
             {TG_GROUPS.map(g => (
@@ -714,7 +673,6 @@ export default function ForoPage() {
               </a>
             ))}
           </div>
-          {/* Últimas resueltas */}
           <div className="f-right-box">
             <div className="f-right-title faq">✓ Últimas resueltas</div>
             {faqTopics.slice(0,5).map(t => (
@@ -727,6 +685,14 @@ export default function ForoPage() {
           </div>
         </aside>
       </div>
+
+      {perfilRapidoId && (
+        <PerfilRapidoModal
+          perfilId={perfilRapidoId}
+          miUserId={userId}
+          onClose={() => setPerfilRapidoId(null)}
+        />
+      )}
     </>
   );
 }
