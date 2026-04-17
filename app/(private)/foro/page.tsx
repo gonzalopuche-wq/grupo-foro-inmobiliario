@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
+import PerfilRapidoModal from "./PerfilRapidoModal";
 
 // ── TYPES ──────────────────────────────────────────────────────────────
 interface Category { id: string; name: string; slug: string; description: string; }
@@ -88,6 +89,7 @@ export default function ForoPage() {
   const [nError, setNError] = useState("");
   const [nLoading, setNLoading] = useState(false);
   const [replyBody, setReplyBody] = useState("");
+  const [perfilRapidoId, setPerfilRapidoId] = useState<string | null>(null);
 
   // Chat
   const [chatMsgs, setChatMsgs] = useState<ChatMsg[]>([]);
@@ -95,6 +97,9 @@ export default function ForoPage() {
   const [chatLoading, setChatLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  <div className="f-chat-avatar" style={{cursor:"pointer"}} onClick={() => setPerfilRapidoId(m.user_id)}>
+  {initials(m.perfiles)}
+</div>
 
   // FAQ
   const [faqTopics, setFaqTopics] = useState<Topic[]>([]);
@@ -490,7 +495,9 @@ export default function ForoPage() {
             <button className={`f-tab${mainTab === "chat" ? " active" : ""}`} onClick={() => setMainTab("chat")}>⚡ Chat en vivo</button>
             <button className={`f-tab${mainTab === "faq" ? " active" : ""}`} onClick={() => setMainTab("faq")}>✓ Resueltos</button>
           </div>
-
+<div className="f-avatar" style={{cursor:"pointer"}} onClick={() => setPerfilRapidoId(r.author_id)}>
+  {initials(r.perfiles)}
+</div>
           {/* ── TAB TEMAS ── */}
           {mainTab === "temas" && vista === "lista" && (
             <>
@@ -579,6 +586,13 @@ export default function ForoPage() {
                 <div style={{padding:"12px 16px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6,fontSize:12,color:"rgba(255,255,255,0.3)",textAlign:"center"}}>🔒 Tema cerrado</div>
               )}
             </div>
+            {perfilRapidoId && (
+  <PerfilRapidoModal
+    perfilId={perfilRapidoId}
+    miUserId={userId}
+    onClose={() => setPerfilRapidoId(null)}
+  />
+)}
           )}
 
           {/* ── NUEVO TEMA ── */}
