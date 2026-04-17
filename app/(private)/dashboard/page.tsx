@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
+import NotificacionesWidget from "./NotificacionesWidget";
 
 interface Dolar { compra: number; venta: number; promedio: number; }
 interface Clima {
@@ -61,7 +62,6 @@ export default function DashboardPage() {
     tick();
     const interval = setInterval(tick, 1000);
 
-    // Stats MIR
     Promise.all([
       supabase.from("mir_busquedas").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_ofrecidos").select("id", { count: "exact", head: true }).eq("activo", true),
@@ -70,7 +70,6 @@ export default function DashboardPage() {
       setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0 });
     });
 
-    // Clima
     const ciudadGuardada = localStorage.getItem("gfi_ciudad_clima");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -88,7 +87,6 @@ export default function DashboardPage() {
       );
     } else { setClimaError(true); setClimaLoading(false); }
 
-    // Indicadores
     fetch("https://dolarapi.com/v1/dolares/blue")
       .then(r => r.json()).then(d => { const c = parseFloat(d.compra); const v = parseFloat(d.venta); setDolar({ compra: c, venta: v, promedio: Math.round(((c + v) / 2) * 100) / 100 }); setDolarLoading(false); })
       .catch(() => { setDolar(null); setDolarLoading(false); });
@@ -149,7 +147,6 @@ export default function DashboardPage() {
         .db-clima-detalles { display: flex; justify-content: center; gap: 8px; margin-top: 3px; }
         .db-clima-det { font-size: 10px; color: rgba(255,255,255,0.3); }
         .db-clima-ciudad { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-top: 3px; }
-        .db-clima-aviso { font-size: 9px; color: #eab308; margin-top: 3px; }
         .db-clima-hora { font-size: 11px; color: rgba(255,255,255,0.2); margin-top: 3px; }
         .db-ciudad-box { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
         .db-ciudad-label { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
@@ -177,7 +174,7 @@ export default function DashboardPage() {
         .db-ind-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; }
         .db-ind-cv { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
         .db-ind-cv b { color: rgba(255,255,255,0.7); }
-        .db-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .db-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
         .db-panel-titulo { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
         .db-link-badge { font-size: 9px; padding: 3px 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.3); border-radius: 20px; color: #cc0000; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
         .db-empty { font-size: 13px; color: rgba(255,255,255,0.2); text-align: center; padding: 24px 0; font-style: italic; }
@@ -207,7 +204,7 @@ export default function DashboardPage() {
               [stats.ofrecidos.toString(), "Ofrecidos activos"],
               [stats.matches.toString(), "Matches totales"],
               ["0", "Miembros activos"],
-            ].map(([n,l],i) => (
+            ].map(([n, l], i) => (
               <div key={i}>
                 <div className="db-hoy-num">{n}</div>
                 <div className="db-hoy-label">{l}</div>
@@ -219,14 +216,14 @@ export default function DashboardPage() {
         <div className="db-clima-col">
           {climaLoading ? (
             <div className="db-clima-box-static">
-              <div style={{fontSize:28}}>⏳</div>
-              <div className="db-clima-temp" style={{fontSize:16}}>Cargando...</div>
+              <div style={{ fontSize: 28 }}>⏳</div>
+              <div className="db-clima-temp" style={{ fontSize: 16 }}>Cargando...</div>
               <div className="db-clima-hora">{hora}</div>
             </div>
           ) : climaError || !clima ? (
             <div className="db-clima-box-static">
-              <div style={{fontSize:28}}>🌡️</div>
-              <div className="db-clima-temp" style={{fontSize:14}}>Sin datos</div>
+              <div style={{ fontSize: 28 }}>🌡️</div>
+              <div className="db-clima-temp" style={{ fontSize: 14 }}>Sin datos</div>
               <div className="db-clima-hora">{hora}</div>
             </div>
           ) : (
@@ -251,7 +248,9 @@ export default function DashboardPage() {
             <div className="db-ciudad-box">
               <div className="db-ciudad-label">Ciudad</div>
               <div className="db-ciudad-form">
-                <input ref={ciudadRef} className="db-ciudad-input" placeholder="Rosario" value={ciudadInput} onChange={e => setCiudadInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter") buscarCiudad(); }} autoFocus />
+                <input ref={ciudadRef} className="db-ciudad-input" placeholder="Rosario" value={ciudadInput}
+                  onChange={e => setCiudadInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") buscarCiudad(); }} autoFocus />
                 <button className="db-ciudad-btn" onClick={buscarCiudad}>→</button>
               </div>
               <button className="db-ciudad-link" onClick={() => setMostrarCiudadInput(false)}>Cancelar</button>
@@ -277,10 +276,10 @@ export default function DashboardPage() {
       <div className="db-indicadores">
         <div className="db-ind">
           <div className="db-ind-label">USD Blue — Promedio</div>
-          {dolarLoading ? <div className="skeleton" style={{height:28,width:120,marginTop:6}} /> : dolar ? (
+          {dolarLoading ? <div className="skeleton" style={{ height: 28, width: 120, marginTop: 6 }} /> : dolar ? (
             <>
               <div className="db-ind-valor verde">{formatPeso(dolar.promedio)}</div>
-              <div style={{display:"flex",gap:12,marginTop:6}}>
+              <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
                 <span className="db-ind-cv">C: <b>{formatPeso(dolar.compra)}</b></span>
                 <span className="db-ind-cv">V: <b>{formatPeso(dolar.venta)}</b></span>
               </div>
@@ -290,17 +289,17 @@ export default function DashboardPage() {
         </div>
         <div className="db-ind">
           <div className="db-ind-label">ICL Diario</div>
-          {icl.loading ? <div className="skeleton" style={{height:28,width:100,marginTop:6}} /> : <div className={`db-ind-valor${icl.valor !== "Sin datos" ? " verde" : ""}`}>{icl.valor}</div>}
+          {icl.loading ? <div className="skeleton" style={{ height: 28, width: 100, marginTop: 6 }} /> : <div className={`db-ind-valor${icl.valor !== "Sin datos" ? " verde" : ""}`}>{icl.valor}</div>}
           <div className="db-ind-sub">{icl.sub || "Índice Contratos Locación · BCRA"}</div>
         </div>
         <div className="db-ind">
           <div className="db-ind-label">IPC Mensual</div>
-          {ipc.loading ? <div className="skeleton" style={{height:28,width:80,marginTop:6}} /> : <div className="db-ind-valor">{ipc.valor}</div>}
+          {ipc.loading ? <div className="skeleton" style={{ height: 28, width: 80, marginTop: 6 }} /> : <div className="db-ind-valor">{ipc.valor}</div>}
           <div className="db-ind-sub">{ipc.sub || "Inflación mensual · INDEC"}</div>
         </div>
         <div className="db-ind">
           <div className="db-ind-label">Valor JUS</div>
-          {jus.loading ? <div className="skeleton" style={{height:28,width:100,marginTop:6}} /> : <div className="db-ind-valor">{jus.valor}</div>}
+          {jus.loading ? <div className="skeleton" style={{ height: 28, width: 100, marginTop: 6 }} /> : <div className="db-ind-valor">{jus.valor}</div>}
           <div className="db-ind-sub">COCIR 2da Circ. · Ley 13.154</div>
         </div>
       </div>
@@ -322,6 +321,9 @@ export default function DashboardPage() {
           <div className="db-empty">No hay eventos programados</div>
         </div>
       </div>
+
+      {/* Notificaciones push */}
+      <NotificacionesWidget />
     </>
   );
 }
