@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { icon: "⊞", label: "Dashboard", href: "/dashboard", section: null },
   { icon: "◈", label: "Motor MIR", href: "/mir", section: "Operaciones" },
   { icon: "💱", label: "Cotizaciones", href: "/cotizaciones", section: "Operaciones" },
+  { icon: "📊", label: "Comparables", href: "/comparables", section: "Operaciones" },
   { icon: "📋", label: "Padrón COCIR", href: "/padron", section: "Padrón" },
   { icon: "🏛️", label: "Padrón GFI®", href: "/padron-gfi", section: "Padrón" },
   { icon: "💬", label: "Foro", href: "/foro", section: "Comunidad" },
@@ -17,6 +18,11 @@ const NAV_ITEMS = [
   { icon: "🔗", label: "Enlaces Útiles", href: "/enlaces", section: "Recursos" },
   { icon: "🤝", label: "Proveedores", href: "/proveedores", section: "Recursos" },
   { icon: "👤", label: "Mi perfil", href: "/perfil", section: "Recursos" },
+];
+  
+  { icon: "🔗", label: "Enlaces Útiles", href: "/enlaces", section: "Recursos" },git add .
+git commit -m "feat: enlaces utiles desde Supabase + panel admin"
+git push origin main
 ];
 
 const ADMIN_ITEMS = [
@@ -68,6 +74,14 @@ export default function PrivateLayout({ children }: LayoutProps) {
     return pathname.startsWith(href);
   };
 
+  // Agrupar items por sección
+  const sections = NAV_ITEMS.reduce<Record<string, typeof NAV_ITEMS>>((acc, item) => {
+    const key = item.section ?? "__top__";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(item);
+    return acc;
+  }, {});
+
   const allItems = esAdmin
     ? [...NAV_ITEMS, ...ADMIN_ITEMS]
     : NAV_ITEMS;
@@ -104,6 +118,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
 
         .gfi-layout { display: flex; min-height: 100vh; background: #0a0a0a; }
 
+        /* ── SIDEBAR ── */
         .gfi-sidebar {
           width: ${collapsed ? "64px" : "220px"};
           min-height: 100vh;
@@ -118,28 +133,42 @@ export default function PrivateLayout({ children }: LayoutProps) {
           overflow: hidden;
         }
 
+        /* Logo area */
         .gfi-sidebar-logo {
           display: flex;
           align-items: center;
-          justify-content: center;
-          padding: 0 12px;
-          height: 64px;
+          gap: 10px;
+          padding: ${collapsed ? "0 16px" : "0 18px"};
+          height: 60px;
           border-bottom: 1px solid rgba(255,255,255,0.05);
           flex-shrink: 0;
           text-decoration: none;
           cursor: pointer;
+          transition: padding 0.25s;
+        }
+        .gfi-logo-badge {
+          width: 32px; height: 32px;
+          background: #cc0000;
+          border-radius: 4px;
+          display: flex; align-items: center; justify-content: center;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 12px; font-weight: 800; color: #fff;
+          flex-shrink: 0;
+          letter-spacing: -0.02em;
+        }
+        .gfi-logo-text {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 11px; font-weight: 700;
+          letter-spacing: 0.04em;
+          color: rgba(255,255,255,0.7);
+          line-height: 1.3;
+          white-space: nowrap;
           overflow: hidden;
+          opacity: ${collapsed ? "0" : "1"};
+          transition: opacity 0.2s;
         }
 
-        .gfi-logo-img {
-          width: ${collapsed ? "36px" : "130px"};
-          height: auto;
-          object-fit: contain;
-          transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
-          display: block;
-          max-height: 52px;
-        }
-
+        /* Nav */
         .gfi-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 12px 0; }
         .gfi-nav::-webkit-scrollbar { width: 3px; }
         .gfi-nav::-webkit-scrollbar-track { background: transparent; }
@@ -172,8 +201,12 @@ export default function PrivateLayout({ children }: LayoutProps) {
           margin: 1px 6px;
           border-radius: 4px;
         }
-        .gfi-nav-item:hover { background: rgba(200,0,0,0.08); }
-        .gfi-nav-item.active { background: rgba(200,0,0,0.12); }
+        .gfi-nav-item:hover {
+          background: rgba(200,0,0,0.08);
+        }
+        .gfi-nav-item.active {
+          background: rgba(200,0,0,0.12);
+        }
         .gfi-nav-item.active::before {
           content: '';
           position: absolute;
@@ -205,6 +238,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
         .gfi-nav-item:hover .gfi-nav-label,
         .gfi-nav-item.active .gfi-nav-label { color: #fff; }
 
+        /* Tooltip cuando collapsed */
         .gfi-nav-item[data-tooltip]:hover::after {
           content: attr(data-tooltip);
           position: absolute;
@@ -223,6 +257,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
           display: ${collapsed ? "block" : "none"};
         }
 
+        /* Collapse toggle */
         .gfi-collapse-btn {
           display: flex; align-items: center; justify-content: center;
           height: 40px; width: 100%;
@@ -234,6 +269,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
         }
         .gfi-collapse-btn:hover { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.03); }
 
+        /* User area */
         .gfi-user {
           border-top: 1px solid rgba(255,255,255,0.05);
           padding: ${collapsed ? "12px 16px" : "12px 14px"};
@@ -277,6 +313,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
         }
         .gfi-logout-btn:hover { color: #ff4444; background: rgba(200,0,0,0.1); }
 
+        /* ── MAIN CONTENT ── */
         .gfi-main {
           flex: 1;
           margin-left: ${collapsed ? "64px" : "220px"};
@@ -285,6 +322,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
           transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1);
         }
 
+        /* Topbar */
         .gfi-topbar {
           height: 56px;
           border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -319,8 +357,10 @@ export default function PrivateLayout({ children }: LayoutProps) {
           cursor: pointer; padding: 4px;
         }
 
+        /* Page content */
         .gfi-page { flex: 1; padding: 28px; overflow-x: hidden; }
 
+        /* Mobile overlay */
         .gfi-mobile-overlay {
           display: none;
           position: fixed; inset: 0;
@@ -330,6 +370,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
           .gfi-sidebar {
             transform: translateX(${collapsed || !mobileOpen ? "-100%" : "0"});
@@ -339,7 +380,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
           .gfi-mobile-menu-btn { display: flex; }
           .gfi-mobile-overlay { display: ${mobileOpen ? "block" : "none"}; }
           .gfi-nav-label { opacity: 1 !important; }
-          .gfi-logo-img { width: 130px !important; }
+          .gfi-logo-text { opacity: 1 !important; }
           .gfi-user-info { opacity: 1 !important; pointer-events: auto !important; }
           .gfi-logout-btn { display: flex !important; }
           .gfi-section-label { opacity: 1 !important; height: auto !important; }
@@ -348,14 +389,12 @@ export default function PrivateLayout({ children }: LayoutProps) {
       `}</style>
 
       <div className="gfi-layout">
+        {/* SIDEBAR */}
         <aside className="gfi-sidebar">
           {/* Logo */}
           <a href="/dashboard" className="gfi-sidebar-logo">
-            <img
-              src="/Logo.jpg"
-              alt="Grupo Foro Inmobiliario"
-              className="gfi-logo-img"
-            />
+            <div className="gfi-logo-badge">GFI</div>
+            <div className="gfi-logo-text">Grupo Foro<br/>Inmobiliario</div>
           </a>
 
           {/* Nav */}
@@ -404,12 +443,15 @@ export default function PrivateLayout({ children }: LayoutProps) {
           </div>
         </aside>
 
+        {/* Mobile overlay */}
         <div
           className="gfi-mobile-overlay"
           onClick={() => setMobileOpen(false)}
         />
 
+        {/* MAIN */}
         <div className="gfi-main">
+          {/* Topbar */}
           <header className="gfi-topbar">
             <div className="gfi-topbar-left">
               <button
@@ -429,6 +471,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
             </div>
           </header>
 
+          {/* Page content */}
           <main className="gfi-page">
             {children}
           </main>
