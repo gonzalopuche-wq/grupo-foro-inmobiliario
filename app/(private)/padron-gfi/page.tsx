@@ -140,18 +140,16 @@ export default function PadronGFIPage() {
           <div className="gfi-stats">
             <div className="gfi-stat">
               <div className="gfi-stat-val">{corredores.length}</div>
-              <div className="gfi-stat-label">Total</div>
+              <div className="gfi-stat-label">Miembros</div>
             </div>
             <div className="gfi-stat">
-              <div className="gfi-stat-val" style={{ color: "#22c55e" }}>{activos}</div>
-              <div className="gfi-stat-label">Activos</div>
+              <div className="gfi-stat-val" style={{ color: "#22c55e" }}>{corredores.filter(c => c.matricula).length}</div>
+              <div className="gfi-stat-label">Matriculados</div>
             </div>
-            {pendientes > 0 && (
-              <div className="gfi-stat">
-                <div className="gfi-stat-val" style={{ color: "#eab308" }}>{pendientes}</div>
-                <div className="gfi-stat-label">Pendientes</div>
-              </div>
-            )}
+            <div className="gfi-stat">
+              <div className="gfi-stat-val" style={{ color: "#818cf8" }}>{corredores.filter(c => c.socio_cir).length}</div>
+              <div className="gfi-stat-label">Socios CIR</div>
+            </div>
           </div>
         </div>
 
@@ -165,13 +163,6 @@ export default function PadronGFIPage() {
               value={busqueda}
               onChange={e => setBusqueda(e.target.value)}
             />
-          </div>
-          <div className="gfi-filtros">
-            {[["todos","Todos"],["activo","Activos"],["pendiente","Pendientes"]].map(([v,l]) => (
-              <button key={v} className={`gfi-filtro${filtroEstado === v ? " activo" : ""}`} onClick={() => setFiltroEstado(v)}>
-                {l}
-              </button>
-            ))}
           </div>
           <span className="gfi-count">{filtrados.length} corredor{filtrados.length !== 1 ? "es" : ""}</span>
         </div>
@@ -204,12 +195,9 @@ export default function PadronGFIPage() {
 
                   <div className="gfi-card-badges">
                     {esYo && <span className="gfi-badge gfi-badge-yo">Vos</span>}
-                    <span className={`gfi-badge ${c.estado === "activo" ? "gfi-badge-activo" : "gfi-badge-pendiente"}`}>
-                      {c.estado === "activo" ? "✓ Activo" : "⏳ Pendiente"}
-                    </span>
+                    {c.matricula && <span className="gfi-badge" style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.2)", color: "#cc0000" }}>✓ COCIR</span>}
                     {c.socio_cir && <span className="gfi-badge gfi-badge-cir">CIR</span>}
                     {c.tipo === "admin" && <span className="gfi-badge gfi-badge-admin">Admin</span>}
-                    {c.matricula && <span className="gfi-badge" style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.2)", color: "#cc0000" }}>COCIR</span>}
                   </div>
 
                   <div className="gfi-card-meta">
