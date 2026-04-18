@@ -3,17 +3,26 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; }
-interface Indicador { clave: string; valor: number; label: string; }
-interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number; monto_ars: number | null; monto_declarado_ars: number | null; dolar_ref: number | null; estado: string; fecha_pago_declarado: string | null; fecha_confirmacion: string | null; fecha_vencimiento: string | null; periodo: string | null; comprobante: string | null; cbu_origen: string | null; nota_admin: string | null; creado_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; }; }
+interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; }
+interface Indicador { clave: string; valor: number | string; label: string; tipo: "number" | "text"; }
+interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number; monto_ars: number | null; monto_declarado_ars: number | null; dolar_ref: number | null; estado: string; fecha_pago_declarado: string | null; fecha_confirmacion: string | null; fecha_vencimiento: string | null; periodo: string | null; comprobante: string | null; cbu_origen: string | null; nota_admin: string | null; creado_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
 
 const INDICADORES_CONFIG = [
-  { clave: "valor_jus", label: "Valor JUS" },
-  { clave: "precio_corredor_usd", label: "Precio Corredor (USD)" },
-  { clave: "precio_colaborador_usd", label: "Precio Colaborador (USD)" },
-  { clave: "costo_match_divisas", label: "Costo Match Divisas (ARS)" },
+  { clave: "valor_jus", label: "Valor JUS", tipo: "number" as const },
+  { clave: "precio_corredor_usd", label: "Precio Corredor (USD)", tipo: "number" as const },
+  { clave: "precio_colaborador_usd", label: "Precio Colaborador (USD)", tipo: "number" as const },
+  { clave: "costo_match_divisas", label: "Costo Match Divisas (ARS)", tipo: "number" as const },
 ];
+
+const CBU_CONFIG = [
+  { clave: "cbu_titular", label: "Titular CBU/CVU", placeholder: "Nombre completo" },
+  { clave: "cbu_cvu", label: "CVU/CBU", placeholder: "0000003100..." },
+  { clave: "cbu_alias", label: "Alias", placeholder: "foroinmobiliario.gp" },
+  { clave: "cbu_cuit", label: "CUIT/CUIL", placeholder: "20-12345678-9" },
+  { clave: "cbu_banco", label: "Banco", placeholder: "Mercado Pago" },
+];
+
 const ESTADO_BADGE: Record<string, string> = { pendiente: "badge-pendiente", aprobado: "badge-aprobado", rechazado: "badge-rechazado" };
 const ESTADO_LABEL: Record<string, string> = { pendiente: "Pendiente", aprobado: "Aprobado", rechazado: "Rechazado" };
 const MONEDAS_OPCIONES = ["USD", "EUR", "GBP", "BRL", "USDT", "USDC"];
@@ -29,6 +38,9 @@ export default function AdminPage() {
   const [editando, setEditando] = useState<Record<string, string>>({});
   const [guardando, setGuardando] = useState<string | null>(null);
   const [guardadoOk, setGuardadoOk] = useState<string | null>(null);
+  const [cbuValues, setCbuValues] = useState<Record<string, string>>({});
+  const [guardandoCbu, setGuardandoCbu] = useState(false);
+  const [cbuOk, setCbuOk] = useState(false);
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [loadingPagos, setLoadingPagos] = useState(true);
   const [filtroPagos, setFiltroPagos] = useState<"pendiente"|"activa"|"todos">("pendiente");
@@ -48,35 +60,179 @@ export default function AdminPage() {
       const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", userData.user.id).single();
       if (!perfil || perfil.tipo !== "admin") { window.location.href = "/dashboard"; return; }
       setEsAdmin(true);
-      cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores();
+      cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
     };
     verificar();
   }, []);
 
-  const cargarPerfiles = async () => { setLoading(true); const { data } = await supabase.from("perfiles").select("*").order("created_at", { ascending: false }); setPerfiles(data ?? []); setLoading(false); };
+  const cargarPerfiles = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("perfiles").select("*").order("created_at", { ascending: false });
+    setPerfiles(data ?? []);
+    setLoading(false);
+  };
+
   const cargarIndicadores = async () => {
     const claves = INDICADORES_CONFIG.map(i => i.clave);
     const { data } = await supabase.from("indicadores").select("clave, valor").in("clave", claves);
     if (!data) return;
-    const result: Indicador[] = INDICADORES_CONFIG.map(cfg => { const row = data.find(r => r.clave === cfg.clave); return { clave: cfg.clave, label: cfg.label, valor: row?.valor ?? 0 }; });
+    const result: Indicador[] = INDICADORES_CONFIG.map(cfg => {
+      const row = data.find(r => r.clave === cfg.clave);
+      return { clave: cfg.clave, label: cfg.label, valor: row?.valor ?? 0, tipo: cfg.tipo };
+    });
     setIndicadores(result);
     const editInit: Record<string, string> = {};
-    result.forEach(i => { editInit[i.clave] = i.clave.includes("_usd") ? i.valor.toString() : i.valor.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); });
+    result.forEach(i => { editInit[i.clave] = i.clave.includes("_usd") ? i.valor.toString() : Number(i.valor).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); });
     setEditando(editInit);
   };
-  const cargarPagos = async () => { setLoadingPagos(true); const { data } = await supabase.from("suscripciones").select("*, perfiles(nombre, apellido, matricula)").order("creado_at", { ascending: false }); setPagos((data as unknown as Pago[]) ?? []); setLoadingPagos(false); };
-  const cargarProveedores = async () => { setLoadingProv(true); const { data } = await supabase.from("divisas_proveedores").select("*").order("orden"); setProveedores(data ?? []); setLoadingProv(false); };
+
+  const cargarCbu = async () => {
+    const claves = CBU_CONFIG.map(c => c.clave);
+    const { data } = await supabase.from("indicadores").select("clave, valor_texto").in("clave", claves);
+    if (!data) return;
+    const vals: Record<string, string> = {};
+    CBU_CONFIG.forEach(c => {
+      vals[c.clave] = (data as any[]).find(r => r.clave === c.clave)?.valor_texto ?? "";
+    });
+    setCbuValues(vals);
+  };
+
+  const guardarCbu = async () => {
+    setGuardandoCbu(true);
+    for (const c of CBU_CONFIG) {
+      await supabase.from("indicadores").upsert(
+        { clave: c.clave, valor_texto: cbuValues[c.clave] ?? "", valor: 0 },
+        { onConflict: "clave" }
+      );
+    }
+    setGuardandoCbu(false);
+    setCbuOk(true);
+    setTimeout(() => setCbuOk(false), 2000);
+  };
+
+  const cargarPagos = async () => {
+    setLoadingPagos(true);
+    const { data } = await supabase.from("suscripciones")
+      .select("*, perfiles(nombre, apellido, matricula, email)")
+      .order("creado_at", { ascending: false });
+    setPagos((data as unknown as Pago[]) ?? []);
+    setLoadingPagos(false);
+  };
+
+  const cargarProveedores = async () => {
+    setLoadingProv(true);
+    const { data } = await supabase.from("divisas_proveedores").select("*").order("orden");
+    setProveedores(data ?? []);
+    setLoadingProv(false);
+  };
 
   const confirmarPago = async (pago: Pago) => {
     setProcesandoPago(pago.id);
-    const vencimiento = new Date(); vencimiento.setMonth(vencimiento.getMonth() + 1); vencimiento.setDate(vencimiento.getDate() + 3);
-    await supabase.from("suscripciones").update({ estado: "activa", fecha_confirmacion: new Date().toISOString().slice(0,10), fecha_vencimiento: vencimiento.toISOString().slice(0,10), nota_admin: notaAdmin[pago.id] || null }).eq("id", pago.id);
+    const vencimiento = new Date();
+    vencimiento.setMonth(vencimiento.getMonth() + 1);
+    vencimiento.setDate(vencimiento.getDate() + 3);
+    await supabase.from("suscripciones").update({
+      estado: "activa",
+      fecha_confirmacion: new Date().toISOString().slice(0, 10),
+      fecha_vencimiento: vencimiento.toISOString().slice(0, 10),
+      nota_admin: notaAdmin[pago.id] || null,
+    }).eq("id", pago.id);
     await supabase.from("perfiles").update({ estado: "aprobado" }).eq("id", pago.perfil_id);
-    setProcesandoPago(null); cargarPagos();
+
+    // Email al corredor
+    if (pago.perfiles?.email) {
+      try {
+        await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: pago.perfiles.email,
+            subject: "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario",
+            html: `
+              <div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);">
+                <h2 style="color:#22c55e;margin-bottom:16px;">✅ Pago confirmado</h2>
+                <p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">
+                  Hola <strong>${pago.perfiles.nombre}</strong>, tu pago fue confirmado exitosamente.
+                </p>
+                <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
+                  <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);width:140px;">Período</td><td style="color:#fff;font-weight:600;">${pago.periodo ?? "—"}</td></tr>
+                  <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto</td><td style="color:#fff;">USD ${pago.monto_usd}</td></tr>
+                  <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Vencimiento</td><td style="color:#22c55e;font-weight:700;">${vencimiento.toLocaleDateString("es-AR")}</td></tr>
+                  ${notaAdmin[pago.id] ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Nota</td><td style="color:#fff;">${notaAdmin[pago.id]}</td></tr>` : ""}
+                </table>
+                <a href="https://www.foroinmobiliario.com.ar/suscripcion" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;">
+                  Ver mi suscripción
+                </a>
+              </div>
+            `,
+          }),
+        });
+      } catch {}
+    }
+
+    setProcesandoPago(null);
+    cargarPagos();
   };
-  const rechazarPago = async (pagoId: string) => { if (!confirm("¿Rechazar este pago?")) return; setProcesandoPago(pagoId); await supabase.from("suscripciones").update({ estado: "rechazado", nota_admin: notaAdmin[pagoId] || null }).eq("id", pagoId); setProcesandoPago(null); cargarPagos(); };
-  const guardarIndicador = async (clave: string) => { const raw = editando[clave]?.replace(/\./g, "").replace(",", "."); const valor = parseFloat(raw); if (isNaN(valor)) return; setGuardando(clave); await supabase.from("indicadores").update({ valor }).eq("clave", clave); setGuardando(null); setGuardadoOk(clave); setTimeout(() => setGuardadoOk(null), 2000); cargarIndicadores(); };
-  const cambiarEstado = async (id: string, nuevoEstado: "aprobado"|"rechazado") => { setProcesando(id); await supabase.from("perfiles").update({ estado: nuevoEstado }).eq("id", id); await cargarPerfiles(); setProcesando(null); };
+
+  const rechazarPago = async (pago: Pago) => {
+    if (!confirm("¿Rechazar este pago?")) return;
+    setProcesandoPago(pago.id);
+    await supabase.from("suscripciones").update({
+      estado: "rechazado",
+      nota_admin: notaAdmin[pago.id] || null,
+    }).eq("id", pago.id);
+
+    // Email al corredor
+    if (pago.perfiles?.email) {
+      try {
+        await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: pago.perfiles.email,
+            subject: "⚠️ Pago no confirmado — GFI® Grupo Foro Inmobiliario",
+            html: `
+              <div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(200,0,0,0.2);">
+                <h2 style="color:#cc0000;margin-bottom:16px;">⚠️ Pago no confirmado</h2>
+                <p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">
+                  Hola <strong>${pago.perfiles.nombre}</strong>, no pudimos confirmar tu pago del período <strong>${pago.periodo ?? "—"}</strong>.
+                </p>
+                ${notaAdmin[pago.id] ? `<p style="font-size:13px;color:#eab308;background:rgba(234,179,8,0.08);padding:12px;border-radius:4px;margin-bottom:20px;">📋 ${notaAdmin[pago.id]}</p>` : ""}
+                <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;">
+                  Por favor revisá los datos de la transferencia y volvé a declararla desde tu panel de suscripción. Si tenés alguna consulta respondé este email.
+                </p>
+                <a href="https://www.foroinmobiliario.com.ar/suscripcion" style="display:inline-block;background:#cc0000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;">
+                  Ir a mi suscripción
+                </a>
+              </div>
+            `,
+          }),
+        });
+      } catch {}
+    }
+
+    setProcesandoPago(null);
+    cargarPagos();
+  };
+
+  const guardarIndicador = async (clave: string) => {
+    const raw = editando[clave]?.replace(/\./g, "").replace(",", ".");
+    const valor = parseFloat(raw);
+    if (isNaN(valor)) return;
+    setGuardando(clave);
+    await supabase.from("indicadores").update({ valor }).eq("clave", clave);
+    setGuardando(null);
+    setGuardadoOk(clave);
+    setTimeout(() => setGuardadoOk(null), 2000);
+    cargarIndicadores();
+  };
+
+  const cambiarEstado = async (id: string, nuevoEstado: "aprobado" | "rechazado") => {
+    setProcesando(id);
+    await supabase.from("perfiles").update({ estado: nuevoEstado }).eq("id", id);
+    await cargarPerfiles();
+    setProcesando(null);
+  };
 
   const guardarProveedor = async () => {
     if (!formProv.nombre) return;
@@ -89,6 +245,7 @@ export default function AdminPage() {
     else { const maxOrden = proveedores.length > 0 ? Math.max(...proveedores.map(p => p.orden)) + 1 : 0; await supabase.from("divisas_proveedores").insert({ ...datos, orden: maxOrden }); }
     setGuardandoProv(false); setMostrarFormProv(false); setFormProv(FORM_PROV_VACIO); setEditandoProv(null); cargarProveedores();
   };
+
   const editarProveedor = (p: Proveedor) => { setFormProv({ nombre: p.nombre, contacto_whatsapp: p.contacto_whatsapp ?? "", contacto_email: p.contacto_email ?? "", monedas: p.monedas ?? [], servicios: (p.servicios ?? []).join(", "), compra_usd: p.compra_usd?.toString() ?? "", venta_usd: p.venta_usd?.toString() ?? "" }); setEditandoProv(p.id); setMostrarFormProv(true); };
   const toggleActivoProv = async (p: Proveedor) => { await supabase.from("divisas_proveedores").update({ activo: !p.activo }).eq("id", p.id); cargarProveedores(); };
   const eliminarProveedor = async (id: string) => { if (!confirm("¿Eliminar este proveedor?")) return; await supabase.from("divisas_proveedores").delete().eq("id", id); cargarProveedores(); };
@@ -147,9 +304,9 @@ export default function AdminPage() {
         .badge-colaborador { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.5); }
         .adm-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
         .adm-btn-aprobar { padding: 6px 14px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #22c55e; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-        .adm-btn-aprobar:hover { background: rgba(34,197,94,0.2); border-color: #22c55e; }
+        .adm-btn-aprobar:hover { background: rgba(34,197,94,0.2); }
         .adm-btn-rechazar { padding: 6px 14px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.25); border-radius: 3px; color: #ff4444; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-        .adm-btn-rechazar:hover { background: rgba(200,0,0,0.18); border-color: #ff4444; }
+        .adm-btn-rechazar:hover { background: rgba(200,0,0,0.18); }
         .adm-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .adm-empty { padding: 48px; text-align: center; color: rgba(255,255,255,0.25); font-size: 13px; font-style: italic; }
@@ -167,11 +324,11 @@ export default function AdminPage() {
         .adm-ind-form { display: flex; gap: 8px; align-items: center; }
         .adm-ind-input { flex: 1; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: #fff; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
         .adm-ind-input:focus { border-color: rgba(200,0,0,0.5); }
-        .adm-ind-btn { padding: 9px 16px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        .adm-ind-btn { padding: 9px 16px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .adm-ind-btn:hover { background: #e60000; }
         .adm-ind-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .adm-ind-ok { font-size: 11px; color: #22c55e; margin-top: 8px; font-family: 'Montserrat', sans-serif; font-weight: 700; }
-        .adm-btn-nuevo { padding: 9px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+        .adm-btn-nuevo { padding: 9px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
         .adm-btn-nuevo:hover { background: #e60000; }
         .prov-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
         .prov-lista { display: flex; flex-direction: column; gap: 10px; }
@@ -195,6 +352,13 @@ export default function AdminPage() {
         .prov-btn-toggle:hover { background: rgba(234,179,8,0.1); }
         .prov-btn-del { background: transparent; border: 1px solid rgba(200,0,0,0.25); color: #ff4444; }
         .prov-btn-del:hover { background: rgba(200,0,0,0.1); }
+        .cbu-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 22px 24px; }
+        .cbu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .cbu-field { display: flex; flex-direction: column; gap: 5px; }
+        .cbu-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+        .cbu-input { padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
+        .cbu-input:focus { border-color: rgba(200,0,0,0.4); }
+        .cbu-input::placeholder { color: rgba(255,255,255,0.2); }
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
         .modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 32px; width: 100%; max-width: 500px; position: relative; max-height: 90vh; overflow-y: auto; }
         .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
@@ -232,7 +396,10 @@ export default function AdminPage() {
 
           {/* PAGOS */}
           <div>
-            <div className="adm-header"><h1>Gestión de <span>pagos</span></h1><p>Confirmá o rechazá los pagos declarados.</p></div>
+            <div className="adm-header">
+              <h1>Gestión de <span>pagos</span></h1>
+              <p>Confirmá o rechazá los pagos declarados. Se envía email automático al corredor.</p>
+            </div>
             <div className="adm-filtros">
               {(["pendiente","activa","todos"] as const).map(f => (
                 <button key={f} className={`adm-filtro-btn${filtroPagos === f ? " activo" : ""}`} onClick={() => setFiltroPagos(f)}>
@@ -250,13 +417,38 @@ export default function AdminPage() {
                   {pagosFiltrados.map(p => {
                     const color = estadoPagoColor(p.estado);
                     return <tr key={p.id}>
-                      <td><div className="adm-nombre">{p.perfiles ? `${p.perfiles.apellido}, ${p.perfiles.nombre}` : "—"}</div><div className="adm-sub">Mat. {p.perfiles?.matricula ?? "—"} · {p.tipo}</div></td>
+                      <td>
+                        <div className="adm-nombre">{p.perfiles ? `${p.perfiles.apellido}, ${p.perfiles.nombre}` : "—"}</div>
+                        <div className="adm-sub">Mat. {p.perfiles?.matricula ?? "—"} · {p.tipo}</div>
+                        {p.perfiles?.email && <div className="adm-sub">✉️ {p.perfiles.email}</div>}
+                      </td>
                       <td style={{fontFamily:"'Montserrat',sans-serif",fontWeight:700,fontSize:12}}>{p.periodo ?? "—"}</td>
-                      <td>{p.monto_declarado_ars ? <div>${p.monto_declarado_ars.toLocaleString("es-AR")}</div> : <div style={{color:"rgba(255,255,255,0.3)"}}>—</div>}<div className="adm-sub">USD {p.monto_usd}</div></td>
-                      <td><div className="adm-comprobante">{p.comprobante ?? "—"}</div>{p.cbu_origen && <div className="adm-sub">{p.cbu_origen}</div>}</td>
-                      <td style={{fontSize:12,color:"rgba(255,255,255,0.5)"}}>{p.fecha_pago_declarado ? formatFecha(p.fecha_pago_declarado) : "—"}{p.fecha_confirmacion && <div className="adm-sub">Conf: {formatFecha(p.fecha_confirmacion)}</div>}{p.fecha_vencimiento && <div className="adm-sub">Vence: {formatFecha(p.fecha_vencimiento)}</div>}</td>
+                      <td>
+                        {p.monto_declarado_ars ? <div>${p.monto_declarado_ars.toLocaleString("es-AR")}</div> : <div style={{color:"rgba(255,255,255,0.3)"}}>—</div>}
+                        <div className="adm-sub">USD {p.monto_usd}</div>
+                      </td>
+                      <td>
+                        <div className="adm-comprobante">{p.comprobante ?? "—"}</div>
+                        {p.cbu_origen && <div className="adm-sub">{p.cbu_origen}</div>}
+                      </td>
+                      <td style={{fontSize:12,color:"rgba(255,255,255,0.5)"}}>
+                        {p.fecha_pago_declarado ? formatFecha(p.fecha_pago_declarado) : "—"}
+                        {p.fecha_confirmacion && <div className="adm-sub">Conf: {formatFecha(p.fecha_confirmacion)}</div>}
+                        {p.fecha_vencimiento && <div className="adm-sub">Vence: {formatFecha(p.fecha_vencimiento)}</div>}
+                      </td>
                       <td><span className="badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{p.estado.toUpperCase()}</span></td>
-                      <td>{procesandoPago === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? <div><input className="adm-nota-input" placeholder="Nota interna (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => confirmarPago(p)}>✓ Confirmar</button><button className="adm-btn-rechazar" onClick={() => rechazarPago(p.id)}>✗ Rechazar</button></div></div> : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{p.nota_admin ?? "—"}</span>}</td>
+                      <td>
+                        {procesandoPago === p.id ? <span className="adm-spinner" />
+                         : p.estado === "pendiente" ? (
+                          <div>
+                            <input className="adm-nota-input" placeholder="Nota interna (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} />
+                            <div className="adm-acciones">
+                              <button className="adm-btn-aprobar" onClick={() => confirmarPago(p)}>✓ Confirmar</button>
+                              <button className="adm-btn-rechazar" onClick={() => rechazarPago(p)}>✗ Rechazar</button>
+                            </div>
+                          </div>
+                        ) : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{p.nota_admin ?? "—"}</span>}
+                      </td>
                     </tr>;
                   })}
                 </tbody>
@@ -264,17 +456,41 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* PROVEEDORES */}
+          {/* CBU CONFIGURABLE */}
+          <div>
+            <div className="adm-header">
+              <h1>Datos de <span>transferencia</span></h1>
+              <p>Los datos que ven los corredores en la página de suscripción.</p>
+            </div>
+            <div className="cbu-card">
+              <div className="cbu-grid">
+                {CBU_CONFIG.map(c => (
+                  <div key={c.clave} className="cbu-field">
+                    <label className="cbu-label">{c.label}</label>
+                    <input className="cbu-input" placeholder={c.placeholder} value={cbuValues[c.clave] ?? ""} onChange={e => setCbuValues(prev => ({...prev, [c.clave]: e.target.value}))} />
+                  </div>
+                ))}
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <button className="adm-ind-btn" onClick={guardarCbu} disabled={guardandoCbu}>
+                  {guardandoCbu ? "Guardando..." : "Guardar datos de transferencia"}
+                </button>
+                {cbuOk && <span className="adm-ind-ok">✓ Guardado</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* PROVEEDORES DIVISAS */}
           <div>
             <div className="prov-header">
               <div>
                 <div className="adm-ind-titulo">Proveedores <span>de divisas</span></div>
-                <div className="adm-ind-subtitulo">Cargá los proveedores verificados con sus cotizaciones del día. Los corredores pueden contactarlos directamente.</div>
+                <div className="adm-ind-subtitulo">Cargá los proveedores verificados con sus cotizaciones del día.</div>
               </div>
               <button className="adm-btn-nuevo" onClick={() => { setFormProv(FORM_PROV_VACIO); setEditandoProv(null); setMostrarFormProv(true); }}>+ Nuevo proveedor</button>
             </div>
             {loadingProv ? <div className="adm-loading">Cargando...</div>
-             : proveedores.length === 0 ? <div className="adm-empty">No hay proveedores cargados todavía.</div>
+             : proveedores.length === 0 ? <div className="adm-empty">No hay proveedores cargados.</div>
              : <div className="prov-lista">
               {proveedores.map(p => (
                 <div key={p.id} className={`prov-row${p.activo ? "" : " inactivo"}`}>
@@ -302,9 +518,12 @@ export default function AdminPage() {
             </div>}
           </div>
 
-          {/* SOLICITUDES */}
+          {/* SOLICITUDES REGISTRO */}
           <div>
-            <div className="adm-header"><h1>Solicitudes de <span>registro</span></h1><p>Revisá y aprobá o rechazá cada solicitud manualmente.</p></div>
+            <div className="adm-header">
+              <h1>Solicitudes de <span>registro</span></h1>
+              <p>Revisá y aprobá o rechazá cada solicitud manualmente.</p>
+            </div>
             <div className="adm-filtros">
               {(["pendiente","aprobado","rechazado","todos"] as const).map(f => (
                 <button key={f} className={`adm-filtro-btn${filtro === f ? " activo" : ""}`} onClick={() => setFiltro(f)}>
@@ -321,13 +540,29 @@ export default function AdminPage() {
                 <tbody>
                   {perfilesFiltrados.map(p => (
                     <tr key={p.id}>
-                      <td><div className="adm-nombre">{p.apellido}, {p.nombre}</div>{p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}{p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}</td>
+                      <td>
+                        <div className="adm-nombre">{p.apellido}, {p.nombre}</div>
+                        {p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}
+                        {p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}
+                      </td>
                       <td><span className={`badge badge-${p.tipo}`}>{p.tipo === "corredor" ? "Corredor" : p.tipo === "colaborador" ? "Colaborador" : "Admin"}</span></td>
                       <td>{p.matricula && <div>Mat. {p.matricula}</div>}{p.dni && <div>DNI {p.dni}</div>}</td>
-                      <td>{p.telefono && <div>{p.telefono}</div>}</td>
+                      <td>{p.telefono && <div>{p.telefono}</div>}{p.email && <div className="adm-sub">{p.email}</div>}</td>
                       <td style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{formatFecha(p.created_at)}</td>
-                      <td><span className={`badge ${ESTADO_BADGE[p.estado]}`}>{ESTADO_LABEL[p.estado]}</span></td>
-                      <td>{procesando === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? <div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>✓ Aprobar</button><button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>✗ Rechazar</button></div> : p.estado === "aprobado" ? <button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>Revocar</button> : <button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>Reactivar</button>}</td>
+                      <td><span className={`badge ${ESTADO_BADGE[p.estado] ?? "badge-pendiente"}`}>{ESTADO_LABEL[p.estado] ?? p.estado}</span></td>
+                      <td>
+                        {procesando === p.id ? <span className="adm-spinner" />
+                         : p.estado === "pendiente" ? (
+                          <div className="adm-acciones">
+                            <button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>✓ Aprobar</button>
+                            <button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>✗ Rechazar</button>
+                          </div>
+                        ) : p.estado === "aprobado" ? (
+                          <button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>Revocar</button>
+                        ) : (
+                          <button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>Reactivar</button>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -343,7 +578,9 @@ export default function AdminPage() {
               {indicadores.map(ind => (
                 <div key={ind.clave} className="adm-ind-card">
                   <div className="adm-ind-label">{ind.label}</div>
-                  <div className="adm-ind-actual">{ind.clave.includes("_usd") ? `USD ${ind.valor}` : new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(ind.valor)}</div>
+                  <div className="adm-ind-actual">
+                    {ind.clave.includes("_usd") ? `USD ${ind.valor}` : new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(ind.valor))}
+                  </div>
                   <div className="adm-ind-form">
                     <input className="adm-ind-input" value={editando[ind.clave] ?? ""} onChange={e => setEditando(prev => ({...prev,[ind.clave]:e.target.value}))} onKeyDown={e => { if (e.key === "Enter") guardarIndicador(ind.clave); }} placeholder={ind.clave.includes("_usd") ? "Ej: 15" : "Ej: 5000"} />
                     <button className="adm-ind-btn" onClick={() => guardarIndicador(ind.clave)} disabled={guardando === ind.clave}>{guardando === ind.clave ? "..." : "Guardar"}</button>
@@ -362,7 +599,6 @@ export default function AdminPage() {
         <div className="modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFormProv(false); }}>
           <div className="modal">
             <h2>{editandoProv ? "Editar" : "Nuevo"} <span>proveedor</span></h2>
-
             <div className="modal-seccion">Datos del proveedor</div>
             <div className="modal-field">
               <label className="modal-label">Nombre *</label>
@@ -388,11 +624,10 @@ export default function AdminPage() {
             </div>
             <div className="modal-field">
               <label className="modal-label">Servicios <small>separados por coma</small></label>
-              <input className="modal-input" placeholder="Ej: Transferencias, Cripto, Payoneer, Wise" value={formProv.servicios} onChange={e => setFormProv(p => ({...p, servicios: e.target.value}))} />
+              <input className="modal-input" placeholder="Ej: Transferencias, Cripto, Payoneer" value={formProv.servicios} onChange={e => setFormProv(p => ({...p, servicios: e.target.value}))} />
             </div>
-
             <div className="modal-divider" />
-            <div className="modal-seccion">Cotización USD/ARS del día <small style={{color:"rgba(255,255,255,0.25)",fontSize:9}}>(opcional — se muestra a los corredores)</small></div>
+            <div className="modal-seccion">Cotización USD/ARS del día <small style={{color:"rgba(255,255,255,0.25)",fontSize:9}}>(opcional)</small></div>
             <div className="modal-row">
               <div className="modal-field">
                 <label className="modal-label">Compra (ARS)</label>
@@ -403,7 +638,6 @@ export default function AdminPage() {
                 <input className="modal-input" placeholder="Ej: 1420" value={formProv.venta_usd} onChange={e => setFormProv(p => ({...p, venta_usd: e.target.value}))} />
               </div>
             </div>
-
             <div className="modal-actions">
               <button className="modal-btn-cancel" onClick={() => { setMostrarFormProv(false); setEditandoProv(null); }}>Cancelar</button>
               <button className="modal-btn-save" onClick={guardarProveedor} disabled={guardandoProv || !formProv.nombre}>{guardandoProv ? "Guardando..." : "Guardar"}</button>
