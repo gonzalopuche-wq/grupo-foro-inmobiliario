@@ -62,8 +62,14 @@ export default function ComparablesPage() {
   const [filtroTipo, setFiltroTipo] = useState("todos");
   const [filtroBarrio, setFiltroBarrio] = useState("todos");
   const [filtroDorm, setFiltroDorm] = useState("todos");
+  const [filtroAnio, setFiltroAnio] = useState("todos");
+  const [filtroCiudad, setFiltroCiudad] = useState("todos");
+  const [precioMin, setPrecioMin] = useState("");
+  const [precioMax, setPrecioMax] = useState("");
+  const [supMin, setSupMin] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [soloMios, setSoloMios] = useState(false);
+  const [mostrarFiltrosAvanzados, setMostrarFiltrosAvanzados] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -177,19 +183,26 @@ export default function ComparablesPage() {
     if (soloMios && c.perfil_id !== userId) return false;
     if (filtroTipo !== "todos" && c.tipo_inmueble !== filtroTipo) return false;
     if (filtroBarrio !== "todos" && c.barrio !== filtroBarrio) return false;
+    if (filtroCiudad !== "todos" && c.ciudad !== filtroCiudad) return false;
+    if (filtroAnio !== "todos" && c.anio.toString() !== filtroAnio) return false;
     if (filtroDorm !== "todos") {
       if (filtroDorm === "4+" && (c.dormitorios ?? 0) < 4) return false;
       if (filtroDorm !== "4+" && c.dormitorios?.toString() !== filtroDorm) return false;
     }
+    if (precioMin && (c.precio_venta ?? 0) < parseFloat(precioMin)) return false;
+    if (precioMax && (c.precio_venta ?? 0) > parseFloat(precioMax)) return false;
+    if (supMin && (c.sup_cubierta ?? 0) < parseFloat(supMin)) return false;
     if (busqueda.trim()) {
       const q = busqueda.toLowerCase();
-      return c.calle.toLowerCase().includes(q) || c.barrio?.toLowerCase().includes(q) || c.tipo_inmueble.toLowerCase().includes(q);
+      return c.calle.toLowerCase().includes(q) || c.barrio?.toLowerCase().includes(q) || c.tipo_inmueble.toLowerCase().includes(q) || c.ciudad?.toLowerCase().includes(q);
     }
     return true;
   });
 
   const barriosUnicos = ["todos", ...Array.from(new Set(comparables.map(c => c.barrio).filter(Boolean))).sort() as string[]];
   const tiposUnicos = ["todos", ...Array.from(new Set(comparables.map(c => c.tipo_inmueble))).sort()];
+  const aniosUnicos = ["todos", ...Array.from(new Set(comparables.map(c => c.anio.toString()))).sort((a,b) => parseInt(b)-parseInt(a))];
+  const ciudadesUnicas = ["todos", ...Array.from(new Set(comparables.map(c => c.ciudad).filter(Boolean))).sort() as string[]];
 
   const formatUSD = (n: number | null) => n ? `USD ${n.toLocaleString("es-AR")}` : "—";
   const formatNum = (n: number | null) => n ? n.toLocaleString("es-AR") : "—";
@@ -304,25 +317,61 @@ export default function ComparablesPage() {
         </div>
 
         {/* Filtros */}
-        <div className="cmp-filtros">
-          <input className="cmp-search" placeholder="Buscar calle, barrio, tipo..." value={busqueda} onChange={e=>setBusqueda(e.target.value)} />
-          <select className="cmp-select" value={filtroTipo} onChange={e=>setFiltroTipo(e.target.value)}>
-            {tiposUnicos.map(t=><option key={t} value={t}>{t==="todos"?"Todos los tipos":t}</option>)}
-          </select>
-          <select className="cmp-select" value={filtroBarrio} onChange={e=>setFiltroBarrio(e.target.value)}>
-            {barriosUnicos.map(b=><option key={b} value={b}>{b==="todos"?"Todos los barrios":b}</option>)}
-          </select>
-          <select className="cmp-select" value={filtroDorm} onChange={e=>setFiltroDorm(e.target.value)}>
-            <option value="todos">Dorm: todos</option>
-            {["1","2","3","4+"].map(d=><option key={d} value={d}>{d} dorm.</option>)}
-          </select>
-          <div className="cmp-toggle" onClick={()=>setSoloMios(v=>!v)}>
-            <div className="cmp-toggle-switch" style={{background:soloMios?"#cc0000":"rgba(255,255,255,0.1)"}}>
-              <div className="cmp-toggle-knob" style={{left:soloMios?18:2}}/>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          <div className="cmp-filtros">
+            <input className="cmp-search" placeholder="Buscar calle, barrio, ciudad, tipo..." value={busqueda} onChange={e=>setBusqueda(e.target.value)} />
+            <select className="cmp-select" value={filtroTipo} onChange={e=>setFiltroTipo(e.target.value)}>
+              {tiposUnicos.map(t=><option key={t} value={t}>{t==="todos"?"Todos los tipos":t}</option>)}
+            </select>
+            <select className="cmp-select" value={filtroBarrio} onChange={e=>setFiltroBarrio(e.target.value)}>
+              {barriosUnicos.map(b=><option key={b} value={b}>{b==="todos"?"Todos los barrios":b}</option>)}
+            </select>
+            <select className="cmp-select" value={filtroDorm} onChange={e=>setFiltroDorm(e.target.value)}>
+              <option value="todos">Dorm: todos</option>
+              {["1","2","3","4+"].map(d=><option key={d} value={d}>{d} dorm.</option>)}
+            </select>
+            <button
+              className="cmp-select"
+              style={{cursor:"pointer",color:mostrarFiltrosAvanzados?"#cc0000":"rgba(255,255,255,0.6)",borderColor:mostrarFiltrosAvanzados?"rgba(200,0,0,0.4)":"rgba(255,255,255,0.1)"}}
+              onClick={()=>setMostrarFiltrosAvanzados(v=>!v)}
+            >
+              {mostrarFiltrosAvanzados?"▲ Menos filtros":"▼ Más filtros"}
+            </button>
+            <div className="cmp-toggle" onClick={()=>setSoloMios(v=>!v)}>
+              <div className="cmp-toggle-switch" style={{background:soloMios?"#cc0000":"rgba(255,255,255,0.1)"}}>
+                <div className="cmp-toggle-knob" style={{left:soloMios?18:2}}/>
+              </div>
+              <span className="cmp-toggle-label">Solo míos</span>
             </div>
-            <span className="cmp-toggle-label">Solo míos</span>
+            <span className="cmp-count">{filtrados.length} resultado{filtrados.length!==1?"s":""}</span>
           </div>
-          <span className="cmp-count">{filtrados.length} resultado{filtrados.length!==1?"s":""}</span>
+
+          {mostrarFiltrosAvanzados && (
+            <div className="cmp-filtros" style={{background:"rgba(14,14,14,0.6)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:4,padding:"10px 12px"}}>
+              <select className="cmp-select" value={filtroAnio} onChange={e=>setFiltroAnio(e.target.value)}>
+                {aniosUnicos.map(a=><option key={a} value={a}>{a==="todos"?"Todos los años":a}</option>)}
+              </select>
+              <select className="cmp-select" value={filtroCiudad} onChange={e=>setFiltroCiudad(e.target.value)}>
+                {ciudadesUnicas.map(c=><option key={c} value={c}>{c==="todos"?"Todas las ciudades":c}</option>)}
+              </select>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:11,color:"rgba(255,255,255,0.3)",whiteSpace:"nowrap"}}>Precio USD:</span>
+                <input className="cmp-search" style={{width:90,minWidth:0}} placeholder="Desde" value={precioMin} onChange={e=>setPrecioMin(e.target.value)} type="number" />
+                <span style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>—</span>
+                <input className="cmp-search" style={{width:90,minWidth:0}} placeholder="Hasta" value={precioMax} onChange={e=>setPrecioMax(e.target.value)} type="number" />
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:11,color:"rgba(255,255,255,0.3)",whiteSpace:"nowrap"}}>Sup. mín (m²):</span>
+                <input className="cmp-search" style={{width:80,minWidth:0}} placeholder="Ej: 50" value={supMin} onChange={e=>setSupMin(e.target.value)} type="number" />
+              </div>
+              <button
+                style={{padding:"6px 12px",background:"transparent",border:"1px solid rgba(255,255,255,0.12)",borderRadius:3,color:"rgba(255,255,255,0.35)",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
+                onClick={()=>{ setFiltroAnio("todos"); setFiltroCiudad("todos"); setPrecioMin(""); setPrecioMax(""); setSupMin(""); setFiltroTipo("todos"); setFiltroBarrio("todos"); setFiltroDorm("todos"); setBusqueda(""); setSoloMios(false); }}
+              >
+                Limpiar todo
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Tabla */}
