@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/recordatorio-vencimiento",
+      "schedule": "0 12 28-31 * *"
+    }
+  ]
+}
