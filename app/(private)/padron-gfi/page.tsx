@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../lib/supabase";
 import PerfilRapidoModal from "../foro/PerfilRapidoModal";
-
-// ── Tipos ──────────────────────────────────────────────────────────────────
 
 interface RegistroCOCIR {
   id: string;
@@ -41,21 +39,17 @@ interface PerfilGFI {
 
 interface RegistroUnificado {
   key: string;
-  // Fuente
   enCOCIR: boolean;
   enGFI: boolean;
-  // Datos comunes
   matricula: string | null;
   apellido: string;
   nombre: string;
   inmobiliaria: string | null;
   telefono: string | null;
   email: string | null;
-  // Solo COCIR
   direccion: string | null;
   localidad: string | null;
   estadoCOCIR: string | null;
-  // Solo GFI
   perfilId: string | null;
   foto_url: string | null;
   zona_trabajo: string | null;
@@ -76,7 +70,28 @@ const estadoColor = (estado: string | null) => {
   return "#eab308";
 };
 
-// ── Componente principal ───────────────────────────────────────────────────
+// Carga todos los registros paginando de a 1000
+async function cargarTodo<T>(
+  tabla: string,
+  columnas: string,
+  orden: string
+): Promise<T[]> {
+  const CHUNK = 1000;
+  let todos: T[] = [];
+  let desde = 0;
+  while (true) {
+    const { data, error } = await supabase
+      .from(tabla)
+      .select(columnas)
+      .order(orden, { ascending: true })
+      .range(desde, desde + CHUNK - 1);
+    if (error || !data || data.length === 0) break;
+    todos = todos.concat(data as T[]);
+    if (data.length < CHUNK) break;
+    desde += CHUNK;
+  }
+  return todos;
+}
 
 export default function PadronGFIPage() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -94,187 +109,116 @@ export default function PadronGFIPage() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
-      await Promise.all([cargarCOCIR(), cargarGFI()]);
+      const [cocir, gfi] = await Promise.all([
+        cargarTodo<RegistroCOCIR>(
+          "cocir_padron",
+          "id,matricula,apellido,nombre,inmobiliaria,direccion,localidad,telefono,email,estado,actualizado_at",
+          "apellido"
+        ),
+        cargarTodo<PerfilGFI>(
+          "perfiles",
+          "id,nombre,apellido,matricula,telefono,email,inmobiliaria,especialidades,foto_url,zona_trabajo,anos_experiencia,bio,socio_cir,tipo,estado,created_at",
+          "apellido"
+        ),
+      ]);
+      setCocirData(cocir);
+      setGfiData(gfi);
       setLoading(false);
     };
     init();
   }, []);
 
-  const cargarCOCIR = async () => {
-    const { data } = await supabase
-      .from("cocir_padron")
-      .select("id,matricula,apellido,nombre,inmobiliaria,direccion,localidad,telefono,email,estado,actualizado_at")
-      .order("apellido", { ascending: true });
-    setCocirData(data ?? []);
-  };
-
-  const cargarGFI = async () => {
-    const { data } = await supabase
-      .from("perfiles")
-      .select("id,nombre,apellido,matricula,telefono,email,inmobiliaria,especialidades,foto_url,zona_trabajo,anos_experiencia,bio,socio_cir,tipo,estado,created_at")
-      .order("apellido", { ascending: true });
-    setGfiData((data as PerfilGFI[]) ?? []);
-  };
-
-  // ── Construir lista unificada según fuente ─────────────────────────────
-
-  const registros: RegistroUnificado[] = useCallback(() => {
+  // Construir lista unificada según fuente
+  const registros: RegistroUnificado[] = useMemo(() => {
     if (fuente === "cocir") {
       return cocirData.map(c => ({
         key: `cocir-${c.id}`,
-        enCOCIR: true,
-        enGFI: false,
-        matricula: c.matricula,
-        apellido: c.apellido,
-        nombre: c.nombre,
-        inmobiliaria: c.inmobiliaria,
-        telefono: c.telefono,
-        email: c.email,
-        direccion: c.direccion,
-        localidad: c.localidad,
-        estadoCOCIR: c.estado,
-        perfilId: null,
-        foto_url: null,
-        zona_trabajo: null,
-        especialidades: null,
-        socio_cir: false,
-        tipo: null,
+        enCOCIR: true, enGFI: false,
+        matricula: c.matricula, apellido: c.apellido, nombre: c.nombre,
+        inmobiliaria: c.inmobiliaria, telefono: c.telefono, email: c.email,
+        direccion: c.direccion, localidad: c.localidad, estadoCOCIR: c.estado,
+        perfilId: null, foto_url: null, zona_trabajo: null,
+        especialidades: null, socio_cir: false, tipo: null,
       }));
     }
 
     if (fuente === "gfi") {
       return gfiData.map(g => ({
         key: `gfi-${g.id}`,
-        enCOCIR: false,
-        enGFI: true,
-        matricula: g.matricula,
-        apellido: g.apellido,
-        nombre: g.nombre,
-        inmobiliaria: g.inmobiliaria,
-        telefono: g.telefono,
-        email: g.email,
-        direccion: null,
-        localidad: null,
-        estadoCOCIR: null,
-        perfilId: g.id,
-        foto_url: g.foto_url,
-        zona_trabajo: g.zona_trabajo,
-        especialidades: g.especialidades,
-        socio_cir: g.socio_cir,
-        tipo: g.tipo,
+        enCOCIR: false, enGFI: true,
+        matricula: g.matricula, apellido: g.apellido, nombre: g.nombre,
+        inmobiliaria: g.inmobiliaria, telefono: g.telefono, email: g.email,
+        direccion: null, localidad: null, estadoCOCIR: null,
+        perfilId: g.id, foto_url: g.foto_url, zona_trabajo: g.zona_trabajo,
+        especialidades: g.especialidades, socio_cir: g.socio_cir, tipo: g.tipo,
       }));
     }
 
     // ambos: cruzar por matrícula
     const resultado: RegistroUnificado[] = [];
     const gfiPorMatricula = new Map<string, PerfilGFI>();
-    gfiData.forEach(g => {
-      if (g.matricula) gfiPorMatricula.set(g.matricula.trim(), g);
-    });
-
+    gfiData.forEach(g => { if (g.matricula) gfiPorMatricula.set(g.matricula.trim(), g); });
     const cocirUsados = new Set<string>();
 
-    // COCIR con o sin match GFI
     cocirData.forEach(c => {
       const mat = c.matricula?.trim() ?? "";
       const gfi = mat ? gfiPorMatricula.get(mat) : undefined;
       if (mat) cocirUsados.add(mat);
-
       resultado.push({
-        key: `ambos-${c.id}`,
-        enCOCIR: true,
-        enGFI: !!gfi,
-        matricula: c.matricula,
-        apellido: c.apellido,
-        nombre: c.nombre,
+        key: `ambos-${c.id}`, enCOCIR: true, enGFI: !!gfi,
+        matricula: c.matricula, apellido: c.apellido, nombre: c.nombre,
         inmobiliaria: gfi?.inmobiliaria ?? c.inmobiliaria,
-        telefono: gfi?.telefono ?? c.telefono,
-        email: gfi?.email ?? c.email,
-        direccion: c.direccion,
-        localidad: c.localidad,
-        estadoCOCIR: c.estado,
-        perfilId: gfi?.id ?? null,
-        foto_url: gfi?.foto_url ?? null,
-        zona_trabajo: gfi?.zona_trabajo ?? null,
-        especialidades: gfi?.especialidades ?? null,
-        socio_cir: gfi?.socio_cir ?? false,
-        tipo: gfi?.tipo ?? null,
+        telefono: gfi?.telefono ?? c.telefono, email: gfi?.email ?? c.email,
+        direccion: c.direccion, localidad: c.localidad, estadoCOCIR: c.estado,
+        perfilId: gfi?.id ?? null, foto_url: gfi?.foto_url ?? null,
+        zona_trabajo: gfi?.zona_trabajo ?? null, especialidades: gfi?.especialidades ?? null,
+        socio_cir: gfi?.socio_cir ?? false, tipo: gfi?.tipo ?? null,
       });
     });
 
-    // GFI sin matrícula COCIR (no están en el padrón oficial)
     gfiData.forEach(g => {
       const mat = g.matricula?.trim() ?? "";
       if (!mat || !cocirUsados.has(mat)) {
         resultado.push({
-          key: `gfi-solo-${g.id}`,
-          enCOCIR: false,
-          enGFI: true,
-          matricula: g.matricula,
-          apellido: g.apellido,
-          nombre: g.nombre,
-          inmobiliaria: g.inmobiliaria,
-          telefono: g.telefono,
-          email: g.email,
-          direccion: null,
-          localidad: null,
-          estadoCOCIR: null,
-          perfilId: g.id,
-          foto_url: g.foto_url,
-          zona_trabajo: g.zona_trabajo,
-          especialidades: g.especialidades,
-          socio_cir: g.socio_cir,
-          tipo: g.tipo,
+          key: `gfi-solo-${g.id}`, enCOCIR: false, enGFI: true,
+          matricula: g.matricula, apellido: g.apellido, nombre: g.nombre,
+          inmobiliaria: g.inmobiliaria, telefono: g.telefono, email: g.email,
+          direccion: null, localidad: null, estadoCOCIR: null,
+          perfilId: g.id, foto_url: g.foto_url, zona_trabajo: g.zona_trabajo,
+          especialidades: g.especialidades, socio_cir: g.socio_cir, tipo: g.tipo,
         });
       }
     });
 
     return resultado.sort((a, b) => a.apellido.localeCompare(b.apellido));
-  }, [fuente, cocirData, gfiData])();
+  }, [fuente, cocirData, gfiData]);
 
-  // ── Filtrar por búsqueda ──────────────────────────────────────────────
-
-  const filtrados = busqueda.trim()
-    ? registros.filter(r => {
-        const q = busqueda.toLowerCase();
-        return (
-          r.apellido?.toLowerCase().includes(q) ||
-          r.nombre?.toLowerCase().includes(q) ||
-          r.matricula?.toLowerCase().includes(q) ||
-          r.inmobiliaria?.toLowerCase().includes(q) ||
-          r.email?.toLowerCase().includes(q)
-        );
-      })
-    : registros;
+  const filtrados = useMemo(() => {
+    if (!busqueda.trim()) return registros;
+    const q = busqueda.toLowerCase();
+    return registros.filter(r =>
+      r.apellido?.toLowerCase().includes(q) ||
+      r.nombre?.toLowerCase().includes(q) ||
+      r.matricula?.toLowerCase().includes(q) ||
+      r.inmobiliaria?.toLowerCase().includes(q) ||
+      r.email?.toLowerCase().includes(q)
+    );
+  }, [registros, busqueda]);
 
   const totalPaginas = Math.ceil(filtrados.length / POR_PAGINA);
   const paginados = filtrados.slice(pagina * POR_PAGINA, (pagina + 1) * POR_PAGINA);
 
-  const iniciales = (r: RegistroUnificado) =>
-    `${r.nombre?.charAt(0) ?? ""}${r.apellido?.charAt(0) ?? ""}`.toUpperCase();
-
-  const cambiarFuente = (f: Fuente) => {
-    setFuente(f);
-    setBusqueda("");
-    setPagina(0);
-  };
-
-  const cambiarBusqueda = (v: string) => {
-    setBusqueda(v);
-    setPagina(0);
-  };
-
-  // ── Render ─────────────────────────────────────────────────────────────
+  const cambiarFuente = (f: Fuente) => { setFuente(f); setBusqueda(""); setPagina(0); };
+  const cambiarBusqueda = (v: string) => { setBusqueda(v); setPagina(0); };
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .pad-wrap { display: flex; flex-direction: column; gap: 20px; }
-        .pad-header { display: flex; flex-direction: column; gap: 4px; }
         .pad-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
         .pad-titulo span { color: #cc0000; }
-        .pad-sub { font-size: 13px; color: rgba(255,255,255,0.35); }
+        .pad-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
         .pad-fuentes { display: flex; gap: 8px; flex-wrap: wrap; }
         .pad-fuente-btn { padding: 9px 20px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); background: rgba(14,14,14,0.9); color: rgba(255,255,255,0.4); }
         .pad-fuente-btn:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
@@ -295,7 +239,7 @@ export default function PadronGFIPage() {
         .pad-tabla { width: 100%; border-collapse: collapse; }
         .pad-tabla thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
         .pad-tabla th { padding: 11px 14px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
-        .pad-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; cursor: default; }
+        .pad-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
         .pad-tabla tbody tr:last-child { border-bottom: none; }
         .pad-tabla tbody tr:hover { background: rgba(255,255,255,0.02); }
         .pad-tabla tbody tr.clickable:hover { background: rgba(200,0,0,0.04); cursor: pointer; }
@@ -305,10 +249,11 @@ export default function PadronGFIPage() {
         .pad-avatar { width: 32px; height: 32px; border-radius: 6px; background: rgba(200,0,0,0.12); border: 1px solid rgba(200,0,0,0.2); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; color: #cc0000; overflow: hidden; flex-shrink: 0; }
         .pad-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .pad-estado-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-        .pad-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 10px; margin-right: 3px; }
+        .pad-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 10px; }
         .pad-empty { padding: 64px 32px; text-align: center; color: rgba(255,255,255,0.2); font-size: 14px; font-style: italic; }
-        .pad-spinner { display: flex; align-items: center; justify-content: center; padding: 64px; }
+        .pad-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px; gap: 16px; }
         .pad-spin { width: 28px; height: 28px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .pad-loading-txt { font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .pad-paginacion { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; gap: 8px; }
         .pad-pag-btn { padding: 6px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
@@ -322,31 +267,20 @@ export default function PadronGFIPage() {
       `}</style>
 
       <div className="pad-wrap">
-
-        {/* Header */}
-        <div className="pad-header">
+        <div>
           <div className="pad-titulo">Padrón <span>GFI®</span></div>
           <div className="pad-sub">Consultá corredores del padrón COCIR, de GFI o de ambos</div>
         </div>
 
-        {/* Selector de fuente */}
+        {/* Selector */}
         <div className="pad-fuentes">
-          <button
-            className={`pad-fuente-btn${fuente === "cocir" ? " activo" : ""}`}
-            onClick={() => cambiarFuente("cocir")}
-          >
+          <button className={`pad-fuente-btn${fuente === "cocir" ? " activo" : ""}`} onClick={() => cambiarFuente("cocir")}>
             🏛 Padrón COCIR
           </button>
-          <button
-            className={`pad-fuente-btn${fuente === "gfi" ? " activo" : ""}`}
-            onClick={() => cambiarFuente("gfi")}
-          >
+          <button className={`pad-fuente-btn${fuente === "gfi" ? " activo" : ""}`} onClick={() => cambiarFuente("gfi")}>
             ◈ Miembros GFI
           </button>
-          <button
-            className={`pad-fuente-btn${fuente === "ambos" ? " activo" : ""}`}
-            onClick={() => cambiarFuente("ambos")}
-          >
+          <button className={`pad-fuente-btn${fuente === "ambos" ? " activo" : ""}`} onClick={() => cambiarFuente("ambos")}>
             🔗 Vista unificada
           </button>
         </div>
@@ -354,13 +288,29 @@ export default function PadronGFIPage() {
         {/* Stats */}
         <div className="pad-statsbar">
           <div className="pad-stat">
-            <div className="pad-stat-val">{registros.length.toLocaleString("es-AR")}</div>
+            <div className="pad-stat-val">
+              {loading ? "..." : registros.length.toLocaleString("es-AR")}
+            </div>
             <div className="pad-stat-label">
               {fuente === "cocir" ? "Matriculados COCIR" : fuente === "gfi" ? "Miembros GFI" : "Total registros"}
             </div>
           </div>
           <div className="pad-stat-sep" />
-          {fuente === "ambos" && (
+          {fuente === "cocir" && !loading && (
+            <>
+              <div className="pad-stat">
+                <div className="pad-stat-val" style={{color:"#22c55e"}}>
+                  {cocirData.filter(c => {
+                    if (!c.estado) return true;
+                    return !ESTADOS_ALERTA.some(s => c.estado!.toLowerCase().includes(s));
+                  }).length.toLocaleString("es-AR")}
+                </div>
+                <div className="pad-stat-label">Habilitados</div>
+              </div>
+              <div className="pad-stat-sep" />
+            </>
+          )}
+          {fuente === "ambos" && !loading && (
             <>
               <div className="pad-stat">
                 <div className="pad-stat-val" style={{color:"#22c55e"}}>{registros.filter(r => r.enCOCIR && r.enGFI).length}</div>
@@ -375,21 +325,6 @@ export default function PadronGFIPage() {
               <div className="pad-stat">
                 <div className="pad-stat-val" style={{color:"#eab308"}}>{registros.filter(r => !r.enCOCIR && r.enGFI).length}</div>
                 <div className="pad-stat-label">Solo GFI</div>
-              </div>
-              <div className="pad-stat-sep" />
-            </>
-          )}
-          {fuente === "cocir" && (
-            <>
-              <div className="pad-stat">
-                <div className="pad-stat-val" style={{color:"#22c55e"}}>
-                  {cocirData.filter(c => {
-                    if (!c.estado) return true;
-                    const e = c.estado.toLowerCase();
-                    return !ESTADOS_ALERTA.some(s => e.includes(s));
-                  }).length.toLocaleString("es-AR")}
-                </div>
-                <div className="pad-stat-label">Habilitados</div>
               </div>
               <div className="pad-stat-sep" />
             </>
@@ -416,19 +351,29 @@ export default function PadronGFIPage() {
               placeholder="Buscar por nombre, apellido, matrícula, inmobiliaria o email..."
               value={busqueda}
               onChange={e => cambiarBusqueda(e.target.value)}
+              disabled={loading}
             />
           </div>
           <span className="pad-count">
-            {filtrados.length.toLocaleString("es-AR")} resultado{filtrados.length !== 1 ? "s" : ""}
+            {loading ? "Cargando..." : `${filtrados.length.toLocaleString("es-AR")} resultado${filtrados.length !== 1 ? "s" : ""}`}
           </span>
         </div>
 
         {/* Tabla */}
         {loading ? (
-          <div className="pad-spinner"><div className="pad-spin" /></div>
+          <div className="pad-tabla-wrap">
+            <div className="pad-loading">
+              <div className="pad-spin" />
+              <div className="pad-loading-txt">
+                Cargando {fuente === "cocir" ? "3.189 registros" : "registros"}...
+              </div>
+            </div>
+          </div>
         ) : filtrados.length === 0 ? (
           <div className="pad-tabla-wrap">
-            <div className="pad-empty">No se encontraron resultados para &quot;{busqueda}&quot;</div>
+            <div className="pad-empty">
+              {busqueda ? `No se encontraron resultados para "${busqueda}"` : "Sin registros"}
+            </div>
           </div>
         ) : (
           <div className="pad-tabla-wrap">
@@ -439,8 +384,8 @@ export default function PadronGFIPage() {
                   <th>Matrícula</th>
                   <th>Inmobiliaria</th>
                   <th>Dirección</th>
-                  <th>Email</th>
-                  {(fuente === "ambos") && <th>Fuente</th>}
+                  <th>Email / Tel</th>
+                  {fuente === "ambos" && <th>Fuente</th>}
                   <th>Estado</th>
                 </tr>
               </thead>
@@ -456,15 +401,12 @@ export default function PadronGFIPage() {
                       className={esClickable ? "clickable" : ""}
                       onClick={() => { if (r.perfilId) setPerfilRapidoId(r.perfilId); }}
                     >
-                      {/* Nombre */}
                       <td>
                         <div style={{display:"flex",alignItems:"center",gap:10}}>
-                          {(fuente === "gfi" || (fuente === "ambos" && r.enGFI)) && (
+                          {r.enGFI && (
                             <div className="pad-avatar">
-                              {r.foto_url
-                                ? <img src={r.foto_url} alt="" />
-                                : `${r.nombre?.charAt(0) ?? ""}${r.apellido?.charAt(0) ?? ""}`.toUpperCase()
-                              }
+                              {r.foto_url ? <img src={r.foto_url} alt="" /> :
+                                `${r.nombre?.charAt(0) ?? ""}${r.apellido?.charAt(0) ?? ""}`.toUpperCase()}
                             </div>
                           )}
                           <div>
@@ -473,45 +415,37 @@ export default function PadronGFIPage() {
                           </div>
                         </div>
                       </td>
-                      {/* Matrícula */}
                       <td>
                         {r.matricula
                           ? <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:12}}>{r.matricula}</span>
-                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>
-                        }
+                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                       </td>
-                      {/* Inmobiliaria */}
                       <td style={{color:"rgba(255,255,255,0.6)"}}>
                         {r.inmobiliaria || <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                       </td>
-                      {/* Dirección */}
                       <td style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>
                         {r.direccion
-                          ? <><span>📍</span> {r.direccion}{r.localidad ? ` · ${r.localidad}` : ""}</>
-                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>
-                        }
+                          ? <>{r.direccion}{r.localidad ? ` · ${r.localidad}` : ""}</>
+                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                       </td>
-                      {/* Email / Teléfono */}
                       <td style={{fontSize:11}}>
                         {r.telefono && <div style={{color:"rgba(255,255,255,0.5)"}}>📞 {r.telefono}</div>}
-                        {r.email && <div style={{color:"rgba(200,0,0,0.7)"}}><a href={`mailto:${r.email}`} style={{color:"inherit",textDecoration:"none"}} onClick={e => e.stopPropagation()}>✉ {r.email}</a></div>}
+                        {r.email && (
+                          <div>
+                            <a href={`mailto:${r.email}`} style={{color:"rgba(200,0,0,0.7)",textDecoration:"none"}} onClick={e => e.stopPropagation()}>
+                              ✉ {r.email}
+                            </a>
+                          </div>
+                        )}
                         {!r.telefono && !r.email && <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                       </td>
-                      {/* Fuente (solo en vista ambos) */}
                       {fuente === "ambos" && (
                         <td>
-                          {r.enCOCIR && r.enGFI && (
-                            <span className="pad-badge" style={{background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.25)",color:"#22c55e"}}>Ambos</span>
-                          )}
-                          {r.enCOCIR && !r.enGFI && (
-                            <span className="pad-badge" style={{background:"rgba(96,165,250,0.1)",border:"1px solid rgba(96,165,250,0.25)",color:"#60a5fa"}}>COCIR</span>
-                          )}
-                          {!r.enCOCIR && r.enGFI && (
-                            <span className="pad-badge" style={{background:"rgba(234,179,8,0.1)",border:"1px solid rgba(234,179,8,0.25)",color:"#eab308"}}>GFI</span>
-                          )}
+                          {r.enCOCIR && r.enGFI && <span className="pad-badge" style={{background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.25)",color:"#22c55e"}}>Ambos</span>}
+                          {r.enCOCIR && !r.enGFI && <span className="pad-badge" style={{background:"rgba(96,165,250,0.1)",border:"1px solid rgba(96,165,250,0.25)",color:"#60a5fa"}}>COCIR</span>}
+                          {!r.enCOCIR && r.enGFI && <span className="pad-badge" style={{background:"rgba(234,179,8,0.1)",border:"1px solid rgba(234,179,8,0.25)",color:"#eab308"}}>GFI</span>}
                         </td>
                       )}
-                      {/* Estado */}
                       <td>
                         {r.enCOCIR ? (
                           <span className="pad-estado-pill" style={{background:`${color}18`,border:`1px solid ${color}40`,color}}>
@@ -529,33 +463,17 @@ export default function PadronGFIPage() {
               </tbody>
             </table>
 
-            {/* Paginación */}
             {totalPaginas > 1 && (
               <div className="pad-paginacion">
-                <button
-                  className="pad-pag-btn"
-                  disabled={pagina === 0}
-                  onClick={() => setPagina(p => p - 1)}
-                >
-                  ← Anterior
-                </button>
-                <span className="pad-pag-info">
-                  Página {pagina + 1} de {totalPaginas} · {filtrados.length.toLocaleString("es-AR")} registros
-                </span>
-                <button
-                  className="pad-pag-btn"
-                  disabled={pagina >= totalPaginas - 1}
-                  onClick={() => setPagina(p => p + 1)}
-                >
-                  Siguiente →
-                </button>
+                <button className="pad-pag-btn" disabled={pagina === 0} onClick={() => setPagina(p => p - 1)}>← Anterior</button>
+                <span className="pad-pag-info">Página {pagina + 1} de {totalPaginas} · {filtrados.length.toLocaleString("es-AR")} registros</span>
+                <button className="pad-pag-btn" disabled={pagina >= totalPaginas - 1} onClick={() => setPagina(p => p + 1)}>Siguiente →</button>
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Modal perfil rápido (solo para miembros GFI) */}
       {perfilRapidoId && (
         <PerfilRapidoModal
           perfilId={perfilRapidoId}
