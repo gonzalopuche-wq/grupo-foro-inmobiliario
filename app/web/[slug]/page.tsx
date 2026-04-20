@@ -18,6 +18,7 @@ interface Config {
   instagram: string | null; facebook: string | null;
   twitter: string | null; linkedin: string | null; whatsapp: string | null;
   limite_propiedades_home: number;
+  google_analytics: string | null;
 }
 
 interface Perfil {
