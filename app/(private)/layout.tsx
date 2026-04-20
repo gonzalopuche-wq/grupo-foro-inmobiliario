@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
+import Campanita from "../components/Campanita";
 
 const NAV_ITEMS = [
   { icon: "⊞", label: "Dashboard", href: "/dashboard", section: null },
@@ -38,6 +39,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
   const [nombre, setNombre] = useState("");
   const [matricula, setMatricula] = useState("");
   const [tipo, setTipo] = useState("");
+  const [userId, setUserId] = useState("");
   const [esAdmin, setEsAdmin] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -47,6 +49,8 @@ export default function PrivateLayout({ children }: LayoutProps) {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { router.push("/login"); return; }
+
+      setUserId(session.user.id);
 
       const { data: perfil } = await supabase
         .from("perfiles")
@@ -60,7 +64,6 @@ export default function PrivateLayout({ children }: LayoutProps) {
         setTipo(perfil.tipo ?? "corredor");
         setEsAdmin(perfil.tipo === "admin");
 
-        // Redirigir colaborador si intenta acceder a ruta no permitida
         if (perfil.tipo === "colaborador") {
           const rutasPermitidas = ["/mir", "/perfil"];
           const permitida = rutasPermitidas.some(r => pathname.startsWith(r));
@@ -290,6 +293,7 @@ export default function PrivateLayout({ children }: LayoutProps) {
               <span className="gfi-topbar-title">{navItems.find(i=>isActive(i.href))?.label ?? "GFI®"}</span>
             </div>
             <div className="gfi-topbar-right">
+              {userId && <Campanita userId={userId} />}
               {esAdmin && <span className="gfi-topbar-badge">Admin</span>}
               {esColaborador && <span className="gfi-topbar-badge colaborador">Colaborador</span>}
             </div>
