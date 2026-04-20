@@ -7,6 +7,7 @@ import Campanita from "../components/Campanita";
 
 const NAV_ITEMS = [
   { icon: "⊞", label: "Dashboard", href: "/dashboard", section: null },
+  { href: "/crm", label: "CRM", icon: "👥" },
   { icon: "◈", label: "Motor MIR", href: "/mir", section: "Operaciones" },
   { icon: "💱", label: "Cotizaciones", href: "/cotizaciones", section: "Operaciones" },
   { icon: "📊", label: "Comparables", href: "/comparables", section: "Operaciones" },
