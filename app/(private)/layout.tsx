@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { icon: "📋", label: "Padrón COCIR", href: "/padron", section: "Padrón" },
   { icon: "🏛️", label: "Padrón GFI®", href: "/padron-gfi", section: "Padrón" },
   { icon: "💬", label: "Foro", href: "/foro", section: "Comunidad" },
+  { icon: "👥", label: "Comunidad", href: "/comunidad", section: "Comunidad" },
   { icon: "📅", label: "Eventos", href: "/eventos", section: "Comunidad" },
   { icon: "📚", label: "Biblioteca", href: "/biblioteca", section: "Recursos" },
   { icon: "💰", label: "Suscripción", href: "/suscripcion", section: "Recursos" },
