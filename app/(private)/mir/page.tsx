@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 
-// ── CONSTANTES ──────────────────────────────────────────────────────────
 const OPS_OFRECIDO = [
   { value: "venta", label: "Venta" },
   { value: "alquiler", label: "Alquiler" },
@@ -25,13 +24,8 @@ const OPS_BUSQUEDA = [
 ];
 
 const MATCH_OP: Record<string, string> = {
-  venta: "compra",
-  alquiler: "alquiler",
-  temporario: "temporario",
-  permuta: "permuta",
-  comercial: "comercial",
-  fondo_comercio: "fondo_comercio",
-  campo: "campo",
+  venta: "compra", alquiler: "alquiler", temporario: "temporario",
+  permuta: "permuta", comercial: "comercial", fondo_comercio: "fondo_comercio", campo: "campo",
 };
 
 const TIPOS_PROPIEDAD = [
@@ -59,23 +53,17 @@ const ANTIGUEDADES = [
 ];
 
 const OP_COLOR: Record<string, string> = {
-  venta: "#22c55e", compra: "#22c55e",
-  alquiler: "#60a5fa",
-  temporario: "#eab308",
-  permuta: "#c084fc",
-  comercial: "#f97316",
-  fondo_comercio: "#fb7185",
-  campo: "#84cc16",
+  venta: "#22c55e", compra: "#22c55e", alquiler: "#60a5fa",
+  temporario: "#eab308", permuta: "#c084fc", comercial: "#f97316",
+  fondo_comercio: "#fb7185", campo: "#84cc16",
 };
 
 const OP_LABEL: Record<string, string> = {
   venta: "Venta", compra: "Comprar", alquiler: "Alquiler",
   temporario: "Temporario", permuta: "Permuta",
-  comercial: "Inmueble Comercial", fondo_comercio: "Fondo de Comercio",
-  campo: "Campo / Chacra",
+  comercial: "Inmueble Comercial", fondo_comercio: "Fondo de Comercio", campo: "Campo / Chacra",
 };
 
-// ── TIPOS ───────────────────────────────────────────────────────────────
 interface Ofrecido {
   id: string; perfil_id: string; operacion: string; tipo_propiedad: string;
   zona: string | null; ciudad: string; precio: number | null; moneda: string;
@@ -95,8 +83,7 @@ interface Busqueda {
   dormitorios_min: number | null; dormitorios_max: number | null;
   banos_min: number | null; banos_max: number | null;
   superficie_min: number | null; superficie_max: number | null;
-  tipo_superficie: string;
-  antiguedad: string | null;
+  tipo_superficie: string; antiguedad: string | null;
   apto_credito: boolean; uso_comercial: boolean; con_cochera: boolean;
   barrio_cerrado: boolean; acepta_mascotas: boolean; acepta_bitcoin: boolean;
   descripcion: string | null; activo: boolean; created_at: string;
@@ -109,19 +96,17 @@ interface Match {
   created_at: string;
 }
 
-// Filtros de lista
+interface ContactoDesbloqueado {
+  match_id: string;
+  nombre: string; apellido: string; matricula: string | null;
+  telefono: string | null; email: string | null;
+}
+
 interface FiltroLista {
-  operaciones: string[];
-  localidades: string[];
-  tipos: string[];
-  sup_min: string;
-  sup_max: string;
-  apto_credito: boolean;
-  con_cochera: boolean;
-  uso_comercial: boolean;
-  barrio_cerrado: boolean;
-  acepta_mascotas: boolean;
-  acepta_bitcoin: boolean;
+  operaciones: string[]; localidades: string[]; tipos: string[];
+  sup_min: string; sup_max: string;
+  apto_credito: boolean; con_cochera: boolean; uso_comercial: boolean;
+  barrio_cerrado: boolean; acepta_mascotas: boolean; acepta_bitcoin: boolean;
 }
 
 const FILTRO_VACIO: FiltroLista = {
@@ -153,7 +138,6 @@ const FORM_B = {
   descripcion: "",
 };
 
-// ── HELPERS ──────────────────────────────────────────────────────────────
 const n = (v: string) => v ? parseFloat(v) : null;
 const ni = (v: string) => v ? parseInt(v) : null;
 const formatPeso = (v: number, m = "ARS") =>
@@ -171,13 +155,13 @@ const Toggle = ({ label, value, onChange }: { label: string; value: boolean; onC
   </div>
 );
 
-// ── COMPONENTE PRINCIPAL ─────────────────────────────────────────────────
 export default function MirPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [vista, setVista] = useState<"ofrecidos" | "busquedas" | "matches">("ofrecidos");
   const [ofrecidos, setOfrecidos] = useState<Ofrecido[]>([]);
   const [busquedas, setBusquedas] = useState<Busqueda[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [contactosDesbloqueados, setContactosDesbloqueados] = useState<ContactoDesbloqueado[]>([]);
   const [costoMatch, setCostoMatch] = useState(5000);
   const [loading, setLoading] = useState(true);
   const [mostrarFormO, setMostrarFormO] = useState(false);
@@ -188,6 +172,7 @@ export default function MirPage() {
   const [filtro, setFiltro] = useState<FiltroLista>(FILTRO_VACIO);
   const [filtroTemp, setFiltroTemp] = useState<FiltroLista>(FILTRO_VACIO);
   const [guardando, setGuardando] = useState(false);
+  const [desbloqueando, setDesbloqueando] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -220,11 +205,52 @@ export default function MirPage() {
     setLoading(false);
   };
 
-  // Aplicar filtros localmente
+  const cargarContactosDesbloqueados = async (userId: string, matchIds: string[]) => {
+    if (!matchIds.length) return;
+    const { data } = await supabase
+      .from("mir_desbloqueos")
+      .select("match_id, perfiles:user_id(nombre, apellido, matricula, telefono, email)")
+      .in("match_id", matchIds)
+      .neq("user_id", userId);
+    if (data) {
+      const contactos = data.map((d: any) => ({
+        match_id: d.match_id,
+        nombre: d.perfiles?.nombre ?? "",
+        apellido: d.perfiles?.apellido ?? "",
+        matricula: d.perfiles?.matricula ?? null,
+        telefono: d.perfiles?.telefono ?? null,
+        email: d.perfiles?.email ?? null,
+      }));
+      setContactosDesbloqueados(contactos);
+    }
+  };
+
+  const desbloquear = async (match_id: string, es_duenio_ofrecido: boolean) => {
+    if (!userId || desbloqueando) return;
+    setDesbloqueando(match_id);
+    try {
+      const res = await fetch("/api/mir/desbloquear", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ match_id, user_id: userId, es_duenio_ofrecido }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        await cargarDatos();
+        if (userId) {
+          const matchIds = matches.map(m => m.id);
+          await cargarContactosDesbloqueados(userId, matchIds);
+        }
+      }
+    } catch (err) {
+      console.error("Error desbloqueando:", err);
+    }
+    setDesbloqueando(null);
+  };
+
   const aplicarFiltros = <T extends Ofrecido | Busqueda>(items: T[]): T[] => {
     return items.filter(item => {
-      const op = "precio" in item ? item.operacion : item.operacion;
-      if (filtro.operaciones.length > 0 && !filtro.operaciones.includes(op)) return false;
+      if (filtro.operaciones.length > 0 && !filtro.operaciones.includes(item.operacion)) return false;
       if (filtro.localidades.length > 0 && !filtro.localidades.some(l => item.ciudad.toLowerCase().includes(l.toLowerCase()))) return false;
       if (filtro.tipos.length > 0 && !filtro.tipos.includes(item.tipo_propiedad)) return false;
       if (filtro.apto_credito && !item.apto_credito) return false;
@@ -314,8 +340,7 @@ export default function MirPage() {
       dormitorios_min: ni(formB.dormitorios_min), dormitorios_max: ni(formB.dormitorios_max),
       banos_min: ni(formB.banos_min), banos_max: ni(formB.banos_max),
       superficie_min: n(formB.superficie_min), superficie_max: n(formB.superficie_max),
-      tipo_superficie: formB.tipo_superficie,
-      antiguedad: formB.antiguedad || null,
+      tipo_superficie: formB.tipo_superficie, antiguedad: formB.antiguedad || null,
       apto_credito: formB.apto_credito, uso_comercial: formB.uso_comercial,
       con_cochera: formB.con_cochera, barrio_cerrado: formB.barrio_cerrado,
       acepta_mascotas: formB.acepta_mascotas, acepta_bitcoin: formB.acepta_bitcoin,
@@ -337,7 +362,6 @@ export default function MirPage() {
     ofrecidos.find(o => o.id === m.ofrecido_id)?.perfil_id === userId ||
     busquedas.find(b => b.id === m.busqueda_id)?.perfil_id === userId
   );
-
   const cantFiltrosActivos = filtro.operaciones.length + filtro.localidades.length + filtro.tipos.length +
     [filtro.apto_credito, filtro.con_cochera, filtro.uso_comercial, filtro.barrio_cerrado, filtro.acepta_mascotas, filtro.acepta_bitcoin].filter(Boolean).length;
 
@@ -396,12 +420,14 @@ export default function MirPage() {
         .mir-match-info { font-size: 13px; color: #fff; font-weight: 600; }
         .mir-match-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 3px; }
         .mir-match-sep { width: 1px; background: rgba(255,255,255,0.07); align-self: stretch; }
-        .mir-btn-desbloquear { padding: 8px 14px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .mir-btn-desbloquear { padding: 8px 14px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .mir-btn-desbloquear:hover { background: rgba(200,0,0,0.2); color: #fff; }
+        .mir-btn-desbloquear:disabled { opacity: 0.5; cursor: not-allowed; }
         .mir-costo { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 4px; text-align: center; }
-        .mir-nota { font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; padding: 8px 16px; background: rgba(200,0,0,0.04); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; }
-
-        /* MODAL FILTROS */
+        .mir-nota { font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; padding: 8px 16px; background: rgba(200,0,0,0.04); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; margin-bottom: 12px; }
+        .mir-contacto-card { background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 6px; padding: 12px 16px; margin-top: 8px; }
+        .mir-contacto-titulo { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #22c55e; margin-bottom: 6px; }
+        .mir-contacto-dato { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 3px; }
         .filtro-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; display: flex; justify-content: flex-end; }
         .filtro-panel { width: 420px; max-width: 100vw; background: #111; border-left: 1px solid rgba(255,255,255,0.1); height: 100vh; overflow-y: auto; display: flex; flex-direction: column; animation: slideIn 0.25s ease; }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
@@ -433,8 +459,6 @@ export default function MirPage() {
         .filtro-btn-limpiar { flex: 1; padding: 11px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .filtro-btn-aplicar { flex: 2; padding: 11px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .filtro-btn-aplicar:hover { background: #e60000; }
-
-        /* MODALES PUBLICAR */
         .fn-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: flex-start; justify-content: center; z-index: 200; padding: 24px; overflow-y: auto; }
         .fn-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 28px 32px; width: 100%; max-width: 580px; position: relative; margin: auto; }
         .fn-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
@@ -467,7 +491,7 @@ export default function MirPage() {
         @media (max-width: 700px) { .mir-grid { grid-template-columns: 1fr; } .fn-row3 { grid-template-columns: 1fr 1fr; } .filtro-panel { width: 100vw; } }
       `}</style>
 
-      {/* ── TABS ── */}
+      {/* TABS */}
       <div className="mir-tabs">
         <button className={`mir-tab${vista === "ofrecidos" ? " activo" : ""}`} onClick={() => setVista("ofrecidos")}>
           🏠 Ofrecidos {ofrecidos.length > 0 && <span className="mir-tab-badge">{ofrecidos.length}</span>}
@@ -480,7 +504,7 @@ export default function MirPage() {
         </button>
       </div>
 
-      {/* ── BARRA ── */}
+      {/* BARRA */}
       {vista !== "matches" && (
         <div className="mir-barra">
           <div className="mir-barra-left">
@@ -503,7 +527,7 @@ export default function MirPage() {
         </div>
       )}
 
-      {/* ── OFRECIDOS ── */}
+      {/* OFRECIDOS */}
       {vista === "ofrecidos" && (
         loading ? <div className="mir-empty">Cargando...</div> :
         ofsFilt.length === 0 ? <div className="mir-empty">No hay ofrecidos{cantFiltrosActivos > 0 ? " con esos filtros" : " publicados todavía"}.</div> :
@@ -541,7 +565,7 @@ export default function MirPage() {
         </div>
       )}
 
-      {/* ── BÚSQUEDAS ── */}
+      {/* BÚSQUEDAS */}
       {vista === "busquedas" && (
         loading ? <div className="mir-empty">Cargando...</div> :
         busFilt.length === 0 ? <div className="mir-empty">No hay búsquedas{cantFiltrosActivos > 0 ? " con esos filtros" : " publicadas todavía"}.</div> :
@@ -584,52 +608,76 @@ export default function MirPage() {
         </div>
       )}
 
-      {/* ── MATCHES ── */}
+      {/* MATCHES */}
       {vista === "matches" && (
         <>
-          <div className="mir-nota">💡 Ambos pagan {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} para revelar los datos de contacto.</div>
+          <div className="mir-nota">
+            💡 Ambos pagan {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} para revelar los datos de contacto.
+          </div>
           {loading ? <div className="mir-empty">Cargando...</div> :
            matchesPropios.length === 0 ? <div className="mir-empty">No tenés matches todavía.</div> :
            <div style={{display:"flex",flexDirection:"column",gap:12}}>
-             {matchesPropios.map(m => {
-               const of = ofrecidos.find(o => o.id === m.ofrecido_id);
-               const bu = busquedas.find(b => b.id === m.busqueda_id);
-               const esDuenioOf = of?.perfil_id === userId;
-               const desbloqueado = esDuenioOf ? m.desbloqueado_ofrecido : m.desbloqueado_busqueda;
-               return (
-                 <div key={m.id} className="mir-match-card">
-                   <div className="mir-match-lados">
-                     <div className="mir-match-lado">
-                       <div className="mir-match-lado-titulo">🏠 Ofrecido</div>
-                       <div className="mir-match-info">{of?.tipo_propiedad} · {of?.ciudad}</div>
-                       <div className="mir-match-sub">{OP_LABEL[of?.operacion ?? ""]}{of?.precio ? ` · ${formatPeso(of.precio, of.moneda)}` : ""}</div>
-                       {esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>📌 Es tuyo</div>}
-                     </div>
-                     <div className="mir-match-sep"/>
-                     <div className="mir-match-lado">
-                       <div className="mir-match-lado-titulo">🔍 Búsqueda</div>
-                       <div className="mir-match-info">{bu?.tipo_propiedad} · {bu?.ciudad}</div>
-                       <div className="mir-match-sub">{OP_LABEL[bu?.operacion ?? ""]}{bu?.presupuesto_max ? ` · hasta ${formatPeso(bu.presupuesto_max, bu.moneda)}` : ""}</div>
-                       {!esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>📌 Es tuya</div>}
-                     </div>
-                   </div>
-                   <div style={{display:"flex",flexDirection:"column" as const,alignItems:"flex-end",gap:4,flexShrink:0}}>
-                     {desbloqueado ? <div style={{fontSize:12,color:"#22c55e",fontWeight:700}}>✅ Desbloqueado</div> : (
-                       <>
-                         <button className="mir-btn-desbloquear">Desbloquear contacto</button>
-                         <div className="mir-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}</div>
-                       </>
-                     )}
-                   </div>
-                 </div>
-               );
-             })}
-           </div>
-          }
+            {matchesPropios.map(m => {
+              const of = ofrecidos.find(o => o.id === m.ofrecido_id);
+              const bu = busquedas.find(b => b.id === m.busqueda_id);
+              const esDuenioOf = of?.perfil_id === userId;
+              const yoPague = esDuenioOf ? m.desbloqueado_ofrecido : m.desbloqueado_busqueda;
+              const ambosDesbloquearon = m.desbloqueado_ofrecido && m.desbloqueado_busqueda;
+              const contacto = contactosDesbloqueados.find(c => c.match_id === m.id);
+
+              return (
+                <div key={m.id} className="mir-match-card">
+                  <div className="mir-match-lados">
+                    <div className="mir-match-lado">
+                      <div className="mir-match-lado-titulo">🏠 Ofrecido</div>
+                      <div className="mir-match-info">{of?.tipo_propiedad} · {of?.ciudad}</div>
+                      <div className="mir-match-sub">{OP_LABEL[of?.operacion ?? ""]}{of?.precio ? ` · ${formatPeso(of.precio, of.moneda)}` : ""}</div>
+                      {esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>📌 Es tuyo</div>}
+                    </div>
+                    <div className="mir-match-sep"/>
+                    <div className="mir-match-lado">
+                      <div className="mir-match-lado-titulo">🔍 Búsqueda</div>
+                      <div className="mir-match-info">{bu?.tipo_propiedad} · {bu?.ciudad}</div>
+                      <div className="mir-match-sub">{OP_LABEL[bu?.operacion ?? ""]}{bu?.presupuesto_max ? ` · hasta ${formatPeso(bu.presupuesto_max, bu.moneda)}` : ""}</div>
+                      {!esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>📌 Es tuya</div>}
+                    </div>
+                  </div>
+
+                  <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                    {ambosDesbloquearon && contacto ? (
+                      <div className="mir-contacto-card">
+                        <div className="mir-contacto-titulo">✅ Contacto desbloqueado</div>
+                        <div className="mir-contacto-dato"><b>{contacto.nombre} {contacto.apellido}</b> · Mat. {contacto.matricula ?? "—"}</div>
+                        {contacto.telefono && <div className="mir-contacto-dato">📱 {contacto.telefono}</div>}
+                        {contacto.email && <div className="mir-contacto-dato">✉️ {contacto.email}</div>}
+                      </div>
+                    ) : yoPague ? (
+                      <div style={{fontSize:11,color:"#eab308",fontFamily:"Inter,sans-serif",textAlign:"center"}}>
+                        ✓ Pagaste · Esperando al otro corredor
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          className="mir-btn-desbloquear"
+                          disabled={desbloqueando === m.id}
+                          onClick={() => desbloquear(m.id, esDuenioOf)}
+                        >
+                          {desbloqueando === m.id ? "..." : "Desbloquear contacto"}
+                        </button>
+                        <div className="mir-costo">
+                          {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>}
         </>
       )}
 
-      {/* ── PANEL FILTROS ── */}
+      {/* PANEL FILTROS */}
       {mostrarFiltros && (
         <div className="filtro-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFiltros(false); }}>
           <div className="filtro-panel">
@@ -638,7 +686,6 @@ export default function MirPage() {
               <button className="filtro-close" onClick={() => setMostrarFiltros(false)}>×</button>
             </div>
             <div className="filtro-body">
-              {/* Operación */}
               <div>
                 <div className="filtro-section-title">Operación</div>
                 <div className="filtro-chips">
@@ -647,7 +694,6 @@ export default function MirPage() {
                   ))}
                 </div>
               </div>
-              {/* Localidades */}
               <div>
                 <div className="filtro-section-title">Ubicación</div>
                 <div className="filtro-localidades">
@@ -659,7 +705,6 @@ export default function MirPage() {
                   ))}
                 </div>
               </div>
-              {/* Tipo propiedad */}
               <div>
                 <div className="filtro-section-title">Tipo de propiedad</div>
                 <div className="filtro-localidades">
@@ -671,7 +716,6 @@ export default function MirPage() {
                   ))}
                 </div>
               </div>
-              {/* Superficie */}
               <div>
                 <div className="filtro-section-title">Superficie (m²)</div>
                 <div className="filtro-row">
@@ -679,7 +723,6 @@ export default function MirPage() {
                   <input className="filtro-input" type="number" placeholder="Máximo" value={filtroTemp.sup_max} onChange={e => setFiltroTemp(f => ({...f, sup_max: e.target.value}))} />
                 </div>
               </div>
-              {/* Filtros adicionales */}
               <div>
                 <div className="filtro-section-title">Filtros adicionales</div>
                 <div className="filtro-toggles">
@@ -694,15 +737,13 @@ export default function MirPage() {
             </div>
             <div className="filtro-footer">
               <button className="filtro-btn-limpiar" onClick={() => setFiltroTemp(FILTRO_VACIO)}>Limpiar todo</button>
-              <button className="filtro-btn-aplicar" onClick={() => { setFiltro(filtroTemp); setMostrarFiltros(false); }}>
-                Ver resultados
-              </button>
+              <button className="filtro-btn-aplicar" onClick={() => { setFiltro(filtroTemp); setMostrarFiltros(false); }}>Ver resultados</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── MODAL OFRECIDO ── */}
+      {/* MODAL OFRECIDO */}
       {mostrarFormO && (
         <div className="fn-modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFormO(false); }}>
           <div className="fn-modal">
@@ -796,7 +837,7 @@ export default function MirPage() {
         </div>
       )}
 
-      {/* ── MODAL BÚSQUEDA ── */}
+      {/* MODAL BÚSQUEDA */}
       {mostrarFormB && (
         <div className="fn-modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFormB(false); }}>
           <div className="fn-modal">
