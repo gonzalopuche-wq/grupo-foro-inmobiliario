@@ -322,8 +322,10 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Noticias */}
+      <NoticiasWidget />
+
       {/* Notificaciones push */}
       <NotificacionesWidget />
     </>
-  );
 }
