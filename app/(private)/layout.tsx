@@ -9,12 +9,17 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/mir", label: "MIR", icon: "🔄" },
   { href: "/comunidad", label: "Comunidad", icon: "💬" },
+  { href: "/foro", label: "Foro", icon: "🗣️" },
   { href: "/crm", label: "CRM", icon: "👥" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
   { href: "/comparables", label: "Comparables", icon: "📈" },
   { href: "/padron-gfi", label: "Padrón", icon: "📋" },
+  { href: "/padron", label: "Padrón COCIR", icon: "📜" },
   { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
   { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
+  { href: "/enlaces", label: "Enlaces", icon: "🔗" },
+  { href: "/proveedores", label: "Proveedores", icon: "🏢" },
+  { href: "/perfil", label: "Mi Perfil", icon: "👤" },
   { href: "/mi-web", label: "Mi Web", icon: "🌐" },
 ];
 
@@ -74,7 +79,6 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         * { box-sizing: border-box; }
         body { margin: 0; background: #0a0a0a; }
         .layout-wrap { display: flex; min-height: 100vh; }
-        /* Sidebar */
         .sidebar { width: 220px; flex-shrink: 0; background: rgba(6,6,6,0.98); border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 50; transition: transform 0.25s; }
         .sidebar-logo { padding: 18px 20px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .sidebar-logo-txt { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 800; color: #fff; letter-spacing: 0.05em; }
@@ -88,7 +92,6 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         .nav-item:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.03); }
         .nav-item.active { color: #fff; background: rgba(200,0,0,0.08); border-left-color: #cc0000; font-weight: 500; }
         .nav-item-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
-        /* Perfil en sidebar */
         .sidebar-perfil { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; }
         .sidebar-avatar { width: 32px; height: 32px; border-radius: 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; color: #cc0000; flex-shrink: 0; overflow: hidden; }
         .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -97,16 +100,12 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         .sidebar-perfil-mat { font-size: 10px; color: rgba(255,255,255,0.3); }
         .sidebar-logout { padding: 4px 6px; background: none; border: none; color: rgba(255,255,255,0.25); cursor: pointer; font-size: 14px; transition: color 0.15s; }
         .sidebar-logout:hover { color: #cc0000; }
-        /* Main */
         .main-content { margin-left: 220px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
-        /* Topbar mobile */
         .topbar { display: none; height: 56px; background: rgba(6,6,6,0.98); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0 16px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
         .topbar-logo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
         .topbar-logo span { color: #cc0000; }
         .topbar-menu-btn { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 20px; cursor: pointer; padding: 6px; }
-        /* Page content */
         .page-content { flex: 1; padding: 24px 28px; }
-        /* Mobile overlay */
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 45; }
         @media (max-width: 900px) {
           .sidebar { transform: translateX(-100%); }
@@ -119,13 +118,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
       `}</style>
 
       <div className="layout-wrap">
-        {/* Overlay mobile */}
         <div
           className={`sidebar-overlay${menuAbierto ? " visible" : ""}`}
           onClick={() => setMenuAbierto(false)}
         />
 
-        {/* Sidebar */}
         <aside className={`sidebar${menuAbierto ? " abierto" : ""}`}>
           <div className="sidebar-logo">
             <div className="sidebar-logo-txt">GFI<span>®</span></div>
@@ -164,7 +161,6 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
             )}
           </nav>
 
-          {/* Perfil */}
           {perfil && (
             <div className="sidebar-perfil">
               <div className="sidebar-avatar">
@@ -184,14 +180,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           )}
         </aside>
 
-        {/* Main */}
         <main className="main-content">
-          {/* Topbar mobile */}
           <div className="topbar">
             <div className="topbar-logo">GFI<span>®</span></div>
             <button className="topbar-menu-btn" onClick={() => setMenuAbierto(true)}>☰</button>
           </div>
-
           <div className="page-content">
             {children}
           </div>
