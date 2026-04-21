@@ -2,307 +2,200 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "../lib/supabase";
-import Campanita from "../components/Campanita";
 
 const NAV_ITEMS = [
-  { icon: "⊞", label: "Dashboard", href: "/dashboard", section: null },
+  { href: "/dashboard", label: "Dashboard", icon: "📊" },
+  { href: "/mir", label: "MIR", icon: "🔄" },
+  { href: "/comunidad", label: "Comunidad", icon: "💬" },
   { href: "/crm", label: "CRM", icon: "👥" },
-  { href: "/mi-web", label: "Mi Web", icon: "🌐" },
-  { icon: "◈", label: "Motor MIR", href: "/mir", section: "Operaciones" },
-  { icon: "💱", label: "Cotizaciones", href: "/cotizaciones", section: "Operaciones" },
-  { icon: "📊", label: "Comparables", href: "/comparables", section: "Operaciones" },
-  { icon: "📋", label: "Padrón COCIR", href: "/padron", section: "Padrón" },
-  { icon: "🏛️", label: "Padrón GFI®", href: "/padron-gfi", section: "Padrón" },
-  { icon: "💬", label: "Foro", href: "/foro", section: "Comunidad" },
-  { icon: "👥", label: "Comunidad", href: "/comunidad", section: "Comunidad" },
-  { icon: "📅", label: "Eventos", href: "/eventos", section: "Comunidad" },
-  { icon: "📚", label: "Biblioteca", href: "/biblioteca", section: "Recursos" },
-  { icon: "💰", label: "Suscripción", href: "/suscripcion", section: "Recursos" },
-  { icon: "🔗", label: "Enlaces Útiles", href: "/enlaces", section: "Recursos" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
-  { icon: "🤝", label: "Proveedores", href: "/proveedores", section: "Recursos" },
-  { icon: "👤", label: "Mi perfil", href: "/perfil", section: "Recursos" },
+  { href: "/comparables", label: "Comparables", icon: "📈" },
+  { href: "/padron-gfi", label: "Padrón", icon: "📋" },
+  { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
+  { href: "/divisas", label: "Divisas", icon: "💱" },
+  { href: "/mi-web", label: "Mi Web", icon: "🌐" },
 ];
 
-const NAV_COLABORADOR = [
-  { icon: "◈", label: "Motor MIR", href: "/mir", section: null },
-  { icon: "👤", label: "Mi perfil", href: "/perfil", section: null },
+const NAV_ADMIN = [
+  { href: "/admin", label: "Admin", icon: "⚙️" },
 ];
 
-const ADMIN_ITEMS = [
-  { icon: "⚙", label: "Panel Admin", href: "/admin", section: "Admin" },
-];
-
-interface LayoutProps { children: React.ReactNode; }
-
-export default function PrivateLayout({ children }: LayoutProps) {
+export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [nombre, setNombre] = useState("");
-  const [matricula, setMatricula] = useState("");
-  const [tipo, setTipo] = useState("");
-  const [userId, setUserId] = useState("");
-  const [esAdmin, setEsAdmin] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [perfil, setPerfil] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { router.push("/login"); return; }
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) { router.push("/login"); return; }
 
-      setUserId(session.user.id);
-
-      const { data: perfil } = await supabase
+      const { data: p } = await supabase
         .from("perfiles")
-        .select("nombre,apellido,matricula,tipo")
-        .eq("id", session.user.id)
+        .select("nombre, apellido, matricula, foto_url, rol")
+        .eq("id", auth.user.id)
         .single();
 
-      if (perfil) {
-        setNombre(`${perfil.nombre ?? ""} ${perfil.apellido ?? ""}`.trim());
-        setMatricula(perfil.matricula ?? "");
-        setTipo(perfil.tipo ?? "corredor");
-        setEsAdmin(perfil.tipo === "admin");
-
-        if (perfil.tipo === "colaborador") {
-          const rutasPermitidas = ["/mir", "/perfil"];
-          const permitida = rutasPermitidas.some(r => pathname.startsWith(r));
-          if (!permitida) router.push("/mir");
-        }
+      if (p) {
+        setPerfil(p);
+        setIsAdmin(p.rol === "admin" || p.rol === "admin_general" || p.rol === "admin_contenido");
       }
       setLoading(false);
     };
     init();
-  }, [pathname]);
+  }, []);
 
-  const handleLogout = async () => { await supabase.auth.signOut(); router.push("/login"); };
-  const isActive = (href: string) => href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
 
-  const esColaborador = tipo === "colaborador";
-  const navItems = esColaborador ? NAV_COLABORADOR : esAdmin ? [...NAV_ITEMS, ...ADMIN_ITEMS] : NAV_ITEMS;
-
-  const allSections = navItems.reduce<Record<string, typeof NAV_ITEMS>>((acc, item) => {
-    const key = item.section ?? "__top__";
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(item);
-    return acc;
-  }, {});
+  const isActive = (href: string) => {
+    if (href === "/crm") return pathname.startsWith("/crm");
+    return pathname === href || pathname.startsWith(href + "/");
+  };
 
   if (loading) return (
-    <div style={{ minHeight:"100vh",background:"#0a0a0a",display:"flex",alignItems:"center",justifyContent:"center" }}>
-      <div style={{ width:32,height:32,border:"2px solid rgba(200,0,0,0.3)",borderTopColor:"#cc0000",borderRadius:"50%",animation:"spin 0.7s linear infinite" }} />
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: 32, height: 32, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        html,body{height:100%;background:#0a0a0a;color:#fff;font-family:'Inter',sans-serif}
-        .gfi-layout{display:flex;min-height:100vh;background:#0a0a0a}
-        .gfi-sidebar{
-          width:${collapsed?"64px":"220px"};
-          min-height:100vh;background:#0d0d0d;
-          border-right:1px solid rgba(180,0,0,0.15);
-          display:flex;flex-direction:column;
-          position:fixed;top:0;left:0;bottom:0;z-index:200;
-          transition:width 0.25s cubic-bezier(0.4,0,0.2,1);overflow:hidden;
-        }
-        .gfi-sidebar-logo{
-          display:flex;align-items:center;justify-content:center;
-          padding:${collapsed?"6px":"8px 12px"};
-          height:64px;border-bottom:1px solid rgba(255,255,255,0.05);
-          flex-shrink:0;text-decoration:none;cursor:pointer;
-          transition:padding 0.25s;overflow:hidden;
-        }
-        .gfi-sidebar-logo img{
-          height:${collapsed?"38px":"48px"};
-          width:auto;max-width:${collapsed?"44px":"190px"};
-          object-fit:contain;transition:all 0.25s;
-        }
-        .gfi-colaborador-badge{
-          margin:8px 10px;padding:8px 10px;
-          background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);
-          border-radius:4px;font-family:'Montserrat',sans-serif;
-          font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
-          color:#eab308;text-align:center;line-height:1.4;
-          opacity:${collapsed?"0":"1"};transition:opacity 0.2s;
-        }
-        .gfi-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 0}
-        .gfi-nav::-webkit-scrollbar{width:3px}
-        .gfi-nav::-webkit-scrollbar-thumb{background:rgba(200,0,0,0.2);border-radius:2px}
-        .gfi-section-label{
-          font-family:'Montserrat',sans-serif;font-size:8px;font-weight:700;
-          letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.2);
-          padding:12px 18px 4px;white-space:nowrap;overflow:hidden;
-          opacity:${collapsed?"0":"1"};transition:opacity 0.15s;
-          height:${collapsed?"0":"auto"};
-        }
-        .gfi-nav-item{
-          display:flex;align-items:center;gap:10px;
-          padding:0 ${collapsed?"16px":"14px"};height:40px;
-          text-decoration:none;cursor:pointer;transition:all 0.15s;
-          position:relative;white-space:nowrap;margin:1px 6px;border-radius:4px;
-        }
-        .gfi-nav-item:hover{background:rgba(200,0,0,0.08)}
-        .gfi-nav-item.active{background:rgba(200,0,0,0.12)}
-        .gfi-nav-item.active::before{
-          content:'';position:absolute;left:0;top:6px;bottom:6px;width:2px;
-          background:#cc0000;border-radius:0 2px 2px 0;margin-left:-6px;
-        }
-        .gfi-nav-icon{
-          font-size:16px;width:20px;height:20px;
-          display:flex;align-items:center;justify-content:center;
-          flex-shrink:0;color:rgba(255,255,255,0.4);transition:color 0.15s;font-style:normal;
-        }
-        .gfi-nav-item:hover .gfi-nav-icon,.gfi-nav-item.active .gfi-nav-icon{color:#cc0000}
-        .gfi-nav-label{
-          font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
-          color:rgba(255,255,255,0.5);transition:color 0.15s,opacity 0.2s;
-          overflow:hidden;opacity:${collapsed?"0":"1"};
-        }
-        .gfi-nav-item:hover .gfi-nav-label,.gfi-nav-item.active .gfi-nav-label{color:#fff}
-        .gfi-nav-item[data-tooltip]:hover::after{
-          content:attr(data-tooltip);position:absolute;left:calc(100% + 12px);
-          top:50%;transform:translateY(-50%);background:#1a1a1a;
-          border:1px solid rgba(200,0,0,0.2);color:#fff;font-size:11px;
-          font-family:'Inter',sans-serif;padding:5px 10px;border-radius:3px;
-          white-space:nowrap;pointer-events:none;z-index:300;
-          display:${collapsed?"block":"none"};
-        }
-        .gfi-collapse-btn{
-          display:flex;align-items:center;justify-content:center;
-          height:40px;width:100%;background:none;border:none;
-          border-top:1px solid rgba(255,255,255,0.05);
-          color:rgba(255,255,255,0.25);cursor:pointer;font-size:14px;
-          transition:color 0.2s,background 0.2s;flex-shrink:0;
-        }
-        .gfi-collapse-btn:hover{color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.03)}
-        .gfi-user{
-          border-top:1px solid rgba(255,255,255,0.05);
-          padding:${collapsed?"12px 16px":"12px 14px"};
-          display:flex;align-items:center;gap:10px;flex-shrink:0;transition:padding 0.25s;
-        }
-        .gfi-user-avatar{
-          width:32px;height:32px;background:rgba(200,0,0,0.15);
-          border:1px solid rgba(200,0,0,0.3);border-radius:6px;
-          display:flex;align-items:center;justify-content:center;
-          font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;color:#cc0000;flex-shrink:0;
-        }
-        .gfi-user-info{flex:1;overflow:hidden;opacity:${collapsed?"0":"1"};transition:opacity 0.2s;pointer-events:${collapsed?"none":"auto"}}
-        .gfi-user-name{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .gfi-user-mat{font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.06em;margin-top:1px;font-family:'Montserrat',sans-serif}
-        .gfi-logout-btn{
-          background:none;border:none;color:rgba(255,255,255,0.2);font-size:14px;
-          cursor:pointer;padding:4px;border-radius:3px;transition:color 0.2s,background 0.2s;
-          flex-shrink:0;display:${collapsed?"none":"flex"};align-items:center;justify-content:center;
-        }
-        .gfi-logout-btn:hover{color:#ff4444;background:rgba(200,0,0,0.1)}
-        .gfi-main{
-          flex:1;margin-left:${collapsed?"64px":"220px"};
-          min-height:100vh;display:flex;flex-direction:column;
-          transition:margin-left 0.25s cubic-bezier(0.4,0,0.2,1);
-        }
-        .gfi-topbar{
-          height:56px;border-bottom:1px solid rgba(255,255,255,0.06);
-          display:flex;align-items:center;justify-content:space-between;
-          padding:0 28px;background:rgba(10,10,10,0.98);
-          position:sticky;top:0;z-index:100;flex-shrink:0;
-        }
-        .gfi-topbar-left{display:flex;align-items:center;gap:12px}
-        .gfi-topbar-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:0.04em}
-        .gfi-topbar-right{display:flex;align-items:center;gap:10px}
-        .gfi-topbar-badge{padding:5px 12px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.25);border-radius:3px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#cc0000}
-        .gfi-topbar-badge.colaborador{background:rgba(234,179,8,0.1);border-color:rgba(234,179,8,0.25);color:#eab308}
-        .gfi-mobile-menu-btn{display:none;background:none;border:none;color:rgba(255,255,255,0.5);font-size:18px;cursor:pointer;padding:4px}
-        .gfi-page{flex:1;padding:28px;overflow-x:hidden}
-        .gfi-mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:150}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        @media(max-width:768px){
-          .gfi-sidebar{transform:translateX(${collapsed||!mobileOpen?"-100%":"0"});width:220px!important}
-          .gfi-main{margin-left:0!important}
-          .gfi-mobile-menu-btn{display:flex}
-          .gfi-mobile-overlay{display:${mobileOpen?"block":"none"}}
-          .gfi-nav-label{opacity:1!important}
-          .gfi-sidebar-logo img{height:46px!important;max-width:180px!important}
-          .gfi-user-info{opacity:1!important;pointer-events:auto!important}
-          .gfi-logout-btn{display:flex!important}
-          .gfi-section-label{opacity:1!important;height:auto!important}
-          .gfi-colaborador-badge{opacity:1!important}
-          .gfi-page{padding:16px}
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #0a0a0a; }
+        .layout-wrap { display: flex; min-height: 100vh; }
+        /* Sidebar */
+        .sidebar { width: 220px; flex-shrink: 0; background: rgba(6,6,6,0.98); border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 50; transition: transform 0.25s; }
+        .sidebar-logo { padding: 18px 20px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-logo-txt { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 800; color: #fff; letter-spacing: 0.05em; }
+        .sidebar-logo-txt span { color: #cc0000; }
+        .sidebar-logo-sub { font-size: 9px; color: rgba(255,255,255,0.25); margin-top: 2px; font-family: 'Montserrat',sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
+        .sidebar-nav::-webkit-scrollbar { width: 2px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+        .sidebar-section-label { padding: 10px 20px 4px; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: rgba(255,255,255,0.45); font-size: 13px; font-family: 'Inter',sans-serif; font-weight: 400; text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+        .nav-item:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.03); }
+        .nav-item.active { color: #fff; background: rgba(200,0,0,0.08); border-left-color: #cc0000; font-weight: 500; }
+        .nav-item-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+        /* Perfil en sidebar */
+        .sidebar-perfil { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; }
+        .sidebar-avatar { width: 32px; height: 32px; border-radius: 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; color: #cc0000; flex-shrink: 0; overflow: hidden; }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar-perfil-info { flex: 1; min-width: 0; }
+        .sidebar-perfil-nombre { font-size: 12px; font-weight: 600; color: #fff; font-family: 'Inter',sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-perfil-mat { font-size: 10px; color: rgba(255,255,255,0.3); }
+        .sidebar-logout { padding: 4px 6px; background: none; border: none; color: rgba(255,255,255,0.25); cursor: pointer; font-size: 14px; transition: color 0.15s; }
+        .sidebar-logout:hover { color: #cc0000; }
+        /* Main */
+        .main-content { margin-left: 220px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+        /* Topbar mobile */
+        .topbar { display: none; height: 56px; background: rgba(6,6,6,0.98); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0 16px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
+        .topbar-logo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
+        .topbar-logo span { color: #cc0000; }
+        .topbar-menu-btn { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 20px; cursor: pointer; padding: 6px; }
+        /* Page content */
+        .page-content { flex: 1; padding: 24px 28px; }
+        /* Mobile overlay */
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 45; }
+        @media (max-width: 900px) {
+          .sidebar { transform: translateX(-100%); }
+          .sidebar.abierto { transform: translateX(0); }
+          .main-content { margin-left: 0; }
+          .topbar { display: flex; }
+          .sidebar-overlay.visible { display: block; }
+          .page-content { padding: 16px; }
         }
       `}</style>
 
-      <div className="gfi-layout">
-        <aside className="gfi-sidebar">
-          <a href={esColaborador ? "/mir" : "/dashboard"} className="gfi-sidebar-logo">
-            <img src="/logo.jpg" alt="Grupo Foro Inmobiliario" />
-          </a>
+      <div className="layout-wrap">
+        {/* Overlay mobile */}
+        <div
+          className={`sidebar-overlay${menuAbierto ? " visible" : ""}`}
+          onClick={() => setMenuAbierto(false)}
+        />
 
-          {esColaborador && (
-            <div className="gfi-colaborador-badge">
-              ⚠️ Cuenta colaborador<br/>Solo acceso al MIR
-            </div>
-          )}
+        {/* Sidebar */}
+        <aside className={`sidebar${menuAbierto ? " abierto" : ""}`}>
+          <div className="sidebar-logo">
+            <div className="sidebar-logo-txt">GFI<span>®</span></div>
+            <div className="sidebar-logo-sub">Grupo Foro Inmobiliario</div>
+          </div>
 
-          <nav className="gfi-nav">
-            {Object.entries(allSections).map(([section, items]) => (
-              <div key={section}>
-                {section !== "__top__" && <div className="gfi-section-label">{section}</div>}
-                {items.map(item => (
-                  <a
+          <nav className="sidebar-nav">
+            <div className="sidebar-section-label">Plataforma</div>
+            {NAV_ITEMS.map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`nav-item${isActive(item.href) ? " active" : ""}`}
+                onClick={() => setMenuAbierto(false)}
+              >
+                <span className="nav-item-icon">{item.icon}</span>
+                {item.label}
+              </Link>
+            ))}
+
+            {isAdmin && (
+              <>
+                <div className="sidebar-section-label" style={{ marginTop: 8 }}>Administración</div>
+                {NAV_ADMIN.map(item => (
+                  <Link
                     key={item.href}
                     href={item.href}
-                    className={`gfi-nav-item${isActive(item.href)?" active":""}`}
-                    data-tooltip={item.label}
+                    className={`nav-item${isActive(item.href) ? " active" : ""}`}
+                    onClick={() => setMenuAbierto(false)}
                   >
-                    <span className="gfi-nav-icon">{item.icon}</span>
-                    <span className="gfi-nav-label">{item.label}</span>
-                  </a>
+                    <span className="nav-item-icon">{item.icon}</span>
+                    {item.label}
+                  </Link>
                 ))}
-              </div>
-            ))}
+              </>
+            )}
           </nav>
 
-          <button
-            className="gfi-collapse-btn"
-            onClick={() => setCollapsed(c=>!c)}
-            title={collapsed?"Expandir menú":"Colapsar menú"}
-          >
-            {collapsed ? "▶" : "◀"}
-          </button>
-
-          <div className="gfi-user">
-            <div className="gfi-user-avatar">{nombre ? nombre.charAt(0).toUpperCase() : "U"}</div>
-            <div className="gfi-user-info">
-              <div className="gfi-user-name">{nombre || "Usuario"}</div>
-              {matricula && <div className="gfi-user-mat">Mat. {matricula}</div>}
+          {/* Perfil */}
+          {perfil && (
+            <div className="sidebar-perfil">
+              <div className="sidebar-avatar">
+                {perfil.foto_url
+                  ? <img src={perfil.foto_url} alt={perfil.nombre} />
+                  : `${perfil.nombre?.charAt(0) ?? ""}${perfil.apellido?.charAt(0) ?? ""}`.toUpperCase()
+                }
+              </div>
+              <div className="sidebar-perfil-info">
+                <div className="sidebar-perfil-nombre">{perfil.nombre} {perfil.apellido}</div>
+                <div className="sidebar-perfil-mat">
+                  {perfil.matricula ? `Mat. ${perfil.matricula}` : "Sin matrícula"}
+                </div>
+              </div>
+              <button className="sidebar-logout" onClick={handleLogout} title="Cerrar sesión">↩</button>
             </div>
-            <button className="gfi-logout-btn" onClick={handleLogout} title="Cerrar sesión">⏻</button>
-          </div>
+          )}
         </aside>
 
-        <div className="gfi-mobile-overlay" onClick={() => setMobileOpen(false)} />
+        {/* Main */}
+        <main className="main-content">
+          {/* Topbar mobile */}
+          <div className="topbar">
+            <div className="topbar-logo">GFI<span>®</span></div>
+            <button className="topbar-menu-btn" onClick={() => setMenuAbierto(true)}>☰</button>
+          </div>
 
-        <div className="gfi-main">
-          <header className="gfi-topbar">
-            <div className="gfi-topbar-left">
-              <button className="gfi-mobile-menu-btn" onClick={() => setMobileOpen(o=>!o)}>☰</button>
-              <span className="gfi-topbar-title">{navItems.find(i=>isActive(i.href))?.label ?? "GFI®"}</span>
-            </div>
-            <div className="gfi-topbar-right">
-              {userId && <Campanita userId={userId} />}
-              {esAdmin && <span className="gfi-topbar-badge">Admin</span>}
-              {esColaborador && <span className="gfi-topbar-badge colaborador">Colaborador</span>}
-            </div>
-          </header>
-          <main className="gfi-page">{children}</main>
-        </div>
+          <div className="page-content">
+            {children}
+          </div>
+        </main>
       </div>
     </>
   );
