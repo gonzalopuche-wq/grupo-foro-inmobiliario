@@ -42,13 +42,13 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
 
       const { data: p } = await supabase
         .from("perfiles")
-        .select("nombre, apellido, matricula, foto_url, rol")
+        .select("nombre, apellido, matricula, foto_url, tipo")
         .eq("id", auth.user.id)
         .single();
 
       if (p) {
         setPerfil(p);
-        setIsAdmin(p.rol === "admin" || p.rol === "admin_general" || p.rol === "admin_contenido");
+        setIsAdmin(p.tipo === "admin");
       }
       setLoading(false);
     };
@@ -118,10 +118,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
       `}</style>
 
       <div className="layout-wrap">
-        <div
-          className={`sidebar-overlay${menuAbierto ? " visible" : ""}`}
-          onClick={() => setMenuAbierto(false)}
-        />
+        <div className={`sidebar-overlay${menuAbierto ? " visible" : ""}`} onClick={() => setMenuAbierto(false)} />
 
         <aside className={`sidebar${menuAbierto ? " abierto" : ""}`}>
           <div className="sidebar-logo">
