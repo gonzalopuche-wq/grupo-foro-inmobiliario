@@ -8,6 +8,7 @@ interface Indicador { clave: string; valor: number | string; label: string; tipo
 interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number; monto_ars: number | null; monto_declarado_ars: number | null; dolar_ref: number | null; estado: string; fecha_pago_declarado: string | null; fecha_confirmacion: string | null; fecha_vencimiento: string | null; periodo: string | null; comprobante: string | null; cbu_origen: string | null; nota_admin: string | null; creado_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
 interface Documento { id: string; nombre: string; descripcion: string; nivel: string; categoria: string; archivo_url: string; estado: string; created_at: string; user_id: string; perfiles: { nombre: string; apellido: string; matricula: string; }; }
+interface Noticia { id: string; titulo: string; cuerpo: string; link: string | null; imagen_url: string | null; fuente: string | null; destacado: boolean; estado: string; created_at: string; autor_id: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; }; }
 
 const INDICADORES_CONFIG = [
   { clave: "valor_jus", label: "Valor JUS", tipo: "number" as const },
@@ -35,6 +36,7 @@ export default function AdminPage() {
   const [filtro, setFiltro] = useState<"todos"|"pendiente"|"aprobado"|"rechazado">("pendiente");
   const [procesando, setProcesando] = useState<string | null>(null);
   const [esAdmin, setEsAdmin] = useState(false);
+  const [adminId, setAdminId] = useState<string | null>(null);
   const [indicadores, setIndicadores] = useState<Indicador[]>([]);
   const [editando, setEditando] = useState<Record<string, string>>({});
   const [guardando, setGuardando] = useState<string | null>(null);
@@ -58,6 +60,11 @@ export default function AdminPage() {
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [filtroDocs, setFiltroDocs] = useState<"pendiente"|"aprobado"|"rechazado">("pendiente");
   const [procesandoDoc, setProcesandoDoc] = useState<string | null>(null);
+  // Noticias
+  const [noticias, setNoticias] = useState<Noticia[]>([]);
+  const [loadingNot, setLoadingNot] = useState(true);
+  const [filtroNot, setFiltroNot] = useState<"pendiente"|"aprobado"|"rechazado">("pendiente");
+  const [procesandoNot, setProcesandoNot] = useState<string | null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -66,7 +73,8 @@ export default function AdminPage() {
       const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", userData.user.id).single();
       if (!perfil || perfil.tipo !== "admin") { window.location.href = "/dashboard"; return; }
       setEsAdmin(true);
-      cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu(); cargarDocumentos("pendiente");
+      setAdminId(userData.user.id);
+      cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu(); cargarDocumentos("pendiente"); cargarNoticias("pendiente");
     };
     verificar();
   }, []);
@@ -141,7 +149,19 @@ export default function AdminPage() {
     setLoadingDocs(false);
   };
 
+  const cargarNoticias = async (estado: string) => {
+    setLoadingNot(true);
+    const { data } = await supabase
+      .from("noticias")
+      .select("*, perfiles(nombre, apellido, matricula)")
+      .eq("estado", estado)
+      .order("created_at", { ascending: false });
+    setNoticias((data as any) ?? []);
+    setLoadingNot(false);
+  };
+
   useEffect(() => { if (esAdmin) cargarDocumentos(filtroDocs); }, [filtroDocs, esAdmin]);
+  useEffect(() => { if (esAdmin) cargarNoticias(filtroNot); }, [filtroNot, esAdmin]);
 
   const aprobarDoc = async (doc: Documento) => {
     setProcesandoDoc(doc.id);
@@ -169,6 +189,51 @@ export default function AdminPage() {
     });
     await cargarDocumentos(filtroDocs);
     setProcesandoDoc(null);
+  };
+
+  const aprobarNoticia = async (n: Noticia) => {
+    setProcesandoNot(n.id);
+    await supabase.from("noticias").update({
+      estado: "aprobado",
+      aprobado_at: new Date().toISOString(),
+      aprobado_por: adminId,
+    }).eq("id", n.id);
+    const { data: destinatarios } = await supabase
+      .from("perfiles")
+      .select("id")
+      .eq("notif_foro", true)
+      .neq("id", n.autor_id);
+    if (destinatarios && destinatarios.length > 0) {
+      await supabase.from("notificaciones").insert(
+        destinatarios.map((p: any) => ({
+          user_id: p.id,
+          titulo: "📰 Nueva noticia publicada",
+          mensaje: n.titulo,
+          tipo: "noticias",
+          url: "/dashboard",
+        }))
+      );
+    }
+    await cargarNoticias(filtroNot);
+    setProcesandoNot(null);
+  };
+
+  const rechazarNoticia = async (id: string) => {
+    setProcesandoNot(id);
+    await supabase.from("noticias").update({ estado: "rechazado" }).eq("id", id);
+    await cargarNoticias(filtroNot);
+    setProcesandoNot(null);
+  };
+
+  const toggleDestacado = async (n: Noticia) => {
+    await supabase.from("noticias").update({ destacado: !n.destacado }).eq("id", n.id);
+    await cargarNoticias(filtroNot);
+  };
+
+  const eliminarNoticia = async (id: string) => {
+    if (!confirm("¿Eliminar esta noticia?")) return;
+    await supabase.from("noticias").delete().eq("id", id);
+    await cargarNoticias(filtroNot);
   };
 
   const confirmarPago = async (pago: Pago) => {
@@ -313,6 +378,11 @@ export default function AdminPage() {
         .adm-btn-aprobar:hover { background: rgba(34,197,94,0.2); }
         .adm-btn-rechazar { padding: 6px 14px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.25); border-radius: 3px; color: #ff4444; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .adm-btn-rechazar:hover { background: rgba(200,0,0,0.18); }
+        .adm-btn-destacar { padding: 6px 14px; background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.25); border-radius: 3px; color: #eab308; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .adm-btn-destacar:hover { background: rgba(234,179,8,0.18); }
+        .adm-btn-destacar.on { background: rgba(234,179,8,0.2); border-color: #eab308; }
+        .adm-btn-eliminar { padding: 6px 14px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.35); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .adm-btn-eliminar:hover { border-color: rgba(200,0,0,0.3); color: #ff4444; }
         .adm-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .adm-empty { padding: 48px; text-align: center; color: rgba(255,255,255,0.25); font-size: 13px; font-style: italic; }
@@ -372,6 +442,10 @@ export default function AdminPage() {
         .doc-meta { font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Inter', sans-serif; }
         .doc-desc { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'Inter', sans-serif; margin-top: 3px; line-height: 1.4; }
         .doc-acciones { display: flex; gap: 8px; flex-shrink: 0; align-items: flex-start; }
+        .not-row { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px 20px; display: flex; align-items: flex-start; gap: 14px; margin-bottom: 8px; }
+        .not-row.dest { border-color: rgba(234,179,8,0.2); }
+        .not-img-thumb { width: 72px; height: 54px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+        .not-img-ph { width: 72px; height: 54px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
         .modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 32px; width: 100%; max-width: 500px; position: relative; max-height: 90vh; overflow-y: auto; }
         .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
@@ -406,6 +480,95 @@ export default function AdminPage() {
         </header>
 
         <main className="adm-content">
+
+          {/* MODERACIÓN NOTICIAS */}
+          <div>
+            <div className="adm-header">
+              <h1>Moderación <span>Noticias</span></h1>
+              <p>Noticias publicadas por los corredores. Al aprobar se envía notificación a todos los que tienen alertas de foro activas.</p>
+            </div>
+            <div className="adm-filtros">
+              {(["pendiente","aprobado","rechazado"] as const).map(f => (
+                <button key={f} className={`adm-filtro-btn${filtroNot === f ? " activo" : ""}`} onClick={() => setFiltroNot(f)}>
+                  {f === "pendiente" ? "⏳ Pendientes" : f === "aprobado" ? "✓ Aprobadas" : "✗ Rechazadas"}
+                </button>
+              ))}
+            </div>
+            {loadingNot ? (
+              <div className="adm-loading">Cargando...</div>
+            ) : noticias.length === 0 ? (
+              <div className="adm-empty">
+                {filtroNot === "pendiente" ? "No hay noticias pendientes ✓" :
+                 filtroNot === "aprobado" ? "No hay noticias aprobadas" :
+                 "No hay noticias rechazadas"}
+              </div>
+            ) : (
+              noticias.map(n => (
+                <div key={n.id} className={`not-row${n.destacado ? " dest" : ""}`}>
+                  {n.imagen_url ? (
+                    <img className="not-img-thumb" src={n.imagen_url} alt={n.titulo} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  ) : (
+                    <div className="not-img-ph">📰</div>
+                  )}
+                  <div className="doc-info">
+                    <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
+                      <span className="doc-nombre">{n.titulo}</span>
+                      {n.destacado && (
+                        <span style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#eab308",background:"rgba(234,179,8,0.1)",border:"1px solid rgba(234,179,8,0.2)",padding:"2px 6px",borderRadius:10}}>
+                          ⭐ DESTACADA
+                        </span>
+                      )}
+                      {n.fuente && (
+                        <span style={{fontSize:9,color:"rgba(200,0,0,0.6)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
+                          {n.fuente}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",lineHeight:1.5,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical" as any,overflow:"hidden"}}>
+                      {n.cuerpo}
+                    </div>
+                    <div className="doc-meta">
+                      Por: {n.perfiles?.nombre} {n.perfiles?.apellido}
+                      {n.perfiles?.matricula ? ` · Mat. ${n.perfiles.matricula}` : ""}
+                      {" · "}{formatFecha(n.created_at)}
+                      {n.link && (
+                        <a href={n.link} target="_blank" rel="noopener noreferrer"
+                          style={{marginLeft:10,color:"#cc0000",textDecoration:"none",fontSize:10}}>
+                          Ver link →
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <div className="doc-acciones" style={{flexDirection:"column",gap:6}}>
+                    {procesandoNot === n.id ? (
+                      <span className="adm-spinner" />
+                    ) : (
+                      <>
+                        {n.estado === "pendiente" && (
+                          <button className="adm-btn-aprobar" onClick={() => aprobarNoticia(n)}>✓ Aprobar</button>
+                        )}
+                        {n.estado === "pendiente" && (
+                          <button className="adm-btn-rechazar" onClick={() => rechazarNoticia(n.id)}>✗ Rechazar</button>
+                        )}
+                        {n.estado === "aprobado" && (
+                          <button className={`adm-btn-destacar${n.destacado ? " on" : ""}`} onClick={() => toggleDestacado(n)}>
+                            {n.destacado ? "⭐ Quitar" : "☆ Destacar"}
+                          </button>
+                        )}
+                        {n.estado === "aprobado" && (
+                          <button className="adm-btn-rechazar" onClick={() => rechazarNoticia(n.id)}>Bajar</button>
+                        )}
+                        {n.estado === "rechazado" && (
+                          <button className="adm-btn-aprobar" onClick={() => aprobarNoticia(n)}>↑ Publicar</button>
+                        )}
+                        <button className="adm-btn-eliminar" onClick={() => eliminarNoticia(n.id)}>Eliminar</button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
 
           {/* PAGOS */}
           <div>
