@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 import NotificacionesWidget from "./NotificacionesWidget";
-
+import NoticiasWidget from "./NoticiasWidget";
 interface Dolar { compra: number; venta: number; promedio: number; }
 interface Clima {
   temp: number; tempMin: number; tempMax: number;
