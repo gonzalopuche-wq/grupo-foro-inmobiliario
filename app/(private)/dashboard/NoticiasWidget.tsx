@@ -55,13 +55,14 @@ export default function NoticiasWidget() {
 
   const cargarNoticias = async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("noticias")
       .select("*, perfiles(nombre, apellido, matricula)")
       .eq("estado", "aprobado")
       .order("destacado", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(9);
+    console.log("NOTICIAS:", data, "ERROR:", error);
     setNoticias((data as unknown as Noticia[]) ?? []);
     setLoading(false);
   };
@@ -79,7 +80,6 @@ export default function NoticiasWidget() {
       .map(l => l.replace(/[\u{1F300}-\u{1FAFF}🚨⚠️📅📍💻🎙️🔗📌❗]/gu, "").replace(/^[*_~`•\-\s]+/, "").trim())
       .find(l => l.length > 8) ?? "";
     const tituloSugerido = primeraLinea.slice(0, 120);
-
     setCuerpo(prev => prev ? prev + "\n" + texto : texto);
     if (!link && linkDetectado) { setLink(linkDetectado); setLinkAuto(true); }
     if (!titulo && tituloSugerido) { setTitulo(tituloSugerido); setTituloAuto(true); }
@@ -100,7 +100,7 @@ export default function NoticiasWidget() {
         const { data: urlData } = supabase.storage.from("imagenes").getPublicUrl(path);
         setImgUrl(urlData.publicUrl);
       }
-    } catch { /* imagen queda solo como preview */ }
+    } catch { }
     setSubiendo(false);
   };
 
@@ -124,11 +124,8 @@ export default function NoticiasWidget() {
     if (!titulo.trim() || !cuerpo.trim()) { setError("Título y contenido son obligatorios."); return; }
     if (!userId) return;
     setEnviando(true);
-
-    // Admin publica directo sin revisión
     const estado = esAdmin ? "aprobado" : "pendiente";
     const ahora = esAdmin ? new Date().toISOString() : null;
-
     const { error: err } = await supabase.from("noticias").insert({
       autor_id: userId,
       titulo: titulo.trim(),
@@ -234,7 +231,6 @@ export default function NoticiasWidget() {
         @media (max-width: 600px) { .not-grid { grid-template-columns: 1fr; } .not-field-row { grid-template-columns: 1fr; } }
       `}</style>
 
-      {/* ── LISTADO ── */}
       <div style={{ marginTop: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
           <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>
@@ -281,23 +277,17 @@ export default function NoticiasWidget() {
         )}
       </div>
 
-      {/* ── MODAL ── */}
       {mostrarForm && (
         <div className="not-modal-bg" onClick={e => { if (e.target === e.currentTarget) resetForm(); }}>
           <div className="not-modal">
             <div className="not-modal-header">
               <div className="not-modal-title">Nueva <span>noticia</span></div>
               <div className="not-modal-sub">
-                {esAdmin
-                  ? "Se publica directamente sin revisión."
-                  : "Va a revisión del admin antes de publicarse. Pegá foto + texto juntos o un link de internet."}
+                {esAdmin ? "Se publica directamente sin revisión." : "Va a revisión del admin antes de publicarse. Pegá foto + texto juntos o un link de internet."}
               </div>
             </div>
-
             {enviado ? (
-              <div className="not-ok">
-                {esAdmin ? "✓ Noticia publicada." : "✓ Enviado para revisión. El admin la aprobará pronto."}
-              </div>
+              <div className="not-ok">{esAdmin ? "✓ Noticia publicada." : "✓ Enviado para revisión. El admin la aprobará pronto."}</div>
             ) : (
               <>
                 <div className="not-compose" onPaste={handleAreaPaste}>
@@ -324,7 +314,6 @@ export default function NoticiasWidget() {
                     <input ref={inputFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) subirImagen(f); }} />
                   </div>
                 </div>
-
                 <div className="not-extras">
                   <div>
                     <label className="not-mini-label">Título *</label>
@@ -346,7 +335,6 @@ export default function NoticiasWidget() {
                     </div>
                   </div>
                 </div>
-
                 <div className="not-modal-footer">
                   {error ? <span className="not-error">{error}</span> : <span />}
                   <div style={{ display: "flex", gap: 8 }}>
