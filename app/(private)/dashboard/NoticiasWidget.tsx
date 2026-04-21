@@ -20,12 +20,13 @@ export default function NoticiasWidget() {
   const [loading, setLoading] = useState(true);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [esAdmin, setEsAdmin] = useState(false);
   const [titulo, setTitulo] = useState("");
   const [cuerpo, setCuerpo] = useState("");
   const [link, setLink] = useState("");
   const [fuente, setFuente] = useState("");
-  const [imgUrl, setImgUrl] = useState("");          // URL pública final
-  const [imgPreview, setImgPreview] = useState<string | null>(null); // preview local
+  const [imgUrl, setImgUrl] = useState("");
+  const [imgPreview, setImgPreview] = useState<string | null>(null);
   const [subiendo, setSubiendo] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -38,7 +39,15 @@ export default function NoticiasWidget() {
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
-      if (data.user) setUserId(data.user.id);
+      if (data.user) {
+        setUserId(data.user.id);
+        const { data: p } = await supabase
+          .from("perfiles")
+          .select("tipo")
+          .eq("id", data.user.id)
+          .single();
+        if (p?.tipo === "admin") setEsAdmin(true);
+      }
       await cargarNoticias();
     };
     init();
@@ -57,14 +66,30 @@ export default function NoticiasWidget() {
     setLoading(false);
   };
 
-  // ─── Procesamiento de imagen ────────────────────────────────────────────────
+  const extraerLink = (texto: string): string => {
+    const match = texto.match(/https?:\/\/[^\s]+/);
+    return match ? match[0] : "";
+  };
+
+  const handlePegadoTexto = (texto: string) => {
+    const linkDetectado = extraerLink(texto);
+    const cuerpoSinLink = texto.replace(linkDetectado, "").trim();
+    const primeraLinea = cuerpoSinLink
+      .split("\n")
+      .map(l => l.replace(/[\u{1F300}-\u{1FAFF}🚨⚠️📅📍💻🎙️🔗📌❗]/gu, "").replace(/^[*_~`•\-\s]+/, "").trim())
+      .find(l => l.length > 8) ?? "";
+    const tituloSugerido = primeraLinea.slice(0, 120);
+
+    setCuerpo(prev => prev ? prev + "\n" + texto : texto);
+    if (!link && linkDetectado) { setLink(linkDetectado); setLinkAuto(true); }
+    if (!titulo && tituloSugerido) { setTitulo(tituloSugerido); setTituloAuto(true); }
+  };
+
   const subirImagen = async (file: File) => {
     setSubiendo(true);
-    // Preview inmediato
     const reader = new FileReader();
     reader.onload = (ev) => setImgPreview(ev.target?.result as string);
     reader.readAsDataURL(file);
-    // Subir a Supabase Storage bucket "imagenes"
     try {
       const ext = file.name.split(".").pop() ?? "jpg";
       const path = `noticias/${Date.now()}.${ext}`;
@@ -75,86 +100,35 @@ export default function NoticiasWidget() {
         const { data: urlData } = supabase.storage.from("imagenes").getPublicUrl(path);
         setImgUrl(urlData.publicUrl);
       }
-    } catch { /* si falla storage, se envía sin imagen pública */ }
+    } catch { /* imagen queda solo como preview */ }
     setSubiendo(false);
   };
 
-  // ─── Fetch de og:image desde una URL ────────────────────────────────────────
-  const fetchOgImage = async (url: string) => {
-    try {
-      const res = await fetch(`/api/og-image?url=${encodeURIComponent(url)}`);
-      if (res.ok) {
-        const d = await res.json();
-        if (d.image) { setImgUrl(d.image); setImgPreview(d.image); }
-        if (d.title && !titulo) { setTitulo(d.title); setTituloAuto(true); }
-        if (d.siteName && !fuente) setFuente(d.siteName);
-      }
-    } catch { /* silencioso */ }
-  };
-
-  // ─── Pegar en el área principal (texto + imagen juntos) ─────────────────────
   const handleAreaPaste = async (e: React.ClipboardEvent) => {
     const items = Array.from(e.clipboardData.items);
-
-    // ¿Hay imagen?
     const imgItem = items.find(i => i.type.startsWith("image/"));
     if (imgItem) {
       e.preventDefault();
       const file = imgItem.getAsFile();
       if (file) await subirImagen(file);
-      // El texto que venga con la imagen se procesa abajo si también está
       const textItem = items.find(i => i.type === "text/plain");
-      if (textItem) {
-        textItem.getAsString(txt => procesarTexto(txt));
-      }
+      if (textItem) textItem.getAsString(txt => handlePegadoTexto(txt));
       return;
     }
-
-    // Solo texto
     const texto = e.clipboardData.getData("text/plain");
-    if (texto) {
-      e.preventDefault();
-      procesarTexto(texto);
-    }
+    if (texto) { e.preventDefault(); handlePegadoTexto(texto); }
   };
 
-  const procesarTexto = (texto: string) => {
-    // Detectar URL
-    const urlMatch = texto.match(/https?:\/\/[^\s]+/);
-    const urlDetectada = urlMatch ? urlMatch[0] : "";
-
-    if (urlDetectada && !link) {
-      setLink(urlDetectada);
-      setLinkAuto(true);
-      // Si el texto es SOLO una URL (noticia de internet), intentamos OG
-      const textoSinUrl = texto.replace(urlDetectada, "").trim();
-      if (textoSinUrl.length < 20) {
-        fetchOgImage(urlDetectada);
-        setCuerpo(textoSinUrl || texto);
-        return;
-      }
-    }
-
-    // Texto completo de WhatsApp/Telegram
-    const cuerpoFinal = texto;
-    setCuerpo(prev => prev ? prev + "\n" + cuerpoFinal : cuerpoFinal);
-
-    // Auto-título: primera línea con contenido real
-    if (!titulo) {
-      const lineas = texto.split("\n").map(l =>
-        l.replace(/[\u{1F300}-\u{1FAFF}🚨⚠️📅📍💻🎙️🔗📌❗]/gu, "")
-         .replace(/^[*_~`•\-\s]+/, "").trim()
-      ).filter(l => l.length > 8);
-      if (lineas[0]) { setTitulo(lineas[0].slice(0, 120)); setTituloAuto(true); }
-    }
-  };
-
-  // ─── Publicar ────────────────────────────────────────────────────────────────
   const publicar = async () => {
     setError("");
     if (!titulo.trim() || !cuerpo.trim()) { setError("Título y contenido son obligatorios."); return; }
     if (!userId) return;
     setEnviando(true);
+
+    // Admin publica directo sin revisión
+    const estado = esAdmin ? "aprobado" : "pendiente";
+    const ahora = esAdmin ? new Date().toISOString() : null;
+
     const { error: err } = await supabase.from("noticias").insert({
       autor_id: userId,
       titulo: titulo.trim(),
@@ -162,13 +136,16 @@ export default function NoticiasWidget() {
       link: link.trim() || null,
       imagen_url: imgUrl || null,
       fuente: fuente.trim() || null,
-      estado: "pendiente",
+      estado,
+      aprobado_at: ahora,
+      aprobado_por: esAdmin ? userId : null,
     });
     setEnviando(false);
     if (err) { setError("Error al publicar. Intentá de nuevo."); return; }
     setEnviado(true);
     resetForm(false);
-    setTimeout(() => { setEnviado(false); setMostrarForm(false); }, 2500);
+    await cargarNoticias();
+    setTimeout(() => { setEnviado(false); setMostrarForm(false); }, 2000);
   };
 
   const resetForm = (cerrar = true) => {
@@ -181,6 +158,7 @@ export default function NoticiasWidget() {
 
   const formatFecha = (iso: string) =>
     new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
+
   const dominio = (url: string | null) => {
     if (!url) return null;
     try { return new URL(url).hostname.replace("www.", ""); } catch { return null; }
@@ -227,7 +205,6 @@ export default function NoticiasWidget() {
         .not-modal-title { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
         .not-modal-title span { color: #cc0000; }
         .not-modal-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 3px; }
-        /* Área tipo WhatsApp */
         .not-compose { padding: 0; }
         .not-img-preview-wrap { position: relative; background: #000; }
         .not-img-preview-img { width: 100%; max-height: 260px; object-fit: contain; display: block; }
@@ -239,7 +216,6 @@ export default function NoticiasWidget() {
         .not-toolbar-btn { background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; color: rgba(255,255,255,0.5); font-size: 16px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
         .not-toolbar-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; background: rgba(255,255,255,0.05); }
         .not-toolbar-hint { font-size: 10px; color: rgba(255,255,255,0.2); font-family: 'Inter', sans-serif; flex: 1; }
-        /* Campos adicionales */
         .not-extras { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 8px; }
         .not-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .not-mini-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 4px; font-family: 'Montserrat', sans-serif; display: block; }
@@ -247,7 +223,6 @@ export default function NoticiasWidget() {
         .not-mini-input:focus { border-color: rgba(200,0,0,0.4); }
         .not-mini-input::placeholder { color: rgba(255,255,255,0.18); }
         .not-auto-badge { font-size: 9px; color: #22c55e; margin-top: 3px; }
-        /* Footer del modal */
         .not-modal-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .not-error { font-size: 11px; color: #ff4444; flex: 1; }
         .not-ok { font-size: 12px; color: #22c55e; font-family: 'Montserrat', sans-serif; font-weight: 700; text-align: center; padding: 14px; }
@@ -306,86 +281,79 @@ export default function NoticiasWidget() {
         )}
       </div>
 
-      {/* ── MODAL TIPO WHATSAPP ── */}
+      {/* ── MODAL ── */}
       {mostrarForm && (
         <div className="not-modal-bg" onClick={e => { if (e.target === e.currentTarget) resetForm(); }}>
           <div className="not-modal">
-
             <div className="not-modal-header">
               <div className="not-modal-title">Nueva <span>noticia</span></div>
-              <div className="not-modal-sub">Pegá foto + texto juntos, un link de internet, o escribí directo</div>
+              <div className="not-modal-sub">
+                {esAdmin
+                  ? "Se publica directamente sin revisión."
+                  : "Va a revisión del admin antes de publicarse. Pegá foto + texto juntos o un link de internet."}
+              </div>
             </div>
 
             {enviado ? (
-              <div className="not-ok">✓ Enviado para revisión. El admin la aprobará pronto.</div>
+              <div className="not-ok">
+                {esAdmin ? "✓ Noticia publicada." : "✓ Enviado para revisión. El admin la aprobará pronto."}
+              </div>
             ) : (
               <>
                 <div className="not-compose" onPaste={handleAreaPaste}>
-                  {/* Preview imagen */}
                   {imgPreview && (
                     <div className="not-img-preview-wrap">
                       <img className="not-img-preview-img" src={imgPreview} alt="preview" />
                       {subiendo && <div className="not-img-uploading">⏳ Subiendo imagen...</div>}
-                      <button className="not-img-quitar" onClick={quitarImagen} title="Quitar imagen">✕</button>
+                      <button className="not-img-quitar" onClick={quitarImagen}>✕</button>
                     </div>
                   )}
-
-                  {/* Área de texto principal */}
                   <textarea
                     ref={textareaRef}
                     className="not-paste-area"
-                    placeholder={"Pegá el texto de WhatsApp, Telegram o un link de internet acá...\n\nTambién podés pegar una foto (Ctrl+V) o arrastrarla."}
+                    placeholder={"Pegá el texto de WhatsApp, Telegram o un link de internet acá...\n\nTambién podés pegar una foto con Ctrl+V o arrastrarla."}
                     value={cuerpo}
                     onChange={e => setCuerpo(e.target.value)}
                     onPaste={handleAreaPaste}
-                    onDrop={e => {
-                      e.preventDefault();
-                      const file = e.dataTransfer.files[0];
-                      if (file?.type.startsWith("image/")) subirImagen(file);
-                    }}
+                    onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f?.type.startsWith("image/")) subirImagen(f); }}
                     onDragOver={e => e.preventDefault()}
                   />
-
-                  {/* Toolbar tipo WhatsApp */}
                   <div className="not-toolbar">
                     <button className="not-toolbar-btn" title="Adjuntar imagen" onClick={() => inputFileRef.current?.click()}>🖼️</button>
-                    <span className="not-toolbar-hint">Ctrl+V para pegar imagen · arrastrar · o elegir archivo</span>
+                    <span className="not-toolbar-hint">Ctrl+V · arrastrar · o elegir archivo</span>
                     <input ref={inputFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) subirImagen(f); }} />
                   </div>
                 </div>
 
-                {/* Campos adicionales */}
                 <div className="not-extras">
-                  {/* Título */}
                   <div>
                     <label className="not-mini-label">Título *</label>
-                    <input className="not-mini-input" placeholder="Título de la noticia..." value={titulo} onChange={e => { setTitulo(e.target.value); setTituloAuto(false); }} />
+                    <input className="not-mini-input" placeholder="Título de la noticia..." value={titulo}
+                      onChange={e => { setTitulo(e.target.value); setTituloAuto(false); }} />
                     {tituloAuto && titulo && <div className="not-auto-badge">✓ Detectado automáticamente — podés editarlo</div>}
                   </div>
-
                   <div className="not-field-row">
-                    {/* Link */}
                     <div>
                       <label className="not-mini-label">Link</label>
-                      <input className="not-mini-input" placeholder="https://..." value={link} onChange={e => { setLink(e.target.value); setLinkAuto(false); }}
-                        onBlur={e => { if (e.target.value && !imgPreview) fetchOgImage(e.target.value); }} />
+                      <input className="not-mini-input" placeholder="https://..." value={link}
+                        onChange={e => { setLink(e.target.value); setLinkAuto(false); }} />
                       {linkAuto && link && <div className="not-auto-badge">✓ Detectado del texto</div>}
                     </div>
-                    {/* Fuente */}
                     <div>
                       <label className="not-mini-label">Fuente</label>
-                      <input className="not-mini-input" placeholder="Ej: COCIR, Infobae..." value={fuente} onChange={e => setFuente(e.target.value)} />
+                      <input className="not-mini-input" placeholder="Ej: COCIR, Infobae..." value={fuente}
+                        onChange={e => setFuente(e.target.value)} />
                     </div>
                   </div>
                 </div>
 
-                {/* Footer */}
                 <div className="not-modal-footer">
                   {error ? <span className="not-error">{error}</span> : <span />}
                   <div style={{ display: "flex", gap: 8 }}>
                     <button className="not-btn-cancel" onClick={() => resetForm()}>Cancelar</button>
-                    <button className="not-btn-send" onClick={publicar} disabled={enviando || subiendo || !titulo.trim() || !cuerpo.trim()}>
-                      {enviando ? "Enviando..." : subiendo ? "Subiendo..." : "Enviar para revisión"}
+                    <button className="not-btn-send" onClick={publicar}
+                      disabled={enviando || subiendo || !titulo.trim() || !cuerpo.trim()}>
+                      {enviando ? "Publicando..." : subiendo ? "Subiendo imagen..." : esAdmin ? "Publicar" : "Enviar para revisión"}
                     </button>
                   </div>
                 </div>
