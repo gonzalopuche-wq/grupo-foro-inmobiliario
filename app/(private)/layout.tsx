@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { href: "/comparables", label: "Comparables", icon: "📈" },
   { href: "/padron-gfi", label: "Padrón", icon: "📋" },
   { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
-  { href: "/divisas", label: "Cotizaciones", icon: "💱" },
+  { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
   { href: "/mi-web", label: "Mi Web", icon: "🌐" },
 ];
 
