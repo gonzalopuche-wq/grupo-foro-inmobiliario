@@ -90,7 +90,9 @@ function buildPortalURLs(operacion: string, tipo: string, zona: string, precioMi
   const pr = `https://www.properati.com.ar/${tp}s-en-venta/rosario/${z}?operation_type=${op === 'venta' ? 'Venta' : 'Alquiler'}`
 
   // Propia
-  const propia = `https://www.propia.com.ar/buscar?tipo=${tp}&operacion=${op}&localidad=rosario&barrio=${z}${pmin ? `&precio_desde=${pmin}` : ''}${pmax ? `&precio_hasta=${pmax}` : ''}`
+  const propiaOp = op === 'venta' ? 'venta' : 'alquiler'
+  const propiaTp = tp === 'departamento' ? 'departamentos' : tp === 'casa' ? 'casas' : tp + 's'
+  const propia = `https://propia.com.ar/propiedades?operacion=${propiaOp}&tipo=${propiaTp}&provincia=santa-fe&ciudad=rosario&zona=${z}${pmin ? `&precio_min=${pmin}` : ''}${pmax ? `&precio_max=${pmax}` : ''}${d ? `&dormitorios=${d}` : ''}`
 
   // BienesRosario
   const br = `https://www.bienesrosario.com/${tp}s-en-${op}?zona=${zona}`
