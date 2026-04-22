@@ -64,7 +64,7 @@ async function buscarZonaProp(params: BusquedaParams): Promise<PropiedadResultad
     const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(8000) })
     if (!res.ok) return []
     const html = await res.text()
-    const match = html.match(/window\.__PRELOADED_STATE__\s*=\s*({.+?});\s*<\/script>/s)
+    const match = html.match(/window\.__PRELOADED_STATE__\s*=\s*({[\s\S]+?});\s*<\/script>/)
     if (!match) return []
     const state = JSON.parse(match[1])
     const listings = state?.listPostings || state?.searchResult?.listings || []

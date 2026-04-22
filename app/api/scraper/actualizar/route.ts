@@ -36,7 +36,7 @@ async function verificarZonaProp(url: string): Promise<{ precio?: number; dispon
     }
 
     // Extraer precio del JSON embebido
-    const match = html.match(/window\.__PRELOADED_STATE__\s*=\s*({.+?});\s*<\/script>/s)
+    const match = html.match(/window\.__PRELOADED_STATE__\s*=\s*({[\s\S]+?});\s*<\/script>/)
     if (match) {
       const state = JSON.parse(match[1])
       const posting = state?.posting || state?.realEstate
