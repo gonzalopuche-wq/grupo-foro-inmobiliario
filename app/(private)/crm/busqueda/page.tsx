@@ -32,41 +32,98 @@ const TIPOS = ['Departamento', 'Casa', 'PH', 'Local', 'Oficina', 'Terreno', 'Gal
 const OPERACIONES = ['Venta', 'Alquiler', 'Alquiler temporal']
 const DORMITORIOS = ['1', '2', '3', '4', '5+']
 
-// ─── Armar URLs de búsqueda en portales externos ──────────────────────────────
+// ─── Helpers de normalización ─────────────────────────────────────────────────
 
-function armarURLZonaProp(operacion: string, tipo: string, zona: string, precioMin: string, precioMax: string, dorm: string) {
-  const opMap: Record<string, string> = { 'venta': 'venta', 'alquiler': 'alquiler', 'alquiler-temporal': 'alquiler-temporal' }
-  const tpMap: Record<string, string> = { 'departamento': 'departamento', 'casa': 'casa', 'ph': 'ph', 'local': 'local', 'oficina': 'oficina', 'terreno': 'terreno', 'galpón': 'galpon' }
-  const op = opMap[operacion.toLowerCase().replace(' ', '-')] || 'venta'
-  const tp = tpMap[tipo.toLowerCase()] || 'departamento'
-  const zonaSlug = zona.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  let url = `https://www.zonaprop.com.ar/${tp}-${op}-${zonaSlug}.html?`
-  const q: string[] = []
-  if (precioMin) q.push(`preciomin=${precioMin}`)
-  if (precioMax) q.push(`preciomax=${precioMax}`)
-  if (dorm) q.push(`ambientes=${dorm.replace('+', '')}`)
-  q.push('orden=relevancia-DESC')
-  return url + q.join('&')
+function slugify(s: string) {
+  return s.toLowerCase().trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 }
 
-function armarURLArgenprop(operacion: string, tipo: string, zona: string, precioMin: string, precioMax: string, dorm: string) {
-  const op = operacion.toLowerCase().includes('alquiler') ? 'alquiler' : 'venta'
-  const zonaSlug = zona.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  const tpSlug = tipo.toLowerCase().replace('ó', 'o').replace('é', 'e')
-  let url = `https://www.argenprop.com/${tpSlug}-${op}-en-rosario-${zonaSlug}`
-  const q: string[] = []
-  if (precioMin) q.push(`preciomin=${precioMin}`)
-  if (precioMax) q.push(`preciomax=${precioMax}`)
-  if (dorm) q.push(`dormitorios=${dorm.replace('+', '')}`)
-  return url + (q.length ? '?' + q.join('&') : '')
+function opSlug(op: string) {
+  const m: Record<string, string> = { 'venta': 'venta', 'alquiler': 'alquiler', 'alquiler-temporal': 'alquiler-temporal' }
+  return m[op.toLowerCase().replace(' ', '-')] || 'venta'
 }
 
-function armarURLInfocasas(operacion: string, tipo: string, zona: string) {
-  const op = operacion.toLowerCase().includes('alquiler') ? 'alquiler' : 'venta'
-  const zonaSlug = zona.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  const tpSlug = tipo.toLowerCase()
-  return `https://www.infocasas.com.ar/${tpSlug}s-en-${op}/rosario/${zonaSlug}`
+function tipoSlug(t: string) {
+  const m: Record<string, string> = {
+    'departamento': 'departamento', 'casa': 'casa', 'ph': 'ph',
+    'local': 'local', 'oficina': 'oficina', 'terreno': 'terreno', 'galpon': 'galpon', 'galpón': 'galpon'
+  }
+  return m[t.toLowerCase()] || 'departamento'
 }
+
+// ─── URLs por portal ──────────────────────────────────────────────────────────
+
+function buildPortalURLs(operacion: string, tipo: string, zona: string, precioMin: string, precioMax: string, dorm: string) {
+  const op = opSlug(operacion)
+  const tp = tipoSlug(tipo)
+  const z = slugify(zona)
+  const pmin = precioMin || ''
+  const pmax = precioMax || ''
+  const d = dorm.replace('+', '')
+
+  // ZonaProp
+  const zp = (() => {
+    let url = `https://www.zonaprop.com.ar/${tp}-${op}-${z}.html?`
+    const q = ['orden=relevancia-DESC']
+    if (pmin) q.push(`preciomin=${pmin}`)
+    if (pmax) q.push(`preciomax=${pmax}`)
+    if (d) q.push(`ambientes=${d}`)
+    return url + q.join('&')
+  })()
+
+  // Argenprop
+  const ap = (() => {
+    let url = `https://www.argenprop.com/${tp}-${op}-en-rosario-${z}`
+    const q: string[] = []
+    if (pmin) q.push(`preciomin=${pmin}`)
+    if (pmax) q.push(`preciomax=${pmax}`)
+    if (d) q.push(`dormitorios=${d}`)
+    return url + (q.length ? '?' + q.join('&') : '')
+  })()
+
+  // InfoCasas
+  const ic = `https://www.infocasas.com.ar/${tp}s-en-${op}/rosario/${z}`
+
+  // Properati (ahora Proppit)
+  const pr = `https://www.properati.com.ar/${tp}s-en-venta/rosario/${z}?operation_type=${op === 'venta' ? 'Venta' : 'Alquiler'}`
+
+  // Propia
+  const propia = `https://www.propia.com.ar/buscar?tipo=${tp}&operacion=${op}&localidad=rosario&barrio=${z}${pmin ? `&precio_desde=${pmin}` : ''}${pmax ? `&precio_hasta=${pmax}` : ''}`
+
+  // BienesRosario
+  const br = `https://www.bienesrosario.com/${tp}s-en-${op}?zona=${zona}`
+
+  // Doomos
+  const dm = `https://www.doomos.com.ar/${op}/${tp}/rosario-santa-fe/${z}`
+
+  // LaCapital Clasificados
+  const lc = `https://clasificados.lacapital.com.ar/inmuebles/${op}/${tp}/rosario/${z}`
+
+  // Yumblin
+  const yb = `https://www.yumblin.com/rosario/${z}/${tp}s-en-${op}`
+
+  // BienesOnline
+  const bo = `https://www.bienesonline.com/argentina/santa-fe/rosario/${tp}s-en-${op}/?q=${zona}+rosario`
+
+  return { zp, ap, ic, pr, propia, br, dm, lc, yb, bo }
+}
+
+// ─── Config visual de portales ────────────────────────────────────────────────
+
+const PORTALES_CONFIG = [
+  { key: 'zp',    label: 'ZonaProp',    color: 'rgba(230,0,0,0.15)',     border: 'rgba(230,0,0,0.3)' },
+  { key: 'ap',    label: 'Argenprop',   color: 'rgba(245,166,35,0.1)',   border: 'rgba(245,166,35,0.3)' },
+  { key: 'ic',    label: 'InfoCasas',   color: 'rgba(59,130,246,0.1)',   border: 'rgba(59,130,246,0.3)' },
+  { key: 'pr',    label: 'Properati',   color: 'rgba(16,185,129,0.1)',   border: 'rgba(16,185,129,0.3)' },
+  { key: 'propia',label: 'Propia',      color: 'rgba(139,92,246,0.1)',   border: 'rgba(139,92,246,0.3)' },
+  { key: 'br',    label: 'BienesRosario', color: 'rgba(236,72,153,0.1)', border: 'rgba(236,72,153,0.3)' },
+  { key: 'dm',    label: 'Doomos',      color: 'rgba(245,158,11,0.1)',   border: 'rgba(245,158,11,0.3)' },
+  { key: 'lc',    label: 'LaCapital',   color: 'rgba(239,68,68,0.1)',    border: 'rgba(239,68,68,0.3)' },
+  { key: 'yb',    label: 'Yumblin',     color: 'rgba(20,184,166,0.1)',   border: 'rgba(20,184,166,0.3)' },
+  { key: 'bo',    label: 'BienesOnline',color: 'rgba(99,102,241,0.1)',   border: 'rgba(99,102,241,0.3)' },
+]
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
@@ -79,22 +136,24 @@ export default function BusquedaPage() {
   const [dormitorios, setDormitorios] = useState('')
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false)
 
-  // Resultados ML
   const [resultados, setResultados] = useState<Propiedad[]>([])
   const [cargando, setCargando] = useState(false)
   const [buscado, setBuscado] = useState(false)
   const [error, setError] = useState('')
 
-  // Carga manual
   const [urlManual, setUrlManual] = useState('')
   const [propiedadesManuales, setPropiedadesManuales] = useState<Propiedad[]>([])
   const [cargandoManual, setCargandoManual] = useState(false)
 
-  // Selección
   const [seleccionadas, setSeleccionadas] = useState<Set<string>>(new Set())
   const [modalLista, setModalLista] = useState(false)
 
-  // Buscar en MercadoLibre
+  // Armar URLs con los filtros actuales
+  const portalURLs = zona.trim()
+    ? buildPortalURLs(operacion, tipo, zona, precioMin, precioMax, dormitorios)
+    : null
+
+  // Buscar en MercadoLibre (API oficial gratuita)
   const buscar = useCallback(async () => {
     if (!zona.trim()) { setError('Ingresá una zona o barrio'); return }
     setError('')
@@ -108,8 +167,8 @@ export default function BusquedaPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
         body: JSON.stringify({
-          operacion: operacion.toLowerCase().replace(' ', '-'),
-          tipo: tipo.toLowerCase(),
+          operacion: opSlug(operacion),
+          tipo: tipoSlug(tipo),
           zona: zona.trim(),
           precioMin: precioMin ? Number(precioMin) : undefined,
           precioMax: precioMax ? Number(precioMax) : undefined,
@@ -127,25 +186,30 @@ export default function BusquedaPage() {
     }
   }, [operacion, tipo, zona, precioMin, precioMax, dormitorios])
 
-  // Agregar propiedad manual por URL
+  // Agregar propiedad por URL
   const agregarManual = async () => {
     if (!urlManual.trim()) return
     const url = urlManual.trim()
+    if ([...resultados, ...propiedadesManuales].find(p => p.url_original === url)) {
+      setUrlManual(''); return
+    }
 
-    // Detectar portal
     let portal = 'manual'
     if (url.includes('zonaprop')) portal = 'zonaprop'
     else if (url.includes('argenprop')) portal = 'argenprop'
     else if (url.includes('mercadolibre') || url.includes('inmuebles.mercadolibre')) portal = 'mercadolibre'
     else if (url.includes('infocasas')) portal = 'infocasas'
-
-    // Verificar que no esté ya
-    const yaExiste = [...resultados, ...propiedadesManuales].find(p => p.url_original === url)
-    if (yaExiste) { setUrlManual(''); return }
+    else if (url.includes('properati') || url.includes('proppit')) portal = 'properati'
+    else if (url.includes('propia.com.ar')) portal = 'propia'
+    else if (url.includes('bienesrosario')) portal = 'bienesrosario'
+    else if (url.includes('doomos')) portal = 'doomos'
+    else if (url.includes('lacapital')) portal = 'lacapital'
+    else if (url.includes('yumblin')) portal = 'yumblin'
+    else if (url.includes('bienesonline')) portal = 'bienesonline'
 
     setCargandoManual(true)
     try {
-      // Para ML intentamos obtener datos via API
+      // ML: traer datos via API oficial
       if (portal === 'mercadolibre') {
         const mlId = url.match(/MLA-?(\d+)/i)?.[0]?.replace('-', '')
         if (mlId) {
@@ -154,7 +218,7 @@ export default function BusquedaPage() {
             const item = await res.json()
             const atributos: Record<string, string> = {}
             ;(item.attributes || []).forEach((a: any) => { atributos[a.id] = a.value_name || '' })
-            const prop: Propiedad = {
+            setPropiedadesManuales(prev => [{
               portal: 'mercadolibre',
               portal_id: item.id,
               url_original: item.permalink || url,
@@ -169,8 +233,7 @@ export default function BusquedaPage() {
               imagen_principal: item.thumbnail?.replace('-I.jpg', '-O.jpg'),
               imagenes: (item.pictures || []).map((p: any) => p.url?.replace('-I.jpg', '-O.jpg')).filter(Boolean),
               disponible: true,
-            }
-            setPropiedadesManuales(prev => [prop, ...prev])
+            }, ...prev])
             setUrlManual('')
             setCargandoManual(false)
             return
@@ -178,18 +241,18 @@ export default function BusquedaPage() {
         }
       }
 
-      // Para otros portales: agregar con datos mínimos
-      const prop: Propiedad = {
+      // Resto de portales: agregar con datos mínimos
+      setPropiedadesManuales(prev => [{
         portal,
         portal_id: `manual_${Date.now()}`,
         url_original: url,
-        titulo: `Propiedad en ${portal} — ${zona || 'Rosario'}`,
+        titulo: `Propiedad en ${portal.charAt(0).toUpperCase() + portal.slice(1)}`,
+        barrio: zona || '',
+        ciudad: 'Rosario',
         disponible: true,
-      }
-      setPropiedadesManuales(prev => [prop, ...prev])
+      }, ...prev])
       setUrlManual('')
     } catch {
-      // Agregar igual con datos mínimos
       setPropiedadesManuales(prev => [{
         portal,
         portal_id: `manual_${Date.now()}`,
@@ -215,12 +278,7 @@ export default function BusquedaPage() {
   const todasLasPropiedades = [...propiedadesManuales, ...resultados]
   const propiedadesSeleccionadas = todasLasPropiedades.filter(p => seleccionadas.has(p.url_original))
 
-  const zpUrl = zona ? armarURLZonaProp(operacion, tipo, zona, precioMin, precioMax, dormitorios) : null
-  const apUrl = zona ? armarURLArgenprop(operacion, tipo, zona, precioMin, precioMax, dormitorios) : null
-  const icUrl = zona ? armarURLInfocasas(operacion, tipo, zona) : null
-
-  // Estilos inline (mismo sistema que CRM)
-  const label = { fontSize:10, color:'rgba(255,255,255,0.4)', display:'block', marginBottom:6, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' as const }
+  const label: React.CSSProperties = { fontSize:10, color:'rgba(255,255,255,0.4)', display:'block', marginBottom:6, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }
 
   return (
     <div style={{minHeight:'100vh', background:'#0a0a0a', color:'#fff', fontFamily:'Inter,sans-serif'}}>
@@ -234,7 +292,7 @@ export default function BusquedaPage() {
               Búsqueda Inteligente
             </h1>
             <p style={{margin:'2px 0 0', fontSize:11, color:'rgba(255,255,255,0.3)'}}>
-              MercadoLibre · ZonaProp · Argenprop · InfoCasas
+              MercadoLibre · ZonaProp · Argenprop · Properati · Propia · InfoCasas · y más
             </p>
           </div>
           {seleccionadas.size > 0 && (
@@ -250,7 +308,7 @@ export default function BusquedaPage() {
       <div style={{maxWidth:1200, margin:'0 auto', padding:20}}>
 
         {/* ── Filtros ── */}
-        <div style={{background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:12, padding:20, marginBottom:20}}>
+        <div style={{background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:12, padding:20, marginBottom:16}}>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:14, marginBottom:14}}>
             <div>
               <label style={label}>Operación</label>
@@ -274,7 +332,7 @@ export default function BusquedaPage() {
               <label style={label}>Zona / Barrio</label>
               <input type="text" value={zona} onChange={e => setZona(e.target.value)} onKeyDown={e => e.key==='Enter' && buscar()}
                 placeholder="Ej: Pichincha, Centro, Fisherton..."
-                style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box' as const}} />
+                style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
             </div>
           </div>
 
@@ -290,12 +348,12 @@ export default function BusquedaPage() {
                 <div>
                   <label style={label}>Precio mín.</label>
                   <input type="number" value={precioMin} onChange={e => setPrecioMin(e.target.value)} placeholder="USD 0"
-                    style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box' as const}} />
+                    style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
                 </div>
                 <div>
                   <label style={label}>Precio máx.</label>
                   <input type="number" value={precioMax} onChange={e => setPrecioMax(e.target.value)} placeholder="Sin límite"
-                    style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box' as const}} />
+                    style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
                 </div>
                 <div>
                   <label style={label}>Dormitorios</label>
@@ -318,60 +376,47 @@ export default function BusquedaPage() {
             </div>
           )}
 
-          {/* Botón ML + links a portales */}
-          <div style={{display:'flex', gap:10, flexWrap:'wrap' as const}}>
-            <button onClick={buscar} disabled={cargando}
-              style={{flex:'1 1 200px', background:'#cc0000', border:'none', color:'#fff', padding:'11px', borderRadius:8, fontWeight:700, fontSize:13, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:cargando?0.7:1}}>
-              {cargando
-                ? <><Loader2 style={{width:15, height:15, animation:'spin 1s linear infinite'}} />Buscando en MercadoLibre...</>
-                : <><Search style={{width:15, height:15}} />Buscar en MercadoLibre</>
-              }
-            </button>
+          {/* Botón ML */}
+          <button onClick={buscar} disabled={cargando}
+            style={{width:'100%', background:'#cc0000', border:'none', color:'#fff', padding:'12px', borderRadius:8, fontWeight:700, fontSize:13, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:cargando?0.7:1, marginBottom:12}}>
+            {cargando
+              ? <><Loader2 style={{width:15, height:15, animation:'spin 1s linear infinite'}} />Buscando en MercadoLibre...</>
+              : <><Search style={{width:15, height:15}} />Buscar en MercadoLibre (resultados acá)</>
+            }
+          </button>
 
-            {zpUrl && (
-              <a href={zpUrl} target="_blank" rel="noopener noreferrer"
-                style={{flex:'1 1 140px', background:'rgba(230,0,0,0.08)', border:'1px solid rgba(230,0,0,0.25)', color:'rgba(255,255,255,0.7)', padding:'11px', borderRadius:8, fontWeight:700, fontSize:12, fontFamily:'Montserrat,sans-serif', textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center', gap:6}}>
-                <ExternalLink style={{width:13, height:13}} />ZonaProp ↗
-              </a>
-            )}
-
-            {apUrl && (
-              <a href={apUrl} target="_blank" rel="noopener noreferrer"
-                style={{flex:'1 1 140px', background:'rgba(245,166,35,0.08)', border:'1px solid rgba(245,166,35,0.2)', color:'rgba(255,255,255,0.7)', padding:'11px', borderRadius:8, fontWeight:700, fontSize:12, fontFamily:'Montserrat,sans-serif', textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center', gap:6}}>
-                <ExternalLink style={{width:13, height:13}} />Argenprop ↗
-              </a>
-            )}
-
-            {icUrl && (
-              <a href={icUrl} target="_blank" rel="noopener noreferrer"
-                style={{flex:'1 1 140px', background:'rgba(59,130,246,0.08)', border:'1px solid rgba(59,130,246,0.2)', color:'rgba(255,255,255,0.7)', padding:'11px', borderRadius:8, fontWeight:700, fontSize:12, fontFamily:'Montserrat,sans-serif', textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center', gap:6}}>
-                <ExternalLink style={{width:13, height:13}} />InfoCasas ↗
-              </a>
-            )}
-          </div>
-
-          {zona && (
-            <p style={{margin:'10px 0 0', fontSize:11, color:'rgba(255,255,255,0.25)'}}>
-              Los botones ↗ abren cada portal con tu búsqueda ya aplicada. Copiá la URL de las que te gusten y pegala abajo para agregarlas a tu lista.
-            </p>
+          {/* Links a todos los portales */}
+          {portalURLs && (
+            <div>
+              <p style={{margin:'0 0 8px', fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase'}}>
+                Buscar también en — abre en nueva pestaña con tu búsqueda aplicada:
+              </p>
+              <div style={{display:'flex', flexWrap:'wrap', gap:8}}>
+                {PORTALES_CONFIG.map(p => (
+                  <a key={p.key} href={(portalURLs as any)[p.key]} target="_blank" rel="noopener noreferrer"
+                    style={{display:'flex', alignItems:'center', gap:5, background:p.color, border:`1px solid ${p.border}`, color:'rgba(255,255,255,0.75)', padding:'7px 14px', borderRadius:20, fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', textDecoration:'none', whiteSpace:'nowrap'}}>
+                    <ExternalLink style={{width:11, height:11}} />
+                    {p.label}
+                  </a>
+                ))}
+              </div>
+              <p style={{margin:'8px 0 0', fontSize:11, color:'rgba(255,255,255,0.2)'}}>
+                Encontraste algo que te gusta? Copiá la URL y pegala abajo para agregarlo a tu lista.
+              </p>
+            </div>
           )}
         </div>
 
         {/* ── Agregar por URL ── */}
         <div style={{background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:16, marginBottom:20}}>
-          <label style={{...label, marginBottom:10}}>
+          <label style={{...label, marginBottom:8}}>
             <LinkIcon style={{width:12, height:12, display:'inline', marginRight:5}} />
-            Agregar propiedad por URL
+            Agregar propiedad por URL — de cualquier portal
           </label>
           <div style={{display:'flex', gap:8}}>
-            <input
-              type="url"
-              value={urlManual}
-              onChange={e => setUrlManual(e.target.value)}
-              onKeyDown={e => e.key==='Enter' && agregarManual()}
-              placeholder="Pegá la URL de ZonaProp, Argenprop, MercadoLibre, InfoCasas..."
-              style={{flex:1, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'9px 12px', color:'#fff', fontSize:12, outline:'none', fontFamily:'Inter,sans-serif'}}
-            />
+            <input type="url" value={urlManual} onChange={e => setUrlManual(e.target.value)} onKeyDown={e => e.key==='Enter' && agregarManual()}
+              placeholder="Pegá la URL de ZonaProp, Argenprop, Properati, Propia, InfoCasas, Doomos, LaCapital..."
+              style={{flex:1, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'9px 12px', color:'#fff', fontSize:12, outline:'none', fontFamily:'Inter,sans-serif'}} />
             <button onClick={agregarManual} disabled={cargandoManual || !urlManual.trim()}
               style={{background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.15)', color:'#fff', padding:'9px 16px', borderRadius:6, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', gap:6, opacity:(!urlManual.trim()||cargandoManual)?0.4:1}}>
               {cargandoManual ? <Loader2 style={{width:14, height:14, animation:'spin 1s linear infinite'}} /> : <Plus style={{width:14, height:14}} />}
@@ -383,7 +428,7 @@ export default function BusquedaPage() {
         {/* ── Propiedades manuales ── */}
         {propiedadesManuales.length > 0 && (
           <div style={{marginBottom:24}}>
-            <p style={{...label, marginBottom:12}}>Propiedades agregadas manualmente ({propiedadesManuales.length})</p>
+            <p style={{...label, marginBottom:12}}>Propiedades agregadas ({propiedadesManuales.length})</p>
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:14}}>
               {propiedadesManuales.map(prop => (
                 <div key={prop.url_original} style={{position:'relative'}}>
@@ -391,11 +436,7 @@ export default function BusquedaPage() {
                     style={{position:'absolute', top:8, right:8, zIndex:10, background:'rgba(0,0,0,0.7)', border:'none', color:'rgba(255,255,255,0.6)', borderRadius:'50%', width:24, height:24, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}>
                     <X style={{width:12, height:12}} />
                   </button>
-                  <PropiedadCard
-                    propiedad={prop}
-                    seleccionada={seleccionadas.has(prop.url_original)}
-                    onToggle={() => toggleSeleccion(prop.url_original)}
-                  />
+                  <PropiedadCard propiedad={prop} seleccionada={seleccionadas.has(prop.url_original)} onToggle={() => toggleSeleccion(prop.url_original)} />
                 </div>
               ))}
             </div>
@@ -406,18 +447,14 @@ export default function BusquedaPage() {
         {buscado && (
           <>
             <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14}}>
-              <div style={{display:'flex', alignItems:'center', gap:10}}>
-                <span style={{fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.7)', fontFamily:'Montserrat,sans-serif'}}>
-                  {cargando ? 'Buscando...' : resultados.length === 0 ? 'Sin resultados en MercadoLibre' : `${resultados.length} resultados en MercadoLibre`}
-                </span>
-              </div>
-              {resultados.length > 0 && (
-                <button
-                  onClick={() => {
-                    if (seleccionadas.size === todasLasPropiedades.length) setSeleccionadas(new Set())
-                    else setSeleccionadas(new Set(todasLasPropiedades.map(p => p.url_original)))
-                  }}
-                  style={{background:'none', border:'none', color:'#cc0000', fontSize:11, cursor:'pointer', fontWeight:600}}>
+              <span style={{fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.7)', fontFamily:'Montserrat,sans-serif'}}>
+                {cargando ? 'Buscando en MercadoLibre...' : resultados.length === 0 ? 'Sin resultados en MercadoLibre' : `${resultados.length} resultados en MercadoLibre`}
+              </span>
+              {todasLasPropiedades.length > 0 && (
+                <button onClick={() => {
+                  if (seleccionadas.size === todasLasPropiedades.length) setSeleccionadas(new Set())
+                  else setSeleccionadas(new Set(todasLasPropiedades.map(p => p.url_original)))
+                }} style={{background:'none', border:'none', color:'#cc0000', fontSize:11, cursor:'pointer', fontWeight:600}}>
                   {seleccionadas.size === todasLasPropiedades.length ? 'Deseleccionar todas' : 'Seleccionar todas'}
                 </button>
               )}
@@ -426,20 +463,15 @@ export default function BusquedaPage() {
             {!cargando && resultados.length === 0 && (
               <div style={{textAlign:'center', padding:'48px 0', color:'rgba(255,255,255,0.2)'}}>
                 <Home style={{width:36, height:36, margin:'0 auto 10px', display:'block', opacity:0.3}} />
-                <p style={{margin:0}}>No encontramos resultados en MercadoLibre para esa búsqueda.</p>
-                <p style={{margin:'4px 0 0', fontSize:12}}>Probá en ZonaProp o Argenprop con los botones de arriba.</p>
+                <p style={{margin:0}}>Sin resultados en MercadoLibre para esa búsqueda.</p>
+                <p style={{margin:'4px 0 0', fontSize:12}}>Buscá en los otros portales con los botones de arriba.</p>
               </div>
             )}
 
             {resultados.length > 0 && (
               <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:14}}>
                 {resultados.map(prop => (
-                  <PropiedadCard
-                    key={prop.url_original}
-                    propiedad={prop}
-                    seleccionada={seleccionadas.has(prop.url_original)}
-                    onToggle={() => toggleSeleccion(prop.url_original)}
-                  />
+                  <PropiedadCard key={prop.url_original} propiedad={prop} seleccionada={seleccionadas.has(prop.url_original)} onToggle={() => toggleSeleccion(prop.url_original)} />
                 ))}
               </div>
             )}
@@ -448,11 +480,7 @@ export default function BusquedaPage() {
       </div>
 
       {modalLista && (
-        <CrearListaModal
-          propiedades={propiedadesSeleccionadas}
-          onClose={() => setModalLista(false)}
-          onCreada={() => { setModalLista(false); setSeleccionadas(new Set()) }}
-        />
+        <CrearListaModal propiedades={propiedadesSeleccionadas} onClose={() => setModalLista(false)} onCreada={() => { setModalLista(false); setSeleccionadas(new Set()) }} />
       )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
