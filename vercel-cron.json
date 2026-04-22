@@ -1,12 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/recordatorio-vencimiento",
-      "schedule": "0 12 28-31 * *"
-    },
-    {
-      "path": "/api/cron/bloqueo-dia4",
-      "schedule": "0 10 * * *"
+      "path": "/api/scraper/actualizar",
+      "schedule": "0 */6 * * *"
     }
   ]
 }
