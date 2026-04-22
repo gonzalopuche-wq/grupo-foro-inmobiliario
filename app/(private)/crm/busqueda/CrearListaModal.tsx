@@ -2,7 +2,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, BookmarkPlus, User, Mail, Plus, Loader2, CheckCircle2 } from 'lucide-react'
+import { supabase } from '../../../lib/supabase'
+import { X, BookmarkPlus, Loader2, CheckCircle2 } from 'lucide-react'
 
 interface Contacto {
   id: string
@@ -32,19 +33,26 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('/api/crm/contactos?limit=100')
-      .then(r => r.json())
-      .then(data => setContactos(data || []))
-      .catch(() => {})
-      .finally(() => setCargandoContactos(false))
+    const cargar = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from('crm_contactos')
+        .select('id, nombre, apellido, email, telefono')
+        .eq('perfil_id', user.id)
+        .order('apellido', { ascending: true })
+        .limit(200)
+      setContactos((data as Contacto[]) || [])
+      setCargandoContactos(false)
+    }
+    cargar()
   }, [])
 
-  // Auto-completar email cuando se selecciona contacto
   useEffect(() => {
     if (contactoId) {
       const c = contactos.find(x => x.id === contactoId)
       if (c?.email) setEmailCliente(c.email)
-      if (c) setNombre(`${c.nombre} ${c.apellido} — ${new Date().toLocaleDateString('es-AR')}`)
+      if (c) setNombre(`${c.apellido ? c.apellido + ', ' : ''}${c.nombre} — ${new Date().toLocaleDateString('es-AR')}`)
     }
   }, [contactoId, contactos])
 
@@ -52,12 +60,17 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
     if (!nombre.trim()) { setError('Ponele un nombre a la lista'); return }
     setError('')
     setGuardando(true)
-
     try {
-      // 1. Crear lista
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('Sesión expirada')
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      }
+
       const resLista = await fetch('/api/listas', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           nombre: nombre.trim(),
           descripcion,
@@ -66,16 +79,14 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
           notificar_cliente: notificarCliente,
         }),
       })
-
       const lista = await resLista.json()
       if (!resLista.ok) throw new Error(lista.error)
 
-      // 2. Guardar propiedades en paralelo
       await Promise.allSettled(
         propiedades.map(prop =>
           fetch(`/api/listas/${lista.id}/propiedades`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify(prop),
           })
         )
@@ -84,7 +95,6 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
       setSlug(lista.slug)
       setListo(true)
       onCreada(lista.id, lista.slug)
-
     } catch (err: any) {
       setError(err.message || 'Error al guardar')
     } finally {
@@ -94,169 +104,115 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
 
   const urlLista = `https://foroinmobiliario.com.ar/b/${slug}`
 
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-white/10 rounded-2xl w-full max-w-lg">
+  const s: Record<string, any> = {
+    bg: { position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',zIndex:300,display:'flex',alignItems:'center',justifyContent:'center',padding:16 },
+    modal: { background:'#0f0f0f',border:'1px solid rgba(200,0,0,0.2)',borderRadius:12,width:'100%',maxWidth:480 },
+    header: { display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px 20px',borderBottom:'1px solid rgba(255,255,255,0.07)' },
+    body: { padding:20 },
+    label: { fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase' as const },
+    input: { width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,padding:'8px 10px',color:'#fff',fontSize:13,outline:'none',boxSizing:'border-box' as const,fontFamily:'Inter,sans-serif' },
+    field: { marginBottom:14 },
+  }
 
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <BookmarkPlus className="w-5 h-5 text-blue-400" />
-            <h2 className="font-semibold text-white">
+  return (
+    <div style={s.bg} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div style={s.modal}>
+        <div style={s.header}>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <BookmarkPlus style={{width:18,height:18,color:'#cc0000'}} />
+            <span style={{fontWeight:700,fontSize:15,color:'#fff',fontFamily:'Montserrat,sans-serif'}}>
               {listo ? 'Lista creada' : 'Guardar en lista'}
-            </h2>
+            </span>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
-            <X className="w-5 h-5" />
-          </button>
+          <button onClick={onClose} style={{background:'none',border:'none',color:'rgba(255,255,255,0.4)',cursor:'pointer'}}><X style={{width:18,height:18}} /></button>
         </div>
 
         {!listo ? (
-          <div className="p-5 space-y-4">
-            {/* Resumen de propiedades */}
-            <div className="bg-gray-800/50 rounded-xl p-3 text-sm text-gray-300">
+          <div style={s.body}>
+            <div style={{background:'rgba(255,255,255,0.04)',borderRadius:8,padding:'10px 14px',fontSize:12,color:'rgba(255,255,255,0.5)',marginBottom:16}}>
               {propiedades.length} propiedad{propiedades.length !== 1 ? 'es' : ''} seleccionada{propiedades.length !== 1 ? 's' : ''}
             </div>
 
-            {/* Asociar a contacto */}
-            <div>
-              <label className="text-sm text-gray-400 mb-1.5 block">
-                <User className="w-3.5 h-3.5 inline mr-1" />
-                Contacto del CRM (opcional)
-              </label>
+            <div style={s.field}>
+              <label style={s.label}>Contacto del CRM (opcional)</label>
               {cargandoContactos ? (
-                <div className="flex items-center gap-2 text-gray-500 text-sm">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Cargando contactos...
-                </div>
+                <div style={{color:'rgba(255,255,255,0.3)',fontSize:12}}>Cargando contactos...</div>
               ) : (
-                <select
-                  value={contactoId}
-                  onChange={e => setContactoId(e.target.value)}
-                  className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-                >
+                <select value={contactoId} onChange={e => setContactoId(e.target.value)}
+                  style={{...s.input,background:'#111'}}>
                   <option value="">— Sin contacto —</option>
                   {contactos.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.nombre} {c.apellido} {c.telefono ? `· ${c.telefono}` : ''}
+                    <option key={c.id} value={c.id} style={{background:'#111'}}>
+                      {c.apellido ? `${c.apellido}, ${c.nombre}` : c.nombre}{c.telefono ? ` · ${c.telefono}` : ''}
                     </option>
                   ))}
                 </select>
               )}
             </div>
 
-            {/* Nombre de la lista */}
-            <div>
-              <label className="text-sm text-gray-400 mb-1.5 block">Nombre de la lista *</label>
-              <input
-                type="text"
-                value={nombre}
-                onChange={e => setNombre(e.target.value)}
-                placeholder="Ej: Departamentos 2 dorm Pichincha — García"
-                className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500"
-              />
+            <div style={s.field}>
+              <label style={s.label}>Nombre de la lista *</label>
+              <input style={s.input} value={nombre} onChange={e => setNombre(e.target.value)}
+                placeholder="Ej: Departamentos 2 dorm Pichincha — García" />
             </div>
 
-            <div>
-              <label className="text-sm text-gray-400 mb-1.5 block">Descripción (opcional)</label>
-              <input
-                type="text"
-                value={descripcion}
-                onChange={e => setDescripcion(e.target.value)}
-                placeholder="Ej: Búsqueda entre U$D 80.000 y U$D 100.000"
-                className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500"
-              />
+            <div style={s.field}>
+              <label style={s.label}>Descripción (opcional)</label>
+              <input style={s.input} value={descripcion} onChange={e => setDescripcion(e.target.value)}
+                placeholder="Ej: Búsqueda entre U$D 80.000 y U$D 100.000" />
             </div>
 
-            {/* Email cliente para alertas */}
-            <div className="bg-blue-950/40 border border-blue-800/40 rounded-xl p-4 space-y-3">
-              <div className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  id="notificar"
-                  checked={notificarCliente}
-                  onChange={e => setNotificarCliente(e.target.checked)}
-                  className="mt-0.5 accent-blue-500"
-                />
-                <label htmlFor="notificar" className="text-sm text-gray-300 cursor-pointer">
+            <div style={{background:'rgba(200,0,0,0.05)',border:'1px solid rgba(200,0,0,0.15)',borderRadius:8,padding:14,marginBottom:14}}>
+              <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:notificarCliente?12:0}}>
+                <input type="checkbox" id="notif" checked={notificarCliente} onChange={e => setNotificarCliente(e.target.checked)}
+                  style={{marginTop:2,accentColor:'#cc0000'}} />
+                <label htmlFor="notif" style={{fontSize:12,color:'rgba(255,255,255,0.6)',cursor:'pointer'}}>
                   Notificar al cliente cuando cambie el precio o se dé de baja una propiedad
                 </label>
               </div>
               {notificarCliente && (
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">
-                    <Mail className="w-3 h-3 inline mr-1" />
-                    Email del cliente
-                  </label>
-                  <input
-                    type="email"
-                    value={emailCliente}
-                    onChange={e => setEmailCliente(e.target.value)}
-                    placeholder="cliente@email.com"
-                    className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500"
-                  />
+                  <label style={{...s.label,marginBottom:4}}>Email del cliente</label>
+                  <input type="email" style={s.input} value={emailCliente} onChange={e => setEmailCliente(e.target.value)}
+                    placeholder="cliente@email.com" />
                 </div>
               )}
             </div>
 
-            {error && <p className="text-red-400 text-sm">{error}</p>}
+            {error && <p style={{color:'#f87171',fontSize:12,marginBottom:12}}>{error}</p>}
 
-            <button
-              onClick={guardar}
-              disabled={guardando}
-              className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              {guardando ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Guardando...</>
-              ) : (
-                <><BookmarkPlus className="w-4 h-4" /> Crear lista</>
-              )}
+            <button onClick={guardar} disabled={guardando}
+              style={{width:'100%',background:'#cc0000',border:'none',color:'#fff',padding:'12px',borderRadius:8,fontWeight:700,fontSize:13,fontFamily:'Montserrat,sans-serif',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,opacity:guardando?0.7:1}}>
+              {guardando ? <><Loader2 style={{width:15,height:15,animation:'spin 1s linear infinite'}} />Guardando...</> : <><BookmarkPlus style={{width:15,height:15}} />Crear lista</>}
             </button>
           </div>
         ) : (
-          /* Estado: lista creada */
-          <div className="p-5 space-y-5">
-            <div className="text-center space-y-2">
-              <div className="w-14 h-14 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-7 h-7 text-green-400" />
-              </div>
-              <h3 className="text-white font-medium">{propiedades.length} propiedades guardadas</h3>
-              <p className="text-gray-400 text-sm">La lista se irá actualizando automáticamente</p>
+          <div style={{padding:24,textAlign:'center'}}>
+            <div style={{width:56,height:56,background:'rgba(34,197,94,0.15)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 12px'}}>
+              <CheckCircle2 style={{width:28,height:28,color:'#22c55e'}} />
             </div>
+            <h3 style={{margin:'0 0 6px',color:'#fff',fontFamily:'Montserrat,sans-serif'}}>{propiedades.length} propiedades guardadas</h3>
+            <p style={{margin:'0 0 20px',color:'rgba(255,255,255,0.4)',fontSize:13}}>La lista se actualiza automáticamente</p>
 
-            {/* Link para el cliente */}
-            <div className="bg-gray-800 rounded-xl p-4 space-y-2">
-              <p className="text-xs text-gray-400">Link para el cliente:</p>
-              <div className="flex items-center gap-2 bg-gray-900 rounded-lg px-3 py-2">
-                <span className="text-blue-300 text-sm flex-1 truncate">{urlLista}</span>
-                <button
-                  onClick={() => navigator.clipboard.writeText(urlLista)}
-                  className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded"
-                >
+            <div style={{background:'rgba(255,255,255,0.04)',borderRadius:8,padding:14,marginBottom:20,textAlign:'left'}}>
+              <p style={{margin:'0 0 6px',fontSize:10,color:'rgba(255,255,255,0.3)',fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase'}}>Link para el cliente:</p>
+              <div style={{display:'flex',alignItems:'center',gap:8,background:'rgba(0,0,0,0.3)',borderRadius:6,padding:'8px 12px'}}>
+                <span style={{color:'#cc0000',fontSize:12,flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{urlLista}</span>
+                <button onClick={() => navigator.clipboard.writeText(urlLista)}
+                  style={{background:'rgba(255,255,255,0.1)',border:'none',color:'#fff',padding:'4px 10px',borderRadius:4,fontSize:11,cursor:'pointer'}}>
                   Copiar
                 </button>
               </div>
-              <p className="text-xs text-gray-500">
-                El cliente puede ver las propiedades sin iniciar sesión y recibe alertas por email cuando cambia el precio.
-              </p>
             </div>
 
-            <div className="flex gap-2">
-              <button
-                onClick={onClose}
-                className="flex-1 bg-gray-800 hover:bg-gray-700 text-white py-2.5 rounded-xl text-sm font-medium"
-              >
-                Cerrar
-              </button>
-              <a
-                href={`/crm/listas`}
-                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl text-sm font-medium text-center"
-              >
-                Ver mis listas
-              </a>
+            <div style={{display:'flex',gap:10}}>
+              <button onClick={onClose} style={{flex:1,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'#fff',padding:'10px',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer'}}>Cerrar</button>
+              <a href="/crm/listas" style={{flex:1,background:'#cc0000',color:'#fff',padding:'10px',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',textDecoration:'none',display:'flex',alignItems:'center',justifyContent:'center'}}>Ver mis listas</a>
             </div>
           </div>
         )}
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }

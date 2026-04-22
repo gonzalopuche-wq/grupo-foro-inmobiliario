@@ -2,13 +2,11 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Search, BookmarkPlus, ExternalLink, Filter, SlidersHorizontal, Loader2,
-         Home, Building2, MapPin, DollarSign, BedDouble, CheckCircle2, X,
-         ChevronDown, Layers, AlertCircle, Star } from 'lucide-react'
+import { supabase } from '../../../lib/supabase'
+import { Search, BookmarkPlus, SlidersHorizontal, Loader2,
+         Home, AlertCircle, ChevronDown } from 'lucide-react'
 import CrearListaModal from './CrearListaModal'
 import PropiedadCard from './PropiedadCard'
-
-// ─── Tipos ───────────────────────────────────────────────────────────────────
 
 interface Propiedad {
   portal: string
@@ -35,19 +33,15 @@ interface Propiedad {
 }
 
 const PORTALES = [
-  { id: 'zonaprop', label: 'ZonaProp', color: '#e60000' },
-  { id: 'argenprop', label: 'Argenprop', color: '#f5a623' },
-  { id: 'mercadolibre', label: 'MercadoLibre', color: '#ffe600' },
+  { id: 'zonaprop', label: 'ZonaProp' },
+  { id: 'argenprop', label: 'Argenprop' },
+  { id: 'mercadolibre', label: 'MercadoLibre' },
 ]
-
 const TIPOS = ['Departamento', 'Casa', 'PH', 'Local', 'Oficina', 'Terreno', 'Galpón']
 const OPERACIONES = ['Venta', 'Alquiler', 'Alquiler temporal']
 const DORMITORIOS = ['1', '2', '3', '4', '5+']
 
-// ─── Componente principal ─────────────────────────────────────────────────────
-
 export default function BusquedaPage() {
-  // Filtros
   const [operacion, setOperacion] = useState('Venta')
   const [tipo, setTipo] = useState('Departamento')
   const [zona, setZona] = useState('')
@@ -56,28 +50,29 @@ export default function BusquedaPage() {
   const [dormitorios, setDormitorios] = useState('')
   const [portalesSeleccionados, setPortalesSeleccionados] = useState(['zonaprop', 'argenprop', 'mercadolibre'])
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false)
-
-  // Resultados
   const [resultados, setResultados] = useState<Propiedad[]>([])
   const [cargando, setCargando] = useState(false)
   const [buscado, setBuscado] = useState(false)
   const [error, setError] = useState('')
-
-  // Selección para lista
   const [seleccionadas, setSeleccionadas] = useState<Set<string>>(new Set())
   const [modalLista, setModalLista] = useState(false)
 
-  // Búsqueda
   const buscar = useCallback(async () => {
     if (!zona.trim()) { setError('Ingresá una zona o barrio'); return }
     setError('')
     setCargando(true)
     setBuscado(true)
-
     try {
+      // Obtener token de sesión
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { setError('Sesión expirada, volvé a iniciar sesión'); setCargando(false); return }
+
       const res = await fetch('/api/scraper/buscar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({
           operacion: operacion.toLowerCase().replace(' ', '-'),
           tipo: tipo.toLowerCase(),
@@ -88,7 +83,6 @@ export default function BusquedaPage() {
           portales: portalesSeleccionados,
         }),
       })
-
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Error en búsqueda')
       setResultados(data.propiedades || [])
@@ -99,7 +93,6 @@ export default function BusquedaPage() {
     }
   }, [operacion, tipo, zona, precioMin, precioMax, dormitorios, portalesSeleccionados])
 
-  // Toggle selección
   const toggleSeleccion = (url: string) => {
     setSeleccionadas(prev => {
       const next = new Set(prev)
@@ -109,162 +102,109 @@ export default function BusquedaPage() {
   }
 
   const seleccionarTodas = () => {
-    if (seleccionadas.size === resultados.length) {
-      setSeleccionadas(new Set())
-    } else {
-      setSeleccionadas(new Set(resultados.map(p => p.url_original)))
-    }
+    if (seleccionadas.size === resultados.length) setSeleccionadas(new Set())
+    else setSeleccionadas(new Set(resultados.map(p => p.url_original)))
   }
 
   const propiedadesSeleccionadas = resultados.filter(p => seleccionadas.has(p.url_original))
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div style={{minHeight:'100vh',background:'#0a0a0a',color:'#fff',fontFamily:'Inter,sans-serif'}}>
       {/* Header */}
-      <div className="border-b border-white/10 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
-                <Search className="w-5 h-5 text-blue-400" />
-                Búsqueda Inteligente
-              </h1>
-              <p className="text-sm text-gray-400 mt-0.5">
-                ZonaProp · Argenprop · MercadoLibre — todo desde GFI
-              </p>
-            </div>
-            {seleccionadas.size > 0 && (
-              <button
-                onClick={() => setModalLista(true)}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-              >
-                <BookmarkPlus className="w-4 h-4" />
-                Guardar en lista ({seleccionadas.size})
-              </button>
-            )}
+      <div style={{borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(15,15,15,0.95)',position:'sticky',top:0,zIndex:20,padding:'14px 20px'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',maxWidth:1200,margin:'0 auto'}}>
+          <div>
+            <h1 style={{margin:0,fontSize:18,fontWeight:800,fontFamily:'Montserrat,sans-serif',display:'flex',alignItems:'center',gap:8}}>
+              <Search style={{width:18,height:18,color:'#cc0000'}} />
+              Búsqueda Inteligente
+            </h1>
+            <p style={{margin:'2px 0 0',fontSize:11,color:'rgba(255,255,255,0.35)'}}>ZonaProp · Argenprop · MercadoLibre — todo desde GFI</p>
           </div>
+          {seleccionadas.size > 0 && (
+            <button
+              onClick={() => setModalLista(true)}
+              style={{display:'flex',alignItems:'center',gap:8,background:'#cc0000',border:'none',color:'#fff',padding:'8px 16px',borderRadius:6,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer'}}
+            >
+              <BookmarkPlus style={{width:15,height:15}} />
+              Guardar en lista ({seleccionadas.size})
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+      <div style={{maxWidth:1200,margin:'0 auto',padding:'20px'}}>
 
-        {/* Buscador principal */}
-        <div className="bg-gray-900 border border-white/10 rounded-2xl p-5 space-y-4">
-          {/* Fila 1: Operación + Tipo + Zona */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* Buscador */}
+        <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:12,padding:20,marginBottom:24}}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12,marginBottom:12}}>
+            {/* Operación */}
             <div>
-              <label className="text-xs text-gray-400 mb-1.5 block">Operación</label>
-              <div className="flex gap-1">
+              <label style={{fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase'}}>Operación</label>
+              <div style={{display:'flex',gap:4}}>
                 {OPERACIONES.map(op => (
-                  <button
-                    key={op}
-                    onClick={() => setOperacion(op)}
-                    className={`flex-1 py-2 px-2 rounded-lg text-xs font-medium transition-colors ${
-                      operacion === op
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                    }`}
-                  >
-                    {op}
-                  </button>
+                  <button key={op} onClick={() => setOperacion(op)}
+                    style={{flex:1,padding:'7px 4px',borderRadius:6,border:`1px solid ${operacion===op?'#cc0000':'rgba(255,255,255,0.1)'}`,background:operacion===op?'rgba(200,0,0,0.12)':'transparent',color:operacion===op?'#fff':'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer'}}
+                  >{op}</button>
                 ))}
               </div>
             </div>
-
+            {/* Tipo */}
             <div>
-              <label className="text-xs text-gray-400 mb-1.5 block">Tipo</label>
-              <select
-                value={tipo}
-                onChange={e => setTipo(e.target.value)}
-                className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"
-              >
-                {TIPOS.map(t => <option key={t}>{t}</option>)}
+              <label style={{fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase'}}>Tipo</label>
+              <select value={tipo} onChange={e => setTipo(e.target.value)}
+                style={{width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,padding:'8px 10px',color:'#fff',fontSize:12,outline:'none'}}>
+                {TIPOS.map(t => <option key={t} style={{background:'#1a1a1a'}}>{t}</option>)}
               </select>
             </div>
-
+            {/* Zona */}
             <div>
-              <label className="text-xs text-gray-400 mb-1.5 block">Zona / Barrio</label>
-              <input
-                type="text"
-                value={zona}
-                onChange={e => setZona(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && buscar()}
+              <label style={{fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase'}}>Zona / Barrio</label>
+              <input type="text" value={zona} onChange={e => setZona(e.target.value)} onKeyDown={e => e.key==='Enter' && buscar()}
                 placeholder="Ej: Pichincha, Centro, Fisherton..."
-                className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500"
+                style={{width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,padding:'8px 10px',color:'#fff',fontSize:12,outline:'none',boxSizing:'border-box'}}
               />
             </div>
           </div>
 
           {/* Filtros avanzados */}
-          <div>
-            <button
-              onClick={() => setFiltrosAbiertos(!filtrosAbiertos)}
-              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
+          <div style={{marginBottom:12}}>
+            <button onClick={() => setFiltrosAbiertos(!filtrosAbiertos)}
+              style={{background:'none',border:'none',color:'rgba(255,255,255,0.4)',fontSize:11,cursor:'pointer',display:'flex',alignItems:'center',gap:4,padding:0}}>
+              <SlidersHorizontal style={{width:13,height:13}} />
               Filtros avanzados
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${filtrosAbiertos ? 'rotate-180' : ''}`} />
+              <ChevronDown style={{width:13,height:13,transform:filtrosAbiertos?'rotate(180deg)':'none',transition:'transform 0.2s'}} />
             </button>
 
             {filtrosAbiertos && (
-              <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:12,marginTop:12}}>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1.5 block">Precio mín.</label>
-                  <input
-                    type="number"
-                    value={precioMin}
-                    onChange={e => setPrecioMin(e.target.value)}
-                    placeholder="USD 0"
-                    className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500"
-                  />
+                  <label style={{fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6}}>Precio mín.</label>
+                  <input type="number" value={precioMin} onChange={e => setPrecioMin(e.target.value)} placeholder="USD 0"
+                    style={{width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,padding:'8px 10px',color:'#fff',fontSize:12,outline:'none',boxSizing:'border-box'}} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1.5 block">Precio máx.</label>
-                  <input
-                    type="number"
-                    value={precioMax}
-                    onChange={e => setPrecioMax(e.target.value)}
-                    placeholder="Sin límite"
-                    className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500"
-                  />
+                  <label style={{fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6}}>Precio máx.</label>
+                  <input type="number" value={precioMax} onChange={e => setPrecioMax(e.target.value)} placeholder="Sin límite"
+                    style={{width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,padding:'8px 10px',color:'#fff',fontSize:12,outline:'none',boxSizing:'border-box'}} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1.5 block">Dormitorios</label>
-                  <div className="flex gap-1">
+                  <label style={{fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6}}>Dormitorios</label>
+                  <div style={{display:'flex',gap:4}}>
                     {DORMITORIOS.map(d => (
-                      <button
-                        key={d}
-                        onClick={() => setDormitorios(dormitorios === d ? '' : d)}
-                        className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
-                          dormitorios === d
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                        }`}
-                      >
-                        {d}
-                      </button>
+                      <button key={d} onClick={() => setDormitorios(dormitorios===d?'':d)}
+                        style={{flex:1,padding:'7px 2px',borderRadius:6,border:`1px solid ${dormitorios===d?'#cc0000':'rgba(255,255,255,0.1)'}`,background:dormitorios===d?'rgba(200,0,0,0.12)':'transparent',color:dormitorios===d?'#fff':'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,cursor:'pointer'}}
+                      >{d}</button>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1.5 block">Portales</label>
-                  <div className="flex gap-1">
+                  <label style={{fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6}}>Portales</label>
+                  <div style={{display:'flex',gap:4}}>
                     {PORTALES.map(p => (
-                      <button
-                        key={p.id}
-                        onClick={() => setPortalesSeleccionados(prev =>
-                          prev.includes(p.id)
-                            ? prev.filter(x => x !== p.id)
-                            : [...prev, p.id]
-                        )}
-                        className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
-                          portalesSeleccionados.includes(p.id)
-                            ? 'bg-gray-700 text-white border border-white/20'
-                            : 'bg-gray-800 text-gray-500'
-                        }`}
-                      >
-                        {p.label.split('prop')[0] || p.label.substring(0, 4)}
-                      </button>
+                      <button key={p.id}
+                        onClick={() => setPortalesSeleccionados(prev => prev.includes(p.id) ? prev.filter(x=>x!==p.id) : [...prev,p.id])}
+                        style={{flex:1,padding:'7px 2px',borderRadius:6,border:`1px solid ${portalesSeleccionados.includes(p.id)?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.08)'}`,background:portalesSeleccionados.includes(p.id)?'rgba(255,255,255,0.07)':'transparent',color:portalesSeleccionados.includes(p.id)?'#fff':'rgba(255,255,255,0.3)',fontSize:9,fontWeight:700,cursor:'pointer'}}
+                      >{p.label.split('prop')[0] || p.label.substring(0,4)}</button>
                     ))}
                   </div>
                 </div>
@@ -272,22 +212,18 @@ export default function BusquedaPage() {
             )}
           </div>
 
-          {/* Botón buscar */}
           {error && (
-            <p className="text-red-400 text-sm flex items-center gap-1.5">
-              <AlertCircle className="w-4 h-4" />{error}
-            </p>
+            <div style={{display:'flex',alignItems:'center',gap:6,color:'#f87171',fontSize:12,marginBottom:10}}>
+              <AlertCircle style={{width:14,height:14}} />{error}
+            </div>
           )}
 
-          <button
-            onClick={buscar}
-            disabled={cargando}
-            className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors"
-          >
+          <button onClick={buscar} disabled={cargando}
+            style={{width:'100%',background:'#cc0000',border:'none',color:'#fff',padding:'12px',borderRadius:8,fontWeight:700,fontSize:13,fontFamily:'Montserrat,sans-serif',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,opacity:cargando?0.7:1}}>
             {cargando ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> Buscando en {portalesSeleccionados.length} portales...</>
+              <><Loader2 style={{width:16,height:16,animation:'spin 1s linear infinite'}} />Buscando en {portalesSeleccionados.length} portales...</>
             ) : (
-              <><Search className="w-5 h-5" /> Buscar propiedades</>
+              <><Search style={{width:16,height:16}} />Buscar propiedades</>
             )}
           </button>
         </div>
@@ -295,50 +231,34 @@ export default function BusquedaPage() {
         {/* Resultados */}
         {buscado && !cargando && (
           <>
-            {/* Barra de resultados */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300 font-medium">
-                  {resultados.length === 0
-                    ? 'Sin resultados'
-                    : `${resultados.length} propiedades encontradas`
-                  }
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <span style={{color:'rgba(255,255,255,0.7)',fontWeight:600,fontSize:14}}>
+                  {resultados.length === 0 ? 'Sin resultados' : `${resultados.length} propiedades encontradas`}
                 </span>
-                {/* Badges por portal */}
-                <div className="flex gap-2">
+                <div style={{display:'flex',gap:8}}>
                   {PORTALES.map(p => {
                     const cant = resultados.filter(r => r.portal === p.id).length
                     if (!cant) return null
-                    return (
-                      <span key={p.id} className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">
-                        {p.label}: {cant}
-                      </span>
-                    )
+                    return <span key={p.id} style={{fontSize:10,background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.4)',padding:'2px 8px',borderRadius:20}}>{p.label}: {cant}</span>
                   })}
                 </div>
               </div>
-
               {resultados.length > 0 && (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={seleccionarTodas}
-                    className="text-xs text-blue-400 hover:text-blue-300"
-                  >
-                    {seleccionadas.size === resultados.length ? 'Deseleccionar todas' : 'Seleccionar todas'}
-                  </button>
-                </div>
+                <button onClick={seleccionarTodas} style={{background:'none',border:'none',color:'#cc0000',fontSize:11,cursor:'pointer',fontWeight:600}}>
+                  {seleccionadas.size === resultados.length ? 'Deseleccionar todas' : 'Seleccionar todas'}
+                </button>
               )}
             </div>
 
-            {/* Grid de propiedades */}
             {resultados.length === 0 ? (
-              <div className="text-center py-16 text-gray-500">
-                <Home className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>No encontramos propiedades para esa búsqueda.</p>
-                <p className="text-sm mt-1">Probá con otro barrio o ajustá los filtros.</p>
+              <div style={{textAlign:'center',padding:'64px 0',color:'rgba(255,255,255,0.25)'}}>
+                <Home style={{width:40,height:40,margin:'0 auto 12px',display:'block',opacity:0.3}} />
+                <p style={{margin:0}}>No encontramos propiedades para esa búsqueda.</p>
+                <p style={{margin:'4px 0 0',fontSize:12}}>Probá con otro barrio o ajustá los filtros.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:16}}>
                 {resultados.map(prop => (
                   <PropiedadCard
                     key={prop.url_original}
@@ -353,17 +273,15 @@ export default function BusquedaPage() {
         )}
       </div>
 
-      {/* Modal guardar lista */}
       {modalLista && (
         <CrearListaModal
           propiedades={propiedadesSeleccionadas}
           onClose={() => setModalLista(false)}
-          onCreada={() => {
-            setModalLista(false)
-            setSeleccionadas(new Set())
-          }}
+          onCreada={() => { setModalLista(false); setSeleccionadas(new Set()) }}
         />
       )}
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }

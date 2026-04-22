@@ -3,8 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { BookmarkCheck, ExternalLink, Copy, Trash2, Users, Home,
-         TrendingDown, TrendingUp, AlertTriangle, Plus, Loader2, Bell } from 'lucide-react'
+import { supabase } from '../../../lib/supabase'
 
 interface Lista {
   id: string
@@ -14,7 +13,6 @@ interface Lista {
   email_cliente?: string
   notificar_cliente: boolean
   created_at: string
-  updated_at: string
   contacto?: { id: string; nombre: string; apellido: string }
   propiedades: [{ count: number }]
 }
@@ -23,12 +21,21 @@ export default function ListasPage() {
   const [listas, setListas] = useState<Lista[]>([])
   const [cargando, setCargando] = useState(true)
   const [copiado, setCopiado] = useState<string | null>(null)
+  const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/listas')
-      .then(r => r.json())
-      .then(data => setListas(data || []))
-      .finally(() => setCargando(false))
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      setToken(session.access_token)
+      const res = await fetch('/api/listas', {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      })
+      const data = await res.json()
+      setListas(data || [])
+      setCargando(false)
+    }
+    init()
   }, [])
 
   const copiarLink = (slug: string) => {
@@ -39,139 +46,89 @@ export default function ListasPage() {
 
   const eliminar = async (id: string) => {
     if (!confirm('¿Eliminar esta lista? Las propiedades también se eliminarán.')) return
-    await fetch(`/api/listas/${id}`, { method: 'DELETE' })
+    await fetch(`/api/listas/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    })
     setListas(prev => prev.filter(l => l.id !== id))
   }
 
-  if (cargando) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-      </div>
-    )
+  const s: Record<string, any> = {
+    page: { minHeight:'100vh', background:'#0a0a0a', color:'#fff', padding:24, fontFamily:'Inter,sans-serif' },
+    header: { display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24, maxWidth:900 },
+    titulo: { margin:0, fontSize:18, fontWeight:800, fontFamily:'Montserrat,sans-serif', color:'#fff' },
+    subtitulo: { margin:'4px 0 0', fontSize:12, color:'rgba(255,255,255,0.35)' },
+    btnNuevo: { display:'flex', alignItems:'center', gap:8, background:'#cc0000', border:'none', color:'#fff', padding:'9px 16px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none' },
+    card: { background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, padding:'16px 20px', marginBottom:12, maxWidth:900, display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:16 },
+    nombre: { margin:0, fontSize:15, fontWeight:700, fontFamily:'Montserrat,sans-serif', color:'#fff' },
+    desc: { margin:'4px 0 0', fontSize:12, color:'rgba(255,255,255,0.35)' },
+    meta: { display:'flex', flexWrap:'wrap' as const, gap:12, marginTop:8, fontSize:11, color:'rgba(255,255,255,0.3)' },
+    linkWrap: { display:'flex', alignItems:'center', gap:8, background:'rgba(0,0,0,0.3)', borderRadius:6, padding:'6px 10px', marginTop:10 },
+    linkText: { color:'#cc0000', fontSize:11, flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const },
+    acciones: { display:'flex', flexDirection:'column' as const, gap:6, flexShrink:0 },
+    btnVer: { background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)', color:'#fff', padding:'7px 14px', borderRadius:6, fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none', textAlign:'center' as const },
+    btnDel: { background:'none', border:'none', color:'rgba(200,0,0,0.6)', fontSize:11, cursor:'pointer', textAlign:'center' as const },
   }
 
+  if (cargando) return (
+    <div style={{...s.page, display:'flex', alignItems:'center', justifyContent:'center'}}>
+      <span style={{color:'rgba(255,255,255,0.3)'}}>Cargando...</span>
+    </div>
+  )
+
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div style={s.page}>
+      <div style={s.header}>
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <BookmarkCheck className="w-5 h-5 text-blue-400" />
-            Listas guardadas
-          </h1>
-          <p className="text-sm text-gray-400 mt-0.5">
-            Propiedades seleccionadas para tus clientes
-          </p>
+          <h1 style={s.titulo}>🔖 Listas guardadas</h1>
+          <p style={s.subtitulo}>Propiedades seleccionadas para tus clientes</p>
         </div>
-        <Link
-          href="/crm/busqueda"
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium"
-        >
-          <Plus className="w-4 h-4" />
-          Nueva búsqueda
+        <Link href="/crm/busqueda" style={s.btnNuevo}>
+          + Nueva búsqueda
         </Link>
       </div>
 
       {listas.length === 0 ? (
-        <div className="text-center py-16 text-gray-500 bg-gray-900 rounded-2xl border border-white/10">
-          <BookmarkCheck className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p className="font-medium">Todavía no tenés listas guardadas</p>
-          <p className="text-sm mt-1">Buscá propiedades y guardalas para compartir con tus clientes</p>
-          <Link
-            href="/crm/busqueda"
-            className="inline-flex items-center gap-2 mt-4 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium"
-          >
-            <Plus className="w-4 h-4" />
+        <div style={{textAlign:'center',padding:'64px 0',color:'rgba(255,255,255,0.25)',maxWidth:900}}>
+          <p style={{fontSize:14,marginBottom:16}}>Todavía no tenés listas guardadas</p>
+          <Link href="/crm/busqueda" style={s.btnNuevo}>
             Ir a búsqueda inteligente
           </Link>
         </div>
       ) : (
-        <div className="grid gap-4">
-          {listas.map(lista => {
-            const cantPropiedades = lista.propiedades?.[0]?.count || 0
-            const url = `https://foroinmobiliario.com.ar/b/${lista.slug}`
-
-            return (
-              <div
-                key={lista.id}
-                className="bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-white/20 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-white truncate">{lista.nombre}</h3>
-                    {lista.descripcion && (
-                      <p className="text-sm text-gray-400 mt-0.5 truncate">{lista.descripcion}</p>
-                    )}
-
-                    <div className="flex flex-wrap items-center gap-3 mt-2">
-                      {/* Contacto */}
-                      {lista.contacto && (
-                        <span className="flex items-center gap-1 text-xs text-gray-400">
-                          <Users className="w-3 h-3" />
-                          {lista.contacto.nombre} {lista.contacto.apellido}
-                        </span>
-                      )}
-                      {/* Cant propiedades */}
-                      <span className="flex items-center gap-1 text-xs text-gray-400">
-                        <Home className="w-3 h-3" />
-                        {cantPropiedades} propiedad{cantPropiedades !== 1 ? 'es' : ''}
-                      </span>
-                      {/* Notificaciones */}
-                      {lista.notificar_cliente && lista.email_cliente && (
-                        <span className="flex items-center gap-1 text-xs text-green-400">
-                          <Bell className="w-3 h-3" />
-                          Alertas activas
-                        </span>
-                      )}
-                      {/* Fecha */}
-                      <span className="text-xs text-gray-500">
-                        {new Date(lista.created_at).toLocaleDateString('es-AR')}
-                      </span>
-                    </div>
-
-                    {/* Link */}
-                    <div className="mt-3 flex items-center gap-2 bg-gray-800/60 rounded-lg px-3 py-1.5">
-                      <span className="text-blue-400 text-xs truncate flex-1">{url}</span>
-                      <button
-                        onClick={() => copiarLink(lista.slug)}
-                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-white whitespace-nowrap"
-                      >
-                        <Copy className="w-3 h-3" />
-                        {copiado === lista.slug ? '¡Copiado!' : 'Copiar'}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Acciones */}
-                  <div className="flex flex-col gap-2 shrink-0">
-                    <Link
-                      href={`/crm/listas/${lista.id}`}
-                      className="text-xs bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-center"
-                    >
-                      Ver lista
-                    </Link>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-gray-400 hover:text-white flex items-center gap-1 justify-center"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      Vista cliente
-                    </a>
-                    <button
-                      onClick={() => eliminar(lista.id)}
-                      className="text-xs text-red-500 hover:text-red-400 flex items-center gap-1 justify-center"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      Eliminar
-                    </button>
-                  </div>
+        listas.map(lista => {
+          const cantPropiedades = lista.propiedades?.[0]?.count || 0
+          const url = `https://foroinmobiliario.com.ar/b/${lista.slug}`
+          return (
+            <div key={lista.id} style={s.card}>
+              <div style={{flex:1,minWidth:0}}>
+                <h3 style={s.nombre}>{lista.nombre}</h3>
+                {lista.descripcion && <p style={s.desc}>{lista.descripcion}</p>}
+                <div style={s.meta}>
+                  {lista.contacto && <span>👤 {lista.contacto.nombre} {lista.contacto.apellido}</span>}
+                  <span>🏠 {cantPropiedades} propiedad{cantPropiedades !== 1 ? 'es' : ''}</span>
+                  {lista.notificar_cliente && lista.email_cliente && <span style={{color:'#22c55e'}}>🔔 Alertas activas</span>}
+                  <span>{new Date(lista.created_at).toLocaleDateString('es-AR')}</span>
+                </div>
+                <div style={s.linkWrap}>
+                  <span style={s.linkText}>{url}</span>
+                  <button onClick={() => copiarLink(lista.slug)}
+                    style={{background:'rgba(255,255,255,0.1)',border:'none',color:'#fff',padding:'4px 10px',borderRadius:4,fontSize:11,cursor:'pointer'}}>
+                    {copiado === lista.slug ? '¡Copiado!' : 'Copiar'}
+                  </button>
+                  <a href={url} target="_blank" rel="noopener noreferrer"
+                    style={{color:'rgba(255,255,255,0.4)',fontSize:11,textDecoration:'none'}}>
+                    Vista cliente ↗
+                  </a>
                 </div>
               </div>
-            )
-          })}
-        </div>
+              <div style={s.acciones}>
+                <Link href={`/crm/listas/${lista.id}`} style={s.btnVer}>Ver lista</Link>
+                <button onClick={() => eliminar(lista.id)} style={s.btnDel}>Eliminar</button>
+              </div>
+            </div>
+          )
+        })
       )}
     </div>
   )

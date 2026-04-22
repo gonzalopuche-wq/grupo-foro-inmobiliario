@@ -29,13 +29,6 @@ export interface PropiedadResultado {
   disponible: boolean
 }
 
-const HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  'Accept': 'application/json, text/plain, */*',
-  'Accept-Language': 'es-AR,es;q=0.9',
-  'Referer': 'https://www.zonaprop.com.ar/',
-}
-
 interface BusquedaParams {
   operacion: string
   tipo: string
@@ -44,6 +37,13 @@ interface BusquedaParams {
   precioMax?: number
   dormitorios?: number
   portales?: string[]
+}
+
+const HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Accept': 'application/json, text/plain, */*',
+  'Accept-Language': 'es-AR,es;q=0.9',
+  'Referer': 'https://www.zonaprop.com.ar/',
 }
 
 async function buscarZonaProp(params: BusquedaParams): Promise<PropiedadResultado[]> {
@@ -200,33 +200,27 @@ async function buscarMercadoLibre(params: BusquedaParams): Promise<PropiedadResu
 
 export async function POST(req: NextRequest) {
   try {
+    // Verificar sesión via cookie (mismo patrón que el resto del proyecto)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
     const authHeader = req.headers.get('authorization')
     const token = authHeader?.replace('Bearer ', '')
     if (!token) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
-
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
     const { data: { user } } = await supabase.auth.getUser(token)
     if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
     const params: BusquedaParams = await req.json()
     const portales = params.portales || ['zonaprop', 'argenprop', 'mercadolibre']
-
     const promesas: Promise<PropiedadResultado[]>[] = []
     if (portales.includes('zonaprop')) promesas.push(buscarZonaProp(params))
     if (portales.includes('argenprop')) promesas.push(buscarArgenprop(params))
     if (portales.includes('mercadolibre')) promesas.push(buscarMercadoLibre(params))
-
     const resultados = await Promise.allSettled(promesas)
     const propiedades: PropiedadResultado[] = []
     resultados.forEach(r => { if (r.status === 'fulfilled') propiedades.push(...r.value) })
-
-    const unicos = propiedades.filter((p, i, arr) =>
-      arr.findIndex(x => x.url_original === p.url_original) === i
-    )
-
+    const unicos = propiedades.filter((p, i, arr) => arr.findIndex(x => x.url_original === p.url_original) === i)
     return NextResponse.json({ total: unicos.length, propiedades: unicos })
   } catch (err) {
     console.error('Error scraper:', err)
