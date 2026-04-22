@@ -1,24 +1,19 @@
 // app/api/listas/route.ts  ←  GET + POST
 // app/api/listas/[id]/route.ts  ←  PUT + DELETE
-// (dos archivos separados — ver comentario en cada función)
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-function getSupabase(token: string) {
-  return createClient(
+async function getUser(req: NextRequest) {
+  const token = req.headers.get('authorization')?.replace('Bearer ', '')
+  if (!token) return { user: null, supabase: null }
+  const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { global: { headers: { Authorization: `Bearer ${token}` } } }
   )
-}
-
-async function getUser(req: NextRequest) {
-  const token = req.headers.get('authorization')?.replace('Bearer ', '')
-  if (!token) return { user: null, supabase: null, token: null }
-  const supabase = getSupabase(token)
   const { data: { user } } = await supabase.auth.getUser(token)
-  return { user, supabase, token }
+  return { user, supabase }
 }
 
 // ─── app/api/listas/route.ts ──────────────────────────────────────────────────
@@ -72,15 +67,20 @@ export async function POST(req: NextRequest) {
 
 // ─── app/api/listas/[id]/route.ts ────────────────────────────────────────────
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const { user, supabase } = await getUser(req)
   if (!user || !supabase) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
+  const { id } = await params
   const body = await req.json()
+
   const { data, error } = await supabase
     .from('crm_listas_busqueda')
     .update(body)
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('corredor_id', user.id)
     .select()
     .single()
@@ -89,14 +89,19 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(data)
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const { user, supabase } = await getUser(req)
   if (!user || !supabase) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+
+  const { id } = await params
 
   const { error } = await supabase
     .from('crm_listas_busqueda')
     .delete()
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('corredor_id', user.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
