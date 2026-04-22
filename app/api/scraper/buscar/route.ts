@@ -1,15 +1,9 @@
 // app/api/scraper/buscar/route.ts
-// Búsqueda unificada: ZonaProp + Argenprop + MercadoLibre
-// Sin dependencias externas — usa endpoints JSON internos de cada portal
-
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
-
-// ─── Tipos ───────────────────────────────────────────────────────────────────
 
 export interface PropiedadResultado {
   portal: 'zonaprop' | 'argenprop' | 'mercadolibre' | 'infocasas'
@@ -35,8 +29,6 @@ export interface PropiedadResultado {
   disponible: boolean
 }
 
-// ─── Headers comunes para evitar bloqueos ────────────────────────────────────
-
 const HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
   'Accept': 'application/json, text/plain, */*',
@@ -44,60 +36,49 @@ const HEADERS = {
   'Referer': 'https://www.zonaprop.com.ar/',
 }
 
-// ─── ZonaProp ─────────────────────────────────────────────────────────────────
+interface BusquedaParams {
+  operacion: string
+  tipo: string
+  zona: string
+  precioMin?: number
+  precioMax?: number
+  dormitorios?: number
+  portales?: string[]
+}
 
 async function buscarZonaProp(params: BusquedaParams): Promise<PropiedadResultado[]> {
   try {
     const { operacion, tipo, zona, precioMin, precioMax, dormitorios } = params
-
-    // Construir URL de búsqueda de ZonaProp
-    const operacionMap: Record<string, string> = {
-      venta: 'venta', alquiler: 'alquiler', 'alquiler-temporal': 'alquiler-temporal'
-    }
-    const tipoMap: Record<string, string> = {
-      departamento: 'departamento', casa: 'casa', ph: 'ph',
-      local: 'local', oficina: 'oficina', terreno: 'terreno'
-    }
-
+    const operacionMap: Record<string, string> = { venta: 'venta', alquiler: 'alquiler', 'alquiler-temporal': 'alquiler-temporal' }
+    const tipoMap: Record<string, string> = { departamento: 'departamento', casa: 'casa', ph: 'ph', local: 'local', oficina: 'oficina', terreno: 'terreno' }
     const op = operacionMap[operacion] || 'venta'
     const tp = tipoMap[tipo] || 'departamento'
     const zonaSlug = zona.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-
     let url = `https://www.zonaprop.com.ar/${tp}-${op}-${zonaSlug}`
     const queryParts: string[] = []
     if (precioMin) queryParts.push(`preciomin=${precioMin}`)
     if (precioMax) queryParts.push(`preciomax=${precioMax}`)
     if (dormitorios) queryParts.push(`ambientes=${dormitorios}`)
     queryParts.push('orden=relevancia-DESC')
-
     url += '.html?' + queryParts.join('&')
-
-    // ZonaProp expone datos en window.__PRELOADED_STATE__ — lo parseamos del HTML
     const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(8000) })
     if (!res.ok) return []
-
     const html = await res.text()
-
-    // Extraer JSON embebido
     const match = html.match(/window\.__PRELOADED_STATE__\s*=\s*({.+?});\s*<\/script>/s)
     if (!match) return []
-
     const state = JSON.parse(match[1])
     const listings = state?.listPostings || state?.searchResult?.listings || []
-
     return listings.slice(0, 20).map((item: any) => {
       const posting = item.postingInfo || item
       const precio = posting.price || posting.operationPrice?.[0]
-
       return {
         portal: 'zonaprop' as const,
         portal_id: String(posting.postingId || posting.id || ''),
         url_original: `https://www.zonaprop.com.ar${posting.url || ''}`,
         titulo: posting.title || posting.address || '',
         descripcion: posting.description?.substr(0, 500),
-        tipo: tp,
-        operacion: op,
-        barrio: posting.location?.neighbourhood || posting.barrio || '',
+        tipo: tp, operacion: op,
+        barrio: posting.location?.neighbourhood || '',
         ciudad: posting.location?.city || 'Rosario',
         direccion: posting.address || '',
         precio_actual: precio?.amount || precio?.value,
@@ -113,24 +94,18 @@ async function buscarZonaProp(params: BusquedaParams): Promise<PropiedadResultad
         disponible: true,
       }
     }).filter((p: PropiedadResultado) => p.portal_id)
-
   } catch (err) {
     console.error('ZonaProp error:', err)
     return []
   }
 }
 
-// ─── Argenprop ────────────────────────────────────────────────────────────────
-
 async function buscarArgenprop(params: BusquedaParams): Promise<PropiedadResultado[]> {
   try {
     const { operacion, tipo, zona, precioMin, precioMax, dormitorios } = params
-
     const op = operacion === 'alquiler' ? 'alquiler' : 'venta'
     const zonaSlug = zona.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     const tipoSlug = (tipo || 'departamento').toLowerCase()
-
-    // Argenprop tiene una API interna
     const apiUrl = new URL('https://www.argenprop.com/api/v2/listing/search')
     apiUrl.searchParams.set('operationType', op === 'venta' ? '1' : '2')
     apiUrl.searchParams.set('propertyType', tipoSlug)
@@ -140,29 +115,18 @@ async function buscarArgenprop(params: BusquedaParams): Promise<PropiedadResulta
     if (precioMin) apiUrl.searchParams.set('priceMin', String(precioMin))
     if (precioMax) apiUrl.searchParams.set('priceMax', String(precioMax))
     if (dormitorios) apiUrl.searchParams.set('rooms', String(dormitorios))
-
-    const res = await fetch(apiUrl.toString(), {
-      headers: { ...HEADERS, Referer: 'https://www.argenprop.com/' },
-      signal: AbortSignal.timeout(8000)
-    })
-
-    if (!res.ok) {
-      // Fallback: HTML scraping
-      return await buscarArgenpropHTML(params)
-    }
-
+    const res = await fetch(apiUrl.toString(), { headers: { ...HEADERS, Referer: 'https://www.argenprop.com/' }, signal: AbortSignal.timeout(8000) })
+    if (!res.ok) return []
     const data = await res.json()
     const listings = data?.items || data?.data?.items || []
-
     return listings.slice(0, 20).map((item: any) => ({
       portal: 'argenprop' as const,
       portal_id: String(item.id || item.listingId || ''),
       url_original: `https://www.argenprop.com${item.url || item.link || ''}`,
       titulo: item.title || item.address || '',
       descripcion: item.description?.substr(0, 500),
-      tipo: tipoSlug,
-      operacion: op,
-      barrio: item.location?.neighbourhood || item.barrio || '',
+      tipo: tipoSlug, operacion: op,
+      barrio: item.location?.neighbourhood || '',
       ciudad: item.location?.city || 'Rosario',
       direccion: item.address || item.location?.address || '',
       precio_actual: item.price?.amount || item.price,
@@ -177,32 +141,17 @@ async function buscarArgenprop(params: BusquedaParams): Promise<PropiedadResulta
       imagenes: (item.photos || []).slice(0, 8).map((p: any) => p.url || p),
       disponible: true,
     })).filter((p: PropiedadResultado) => p.portal_id)
-
   } catch (err) {
     console.error('Argenprop error:', err)
     return []
   }
 }
 
-async function buscarArgenpropHTML(params: BusquedaParams): Promise<PropiedadResultado[]> {
-  // Fallback HTML parse mínimo
-  return []
-}
-
-// ─── MercadoLibre (API oficial gratuita) ─────────────────────────────────────
-
 async function buscarMercadoLibre(params: BusquedaParams): Promise<PropiedadResultado[]> {
   try {
-    const { operacion, tipo, zona, precioMin, precioMax, dormitorios } = params
-
-    // MercadoLibre tiene API pública sin auth para búsquedas
-    // Categoría inmuebles Argentina: MLA1459 (venta), MLA1480 (alquiler)
-    const catMap: Record<string, string> = {
-      venta: 'MLA1459',
-      alquiler: 'MLA1480',
-    }
+    const { operacion, tipo, zona, precioMin, precioMax } = params
+    const catMap: Record<string, string> = { venta: 'MLA1459', alquiler: 'MLA1480' }
     const categoria = catMap[operacion] || 'MLA1459'
-
     const apiUrl = new URL('https://api.mercadolibre.com/sites/MLA/search')
     apiUrl.searchParams.set('category', categoria)
     apiUrl.searchParams.set('q', `${tipo || 'departamento'} ${zona} Rosario`)
@@ -213,31 +162,20 @@ async function buscarMercadoLibre(params: BusquedaParams): Promise<PropiedadResu
       const precio = apiUrl.searchParams.get('price')
       apiUrl.searchParams.set('price', precio ? precio.replace('*', String(precioMax)) : `*-${precioMax}`)
     }
-
-    const res = await fetch(apiUrl.toString(), {
-      headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(8000)
-    })
-
+    const res = await fetch(apiUrl.toString(), { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(8000) })
     if (!res.ok) return []
-
     const data = await res.json()
     const results = data?.results || []
-
     return results.map((item: any) => {
       const atributos: Record<string, string> = {}
-      ;(item.attributes || []).forEach((a: any) => {
-        atributos[a.id] = a.value_name || ''
-      })
-
+      ;(item.attributes || []).forEach((a: any) => { atributos[a.id] = a.value_name || '' })
       return {
         portal: 'mercadolibre' as const,
         portal_id: String(item.id || ''),
         url_original: item.permalink || '',
         titulo: item.title || '',
         descripcion: '',
-        tipo: tipo || '',
-        operacion,
+        tipo: tipo || '', operacion,
         barrio: atributos['NEIGHBORHOOD'] || '',
         ciudad: atributos['CITY'] || 'Rosario',
         direccion: atributos['LOCATION_DETAILS'] || '',
@@ -254,57 +192,42 @@ async function buscarMercadoLibre(params: BusquedaParams): Promise<PropiedadResu
         disponible: item.status === 'active',
       }
     }).filter((p: PropiedadResultado) => p.portal_id)
-
   } catch (err) {
     console.error('MercadoLibre error:', err)
     return []
   }
 }
 
-// ─── Handler principal ────────────────────────────────────────────────────────
-
-interface BusquedaParams {
-  operacion: string
-  tipo: string
-  zona: string
-  precioMin?: number
-  precioMax?: number
-  dormitorios?: number
-  portales?: string[]
-}
-
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    const authHeader = req.headers.get('authorization')
+    const token = authHeader?.replace('Bearer ', '')
+    if (!token) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    const { data: { user } } = await supabase.auth.getUser(token)
+    if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
     const params: BusquedaParams = await req.json()
     const portales = params.portales || ['zonaprop', 'argenprop', 'mercadolibre']
 
-    // Ejecutar búsquedas en paralelo
     const promesas: Promise<PropiedadResultado[]>[] = []
     if (portales.includes('zonaprop')) promesas.push(buscarZonaProp(params))
     if (portales.includes('argenprop')) promesas.push(buscarArgenprop(params))
     if (portales.includes('mercadolibre')) promesas.push(buscarMercadoLibre(params))
 
     const resultados = await Promise.allSettled(promesas)
-
     const propiedades: PropiedadResultado[] = []
-    resultados.forEach(r => {
-      if (r.status === 'fulfilled') propiedades.push(...r.value)
-    })
+    resultados.forEach(r => { if (r.status === 'fulfilled') propiedades.push(...r.value) })
 
-    // Eliminar duplicados por URL
     const unicos = propiedades.filter((p, i, arr) =>
       arr.findIndex(x => x.url_original === p.url_original) === i
     )
 
-    return NextResponse.json({
-      total: unicos.length,
-      propiedades: unicos,
-    })
-
+    return NextResponse.json({ total: unicos.length, propiedades: unicos })
   } catch (err) {
     console.error('Error scraper:', err)
     return NextResponse.json({ error: 'Error en búsqueda' }, { status: 500 })
