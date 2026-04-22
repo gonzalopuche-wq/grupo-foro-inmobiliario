@@ -63,7 +63,7 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
           descripcion,
           contacto_id: contactoId || null,
           email_cliente: emailCliente || null,
-          notificar_cliente,
+          notificar_cliente: notificarCliente,
         }),
       })
 
