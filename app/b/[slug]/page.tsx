@@ -1,6 +1,4 @@
 // app/b/[slug]/page.tsx
-// Vista pública para el cliente — sin login requerido
-// URL: foroinmobiliario.com.ar/b/[slug]
 
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
@@ -12,14 +10,16 @@ const supabase = createClient(
 )
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: Props) {
+  const { slug } = await params
+
   const { data: lista } = await supabase
     .from('crm_listas_busqueda')
     .select('nombre, descripcion')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('publica', true)
     .single()
 
@@ -36,13 +36,15 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function Page({ params }: Props) {
+  const { slug } = await params
+
   const { data: lista } = await supabase
     .from('crm_listas_busqueda')
     .select(`
       id, nombre, descripcion, slug, created_at, updated_at,
       corredor:perfiles(nombre, apellido, matricula, telefono, foto_url, email)
     `)
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('publica', true)
     .single()
 

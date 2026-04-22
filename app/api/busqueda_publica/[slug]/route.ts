@@ -1,5 +1,4 @@
 // app/api/busqueda-publica/[slug]/route.ts
-// Endpoint público — el cliente accede sin login
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
@@ -9,14 +8,19 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params
+
   const { data: lista, error } = await supabase
     .from('crm_listas_busqueda')
     .select(`
       id, nombre, descripcion, slug, created_at, updated_at,
       corredor:perfiles(nombre, apellido, matricula, telefono, foto_url)
     `)
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('publica', true)
     .single()
 
@@ -32,7 +36,6 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
     .order('orden', { ascending: true })
     .order('created_at', { ascending: false })
 
-  // Alertas recientes (últimas 48hs) para mostrar badges
   const hace48hs = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
   const { data: alertas } = await supabase
     .from('crm_busqueda_alertas')
