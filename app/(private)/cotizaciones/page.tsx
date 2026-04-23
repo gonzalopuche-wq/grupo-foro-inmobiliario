@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import ActualizarCotizacionModal from "./ActualizarCotizacionModal";
+import IndicadoresWidget from "../components/IndicadoresWidget";
 
 interface CotizacionItem {
   label: string;
@@ -98,27 +99,58 @@ export default function CotizacionesPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Recalcular referencia cuando cambian proveedores o dolares de mercado
   useEffect(() => {
     calcularDolarReferencia(proveedores);
-  }, [proveedores]);
+  }, [proveedores, dolares]);
 
   const calcularDolarReferencia = (provs: Proveedor[]) => {
     const conCotizacion = provs.filter(p => p.compra_usd !== null && p.venta_usd !== null);
-    if (conCotizacion.length === 0) {
-      setDolarReferencia({ valor: null, proveedor: null, compra: null, venta: null });
+
+    if (conCotizacion.length > 0) {
+      // Usar el proveedor con mayor promedio
+      const mejor = conCotizacion.reduce((max, p) => {
+        const promP = prom(p.compra_usd, p.venta_usd)!;
+        const promMax = prom(max.compra_usd, max.venta_usd)!;
+        return promP > promMax ? p : max;
+      });
+      setDolarReferencia({
+        valor: prom(mejor.compra_usd, mejor.venta_usd),
+        proveedor: mejor.nombre,
+        compra: mejor.compra_usd,
+        venta: mejor.venta_usd,
+      });
       return;
     }
-    const mejor = conCotizacion.reduce((max, p) => {
-      const promP = prom(p.compra_usd, p.venta_usd)!;
-      const promMax = prom(max.compra_usd, max.venta_usd)!;
-      return promP > promMax ? p : max;
-    });
-    setDolarReferencia({
-      valor: prom(mejor.compra_usd, mejor.venta_usd),
-      proveedor: mejor.nombre,
-      compra: mejor.compra_usd,
-      venta: mejor.venta_usd,
-    });
+
+    // Fallback 1: usar el blue ya cargado en el estado dolares[]
+    const blueDeEstado = dolares.find(d => d.label?.toLowerCase().includes("blue"));
+    if (blueDeEstado && blueDeEstado.compra && blueDeEstado.venta) {
+      setDolarReferencia({
+        valor: prom(blueDeEstado.compra, blueDeEstado.venta),
+        proveedor: "Dólar Blue (mercado)",
+        compra: blueDeEstado.compra,
+        venta: blueDeEstado.venta,
+      });
+      return;
+    }
+
+    // Fallback 2: fetch directo al blue si todavía no cargó
+    fetch("https://dolarapi.com/v1/dolares/blue")
+      .then(r => r.json())
+      .then((d: any) => {
+        if (d.compra && d.venta) {
+          setDolarReferencia({
+            valor: prom(d.compra, d.venta),
+            proveedor: "Dólar Blue (mercado)",
+            compra: d.compra,
+            venta: d.venta,
+          });
+        }
+      })
+      .catch(() => {
+        setDolarReferencia({ valor: null, proveedor: null, compra: null, venta: null });
+      });
   };
 
   const cargarMercado = async () => {
@@ -151,7 +183,6 @@ export default function CotizacionesPage() {
     const { data } = await supabase.from("divisas_proveedores").select("*").eq("activo", true).order("orden");
     const provs = data ?? [];
     setProveedores(provs as Proveedor[]);
-    calcularDolarReferencia(provs as Proveedor[]);
     setLoadingProv(false);
   };
 
@@ -329,12 +360,13 @@ export default function CotizacionesPage() {
           <button className={`cot-tab${vista === "match" ? " activo" : ""}`} onClick={() => setVista("match")}>🔄 Match entre colegas</button>
         </div>
 
+        {/* Dólar de referencia GFI — siempre visible en todas las vistas */}
         {dolarReferencia.valor !== null && (
           <div className="dolar-ref-widget">
             <div className="dolar-ref-left">
               <div className="dolar-ref-label">💵 Dólar de Referencia GFI®</div>
               <div className="dolar-ref-valor">{formatARS(dolarReferencia.valor)}</div>
-              <div className="dolar-ref-fuente">Mayor promedio · {dolarReferencia.proveedor}</div>
+              <div className="dolar-ref-fuente">{dolarReferencia.proveedor}</div>
               <div className="dolar-ref-nota">Este valor se usa para todos los cálculos y transacciones de la plataforma</div>
             </div>
             <div className="dolar-ref-right">
@@ -347,7 +379,7 @@ export default function CotizacionesPage() {
                 <div className="dolar-ref-item-val td-v">{formatARS(dolarReferencia.venta)}</div>
               </div>
               <div className="dolar-ref-item">
-                <div className="dolar-ref-item-label">Promedio</div>
+                <div className="dolar-ref-item-label">Promedio GFI®</div>
                 <div className="dolar-ref-item-val td-p">{formatARS(dolarReferencia.valor)}</div>
               </div>
             </div>
@@ -376,6 +408,7 @@ export default function CotizacionesPage() {
                 </table>
               </div>
             </div>
+
             <div className="cot-seccion">
               <div className="cot-seccion-titulo">🌍 Otras divisas / ARS</div>
               <div className="cot-grid3">
@@ -401,7 +434,14 @@ export default function CotizacionesPage() {
                 ))}
               </div>
             </div>
-            <div className="cot-nota">Datos provistos por DolarApi.com · Se actualizan cada 5 min · Solo referencia</div>
+
+            {/* ICL, IPC y Valor JUS con historial */}
+            <div className="cot-seccion">
+              <div className="cot-seccion-titulo">📊 Índices económicos</div>
+              <IndicadoresWidget mostrarHistorial={true} meses={6} />
+            </div>
+
+            <div className="cot-nota">Cotizaciones: DolarApi.com · Índices: BCRA e INDEC · Se actualizan automáticamente · Solo referencia</div>
           </>
         )}
 
@@ -478,7 +518,7 @@ export default function CotizacionesPage() {
               <button className="match-btn-pub" onClick={() => setMostrarForm(true)}>+ Publicar</button>
             </div>
             <div className="match-nota">
-              💡 Referencia GFI: <strong style={{color:"#22c55e"}}>{dolarReferencia.valor ? formatARS(dolarReferencia.valor) : "sin datos"}</strong>
+              💡 Referencia GFI: <strong style={{color:"#22c55e"}}>{dolarReferencia.valor ? formatARS(dolarReferencia.valor) : "cargando..."}</strong>
               {dolarReferencia.proveedor && <span style={{color:"rgba(255,255,255,0.3)"}}> · {dolarReferencia.proveedor}</span>}
               {" · "}Ambos pagan {new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(costoMatch)} para revelar datos de contacto. Publicaciones vencen en 24hs.
             </div>
@@ -588,7 +628,6 @@ export default function CotizacionesPage() {
         </div>
       )}
 
-      {/* MODAL ACTUALIZAR / SUGERIR COTIZACIÓN */}
       {proveedorActualizando && userId && (
         <ActualizarCotizacionModal
           proveedor={proveedorActualizando}
