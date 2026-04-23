@@ -193,6 +193,23 @@ export default function PerfilPage() {
         setGuardandoColab(false); return;
       }
       mostrarToast("Colaborador agregado");
+      // Notificar a todos los admins
+      const { data: admins } = await supabase
+        .from("perfiles")
+        .select("id")
+        .eq("tipo", "admin");
+      if (admins && admins.length > 0) {
+        await supabase.from("notificaciones").insert(
+          admins.map((a: any) => ({
+            perfil_id: a.id,
+            tipo: "colaborador_nuevo",
+            titulo: "Nuevo colaborador pendiente",
+            mensaje: `${perfil?.apellido}, ${perfil?.nombre} agregó a ${formColab.apellido}, ${formColab.nombre} como colaborador. Pendiente de aprobación.`,
+            leida: false,
+            metadata: { corredor_id: userId, colaborador_email: formColab.email },
+          }))
+        );
+      }
     }
     setGuardandoColab(false);
     setMostrarFormColab(false);
@@ -563,8 +580,15 @@ export default function PerfilPage() {
                         </div>
                         <div className="colab-acciones">
                           <button className="colab-btn editar" onClick={() => editarColaborador(c)}>Editar</button>
-                          {c.estado !== "activo" && (
-                            <button className="colab-btn activar" onClick={() => cambiarEstadoColab(c.id, "activo")}>Activar</button>
+                            {c.estado === "pendiente" && (
+                            <div style={{fontSize:10,color:"#eab308",fontFamily:"'Montserrat',sans-serif",fontWeight:700,marginTop:2}}>
+                              ⏳ Pendiente de aprobación
+                            </div>
+                          )}
+                          {c.estado === "suspendido" && (
+                            <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",fontStyle:"italic",fontFamily:"'Montserrat',sans-serif",marginTop:2}}>
+                              Suspendido · contactá al admin
+                            </div>
                           )}
                           {c.estado === "activo" && (
                             <button className="colab-btn suspender" onClick={() => cambiarEstadoColab(c.id, "suspendido")}>Suspender</button>
