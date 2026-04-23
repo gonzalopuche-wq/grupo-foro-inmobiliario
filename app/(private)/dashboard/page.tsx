@@ -114,9 +114,25 @@ export default function DashboardPage() {
       );
     } else { setClimaError(true); setClimaLoading(false); }
 
-    fetch("https://dolarapi.com/v1/dolares/blue")
-      .then(r => r.json()).then(d => { const c = parseFloat(d.compra); const v = parseFloat(d.venta); setDolar({ compra: c, venta: v, promedio: Math.round(((c + v) / 2) * 100) / 100 }); setDolarLoading(false); })
-      .catch(() => { setDolar(null); setDolarLoading(false); });
+    // Dólar de referencia GFI® — proveedor con mayor promedio, fallback a blue
+    supabase.from("divisas_proveedores").select("nombre, compra_usd, venta_usd").eq("activo", true)
+      .then(({ data }) => {
+        const provs = (data || []).filter(p => p.compra_usd !== null && p.venta_usd !== null);
+        if (provs.length > 0) {
+          const mejor = provs.reduce((max: any, p: any) => {
+            const promP = (p.compra_usd + p.venta_usd) / 2;
+            const promMax = (max.compra_usd + max.venta_usd) / 2;
+            return promP > promMax ? p : max;
+          });
+          setDolar({ compra: mejor.compra_usd, venta: mejor.venta_usd, promedio: Math.round(((mejor.compra_usd + mejor.venta_usd) / 2) * 100) / 100 });
+          setDolarLoading(false);
+        } else {
+          // Fallback blue
+          fetch("https://dolarapi.com/v1/dolares/blue")
+            .then(r => r.json()).then(d => { const c = parseFloat(d.compra); const v = parseFloat(d.venta); setDolar({ compra: c, venta: v, promedio: Math.round(((c + v) / 2) * 100) / 100 }); setDolarLoading(false); })
+            .catch(() => { setDolar(null); setDolarLoading(false); });
+        }
+      });
 
     // Traer historial de 7 meses para calcular hasta semestral
     const hace7 = new Date();
