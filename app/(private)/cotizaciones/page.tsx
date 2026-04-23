@@ -438,7 +438,7 @@ export default function CotizacionesPage() {
             {/* ICL, IPC y Valor JUS con historial */}
             <div className="cot-seccion">
               <div className="cot-seccion-titulo">📊 Índices económicos</div>
-              <IndicadoresWidget mostrarHistorial={true} meses={6} />
+              <IndicadoresWidget />
             </div>
 
             <div className="cot-nota">Cotizaciones: DolarApi.com · Índices: BCRA e INDEC · Se actualizan automáticamente · Solo referencia</div>
