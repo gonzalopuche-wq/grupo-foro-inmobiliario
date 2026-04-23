@@ -92,13 +92,71 @@ export default function DashboardPage() {
       .then(r => r.json()).then(d => { const c = parseFloat(d.compra); const v = parseFloat(d.venta); setDolar({ compra: c, venta: v, promedio: Math.round(((c + v) / 2) * 100) / 100 }); setDolarLoading(false); })
       .catch(() => { setDolar(null); setDolarLoading(false); });
 
+    // ICL — argentinadatos con fallback a Supabase
     fetch("https://argentinadatos.com/api/v1/finanzas/indices/icl/ultimo")
-      .then(r => r.json()).then(d => { const valor = d?.valor ?? null; if (valor !== null) { const fs = d?.fecha ? new Date(d.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""; setIcl({ valor: Number(valor).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 4 }), sub: fs ? `Al ${fs} · BCRA` : "BCRA", loading: false }); } else setIcl({ valor: "Sin datos", sub: "BCRA", loading: false }); })
-      .catch(() => setIcl({ valor: "Sin datos", sub: "BCRA", loading: false }));
+      .then(r => r.json())
+      .then(d => {
+        const valor = d?.valor ?? null;
+        if (valor !== null) {
+          const fs = d?.fecha
+            ? new Date(d.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" })
+            : "";
+          setIcl({
+            valor: Number(valor).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 4 }),
+            sub: fs ? `Al ${fs} · BCRA` : "BCRA",
+            loading: false,
+          });
+        } else {
+          throw new Error("sin datos");
+        }
+      })
+      .catch(() => {
+        supabase.from("indicadores").select("valor, descripcion").eq("clave", "icl_diario").single()
+          .then(({ data }) => {
+            if (data?.valor) {
+              setIcl({
+                valor: Number(data.valor).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 4 }),
+                sub: "Último disponible · BCRA",
+                loading: false,
+              });
+            } else {
+              setIcl({ valor: "Sin datos", sub: "BCRA", loading: false });
+            }
+          });
+      });
 
+    // IPC — argentinadatos con fallback a Supabase
     fetch("https://argentinadatos.com/api/v1/finanzas/indices/inflacion/ultimo")
-      .then(r => r.json()).then(d => { const valor = d?.valor ?? null; if (valor !== null) { const fs = d?.fecha ? new Date(d.fecha).toLocaleDateString("es-AR", { month: "long", year: "numeric" }) : ""; setIpc({ valor: `${Number(valor).toLocaleString("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })}%`, sub: fs ? `${fs} · INDEC` : "INDEC", loading: false }); } else setIpc({ valor: "Sin datos", sub: "INDEC", loading: false }); })
-      .catch(() => setIpc({ valor: "Sin datos", sub: "INDEC", loading: false }));
+      .then(r => r.json())
+      .then(d => {
+        const valor = d?.valor ?? null;
+        if (valor !== null) {
+          const fs = d?.fecha
+            ? new Date(d.fecha).toLocaleDateString("es-AR", { month: "long", year: "numeric" })
+            : "";
+          setIpc({
+            valor: `${Number(valor).toLocaleString("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })}%`,
+            sub: fs ? `${fs} · INDEC` : "INDEC",
+            loading: false,
+          });
+        } else {
+          throw new Error("sin datos");
+        }
+      })
+      .catch(() => {
+        supabase.from("indicadores").select("valor, descripcion").eq("clave", "ipc_mensual").single()
+          .then(({ data }) => {
+            if (data?.valor) {
+              setIpc({
+                valor: `${Number(data.valor).toLocaleString("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })}%`,
+                sub: "Último disponible · INDEC",
+                loading: false,
+              });
+            } else {
+              setIpc({ valor: "Sin datos", sub: "INDEC", loading: false });
+            }
+          });
+      });
 
     supabase.from("indicadores").select("valor").eq("clave", "valor_jus").single()
       .then(({ data, error }) => {
@@ -195,7 +253,6 @@ export default function DashboardPage() {
 
       <div className="db-fecha">{hoy}</div>
 
-      {/* Hoy en GFI + Clima */}
       <div className="db-top-row">
         <div className="db-panel red-top">
           <div className="db-sec-titulo">Hoy en GFI®</div>
@@ -260,7 +317,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Accesos rápidos */}
       <div className="db-accesos">
         <div className="db-sec-titulo">Accesos rápidos</div>
         <div className="db-accesos-grid">
@@ -273,7 +329,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Indicadores */}
       <div className="db-indicadores">
         <div className="db-ind">
           <div className="db-ind-label">USD Blue — Promedio</div>
@@ -290,22 +345,30 @@ export default function DashboardPage() {
         </div>
         <div className="db-ind">
           <div className="db-ind-label">ICL Diario</div>
-          {icl.loading ? <div className="skeleton" style={{ height: 28, width: 100, marginTop: 6 }} /> : <div className={`db-ind-valor${icl.valor !== "Sin datos" ? " verde" : ""}`}>{icl.valor}</div>}
+          {icl.loading
+            ? <div className="skeleton" style={{ height: 28, width: 100, marginTop: 6 }} />
+            : <div className={`db-ind-valor${icl.valor !== "Sin datos" ? " verde" : ""}`}>{icl.valor}</div>
+          }
           <div className="db-ind-sub">{icl.sub || "Índice Contratos Locación · BCRA"}</div>
         </div>
         <div className="db-ind">
           <div className="db-ind-label">IPC Mensual</div>
-          {ipc.loading ? <div className="skeleton" style={{ height: 28, width: 80, marginTop: 6 }} /> : <div className="db-ind-valor">{ipc.valor}</div>}
+          {ipc.loading
+            ? <div className="skeleton" style={{ height: 28, width: 80, marginTop: 6 }} />
+            : <div className="db-ind-valor">{ipc.valor}</div>
+          }
           <div className="db-ind-sub">{ipc.sub || "Inflación mensual · INDEC"}</div>
         </div>
         <div className="db-ind">
           <div className="db-ind-label">Valor JUS</div>
-          {jus.loading ? <div className="skeleton" style={{ height: 28, width: 100, marginTop: 6 }} /> : <div className="db-ind-valor">{jus.valor}</div>}
+          {jus.loading
+            ? <div className="skeleton" style={{ height: 28, width: 100, marginTop: 6 }} />
+            : <div className="db-ind-valor">{jus.valor}</div>
+          }
           <div className="db-ind-sub">COCIR 2da Circ. · Ley 13.154</div>
         </div>
       </div>
 
-      {/* Bottom */}
       <div className="db-bottom-row">
         <div className="db-panel">
           <div className="db-panel-titulo">
@@ -323,10 +386,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Noticias */}
       <NoticiasWidget />
-
-      {/* Notificaciones push */}
       <NotificacionesWidget />
     </>
   );
