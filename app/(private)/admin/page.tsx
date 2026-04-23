@@ -9,6 +9,7 @@ interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number;
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
 interface Documento { id: string; nombre: string; descripcion: string; nivel: string; categoria: string; archivo_url: string; estado: string; created_at: string; user_id: string; perfiles: { nombre: string; apellido: string; matricula: string; }; }
 interface Noticia { id: string; titulo: string; cuerpo: string; link: string | null; imagen_url: string | null; fuente: string | null; destacado: boolean; estado: string; created_at: string; autor_id: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; }; }
+interface Colaborador { id: string; corredor_id: string; nombre: string; apellido: string; email: string; telefono: string | null; dni: string | null; rol: string; estado: string; notas: string | null; created_at: string; corredor?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 
 const INDICADORES_CONFIG = [
   { clave: "valor_jus", label: "Valor JUS", tipo: "number" as const },
@@ -29,6 +30,7 @@ const ESTADO_BADGE: Record<string, string> = { pendiente: "badge-pendiente", apr
 const ESTADO_LABEL: Record<string, string> = { pendiente: "Pendiente", aprobado: "Aprobado", rechazado: "Rechazado" };
 const MONEDAS_OPCIONES = ["USD", "EUR", "GBP", "BRL", "USDT", "USDC"];
 const FORM_PROV_VACIO = { nombre: "", contacto_whatsapp: "", contacto_email: "", monedas: [] as string[], servicios: "", compra_usd: "", venta_usd: "" };
+const ROL_LABELS: Record<string, string> = { colaborador: "Colaborador", asistente: "Asistente", socio: "Socio" };
 
 export default function AdminPage() {
   const [perfiles, setPerfiles] = useState<Perfil[]>([]);
@@ -55,16 +57,19 @@ export default function AdminPage() {
   const [formProv, setFormProv] = useState(FORM_PROV_VACIO);
   const [guardandoProv, setGuardandoProv] = useState(false);
   const [editandoProv, setEditandoProv] = useState<string | null>(null);
-  // Biblioteca
   const [documentos, setDocumentos] = useState<Documento[]>([]);
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [filtroDocs, setFiltroDocs] = useState<"pendiente"|"aprobado"|"rechazado">("pendiente");
   const [procesandoDoc, setProcesandoDoc] = useState<string | null>(null);
-  // Noticias
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [loadingNot, setLoadingNot] = useState(true);
   const [filtroNot, setFiltroNot] = useState<"pendiente"|"aprobado"|"rechazado">("pendiente");
   const [procesandoNot, setProcesandoNot] = useState<string | null>(null);
+  // Colaboradores
+  const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
+  const [loadingColab, setLoadingColab] = useState(true);
+  const [filtroColab, setFiltroColab] = useState<"pendiente"|"activo"|"suspendido"|"todos">("pendiente");
+  const [procesandoColab, setProcesandoColab] = useState<string | null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -74,10 +79,65 @@ export default function AdminPage() {
       if (!perfil || perfil.tipo !== "admin") { window.location.href = "/dashboard"; return; }
       setEsAdmin(true);
       setAdminId(userData.user.id);
-      cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu(); cargarDocumentos("pendiente"); cargarNoticias("pendiente");
+      cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
+      cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente");
     };
     verificar();
   }, []);
+
+  const cargarColaboradores = async (estado: string) => {
+    setLoadingColab(true);
+    const query = estado === "todos"
+      ? supabase.from("colaboradores").select("*, corredor:perfiles!corredor_id(nombre, apellido, matricula, email)").order("created_at", { ascending: false })
+      : supabase.from("colaboradores").select("*, corredor:perfiles!corredor_id(nombre, apellido, matricula, email)").eq("estado", estado).order("created_at", { ascending: false });
+    const { data } = await query;
+    setColaboradores((data as unknown as Colaborador[]) ?? []);
+    setLoadingColab(false);
+  };
+
+  useEffect(() => { if (esAdmin) cargarColaboradores(filtroColab); }, [filtroColab, esAdmin]);
+
+  const aprobarColaborador = async (c: Colaborador) => {
+    setProcesandoColab(c.id);
+    await supabase.from("colaboradores").update({ estado: "activo", activado_at: new Date().toISOString() }).eq("id", c.id);
+    // Notificar al corredor titular
+    await supabase.from("notificaciones").insert({
+      perfil_id: c.corredor_id,
+      tipo: "colaborador_aprobado",
+      titulo: "Colaborador aprobado ✓",
+      mensaje: `${c.apellido}, ${c.nombre} fue aprobado como colaborador de tu cuenta.`,
+      leida: false,
+    });
+    // Enviar email al colaborador
+    try {
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: c.email,
+          subject: "✅ Tu acceso a GFI® fue aprobado",
+          html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:rgba(255,255,255,0.5);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`,
+        }),
+      });
+    } catch {}
+    setProcesandoColab(null);
+    cargarColaboradores(filtroColab);
+  };
+
+  const rechazarColaborador = async (c: Colaborador) => {
+    if (!confirm(`¿Rechazar a ${c.nombre} ${c.apellido}?`)) return;
+    setProcesandoColab(c.id);
+    await supabase.from("colaboradores").update({ estado: "suspendido" }).eq("id", c.id);
+    await supabase.from("notificaciones").insert({
+      perfil_id: c.corredor_id,
+      tipo: "colaborador_rechazado",
+      titulo: "Colaborador no aprobado",
+      mensaje: `${c.apellido}, ${c.nombre} no fue aprobado como colaborador. Contactá al admin.`,
+      leida: false,
+    });
+    setProcesandoColab(null);
+    cargarColaboradores(filtroColab);
+  };
 
   const cargarPerfiles = async () => {
     setLoading(true);
@@ -112,21 +172,14 @@ export default function AdminPage() {
   const guardarCbu = async () => {
     setGuardandoCbu(true);
     for (const c of CBU_CONFIG) {
-      await supabase.from("indicadores").upsert(
-        { clave: c.clave, valor_texto: cbuValues[c.clave] ?? "", valor: 0 },
-        { onConflict: "clave" }
-      );
+      await supabase.from("indicadores").upsert({ clave: c.clave, valor_texto: cbuValues[c.clave] ?? "", valor: 0 }, { onConflict: "clave" });
     }
-    setGuardandoCbu(false);
-    setCbuOk(true);
-    setTimeout(() => setCbuOk(false), 2000);
+    setGuardandoCbu(false); setCbuOk(true); setTimeout(() => setCbuOk(false), 2000);
   };
 
   const cargarPagos = async () => {
     setLoadingPagos(true);
-    const { data } = await supabase.from("suscripciones")
-      .select("*, perfiles(nombre, apellido, matricula, email)")
-      .order("creado_at", { ascending: false });
+    const { data } = await supabase.from("suscripciones").select("*, perfiles(nombre, apellido, matricula, email)").order("creado_at", { ascending: false });
     setPagos((data as unknown as Pago[]) ?? []);
     setLoadingPagos(false);
   };
@@ -140,22 +193,14 @@ export default function AdminPage() {
 
   const cargarDocumentos = async (estado: string) => {
     setLoadingDocs(true);
-    const { data } = await supabase
-      .from("biblioteca")
-      .select("*, perfiles(nombre, apellido, matricula)")
-      .eq("estado", estado)
-      .order("created_at", { ascending: false });
+    const { data } = await supabase.from("biblioteca").select("*, perfiles(nombre, apellido, matricula)").eq("estado", estado).order("created_at", { ascending: false });
     setDocumentos((data as any) ?? []);
     setLoadingDocs(false);
   };
 
   const cargarNoticias = async (estado: string) => {
     setLoadingNot(true);
-    const { data } = await supabase
-      .from("noticias")
-      .select("*, perfiles(nombre, apellido, matricula)")
-      .eq("estado", estado)
-      .order("created_at", { ascending: false });
+    const { data } = await supabase.from("noticias").select("*, perfiles(nombre, apellido, matricula)").eq("estado", estado).order("created_at", { ascending: false });
     setNoticias((data as any) ?? []);
     setLoadingNot(false);
   };
@@ -166,63 +211,31 @@ export default function AdminPage() {
   const aprobarDoc = async (doc: Documento) => {
     setProcesandoDoc(doc.id);
     await supabase.from("biblioteca").update({ estado: "aprobado" }).eq("id", doc.id);
-    await supabase.from("notificaciones").insert({
-      user_id: doc.user_id,
-      titulo: "Documento aprobado ✓",
-      mensaje: `Tu documento "${doc.nombre}" fue aprobado y ya está disponible en la Biblioteca.`,
-      tipo: "biblioteca",
-      url: "/biblioteca",
-    });
-    await cargarDocumentos(filtroDocs);
-    setProcesandoDoc(null);
+    await supabase.from("notificaciones").insert({ user_id: doc.user_id, titulo: "Documento aprobado ✓", mensaje: `Tu documento "${doc.nombre}" fue aprobado y ya está disponible en la Biblioteca.`, tipo: "biblioteca", url: "/biblioteca" });
+    await cargarDocumentos(filtroDocs); setProcesandoDoc(null);
   };
 
   const rechazarDoc = async (doc: Documento) => {
     setProcesandoDoc(doc.id);
     await supabase.from("biblioteca").update({ estado: "rechazado" }).eq("id", doc.id);
-    await supabase.from("notificaciones").insert({
-      user_id: doc.user_id,
-      titulo: "Documento no aprobado",
-      mensaje: `Tu documento "${doc.nombre}" no fue aprobado. Podés contactar al admin para más información.`,
-      tipo: "biblioteca",
-      url: "/biblioteca",
-    });
-    await cargarDocumentos(filtroDocs);
-    setProcesandoDoc(null);
+    await supabase.from("notificaciones").insert({ user_id: doc.user_id, titulo: "Documento no aprobado", mensaje: `Tu documento "${doc.nombre}" no fue aprobado.`, tipo: "biblioteca", url: "/biblioteca" });
+    await cargarDocumentos(filtroDocs); setProcesandoDoc(null);
   };
 
   const aprobarNoticia = async (n: Noticia) => {
     setProcesandoNot(n.id);
-    await supabase.from("noticias").update({
-      estado: "aprobado",
-      aprobado_at: new Date().toISOString(),
-      aprobado_por: adminId,
-    }).eq("id", n.id);
-    const { data: destinatarios } = await supabase
-      .from("perfiles")
-      .select("id")
-      .eq("notif_foro", true)
-      .neq("id", n.autor_id);
+    await supabase.from("noticias").update({ estado: "aprobado", aprobado_at: new Date().toISOString(), aprobado_por: adminId }).eq("id", n.id);
+    const { data: destinatarios } = await supabase.from("perfiles").select("id").eq("notif_foro", true).neq("id", n.autor_id);
     if (destinatarios && destinatarios.length > 0) {
-      await supabase.from("notificaciones").insert(
-        destinatarios.map((p: any) => ({
-          user_id: p.id,
-          titulo: "📰 Nueva noticia publicada",
-          mensaje: n.titulo,
-          tipo: "noticias",
-          url: "/dashboard",
-        }))
-      );
+      await supabase.from("notificaciones").insert(destinatarios.map((p: any) => ({ user_id: p.id, titulo: "📰 Nueva noticia publicada", mensaje: n.titulo, tipo: "noticias", url: "/dashboard" })));
     }
-    await cargarNoticias(filtroNot);
-    setProcesandoNot(null);
+    await cargarNoticias(filtroNot); setProcesandoNot(null);
   };
 
   const rechazarNoticia = async (id: string) => {
     setProcesandoNot(id);
     await supabase.from("noticias").update({ estado: "rechazado" }).eq("id", id);
-    await cargarNoticias(filtroNot);
-    setProcesandoNot(null);
+    await cargarNoticias(filtroNot); setProcesandoNot(null);
   };
 
   const toggleDestacado = async (n: Noticia) => {
@@ -238,52 +251,22 @@ export default function AdminPage() {
 
   const confirmarPago = async (pago: Pago) => {
     setProcesandoPago(pago.id);
-    const vencimiento = new Date();
-    vencimiento.setMonth(vencimiento.getMonth() + 1);
-    vencimiento.setDate(vencimiento.getDate() + 3);
-    await supabase.from("suscripciones").update({
-      estado: "activa",
-      fecha_confirmacion: new Date().toISOString().slice(0, 10),
-      fecha_vencimiento: vencimiento.toISOString().slice(0, 10),
-      nota_admin: notaAdmin[pago.id] || null,
-    }).eq("id", pago.id);
+    const vencimiento = new Date(); vencimiento.setMonth(vencimiento.getMonth() + 1); vencimiento.setDate(vencimiento.getDate() + 3);
+    await supabase.from("suscripciones").update({ estado: "activa", fecha_confirmacion: new Date().toISOString().slice(0, 10), fecha_vencimiento: vencimiento.toISOString().slice(0, 10), nota_admin: notaAdmin[pago.id] || null }).eq("id", pago.id);
     await supabase.from("perfiles").update({ estado: "aprobado" }).eq("id", pago.perfil_id);
     if (pago.perfiles?.email) {
       try {
-        await fetch("/api/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            to: pago.perfiles.email,
-            subject: "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario",
-            html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Pago confirmado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${pago.perfiles.nombre}</strong>, tu pago fue confirmado exitosamente.</p><table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;"><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);width:140px;">Período</td><td style="color:#fff;font-weight:600;">${pago.periodo ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto</td><td style="color:#fff;">USD ${pago.monto_usd}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Vencimiento</td><td style="color:#22c55e;font-weight:700;">${vencimiento.toLocaleDateString("es-AR")}</td></tr>${notaAdmin[pago.id] ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Nota</td><td style="color:#fff;">${notaAdmin[pago.id]}</td></tr>` : ""}</table><a href="https://www.foroinmobiliario.com.ar/suscripcion" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;">Ver mi suscripción</a></div>`,
-          }),
-        });
+        await fetch("/api/send-email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ to: pago.perfiles.email, subject: "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario", html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Pago confirmado</h2><p>Hola <strong>${pago.perfiles.nombre}</strong>, tu pago fue confirmado. Vence el ${vencimiento.toLocaleDateString("es-AR")}.</p></div>` }) });
       } catch {}
     }
-    setProcesandoPago(null);
-    cargarPagos();
+    setProcesandoPago(null); cargarPagos();
   };
 
   const rechazarPago = async (pago: Pago) => {
     if (!confirm("¿Rechazar este pago?")) return;
     setProcesandoPago(pago.id);
     await supabase.from("suscripciones").update({ estado: "rechazado", nota_admin: notaAdmin[pago.id] || null }).eq("id", pago.id);
-    if (pago.perfiles?.email) {
-      try {
-        await fetch("/api/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            to: pago.perfiles.email,
-            subject: "⚠️ Pago no confirmado — GFI® Grupo Foro Inmobiliario",
-            html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(200,0,0,0.2);"><h2 style="color:#cc0000;margin-bottom:16px;">⚠️ Pago no confirmado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${pago.perfiles.nombre}</strong>, no pudimos confirmar tu pago del período <strong>${pago.periodo ?? "—"}</strong>.</p>${notaAdmin[pago.id] ? `<p style="font-size:13px;color:#eab308;background:rgba(234,179,8,0.08);padding:12px;border-radius:4px;margin-bottom:20px;">📋 ${notaAdmin[pago.id]}</p>` : ""}<a href="https://www.foroinmobiliario.com.ar/suscripcion" style="display:inline-block;background:#cc0000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;">Ir a mi suscripción</a></div>`,
-          }),
-        });
-      } catch {}
-    }
-    setProcesandoPago(null);
-    cargarPagos();
+    setProcesandoPago(null); cargarPagos();
   };
 
   const guardarIndicador = async (clave: string) => {
@@ -292,17 +275,13 @@ export default function AdminPage() {
     if (isNaN(valor)) return;
     setGuardando(clave);
     await supabase.from("indicadores").update({ valor }).eq("clave", clave);
-    setGuardando(null);
-    setGuardadoOk(clave);
-    setTimeout(() => setGuardadoOk(null), 2000);
-    cargarIndicadores();
+    setGuardando(null); setGuardadoOk(clave); setTimeout(() => setGuardadoOk(null), 2000); cargarIndicadores();
   };
 
   const cambiarEstado = async (id: string, nuevoEstado: "aprobado" | "rechazado") => {
     setProcesando(id);
     await supabase.from("perfiles").update({ estado: nuevoEstado }).eq("id", id);
-    await cargarPerfiles();
-    setProcesando(null);
+    await cargarPerfiles(); setProcesando(null);
   };
 
   const guardarProveedor = async () => {
@@ -328,6 +307,8 @@ export default function AdminPage() {
   const contadoresPagos = { pendiente: pagos.filter(p => p.estado === "pendiente").length, activa: pagos.filter(p => p.estado === "activa").length, todos: pagos.length };
   const perfilesFiltrados = filtro === "todos" ? perfiles : perfiles.filter(p => p.estado === filtro);
   const contadores = { todos: perfiles.length, pendiente: perfiles.filter(p => p.estado === "pendiente").length, aprobado: perfiles.filter(p => p.estado === "aprobado").length, rechazado: perfiles.filter(p => p.estado === "rechazado").length };
+  const contadoresColab = { pendiente: colaboradores.filter(c => c.estado === "pendiente").length, activo: colaboradores.filter(c => c.estado === "activo").length, suspendido: colaboradores.filter(c => c.estado === "suspendido").length, todos: colaboradores.length };
+  const colaboradoresFiltrados = filtroColab === "todos" ? colaboradores : colaboradores.filter(c => c.estado === filtroColab);
   const formatFecha = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
   const estadoPagoColor = (estado: string) => { if (estado === "activa") return "#22c55e"; if (estado === "pendiente") return "#eab308"; return "#ff4444"; };
 
@@ -338,7 +319,6 @@ export default function AdminPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { min-height: 100%; background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; }
         .adm-root { min-height: 100vh; display: flex; flex-direction: column; background: #0a0a0a; }
         .adm-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 60px; background: rgba(14,14,14,0.98); border-bottom: 1px solid rgba(180,0,0,0.2); position: sticky; top: 0; z-index: 100; }
         .adm-topbar-logo { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 800; }
@@ -371,6 +351,8 @@ export default function AdminPage() {
         .badge-pendiente { background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); color: #eab308; }
         .badge-aprobado { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
         .badge-rechazado { background: rgba(200,0,0,0.12); border: 1px solid rgba(200,0,0,0.3); color: #ff4444; }
+        .badge-activo { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
+        .badge-suspendido { background: rgba(200,0,0,0.12); border: 1px solid rgba(200,0,0,0.3); color: #ff4444; }
         .badge-corredor { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); color: #818cf8; }
         .badge-colaborador { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.5); }
         .adm-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -378,10 +360,9 @@ export default function AdminPage() {
         .adm-btn-aprobar:hover { background: rgba(34,197,94,0.2); }
         .adm-btn-rechazar { padding: 6px 14px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.25); border-radius: 3px; color: #ff4444; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .adm-btn-rechazar:hover { background: rgba(200,0,0,0.18); }
-        .adm-btn-destacar { padding: 6px 14px; background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.25); border-radius: 3px; color: #eab308; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-        .adm-btn-destacar:hover { background: rgba(234,179,8,0.18); }
+        .adm-btn-destacar { padding: 6px 14px; background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.25); border-radius: 3px; color: #eab308; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .adm-btn-destacar.on { background: rgba(234,179,8,0.2); border-color: #eab308; }
-        .adm-btn-eliminar { padding: 6px 14px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.35); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .adm-btn-eliminar { padding: 6px 14px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.35); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .adm-btn-eliminar:hover { border-color: rgba(200,0,0,0.3); color: #ff4444; }
         .adm-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -481,7 +462,90 @@ export default function AdminPage() {
 
         <main className="adm-content">
 
-          {/* MODERACIÓN NOTICIAS */}
+          {/* ── COLABORADORES PENDIENTES ── */}
+          <div>
+            <div className="adm-header">
+              <h1>Colaboradores <span>pendientes</span></h1>
+              <p>Corredores que agregaron colaboradores a sus cuentas. Aprobá para activar el acceso y enviar email de bienvenida.</p>
+            </div>
+            <div className="adm-filtros">
+              {(["pendiente","activo","suspendido","todos"] as const).map(f => (
+                <button key={f} className={`adm-filtro-btn${filtroColab === f ? " activo" : ""}`} onClick={() => setFiltroColab(f)}>
+                  {f === "pendiente" ? "⏳ Pendientes" : f === "activo" ? "✓ Activos" : f === "suspendido" ? "✗ Suspendidos" : "Todos"}
+                  <span className="adm-filtro-count">{contadoresColab[f]}</span>
+                </button>
+              ))}
+            </div>
+            <div className="adm-tabla-wrap">
+              {loadingColab ? <div className="adm-loading">Cargando...</div>
+               : colaboradoresFiltrados.length === 0 ? (
+                <div className="adm-empty">
+                  {filtroColab === "pendiente" ? "No hay colaboradores pendientes ✓" : "No hay colaboradores en esta categoría."}
+                </div>
+               ) : (
+                <table className="adm-tabla">
+                  <thead>
+                    <tr>
+                      <th>Colaborador</th>
+                      <th>Rol</th>
+                      <th>Corredor titular</th>
+                      <th>Contacto</th>
+                      <th>Fecha</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {colaboradoresFiltrados.map(c => (
+                      <tr key={c.id}>
+                        <td>
+                          <div className="adm-nombre">{c.apellido}, {c.nombre}</div>
+                          {c.notas && <div className="adm-sub">📝 {c.notas}</div>}
+                        </td>
+                        <td><span className="badge badge-colaborador">{ROL_LABELS[c.rol] ?? c.rol}</span></td>
+                        <td>
+                          <div className="adm-nombre" style={{fontSize:12}}>{c.corredor?.apellido}, {c.corredor?.nombre}</div>
+                          {c.corredor?.matricula && <div className="adm-sub">Mat. {c.corredor.matricula}</div>}
+                          {c.corredor?.email && <div className="adm-sub">✉️ {c.corredor.email}</div>}
+                        </td>
+                        <td>
+                          {c.email && <div style={{fontSize:12}}>{c.email}</div>}
+                          {c.telefono && <div className="adm-sub">{c.telefono}</div>}
+                          {c.dni && <div className="adm-sub">DNI {c.dni}</div>}
+                        </td>
+                        <td style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{formatFecha(c.created_at)}</td>
+                        <td>
+                          <span className={`badge badge-${c.estado}`}>
+                            {c.estado === "pendiente" ? "⏳ Pendiente" : c.estado === "activo" ? "✓ Activo" : "✗ Suspendido"}
+                          </span>
+                        </td>
+                        <td>
+                          {procesandoColab === c.id ? <span className="adm-spinner" /> : (
+                            <div className="adm-acciones">
+                              {c.estado === "pendiente" && (
+                                <button className="adm-btn-aprobar" onClick={() => aprobarColaborador(c)}>✓ Aprobar</button>
+                              )}
+                              {c.estado === "pendiente" && (
+                                <button className="adm-btn-rechazar" onClick={() => rechazarColaborador(c)}>✗ Rechazar</button>
+                              )}
+                              {c.estado === "activo" && (
+                                <button className="adm-btn-rechazar" onClick={() => rechazarColaborador(c)}>Suspender</button>
+                              )}
+                              {c.estado === "suspendido" && (
+                                <button className="adm-btn-aprobar" onClick={() => aprobarColaborador(c)}>Reactivar</button>
+                              )}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+               )}
+            </div>
+          </div>
+
+          {/* ── MODERACIÓN NOTICIAS ── */}
           <div>
             <div className="adm-header">
               <h1>Moderación <span>Noticias</span></h1>
@@ -494,83 +558,35 @@ export default function AdminPage() {
                 </button>
               ))}
             </div>
-            {loadingNot ? (
-              <div className="adm-loading">Cargando...</div>
-            ) : noticias.length === 0 ? (
-              <div className="adm-empty">
-                {filtroNot === "pendiente" ? "No hay noticias pendientes ✓" :
-                 filtroNot === "aprobado" ? "No hay noticias aprobadas" :
-                 "No hay noticias rechazadas"}
-              </div>
-            ) : (
-              noticias.map(n => (
-                <div key={n.id} className={`not-row${n.destacado ? " dest" : ""}`}>
-                  {n.imagen_url ? (
-                    <img className="not-img-thumb" src={n.imagen_url} alt={n.titulo} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  ) : (
-                    <div className="not-img-ph">📰</div>
-                  )}
-                  <div className="doc-info">
-                    <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
-                      <span className="doc-nombre">{n.titulo}</span>
-                      {n.destacado && (
-                        <span style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#eab308",background:"rgba(234,179,8,0.1)",border:"1px solid rgba(234,179,8,0.2)",padding:"2px 6px",borderRadius:10}}>
-                          ⭐ DESTACADA
-                        </span>
-                      )}
-                      {n.fuente && (
-                        <span style={{fontSize:9,color:"rgba(200,0,0,0.6)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
-                          {n.fuente}
-                        </span>
-                      )}
-                    </div>
-                    <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",lineHeight:1.5,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical" as any,overflow:"hidden"}}>
-                      {n.cuerpo}
-                    </div>
-                    <div className="doc-meta">
-                      Por: {n.perfiles?.nombre} {n.perfiles?.apellido}
-                      {n.perfiles?.matricula ? ` · Mat. ${n.perfiles.matricula}` : ""}
-                      {" · "}{formatFecha(n.created_at)}
-                      {n.link && (
-                        <a href={n.link} target="_blank" rel="noopener noreferrer"
-                          style={{marginLeft:10,color:"#cc0000",textDecoration:"none",fontSize:10}}>
-                          Ver link →
-                        </a>
-                      )}
-                    </div>
+            {loadingNot ? <div className="adm-loading">Cargando...</div>
+             : noticias.length === 0 ? <div className="adm-empty">{filtroNot === "pendiente" ? "No hay noticias pendientes ✓" : filtroNot === "aprobado" ? "No hay noticias aprobadas" : "No hay noticias rechazadas"}</div>
+             : noticias.map(n => (
+              <div key={n.id} className={`not-row${n.destacado ? " dest" : ""}`}>
+                {n.imagen_url ? <img className="not-img-thumb" src={n.imagen_url} alt={n.titulo} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} /> : <div className="not-img-ph">📰</div>}
+                <div className="doc-info">
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
+                    <span className="doc-nombre">{n.titulo}</span>
+                    {n.destacado && <span style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#eab308",background:"rgba(234,179,8,0.1)",border:"1px solid rgba(234,179,8,0.2)",padding:"2px 6px",borderRadius:10}}>⭐ DESTACADA</span>}
+                    {n.fuente && <span style={{fontSize:9,color:"rgba(200,0,0,0.6)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>{n.fuente}</span>}
                   </div>
-                  <div className="doc-acciones" style={{flexDirection:"column",gap:6}}>
-                    {procesandoNot === n.id ? (
-                      <span className="adm-spinner" />
-                    ) : (
-                      <>
-                        {n.estado === "pendiente" && (
-                          <button className="adm-btn-aprobar" onClick={() => aprobarNoticia(n)}>✓ Aprobar</button>
-                        )}
-                        {n.estado === "pendiente" && (
-                          <button className="adm-btn-rechazar" onClick={() => rechazarNoticia(n.id)}>✗ Rechazar</button>
-                        )}
-                        {n.estado === "aprobado" && (
-                          <button className={`adm-btn-destacar${n.destacado ? " on" : ""}`} onClick={() => toggleDestacado(n)}>
-                            {n.destacado ? "⭐ Quitar" : "☆ Destacar"}
-                          </button>
-                        )}
-                        {n.estado === "aprobado" && (
-                          <button className="adm-btn-rechazar" onClick={() => rechazarNoticia(n.id)}>Bajar</button>
-                        )}
-                        {n.estado === "rechazado" && (
-                          <button className="adm-btn-aprobar" onClick={() => aprobarNoticia(n)}>↑ Publicar</button>
-                        )}
-                        <button className="adm-btn-eliminar" onClick={() => eliminarNoticia(n.id)}>Eliminar</button>
-                      </>
-                    )}
-                  </div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",lineHeight:1.5,marginBottom:6}}>{n.cuerpo?.substring(0,200)}{n.cuerpo?.length > 200 ? "..." : ""}</div>
+                  <div className="doc-meta">Por: {n.perfiles?.nombre} {n.perfiles?.apellido}{n.perfiles?.matricula ? ` · Mat. ${n.perfiles.matricula}` : ""} · {formatFecha(n.created_at)}{n.link && <a href={n.link} target="_blank" rel="noopener noreferrer" style={{marginLeft:10,color:"#cc0000",textDecoration:"none",fontSize:10}}>Ver link →</a>}</div>
                 </div>
-              ))
-            )}
+                <div className="doc-acciones" style={{flexDirection:"column",gap:6}}>
+                  {procesandoNot === n.id ? <span className="adm-spinner" /> : (<>
+                    {n.estado === "pendiente" && <button className="adm-btn-aprobar" onClick={() => aprobarNoticia(n)}>✓ Aprobar</button>}
+                    {n.estado === "pendiente" && <button className="adm-btn-rechazar" onClick={() => rechazarNoticia(n.id)}>✗ Rechazar</button>}
+                    {n.estado === "aprobado" && <button className={`adm-btn-destacar${n.destacado ? " on" : ""}`} onClick={() => toggleDestacado(n)}>{n.destacado ? "⭐ Quitar" : "☆ Destacar"}</button>}
+                    {n.estado === "aprobado" && <button className="adm-btn-rechazar" onClick={() => rechazarNoticia(n.id)}>Bajar</button>}
+                    {n.estado === "rechazado" && <button className="adm-btn-aprobar" onClick={() => aprobarNoticia(n)}>↑ Publicar</button>}
+                    <button className="adm-btn-eliminar" onClick={() => eliminarNoticia(n.id)}>Eliminar</button>
+                  </>)}
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* PAGOS */}
+          {/* ── PAGOS ── */}
           <div>
             <div className="adm-header">
               <h1>Gestión de <span>pagos</span></h1>
@@ -593,38 +609,13 @@ export default function AdminPage() {
                   {pagosFiltrados.map(p => {
                     const color = estadoPagoColor(p.estado);
                     return <tr key={p.id}>
-                      <td>
-                        <div className="adm-nombre">{p.perfiles ? `${p.perfiles.apellido}, ${p.perfiles.nombre}` : "—"}</div>
-                        <div className="adm-sub">Mat. {p.perfiles?.matricula ?? "—"} · {p.tipo}</div>
-                        {p.perfiles?.email && <div className="adm-sub">✉️ {p.perfiles.email}</div>}
-                      </td>
+                      <td><div className="adm-nombre">{p.perfiles ? `${p.perfiles.apellido}, ${p.perfiles.nombre}` : "—"}</div><div className="adm-sub">Mat. {p.perfiles?.matricula ?? "—"} · {p.tipo}</div>{p.perfiles?.email && <div className="adm-sub">✉️ {p.perfiles.email}</div>}</td>
                       <td style={{fontFamily:"'Montserrat',sans-serif",fontWeight:700,fontSize:12}}>{p.periodo ?? "—"}</td>
-                      <td>
-                        {p.monto_declarado_ars ? <div>${p.monto_declarado_ars.toLocaleString("es-AR")}</div> : <div style={{color:"rgba(255,255,255,0.3)"}}>—</div>}
-                        <div className="adm-sub">USD {p.monto_usd}</div>
-                      </td>
-                      <td>
-                        <div className="adm-comprobante">{p.comprobante ?? "—"}</div>
-                        {p.cbu_origen && <div className="adm-sub">{p.cbu_origen}</div>}
-                      </td>
-                      <td style={{fontSize:12,color:"rgba(255,255,255,0.5)"}}>
-                        {p.fecha_pago_declarado ? formatFecha(p.fecha_pago_declarado) : "—"}
-                        {p.fecha_confirmacion && <div className="adm-sub">Conf: {formatFecha(p.fecha_confirmacion)}</div>}
-                        {p.fecha_vencimiento && <div className="adm-sub">Vence: {formatFecha(p.fecha_vencimiento)}</div>}
-                      </td>
+                      <td>{p.monto_declarado_ars ? <div>${p.monto_declarado_ars.toLocaleString("es-AR")}</div> : <div style={{color:"rgba(255,255,255,0.3)"}}>—</div>}<div className="adm-sub">USD {p.monto_usd}</div></td>
+                      <td><div className="adm-comprobante">{p.comprobante ?? "—"}</div>{p.cbu_origen && <div className="adm-sub">{p.cbu_origen}</div>}</td>
+                      <td style={{fontSize:12,color:"rgba(255,255,255,0.5)"}}>{p.fecha_pago_declarado ? formatFecha(p.fecha_pago_declarado) : "—"}{p.fecha_confirmacion && <div className="adm-sub">Conf: {formatFecha(p.fecha_confirmacion)}</div>}{p.fecha_vencimiento && <div className="adm-sub">Vence: {formatFecha(p.fecha_vencimiento)}</div>}</td>
                       <td><span className="badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{p.estado.toUpperCase()}</span></td>
-                      <td>
-                        {procesandoPago === p.id ? <span className="adm-spinner" />
-                         : p.estado === "pendiente" ? (
-                          <div>
-                            <input className="adm-nota-input" placeholder="Nota interna (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} />
-                            <div className="adm-acciones">
-                              <button className="adm-btn-aprobar" onClick={() => confirmarPago(p)}>✓ Confirmar</button>
-                              <button className="adm-btn-rechazar" onClick={() => rechazarPago(p)}>✗ Rechazar</button>
-                            </div>
-                          </div>
-                        ) : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{p.nota_admin ?? "—"}</span>}
-                      </td>
+                      <td>{procesandoPago === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div><input className="adm-nota-input" placeholder="Nota interna (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => confirmarPago(p)}>✓ Confirmar</button><button className="adm-btn-rechazar" onClick={() => rechazarPago(p)}>✗ Rechazar</button></div></div>) : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{p.nota_admin ?? "—"}</span>}</td>
                     </tr>;
                   })}
                 </tbody>
@@ -632,37 +623,29 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* CBU CONFIGURABLE */}
+          {/* ── CBU ── */}
           <div>
-            <div className="adm-header">
-              <h1>Datos de <span>transferencia</span></h1>
-              <p>Los datos que ven los corredores en la página de suscripción.</p>
-            </div>
+            <div className="adm-header"><h1>Datos de <span>transferencia</span></h1><p>Los datos que ven los corredores en la página de suscripción.</p></div>
             <div className="cbu-card">
               <div className="cbu-grid">
                 {CBU_CONFIG.map(c => (
                   <div key={c.clave} className="cbu-field">
                     <label className="cbu-label">{c.label}</label>
-                    <input className="cbu-input" placeholder={c.placeholder} value={cbuValues[c.clave] ?? ""} onChange={e => setCbuValues(prev => ({...prev, [c.clave]: e.target.value}))} />
+                    <input className="cbu-input" placeholder={c.placeholder} value={cbuValues[c.clave] ?? ""} onChange={e => setCbuValues(prev => ({...prev,[c.clave]:e.target.value}))} />
                   </div>
                 ))}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:12}}>
-                <button className="adm-ind-btn" onClick={guardarCbu} disabled={guardandoCbu}>
-                  {guardandoCbu ? "Guardando..." : "Guardar datos de transferencia"}
-                </button>
+                <button className="adm-ind-btn" onClick={guardarCbu} disabled={guardandoCbu}>{guardandoCbu ? "Guardando..." : "Guardar datos de transferencia"}</button>
                 {cbuOk && <span className="adm-ind-ok">✓ Guardado</span>}
               </div>
             </div>
           </div>
 
-          {/* PROVEEDORES DIVISAS */}
+          {/* ── PROVEEDORES DIVISAS ── */}
           <div>
             <div className="prov-header">
-              <div>
-                <div className="adm-ind-titulo">Proveedores <span>de divisas</span></div>
-                <div className="adm-ind-subtitulo">Cargá los proveedores verificados con sus cotizaciones del día.</div>
-              </div>
+              <div><div className="adm-ind-titulo">Proveedores <span>de divisas</span></div><div className="adm-ind-subtitulo">Cargá los proveedores verificados con sus cotizaciones del día.</div></div>
               <button className="adm-btn-nuevo" onClick={() => { setFormProv(FORM_PROV_VACIO); setEditandoProv(null); setMostrarFormProv(true); }}>+ Nuevo proveedor</button>
             </div>
             {loadingProv ? <div className="adm-loading">Cargando...</div>
@@ -673,13 +656,7 @@ export default function AdminPage() {
                   <div style={{flex:1}}>
                     <div className="prov-nombre">{p.nombre} {!p.activo && <span style={{fontSize:9,color:"#eab308",fontFamily:"Montserrat",fontWeight:700,letterSpacing:"0.1em",marginLeft:8}}>INACTIVO</span>}</div>
                     {p.monedas && p.monedas.length > 0 && <div className="prov-tags">{p.monedas.map((m,i) => <span key={i} className="prov-tag">{m}</span>)}</div>}
-                    {(p.compra_usd || p.venta_usd) && (
-                      <div className="prov-cot">
-                        {p.compra_usd && <div className="prov-cot-item compra">Compra: <strong>{formatARS(p.compra_usd)}</strong></div>}
-                        {p.venta_usd && <div className="prov-cot-item venta">Venta: <strong>{formatARS(p.venta_usd)}</strong></div>}
-                        {p.compra_usd && p.venta_usd && <div className="prov-cot-item">Promedio: <strong style={{color:"#22c55e"}}>{formatARS((p.compra_usd + p.venta_usd) / 2)}</strong></div>}
-                      </div>
-                    )}
+                    {(p.compra_usd || p.venta_usd) && <div className="prov-cot">{p.compra_usd && <div className="prov-cot-item compra">Compra: <strong>{formatARS(p.compra_usd)}</strong></div>}{p.venta_usd && <div className="prov-cot-item venta">Venta: <strong>{formatARS(p.venta_usd)}</strong></div>}{p.compra_usd && p.venta_usd && <div className="prov-cot-item">Promedio: <strong style={{color:"#22c55e"}}>{formatARS((p.compra_usd + p.venta_usd) / 2)}</strong></div>}</div>}
                     {p.actualizado_cot && <div className="prov-hora">Act: {formatHora(p.actualizado_cot)}</div>}
                     {p.servicios && p.servicios.length > 0 && <div className="prov-wa">{p.servicios.join(" · ")}</div>}
                     {p.contacto_whatsapp && <div className="prov-wa">📱 {p.contacto_whatsapp}</div>}
@@ -694,12 +671,9 @@ export default function AdminPage() {
             </div>}
           </div>
 
-          {/* BIBLIOTECA — MODERACIÓN */}
+          {/* ── BIBLIOTECA ── */}
           <div>
-            <div className="adm-header">
-              <h1>Moderación <span>Biblioteca</span></h1>
-              <p>Documentos subidos por corredores. Al aprobar, el corredor recibe notificación y descuento en suscripción.</p>
-            </div>
+            <div className="adm-header"><h1>Moderación <span>Biblioteca</span></h1><p>Documentos subidos por corredores. Al aprobar, el corredor recibe notificación.</p></div>
             <div className="adm-filtros">
               {(["pendiente","aprobado","rechazado"] as const).map(f => (
                 <button key={f} className={`adm-filtro-btn${filtroDocs === f ? " activo" : ""}`} onClick={() => setFiltroDocs(f)}>
@@ -707,66 +681,24 @@ export default function AdminPage() {
                 </button>
               ))}
             </div>
-            {loadingDocs ? (
-              <div className="adm-loading">Cargando...</div>
-            ) : documentos.length === 0 ? (
-              <div className="adm-empty">
-                {filtroDocs === "pendiente" ? "No hay documentos pendientes de moderación ✓" :
-                 filtroDocs === "aprobado" ? "No hay documentos aprobados aún" :
-                 "No hay documentos rechazados"}
-              </div>
-            ) : (
-              documentos.map(doc => (
-                <div key={doc.id} className="doc-row">
-                  <div className="doc-icono">
-                    {doc.archivo_url?.includes(".pdf") ? "📄" : doc.archivo_url?.includes(".doc") ? "📝" : "📊"}
-                  </div>
-                  <div className="doc-info">
-                    <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
-                      <span className="doc-nombre">{doc.nombre}</span>
-                      {doc.nivel && (
-                        <span style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",padding:"2px 6px",borderRadius:3}}>
-                          {doc.nivel}
-                        </span>
-                      )}
-                    </div>
-                    {doc.descripcion && <div className="doc-desc">{doc.descripcion}</div>}
-                    <div className="doc-meta" style={{marginTop:6}}>
-                      Por: {doc.perfiles?.nombre} {doc.perfiles?.apellido}
-                      {doc.perfiles?.matricula && ` · Mat. ${doc.perfiles.matricula}`}
-                      {" · "}
-                      {new Date(doc.created_at).toLocaleDateString("es-AR", {day:"numeric",month:"short",year:"numeric"})}
-                      {doc.archivo_url && (
-                        <a href={doc.archivo_url} target="_blank" rel="noopener noreferrer"
-                          style={{marginLeft:10,color:"#cc0000",textDecoration:"none",fontSize:10}}>
-                          Ver archivo →
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                  {doc.estado === "pendiente" && (
-                    <div className="doc-acciones">
-                      {procesandoDoc === doc.id ? (
-                        <span className="adm-spinner" />
-                      ) : (
-                        <>
-                          <button className="adm-btn-aprobar" onClick={() => aprobarDoc(doc)}>✓ Aprobar</button>
-                          <button className="adm-btn-rechazar" onClick={() => rechazarDoc(doc)}>✗ Rechazar</button>
-                        </>
-                      )}
-                    </div>
-                  )}
+            {loadingDocs ? <div className="adm-loading">Cargando...</div>
+             : documentos.length === 0 ? <div className="adm-empty">{filtroDocs === "pendiente" ? "No hay documentos pendientes ✓" : "No hay documentos en esta categoría."}</div>
+             : documentos.map(doc => (
+              <div key={doc.id} className="doc-row">
+                <div className="doc-icono">{doc.archivo_url?.includes(".pdf") ? "📄" : doc.archivo_url?.includes(".doc") ? "📝" : "📊"}</div>
+                <div className="doc-info">
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}><span className="doc-nombre">{doc.nombre}</span>{doc.nivel && <span style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",padding:"2px 6px",borderRadius:3}}>{doc.nivel}</span>}</div>
+                  {doc.descripcion && <div className="doc-desc">{doc.descripcion}</div>}
+                  <div className="doc-meta" style={{marginTop:6}}>Por: {doc.perfiles?.nombre} {doc.perfiles?.apellido}{doc.perfiles?.matricula && ` · Mat. ${doc.perfiles.matricula}`} · {new Date(doc.created_at).toLocaleDateString("es-AR",{day:"numeric",month:"short",year:"numeric"})}{doc.archivo_url && <a href={doc.archivo_url} target="_blank" rel="noopener noreferrer" style={{marginLeft:10,color:"#cc0000",textDecoration:"none",fontSize:10}}>Ver archivo →</a>}</div>
                 </div>
-              ))
-            )}
+                {doc.estado === "pendiente" && <div className="doc-acciones">{procesandoDoc === doc.id ? <span className="adm-spinner" /> : (<><button className="adm-btn-aprobar" onClick={() => aprobarDoc(doc)}>✓ Aprobar</button><button className="adm-btn-rechazar" onClick={() => rechazarDoc(doc)}>✗ Rechazar</button></>)}</div>}
+              </div>
+            ))}
           </div>
 
-          {/* SOLICITUDES REGISTRO */}
+          {/* ── SOLICITUDES REGISTRO ── */}
           <div>
-            <div className="adm-header">
-              <h1>Solicitudes de <span>registro</span></h1>
-              <p>Revisá y aprobá o rechazá cada solicitud manualmente.</p>
-            </div>
+            <div className="adm-header"><h1>Solicitudes de <span>registro</span></h1><p>Revisá y aprobá o rechazá cada solicitud manualmente.</p></div>
             <div className="adm-filtros">
               {(["pendiente","aprobado","rechazado","todos"] as const).map(f => (
                 <button key={f} className={`adm-filtro-btn${filtro === f ? " activo" : ""}`} onClick={() => setFiltro(f)}>
@@ -783,29 +715,13 @@ export default function AdminPage() {
                 <tbody>
                   {perfilesFiltrados.map(p => (
                     <tr key={p.id}>
-                      <td>
-                        <div className="adm-nombre">{p.apellido}, {p.nombre}</div>
-                        {p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}
-                        {p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}
-                      </td>
+                      <td><div className="adm-nombre">{p.apellido}, {p.nombre}</div>{p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}{p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}</td>
                       <td><span className={`badge badge-${p.tipo}`}>{p.tipo === "corredor" ? "Corredor" : p.tipo === "colaborador" ? "Colaborador" : "Admin"}</span></td>
                       <td>{p.matricula && <div>Mat. {p.matricula}</div>}{p.dni && <div>DNI {p.dni}</div>}</td>
                       <td>{p.telefono && <div>{p.telefono}</div>}{p.email && <div className="adm-sub">{p.email}</div>}</td>
                       <td style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{formatFecha(p.created_at)}</td>
                       <td><span className={`badge ${ESTADO_BADGE[p.estado] ?? "badge-pendiente"}`}>{ESTADO_LABEL[p.estado] ?? p.estado}</span></td>
-                      <td>
-                        {procesando === p.id ? <span className="adm-spinner" />
-                         : p.estado === "pendiente" ? (
-                          <div className="adm-acciones">
-                            <button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>✓ Aprobar</button>
-                            <button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>✗ Rechazar</button>
-                          </div>
-                        ) : p.estado === "aprobado" ? (
-                          <button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>Revocar</button>
-                        ) : (
-                          <button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>Reactivar</button>
-                        )}
-                      </td>
+                      <td>{procesando === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>✓ Aprobar</button><button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>✗ Rechazar</button></div>) : p.estado === "aprobado" ? (<button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>Revocar</button>) : (<button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>Reactivar</button>)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -813,7 +729,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* INDICADORES */}
+          {/* ── INDICADORES ── */}
           <div>
             <div className="adm-ind-titulo">Indicadores <span>y precios</span></div>
             <div className="adm-ind-subtitulo">Actualizá los valores del dashboard y los precios de suscripción.</div>
@@ -821,9 +737,7 @@ export default function AdminPage() {
               {indicadores.map(ind => (
                 <div key={ind.clave} className="adm-ind-card">
                   <div className="adm-ind-label">{ind.label}</div>
-                  <div className="adm-ind-actual">
-                    {ind.clave.includes("_usd") ? `USD ${ind.valor}` : new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(ind.valor))}
-                  </div>
+                  <div className="adm-ind-actual">{ind.clave.includes("_usd") ? `USD ${ind.valor}` : new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(ind.valor))}</div>
                   <div className="adm-ind-form">
                     <input className="adm-ind-input" value={editando[ind.clave] ?? ""} onChange={e => setEditando(prev => ({...prev,[ind.clave]:e.target.value}))} onKeyDown={e => { if (e.key === "Enter") guardarIndicador(ind.clave); }} placeholder={ind.clave.includes("_usd") ? "Ej: 15" : "Ej: 5000"} />
                     <button className="adm-ind-btn" onClick={() => guardarIndicador(ind.clave)} disabled={guardando === ind.clave}>{guardando === ind.clave ? "..." : "Guardar"}</button>
@@ -843,43 +757,18 @@ export default function AdminPage() {
           <div className="modal">
             <h2>{editandoProv ? "Editar" : "Nuevo"} <span>proveedor</span></h2>
             <div className="modal-seccion">Datos del proveedor</div>
-            <div className="modal-field">
-              <label className="modal-label">Nombre *</label>
-              <input className="modal-input" placeholder="Ej: SAS Cambios" value={formProv.nombre} onChange={e => setFormProv(p => ({...p, nombre: e.target.value}))} />
-            </div>
+            <div className="modal-field"><label className="modal-label">Nombre *</label><input className="modal-input" placeholder="Ej: SAS Cambios" value={formProv.nombre} onChange={e => setFormProv(p => ({...p,nombre:e.target.value}))} /></div>
             <div className="modal-row">
-              <div className="modal-field">
-                <label className="modal-label">WhatsApp</label>
-                <input className="modal-input" placeholder="5493415551234" value={formProv.contacto_whatsapp} onChange={e => setFormProv(p => ({...p, contacto_whatsapp: e.target.value}))} />
-              </div>
-              <div className="modal-field">
-                <label className="modal-label">Email</label>
-                <input className="modal-input" placeholder="contacto@..." value={formProv.contacto_email} onChange={e => setFormProv(p => ({...p, contacto_email: e.target.value}))} />
-              </div>
+              <div className="modal-field"><label className="modal-label">WhatsApp</label><input className="modal-input" placeholder="5493415551234" value={formProv.contacto_whatsapp} onChange={e => setFormProv(p => ({...p,contacto_whatsapp:e.target.value}))} /></div>
+              <div className="modal-field"><label className="modal-label">Email</label><input className="modal-input" placeholder="contacto@..." value={formProv.contacto_email} onChange={e => setFormProv(p => ({...p,contacto_email:e.target.value}))} /></div>
             </div>
-            <div className="modal-field">
-              <label className="modal-label">Monedas que opera</label>
-              <div className="modal-monedas">
-                {MONEDAS_OPCIONES.map(m => (
-                  <button key={m} type="button" className={`modal-moneda-btn${formProv.monedas.includes(m) ? " activo" : ""}`} onClick={() => toggleMoneda(m)}>{m}</button>
-                ))}
-              </div>
-            </div>
-            <div className="modal-field">
-              <label className="modal-label">Servicios <small>separados por coma</small></label>
-              <input className="modal-input" placeholder="Ej: Transferencias, Cripto, Payoneer" value={formProv.servicios} onChange={e => setFormProv(p => ({...p, servicios: e.target.value}))} />
-            </div>
+            <div className="modal-field"><label className="modal-label">Monedas que opera</label><div className="modal-monedas">{MONEDAS_OPCIONES.map(m => <button key={m} type="button" className={`modal-moneda-btn${formProv.monedas.includes(m) ? " activo" : ""}`} onClick={() => toggleMoneda(m)}>{m}</button>)}</div></div>
+            <div className="modal-field"><label className="modal-label">Servicios <small>separados por coma</small></label><input className="modal-input" placeholder="Ej: Transferencias, Cripto" value={formProv.servicios} onChange={e => setFormProv(p => ({...p,servicios:e.target.value}))} /></div>
             <div className="modal-divider" />
             <div className="modal-seccion">Cotización USD/ARS del día</div>
             <div className="modal-row">
-              <div className="modal-field">
-                <label className="modal-label">Compra (ARS)</label>
-                <input className="modal-input" placeholder="Ej: 1380" value={formProv.compra_usd} onChange={e => setFormProv(p => ({...p, compra_usd: e.target.value}))} />
-              </div>
-              <div className="modal-field">
-                <label className="modal-label">Venta (ARS)</label>
-                <input className="modal-input" placeholder="Ej: 1420" value={formProv.venta_usd} onChange={e => setFormProv(p => ({...p, venta_usd: e.target.value}))} />
-              </div>
+              <div className="modal-field"><label className="modal-label">Compra (ARS)</label><input className="modal-input" placeholder="Ej: 1380" value={formProv.compra_usd} onChange={e => setFormProv(p => ({...p,compra_usd:e.target.value}))} /></div>
+              <div className="modal-field"><label className="modal-label">Venta (ARS)</label><input className="modal-input" placeholder="Ej: 1420" value={formProv.venta_usd} onChange={e => setFormProv(p => ({...p,venta_usd:e.target.value}))} /></div>
             </div>
             <div className="modal-actions">
               <button className="modal-btn-cancel" onClick={() => { setMostrarFormProv(false); setEditandoProv(null); }}>Cancelar</button>
