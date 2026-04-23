@@ -124,16 +124,18 @@ export default function DashboardPage() {
     const desde = hace7.toISOString().substring(0, 7);
 
     supabase.from("indicadores_historial").select("valor, periodo").eq("clave", "icl").gte("periodo", desde).order("periodo", { ascending: false })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) { setIclData(p => ({ ...p, loading: false })); return; }
         const hist = (data || []).map(h => ({ periodo: h.periodo, valor: Number(h.valor) }));
         setIclData({ acum: calcICL(hist), periodo: hist[0]?.periodo ?? "", loading: false });
-      }).catch(() => setIclData(p => ({ ...p, loading: false })));
+      });
 
     supabase.from("indicadores_historial").select("valor, periodo").eq("clave", "ipc").gte("periodo", desde).order("periodo", { ascending: false })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) { setIpcData(p => ({ ...p, loading: false })); return; }
         const hist = (data || []).map(h => ({ periodo: h.periodo, valor: Number(h.valor) }));
         setIpcData({ acum: calcIPC(hist), periodo: hist[0]?.periodo ?? "", loading: false });
-      }).catch(() => setIpcData(p => ({ ...p, loading: false })));
+      });
 
     supabase.from("indicadores").select("valor").eq("clave", "valor_jus").single()
       .then(({ data }) => setJus({ valor: data?.valor ? new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(data.valor) : "Sin datos", loading: false }));
