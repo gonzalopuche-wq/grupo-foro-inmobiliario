@@ -15,7 +15,6 @@ const NAV_ITEMS = [
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
   { href: "/comparables", label: "Comparables", icon: "📈" },
   { href: "/padron-gfi", label: "Padrón", icon: "📋" },
-  { href: "/padron", label: "Padrón COCIR", icon: "📜" },
   { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
   { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
   { href: "/enlaces", label: "Enlaces", icon: "🔗" },
