@@ -144,10 +144,13 @@ export default function EventosPage() {
         // Subir al storage en vez de guardar base64
         const ext = file.type.split("/")[1] ?? "jpg";
         const path = `${userId}/paste_${Date.now()}.${ext}`;
-        const { data, error } = await supabase.storage.from("eventos").upload(path, file, { upsert: true });
+        const { data, error } = await supabase.storage.from("eventos").upload(path, file, {
+          upsert: true,
+          contentType: file.type,
+        });
         if (!error && data) {
           const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
-          setImagenParser(urlData.publicUrl);
+          setImagenParser(urlData.publicUrl + "?t=" + Date.now());
         } else {
           // Fallback: base64 para preview local
           const reader = new FileReader();
@@ -165,12 +168,18 @@ export default function EventosPage() {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (!file.type.startsWith("image/")) continue;
-      const ext = file.name.split(".").pop();
+      const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
+      // Sanitizar nombre: sin espacios, paréntesis ni caracteres especiales
       const path = `${userId}/${Date.now()}_${i}.${ext}`;
-      const { data, error } = await supabase.storage.from("eventos").upload(path, file, { upsert: true });
+      const { data, error } = await supabase.storage.from("eventos").upload(path, file, {
+        upsert: true,
+        contentType: file.type,
+      });
       if (!error && data) {
         const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
-        setMedia(prev => [...prev, { tipo: "foto", url: urlData.publicUrl, nombre: file.name }]);
+        // Forzar recarga con timestamp para evitar cache
+        const url = urlData.publicUrl + "?t=" + Date.now();
+        setMedia(prev => [...prev, { tipo: "foto", url, nombre: file.name }]);
       }
     }
     setSubiendoFoto(false);
@@ -856,7 +865,7 @@ export default function EventosPage() {
                   {media.map((m, i) => (
                     <div key={i} style={{position:"relative",borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",aspectRatio:"1",background:"rgba(0,0,0,0.4)",minHeight:88}}>
                       {m.tipo === "foto" ? (
-                        <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover",display:"block",position:"absolute",inset:0}} alt={m.nombre} />
+                        <div style={{position:"absolute",inset:0,backgroundImage:`url(${m.url})`,backgroundSize:"cover",backgroundPosition:"center"}} />
                       ) : (
                         <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:3,padding:4}}>
                           {m.thumb
