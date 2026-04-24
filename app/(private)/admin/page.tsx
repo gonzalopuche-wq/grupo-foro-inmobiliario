@@ -9,6 +9,23 @@ interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number;
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
 interface Documento { id: string; nombre: string; descripcion: string; nivel: string; categoria: string; archivo_url: string; estado: string; created_at: string; user_id: string; perfiles: { nombre: string; apellido: string; matricula: string; }; }
 interface Noticia { id: string; titulo: string; cuerpo: string; link: string | null; imagen_url: string | null; fuente: string | null; destacado: boolean; estado: string; created_at: string; autor_id: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; }; }
+interface EventoPropuesto {
+  id: string;
+  titulo: string;
+  descripcion: string | null;
+  fecha: string;
+  lugar: string | null;
+  tipo: string;
+  gratuito: boolean;
+  precio_entrada: number | null;
+  capacidad: number | null;
+  plataforma: string | null;
+  estado: string;
+  organizador_id: string;
+  created_at: string;
+  organizador?: { nombre: string; apellido: string; matricula: string | null; };
+}
+
 interface Colaborador { id: string; corredor_id: string; nombre: string; apellido: string; email: string; telefono: string | null; dni: string | null; rol: string; estado: string; notas: string | null; created_at: string; corredor?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 
 const INDICADORES_CONFIG = [
@@ -65,6 +82,10 @@ export default function AdminPage() {
   const [loadingNot, setLoadingNot] = useState(true);
   const [filtroNot, setFiltroNot] = useState<"pendiente"|"aprobado"|"rechazado">("pendiente");
   const [procesandoNot, setProcesandoNot] = useState<string | null>(null);
+  // Eventos propuestos
+  const [eventosPropuestos, setEventosPropuestos] = useState<EventoPropuesto[]>([]);
+  const [loadingEvProp, setLoadingEvProp] = useState(true);
+  const [procesandoEvProp, setProcesandoEvProp] = useState<string | null>(null);
   // Colaboradores
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
   const [loadingColab, setLoadingColab] = useState(true);
@@ -80,10 +101,52 @@ export default function AdminPage() {
       setEsAdmin(true);
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
-      cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente");
+      cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos();
     };
     verificar();
   }, []);
+
+  const cargarEventosPropuestos = async () => {
+    setLoadingEvProp(true);
+    const { data } = await supabase
+      .from("eventos")
+      .select("*, organizador:perfiles!organizador_id(nombre, apellido, matricula)")
+      .eq("estado", "pendiente")
+      .order("created_at", { ascending: false });
+    setEventosPropuestos((data as unknown as EventoPropuesto[]) ?? []);
+    setLoadingEvProp(false);
+  };
+
+  const aprobarEventoPropuesto = async (ev: EventoPropuesto) => {
+    setProcesandoEvProp(ev.id);
+    await supabase.from("eventos").update({ estado: "publicado" }).eq("id", ev.id);
+    await supabase.from("notificaciones").insert({
+      perfil_id: ev.organizador_id,
+      tipo: "evento_aprobado",
+      titulo: "Evento aprobado ✓",
+      mensaje: `Tu evento "${ev.titulo}" fue aprobado y publicado.`,
+      leida: false,
+    });
+    setProcesandoEvProp(null);
+    cargarEventosPropuestos();
+  };
+
+  const rechazarEventoPropuesto = async (ev: EventoPropuesto) => {
+    if (!confirm(`¿Rechazar "${ev.titulo}"?`)) return;
+    setProcesandoEvProp(ev.id);
+    await supabase.from("eventos").update({ estado: "cancelado" }).eq("id", ev.id);
+    await supabase.from("notificaciones").insert({
+      perfil_id: ev.organizador_id,
+      tipo: "evento_rechazado",
+      titulo: "Propuesta no aprobada",
+      mensaje: `Tu propuesta de evento "${ev.titulo}" no fue aprobada. Podés contactar al admin.`,
+      leida: false,
+    });
+    setProcesandoEvProp(null);
+    cargarEventosPropuestos();
+  };
+
+  const TIPOS_EV: Record<string, string> = { gfi: "GFI®", cocir: "COCIR", cir: "CIR", comercial: "Comercial", privado: "Privado", externo: "Externo" };
 
   const cargarColaboradores = async (estado: string) => {
     setLoadingColab(true);
@@ -461,6 +524,49 @@ export default function AdminPage() {
         </header>
 
         <main className="adm-content">
+
+          {/* ── EVENTOS PROPUESTOS ── */}
+          <div>
+            <div className="adm-header">
+              <h1>Eventos <span>propuestos</span></h1>
+              <p>Propuestas de eventos enviadas por corredores. Aprobá para publicar o rechazá.</p>
+            </div>
+            {loadingEvProp ? <div className="adm-loading">Cargando...</div>
+             : eventosPropuestos.length === 0 ? (
+              <div className="adm-empty">No hay propuestas de eventos pendientes ✓</div>
+             ) : (
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                {eventosPropuestos.map(ev => (
+                  <div key={ev.id} style={{background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6,padding:"16px 20px",display:"flex",alignItems:"flex-start",gap:16,flexWrap:"wrap"}}>
+                    <div style={{flex:1}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:6}}>
+                        <span style={{fontFamily:"'Montserrat',sans-serif",fontSize:13,fontWeight:800,color:"#fff"}}>{ev.titulo}</span>
+                        <span className="badge badge-pendiente">{TIPOS_EV[ev.tipo] ?? ev.tipo}</span>
+                        <span className="badge" style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",color:"#22c55e"}}>{ev.gratuito ? "Gratuito" : `$${ev.precio_entrada?.toLocaleString("es-AR")}`}</span>
+                      </div>
+                      {ev.descripcion && <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:6,lineHeight:1.5}}>{ev.descripcion.substring(0,200)}{ev.descripcion.length > 200 ? "..." : ""}</div>}
+                      <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",display:"flex",gap:16,flexWrap:"wrap"}}>
+                        <span>📅 {new Date(ev.fecha).toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</span>
+                        {ev.lugar && <span>📍 {ev.lugar}</span>}
+                        {ev.capacidad && <span>👥 Cap. {ev.capacidad}</span>}
+                      </div>
+                      <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginTop:6}}>
+                        Propuesto por: <strong style={{color:"rgba(255,255,255,0.5)"}}>{ev.organizador?.apellido}, {ev.organizador?.nombre}</strong>
+                        {ev.organizador?.matricula && ` · Mat. ${ev.organizador.matricula}`}
+                        {" · "}{formatFecha(ev.created_at)}
+                      </div>
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:8,flexShrink:0}}>
+                      {procesandoEvProp === ev.id ? <span className="adm-spinner" /> : (<>
+                        <button className="adm-btn-aprobar" onClick={() => aprobarEventoPropuesto(ev)}>✓ Publicar</button>
+                        <button className="adm-btn-rechazar" onClick={() => rechazarEventoPropuesto(ev)}>✗ Rechazar</button>
+                      </>)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+             )}
+          </div>
 
           {/* ── COLABORADORES PENDIENTES ── */}
           <div>
