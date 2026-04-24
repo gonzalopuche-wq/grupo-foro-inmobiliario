@@ -134,16 +134,26 @@ export default function EventosPage() {
     setProcesando(null);
   };
 
-  const handlePasteImagen = (e: React.ClipboardEvent) => {
+  const handlePasteImagen = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
-    if (!items) return;
+    if (!items || !userId) return;
     for (let i = 0; i < items.length; i++) {
       if (items[i].type.startsWith("image/")) {
         const file = items[i].getAsFile();
         if (!file) continue;
-        const reader = new FileReader();
-        reader.onload = (ev) => setImagenParser(ev.target?.result as string);
-        reader.readAsDataURL(file);
+        // Subir al storage en vez de guardar base64
+        const ext = file.type.split("/")[1] ?? "jpg";
+        const path = `${userId}/paste_${Date.now()}.${ext}`;
+        const { data, error } = await supabase.storage.from("eventos").upload(path, file, { upsert: true });
+        if (!error && data) {
+          const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
+          setImagenParser(urlData.publicUrl);
+        } else {
+          // Fallback: base64 para preview local
+          const reader = new FileReader();
+          reader.onload = (ev) => setImagenParser(ev.target?.result as string);
+          reader.readAsDataURL(file);
+        }
         break;
       }
     }
@@ -208,9 +218,9 @@ export default function EventosPage() {
         precio_entrada: parsed.precio_entrada?.toString() ?? p.precio_entrada,
         capacidad: parsed.capacidad?.toString() ?? p.capacidad,
       }));
-      // Si habia imagen pegada, agregarla a la galeria
+      // Si habia imagen pegada (ya subida al storage), agregarla a la galeria
       if (imagenParser) {
-        setMedia(prev => [...prev, { tipo: "foto", url: imagenParser!, nombre: "flyer" }]);
+        setMedia(prev => [{ tipo: "foto", url: imagenParser!, nombre: "flyer" }, ...prev]);
         setImagenParser(null);
       }
       setMostrarParser(false);
