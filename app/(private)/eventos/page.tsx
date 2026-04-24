@@ -22,6 +22,7 @@ interface Evento {
   organizador_id: string | null;
   estado: string;
   destacado: boolean;
+  media?: MediaItem[] | null;
   inscripto?: boolean;
   total_inscriptos?: number;
 }
