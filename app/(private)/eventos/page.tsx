@@ -529,6 +529,7 @@ export default function EventosPage() {
                               alt={ev.titulo}
                               style={{width:"100%",height:200,objectFit:"cover",objectPosition:"center",display:"block",borderRadius:"8px 8px 0 0",cursor:"zoom-in"}}
                               onClick={() => setLightbox(fotos[0].url)}
+                              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
                             />
                             <div style={{position:"absolute",bottom:0,left:0,right:0,height:50,background:"linear-gradient(transparent, rgba(10,10,10,0.9))"}} />
                             <div style={{position:"absolute",bottom:8,right:8,background:"rgba(0,0,0,0.6)",borderRadius:4,padding:"3px 8px",fontSize:10,color:"rgba(255,255,255,0.6)",fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer"}}
@@ -853,9 +854,9 @@ export default function EventosPage() {
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))",gap:8}}>
                   {media.map((m, i) => (
-                    <div key={i} style={{position:"relative",borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",aspectRatio:"1",background:"rgba(0,0,0,0.4)"}}>
+                    <div key={i} style={{position:"relative",borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",aspectRatio:"1",background:"rgba(0,0,0,0.4)",minHeight:88}}>
                       {m.tipo === "foto" ? (
-                        <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt={m.nombre} />
+                        <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover",display:"block",position:"absolute",inset:0}} alt={m.nombre} />
                       ) : (
                         <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:3,padding:4}}>
                           {m.thumb

@@ -28,7 +28,7 @@ const securityHeaders = [
       // Fuentes: propio + Google Fonts
       "font-src 'self' https://fonts.gstatic.com",
       // Imágenes: propio + data URIs + servicios externos usados en GFI
-      "img-src 'self' data: blob: https://*.supabase.co https://openweathermap.org https://*.openweathermap.org https://http2.mlstatic.com https://*.mlstatic.com https://*.zonaprop.com.ar https://*.argenprop.com https://via.placeholder.com",
+      "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://openweathermap.org https://*.openweathermap.org https://http2.mlstatic.com https://*.mlstatic.com https://*.zonaprop.com.ar https://*.argenprop.com https://via.placeholder.com https://img.youtube.com",
       // Conexiones fetch/XHR/WebSocket
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://dolarapi.com https://argentinadatos.com https://api.openweathermap.org https://api.mercadolibre.com https://api.bcra.gob.ar https://apis.datos.gob.ar https://api.anthropic.com https://vercel.live",
       // Frames: solo Vercel preview
