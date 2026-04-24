@@ -68,6 +68,10 @@ export default function EventosPage() {
   const [mostrarForm, setMostrarForm] = useState(false);
   const [form, setForm] = useState(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
+  const [textoParser, setTextoParser] = useState("");
+  const [imagenParser, setImagenParser] = useState<string | null>(null);
+  const [parseando, setParseando] = useState(false);
+  const [mostrarParser, setMostrarParser] = useState(false);
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
 
   useEffect(() => {
@@ -116,6 +120,91 @@ export default function EventosPage() {
     }
     await cargarEventos(userId);
     setProcesando(null);
+  };
+
+  const handlePasteImagen = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith("image/")) {
+        const file = items[i].getAsFile();
+        if (!file) continue;
+        const reader = new FileReader();
+        reader.onload = (ev) => setImagenParser(ev.target?.result as string);
+        reader.readAsDataURL(file);
+        break;
+      }
+    }
+  };
+
+  const parsearEvento = async () => {
+    if (!textoParser.trim()) { mostrarToast("Pega el texto del evento", "err"); return; }
+    setParseando(true);
+    try {
+      const prompt = [
+        "Analiza este texto de un evento inmobiliario y extrae los datos en JSON.",
+        "Texto: " + textoParser,
+        "",
+        "Responde SOLO con JSON valido, sin explicaciones ni backticks:",
+        JSON.stringify({
+          titulo: "titulo del evento",
+          descripcion: "descripcion completa con disertantes",
+          fecha: "YYYY-MM-DD",
+          hora: "HH:MM",
+          tipo: "gfi|cocir|cir|comercial|privado|externo",
+          plataforma: "presencial|zoom|meet|youtube|teams",
+          lugar: "lugar o null",
+          link_reunion: "link zoom/meet o null",
+          link_externo: "link inscripcion o null",
+          gratuito: true,
+          precio_entrada: null,
+          capacidad: null,
+        }),
+        "",
+        "Reglas:",
+        "- tipo: COCIR->cocir, CIR->cir, GFI->gfi, sino->externo",
+        "- plataforma: Zoom->zoom, Meet->meet, YouTube->youtube, sino presencial",
+        "- fecha: usa 2026 si no hay anio. meses: enero=01 febrero=02 marzo=03 abril=04 mayo=05 junio=06 julio=07 agosto=08 septiembre=09 octubre=10 noviembre=11 diciembre=12",
+        "- hora: formato 24hs. 17.30hs -> 17:30",
+        "- gratuito: false si menciona precio, true sino",
+      ].join("\n");
+
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+      const data = await response.json();
+      const texto = data.content?.[0]?.text ?? "";
+      const clean = texto.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+      setForm(p => ({
+        ...p,
+        titulo: parsed.titulo ?? p.titulo,
+        descripcion: parsed.descripcion ?? p.descripcion,
+        fecha: parsed.fecha ?? p.fecha,
+        hora: parsed.hora ?? p.hora,
+        tipo: parsed.tipo ?? p.tipo,
+        plataforma: parsed.plataforma ?? p.plataforma,
+        lugar: parsed.lugar ?? p.lugar,
+        link_reunion: parsed.link_reunion ?? p.link_reunion,
+        link_externo: parsed.link_externo ?? p.link_externo,
+        gratuito: typeof parsed.gratuito === "boolean" ? parsed.gratuito : p.gratuito,
+        precio_entrada: parsed.precio_entrada?.toString() ?? p.precio_entrada,
+        capacidad: parsed.capacidad?.toString() ?? p.capacidad,
+      }));
+      if (imagenParser) setForm(p => ({ ...p, imagen_url: imagenParser }));
+      setMostrarParser(false);
+      setTextoParser("");
+      mostrarToast("Datos extraidos — revisa y ajusta antes de guardar");
+    } catch {
+      mostrarToast("No se pudo parsear — completa los datos manualmente", "err");
+    }
+    setParseando(false);
   };
 
   const guardarEvento = async () => {
@@ -490,7 +579,47 @@ export default function EventosPage() {
               </div>
             )}
 
-            <div className="ev-seccion-titulo">Información principal</div>
+            {!mostrarParser ? (
+              <button type="button"
+                style={{width:"100%",padding:"10px 14px",background:"rgba(200,0,0,0.06)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:6,color:"rgba(200,0,0,0.8)",fontFamily:"'Montserrat',sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",marginBottom:16}}
+                onClick={() => setMostrarParser(true)}>
+                Pegar texto de WhatsApp / mail — autocompletar con IA
+              </button>
+            ) : (
+              <div style={{background:"rgba(200,0,0,0.04)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:16,marginBottom:16}}>
+                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:8}}>
+                  Parser IA — Pega el texto del evento
+                </div>
+                <textarea
+                  style={{width:"100%",minHeight:120,padding:"10px 12px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"#fff",fontSize:12,fontFamily:"'Inter',sans-serif",outline:"none",resize:"vertical"}}
+                  placeholder={"Pega aca el texto del evento (Ctrl+V)...\n\nTambien podes pegar una imagen del portapapeles."}
+                  value={textoParser}
+                  onChange={e => setTextoParser(e.target.value)}
+                  onPaste={handlePasteImagen}
+                  autoFocus
+                />
+                {imagenParser && (
+                  <div style={{marginTop:8,display:"flex",alignItems:"center",gap:8}}>
+                    <img src={imagenParser} alt="preview" style={{width:60,height:60,objectFit:"cover",borderRadius:4,border:"1px solid rgba(255,255,255,0.1)"}} />
+                    <span style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>Imagen detectada — se usara como imagen del evento</span>
+                    <button type="button" onClick={() => setImagenParser(null)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:14}}>x</button>
+                  </div>
+                )}
+                <div style={{display:"flex",gap:8,marginTop:10}}>
+                  <button type="button" className="ev-btn-guardar" onClick={parsearEvento} disabled={parseando || !textoParser.trim()}>
+                    {parseando ? "Procesando..." : "Autocompletar con IA"}
+                  </button>
+                  <button type="button" className="ev-btn-cancel" onClick={() => { setMostrarParser(false); setTextoParser(""); setImagenParser(null); }}>
+                    Cancelar
+                  </button>
+                </div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:8,fontStyle:"italic"}}>
+                  La IA extrae titulo, fecha, hora, lugar, disertantes y mas. Revisa los datos antes de guardar.
+                </div>
+              </div>
+            )}
+
+            <div className="ev-seccion-titulo">Informacion principal</div>
             <div className="ev-field">
               <label className="ev-label">Título *</label>
               <input className="ev-input" value={form.titulo} onChange={e => setF("titulo", e.target.value)} placeholder="Ej: Desayuno de trabajo GFI® — Junio" />
