@@ -42,6 +42,13 @@ const PLATAFORMAS: Record<string, string> = {
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const DIAS_SEMANA = ["Lu","Ma","Mi","Ju","Vi","Sa","Do"];
 
+interface MediaItem {
+  tipo: "foto" | "video";
+  url: string;
+  thumb?: string; // para videos: thumbnail
+  nombre?: string;
+}
+
 const FORM_VACIO = {
   titulo: "", descripcion: "", fecha: "", hora: "09:00", fecha_fin: "", hora_fin: "",
   lugar: "", lugar_url: "", link_externo: "", imagen_url: "",
@@ -72,6 +79,9 @@ export default function EventosPage() {
   const [imagenParser, setImagenParser] = useState<string | null>(null);
   const [parseando, setParseando] = useState(false);
   const [mostrarParser, setMostrarParser] = useState(false);
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
+  const [linkVideo, setLinkVideo] = useState("");
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
 
   useEffect(() => {
@@ -135,6 +145,38 @@ export default function EventosPage() {
         break;
       }
     }
+  };
+
+  const subirFotos = async (files: FileList) => {
+    if (!userId) return;
+    setSubiendoFoto(true);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith("image/")) continue;
+      const ext = file.name.split(".").pop();
+      const path = `${userId}/${Date.now()}_${i}.${ext}`;
+      const { data, error } = await supabase.storage.from("eventos").upload(path, file, { upsert: true });
+      if (!error && data) {
+        const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
+        setMedia(prev => [...prev, { tipo: "foto", url: urlData.publicUrl, nombre: file.name }]);
+      }
+    }
+    setSubiendoFoto(false);
+  };
+
+  const agregarVideo = () => {
+    if (!linkVideo.trim()) return;
+    const url = linkVideo.trim();
+    // Extraer thumbnail de YouTube
+    let thumb: string | undefined;
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch) thumb = `https://img.youtube.com/vi/${ytMatch[1]}/mqdefault.jpg`;
+    setMedia(prev => [...prev, { tipo: "video", url, thumb }]);
+    setLinkVideo("");
+  };
+
+  const quitarMedia = (idx: number) => {
+    setMedia(prev => prev.filter((_, i) => i !== idx));
   };
 
   const parsearEvento = async () => {
@@ -224,12 +266,15 @@ export default function EventosPage() {
       organizador_id: userId,
       estado: esAdmin ? "publicado" : "pendiente",
       destacado: esAdmin ? form.destacado : false,
+      media: media.length > 0 ? media : null,
     });
     setGuardando(false);
     if (error) { mostrarToast("Error al guardar", "err"); return; }
     mostrarToast(esAdmin ? "Evento publicado" : "Propuesta enviada — el admin la revisará");
     setMostrarForm(false);
     setForm(FORM_VACIO);
+    setMedia([]);
+    setLinkVideo("");
     await cargarEventos(userId);
   };
 
@@ -515,6 +560,26 @@ export default function EventosPage() {
                           {ev.lugar && <span className="ev-meta-item">📍 {ev.lugar}</span>}
                         </div>
                         {ev.descripcion && <div className="ev-desc">{ev.descripcion}</div>}
+                        {ev.media && Array.isArray(ev.media) && ev.media.length > 0 && (
+                          <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
+                            {(ev.media as MediaItem[]).slice(0,4).map((m: MediaItem, i: number) => (
+                              <a key={i} href={m.url} target="_blank" rel="noopener noreferrer"
+                                style={{width:52,height:52,borderRadius:4,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",display:"block",flexShrink:0,position:"relative",background:"rgba(0,0,0,0.3)"}}>
+                                {m.tipo === "foto"
+                                  ? <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
+                                  : <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,position:"relative"}}>
+                                      {m.thumb && <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />}
+                                      <span style={{position:"relative",zIndex:1,fontSize:16}}>▶️</span>
+                                    </div>}
+                              </a>
+                            ))}
+                            {ev.media.length > 4 && (
+                              <div style={{width:52,height:52,borderRadius:4,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"rgba(255,255,255,0.4)",fontWeight:700,fontFamily:"'Montserrat',sans-serif"}}>
+                                +{ev.media.length - 4}
+                              </div>
+                            )}
+                          </div>
+                        )}
                         {ev.capacidad !== null && (
                           <div className="ev-cap">
                             <div className="ev-cap-bar-wrap">
