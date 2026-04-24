@@ -505,94 +505,131 @@ export default function EventosPage() {
                   const tipo = TIPOS[ev.tipo] ?? TIPOS.externo;
                   const anio = new Date(ev.fecha).getFullYear();
                   return (
-                    <div key={ev.id} className={`ev-card${pasado ? " pasado" : ""}${ev.destacado ? " destacado" : ""}`}>
-                      <div className="ev-fecha-col">
-                        <div className="ev-fecha-num">{f.num}</div>
-                        <div className="ev-fecha-mes">{f.mes}</div>
-                        <div className="ev-fecha-anio">{anio}</div>
-                      </div>
-                      <div className="ev-body">
-                        <div className="ev-body-top">
-                          {ev.destacado && <span style={{ fontSize: 12 }}>⭐</span>}
-                          <span className="ev-titulo">{ev.titulo}</span>
-                          <span className="ev-badge" style={{ color: tipo.color, background: tipo.bg, borderColor: tipo.border }}>
-                            {tipo.label}
-                          </span>
-                          <span className="ev-badge" style={{ color: ev.gratuito ? "#22c55e" : "#eab308", background: ev.gratuito ? "rgba(34,197,94,0.08)" : "rgba(234,179,8,0.08)", borderColor: ev.gratuito ? "rgba(34,197,94,0.2)" : "rgba(234,179,8,0.2)" }}>
-                            {ev.gratuito ? "Gratuito" : ev.precio_entrada ? `$${ev.precio_entrada.toLocaleString("es-AR")}` : "Con costo"}
-                          </span>
-                          {ev.plataforma && ev.plataforma !== "presencial" && (
-                            <span className="ev-badge" style={{ color: "#60a5fa", background: "rgba(96,165,250,0.08)", borderColor: "rgba(96,165,250,0.2)" }}>
-                              {PLATAFORMAS[ev.plataforma] ?? "🎥"} Online
-                            </span>
-                          )}
-                        </div>
-                        <div className="ev-meta">
-                          <span className="ev-meta-item">🕐 {f.dia} · {f.hora}hs</span>
-                          {ev.lugar && <span className="ev-meta-item">📍 {ev.lugar}</span>}
-                        </div>
-                        {ev.descripcion && <div className="ev-desc">{ev.descripcion}</div>}
-                        {ev.media && Array.isArray(ev.media) && ev.media.length > 0 && (
-                          <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
-                            {(ev.media as MediaItem[]).slice(0,4).map((m: MediaItem, i: number) => (
-                              <a key={i} href={m.url} target="_blank" rel="noopener noreferrer"
-                                style={{width:52,height:52,borderRadius:4,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",display:"block",flexShrink:0,position:"relative",background:"rgba(0,0,0,0.3)"}}>
-                                {m.tipo === "foto"
-                                  ? <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
-                                  : <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,position:"relative"}}>
-                                      {m.thumb && <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />}
-                                      <span style={{position:"relative",zIndex:1,fontSize:16}}>▶️</span>
-                                    </div>}
-                              </a>
-                            ))}
-                            {ev.media.length > 4 && (
-                              <div style={{width:52,height:52,borderRadius:4,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"rgba(255,255,255,0.4)",fontWeight:700,fontFamily:"'Montserrat',sans-serif"}}>
-                                +{ev.media.length - 4}
+                    <div key={ev.id} className={`ev-card${pasado ? " pasado" : ""}${ev.destacado ? " destacado" : ""}`} style={{flexDirection:"column"}}>
+
+                      {/* FOTO FLYER — protagonista arriba */}
+                      {ev.media && Array.isArray(ev.media) && (ev.media as MediaItem[]).some((m: MediaItem) => m.tipo === "foto") && (() => {
+                        const fotos = (ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "foto");
+                        const videos = (ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "video");
+                        return (
+                          <div style={{position:"relative",width:"100%"}}>
+                            <img
+                              src={fotos[0].url}
+                              alt={ev.titulo}
+                              style={{width:"100%",maxHeight:340,objectFit:"cover",display:"block",borderRadius:"8px 8px 0 0"}}
+                            />
+                            {/* Miniaturas adicionales */}
+                            {(fotos.length > 1 || videos.length > 0) && (
+                              <div style={{position:"absolute",bottom:8,right:8,display:"flex",gap:6}}>
+                                {fotos.slice(1,4).map((m: MediaItem, i: number) => (
+                                  <a key={i} href={m.url} target="_blank" rel="noopener noreferrer"
+                                    style={{width:48,height:48,borderRadius:4,overflow:"hidden",border:"2px solid rgba(0,0,0,0.5)",display:"block",flexShrink:0}}>
+                                    <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
+                                  </a>
+                                ))}
+                                {videos.map((m: MediaItem, i: number) => (
+                                  <a key={"v"+i} href={m.url} target="_blank" rel="noopener noreferrer"
+                                    style={{width:48,height:48,borderRadius:4,overflow:"hidden",border:"2px solid rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.7)",flexShrink:0,position:"relative"}}>
+                                    {m.thumb && <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />}
+                                    <span style={{fontSize:18,position:"relative",zIndex:1}}>▶️</span>
+                                  </a>
+                                ))}
+                                {fotos.length > 4 && (
+                                  <div style={{width:48,height:48,borderRadius:4,background:"rgba(0,0,0,0.7)",border:"2px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff",fontWeight:800,fontFamily:"'Montserrat',sans-serif"}}>
+                                    +{fotos.length - 4}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {ev.destacado && (
+                              <div style={{position:"absolute",top:10,left:10,background:"rgba(200,0,0,0.85)",padding:"3px 10px",borderRadius:20,fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,color:"#fff",letterSpacing:"0.1em"}}>
+                                ⭐ DESTACADO
                               </div>
                             )}
                           </div>
-                        )}
-                        {ev.capacidad !== null && (
-                          <div className="ev-cap">
-                            <div className="ev-cap-bar-wrap">
-                              <div className="ev-cap-bar" style={{ width: `${pct}%`, background: pct >= 90 ? "#f87171" : pct >= 70 ? "#eab308" : "#22c55e" }} />
-                            </div>
-                            <div className="ev-cap-texto">{ev.total_inscriptos} / {ev.capacidad} inscriptos {lleno && "· COMPLETO"}</div>
+                        );
+                      })()}
+
+                      {/* CUERPO: fecha + info + acciones */}
+                      <div style={{display:"flex",flex:1}}>
+                        <div className="ev-fecha-col">
+                          <div className="ev-fecha-num">{f.num}</div>
+                          <div className="ev-fecha-mes">{f.mes}</div>
+                          <div className="ev-fecha-anio">{anio}</div>
+                        </div>
+                        <div className="ev-body" style={{flex:1}}>
+                          <div className="ev-body-top">
+                            {ev.destacado && !(ev.media && Array.isArray(ev.media) && (ev.media as MediaItem[]).some((m: MediaItem) => m.tipo === "foto")) && <span style={{fontSize:12}}>⭐</span>}
+                            <span className="ev-titulo">{ev.titulo}</span>
+                            <span className="ev-badge" style={{color:tipo.color,background:tipo.bg,borderColor:tipo.border}}>{tipo.label}</span>
+                            <span className="ev-badge" style={{color:ev.gratuito?"#22c55e":"#eab308",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",borderColor:ev.gratuito?"rgba(34,197,94,0.2)":"rgba(234,179,8,0.2)"}}>
+                              {ev.gratuito ? "Gratuito" : ev.precio_entrada ? `$${ev.precio_entrada.toLocaleString("es-AR")}` : "Con costo"}
+                            </span>
+                            {ev.plataforma && ev.plataforma !== "presencial" && (
+                              <span className="ev-badge" style={{color:"#60a5fa",background:"rgba(96,165,250,0.08)",borderColor:"rgba(96,165,250,0.2)"}}>
+                                {PLATAFORMAS[ev.plataforma] ?? "🎥"} Online
+                              </span>
+                            )}
                           </div>
-                        )}
-                        {ev.capacidad === null && ev.total_inscriptos !== undefined && ev.total_inscriptos > 0 && (
-                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginTop: 6 }}>{ev.total_inscriptos} inscriptos</div>
-                        )}
-                      </div>
-                      <div className="ev-acciones">
-                        {procesando === ev.id ? (
-                          <span className="ev-spinner" />
-                        ) : pasado ? (
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>FINALIZADO</span>
-                        ) : (
-                          <button
-                            className={`ev-btn-ins ${ev.inscripto ? "inscripto" : lleno ? "lleno" : "libre"}`}
-                            onClick={() => !lleno || ev.inscripto ? toggleInscripcion(ev.id, !!ev.inscripto, ev.capacidad, ev.total_inscriptos ?? 0) : undefined}
-                            disabled={lleno && !ev.inscripto}
-                          >
-                            {ev.inscripto ? "✓ Inscripto" : lleno ? "Completo" : "Inscribirse"}
-                          </button>
-                        )}
-                        {ev.link_externo && (
-                          <a href={ev.link_externo} target="_blank" rel="noopener noreferrer"
-                            style={{ fontSize: 10, color: "rgba(200,0,0,0.7)", textDecoration: "none", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
-                            Ver más →
-                          </a>
-                        )}
-                        {ev.link_reunion && !pasado && (
-                          <a href={ev.link_reunion} target="_blank" rel="noopener noreferrer"
-                            style={{ fontSize: 10, color: "#60a5fa", textDecoration: "none", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
-                            🔗 Unirse
-                          </a>
-                        )}
-                        {esAdmin && !pasado && (
-                          <button className="ev-btn-cancelar-ev" onClick={() => cancelarEvento(ev.id)}>✕ Cancelar evento</button>
-                        )}
+                          <div className="ev-meta">
+                            <span className="ev-meta-item">🕐 {f.dia} · {f.hora}hs</span>
+                            {ev.lugar && <span className="ev-meta-item">📍 {ev.lugar}</span>}
+                          </div>
+                          {ev.descripcion && <div className="ev-desc">{ev.descripcion}</div>}
+                          {/* Videos sin foto de portada */}
+                          {ev.media && Array.isArray(ev.media) && !(ev.media as MediaItem[]).some((m: MediaItem) => m.tipo === "foto") && (ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "video").length > 0 && (
+                            <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
+                              {(ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "video").map((m: MediaItem, i: number) => (
+                                <a key={i} href={m.url} target="_blank" rel="noopener noreferrer"
+                                  style={{width:80,height:52,borderRadius:4,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative",background:"rgba(0,0,0,0.4)"}}>
+                                  {m.thumb && <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />}
+                                  <span style={{position:"relative",zIndex:1,fontSize:20}}>▶️</span>
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                          {ev.capacidad !== null && (
+                            <div className="ev-cap">
+                              <div className="ev-cap-bar-wrap">
+                                <div className="ev-cap-bar" style={{width:`${pct}%`,background:pct>=90?"#f87171":pct>=70?"#eab308":"#22c55e"}} />
+                              </div>
+                              <div className="ev-cap-texto">{ev.total_inscriptos} / {ev.capacidad} inscriptos {lleno && "· COMPLETO"}</div>
+                            </div>
+                          )}
+                          {ev.capacidad === null && ev.total_inscriptos !== undefined && ev.total_inscriptos > 0 && (
+                            <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:6}}>{ev.total_inscriptos} inscriptos</div>
+                          )}
+                        </div>
+                        <div className="ev-acciones">
+                          {procesando === ev.id ? (
+                            <span className="ev-spinner" />
+                          ) : pasado ? (
+                            <span style={{fontSize:10,color:"rgba(255,255,255,0.2)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>FINALIZADO</span>
+                          ) : (
+                            <button
+                              className={`ev-btn-ins ${ev.inscripto ? "inscripto" : lleno ? "lleno" : "libre"}`}
+                              onClick={() => !lleno || ev.inscripto ? toggleInscripcion(ev.id, !!ev.inscripto, ev.capacidad, ev.total_inscriptos ?? 0) : undefined}
+                              disabled={lleno && !ev.inscripto}
+                            >
+                              {ev.inscripto ? "✓ Inscripto" : lleno ? "Completo" : "Inscribirse"}
+                            </button>
+                          )}
+                          {ev.link_externo && (
+                            <a href={ev.link_externo} target="_blank" rel="noopener noreferrer"
+                              style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
+                              Ver más →
+                            </a>
+                          )}
+                          {ev.link_reunion && !pasado && (
+                            <a href={ev.link_reunion} target="_blank" rel="noopener noreferrer"
+                              style={{fontSize:10,color:"#60a5fa",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
+                              🔗 Unirse
+                            </a>
+                          )}
+                          {esAdmin && !pasado && (
+                            <button className="ev-btn-cancelar-ev" onClick={() => cancelarEvento(ev.id)}>✕ Cancelar</button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   );
@@ -741,6 +778,99 @@ export default function EventosPage() {
                 </label>
               </div>
             )}
+
+            {/* ── FOTOS Y VIDEOS ── */}
+            <div className="ev-seccion-titulo">Fotos y videos</div>
+
+            {/* Drop zone fotos */}
+            <div className="ev-field">
+              <label className="ev-label">Fotos (flyer, lugar, etc.) — varias a la vez</label>
+              <label
+                style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",background:"rgba(255,255,255,0.03)",border:"2px dashed rgba(255,255,255,0.1)",borderRadius:6,cursor:"pointer",transition:"all 0.2s"}}
+                onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(200,0,0,0.5)"; }}
+                onDragLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
+                onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; if (e.dataTransfer.files) subirFotos(e.dataTransfer.files); }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(200,0,0,0.3)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
+              >
+                <input type="file" accept="image/*" multiple style={{display:"none"}} onChange={e => e.target.files && subirFotos(e.target.files)} />
+                <span style={{fontSize:28}}>📷</span>
+                <div>
+                  <div style={{fontSize:13,color:"rgba(255,255,255,0.7)",fontWeight:500}}>
+                    {subiendoFoto ? "⏳ Subiendo fotos..." : "Seleccionar o arrastrar fotos"}
+                  </div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:2}}>JPG, PNG, WEBP · Podés seleccionar varias a la vez</div>
+                </div>
+              </label>
+            </div>
+
+            {/* Links de video */}
+            <div className="ev-field">
+              <label className="ev-label">Videos (YouTube, Instagram, TikTok, WhatsApp) — uno por vez</label>
+              <div style={{display:"flex",gap:8}}>
+                <input
+                  className="ev-input"
+                  style={{flex:1}}
+                  value={linkVideo}
+                  onChange={e => setLinkVideo(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); agregarVideo(); }}}
+                  placeholder="https://youtube.com/watch?v=... · Pegá el link y Enter"
+                />
+                <button type="button" className="ev-btn-guardar" style={{whiteSpace:"nowrap",padding:"9px 16px",flexShrink:0}}
+                  onClick={agregarVideo} disabled={!linkVideo.trim()}>
+                  + Agregar
+                </button>
+              </div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:4}}>
+                Pegá el link y presioná Enter o el botón. Repetí para cada video.
+              </div>
+            </div>
+
+            {/* Galería preview */}
+            {media.length > 0 && (
+              <div style={{marginTop:4}}>
+                <div style={{fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:8}}>
+                  {media.filter(m => m.tipo === "foto").length} foto{media.filter(m => m.tipo === "foto").length !== 1 ? "s" : ""} · {media.filter(m => m.tipo === "video").length} video{media.filter(m => m.tipo === "video").length !== 1 ? "s" : ""}
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))",gap:8}}>
+                  {media.map((m, i) => (
+                    <div key={i} style={{position:"relative",borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",aspectRatio:"1",background:"rgba(0,0,0,0.4)"}}>
+                      {m.tipo === "foto" ? (
+                        <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt={m.nombre} />
+                      ) : (
+                        <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:3,padding:4}}>
+                          {m.thumb
+                            ? <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />
+                            : null}
+                          <span style={{fontSize:22,position:"relative",zIndex:1}}>▶️</span>
+                          <span style={{fontSize:8,color:"rgba(255,255,255,0.5)",textAlign:"center",position:"relative",zIndex:1,lineHeight:1.2,wordBreak:"break-all"}}>
+                            {m.url.includes("youtube") ? "YouTube" : m.url.includes("instagram") ? "Instagram" : m.url.includes("tiktok") ? "TikTok" : "Video"}
+                          </span>
+                        </div>
+                      )}
+                      {/* Badge tipo */}
+                      <div style={{position:"absolute",bottom:0,left:0,right:0,background:"rgba(0,0,0,0.65)",padding:"2px 4px",fontSize:9,color:"rgba(255,255,255,0.7)",textAlign:"center",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
+                        {m.tipo === "foto" ? "📷 Foto" : "🎬 Video"}
+                      </div>
+                      {/* Botón quitar */}
+                      <button type="button"
+                        style={{position:"absolute",top:4,right:4,background:"rgba(200,0,0,0.85)",border:"none",borderRadius:"50%",width:22,height:22,color:"#fff",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2,fontWeight:700}}
+                        onClick={() => quitarMedia(i)}>✕</button>
+                      {/* Primera foto = portada */}
+                      {i === 0 && m.tipo === "foto" && (
+                        <div style={{position:"absolute",top:4,left:4,background:"rgba(200,0,0,0.85)",padding:"2px 6px",borderRadius:3,fontSize:8,color:"#fff",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
+                          PORTADA
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:6,fontStyle:"italic"}}>
+                  La primera foto se muestra como portada del evento. Podés reordenarlas quitando y volviendo a subir.
+                </div>
+              </div>
+            )}
+
             <div className="ev-modal-actions">
               <button className="ev-btn-cancel" onClick={() => { setMostrarForm(false); setForm(FORM_VACIO); }}>Cancelar</button>
               <button className="ev-btn-guardar" onClick={guardarEvento} disabled={guardando || !form.titulo || !form.fecha}>
