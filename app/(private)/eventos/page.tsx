@@ -183,47 +183,14 @@ export default function EventosPage() {
     if (!textoParser.trim()) { mostrarToast("Pega el texto del evento", "err"); return; }
     setParseando(true);
     try {
-      const prompt = [
-        "Analiza este texto de un evento inmobiliario y extrae los datos en JSON.",
-        "Texto: " + textoParser,
-        "",
-        "Responde SOLO con JSON valido, sin explicaciones ni backticks:",
-        JSON.stringify({
-          titulo: "titulo del evento",
-          descripcion: "descripcion completa con disertantes",
-          fecha: "YYYY-MM-DD",
-          hora: "HH:MM",
-          tipo: "gfi|cocir|cir|comercial|privado|externo",
-          plataforma: "presencial|zoom|meet|youtube|teams",
-          lugar: "lugar o null",
-          link_reunion: "link zoom/meet o null",
-          link_externo: "link inscripcion o null",
-          gratuito: true,
-          precio_entrada: null,
-          capacidad: null,
-        }),
-        "",
-        "Reglas:",
-        "- tipo: COCIR->cocir, CIR->cir, GFI->gfi, sino->externo",
-        "- plataforma: Zoom->zoom, Meet->meet, YouTube->youtube, sino presencial",
-        "- fecha: usa 2026 si no hay anio. meses: enero=01 febrero=02 marzo=03 abril=04 mayo=05 junio=06 julio=07 agosto=08 septiembre=09 octubre=10 noviembre=11 diciembre=12",
-        "- hora: formato 24hs. 17.30hs -> 17:30",
-        "- gratuito: false si menciona precio, true sino",
-      ].join("\n");
-
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/eventos/parsear", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }],
-        }),
+        body: JSON.stringify({ texto: textoParser }),
       });
-      const data = await response.json();
-      const texto = data.content?.[0]?.text ?? "";
-      const clean = texto.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error ?? "error");
+      const parsed = json.data;
       setForm(p => ({
         ...p,
         titulo: parsed.titulo ?? p.titulo,
@@ -239,7 +206,11 @@ export default function EventosPage() {
         precio_entrada: parsed.precio_entrada?.toString() ?? p.precio_entrada,
         capacidad: parsed.capacidad?.toString() ?? p.capacidad,
       }));
-      if (imagenParser) setForm(p => ({ ...p, imagen_url: imagenParser }));
+      // Si habia imagen pegada, agregarla a la galeria
+      if (imagenParser) {
+        setMedia(prev => [...prev, { tipo: "foto", url: imagenParser!, nombre: "flyer" }]);
+        setImagenParser(null);
+      }
       setMostrarParser(false);
       setTextoParser("");
       mostrarToast("Datos extraidos — revisa y ajusta antes de guardar");
