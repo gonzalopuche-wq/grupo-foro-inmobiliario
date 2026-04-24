@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 
 const OPS_OFRECIDO = [
@@ -73,7 +73,7 @@ interface Ofrecido {
   apto_credito: boolean; uso_comercial: boolean; barrio_cerrado: boolean;
   con_cochera: boolean; acepta_mascotas: boolean; acepta_bitcoin: boolean;
   descripcion: string | null; activo: boolean; created_at: string;
-  perfiles?: { nombre: string; apellido: string; matricula: string | null; };
+  perfiles?: { nombre: string; apellido: string; matricula: string | null; telefono: string | null; email: string | null; };
 }
 
 interface Busqueda {
@@ -87,7 +87,7 @@ interface Busqueda {
   apto_credito: boolean; uso_comercial: boolean; con_cochera: boolean;
   barrio_cerrado: boolean; acepta_mascotas: boolean; acepta_bitcoin: boolean;
   descripcion: string | null; activo: boolean; created_at: string;
-  perfiles?: { nombre: string; apellido: string; matricula: string | null; };
+  perfiles?: { nombre: string; apellido: string; matricula: string | null; telefono: string | null; email: string | null; };
 }
 
 interface Match {
@@ -96,10 +96,24 @@ interface Match {
   created_at: string;
 }
 
-interface ContactoDesbloqueado {
-  match_id: string;
-  nombre: string; apellido: string; matricula: string | null;
-  telefono: string | null; email: string | null;
+interface Interes {
+  id: string; tipo: string; publicacion_id: string; publicacion_tipo: string;
+  remitente_id: string; destinatario_id: string; mensaje: string | null; leido: boolean;
+  created_at: string;
+  remitente?: { nombre: string; apellido: string; matricula: string | null; };
+}
+
+interface MirChat {
+  id: string; publicacion_id: string; publicacion_tipo: string;
+  corredor_a: string; corredor_b: string; ultimo_mensaje_at: string;
+  perfil_otro?: { nombre: string; apellido: string; matricula: string | null; foto_url: string | null; };
+  publicacion_titulo?: string;
+  no_leidos?: number;
+}
+
+interface MirMensaje {
+  id: string; chat_id: string; autor_id: string; texto: string; leido: boolean; created_at: string;
+  autor?: { nombre: string; apellido: string; foto_url: string | null; };
 }
 
 interface FiltroLista {
@@ -145,6 +159,8 @@ const formatPeso = (v: number, m = "ARS") =>
   new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(v);
 const formatFecha = (iso: string) =>
   new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" });
+const formatHora = (iso: string) =>
+  new Date(iso).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
 
 const Toggle = ({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => onChange(!value)}>
@@ -157,11 +173,16 @@ const Toggle = ({ label, value, onChange }: { label: string; value: boolean; onC
 
 export default function MirPage() {
   const [userId, setUserId] = useState<string | null>(null);
-  const [vista, setVista] = useState<"ofrecidos" | "busquedas" | "matches">("ofrecidos");
+  const [vista, setVista] = useState<"ofrecidos" | "busquedas" | "matches" | "chats">("ofrecidos");
   const [ofrecidos, setOfrecidos] = useState<Ofrecido[]>([]);
   const [busquedas, setBusquedas] = useState<Busqueda[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
-  const [contactosDesbloqueados, setContactosDesbloqueados] = useState<ContactoDesbloqueado[]>([]);
+  const [intereses, setIntereses] = useState<Interes[]>([]);
+  const [chats, setChats] = useState<MirChat[]>([]);
+  const [chatActivo, setChatActivo] = useState<MirChat | null>(null);
+  const [mensajes, setMensajes] = useState<MirMensaje[]>([]);
+  const [textoMensaje, setTextoMensaje] = useState("");
+  const [enviandoMsg, setEnviandoMsg] = useState(false);
   const [costoMatch, setCostoMatch] = useState(5000);
   const [loading, setLoading] = useState(true);
   const [mostrarFormO, setMostrarFormO] = useState(false);
@@ -173,6 +194,10 @@ export default function MirPage() {
   const [filtroTemp, setFiltroTemp] = useState<FiltroLista>(FILTRO_VACIO);
   const [guardando, setGuardando] = useState(false);
   const [desbloqueando, setDesbloqueando] = useState<string | null>(null);
+  const [interesando, setInteresando] = useState<string | null>(null);
+  const [modalInteres, setModalInteres] = useState<{ pub: Ofrecido | Busqueda; tipo: "me_interesa" | "tengo"; pubTipo: "ofrecido" | "busqueda" } | null>(null);
+  const [msgInteres, setMsgInteres] = useState("");
+  const mensajesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -192,11 +217,30 @@ export default function MirPage() {
     cargarDatos();
   }, []);
 
+  useEffect(() => {
+    if (vista === "chats" && userId) cargarChats(userId);
+  }, [vista, userId]);
+
+  useEffect(() => {
+    if (chatActivo) {
+      cargarMensajes(chatActivo.id);
+      const sub = supabase.channel(`chat-${chatActivo.id}`)
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "mir_mensajes", filter: `chat_id=eq.${chatActivo.id}` },
+          () => cargarMensajes(chatActivo.id))
+        .subscribe();
+      return () => { sub.unsubscribe(); };
+    }
+  }, [chatActivo]);
+
+  useEffect(() => {
+    mensajesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [mensajes]);
+
   const cargarDatos = async () => {
     setLoading(true);
     const [{ data: of }, { data: bu }, { data: ma }] = await Promise.all([
-      supabase.from("mir_ofrecidos").select("*, perfiles(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
-      supabase.from("mir_busquedas").select("*, perfiles(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
+      supabase.from("mir_ofrecidos").select("*, perfiles(nombre,apellido,matricula,telefono,email)").eq("activo", true).order("created_at", { ascending: false }),
+      supabase.from("mir_busquedas").select("*, perfiles(nombre,apellido,matricula,telefono,email)").eq("activo", true).order("created_at", { ascending: false }),
       supabase.from("mir_matches").select("*").order("created_at", { ascending: false }).limit(100),
     ]);
     setOfrecidos((of as unknown as Ofrecido[]) ?? []);
@@ -205,25 +249,118 @@ export default function MirPage() {
     setLoading(false);
   };
 
-  const cargarContactosDesbloqueados = async (userId: string, matchIds: string[]) => {
-    if (!matchIds.length) return;
-    const { data } = await supabase
-      .from("mir_desbloqueos")
-      .select("match_id, perfiles:user_id(nombre, apellido, matricula, telefono, email)")
-      .in("match_id", matchIds)
-      .neq("user_id", userId);
-    if (data) {
-      const contactos = data.map((d: any) => ({
-        match_id: d.match_id,
-        nombre: d.perfiles?.nombre ?? "",
-        apellido: d.perfiles?.apellido ?? "",
-        matricula: d.perfiles?.matricula ?? null,
-        telefono: d.perfiles?.telefono ?? null,
-        email: d.perfiles?.email ?? null,
-      }));
-      setContactosDesbloqueados(contactos);
+  const cargarIntereses = async (uid: string) => {
+    const { data } = await supabase.from("mir_intereses")
+      .select("*, remitente:perfiles!remitente_id(nombre,apellido,matricula)")
+      .or(`remitente_id.eq.${uid},destinatario_id.eq.${uid}`)
+      .order("created_at", { ascending: false });
+    setIntereses((data as unknown as Interes[]) ?? []);
+  };
+
+  const cargarChats = async (uid: string) => {
+    const { data } = await supabase.from("mir_chats")
+      .select("*, perfil_a:perfiles!corredor_a(nombre,apellido,matricula,foto_url), perfil_b:perfiles!corredor_b(nombre,apellido,matricula,foto_url)")
+      .or(`corredor_a.eq.${uid},corredor_b.eq.${uid}`)
+      .order("ultimo_mensaje_at", { ascending: false });
+
+    if (!data) return;
+    const chatsConInfo = await Promise.all((data as any[]).map(async (c) => {
+      const esA = c.corredor_a === uid;
+      const perfilOtro = esA ? c.perfil_b : c.perfil_a;
+      // Buscar título de la publicación
+      let titulo = "";
+      if (c.publicacion_tipo === "ofrecido") {
+        const of = ofrecidos.find(o => o.id === c.publicacion_id);
+        titulo = of ? `${of.tipo_propiedad} · ${of.ciudad}` : "Ofrecido";
+      } else {
+        const bu = busquedas.find(b => b.id === c.publicacion_id);
+        titulo = bu ? `${bu.tipo_propiedad} · ${bu.ciudad}` : "Búsqueda";
+      }
+      // Contar no leídos
+      const { count } = await supabase.from("mir_mensajes")
+        .select("*", { count: "exact", head: true })
+        .eq("chat_id", c.id).eq("leido", false).neq("autor_id", uid);
+      return { ...c, perfil_otro: perfilOtro, publicacion_titulo: titulo, no_leidos: count ?? 0 };
+    }));
+    setChats(chatsConInfo);
+  };
+
+  const cargarMensajes = async (chatId: string) => {
+    const { data } = await supabase.from("mir_mensajes")
+      .select("*, autor:perfiles!autor_id(nombre,apellido,foto_url)")
+      .eq("chat_id", chatId)
+      .order("created_at", { ascending: true });
+    setMensajes((data as unknown as MirMensaje[]) ?? []);
+    // Marcar como leídos
+    if (userId) {
+      await supabase.from("mir_mensajes").update({ leido: true })
+        .eq("chat_id", chatId).eq("leido", false).neq("autor_id", userId);
     }
   };
+
+  const abrirChat = async (pubId: string, pubTipo: "ofrecido" | "busqueda", destinatarioId: string) => {
+    if (!userId) return;
+    // Buscar chat existente o crear uno
+    const { data: existente } = await supabase.from("mir_chats")
+      .select("*")
+      .eq("publicacion_id", pubId)
+      .or(`and(corredor_a.eq.${userId},corredor_b.eq.${destinatarioId}),and(corredor_a.eq.${destinatarioId},corredor_b.eq.${userId})`)
+      .single();
+
+    if (existente) {
+      setChatActivo(existente as MirChat);
+    } else {
+      const { data: nuevo } = await supabase.from("mir_chats").insert({
+        publicacion_id: pubId, publicacion_tipo: pubTipo,
+        corredor_a: userId, corredor_b: destinatarioId,
+      }).select().single();
+      if (nuevo) setChatActivo(nuevo as MirChat);
+    }
+    setVista("chats");
+  };
+
+  const enviarMensaje = async () => {
+    if (!userId || !chatActivo || !textoMensaje.trim() || enviandoMsg) return;
+    setEnviandoMsg(true);
+    await supabase.from("mir_mensajes").insert({
+      chat_id: chatActivo.id, autor_id: userId, texto: textoMensaje.trim(),
+    });
+    await supabase.from("mir_chats").update({ ultimo_mensaje_at: new Date().toISOString() }).eq("id", chatActivo.id);
+    setTextoMensaje("");
+    setEnviandoMsg(false);
+  };
+
+  const enviarInteres = async () => {
+    if (!userId || !modalInteres || interesando) return;
+    const { pub, tipo, pubTipo } = modalInteres;
+    setInteresando(pub.id);
+    const destinatarioId = pub.perfil_id;
+    // Insertar interés
+    await supabase.from("mir_intereses").upsert({
+      tipo, publicacion_id: pub.id, publicacion_tipo: pubTipo,
+      remitente_id: userId, destinatario_id: destinatarioId,
+      mensaje: msgInteres || null, leido: false,
+    }, { onConflict: "publicacion_id,remitente_id,tipo" });
+    // Notificar
+    await supabase.from("notificaciones").insert({
+      perfil_id: destinatarioId,
+      tipo: "mir_interes",
+      titulo: tipo === "me_interesa" ? "Te consultaron por tu ofrecido" : "Alguien tiene algo para tu búsqueda",
+      mensaje: msgInteres || (tipo === "me_interesa" ? "Un colega está interesado en tu ofrecido." : "Un colega tiene algo que coincide con tu búsqueda."),
+      leida: false,
+    });
+    // Abrir chat directo
+    setModalInteres(null);
+    setMsgInteres("");
+    await abrirChat(pub.id, pubTipo, destinatarioId);
+    setInteresando(null);
+  };
+
+  const yaMostreInteres = (pubId: string, tipo: string) =>
+    intereses.some(i => i.publicacion_id === pubId && i.remitente_id === userId && i.tipo === tipo);
+
+  const cantIntereses = (pubId: string) =>
+    intereses.filter(i => i.publicacion_id === pubId && i.destinatario_id === userId && !i.leido).length;
 
   const desbloquear = async (match_id: string, es_duenio_ofrecido: boolean) => {
     if (!userId || desbloqueando) return;
@@ -235,16 +372,8 @@ export default function MirPage() {
         body: JSON.stringify({ match_id, user_id: userId, es_duenio_ofrecido }),
       });
       const data = await res.json();
-      if (data.ok) {
-        await cargarDatos();
-        if (userId) {
-          const matchIds = matches.map(m => m.id);
-          await cargarContactosDesbloqueados(userId, matchIds);
-        }
-      }
-    } catch (err) {
-      console.error("Error desbloqueando:", err);
-    }
+      if (data.ok) await cargarDatos();
+    } catch {}
     setDesbloqueando(null);
   };
 
@@ -324,8 +453,7 @@ export default function MirPage() {
       acepta_mascotas: formO.acepta_mascotas, acepta_bitcoin: formO.acepta_bitcoin,
       descripcion: formO.descripcion || null,
     }).select().single();
-    if (error) { console.error("Error:", error); setGuardando(false); return; }
-    if (nuevo) await matchearOfrecido(nuevo as Ofrecido);
+    if (!error && nuevo) await matchearOfrecido(nuevo as Ofrecido);
     setGuardando(false); setMostrarFormO(false); setFormO(FORM_O); cargarDatos();
   };
 
@@ -335,8 +463,7 @@ export default function MirPage() {
     const { data: nueva, error } = await supabase.from("mir_busquedas").insert({
       perfil_id: userId, operacion: formB.operacion, tipo_propiedad: formB.tipo_propiedad,
       zona: formB.zona || null, ciudad: formB.ciudad,
-      presupuesto_min: n(formB.presupuesto_min), presupuesto_max: n(formB.presupuesto_max),
-      moneda: formB.moneda,
+      presupuesto_min: n(formB.presupuesto_min), presupuesto_max: n(formB.presupuesto_max), moneda: formB.moneda,
       dormitorios_min: ni(formB.dormitorios_min), dormitorios_max: ni(formB.dormitorios_max),
       banos_min: ni(formB.banos_min), banos_max: ni(formB.banos_max),
       superficie_min: n(formB.superficie_min), superficie_max: n(formB.superficie_max),
@@ -346,8 +473,7 @@ export default function MirPage() {
       acepta_mascotas: formB.acepta_mascotas, acepta_bitcoin: formB.acepta_bitcoin,
       descripcion: formB.descripcion || null,
     }).select().single();
-    if (error) { console.error("Error:", error); setGuardando(false); return; }
-    if (nueva) await matchearBusqueda(nueva as Busqueda);
+    if (!error && nueva) await matchearBusqueda(nueva as Busqueda);
     setGuardando(false); setMostrarFormB(false); setFormB(FORM_B); cargarDatos();
   };
 
@@ -364,17 +490,43 @@ export default function MirPage() {
   );
   const cantFiltrosActivos = filtro.operaciones.length + filtro.localidades.length + filtro.tipos.length +
     [filtro.apto_credito, filtro.con_cochera, filtro.uso_comercial, filtro.barrio_cerrado, filtro.acepta_mascotas, filtro.acepta_bitcoin].filter(Boolean).length;
+  const totalNoLeidos = chats.reduce((acc, c) => acc + (c.no_leidos ?? 0), 0);
 
   const toggleFiltroItem = (key: "operaciones" | "localidades" | "tipos", val: string) => {
     setFiltroTemp(f => ({
-      ...f,
-      [key]: f[key].includes(val) ? f[key].filter(x => x !== val) : [...f[key], val]
+      ...f, [key]: f[key].includes(val) ? f[key].filter(x => x !== val) : [...f[key], val]
     }));
   };
 
-  const Card = ({ children, propia }: { children: React.ReactNode; propia: boolean }) => (
-    <div className={`mir-card${propia ? " propia" : ""}`}>{children}</div>
-  );
+  // Render botones Me interesa / Tengo
+  const BotonesInteres = ({ pub, pubTipo }: { pub: Ofrecido | Busqueda; pubTipo: "ofrecido" | "busqueda" }) => {
+    if (pub.perfil_id === userId) return null;
+    const yaInteresa = yaMostreInteres(pub.id, "me_interesa");
+    const yaTengo = yaMostreInteres(pub.id, "tengo");
+    return (
+      <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+        <button
+          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaInteresa ? "rgba(34,197,94,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaInteresa ? "rgba(34,197,94,0.1)" : "transparent", color: yaInteresa ? "#22c55e" : "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: yaInteresa ? "default" : "pointer", transition: "all 0.15s" }}
+          onClick={() => !yaInteresa && setModalInteres({ pub, tipo: "me_interesa", pubTipo })}
+          disabled={interesando === pub.id}
+        >
+          {yaInteresa ? "✓ Interesado" : "Me interesa"}
+        </button>
+        <button
+          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaTengo ? "rgba(96,165,250,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaTengo ? "rgba(96,165,250,0.1)" : "transparent", color: yaTengo ? "#60a5fa" : "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: yaTengo ? "default" : "pointer", transition: "all 0.15s" }}
+          onClick={() => !yaTengo && setModalInteres({ pub, tipo: "tengo", pubTipo })}
+          disabled={interesando === pub.id}
+        >
+          {yaTengo ? "✓ Enviado" : "Tengo"}
+        </button>
+        {cantIntereses(pub.id) > 0 && (
+          <span style={{ padding: "5px 10px", borderRadius: 20, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.25)", color: "#cc0000", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+            {cantIntereses(pub.id)} nuevo{cantIntereses(pub.id) !== 1 ? "s" : ""}
+          </span>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -384,6 +536,7 @@ export default function MirPage() {
         .mir-tab { padding: 9px 22px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; position: relative; }
         .mir-tab.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
         .mir-tab-badge { position: absolute; top: -6px; right: -6px; background: #cc0000; color: #fff; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; min-width: 16px; text-align: center; }
+        .mir-tab-badge.verde { background: #22c55e; }
         .mir-barra { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
         .mir-barra-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .mir-btn-pub { padding: 9px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
@@ -425,9 +578,44 @@ export default function MirPage() {
         .mir-btn-desbloquear:disabled { opacity: 0.5; cursor: not-allowed; }
         .mir-costo { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 4px; text-align: center; }
         .mir-nota { font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; padding: 8px 16px; background: rgba(200,0,0,0.04); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; margin-bottom: 12px; }
-        .mir-contacto-card { background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 6px; padding: 12px 16px; margin-top: 8px; }
-        .mir-contacto-titulo { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #22c55e; margin-bottom: 6px; }
-        .mir-contacto-dato { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 3px; }
+        /* Chat styles */
+        .mir-chats-layout { display: grid; grid-template-columns: 280px 1fr; gap: 16px; height: calc(100vh - 200px); min-height: 400px; }
+        .mir-chats-lista { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow-y: auto; }
+        .mir-chat-item { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 10px; }
+        .mir-chat-item:hover { background: rgba(255,255,255,0.03); }
+        .mir-chat-item.activo { background: rgba(200,0,0,0.07); border-left: 2px solid #cc0000; }
+        .mir-chat-avatar { width: 36px; height: 36px; border-radius: 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 800; color: #cc0000; flex-shrink: 0; overflow: hidden; }
+        .mir-chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .mir-chat-info { flex: 1; min-width: 0; }
+        .mir-chat-nombre { font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mir-chat-pub { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mir-chat-badge { background: #cc0000; color: #fff; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 10px; flex-shrink: 0; }
+        .mir-chat-ventana { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+        .mir-chat-header { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 10px; }
+        .mir-chat-mensajes { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .mir-chat-mensajes::-webkit-scrollbar { width: 4px; }
+        .mir-chat-mensajes::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+        .mir-msg { max-width: 75%; }
+        .mir-msg.mio { align-self: flex-end; }
+        .mir-msg.otro { align-self: flex-start; }
+        .mir-msg-burbuja { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+        .mir-msg.mio .mir-msg-burbuja { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); color: #fff; border-radius: 12px 12px 2px 12px; }
+        .mir-msg.otro .mir-msg-burbuja { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); border-radius: 12px 12px 12px 2px; }
+        .mir-msg-meta { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 3px; }
+        .mir-msg.mio .mir-msg-meta { text-align: right; }
+        .mir-chat-input { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; gap: 10px; align-items: flex-end; }
+        .mir-chat-textarea { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; resize: none; min-height: 40px; max-height: 120px; line-height: 1.4; }
+        .mir-chat-textarea:focus { border-color: rgba(200,0,0,0.4); }
+        .mir-chat-textarea::placeholder { color: rgba(255,255,255,0.2); }
+        .mir-chat-send { padding: 10px 16px; background: #cc0000; border: none; border-radius: 8px; color: #fff; font-size: 16px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+        .mir-chat-send:hover { background: #e60000; }
+        .mir-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+        .mir-chat-vacio { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; color: rgba(255,255,255,0.2); }
+        /* Modal interes */
+        .mir-interes-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
+        .mir-interes-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; padding: 28px 32px; width: 100%; max-width: 420px; position: relative; }
+        .mir-interes-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 8px 8px 0 0; }
+        /* Filtros */
         .filtro-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; display: flex; justify-content: flex-end; }
         .filtro-panel { width: 420px; max-width: 100vw; background: #111; border-left: 1px solid rgba(255,255,255,0.1); height: 100vh; overflow-y: auto; display: flex; flex-direction: column; animation: slideIn 0.25s ease; }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
@@ -488,41 +676,45 @@ export default function MirPage() {
         .fn-sup-tipos { display: flex; gap: 6px; margin-top: 6px; }
         .fn-sup-tipo { padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-size: 10px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
         .fn-sup-tipo.activo { border-color: #cc0000; background: rgba(200,0,0,0.1); color: #fff; }
-        @media (max-width: 700px) { .mir-grid { grid-template-columns: 1fr; } .fn-row3 { grid-template-columns: 1fr 1fr; } .filtro-panel { width: 100vw; } }
+        @media (max-width: 700px) {
+          .mir-grid { grid-template-columns: 1fr; }
+          .fn-row3 { grid-template-columns: 1fr 1fr; }
+          .filtro-panel { width: 100vw; }
+          .mir-chats-layout { grid-template-columns: 1fr; }
+        }
       `}</style>
 
       {/* TABS */}
       <div className="mir-tabs">
         <button className={`mir-tab${vista === "ofrecidos" ? " activo" : ""}`} onClick={() => setVista("ofrecidos")}>
-          🏠 Ofrecidos {ofrecidos.length > 0 && <span className="mir-tab-badge">{ofrecidos.length}</span>}
+          Ofrecidos {ofrecidos.length > 0 && <span className="mir-tab-badge">{ofrecidos.length}</span>}
         </button>
         <button className={`mir-tab${vista === "busquedas" ? " activo" : ""}`} onClick={() => setVista("busquedas")}>
-          🔍 Búsquedas {busquedas.length > 0 && <span className="mir-tab-badge">{busquedas.length}</span>}
+          Busquedas {busquedas.length > 0 && <span className="mir-tab-badge">{busquedas.length}</span>}
         </button>
         <button className={`mir-tab${vista === "matches" ? " activo" : ""}`} onClick={() => setVista("matches")}>
-          🔗 Mis matches {matchesPropios.length > 0 && <span className="mir-tab-badge" style={{background:"#22c55e"}}>{matchesPropios.length}</span>}
+          Matches {matchesPropios.length > 0 && <span className="mir-tab-badge verde">{matchesPropios.length}</span>}
+        </button>
+        <button className={`mir-tab${vista === "chats" ? " activo" : ""}`} onClick={() => { setVista("chats"); if (userId) cargarChats(userId); }}>
+          Chats {totalNoLeidos > 0 && <span className="mir-tab-badge">{totalNoLeidos}</span>}
         </button>
       </div>
 
       {/* BARRA */}
-      {vista !== "matches" && (
+      {vista !== "matches" && vista !== "chats" && (
         <div className="mir-barra">
           <div className="mir-barra-left">
-            <button
-              className={`mir-btn-filtrar${cantFiltrosActivos > 0 ? " activo" : ""}`}
-              onClick={() => { setFiltroTemp({...filtro}); setMostrarFiltros(true); }}
-            >
-              ⚙ Filtrar
-              {cantFiltrosActivos > 0 && <span className="mir-filtro-badge">{cantFiltrosActivos}</span>}
+            <button className={`mir-btn-filtrar${cantFiltrosActivos > 0 ? " activo" : ""}`} onClick={() => { setFiltroTemp({...filtro}); setMostrarFiltros(true); }}>
+              Filtrar {cantFiltrosActivos > 0 && <span className="mir-filtro-badge">{cantFiltrosActivos}</span>}
             </button>
             {cantFiltrosActivos > 0 && (
               <button style={{background:"none",border:"none",color:"rgba(200,0,0,0.7)",fontSize:11,cursor:"pointer",fontFamily:"'Montserrat',sans-serif",fontWeight:700}} onClick={() => setFiltro(FILTRO_VACIO)}>
-                × Limpiar filtros
+                Limpiar filtros
               </button>
             )}
           </div>
           <button className="mir-btn-pub" onClick={() => vista === "ofrecidos" ? setMostrarFormO(true) : setMostrarFormB(true)}>
-            {vista === "ofrecidos" ? "+ Publicar ofrecido" : "+ Publicar búsqueda"}
+            {vista === "ofrecidos" ? "+ Publicar ofrecido" : "+ Publicar busqueda"}
           </button>
         </div>
       )}
@@ -530,13 +722,14 @@ export default function MirPage() {
       {/* OFRECIDOS */}
       {vista === "ofrecidos" && (
         loading ? <div className="mir-empty">Cargando...</div> :
-        ofsFilt.length === 0 ? <div className="mir-empty">No hay ofrecidos{cantFiltrosActivos > 0 ? " con esos filtros" : " publicados todavía"}.</div> :
+        ofsFilt.length === 0 ? <div className="mir-empty">No hay ofrecidos{cantFiltrosActivos > 0 ? " con esos filtros" : " publicados todavia"}.</div> :
         <div className="mir-grid">
           {ofsFilt.map(o => {
             const color = OP_COLOR[o.operacion] ?? "#fff";
-            const extras = [o.apto_credito && "Apto crédito", o.uso_comercial && "Uso comercial", o.barrio_cerrado && "B. cerrado", o.con_cochera && "Cochera", o.acepta_mascotas && "Mascotas", o.acepta_bitcoin && "Bitcoin"].filter(Boolean) as string[];
+            const extras = [o.apto_credito && "Apto credito", o.uso_comercial && "Uso comercial", o.barrio_cerrado && "B. cerrado", o.con_cochera && "Cochera", o.acepta_mascotas && "Mascotas", o.acepta_bitcoin && "Bitcoin"].filter(Boolean) as string[];
+            const esPropia = o.perfil_id === userId;
             return (
-              <Card key={o.id} propia={o.perfil_id === userId}>
+              <div key={o.id} className={`mir-card${esPropia ? " propia" : ""}`}>
                 <div className="mir-card-top">
                   <div className="mir-card-titulo">{o.tipo_propiedad}</div>
                   <span className="mir-op-badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{OP_LABEL[o.operacion]}</span>
@@ -552,57 +745,60 @@ export default function MirPage() {
                 </div>
                 {extras.length > 0 && <div className="mir-extras">{extras.map((e,i) => <span key={i} className="mir-extra">{e}</span>)}</div>}
                 {o.descripcion && <div className="mir-desc">{o.descripcion}</div>}
+                {!esPropia && <BotonesInteres pub={o} pubTipo="ofrecido" />}
                 <div className="mir-card-footer">
                   <div>
-                    {o.perfil_id === userId ? <span className="mir-corredor">📌 Tu publicación</span> : <span className="mir-corredor">C.I. <b>{o.perfiles?.apellido}, {o.perfiles?.nombre}</b> · Mat. {o.perfiles?.matricula ?? "—"}</span>}
+                    {esPropia ? <span className="mir-corredor">📌 Tu publicacion</span> : <span className="mir-corredor">C.I. <b>{o.perfiles?.apellido}, {o.perfiles?.nombre}</b> · Mat. {o.perfiles?.matricula ?? "—"}</span>}
                     <div className="mir-fecha">{formatFecha(o.created_at)}</div>
                   </div>
-                  {o.perfil_id === userId && <button className="mir-btn-baja" onClick={() => desactivar("mir_ofrecidos", o.id)}>Dar de baja</button>}
+                  {esPropia && <button className="mir-btn-baja" onClick={() => desactivar("mir_ofrecidos", o.id)}>Dar de baja</button>}
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
       )}
 
-      {/* BÚSQUEDAS */}
+      {/* BUSQUEDAS */}
       {vista === "busquedas" && (
         loading ? <div className="mir-empty">Cargando...</div> :
-        busFilt.length === 0 ? <div className="mir-empty">No hay búsquedas{cantFiltrosActivos > 0 ? " con esos filtros" : " publicadas todavía"}.</div> :
+        busFilt.length === 0 ? <div className="mir-empty">No hay busquedas{cantFiltrosActivos > 0 ? " con esos filtros" : " publicadas todavia"}.</div> :
         <div className="mir-grid">
           {busFilt.map(b => {
             const color = OP_COLOR[b.operacion] ?? "#fff";
-            const extras = [b.apto_credito && "Apto crédito", b.uso_comercial && "Uso comercial", b.con_cochera && "Con cochera", b.barrio_cerrado && "B. cerrado", b.acepta_mascotas && "Mascotas", b.acepta_bitcoin && "Bitcoin"].filter(Boolean) as string[];
+            const extras = [b.apto_credito && "Apto credito", b.uso_comercial && "Uso comercial", b.con_cochera && "Con cochera", b.barrio_cerrado && "B. cerrado", b.acepta_mascotas && "Mascotas", b.acepta_bitcoin && "Bitcoin"].filter(Boolean) as string[];
+            const esPropia = b.perfil_id === userId;
             return (
-              <Card key={b.id} propia={b.perfil_id === userId}>
+              <div key={b.id} className={`mir-card${esPropia ? " propia" : ""}`}>
                 <div className="mir-card-top">
                   <div className="mir-card-titulo">{b.tipo_propiedad}</div>
                   <span className="mir-op-badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{OP_LABEL[b.operacion]}</span>
                 </div>
                 {(b.presupuesto_min || b.presupuesto_max) && (
                   <div className="mir-precio">
-                    {b.presupuesto_min && b.presupuesto_max ? `${formatPeso(b.presupuesto_min, b.moneda)} – ${formatPeso(b.presupuesto_max, b.moneda)}` :
+                    {b.presupuesto_min && b.presupuesto_max ? `${formatPeso(b.presupuesto_min, b.moneda)} - ${formatPeso(b.presupuesto_max, b.moneda)}` :
                      b.presupuesto_max ? `Hasta ${formatPeso(b.presupuesto_max, b.moneda)}` :
                      `Desde ${formatPeso(b.presupuesto_min!, b.moneda)}`}
                   </div>
                 )}
                 <div className="mir-zona">📍 {[b.zona, b.ciudad].filter(Boolean).join(" · ")}</div>
                 <div className="mir-detalles">
-                  {b.dormitorios_min && <span className="mir-det">🛏 {b.dormitorios_min}{b.dormitorios_max ? `–${b.dormitorios_max}` : "+"} dorm.</span>}
+                  {b.dormitorios_min && <span className="mir-det">🛏 {b.dormitorios_min}{b.dormitorios_max ? `-${b.dormitorios_max}` : "+"} dorm.</span>}
                   {b.banos_min && <span className="mir-det">🚿 {b.banos_min}+ baños</span>}
-                  {b.superficie_min && <span className="mir-det">📐 {b.superficie_min}{b.superficie_max ? `–${b.superficie_max}` : "+"}m²</span>}
+                  {b.superficie_min && <span className="mir-det">📐 {b.superficie_min}{b.superficie_max ? `-${b.superficie_max}` : "+"}m²</span>}
                   {b.antiguedad && <span className="mir-det">🏗 {b.antiguedad.replace(/_/g," ")}</span>}
                 </div>
                 {extras.length > 0 && <div className="mir-extras">{extras.map((e,i) => <span key={i} className="mir-extra">{e}</span>)}</div>}
                 {b.descripcion && <div className="mir-desc">{b.descripcion}</div>}
+                {!esPropia && <BotonesInteres pub={b} pubTipo="busqueda" />}
                 <div className="mir-card-footer">
                   <div>
-                    {b.perfil_id === userId ? <span className="mir-corredor">📌 Tu publicación</span> : <span className="mir-corredor">C.I. <b>{b.perfiles?.apellido}, {b.perfiles?.nombre}</b> · Mat. {b.perfiles?.matricula ?? "—"}</span>}
+                    {esPropia ? <span className="mir-corredor">📌 Tu publicacion</span> : <span className="mir-corredor">C.I. <b>{b.perfiles?.apellido}, {b.perfiles?.nombre}</b> · Mat. {b.perfiles?.matricula ?? "—"}</span>}
                     <div className="mir-fecha">{formatFecha(b.created_at)}</div>
                   </div>
-                  {b.perfil_id === userId && <button className="mir-btn-baja" onClick={() => desactivar("mir_busquedas", b.id)}>Dar de baja</button>}
+                  {esPropia && <button className="mir-btn-baja" onClick={() => desactivar("mir_busquedas", b.id)}>Dar de baja</button>}
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
@@ -612,10 +808,10 @@ export default function MirPage() {
       {vista === "matches" && (
         <>
           <div className="mir-nota">
-            💡 Ambos pagan {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} para revelar los datos de contacto.
+            Ambos pagan {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} para revelar los datos de contacto.
           </div>
           {loading ? <div className="mir-empty">Cargando...</div> :
-           matchesPropios.length === 0 ? <div className="mir-empty">No tenés matches todavía.</div> :
+           matchesPropios.length === 0 ? <div className="mir-empty">No tenes matches todavia.</div> :
            <div style={{display:"flex",flexDirection:"column",gap:12}}>
             {matchesPropios.map(m => {
               const of = ofrecidos.find(o => o.id === m.ofrecido_id);
@@ -623,50 +819,46 @@ export default function MirPage() {
               const esDuenioOf = of?.perfil_id === userId;
               const yoPague = esDuenioOf ? m.desbloqueado_ofrecido : m.desbloqueado_busqueda;
               const ambosDesbloquearon = m.desbloqueado_ofrecido && m.desbloqueado_busqueda;
-              const contacto = contactosDesbloqueados.find(c => c.match_id === m.id);
-
+              const otroId = esDuenioOf ? bu?.perfil_id : of?.perfil_id;
               return (
                 <div key={m.id} className="mir-match-card">
                   <div className="mir-match-lados">
                     <div className="mir-match-lado">
-                      <div className="mir-match-lado-titulo">🏠 Ofrecido</div>
+                      <div className="mir-match-lado-titulo">Ofrecido</div>
                       <div className="mir-match-info">{of?.tipo_propiedad} · {of?.ciudad}</div>
                       <div className="mir-match-sub">{OP_LABEL[of?.operacion ?? ""]}{of?.precio ? ` · ${formatPeso(of.precio, of.moneda)}` : ""}</div>
-                      {esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>📌 Es tuyo</div>}
+                      {esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>Es tuyo</div>}
                     </div>
                     <div className="mir-match-sep"/>
                     <div className="mir-match-lado">
-                      <div className="mir-match-lado-titulo">🔍 Búsqueda</div>
+                      <div className="mir-match-lado-titulo">Busqueda</div>
                       <div className="mir-match-info">{bu?.tipo_propiedad} · {bu?.ciudad}</div>
                       <div className="mir-match-sub">{OP_LABEL[bu?.operacion ?? ""]}{bu?.presupuesto_max ? ` · hasta ${formatPeso(bu.presupuesto_max, bu.moneda)}` : ""}</div>
-                      {!esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>📌 Es tuya</div>}
+                      {!esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>Es tuya</div>}
                     </div>
                   </div>
-
-                  <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
-                    {ambosDesbloquearon && contacto ? (
-                      <div className="mir-contacto-card">
-                        <div className="mir-contacto-titulo">✅ Contacto desbloqueado</div>
-                        <div className="mir-contacto-dato"><b>{contacto.nombre} {contacto.apellido}</b> · Mat. {contacto.matricula ?? "—"}</div>
-                        {contacto.telefono && <div className="mir-contacto-dato">📱 {contacto.telefono}</div>}
-                        {contacto.email && <div className="mir-contacto-dato">✉️ {contacto.email}</div>}
+                  <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0}}>
+                    {ambosDesbloquearon ? (
+                      <div style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:6,padding:"10px 14px",minWidth:160}}>
+                        <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#22c55e",marginBottom:6}}>CONTACTO DESBLOQUEADO</div>
+                        <div style={{fontSize:12,color:"#fff",fontWeight:600}}>{esDuenioOf ? bu?.perfiles?.nombre : of?.perfiles?.nombre} {esDuenioOf ? bu?.perfiles?.apellido : of?.perfiles?.apellido}</div>
+                        {(esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:3}}>📱 {esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono}</div>}
+                        {(esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>✉️ {esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email}</div>}
+                        {otroId && (
+                          <button onClick={() => abrirChat(m.ofrecido_id, "ofrecido", otroId)}
+                            style={{marginTop:8,padding:"5px 12px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:4,color:"#22c55e",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer",width:"100%"}}>
+                            Abrir chat
+                          </button>
+                        )}
                       </div>
                     ) : yoPague ? (
-                      <div style={{fontSize:11,color:"#eab308",fontFamily:"Inter,sans-serif",textAlign:"center"}}>
-                        ✓ Pagaste · Esperando al otro corredor
-                      </div>
+                      <div style={{fontSize:11,color:"#eab308",textAlign:"center"}}>Pagaste · Esperando al otro corredor</div>
                     ) : (
                       <>
-                        <button
-                          className="mir-btn-desbloquear"
-                          disabled={desbloqueando === m.id}
-                          onClick={() => desbloquear(m.id, esDuenioOf)}
-                        >
+                        <button className="mir-btn-desbloquear" disabled={desbloqueando === m.id} onClick={() => desbloquear(m.id, esDuenioOf)}>
                           {desbloqueando === m.id ? "..." : "Desbloquear contacto"}
                         </button>
-                        <div className="mir-costo">
-                          {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}
-                        </div>
+                        <div className="mir-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}</div>
                       </>
                     )}
                   </div>
@@ -677,17 +869,106 @@ export default function MirPage() {
         </>
       )}
 
+      {/* CHATS */}
+      {vista === "chats" && (
+        <div className="mir-chats-layout">
+          {/* Lista de chats */}
+          <div className="mir-chats-lista">
+            {chats.length === 0 ? (
+              <div style={{padding:32,textAlign:"center",color:"rgba(255,255,255,0.2)",fontSize:13,fontStyle:"italic"}}>
+                No tenes chats todavia.<br/>
+                <span style={{fontSize:11}}>Toca "Me interesa" o "Tengo" en una publicacion para iniciar.</span>
+              </div>
+            ) : chats.map(c => {
+              const ini = `${c.perfil_otro?.nombre?.charAt(0) ?? ""}${c.perfil_otro?.apellido?.charAt(0) ?? ""}`.toUpperCase();
+              return (
+                <div key={c.id} className={`mir-chat-item${chatActivo?.id === c.id ? " activo" : ""}`} onClick={() => setChatActivo(c)}>
+                  <div className="mir-chat-avatar">
+                    {c.perfil_otro?.foto_url ? <img src={c.perfil_otro.foto_url} alt="" /> : ini}
+                  </div>
+                  <div className="mir-chat-info">
+                    <div className="mir-chat-nombre">{c.perfil_otro?.apellido}, {c.perfil_otro?.nombre}</div>
+                    <div className="mir-chat-pub">{c.publicacion_titulo}</div>
+                  </div>
+                  {(c.no_leidos ?? 0) > 0 && <span className="mir-chat-badge">{c.no_leidos}</span>}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Ventana de chat */}
+          <div className="mir-chat-ventana">
+            {!chatActivo ? (
+              <div className="mir-chat-vacio">
+                <span style={{fontSize:40}}>💬</span>
+                <span style={{fontSize:13}}>Selecciona un chat para ver los mensajes</span>
+              </div>
+            ) : (
+              <>
+                <div className="mir-chat-header">
+                  <div className="mir-chat-avatar" style={{width:36,height:36}}>
+                    {(chatActivo as any).perfil_otro?.foto_url
+                      ? <img src={(chatActivo as any).perfil_otro.foto_url} alt="" />
+                      : `${(chatActivo as any).perfil_otro?.nombre?.charAt(0) ?? ""}${(chatActivo as any).perfil_otro?.apellido?.charAt(0) ?? ""}`.toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>
+                      {(chatActivo as any).perfil_otro?.apellido}, {(chatActivo as any).perfil_otro?.nombre}
+                    </div>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.35)"}}>
+                      {(chatActivo as any).publicacion_titulo}
+                    </div>
+                  </div>
+                </div>
+                <div className="mir-chat-mensajes">
+                  {mensajes.length === 0 && (
+                    <div style={{textAlign:"center",color:"rgba(255,255,255,0.2)",fontSize:12,fontStyle:"italic",padding:"20px 0"}}>
+                      Empeza la conversacion
+                    </div>
+                  )}
+                  {mensajes.map(msg => {
+                    const esMio = msg.autor_id === userId;
+                    return (
+                      <div key={msg.id} className={`mir-msg ${esMio ? "mio" : "otro"}`}>
+                        <div className="mir-msg-burbuja">{msg.texto}</div>
+                        <div className="mir-msg-meta">
+                          {!esMio && `${msg.autor?.nombre ?? ""} · `}{formatHora(msg.created_at)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div ref={mensajesEndRef} />
+                </div>
+                <div className="mir-chat-input">
+                  <textarea
+                    className="mir-chat-textarea"
+                    placeholder="Escribi un mensaje..."
+                    value={textoMensaje}
+                    onChange={e => setTextoMensaje(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviarMensaje(); }}}
+                    rows={1}
+                  />
+                  <button className="mir-chat-send" onClick={enviarMensaje} disabled={!textoMensaje.trim() || enviandoMsg}>
+                    ➤
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* PANEL FILTROS */}
       {mostrarFiltros && (
         <div className="filtro-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFiltros(false); }}>
           <div className="filtro-panel">
             <div className="filtro-header">
               <span className="filtro-title">Filtrar {vista}</span>
-              <button className="filtro-close" onClick={() => setMostrarFiltros(false)}>×</button>
+              <button className="filtro-close" onClick={() => setMostrarFiltros(false)}>x</button>
             </div>
             <div className="filtro-body">
               <div>
-                <div className="filtro-section-title">Operación</div>
+                <div className="filtro-section-title">Operacion</div>
                 <div className="filtro-chips">
                   {(vista === "ofrecidos" ? OPS_OFRECIDO : OPS_BUSQUEDA).map(op => (
                     <button key={op.value} className={`filtro-chip${filtroTemp.operaciones.includes(op.value) ? " activo" : ""}`} onClick={() => toggleFiltroItem("operaciones", op.value)}>{op.label}</button>
@@ -695,7 +976,7 @@ export default function MirPage() {
                 </div>
               </div>
               <div>
-                <div className="filtro-section-title">Ubicación</div>
+                <div className="filtro-section-title">Ubicacion</div>
                 <div className="filtro-localidades">
                   {LOCALIDADES.map(loc => (
                     <label key={loc} className="filtro-check">
@@ -717,16 +998,16 @@ export default function MirPage() {
                 </div>
               </div>
               <div>
-                <div className="filtro-section-title">Superficie (m²)</div>
+                <div className="filtro-section-title">Superficie (m2)</div>
                 <div className="filtro-row">
-                  <input className="filtro-input" type="number" placeholder="Mínimo" value={filtroTemp.sup_min} onChange={e => setFiltroTemp(f => ({...f, sup_min: e.target.value}))} />
-                  <input className="filtro-input" type="number" placeholder="Máximo" value={filtroTemp.sup_max} onChange={e => setFiltroTemp(f => ({...f, sup_max: e.target.value}))} />
+                  <input className="filtro-input" type="number" placeholder="Minimo" value={filtroTemp.sup_min} onChange={e => setFiltroTemp(f => ({...f, sup_min: e.target.value}))} />
+                  <input className="filtro-input" type="number" placeholder="Maximo" value={filtroTemp.sup_max} onChange={e => setFiltroTemp(f => ({...f, sup_max: e.target.value}))} />
                 </div>
               </div>
               <div>
                 <div className="filtro-section-title">Filtros adicionales</div>
                 <div className="filtro-toggles">
-                  <Toggle label="Apto crédito" value={filtroTemp.apto_credito} onChange={v => setFiltroTemp(f => ({...f, apto_credito: v}))} />
+                  <Toggle label="Apto credito" value={filtroTemp.apto_credito} onChange={v => setFiltroTemp(f => ({...f, apto_credito: v}))} />
                   <Toggle label="Con cochera" value={filtroTemp.con_cochera} onChange={v => setFiltroTemp(f => ({...f, con_cochera: v}))} />
                   <Toggle label="Uso comercial" value={filtroTemp.uso_comercial} onChange={v => setFiltroTemp(f => ({...f, uso_comercial: v}))} />
                   <Toggle label="Barrio cerrado" value={filtroTemp.barrio_cerrado} onChange={v => setFiltroTemp(f => ({...f, barrio_cerrado: v}))} />
@@ -743,16 +1024,49 @@ export default function MirPage() {
         </div>
       )}
 
+      {/* MODAL ME INTERESA / TENGO */}
+      {modalInteres && (
+        <div className="mir-interes-bg" onClick={e => { if (e.target === e.currentTarget) setModalInteres(null); }}>
+          <div className="mir-interes-modal">
+            <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:15,fontWeight:800,color:"#fff",marginBottom:6}}>
+              {modalInteres.tipo === "me_interesa" ? "Me interesa" : "Tengo"} <span style={{color:"#cc0000"}}>esta publicacion</span>
+            </div>
+            <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:16}}>
+              {modalInteres.pub.tipo_propiedad} · {modalInteres.pub.ciudad}
+              {(modalInteres.pub as Ofrecido).precio ? ` · ${formatPeso((modalInteres.pub as Ofrecido).precio!, modalInteres.pub.moneda)}` : ""}
+            </div>
+            <div style={{marginBottom:14}}>
+              <label style={{display:"block",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:6}}>
+                Mensaje inicial (opcional)
+              </label>
+              <textarea
+                style={{width:"100%",padding:"10px 13px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"#fff",fontSize:13,outline:"none",fontFamily:"'Inter',sans-serif",resize:"vertical",minHeight:80}}
+                placeholder={modalInteres.tipo === "me_interesa" ? "Hola, me interesa tu ofrecido. Puedo agendar visita..." : "Hola, tengo una propiedad que puede coincidir con tu busqueda..."}
+                value={msgInteres}
+                onChange={e => setMsgInteres(e.target.value)}
+              />
+            </div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginBottom:16,background:"rgba(200,0,0,0.04)",border:"1px solid rgba(200,0,0,0.1)",borderRadius:4,padding:"8px 12px"}}>
+              Se abrira un chat directo con el corredor titular de la publicacion.
+            </div>
+            <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+              <button className="fn-btn-cancelar" onClick={() => { setModalInteres(null); setMsgInteres(""); }}>Cancelar</button>
+              <button className="fn-btn-guardar" onClick={enviarInteres} disabled={!!interesando}>
+                {interesando ? "Enviando..." : modalInteres.tipo === "me_interesa" ? "Me interesa — Abrir chat" : "Tengo — Abrir chat"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MODAL OFRECIDO */}
       {mostrarFormO && (
         <div className="fn-modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFormO(false); }}>
           <div className="fn-modal">
             <h2>Publicar <span>ofrecido</span></h2>
             <div className="fn-field">
-              <label className="fn-label">Operación *</label>
-              <div className="fn-chips">
-                {OPS_OFRECIDO.map(op => <button key={op.value} type="button" className={`fn-chip${formO.operacion === op.value ? " activo" : ""}`} onClick={() => setFormO(p => ({...p, operacion: op.value}))}>{op.label}</button>)}
-              </div>
+              <label className="fn-label">Operacion *</label>
+              <div className="fn-chips">{OPS_OFRECIDO.map(op => <button key={op.value} type="button" className={`fn-chip${formO.operacion === op.value ? " activo" : ""}`} onClick={() => setFormO(p => ({...p, operacion: op.value}))}>{op.label}</button>)}</div>
             </div>
             <div className="fn-field">
               <label className="fn-label">Tipo de propiedad *</label>
@@ -763,9 +1077,7 @@ export default function MirPage() {
             <div className="fn-row">
               <div className="fn-field">
                 <label className="fn-label">Localidad *</label>
-                <select className="fn-select" value={formO.ciudad} onChange={e => setFormO(p => ({...p, ciudad: e.target.value}))}>
-                  {LOCALIDADES.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
+                <select className="fn-select" value={formO.ciudad} onChange={e => setFormO(p => ({...p, ciudad: e.target.value}))}>{LOCALIDADES.map(l => <option key={l} value={l}>{l}</option>)}</select>
               </div>
               <div className="fn-field">
                 <label className="fn-label">Zona / Barrio</label>
@@ -786,36 +1098,19 @@ export default function MirPage() {
               </div>
             </div>
             <div className="fn-row3">
-              <div className="fn-field">
-                <label className="fn-label">Dormitorios</label>
-                <input className="fn-input" type="number" placeholder="2" value={formO.dormitorios} onChange={e => setFormO(p => ({...p, dormitorios: e.target.value}))} />
-              </div>
-              <div className="fn-field">
-                <label className="fn-label">Baños</label>
-                <input className="fn-input" type="number" placeholder="1" value={formO.banos} onChange={e => setFormO(p => ({...p, banos: e.target.value}))} />
-              </div>
-              <div className="fn-field">
-                <label className="fn-label">Antigüedad</label>
-                <select className="fn-select" value={formO.antiguedad} onChange={e => setFormO(p => ({...p, antiguedad: e.target.value}))}>
-                  {ANTIGUEDADES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
-                </select>
-              </div>
+              <div className="fn-field"><label className="fn-label">Dormitorios</label><input className="fn-input" type="number" placeholder="2" value={formO.dormitorios} onChange={e => setFormO(p => ({...p, dormitorios: e.target.value}))} /></div>
+              <div className="fn-field"><label className="fn-label">Baños</label><input className="fn-input" type="number" placeholder="1" value={formO.banos} onChange={e => setFormO(p => ({...p, banos: e.target.value}))} /></div>
+              <div className="fn-field"><label className="fn-label">Antiguedad</label><select className="fn-select" value={formO.antiguedad} onChange={e => setFormO(p => ({...p, antiguedad: e.target.value}))}>{ANTIGUEDADES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}</select></div>
             </div>
             <div className="fn-row">
-              <div className="fn-field">
-                <label className="fn-label">Sup. total m²</label>
-                <input className="fn-input" type="number" placeholder="80" value={formO.superficie_total} onChange={e => setFormO(p => ({...p, superficie_total: e.target.value}))} />
-              </div>
-              <div className="fn-field">
-                <label className="fn-label">Sup. cubierta m²</label>
-                <input className="fn-input" type="number" placeholder="60" value={formO.superficie_cubierta} onChange={e => setFormO(p => ({...p, superficie_cubierta: e.target.value}))} />
-              </div>
+              <div className="fn-field"><label className="fn-label">Sup. total m2</label><input className="fn-input" type="number" placeholder="80" value={formO.superficie_total} onChange={e => setFormO(p => ({...p, superficie_total: e.target.value}))} /></div>
+              <div className="fn-field"><label className="fn-label">Sup. cubierta m2</label><input className="fn-input" type="number" placeholder="60" value={formO.superficie_cubierta} onChange={e => setFormO(p => ({...p, superficie_cubierta: e.target.value}))} /></div>
             </div>
             <div className="fn-divider"/>
             <div className="fn-field">
-              <label className="fn-label">Características</label>
+              <label className="fn-label">Caracteristicas</label>
               <div className="fn-toggles">
-                <Toggle label="Apto crédito" value={formO.apto_credito} onChange={v => setFormO(p => ({...p, apto_credito: v}))} />
+                <Toggle label="Apto credito" value={formO.apto_credito} onChange={v => setFormO(p => ({...p, apto_credito: v}))} />
                 <Toggle label="Con cochera" value={formO.con_cochera} onChange={v => setFormO(p => ({...p, con_cochera: v}))} />
                 <Toggle label="Uso comercial" value={formO.uso_comercial} onChange={v => setFormO(p => ({...p, uso_comercial: v}))} />
                 <Toggle label="Barrio cerrado" value={formO.barrio_cerrado} onChange={v => setFormO(p => ({...p, barrio_cerrado: v}))} />
@@ -823,10 +1118,7 @@ export default function MirPage() {
                 <Toggle label="Acepta Bitcoin" value={formO.acepta_bitcoin} onChange={v => setFormO(p => ({...p, acepta_bitcoin: v}))} />
               </div>
             </div>
-            <div className="fn-field">
-              <label className="fn-label">Descripción</label>
-              <textarea className="fn-textarea" placeholder="Detalles adicionales..." value={formO.descripcion} onChange={e => setFormO(p => ({...p, descripcion: e.target.value}))} />
-            </div>
+            <div className="fn-field"><label className="fn-label">Descripcion</label><textarea className="fn-textarea" placeholder="Detalles adicionales..." value={formO.descripcion} onChange={e => setFormO(p => ({...p, descripcion: e.target.value}))} /></div>
             <div className="fn-modal-actions">
               <button className="fn-btn-cancelar" onClick={() => setMostrarFormO(false)}>Cancelar</button>
               <button className="fn-btn-guardar" onClick={guardarOfrecido} disabled={guardando || !formO.ciudad}>
@@ -837,44 +1129,26 @@ export default function MirPage() {
         </div>
       )}
 
-      {/* MODAL BÚSQUEDA */}
+      {/* MODAL BUSQUEDA */}
       {mostrarFormB && (
         <div className="fn-modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFormB(false); }}>
           <div className="fn-modal">
-            <h2>Publicar <span>búsqueda</span></h2>
+            <h2>Publicar <span>busqueda</span></h2>
             <div className="fn-field">
-              <label className="fn-label">Operación *</label>
-              <div className="fn-chips">
-                {OPS_BUSQUEDA.map(op => <button key={op.value} type="button" className={`fn-chip${formB.operacion === op.value ? " activo" : ""}`} onClick={() => setFormB(p => ({...p, operacion: op.value}))}>{op.label}</button>)}
-              </div>
+              <label className="fn-label">Operacion *</label>
+              <div className="fn-chips">{OPS_BUSQUEDA.map(op => <button key={op.value} type="button" className={`fn-chip${formB.operacion === op.value ? " activo" : ""}`} onClick={() => setFormB(p => ({...p, operacion: op.value}))}>{op.label}</button>)}</div>
             </div>
             <div className="fn-field">
               <label className="fn-label">Tipo de propiedad *</label>
-              <select className="fn-select" value={formB.tipo_propiedad} onChange={e => setFormB(p => ({...p, tipo_propiedad: e.target.value}))}>
-                {TIPOS_PROPIEDAD.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <select className="fn-select" value={formB.tipo_propiedad} onChange={e => setFormB(p => ({...p, tipo_propiedad: e.target.value}))}>{TIPOS_PROPIEDAD.map(t => <option key={t} value={t}>{t}</option>)}</select>
             </div>
             <div className="fn-row">
-              <div className="fn-field">
-                <label className="fn-label">Localidad *</label>
-                <select className="fn-select" value={formB.ciudad} onChange={e => setFormB(p => ({...p, ciudad: e.target.value}))}>
-                  {LOCALIDADES.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-              <div className="fn-field">
-                <label className="fn-label">Zona / Barrio</label>
-                <input className="fn-input" placeholder="Ej: Norte, Fisherton..." value={formB.zona} onChange={e => setFormB(p => ({...p, zona: e.target.value}))} />
-              </div>
+              <div className="fn-field"><label className="fn-label">Localidad *</label><select className="fn-select" value={formB.ciudad} onChange={e => setFormB(p => ({...p, ciudad: e.target.value}))}>{LOCALIDADES.map(l => <option key={l} value={l}>{l}</option>)}</select></div>
+              <div className="fn-field"><label className="fn-label">Zona / Barrio</label><input className="fn-input" placeholder="Ej: Norte, Fisherton..." value={formB.zona} onChange={e => setFormB(p => ({...p, zona: e.target.value}))} /></div>
             </div>
             <div className="fn-row">
-              <div className="fn-field">
-                <label className="fn-label">Presupuesto mín.</label>
-                <input className="fn-input" type="number" placeholder="50000" value={formB.presupuesto_min} onChange={e => setFormB(p => ({...p, presupuesto_min: e.target.value}))} />
-              </div>
-              <div className="fn-field">
-                <label className="fn-label">Presupuesto máx.</label>
-                <input className="fn-input" type="number" placeholder="200000" value={formB.presupuesto_max} onChange={e => setFormB(p => ({...p, presupuesto_max: e.target.value}))} />
-              </div>
+              <div className="fn-field"><label className="fn-label">Presupuesto min.</label><input className="fn-input" type="number" placeholder="50000" value={formB.presupuesto_min} onChange={e => setFormB(p => ({...p, presupuesto_min: e.target.value}))} /></div>
+              <div className="fn-field"><label className="fn-label">Presupuesto max.</label><input className="fn-input" type="number" placeholder="200000" value={formB.presupuesto_max} onChange={e => setFormB(p => ({...p, presupuesto_max: e.target.value}))} /></div>
             </div>
             <div className="fn-field">
               <label className="fn-label">Moneda</label>
@@ -884,24 +1158,15 @@ export default function MirPage() {
               </div>
             </div>
             <div className="fn-row3">
-              <div className="fn-field">
-                <label className="fn-label">Dorm. mín.</label>
-                <input className="fn-input" type="number" placeholder="2" value={formB.dormitorios_min} onChange={e => setFormB(p => ({...p, dormitorios_min: e.target.value}))} />
-              </div>
-              <div className="fn-field">
-                <label className="fn-label">Dorm. máx.</label>
-                <input className="fn-input" type="number" placeholder="4" value={formB.dormitorios_max} onChange={e => setFormB(p => ({...p, dormitorios_max: e.target.value}))} />
-              </div>
-              <div className="fn-field">
-                <label className="fn-label">Baños mín.</label>
-                <input className="fn-input" type="number" placeholder="1" value={formB.banos_min} onChange={e => setFormB(p => ({...p, banos_min: e.target.value}))} />
-              </div>
+              <div className="fn-field"><label className="fn-label">Dorm. min.</label><input className="fn-input" type="number" placeholder="2" value={formB.dormitorios_min} onChange={e => setFormB(p => ({...p, dormitorios_min: e.target.value}))} /></div>
+              <div className="fn-field"><label className="fn-label">Dorm. max.</label><input className="fn-input" type="number" placeholder="4" value={formB.dormitorios_max} onChange={e => setFormB(p => ({...p, dormitorios_max: e.target.value}))} /></div>
+              <div className="fn-field"><label className="fn-label">Baños min.</label><input className="fn-input" type="number" placeholder="1" value={formB.banos_min} onChange={e => setFormB(p => ({...p, banos_min: e.target.value}))} /></div>
             </div>
             <div className="fn-field">
-              <label className="fn-label">Superficie m²</label>
+              <label className="fn-label">Superficie m2</label>
               <div className="fn-row">
-                <input className="fn-input" type="number" placeholder="Mínimo" value={formB.superficie_min} onChange={e => setFormB(p => ({...p, superficie_min: e.target.value}))} />
-                <input className="fn-input" type="number" placeholder="Máximo" value={formB.superficie_max} onChange={e => setFormB(p => ({...p, superficie_max: e.target.value}))} />
+                <input className="fn-input" type="number" placeholder="Minimo" value={formB.superficie_min} onChange={e => setFormB(p => ({...p, superficie_min: e.target.value}))} />
+                <input className="fn-input" type="number" placeholder="Maximo" value={formB.superficie_max} onChange={e => setFormB(p => ({...p, superficie_max: e.target.value}))} />
               </div>
               <div className="fn-sup-tipos">
                 {[["total","Total"],["cubierta","Cubierta"],["terreno","Del terreno"]].map(([v,l]) => (
@@ -909,17 +1174,12 @@ export default function MirPage() {
                 ))}
               </div>
             </div>
-            <div className="fn-field">
-              <label className="fn-label">Antigüedad</label>
-              <select className="fn-select" value={formB.antiguedad} onChange={e => setFormB(p => ({...p, antiguedad: e.target.value}))}>
-                {ANTIGUEDADES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
-              </select>
-            </div>
+            <div className="fn-field"><label className="fn-label">Antiguedad</label><select className="fn-select" value={formB.antiguedad} onChange={e => setFormB(p => ({...p, antiguedad: e.target.value}))}>{ANTIGUEDADES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}</select></div>
             <div className="fn-divider"/>
             <div className="fn-field">
               <label className="fn-label">Filtros adicionales</label>
               <div className="fn-toggles">
-                <Toggle label="Apto crédito" value={formB.apto_credito} onChange={v => setFormB(p => ({...p, apto_credito: v}))} />
+                <Toggle label="Apto credito" value={formB.apto_credito} onChange={v => setFormB(p => ({...p, apto_credito: v}))} />
                 <Toggle label="Con cochera" value={formB.con_cochera} onChange={v => setFormB(p => ({...p, con_cochera: v}))} />
                 <Toggle label="Uso comercial" value={formB.uso_comercial} onChange={v => setFormB(p => ({...p, uso_comercial: v}))} />
                 <Toggle label="Barrio cerrado" value={formB.barrio_cerrado} onChange={v => setFormB(p => ({...p, barrio_cerrado: v}))} />
@@ -927,14 +1187,11 @@ export default function MirPage() {
                 <Toggle label="Acepta Bitcoin" value={formB.acepta_bitcoin} onChange={v => setFormB(p => ({...p, acepta_bitcoin: v}))} />
               </div>
             </div>
-            <div className="fn-field">
-              <label className="fn-label">Descripción</label>
-              <textarea className="fn-textarea" placeholder="Requisitos específicos del cliente..." value={formB.descripcion} onChange={e => setFormB(p => ({...p, descripcion: e.target.value}))} />
-            </div>
+            <div className="fn-field"><label className="fn-label">Descripcion</label><textarea className="fn-textarea" placeholder="Requisitos especificos del cliente..." value={formB.descripcion} onChange={e => setFormB(p => ({...p, descripcion: e.target.value}))} /></div>
             <div className="fn-modal-actions">
               <button className="fn-btn-cancelar" onClick={() => setMostrarFormB(false)}>Cancelar</button>
               <button className="fn-btn-guardar" onClick={guardarBusqueda} disabled={guardando || !formB.ciudad}>
-                {guardando && <span className="fn-spinner"/>}{guardando ? "Publicando..." : "Publicar búsqueda"}
+                {guardando && <span className="fn-spinner"/>}{guardando ? "Publicando..." : "Publicar busqueda"}
               </button>
             </div>
           </div>
