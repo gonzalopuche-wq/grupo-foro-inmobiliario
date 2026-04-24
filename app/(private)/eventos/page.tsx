@@ -516,8 +516,9 @@ export default function EventosPage() {
                             <img
                               src={fotos[0].url}
                               alt={ev.titulo}
-                              style={{width:"100%",maxHeight:340,objectFit:"cover",display:"block",borderRadius:"8px 8px 0 0"}}
+                              style={{width:"100%",height:200,objectFit:"cover",objectPosition:"top",display:"block",borderRadius:"8px 8px 0 0"}}
                             />
+                            <div style={{position:"absolute",bottom:0,left:0,right:0,height:60,background:"linear-gradient(transparent, rgba(10,10,10,0.85))",borderRadius:0}} />
                             {/* Miniaturas adicionales */}
                             {(fotos.length > 1 || videos.length > 0) && (
                               <div style={{position:"absolute",bottom:8,right:8,display:"flex",gap:6}}>
