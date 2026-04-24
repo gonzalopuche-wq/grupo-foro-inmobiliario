@@ -551,147 +551,109 @@ export default function EventosPage() {
                   const tipo = TIPOS[ev.tipo] ?? TIPOS.externo;
                   const anio = new Date(ev.fecha).getFullYear();
                   return (
-                    <div key={ev.id} className={`ev-card${pasado ? " pasado" : ""}${ev.destacado ? " destacado" : ""}`} style={{flexDirection:"column"}}>
+                    <div key={ev.id} className={`ev-card${pasado ? " pasado" : ""}${ev.destacado ? " destacado" : ""}`} style={{flexDirection:"row",alignItems:"stretch",minHeight:160}}>
 
-                      {/* FOTO FLYER — protagonista arriba */}
-                      {ev.media && Array.isArray(ev.media) && (ev.media as MediaItem[]).some((m: MediaItem) => m.tipo === "foto") && (() => {
-                        const fotos = (ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "foto");
-                        const videos = (ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "video");
+                      {/* FOTO IZQUIERDA — estilo carrusel */}
+                      {(() => {
+                        const fotos = ev.media && Array.isArray(ev.media) ? (ev.media as MediaItem[]).filter((m:MediaItem) => m.tipo==="foto") : [];
+                        const videos = ev.media && Array.isArray(ev.media) ? (ev.media as MediaItem[]).filter((m:MediaItem) => m.tipo==="video") : [];
+                        if (fotos.length === 0 && videos.length === 0) return null;
+                        const portada = fotos[0] ?? null;
                         return (
-                          <div style={{position:"relative",width:"100%"}}>
-                            <img
-                              src={fotos[0].url}
-                              alt={ev.titulo}
-                              style={{width:"100%",height:220,objectFit:"contain",objectPosition:"center",background:"rgba(10,10,10,0.95)",display:"block",borderRadius:"8px 8px 0 0",cursor:"zoom-in"}}
-                              onClick={() => setLightbox(fotos[0].url)}
-                              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                            />
-                            <div style={{position:"absolute",bottom:0,left:0,right:0,height:50,background:"linear-gradient(transparent, rgba(10,10,10,0.9))"}} />
-                            <div style={{position:"absolute",bottom:8,right:8,background:"rgba(0,0,0,0.6)",borderRadius:4,padding:"3px 8px",fontSize:10,color:"rgba(255,255,255,0.6)",fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer"}}
-                              onClick={() => setLightbox(fotos[0].url)}>
-                              🔍 Ver completa
-                            </div>
-                            {/* Miniaturas adicionales */}
-                            {(fotos.length > 1 || videos.length > 0) && (
-                              <div style={{position:"absolute",bottom:8,right:8,display:"flex",gap:6}}>
-                                {fotos.slice(1,4).map((m: MediaItem, i: number) => (
-                                  <div key={i}
-                                    style={{width:48,height:48,borderRadius:4,overflow:"hidden",border:"2px solid rgba(0,0,0,0.5)",display:"block",flexShrink:0,cursor:"zoom-in"}}
-                                    onClick={() => setLightbox(m.url)}>
-                                    <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
+                          <div style={{width:190,minWidth:190,flexShrink:0,position:"relative",background:"#000",borderRadius:"8px 0 0 8px",overflow:"hidden",cursor:"zoom-in",display:"flex",alignItems:"center",justifyContent:"center"}}
+                            onClick={() => portada ? setLightbox(portada.url) : videos[0] && setLightbox(videos[0].url)}>
+                            {portada ? (
+                              <img src={portada.url} alt={ev.titulo}
+                                style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center",display:"block"}}
+                                onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+                            ) : (
+                              <div style={{display:"flex",alignItems:"center",justifyContent:"center",width:"100%",height:"100%",position:"relative"}}>
+                                {videos[0].thumb && <img src={videos[0].thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.4}} alt="" />}
+                                <span style={{fontSize:36,position:"relative",zIndex:1}}>▶️</span>
+                              </div>
+                            )}
+                            {/* Miniaturas extras abajo */}
+                            {(fotos.length + videos.length) > 1 && (
+                              <div style={{position:"absolute",bottom:5,right:5,display:"flex",gap:3}}>
+                                {[...fotos.slice(1,3),...videos.slice(0,1)].map((m:MediaItem,i:number) => (
+                                  <div key={i} style={{width:30,height:30,borderRadius:3,overflow:"hidden",border:"1.5px solid rgba(255,255,255,0.5)",flexShrink:0,position:"relative",background:"#000",cursor:"zoom-in"}}
+                                    onClick={e=>{e.stopPropagation();setLightbox(m.url);}}>
+                                    {m.tipo==="foto"
+                                      ? <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
+                                      : <div style={{width:"100%",height:"100%",position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                                          {m.thumb&&<img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />}
+                                          <span style={{position:"relative",zIndex:1,fontSize:11}}>▶️</span>
+                                        </div>}
                                   </div>
                                 ))}
-                                {videos.map((m: MediaItem, i: number) => (
-                                  <a key={"v"+i} href={m.url} target="_blank" rel="noopener noreferrer"
-                                    style={{width:48,height:48,borderRadius:4,overflow:"hidden",border:"2px solid rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.7)",flexShrink:0,position:"relative"}}>
-                                    {m.thumb && <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />}
-                                    <span style={{fontSize:18,position:"relative",zIndex:1}}>▶️</span>
-                                  </a>
-                                ))}
-                                {fotos.length > 4 && (
-                                  <div style={{width:48,height:48,borderRadius:4,background:"rgba(0,0,0,0.7)",border:"2px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff",fontWeight:800,fontFamily:"'Montserrat',sans-serif"}}>
-                                    +{fotos.length - 4}
+                                {(fotos.length+videos.length) > 4 && (
+                                  <div style={{width:30,height:30,borderRadius:3,background:"rgba(0,0,0,0.85)",border:"1.5px solid rgba(255,255,255,0.4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"#fff",fontWeight:800,fontFamily:"'Montserrat',sans-serif"}}>
+                                    +{(fotos.length+videos.length)-4}
                                   </div>
                                 )}
                               </div>
                             )}
                             {ev.destacado && (
-                              <div style={{position:"absolute",top:10,left:10,background:"rgba(200,0,0,0.85)",padding:"3px 10px",borderRadius:20,fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,color:"#fff",letterSpacing:"0.1em"}}>
-                                ⭐ DESTACADO
-                              </div>
+                              <div style={{position:"absolute",top:7,left:7,background:"rgba(200,0,0,0.9)",padding:"2px 7px",borderRadius:20,fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,color:"#fff"}}>⭐</div>
                             )}
                           </div>
                         );
                       })()}
 
-                      {/* CUERPO: fecha + info + acciones */}
-                      <div style={{display:"flex",flex:1}}>
-                        <div className="ev-fecha-col">
-                          <div className="ev-fecha-num">{f.num}</div>
-                          <div className="ev-fecha-mes">{f.mes}</div>
-                          <div className="ev-fecha-anio">{anio}</div>
-                        </div>
-                        <div className="ev-body" style={{flex:1}}>
-                          <div className="ev-body-top">
-                            {ev.destacado && !(ev.media && Array.isArray(ev.media) && (ev.media as MediaItem[]).some((m: MediaItem) => m.tipo === "foto")) && <span style={{fontSize:12}}>⭐</span>}
-                            <span className="ev-titulo">{ev.titulo}</span>
-                            <span className="ev-badge" style={{color:tipo.color,background:tipo.bg,borderColor:tipo.border}}>{tipo.label}</span>
-                            <span className="ev-badge" style={{color:ev.gratuito?"#22c55e":"#eab308",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",borderColor:ev.gratuito?"rgba(34,197,94,0.2)":"rgba(234,179,8,0.2)"}}>
-                              {ev.gratuito ? "Gratuito" : ev.precio_entrada ? `$${ev.precio_entrada.toLocaleString("es-AR")}` : "Con costo"}
+                      {/* FECHA */}
+                      <div className="ev-fecha-col">
+                        <div className="ev-fecha-num">{f.num}</div>
+                        <div className="ev-fecha-mes">{f.mes}</div>
+                        <div className="ev-fecha-anio">{anio}</div>
+                      </div>
+
+                      {/* INFO */}
+                      <div className="ev-body" style={{flex:1}}>
+                        <div className="ev-body-top">
+                          {ev.destacado && !(ev.media&&Array.isArray(ev.media)&&(ev.media as MediaItem[]).some((m:MediaItem)=>m.tipo==="foto")) && <span style={{fontSize:12}}>⭐</span>}
+                          <span className="ev-titulo">{ev.titulo}</span>
+                          <span className="ev-badge" style={{color:tipo.color,background:tipo.bg,borderColor:tipo.border}}>{tipo.label}</span>
+                          <span className="ev-badge" style={{color:ev.gratuito?"#22c55e":"#eab308",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",borderColor:ev.gratuito?"rgba(34,197,94,0.2)":"rgba(234,179,8,0.2)"}}>
+                            {ev.gratuito?"Gratuito":ev.precio_entrada?`$${ev.precio_entrada.toLocaleString("es-AR")}`:"Con costo"}
+                          </span>
+                          {ev.plataforma&&ev.plataforma!=="presencial"&&(
+                            <span className="ev-badge" style={{color:"#60a5fa",background:"rgba(96,165,250,0.08)",borderColor:"rgba(96,165,250,0.2)"}}>
+                              {PLATAFORMAS[ev.plataforma]??"🎥"} Online
                             </span>
-                            {ev.plataforma && ev.plataforma !== "presencial" && (
-                              <span className="ev-badge" style={{color:"#60a5fa",background:"rgba(96,165,250,0.08)",borderColor:"rgba(96,165,250,0.2)"}}>
-                                {PLATAFORMAS[ev.plataforma] ?? "🎥"} Online
-                              </span>
-                            )}
-                          </div>
-                          <div className="ev-meta">
-                            <span className="ev-meta-item">🕐 {f.dia} · {f.hora}hs</span>
-                            {ev.lugar && <span className="ev-meta-item">📍 {ev.lugar}</span>}
-                          </div>
-                          {ev.descripcion && <div className="ev-desc">{ev.descripcion}</div>}
-                          {/* Videos sin foto de portada */}
-                          {ev.media && Array.isArray(ev.media) && !(ev.media as MediaItem[]).some((m: MediaItem) => m.tipo === "foto") && (ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "video").length > 0 && (
-                            <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
-                              {(ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "video").map((m: MediaItem, i: number) => (
-                                <div key={i}
-                                  style={{width:80,height:52,borderRadius:4,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative",background:"rgba(0,0,0,0.4)",cursor:"pointer"}}
-                                  onClick={() => setLightbox(m.url)}>
-                                  {m.thumb && <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />}
-                                  <span style={{position:"relative",zIndex:1,fontSize:20}}>▶️</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                          {ev.capacidad !== null && (
-                            <div className="ev-cap">
-                              <div className="ev-cap-bar-wrap">
-                                <div className="ev-cap-bar" style={{width:`${pct}%`,background:pct>=90?"#f87171":pct>=70?"#eab308":"#22c55e"}} />
-                              </div>
-                              <div className="ev-cap-texto">{ev.total_inscriptos} / {ev.capacidad} inscriptos {lleno && "· COMPLETO"}</div>
-                            </div>
-                          )}
-                          {ev.capacidad === null && ev.total_inscriptos !== undefined && ev.total_inscriptos > 0 && (
-                            <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:6}}>{ev.total_inscriptos} inscriptos</div>
                           )}
                         </div>
-                        <div className="ev-acciones">
-                          {procesando === ev.id ? (
-                            <span className="ev-spinner" />
-                          ) : pasado ? (
-                            <span style={{fontSize:10,color:"rgba(255,255,255,0.2)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>FINALIZADO</span>
-                          ) : (
-                            <button
-                              className={`ev-btn-ins ${ev.inscripto ? "inscripto" : lleno ? "lleno" : "libre"}`}
-                              onClick={() => !lleno || ev.inscripto ? toggleInscripcion(ev.id, !!ev.inscripto, ev.capacidad, ev.total_inscriptos ?? 0) : undefined}
-                              disabled={lleno && !ev.inscripto}
-                            >
-                              {ev.inscripto ? "✓ Inscripto" : lleno ? "Completo" : "Inscribirse"}
-                            </button>
-                          )}
-                          {ev.link_externo && (
-                            <a href={ev.link_externo} target="_blank" rel="noopener noreferrer"
-                              style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
-                              Ver más →
-                            </a>
-                          )}
-                          {ev.link_reunion && !pasado && (
-                            <a href={ev.link_reunion} target="_blank" rel="noopener noreferrer"
-                              style={{fontSize:10,color:"#60a5fa",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
-                              🔗 Unirse
-                            </a>
-                          )}
-                          {esAdmin && !pasado && (
-                            <button className="ev-btn-cancelar-ev" onClick={() => cancelarEvento(ev.id)}>✕ Cancelar</button>
-                          )}
+                        <div className="ev-meta">
+                          <span className="ev-meta-item">🕐 {f.dia} · {f.hora}hs</span>
+                          {ev.lugar&&<span className="ev-meta-item">📍 {ev.lugar}</span>}
                         </div>
+                        {ev.descripcion&&<div className="ev-desc">{ev.descripcion}</div>}
+                        {ev.capacidad!==null&&(
+                          <div className="ev-cap">
+                            <div className="ev-cap-bar-wrap"><div className="ev-cap-bar" style={{width:`${pct}%`,background:pct>=90?"#f87171":pct>=70?"#eab308":"#22c55e"}} /></div>
+                            <div className="ev-cap-texto">{ev.total_inscriptos} / {ev.capacidad} inscriptos {lleno&&"· COMPLETO"}</div>
+                          </div>
+                        )}
+                        {ev.capacidad===null&&ev.total_inscriptos!==undefined&&ev.total_inscriptos>0&&(
+                          <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:6}}>{ev.total_inscriptos} inscriptos</div>
+                        )}
+                      </div>
+
+                      {/* ACCIONES */}
+                      <div className="ev-acciones">
+                        {procesando===ev.id?<span className="ev-spinner" />
+                        :pasado?<span style={{fontSize:10,color:"rgba(255,255,255,0.2)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>FINALIZADO</span>
+                        :(
+                          <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
+                            onClick={()=>!lleno||ev.inscripto?toggleInscripcion(ev.id,!!ev.inscripto,ev.capacidad,ev.total_inscriptos??0):undefined}
+                            disabled={lleno&&!ev.inscripto}>
+                            {ev.inscripto?"✓ Inscripto":lleno?"Completo":"Inscribirse"}
+                          </button>
+                        )}
+                        {ev.link_externo&&<a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Ver más →</a>}
+                        {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#60a5fa",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>🔗 Unirse</a>}
+                        {esAdmin&&!pasado&&<button className="ev-btn-cancelar-ev" onClick={()=>cancelarEvento(ev.id)}>✕ Cancelar</button>}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
