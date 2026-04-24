@@ -138,27 +138,36 @@ export default function EventosPage() {
     const items = e.clipboardData?.items;
     if (!items || !userId) return;
     for (let i = 0; i < items.length; i++) {
-      if (items[i].type.startsWith("image/")) {
-        const file = items[i].getAsFile();
-        if (!file) continue;
-        // Subir al storage en vez de guardar base64
-        const ext = file.type.split("/")[1] ?? "jpg";
-        const path = `${userId}/paste_${Date.now()}.${ext}`;
-        const { data, error } = await supabase.storage.from("eventos").upload(path, file, {
-          upsert: true,
-          contentType: file.type,
-        });
-        if (!error && data) {
-          const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
-          setImagenParser(urlData.publicUrl + "?t=" + Date.now());
-        } else {
-          // Fallback: base64 para preview local
-          const reader = new FileReader();
-          reader.onload = (ev) => setImagenParser(ev.target?.result as string);
-          reader.readAsDataURL(file);
+      const item = items[i];
+      if (!item.type.startsWith("image/")) continue;
+      const file = item.getAsFile();
+      if (!file) continue;
+
+      // Mostrar preview inmediato mientras sube
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const base64 = ev.target?.result as string;
+        setImagenParser(base64); // preview inmediato
+
+        // Subir al storage en background
+        try {
+          const ext = file.type.includes("png") ? "png" : file.type.includes("gif") ? "gif" : "jpg";
+          const path = `${userId}/paste_${Date.now()}.${ext}`;
+          const { data, error } = await supabase.storage.from("eventos").upload(path, file, {
+            upsert: true,
+            contentType: file.type || "image/jpeg",
+          });
+          if (!error && data) {
+            const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
+            setImagenParser(urlData.publicUrl); // reemplazar base64 con URL pública
+          }
+          // Si falla el storage, queda el base64 como fallback
+        } catch {
+          // base64 ya está seteado como fallback
         }
-        break;
-      }
+      };
+      reader.readAsDataURL(file);
+      break;
     }
   };
 
@@ -178,7 +187,7 @@ export default function EventosPage() {
       if (!error && data) {
         const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
         // Forzar recarga con timestamp para evitar cache
-        const url = urlData.publicUrl + "?t=" + Date.now();
+        const url = urlData.publicUrl;
         setMedia(prev => [...prev, { tipo: "foto", url, nombre: file.name }]);
       }
     }
@@ -227,9 +236,26 @@ export default function EventosPage() {
         precio_entrada: parsed.precio_entrada?.toString() ?? p.precio_entrada,
         capacidad: parsed.capacidad?.toString() ?? p.capacidad,
       }));
-      // Si habia imagen pegada (ya subida al storage), agregarla a la galeria
+      // Si habia imagen pegada, agregarla a la galeria
       if (imagenParser) {
-        setMedia(prev => [{ tipo: "foto", url: imagenParser!, nombre: "flyer" }, ...prev]);
+        let urlFinal = imagenParser;
+        // Si es base64 (storage falló), intentar subir ahora
+        if (imagenParser.startsWith("data:") && userId) {
+          try {
+            const res = await fetch(imagenParser);
+            const blob = await res.blob();
+            const ext = blob.type.includes("png") ? "png" : "jpg";
+            const path = `${userId}/flyer_${Date.now()}.${ext}`;
+            const { data } = await supabase.storage.from("eventos").upload(path, blob, {
+              upsert: true, contentType: blob.type,
+            });
+            if (data) {
+              const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
+              urlFinal = urlData.publicUrl;
+            }
+          } catch { /* queda base64 */ }
+        }
+        setMedia(prev => [{ tipo: "foto", url: urlFinal, nombre: "flyer" }, ...prev]);
         setImagenParser(null);
       }
       setMostrarParser(false);
@@ -865,7 +891,13 @@ export default function EventosPage() {
                   {media.map((m, i) => (
                     <div key={i} style={{position:"relative",borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",aspectRatio:"1",background:"rgba(0,0,0,0.4)",minHeight:88}}>
                       {m.tipo === "foto" ? (
-                        <div style={{position:"absolute",inset:0,backgroundImage:`url(${m.url})`,backgroundSize:"cover",backgroundPosition:"center"}} />
+                        <img
+                          src={m.url}
+                          crossOrigin="anonymous"
+                          style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",display:"block"}}
+                          alt=""
+                          onError={e => { (e.target as HTMLImageElement).style.opacity = "0.3"; }}
+                        />
                       ) : (
                         <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:3,padding:4}}>
                           {m.thumb
