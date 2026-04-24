@@ -198,6 +198,7 @@ export default function MirPage() {
   const [modalInteres, setModalInteres] = useState<{ pub: Ofrecido | Busqueda; tipo: "me_interesa" | "tengo"; pubTipo: "ofrecido" | "busqueda" } | null>(null);
   const [msgInteres, setMsgInteres] = useState("");
   const mensajesEndRef = useRef<HTMLDivElement>(null);
+  const chatActivoIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -223,14 +224,34 @@ export default function MirPage() {
 
   useEffect(() => {
     if (chatActivo) {
+      chatActivoIdRef.current = chatActivo.id;
       cargarMensajes(chatActivo.id);
-      const sub = supabase.channel(`chat-${chatActivo.id}`)
-        .on("postgres_changes", { event: "INSERT", schema: "public", table: "mir_mensajes", filter: `chat_id=eq.${chatActivo.id}` },
-          () => cargarMensajes(chatActivo.id))
+
+      const chatId = chatActivo.id;
+      const channelName = `mir-chat-${chatId}-${Date.now()}`;
+      const sub = supabase.channel(channelName)
+        .on("postgres_changes", {
+          event: "INSERT",
+          schema: "public",
+          table: "mir_mensajes",
+          filter: `chat_id=eq.${chatId}`
+        }, (payload) => {
+          // Agregar mensaje directamente al estado sin hacer fetch
+          const msg = payload.new as MirMensaje;
+          setMensajes(prev => {
+            // Evitar duplicados
+            if (prev.some(m => m.id === msg.id)) return prev;
+            return [...prev, msg];
+          });
+        })
         .subscribe();
-      return () => { sub.unsubscribe(); };
+
+      return () => {
+        chatActivoIdRef.current = null;
+        supabase.removeChannel(sub);
+      };
     }
-  }, [chatActivo]);
+  }, [chatActivo?.id]);
 
   useEffect(() => {
     mensajesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -322,11 +343,30 @@ export default function MirPage() {
   const enviarMensaje = async () => {
     if (!userId || !chatActivo || !textoMensaje.trim() || enviandoMsg) return;
     setEnviandoMsg(true);
-    await supabase.from("mir_mensajes").insert({
-      chat_id: chatActivo.id, autor_id: userId, texto: textoMensaje.trim(),
-    });
+    const texto = textoMensaje.trim();
+    setTextoMensaje(""); // limpiar inmediatamente
+
+    // Optimistic update — mostrar el mensaje antes de que confirme el servidor
+    const msgTemp: MirMensaje = {
+      id: `temp-${Date.now()}`,
+      chat_id: chatActivo.id,
+      autor_id: userId,
+      texto,
+      leido: false,
+      created_at: new Date().toISOString(),
+    };
+    setMensajes(prev => [...prev, msgTemp]);
+
+    const { data: inserted } = await supabase.from("mir_mensajes").insert({
+      chat_id: chatActivo.id, autor_id: userId, texto,
+    }).select().single();
+
+    // Reemplazar el temp por el real
+    if (inserted) {
+      setMensajes(prev => prev.map(m => m.id === msgTemp.id ? (inserted as MirMensaje) : m));
+    }
+
     await supabase.from("mir_chats").update({ ultimo_mensaje_at: new Date().toISOString() }).eq("id", chatActivo.id);
-    setTextoMensaje("");
     setEnviandoMsg(false);
   };
 
