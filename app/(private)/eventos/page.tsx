@@ -413,7 +413,7 @@ export default function EventosPage() {
                             {tipo.label}
                           </span>
                           <span className="ev-badge" style={{ color: ev.gratuito ? "#22c55e" : "#eab308", background: ev.gratuito ? "rgba(34,197,94,0.08)" : "rgba(234,179,8,0.08)", borderColor: ev.gratuito ? "rgba(34,197,94,0.2)" : "rgba(234,179,8,0.2)" }}>
-                            {ev.gratuito ? "Gratuito" : `$${ev.precio_entrada?.toLocaleString("es-AR")}`}
+                            {ev.gratuito ? "Gratuito" : ev.precio_entrada ? `$${ev.precio_entrada.toLocaleString("es-AR")}` : "Con costo"}
                           </span>
                           {ev.plataforma && ev.plataforma !== "presencial" && (
                             <span className="ev-badge" style={{ color: "#60a5fa", background: "rgba(96,165,250,0.08)", borderColor: "rgba(96,165,250,0.2)" }}>
@@ -465,7 +465,7 @@ export default function EventosPage() {
                           </a>
                         )}
                         {esAdmin && !pasado && (
-                          <button className="ev-btn-cancelar-ev" onClick={() => cancelarEvento(ev.id)}>Cancelar</button>
+                          <button className="ev-btn-cancelar-ev" onClick={() => cancelarEvento(ev.id)}>✕ Cancelar evento</button>
                         )}
                       </div>
                     </div>
