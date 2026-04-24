@@ -83,6 +83,7 @@ export default function EventosPage() {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [linkVideo, setLinkVideo] = useState("");
+  const [lightbox, setLightbox] = useState<string | null>(null);
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
 
   useEffect(() => {
@@ -516,17 +517,23 @@ export default function EventosPage() {
                             <img
                               src={fotos[0].url}
                               alt={ev.titulo}
-                              style={{width:"100%",height:200,objectFit:"cover",objectPosition:"top",display:"block",borderRadius:"8px 8px 0 0"}}
+                              style={{width:"100%",height:200,objectFit:"cover",objectPosition:"center",display:"block",borderRadius:"8px 8px 0 0",cursor:"zoom-in"}}
+                              onClick={() => setLightbox(fotos[0].url)}
                             />
-                            <div style={{position:"absolute",bottom:0,left:0,right:0,height:60,background:"linear-gradient(transparent, rgba(10,10,10,0.85))",borderRadius:0}} />
+                            <div style={{position:"absolute",bottom:0,left:0,right:0,height:50,background:"linear-gradient(transparent, rgba(10,10,10,0.9))"}} />
+                            <div style={{position:"absolute",bottom:8,right:8,background:"rgba(0,0,0,0.6)",borderRadius:4,padding:"3px 8px",fontSize:10,color:"rgba(255,255,255,0.6)",fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer"}}
+                              onClick={() => setLightbox(fotos[0].url)}>
+                              🔍 Ver completa
+                            </div>
                             {/* Miniaturas adicionales */}
                             {(fotos.length > 1 || videos.length > 0) && (
                               <div style={{position:"absolute",bottom:8,right:8,display:"flex",gap:6}}>
                                 {fotos.slice(1,4).map((m: MediaItem, i: number) => (
-                                  <a key={i} href={m.url} target="_blank" rel="noopener noreferrer"
-                                    style={{width:48,height:48,borderRadius:4,overflow:"hidden",border:"2px solid rgba(0,0,0,0.5)",display:"block",flexShrink:0}}>
+                                  <div key={i}
+                                    style={{width:48,height:48,borderRadius:4,overflow:"hidden",border:"2px solid rgba(0,0,0,0.5)",display:"block",flexShrink:0,cursor:"zoom-in"}}
+                                    onClick={() => setLightbox(m.url)}>
                                     <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
-                                  </a>
+                                  </div>
                                 ))}
                                 {videos.map((m: MediaItem, i: number) => (
                                   <a key={"v"+i} href={m.url} target="_blank" rel="noopener noreferrer"
@@ -581,11 +588,12 @@ export default function EventosPage() {
                           {ev.media && Array.isArray(ev.media) && !(ev.media as MediaItem[]).some((m: MediaItem) => m.tipo === "foto") && (ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "video").length > 0 && (
                             <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
                               {(ev.media as MediaItem[]).filter((m: MediaItem) => m.tipo === "video").map((m: MediaItem, i: number) => (
-                                <a key={i} href={m.url} target="_blank" rel="noopener noreferrer"
-                                  style={{width:80,height:52,borderRadius:4,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative",background:"rgba(0,0,0,0.4)"}}>
+                                <div key={i}
+                                  style={{width:80,height:52,borderRadius:4,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative",background:"rgba(0,0,0,0.4)",cursor:"pointer"}}
+                                  onClick={() => setLightbox(m.url)}>
                                   {m.thumb && <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />}
                                   <span style={{position:"relative",zIndex:1,fontSize:20}}>▶️</span>
-                                </a>
+                                </div>
                               ))}
                             </div>
                           )}
@@ -878,6 +886,69 @@ export default function EventosPage() {
                 {guardando ? "Guardando..." : esAdmin ? "Publicar evento" : "Enviar propuesta"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* LIGHTBOX — fotos y videos */}
+      {lightbox && (
+        <div
+          style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.96)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,cursor:"zoom-out"}}
+          onClick={() => setLightbox(null)}>
+          <div style={{position:"relative",maxWidth:"95vw",maxHeight:"94vh",display:"flex",alignItems:"center",justifyContent:"center"}}
+            onClick={e => e.stopPropagation()}>
+
+            {/* VIDEO */}
+            {(lightbox.includes("youtube.com") || lightbox.includes("youtu.be")) ? (
+              <iframe
+                src={`https://www.youtube.com/embed/${lightbox.match(/(?:watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1]}?autoplay=1`}
+                style={{width:"min(860px,90vw)",height:"min(484px,50vw)",borderRadius:8,border:"none"}}
+                allow="autoplay; fullscreen"
+                allowFullScreen
+              />
+            ) : lightbox.includes("instagram.com") ? (
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
+                <div style={{fontSize:48}}>📷</div>
+                <div style={{fontSize:14,color:"rgba(255,255,255,0.7)",textAlign:"center",maxWidth:320}}>
+                  Instagram no permite reproducción embebida.<br/>
+                  <a href={lightbox} target="_blank" rel="noopener noreferrer"
+                    style={{color:"#cc0000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",marginTop:12,display:"inline-block"}}>
+                    Abrir en Instagram →
+                  </a>
+                </div>
+              </div>
+            ) : lightbox.includes("tiktok.com") ? (
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
+                <div style={{fontSize:48}}>🎵</div>
+                <div style={{fontSize:14,color:"rgba(255,255,255,0.7)",textAlign:"center",maxWidth:320}}>
+                  TikTok no permite reproducción embebida.<br/>
+                  <a href={lightbox} target="_blank" rel="noopener noreferrer"
+                    style={{color:"#cc0000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",marginTop:12,display:"inline-block"}}>
+                    Abrir en TikTok →
+                  </a>
+                </div>
+              </div>
+            ) : lightbox.startsWith("data:") || lightbox.includes("/storage/") || lightbox.match(/\.(jpg|jpeg|png|webp|gif)/i) ? (
+              /* FOTO */
+              <img
+                src={lightbox}
+                alt="Foto evento"
+                style={{maxWidth:"92vw",maxHeight:"88vh",objectFit:"contain",borderRadius:8,display:"block",boxShadow:"0 0 80px rgba(0,0,0,0.9)"}}
+              />
+            ) : (
+              /* Link genérico — abrir en nueva tab */
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
+                <div style={{fontSize:48}}>🎬</div>
+                <a href={lightbox} target="_blank" rel="noopener noreferrer"
+                  style={{color:"#cc0000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",fontSize:14}}>
+                  Abrir video →
+                </a>
+              </div>
+            )}
+
+            <button
+              style={{position:"fixed",top:16,right:16,width:36,height:36,borderRadius:"50%",background:"rgba(200,0,0,0.9)",border:"none",color:"#fff",fontSize:18,fontWeight:800,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10}}
+              onClick={() => setLightbox(null)}>✕</button>
           </div>
         </div>
       )}
