@@ -562,7 +562,7 @@ export default function EventosPage() {
                             <img
                               src={fotos[0].url}
                               alt={ev.titulo}
-                              style={{width:"100%",height:200,objectFit:"cover",objectPosition:"center",display:"block",borderRadius:"8px 8px 0 0",cursor:"zoom-in"}}
+                              style={{width:"100%",height:220,objectFit:"contain",objectPosition:"center",background:"rgba(10,10,10,0.95)",display:"block",borderRadius:"8px 8px 0 0",cursor:"zoom-in"}}
                               onClick={() => setLightbox(fotos[0].url)}
                               onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
                             />
