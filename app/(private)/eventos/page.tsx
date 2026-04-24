@@ -649,11 +649,16 @@ export default function EventosPage() {
                             {ev.inscripto?"✓ Inscripto":lleno?"Completo":"Inscribirse"}
                           </button>
                         )}
-                        {ev.link_externo&&<a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Ver más →</a>}
-                        {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#60a5fa",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>🔗 Unirse</a>}
-                        {esAdmin&&!pasado&&<button className="ev-btn-cancelar-ev" onClick={()=>cancelarEvento(ev.id)}>✕ Cancelar</button>}
+                        {ev.link_externo&&<a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Ver más &#x2192;</a>}
+                        {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#60a5fa",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Unirse</a>}
+                        {esAdmin&&!pasado&&<button className="ev-btn-cancelar-ev" onClick={()=>cancelarEvento(ev.id)}>Cancelar</button>}
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -878,7 +883,7 @@ export default function EventosPage() {
                       {/* Botón quitar */}
                       <button type="button"
                         style={{position:"absolute",top:4,right:4,background:"rgba(200,0,0,0.85)",border:"none",borderRadius:"50%",width:22,height:22,color:"#fff",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2,fontWeight:700}}
-                        onClick={() => quitarMedia(i)}>✕</button>
+                        onClick={() => quitarMedia(i)}>&times;</button>
                       {/* Primera foto = portada */}
                       {i === 0 && m.tipo === "foto" && (
                         <div style={{position:"absolute",top:4,left:4,background:"rgba(200,0,0,0.85)",padding:"2px 6px",borderRadius:3,fontSize:8,color:"#fff",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
@@ -962,7 +967,7 @@ export default function EventosPage() {
 
             <button
               style={{position:"fixed",top:16,right:16,width:36,height:36,borderRadius:"50%",background:"rgba(200,0,0,0.9)",border:"none",color:"#fff",fontSize:18,fontWeight:800,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10}}
-              onClick={() => setLightbox(null)}>✕</button>
+              onClick={() => setLightbox(null)}>&times;</button>
           </div>
         </div>
       )}
