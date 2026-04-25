@@ -504,8 +504,8 @@ export default function GrupoChatPage() {
                   {menuMsgId === m.id && !eliminado && editandoId !== m.id && (
                     <div onClick={e => e.stopPropagation()}
                       style={{ position: "absolute", [esMio ? "right" : "left"]: 0, bottom: "100%", marginBottom: 6, background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 12, padding: "8px 6px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", gap: 2, minWidth: 160 }}>
-                      <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 2 }}>
-                        {EMOJIS_RAPIDOS.map(emoji => (
+                      <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 2, flexWrap: "wrap", maxWidth: 220 }}>
+                        {["👍","❤️","😂","😮","😢","🙏","🔥","✅","👀","😡","💯","🎉"].map(emoji => (
                           <button key={emoji} onClick={() => { reaccionar(m.id, emoji); setMenuMsgId(null); }}
                             style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: "2px 4px", borderRadius: 6 }}>
                             {emoji}
@@ -515,10 +515,13 @@ export default function GrupoChatPage() {
                       {([
                         { icon: "↩", label: "Responder", action: () => { setReplyMsg(m); setMenuMsgId(null); inputRef.current?.focus(); } },
                         { icon: "↗", label: "Reenviar", action: () => { reenviar(m); setMenuMsgId(null); } },
+                        { icon: "📋", label: "Copiar", action: () => { navigator.clipboard.writeText(m.texto); setMenuMsgId(null); } },
                         ...(esMio ? [
                           { icon: "✏", label: "Editar", action: () => { setEditandoId(m.id); setTextoEdit(m.texto); setMenuMsgId(null); setTimeout(() => editRef.current?.focus(), 50); } },
                           { icon: "🗑", label: "Eliminar", action: () => { eliminarMensaje(m.id); setMenuMsgId(null); }, danger: true },
-                        ] : []),
+                        ] : [
+                          { icon: "🚩", label: "Reportar", action: () => { alert("Mensaje reportado al admin."); setMenuMsgId(null); } },
+                        ]),
                       ] as any[]).map(({ icon, label, action, danger }) => (
                         <button key={label} onClick={action}
                           style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", color: danger ? "#ff6060" : "rgba(255,255,255,0.8)", fontSize: 13, fontFamily: "Inter,sans-serif", cursor: "pointer", padding: "8px 12px", borderRadius: 8, width: "100%", textAlign: "left" }}

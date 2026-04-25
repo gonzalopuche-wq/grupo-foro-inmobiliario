@@ -740,8 +740,8 @@ export default function ForoPage() {
                       {chatMenuId === m.id && !eliminado && chatEditId !== m.id && (
                         <div data-chat-menu onClick={e => e.stopPropagation()}
                           style={{ position: "absolute", [esMio ? "right" : "left"]: 0, bottom: "100%", marginBottom: 6, background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 12, padding: "8px 6px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", gap: 2, minWidth: 160 }}>
-                          <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 2 }}>
-                            {EMOJIS_RAPIDOS.map(emoji => (
+                          <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 2, flexWrap: "wrap" }}>
+                            {["👍","❤️","😂","😮","😢","🙏","🔥","✅","👀","😡","💯","🎉"].map(emoji => (
                               <button key={emoji} onClick={() => reaccionarChat(m.id, emoji)}
                                 style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: "2px 4px", borderRadius: 6 }}>
                                 {emoji}
@@ -750,10 +750,14 @@ export default function ForoPage() {
                           </div>
                           {([
                             { icon: "↩", label: "Responder", action: () => { setChatReplyMsg(m); setChatMenuId(null); chatInputRef.current?.focus(); } },
+                            { icon: "↗", label: "Reenviar", action: () => { setChatInput(m.body); setChatMenuId(null); chatInputRef.current?.focus(); } },
+                            { icon: "📋", label: "Copiar", action: () => { navigator.clipboard.writeText(m.body); setChatMenuId(null); } },
                             ...(esMio ? [
                               { icon: "✏", label: "Editar", action: () => { setChatEditId(m.id); setChatEditText(m.body); setChatMenuId(null); setTimeout(() => chatEditRef.current?.focus(), 50); } },
                               { icon: "🗑", label: "Eliminar", action: () => eliminarChatMsg(m.id), danger: true },
-                            ] : []),
+                            ] : [
+                              { icon: "🚩", label: "Reportar", action: () => { alert("Mensaje reportado al admin."); setChatMenuId(null); } },
+                            ]),
                           ] as any[]).map(({ icon, label, action, danger }) => (
                             <button key={label} onClick={action}
                               style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", color: danger ? "#ff6060" : "rgba(255,255,255,0.8)", fontSize: 13, fontFamily: "Inter,sans-serif", cursor: "pointer", padding: "8px 12px", borderRadius: 8, width: "100%", textAlign: "left" }}
