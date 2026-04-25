@@ -50,6 +50,7 @@ export default function GrupoChatPage() {
   const [textoEdit, setTextoEdit] = useState("");
   const [menuMsgId, setMenuMsgId] = useState<string | null>(null);
   const [emojiMsgId, setEmojiMsgId] = useState<string | null>(null);
+  const [linkPreviews, setLinkPreviews] = useState<Record<string, any>>({});
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const editRef = useRef<HTMLTextAreaElement>(null);
@@ -117,6 +118,28 @@ export default function GrupoChatPage() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const cargarLinkPreview = async (url: string) => {
+    if (linkPreviews[url] !== undefined) return;
+    setLinkPreviews(prev => ({ ...prev, [url]: null })); // mark as loading
+    try {
+      const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      setLinkPreviews(prev => ({ ...prev, [url]: data }));
+    } catch {
+      setLinkPreviews(prev => ({ ...prev, [url]: null }));
+    }
+  };
+
+  // Cargar previews de links en mensajes nuevos
+  useEffect(() => {
+    const urlRegex = /https?:\/\/\S+/g;
+    mensajes.forEach(m => {
+      if (!m.texto || m.eliminado) return;
+      const urls = m.texto.match(urlRegex) ?? [];
+      urls.forEach(url => cargarLinkPreview(url));
+    });
+  }, [mensajes]);
 
   const cargarMensajes = async () => {
     const { data } = await supabase.from("mensajes_chat")
@@ -238,6 +261,31 @@ export default function GrupoChatPage() {
     if (ultimo && ultimo.fecha === fecha) ultimo.msgs.push(m);
     else mensajesPorFecha.push({ fecha, msgs: [m] });
   });
+
+  const LinkPreview = ({ url }: { url: string }) => {
+    const data = linkPreviews[url];
+    if (!data || (!data.title && !data.image)) return null;
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer"
+        style={{ display: "block", marginTop: 8, borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.3)", textDecoration: "none", transition: "border-color 0.15s" }}
+        onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)")}
+        onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+        onClick={e => e.stopPropagation()}>
+        {data.image && (
+          <div style={{ width: "100%", maxHeight: 180, overflow: "hidden", background: "#000" }}>
+            <img src={data.image} alt="" style={{ width: "100%", objectFit: "cover", display: "block", maxHeight: 180 }}
+              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          </div>
+        )}
+        <div style={{ padding: "8px 10px" }}>
+          {data.siteName && <div style={{ fontSize: 9, color: "#60a5fa", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 3 }}>{data.siteName}</div>}
+          {data.title && <div style={{ fontSize: 12, color: "#fff", fontWeight: 600, fontFamily: "Inter,sans-serif", lineHeight: 1.3, marginBottom: 3 }}>{data.title}</div>}
+          {data.description && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif", lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.description}</div>}
+          <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", marginTop: 4, fontFamily: "Inter,sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{url}</div>
+        </div>
+      </a>
+    );
+  };
 
   if (loading || !grupo) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 400 }}>
