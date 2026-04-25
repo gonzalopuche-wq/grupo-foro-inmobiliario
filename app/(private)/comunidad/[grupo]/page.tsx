@@ -188,10 +188,13 @@ export default function GrupoChatPage() {
     };
     setMensajes(prev => [...prev, temp]);
 
-    const { data: msg } = await supabase.from("mensajes_chat").insert({
-      grupo_id: grupoId, user_id: userId, texto: textoEnviar, tipo: "mensaje",
-      reply_id: replyId,
-    }).select("*, perfiles(nombre,apellido,matricula)").single();
+    const insertData: any = { grupo_id: grupoId, user_id: userId, texto: textoEnviar, tipo: "mensaje" };
+    if (replyId) insertData.reply_id = replyId;
+
+    const { data: msg, error: insertError } = await supabase.from("mensajes_chat")
+      .insert(insertData)
+      .select("*, perfiles(nombre,apellido,matricula)").single();
+    if (insertError) console.error("INSERT ERROR:", insertError);
 
     if (msg) setMensajes(prev => prev.map(m => m.id === temp.id ? msg as any : m));
 
