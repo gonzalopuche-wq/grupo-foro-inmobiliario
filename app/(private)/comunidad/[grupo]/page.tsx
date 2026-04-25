@@ -12,7 +12,12 @@ interface Mensaje {
   mir_tipo?: string;
   created_at: string;
   user_id: string;
+  reply_id?: string | null;
+  editado?: boolean;
+  eliminado?: boolean;
+  reacciones?: Record<string, string[]>;
   perfiles: { nombre: string; apellido: string; matricula: string };
+  reply?: Mensaje | null;
 }
 
 interface Grupo {
@@ -22,6 +27,8 @@ interface Grupo {
   va_al_mir: boolean;
   solo_matriculado: boolean;
 }
+
+const EMOJIS_RAPIDOS = ["👍", "❤️", "🔥", "✅", "👀", "😂"];
 
 export default function GrupoChatPage() {
   const router = useRouter();
@@ -36,8 +43,17 @@ export default function GrupoChatPage() {
   const [userId, setUserId] = useState("");
   const [perfil, setPerfil] = useState<any>(null);
   const [parserInfo, setParserInfo] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState("");
+  const [mostrarBusqueda, setMostrarBusqueda] = useState(false);
+  const [replyMsg, setReplyMsg] = useState<Mensaje | null>(null);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
+  const [textoEdit, setTextoEdit] = useState("");
+  const [menuMsgId, setMenuMsgId] = useState<string | null>(null);
+  const [emojiMsgId, setEmojiMsgId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const editRef = useRef<HTMLTextAreaElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -46,35 +62,16 @@ export default function GrupoChatPage() {
       setUserId(session.user.id);
 
       const { data: perfilData } = await supabase
-        .from("perfiles")
-        .select("nombre, apellido, matricula, tipo")
-        .eq("id", session.user.id)
-        .single();
+        .from("perfiles").select("nombre, apellido, matricula, tipo").eq("id", session.user.id).single();
       setPerfil(perfilData);
 
       const { data: grupoData } = await supabase
-        .from("grupos_chat")
-        .select("*")
-        .eq("id", grupoId)
-        .single();
-
+        .from("grupos_chat").select("*").eq("id", grupoId).single();
       if (!grupoData) { router.push("/comunidad"); return; }
-
-      // Verificar acceso
-      if (grupoData.solo_matriculado && perfilData?.tipo === "colaborador") {
-        router.push("/comunidad");
-        return;
-      }
+      if (grupoData.solo_matriculado && perfilData?.tipo === "colaborador") { router.push("/comunidad"); return; }
       setGrupo(grupoData);
 
-      const { data: msgsData } = await supabase
-        .from("mensajes_chat")
-        .select("*, perfiles(nombre, apellido, matricula)")
-        .eq("grupo_id", grupoId)
-        .order("created_at", { ascending: true })
-        .limit(100);
-
-      if (msgsData) setMensajes(msgsData as any);
+      await cargarMensajes();
       setLoading(false);
     };
     init();
@@ -83,84 +80,130 @@ export default function GrupoChatPage() {
   // Tiempo real
   useEffect(() => {
     if (!grupoId) return;
-    const channel = supabase
-      .channel(`chat_${grupoId}`)
-      .on("postgres_changes", {
-        event: "INSERT",
-        schema: "public",
-        table: "mensajes_chat",
-        filter: `grupo_id=eq.${grupoId}`,
-      }, async (payload) => {
-        const { data } = await supabase
-          .from("mensajes_chat")
-          .select("*, perfiles(nombre, apellido, matricula)")
-          .eq("id", payload.new.id)
-          .single();
-        if (data) setMensajes(prev => [...prev, data as any]);
-      })
+    const channel = supabase.channel(`chat_${grupoId}_${Date.now()}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensajes_chat", filter: `grupo_id=eq.${grupoId}` },
+        async (payload) => {
+          const { data } = await supabase.from("mensajes_chat")
+            .select("*, perfiles(nombre,apellido,matricula), reply:reply_id(id,texto,user_id,perfiles(nombre,apellido))")
+            .eq("id", payload.new.id).single();
+          if (data) setMensajes(prev => {
+            if (prev.some(m => m.id === (data as any).id)) return prev;
+            return [...prev, data as any];
+          });
+        })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "mensajes_chat", filter: `grupo_id=eq.${grupoId}` },
+        async (payload) => {
+          const { data } = await supabase.from("mensajes_chat")
+            .select("*, perfiles(nombre,apellido,matricula), reply:reply_id(id,texto,user_id,perfiles(nombre,apellido))")
+            .eq("id", payload.new.id).single();
+          if (data) setMensajes(prev => prev.map(m => m.id === (data as any).id ? data as any : m));
+        })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [grupoId]);
 
-  // Scroll al fondo
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [mensajes]);
+    if (!mostrarBusqueda) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [mensajes, mostrarBusqueda]);
+
+  // Cerrar menú al click afuera
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuMsgId(null);
+        setEmojiMsgId(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const cargarMensajes = async () => {
+    const { data } = await supabase.from("mensajes_chat")
+      .select("*, perfiles(nombre,apellido,matricula), reply:reply_id(id,texto,user_id,perfiles(nombre,apellido))")
+      .eq("grupo_id", grupoId)
+      .order("created_at", { ascending: true })
+      .limit(200);
+    if (data) setMensajes(data as any);
+  };
 
   const enviar = async () => {
     if (!texto.trim() || enviando || !userId || !grupo) return;
     setEnviando(true);
     const textoEnviar = texto.trim();
     setTexto("");
+    const replyId = replyMsg?.id ?? null;
+    setReplyMsg(null);
 
-    // 1. Guardar mensaje
-    const { data: msg } = await supabase
-      .from("mensajes_chat")
-      .insert({
-        grupo_id: grupoId,
-        user_id: userId,
-        texto: textoEnviar,
-        tipo: "mensaje",
-      })
-      .select("*, perfiles(nombre, apellido, matricula)")
-      .single();
+    // Optimistic
+    const temp: Mensaje = {
+      id: `temp-${Date.now()}`, texto: textoEnviar, tipo: "mensaje",
+      created_at: new Date().toISOString(), user_id: userId,
+      reply_id: replyId, editado: false, eliminado: false, reacciones: {},
+      perfiles: { nombre: perfil?.nombre ?? "", apellido: perfil?.apellido ?? "", matricula: perfil?.matricula ?? "" },
+      reply: replyMsg ?? null,
+    };
+    setMensajes(prev => [...prev, temp]);
 
-    // 2. Si el grupo va al MIR, parsear con IA
+    const { data: msg } = await supabase.from("mensajes_chat").insert({
+      grupo_id: grupoId, user_id: userId, texto: textoEnviar, tipo: "mensaje",
+      reply_id: replyId,
+    }).select("*, perfiles(nombre,apellido,matricula), reply:reply_id(id,texto,user_id,perfiles(nombre,apellido))").single();
+
+    if (msg) setMensajes(prev => prev.map(m => m.id === temp.id ? msg as any : m));
+
     if (grupo.va_al_mir && msg) {
       try {
         const res = await fetch("/api/comunidad/parser", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            texto: textoEnviar,
-            grupo_id: grupoId,
-            user_id: userId,
-            mensaje_id: msg.id,
-          }),
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ texto: textoEnviar, grupo_id: grupoId, user_id: userId, mensaje_id: (msg as any).id }),
         });
         const result = await res.json();
-        if (result.cargado) {
-          setParserInfo(`✓ Cargado al MIR como ${result.tipo}`);
-          setTimeout(() => setParserInfo(null), 4000);
-        }
+        if (result.cargado) { setParserInfo(`Cargado al MIR como ${result.tipo}`); setTimeout(() => setParserInfo(null), 4000); }
       } catch {}
     }
-
     setEnviando(false);
     inputRef.current?.focus();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      enviar();
+  const editarMensaje = async (id: string) => {
+    if (!textoEdit.trim()) return;
+    await supabase.from("mensajes_chat").update({ texto: textoEdit.trim(), editado: true }).eq("id", id);
+    setEditandoId(null);
+    setTextoEdit("");
+  };
+
+  const eliminarMensaje = async (id: string) => {
+    await supabase.from("mensajes_chat").update({ eliminado: true, texto: "" }).eq("id", id);
+    setMenuMsgId(null);
+  };
+
+  const reaccionar = async (msgId: string, emoji: string) => {
+    const msg = mensajes.find(m => m.id === msgId);
+    if (!msg) return;
+    const reacs = { ...(msg.reacciones ?? {}) };
+    const usuarios = reacs[emoji] ?? [];
+    if (usuarios.includes(userId)) {
+      reacs[emoji] = usuarios.filter(u => u !== userId);
+      if (reacs[emoji].length === 0) delete reacs[emoji];
+    } else {
+      reacs[emoji] = [...usuarios, userId];
     }
+    await supabase.from("mensajes_chat").update({ reacciones: reacs }).eq("id", msgId);
+    setEmojiMsgId(null);
   };
 
-  const formatHora = (fecha: string) => {
-    return new Date(fecha).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+  const reenviar = (msg: Mensaje) => {
+    setTexto(msg.texto);
+    setMenuMsgId(null);
+    inputRef.current?.focus();
   };
 
+  const mensajesFiltrados = busqueda.trim()
+    ? mensajes.filter(m => m.texto.toLowerCase().includes(busqueda.toLowerCase()))
+    : mensajes;
+
+  const formatHora = (fecha: string) => new Date(fecha).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
   const formatFecha = (fecha: string) => {
     const d = new Date(fecha);
     const hoy = new Date();
@@ -170,16 +213,12 @@ export default function GrupoChatPage() {
     return d.toLocaleDateString("es-AR", { day: "numeric", month: "long" });
   };
 
-  // Agrupar mensajes por fecha
   const mensajesPorFecha: { fecha: string; msgs: Mensaje[] }[] = [];
-  mensajes.forEach(m => {
+  mensajesFiltrados.forEach(m => {
     const fecha = formatFecha(m.created_at);
     const ultimo = mensajesPorFecha[mensajesPorFecha.length - 1];
-    if (ultimo && ultimo.fecha === fecha) {
-      ultimo.msgs.push(m);
-    } else {
-      mensajesPorFecha.push({ fecha, msgs: [m] });
-    }
+    if (ultimo && ultimo.fecha === fecha) ultimo.msgs.push(m);
+    else mensajesPorFecha.push({ fecha, msgs: [m] });
   });
 
   if (loading || !grupo) return (
@@ -191,123 +230,210 @@ export default function GrupoChatPage() {
 
   return (
     <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", flexDirection: "column", height: "calc(100vh - 120px)" }}>
+
       {/* Header */}
-      <div style={{
-        display: "flex", alignItems: "center", gap: 12, padding: "0 0 16px",
-        borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 0, flexShrink: 0,
-      }}>
-        <button onClick={() => router.push("/comunidad")} style={{
-          background: "none", border: "none", color: "rgba(255,255,255,0.4)",
-          cursor: "pointer", fontSize: 18, padding: "4px 8px 4px 0",
-        }}>←</button>
-        <div style={{
-          width: 38, height: 38, borderRadius: 8, fontSize: 18,
-          background: grupo.va_al_mir ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)",
-          border: grupo.va_al_mir ? "1px solid rgba(200,0,0,0.25)" : "1px solid rgba(255,255,255,0.08)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 0 14px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+        <button onClick={() => router.push("/comunidad")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 18, padding: "4px 8px 4px 0" }}>←</button>
+        <div style={{ width: 36, height: 36, borderRadius: 8, fontSize: 18, background: grupo.va_al_mir ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)", border: grupo.va_al_mir ? "1px solid rgba(200,0,0,0.25)" : "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           {grupo.icono}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 14, fontWeight: 700, color: "#fff" }}>
-              {grupo.nombre}
-            </span>
-            {grupo.va_al_mir && (
-              <span style={{
-                fontSize: 8, fontFamily: "Montserrat, sans-serif", fontWeight: 700,
-                letterSpacing: "0.1em", textTransform: "uppercase",
-                color: "#cc0000", background: "rgba(200,0,0,0.1)",
-                border: "1px solid rgba(200,0,0,0.2)", padding: "2px 5px", borderRadius: 3,
-              }}>MIR automático</span>
-            )}
+            <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>{grupo.nombre}</span>
+            {grupo.va_al_mir && <span style={{ fontSize: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#cc0000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "2px 5px", borderRadius: 3 }}>MIR</span>}
           </div>
-          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif", marginTop: 1 }}>
-            {mensajes.length} mensajes
-          </p>
+          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginTop: 1 }}>{mensajes.length} mensajes</p>
         </div>
+        {/* Botón buscar */}
+        <button onClick={() => { setMostrarBusqueda(v => !v); setBusqueda(""); }}
+          style={{ background: mostrarBusqueda ? "rgba(200,0,0,0.1)" : "none", border: mostrarBusqueda ? "1px solid rgba(200,0,0,0.3)" : "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: mostrarBusqueda ? "#cc0000" : "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 14, padding: "6px 10px", transition: "all 0.15s" }}>
+          🔍
+        </button>
       </div>
+
+      {/* Buscador */}
+      {mostrarBusqueda && (
+        <div style={{ padding: "10px 0 6px", flexShrink: 0 }}>
+          <input
+            autoFocus
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+            placeholder="Buscar en el chat..."
+            style={{ width: "100%", padding: "9px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
+          />
+          {busqueda && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 5, fontFamily: "Inter,sans-serif" }}>{mensajesFiltrados.length} resultado{mensajesFiltrados.length !== 1 ? "s" : ""}</div>}
+        </div>
+      )}
 
       {/* Parser info */}
       {parserInfo && (
-        <div style={{
-          background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)",
-          borderRadius: 6, padding: "8px 14px", margin: "8px 0",
-          fontSize: 11, color: "#4ade80", fontFamily: "Inter, sans-serif", flexShrink: 0,
-        }}>
+        <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 6, padding: "7px 14px", margin: "6px 0", fontSize: 11, color: "#4ade80", fontFamily: "Inter,sans-serif", flexShrink: 0 }}>
           {parserInfo}
         </div>
       )}
 
       {/* Mensajes */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 0" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "12px 0" }}>
         {mensajesPorFecha.map(({ fecha, msgs }) => (
           <div key={fecha}>
-            <div style={{ textAlign: "center", margin: "12px 0" }}>
-              <span style={{
-                fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat, sans-serif",
-                background: "rgba(255,255,255,0.04)", padding: "3px 10px", borderRadius: 10,
-              }}>
-                {fecha}
-              </span>
+            <div style={{ textAlign: "center", margin: "10px 0" }}>
+              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif", background: "rgba(255,255,255,0.04)", padding: "3px 10px", borderRadius: 10 }}>{fecha}</span>
             </div>
             {msgs.map(m => {
               const esMio = m.user_id === userId;
+              const eliminado = m.eliminado;
+
               return (
-                <div key={m.id} style={{
-                  display: "flex", justifyContent: esMio ? "flex-end" : "flex-start",
-                  marginBottom: 6, padding: "0 4px",
-                }}>
-                  <div style={{ maxWidth: "75%" }}>
-                    {!esMio && (
-                      <div style={{ fontSize: 10, color: "#cc0000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, marginBottom: 3, paddingLeft: 4 }}>
+                <div key={m.id}
+                  style={{ display: "flex", justifyContent: esMio ? "flex-end" : "flex-start", marginBottom: 4, padding: "0 4px", position: "relative" }}
+                  onMouseEnter={() => !eliminado && setMenuMsgId(m.id)}
+                  onMouseLeave={() => { setMenuMsgId(null); setEmojiMsgId(null); }}>
+
+                  <div style={{ maxWidth: "78%" }}>
+                    {/* Nombre */}
+                    {!esMio && !eliminado && (
+                      <div style={{ fontSize: 10, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, paddingLeft: 4 }}>
                         {m.perfiles?.nombre} {m.perfiles?.apellido}
-                        {m.perfiles?.matricula && <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}> · Mat. {m.perfiles.matricula}</span>}
+                        {m.perfiles?.matricula && <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
                       </div>
                     )}
-                    <div style={{
-                      background: esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)",
-                      border: esMio ? "1px solid rgba(200,0,0,0.25)" : "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px",
-                      padding: "8px 12px",
-                    }}>
-                      {m.mir_id && (
-                        <div style={{
-                          fontSize: 9, color: "#cc0000", fontFamily: "Montserrat, sans-serif",
-                          fontWeight: 700, letterSpacing: "0.1em", marginBottom: 4,
-                        }}>
-                          ◈ CARGADO AL MIR · {m.mir_tipo?.toUpperCase()}
+
+                    {/* Burbuja */}
+                    <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? "1px solid rgba(200,0,0,0.25)" : "1px solid rgba(255,255,255,0.08)", borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", position: "relative" }}>
+
+                      {/* Reply preview */}
+                      {m.reply && !eliminado && (
+                        <div style={{ background: "rgba(255,255,255,0.04)", borderLeft: "2px solid #cc0000", borderRadius: "0 4px 4px 0", padding: "4px 8px", marginBottom: 6, fontSize: 11, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
+                          <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>
+                            {(m.reply as any).perfiles?.nombre ?? ""}
+                          </div>
+                          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>
+                            {(m.reply as any).texto}
+                          </div>
                         </div>
                       )}
-                      <p style={{ fontSize: 12, color: "#fff", fontFamily: "Inter, sans-serif", lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                        {m.texto}
-                      </p>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", textAlign: "right", marginTop: 4, fontFamily: "Inter, sans-serif" }}>
-                        {formatHora(m.created_at)}
-                      </div>
+
+                      {/* MIR badge */}
+                      {m.mir_id && !eliminado && (
+                        <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 4 }}>
+                          ◈ MIR · {m.mir_tipo?.toUpperCase()}
+                        </div>
+                      )}
+
+                      {/* Texto o eliminado */}
+                      {eliminado ? (
+                        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontStyle: "italic", fontFamily: "Inter,sans-serif" }}>Mensaje eliminado</p>
+                      ) : editandoId === m.id ? (
+                        <div>
+                          <textarea
+                            ref={editRef}
+                            value={textoEdit}
+                            onChange={e => setTextoEdit(e.target.value)}
+                            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); editarMensaje(m.id); } if (e.key === "Escape") { setEditandoId(null); setTextoEdit(""); } }}
+                            style={{ width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(200,0,0,0.4)", borderRadius: 4, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", padding: "6px 8px", outline: "none", resize: "none", minHeight: 60 }}
+                            autoFocus
+                          />
+                          <div style={{ display: "flex", gap: 6, marginTop: 5, justifyContent: "flex-end" }}>
+                            <button onClick={() => { setEditandoId(null); setTextoEdit(""); }} style={{ fontSize: 10, background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, color: "rgba(255,255,255,0.4)", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Cancelar</button>
+                            <button onClick={() => editarMensaje(m.id)} style={{ fontSize: 10, background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Guardar</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                          {m.texto}
+                        </p>
+                      )}
+
+                      {/* Meta */}
+                      {!eliminado && (
+                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", textAlign: "right", marginTop: 4, fontFamily: "Inter,sans-serif", display: "flex", gap: 5, justifyContent: "flex-end", alignItems: "center" }}>
+                          {m.editado && <span style={{ fontStyle: "italic" }}>editado</span>}
+                          {formatHora(m.created_at)}
+                        </div>
+                      )}
                     </div>
+
+                    {/* Reacciones */}
+                    {!eliminado && m.reacciones && Object.keys(m.reacciones).length > 0 && (
+                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4, justifyContent: esMio ? "flex-end" : "flex-start" }}>
+                        {Object.entries(m.reacciones).map(([emoji, users]) => (
+                          <button key={emoji} onClick={() => reaccionar(m.id, emoji)}
+                            style={{ background: (users as string[]).includes(userId) ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: (users as string[]).includes(userId) ? "1px solid rgba(200,0,0,0.3)" : "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "2px 7px", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                            {emoji} <span style={{ fontSize: 10, color: "rgba(255,255,255,0.5)" }}>{(users as string[]).length}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
+
+                  {/* Menú hover */}
+                  {menuMsgId === m.id && !eliminado && editandoId !== m.id && (
+                    <div ref={menuRef} style={{ position: "absolute", [esMio ? "left" : "right"]: "100%", top: 0, display: "flex", flexDirection: "column", gap: 2, background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: 4, zIndex: 100, marginLeft: esMio ? 0 : 8, marginRight: esMio ? 8 : 0, boxShadow: "0 4px 16px rgba(0,0,0,0.5)", minWidth: 130 }}>
+
+                      {/* Emojis rápidos */}
+                      <div style={{ display: "flex", gap: 3, padding: "4px 6px", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 2 }}>
+                        {EMOJIS_RAPIDOS.map(e => (
+                          <button key={e} onClick={() => reaccionar(m.id, e)}
+                            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: "2px", borderRadius: 4, transition: "background 0.1s" }}
+                            onMouseEnter={ev => (ev.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+                            onMouseLeave={ev => (ev.currentTarget.style.background = "none")}>
+                            {e}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Acciones */}
+                      {[
+                        { label: "↩ Responder", action: () => { setReplyMsg(m); setMenuMsgId(null); inputRef.current?.focus(); } },
+                        { label: "↗ Reenviar", action: () => reenviar(m) },
+                        ...(esMio ? [
+                          { label: "✏ Editar", action: () => { setEditandoId(m.id); setTextoEdit(m.texto); setMenuMsgId(null); setTimeout(() => editRef.current?.focus(), 50); } },
+                          { label: "🗑 Eliminar", action: () => eliminarMensaje(m.id), danger: true },
+                        ] : []),
+                      ].map(({ label, action, danger }: any) => (
+                        <button key={label} onClick={action}
+                          style={{ background: "none", border: "none", color: danger ? "#ff4444" : "rgba(255,255,255,0.7)", fontSize: 11, fontFamily: "Inter,sans-serif", cursor: "pointer", padding: "6px 10px", textAlign: "left", borderRadius: 4, whiteSpace: "nowrap", transition: "background 0.1s" }}
+                          onMouseEnter={ev => (ev.currentTarget.style.background = danger ? "rgba(255,0,0,0.1)" : "rgba(255,255,255,0.06)")}
+                          onMouseLeave={ev => (ev.currentTarget.style.background = "none")}>
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
         ))}
-        {mensajes.length === 0 && (
-          <div style={{ textAlign: "center", padding: 40, color: "rgba(255,255,255,0.2)", fontSize: 12, fontFamily: "Inter, sans-serif" }}>
-            Sin mensajes aún. ¡Sé el primero en escribir!
+        {mensajesFiltrados.length === 0 && (
+          <div style={{ textAlign: "center", padding: 40, color: "rgba(255,255,255,0.2)", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
+            {busqueda ? `Sin resultados para "${busqueda}"` : "Sin mensajes aún. ¡Sé el primero en escribir!"}
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
+      {/* Reply preview */}
+      {replyMsg && (
+        <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "rgba(200,0,0,0.06)", border: "1px solid rgba(200,0,0,0.15)", borderRadius: "6px 6px 0 0", borderBottom: "none" }}>
+          <div style={{ borderLeft: "2px solid #cc0000", paddingLeft: 8, flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>
+              Respondiendo a {replyMsg.perfiles?.nombre}
+            </div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {replyMsg.texto}
+            </div>
+          </div>
+          <button onClick={() => setReplyMsg(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16, padding: 4, lineHeight: 1, flexShrink: 0 }}>×</button>
+        </div>
+      )}
+
       {/* Input */}
-      <div style={{
-        flexShrink: 0, paddingTop: 12,
-        borderTop: "1px solid rgba(255,255,255,0.07)",
-      }}>
+      <div style={{ flexShrink: 0, paddingTop: replyMsg ? 0 : 10, borderTop: replyMsg ? "none" : "1px solid rgba(255,255,255,0.07)" }}>
+        {!replyMsg && <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", marginBottom: 10 }} />}
         {grupo.va_al_mir && (
-          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Inter, sans-serif", marginBottom: 8, paddingLeft: 2 }}>
-            💡 Los mensajes de ofrecidos y búsquedas se cargan automáticamente al MIR
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", marginBottom: 7 }}>
+            Los mensajes de ofrecidos y búsquedas se cargan al MIR automáticamente
           </div>
         )}
         <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
@@ -315,34 +441,18 @@ export default function GrupoChatPage() {
             ref={inputRef}
             value={texto}
             onChange={e => setTexto(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Escribí tu mensaje... (Enter para enviar)"
+            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
+            placeholder="Escribí un mensaje..."
             rows={1}
-            style={{
-              flex: 1, background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8,
-              padding: "10px 14px", color: "#fff", fontSize: 13,
-              fontFamily: "Inter, sans-serif", resize: "none",
-              outline: "none", lineHeight: 1.5, maxHeight: 120, overflowY: "auto",
-            }}
+            style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", resize: "none", outline: "none", lineHeight: 1.5, maxHeight: 120, overflowY: "auto" }}
             onInput={e => {
               const t = e.target as HTMLTextAreaElement;
               t.style.height = "auto";
               t.style.height = Math.min(t.scrollHeight, 120) + "px";
             }}
           />
-          <button
-            onClick={enviar}
-            disabled={!texto.trim() || enviando}
-            style={{
-              background: texto.trim() ? "#cc0000" : "rgba(255,255,255,0.05)",
-              border: "none", borderRadius: 8, width: 40, height: 40,
-              cursor: texto.trim() ? "pointer" : "default",
-              color: texto.trim() ? "#fff" : "rgba(255,255,255,0.2)",
-              fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "all 0.2s", flexShrink: 0,
-            }}
-          >
+          <button onClick={enviar} disabled={!texto.trim() || enviando}
+            style={{ background: texto.trim() ? "#cc0000" : "rgba(255,255,255,0.05)", border: "none", borderRadius: 8, width: 40, height: 40, cursor: texto.trim() ? "pointer" : "default", color: texto.trim() ? "#fff" : "rgba(255,255,255,0.2)", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", flexShrink: 0 }}>
             {enviando ? "..." : "➤"}
           </button>
         </div>
