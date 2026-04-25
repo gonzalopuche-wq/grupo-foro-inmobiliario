@@ -24,11 +24,17 @@ interface Reply {
 }
 interface ChatMsg {
   id: string; user_id: string; body: string; created_at: string;
+  editado?: boolean; eliminado?: boolean;
+  reacciones?: Record<string, string[]>;
+  reply_id?: string | null;
   perfiles?: Author;
+  reply?: ChatMsg | null;
 }
 
 type MainTab = "temas" | "chat" | "faq";
 type Vista = "lista" | "detalle" | "nuevo";
+
+const EMOJIS_RAPIDOS = ["👍", "❤️", "🔥", "✅", "👀", "😂"];
 
 const timeAgo = (iso: string) => {
   const diff = Date.now() - new Date(iso).getTime();
@@ -86,10 +92,21 @@ export default function ForoPage() {
   const [nLoading, setNLoading] = useState(false);
   const [replyBody, setReplyBody] = useState("");
 
+  // Chat estado completo
   const [chatMsgs, setChatMsgs] = useState<ChatMsg[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [chatReplyMsg, setChatReplyMsg] = useState<ChatMsg | null>(null);
+  const [chatMenuId, setChatMenuId] = useState<string | null>(null);
+  const [chatEditId, setChatEditId] = useState<string | null>(null);
+  const [chatEditText, setChatEditText] = useState("");
+  const [chatLinkPreviews, setChatLinkPreviews] = useState<Record<string, any>>({});
+  const [chatInputPreview, setChatInputPreview] = useState<{ url: string; data: any } | null>(null);
+  const chatInputPreviewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<HTMLInputElement>(null);
+  const chatEditRef = useRef<HTMLTextAreaElement>(null);
+
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [faqTopics, setFaqTopics] = useState<Topic[]>([]);
 
@@ -110,6 +127,18 @@ export default function ForoPage() {
   }, []);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMsgs]);
+
+  // Cerrar menú al click afuera
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-chat-menu]")) setChatMenuId(null);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const extraerUrl = (texto: string) => texto.match(/https?:\/\/[^\s]+/)?.[0] ?? null;
 
   const loadCategories = async () => {
     const { data } = await supabase.from("forum_categories").select("*").eq("is_active", true).order("sort_order");
@@ -161,7 +190,21 @@ export default function ForoPage() {
     const { data } = await supabase.from("forum_chat_messages")
       .select("*, perfiles(nombre,apellido,matricula)")
       .order("created_at", { ascending: true }).limit(100);
-    setChatMsgs((data as unknown as ChatMsg[]) ?? []);
+    const msgs = (data as unknown as ChatMsg[]) ?? [];
+    setChatMsgs(msgs);
+    // Cargar previews
+    const previews: Record<string, any> = {};
+    await Promise.all(msgs.map(async (m) => {
+      if (!m.body || m.eliminado) return;
+      const url = extraerUrl(m.body);
+      if (!url || previews[url] !== undefined) return;
+      previews[url] = "loading";
+      try {
+        const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+        previews[url] = await res.json();
+      } catch { previews[url] = "error"; }
+    }));
+    setChatLinkPreviews(previews);
   };
 
   const subscribeChat = () => {
@@ -169,7 +212,30 @@ export default function ForoPage() {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "forum_chat_messages" }, async (payload) => {
         const { data } = await supabase.from("forum_chat_messages")
           .select("*, perfiles(nombre,apellido,matricula)").eq("id", payload.new.id).single();
-        if (data) setChatMsgs(prev => [...prev, data as unknown as ChatMsg]);
+        if (!data) return;
+        let reply = null;
+        if ((data as any).reply_id) {
+          const { data: r } = await supabase.from("forum_chat_messages")
+            .select("id,body,user_id,perfiles(nombre,apellido)").eq("id", (data as any).reply_id).single();
+          reply = r ?? null;
+        }
+        setChatMsgs(prev => {
+          if (prev.some(m => m.id === (data as any).id)) return prev;
+          return [...prev, { ...data, reply } as unknown as ChatMsg];
+        });
+        // Cargar preview del nuevo mensaje
+        const url = extraerUrl((data as any).body ?? "");
+        if (url) {
+          fetch(`/api/link-preview?url=${encodeURIComponent(url)}`)
+            .then(r => r.json())
+            .then(d => setChatLinkPreviews(prev => ({ ...prev, [url]: d })))
+            .catch(() => {});
+        }
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "forum_chat_messages" }, async (payload) => {
+        const { data } = await supabase.from("forum_chat_messages")
+          .select("*, perfiles(nombre,apellido,matricula)").eq("id", payload.new.id).single();
+        if (data) setChatMsgs(prev => prev.map(m => m.id === (data as any).id ? { ...data, reply: m.reply } as unknown as ChatMsg : m));
       })
       .subscribe();
   };
@@ -177,9 +243,46 @@ export default function ForoPage() {
   const sendChat = async () => {
     if (!chatInput.trim() || !userId) return;
     setChatLoading(true);
-    await supabase.from("forum_chat_messages").insert({ user_id: userId, body: chatInput.trim() });
+    const textoEnviar = chatInput.trim();
     setChatInput("");
+    setChatInputPreview(null);
+    const replyId = chatReplyMsg?.id ?? null;
+    setChatReplyMsg(null);
+
+    const insertData: any = { user_id: userId, body: textoEnviar };
+    if (replyId) insertData.reply_id = replyId;
+
+    await supabase.from("forum_chat_messages").insert(insertData);
     setChatLoading(false);
+    chatInputRef.current?.focus();
+  };
+
+  const editarChatMsg = async (id: string) => {
+    if (!chatEditText.trim()) return;
+    await supabase.from("forum_chat_messages").update({ body: chatEditText.trim(), editado: true }).eq("id", id);
+    setChatEditId(null);
+    setChatEditText("");
+  };
+
+  const eliminarChatMsg = async (id: string) => {
+    await supabase.from("forum_chat_messages").update({ eliminado: true, body: "" }).eq("id", id);
+    setChatMenuId(null);
+  };
+
+  const reaccionarChat = async (msgId: string, emoji: string) => {
+    const msg = chatMsgs.find(m => m.id === msgId);
+    if (!msg || !userId) return;
+    const reacs = { ...(msg.reacciones ?? {}) };
+    const usuarios = reacs[emoji] ?? [];
+    if (usuarios.includes(userId)) {
+      reacs[emoji] = usuarios.filter(u => u !== userId);
+      if (reacs[emoji].length === 0) delete reacs[emoji];
+    } else {
+      reacs[emoji] = [...usuarios, userId];
+    }
+    setChatMsgs(prev => prev.map(m => m.id === msgId ? { ...m, reacciones: reacs } : m));
+    setChatMenuId(null);
+    supabase.from("forum_chat_messages").update({ reacciones: reacs }).eq("id", msgId);
   };
 
   const openTopic = async (t: Topic) => {
@@ -262,6 +365,28 @@ export default function ForoPage() {
     if (opts.cat !== undefined) setCatFilter(opts.cat);
     if (opts.status !== undefined) setStatusFilter(opts.status);
     loadTopics({ cat: newCat, status: newSt });
+  };
+
+  const ChatLinkPreview = ({ url }: { url: string }) => {
+    const data = chatLinkPreviews[url];
+    if (!data || data === "loading" || data === "error" || (!data.title && !data.image)) return null;
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer"
+        style={{ display: "flex", gap: 8, marginTop: 6, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.3)", textDecoration: "none", minHeight: 60 }}
+        onClick={e => e.stopPropagation()}>
+        {data.image && (
+          <div style={{ width: 60, minWidth: 60, background: "#000", flexShrink: 0 }}>
+            <img src={data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = "none"; }} />
+          </div>
+        )}
+        <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          {data.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.title}</div>}
+          {data.description && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.description}</div>}
+          <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginTop: 2 }}>{(() => { try { return new URL(url).hostname; } catch { return url; } })()}</div>
+        </div>
+      </a>
+    );
   };
 
   const TopicCard = ({ t, onClick }: { t: Topic; onClick: () => void }) => (
@@ -349,26 +474,15 @@ export default function ForoPage() {
         .f-chat-header-title { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
         .f-chat-live { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)} }
-        .f-chat-msgs { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+        .f-chat-msgs { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; }
         .f-chat-msgs::-webkit-scrollbar { width: 4px; }
         .f-chat-msgs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-        .f-chat-msg { display: flex; gap: 10px; align-items: flex-start; }
-        .f-chat-msg.mine { flex-direction: row-reverse; }
-        .f-chat-avatar { width: 28px; height: 28px; border-radius: 5px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; color: #cc0000; flex-shrink: 0; cursor: pointer; transition: border-color 0.15s; }
-        .f-chat-avatar:hover { border-color: #cc0000; }
-        .f-chat-bubble { max-width: 75%; }
-        .f-chat-name { font-size: 10px; color: rgba(255,255,255,0.35); margin-bottom: 3px; font-family: 'Montserrat',sans-serif; font-weight: 600; cursor: pointer; }
-        .f-chat-name:hover { color: rgba(255,255,255,0.7); }
-        .f-chat-msg.mine .f-chat-name { text-align: right; }
-        .f-chat-text { padding: 8px 12px; border-radius: 8px; font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); word-break: break-word; }
-        .f-chat-msg.mine .f-chat-text { background: rgba(200,0,0,0.12); border-color: rgba(200,0,0,0.2); }
-        .f-chat-time { font-size: 9px; color: rgba(255,255,255,0.2); margin-top: 3px; }
-        .f-chat-msg.mine .f-chat-time { text-align: right; }
-        .f-chat-input { border-top: 1px solid rgba(255,255,255,0.06); padding: 12px 14px; display: flex; gap: 8px; }
-        .f-chat-input input { flex: 1; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
-        .f-chat-input input:focus { border-color: rgba(200,0,0,0.35); }
-        .f-chat-input input::placeholder { color: rgba(255,255,255,0.2); }
-        .f-chat-send { padding: 9px 16px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .f-chat-input-area { border-top: 1px solid rgba(255,255,255,0.06); padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
+        .f-chat-input-row { display: flex; gap: 8px; align-items: center; }
+        .f-chat-input-row input { flex: 1; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
+        .f-chat-input-row input:focus { border-color: rgba(200,0,0,0.35); }
+        .f-chat-input-row input::placeholder { color: rgba(255,255,255,0.2); }
+        .f-chat-send { padding: 9px 16px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .f-chat-send:hover { background: #e60000; }
         .f-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
         .f-detalle { display: flex; flex-direction: column; gap: 16px; }
@@ -610,31 +724,188 @@ export default function ForoPage() {
               <div className="f-chat-header">
                 <div className="f-chat-live"/>
                 <span className="f-chat-header-title">Chat General — En vivo</span>
-                <span style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginLeft:"auto"}}>Mensajes en tiempo real</span>
+                <span style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginLeft:"auto"}}>Tocá un mensaje para ver opciones</span>
               </div>
               <div className="f-chat-msgs">
                 {chatMsgs.length === 0 && <div style={{textAlign:"center",color:"rgba(255,255,255,0.2)",fontSize:13,fontStyle:"italic",marginTop:32}}>No hay mensajes todavía. ¡Sé el primero!</div>}
-                {chatMsgs.map(m => (
-                  <div key={m.id} className={`f-chat-msg${m.user_id === userId ? " mine" : ""}`}>
-                    <div className="f-chat-avatar" onClick={() => setPerfilRapidoId(m.user_id)}>{initials(m.perfiles)}</div>
-                    <div className="f-chat-bubble">
-                      <div className="f-chat-name" onClick={() => setPerfilRapidoId(m.user_id)}>{fullName(m.perfiles)}{m.perfiles?.matricula ? ` · Mat. ${m.perfiles.matricula}` : ""}</div>
-                      <div className="f-chat-text">{m.body}</div>
-                      <div className="f-chat-time">{timeAgo(m.created_at)}</div>
+                {chatMsgs.map(m => {
+                  const esMio = m.user_id === userId;
+                  const eliminado = m.eliminado;
+                  return (
+                    <div key={m.id}
+                      style={{ display: "flex", justifyContent: esMio ? "flex-end" : "flex-start", marginBottom: 4, position: "relative", cursor: "pointer" }}
+                      onClick={() => !eliminado && setChatMenuId(prev => prev === m.id ? null : m.id)}>
+
+                      {/* Popup menú */}
+                      {chatMenuId === m.id && !eliminado && chatEditId !== m.id && (
+                        <div data-chat-menu onClick={e => e.stopPropagation()}
+                          style={{ position: "absolute", [esMio ? "right" : "left"]: 0, bottom: "100%", marginBottom: 6, background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 12, padding: "8px 6px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", gap: 2, minWidth: 160 }}>
+                          <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 2 }}>
+                            {EMOJIS_RAPIDOS.map(emoji => (
+                              <button key={emoji} onClick={() => reaccionarChat(m.id, emoji)}
+                                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: "2px 4px", borderRadius: 6 }}>
+                                {emoji}
+                              </button>
+                            ))}
+                          </div>
+                          {([
+                            { icon: "↩", label: "Responder", action: () => { setChatReplyMsg(m); setChatMenuId(null); chatInputRef.current?.focus(); } },
+                            ...(esMio ? [
+                              { icon: "✏", label: "Editar", action: () => { setChatEditId(m.id); setChatEditText(m.body); setChatMenuId(null); setTimeout(() => chatEditRef.current?.focus(), 50); } },
+                              { icon: "🗑", label: "Eliminar", action: () => eliminarChatMsg(m.id), danger: true },
+                            ] : []),
+                          ] as any[]).map(({ icon, label, action, danger }) => (
+                            <button key={label} onClick={action}
+                              style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", color: danger ? "#ff6060" : "rgba(255,255,255,0.8)", fontSize: 13, fontFamily: "Inter,sans-serif", cursor: "pointer", padding: "8px 12px", borderRadius: 8, width: "100%", textAlign: "left" }}
+                              onMouseEnter={ev => (ev.currentTarget.style.background = danger ? "rgba(255,0,0,0.08)" : "rgba(255,255,255,0.06)")}
+                              onMouseLeave={ev => (ev.currentTarget.style.background = "none")}>
+                              <span style={{ fontSize: 16, width: 22, textAlign: "center" }}>{icon}</span>{label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      <div style={{ maxWidth: "75%", position: "relative" }}>
+                        {/* Indicador ▲ */}
+                        {!eliminado && (
+                          <div style={{ position: "absolute", right: 4, top: -10, background: "rgba(40,40,40,0.9)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M2 6.5L5 3.5L8 6.5" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
+                        )}
+
+                        {/* Nombre */}
+                        {!esMio && !eliminado && (
+                          <div style={{ fontSize: 10, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, cursor: "pointer" }}
+                            onClick={e => { e.stopPropagation(); setPerfilRapidoId(m.user_id); }}>
+                            {fullName(m.perfiles)}
+                            {m.perfiles?.matricula && <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
+                          </div>
+                        )}
+
+                        {/* Burbuja */}
+                        <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${chatMenuId === m.id ? "rgba(200,0,0,0.5)" : "rgba(200,0,0,0.25)"}` : `1px solid ${chatMenuId === m.id ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", transition: "border-color 0.15s" }}>
+
+                          {/* Reply preview */}
+                          {m.reply && !eliminado && (
+                            <div style={{ background: "rgba(255,255,255,0.04)", borderLeft: "2px solid #cc0000", borderRadius: "0 4px 4px 0", padding: "4px 8px", marginBottom: 6, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                              <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>
+                                {(m.reply as any).perfiles?.nombre ?? ""}
+                              </div>
+                              <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>
+                                {(m.reply as any).body}
+                              </div>
+                            </div>
+                          )}
+
+                          {eliminado ? (
+                            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>Mensaje eliminado</p>
+                          ) : chatEditId === m.id ? (
+                            <div onClick={e => e.stopPropagation()}>
+                              <textarea ref={chatEditRef} value={chatEditText} onChange={e => setChatEditText(e.target.value)}
+                                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); editarChatMsg(m.id); } if (e.key === "Escape") { setChatEditId(null); setChatEditText(""); } }}
+                                style={{ width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(200,0,0,0.4)", borderRadius: 4, color: "#fff", fontSize: 12, padding: "6px 8px", outline: "none", resize: "none", minHeight: 60, fontFamily: "Inter,sans-serif" }} autoFocus />
+                              <div style={{ display: "flex", gap: 6, marginTop: 5, justifyContent: "flex-end" }}>
+                                <button onClick={() => { setChatEditId(null); setChatEditText(""); }} style={{ fontSize: 10, background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, color: "rgba(255,255,255,0.4)", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Cancelar</button>
+                                <button onClick={() => editarChatMsg(m.id)} style={{ fontSize: 10, background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Guardar</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5, wordBreak: "break-word", whiteSpace: "pre-wrap", margin: 0 }}>{m.body}</p>
+                          )}
+
+                          {/* Link preview */}
+                          {!eliminado && extraerUrl(m.body ?? "") && (
+                            <ChatLinkPreview url={extraerUrl(m.body ?? "")!} />
+                          )}
+
+                          {/* Meta */}
+                          {!eliminado && (
+                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", textAlign: "right", marginTop: 4, display: "flex", gap: 5, justifyContent: "flex-end" }}>
+                              {m.editado && <span style={{ fontStyle: "italic" }}>editado</span>}
+                              {timeAgo(m.created_at)}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Reacciones */}
+                        {!eliminado && m.reacciones && Object.keys(m.reacciones).length > 0 && (
+                          <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4, justifyContent: esMio ? "flex-end" : "flex-start" }}>
+                            {Object.entries(m.reacciones).map(([emoji, users]) => (
+                              <button key={emoji} onClick={e => { e.stopPropagation(); reaccionarChat(m.id, emoji); }}
+                                style={{ background: (users as string[]).includes(userId ?? "") ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: (users as string[]).includes(userId ?? "") ? "1px solid rgba(200,0,0,0.3)" : "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "2px 7px", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                                {emoji} <span style={{ fontSize: 10, color: "rgba(255,255,255,0.5)" }}>{(users as string[]).length}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <div ref={chatEndRef}/>
               </div>
-              <div className="f-chat-input">
-                <input
-                  placeholder="Escribí un mensaje..."
-                  value={chatInput}
-                  onChange={e => setChatInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
-                  disabled={chatLoading}
-                />
-                <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || !chatInput.trim()}>Enviar</button>
+
+              {/* Reply preview */}
+              {chatReplyMsg && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: "rgba(200,0,0,0.06)", borderTop: "1px solid rgba(200,0,0,0.15)" }}>
+                  <div style={{ borderLeft: "2px solid #cc0000", paddingLeft: 8, flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>
+                      Respondiendo a {fullName(chatReplyMsg.perfiles)}
+                    </div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {chatReplyMsg.body}
+                    </div>
+                  </div>
+                  <button onClick={() => setChatReplyMsg(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16, padding: 4 }}>×</button>
+                </div>
+              )}
+
+              <div className="f-chat-input-area">
+                {/* Link preview del input */}
+                {chatInputPreview && (
+                  <div style={{ display: "flex", gap: 8, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.35)", position: "relative", minHeight: 56 }}>
+                    {chatInputPreview.data.image && (
+                      <div style={{ width: 56, minWidth: 56, background: "#000", flexShrink: 0 }}>
+                        <img src={chatInputPreview.data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                      </div>
+                    )}
+                    <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                      {chatInputPreview.data.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatInputPreview.data.title}</div>}
+                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{(() => { try { return new URL(chatInputPreview.url).hostname; } catch { return ""; } })()}</div>
+                    </div>
+                    <button onClick={() => setChatInputPreview(null)} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+                  </div>
+                )}
+                <div className="f-chat-input-row">
+                  <input
+                    ref={chatInputRef}
+                    placeholder="Escribí un mensaje..."
+                    value={chatInput}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setChatInput(val);
+                      const urlMatch = val.match(/https?:\/\/[^\s]+/);
+                      if (urlMatch) {
+                        const url = urlMatch[0];
+                        if (chatInputPreviewTimer.current) clearTimeout(chatInputPreviewTimer.current);
+                        chatInputPreviewTimer.current = setTimeout(async () => {
+                          try {
+                            const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+                            const d = await res.json();
+                            if (d.title || d.image) setChatInputPreview({ url, data: d });
+                          } catch {}
+                        }, 600);
+                      } else {
+                        setChatInputPreview(null);
+                      }
+                    }}
+                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
+                    disabled={chatLoading}
+                  />
+                  <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || !chatInput.trim()}>Enviar</button>
+                </div>
               </div>
             </div>
           )}
