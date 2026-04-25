@@ -413,7 +413,7 @@ export default function GrupoChatPage() {
                   <div style={{ maxWidth: "78%", position: "relative" }}>
                     {/* Indicador toqueable */}
                     {!eliminado && (
-                      <div style={{ position: "absolute", [esMio ? "left" : "right"]: -18, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.2)", fontSize: 14, lineHeight: 1, userSelect: "none" }}>⋮</div>
+                      <div style={{ position: "absolute", [esMio ? "left" : "right"]: -20, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.35)", fontSize: 18, lineHeight: 1, userSelect: "none", cursor: "pointer" }}>⋮</div>
                     )}
                     {/* Nombre */}
                     {!esMio && !eliminado && (
@@ -424,7 +424,7 @@ export default function GrupoChatPage() {
                     )}
 
                     {/* Burbuja */}
-                    <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? "1px solid rgba(200,0,0,0.25)" : "1px solid rgba(255,255,255,0.08)", borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", position: "relative" }}>
+                    <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${menuMsgId === m.id ? "rgba(200,0,0,0.5)" : "rgba(200,0,0,0.25)"}` : `1px solid ${menuMsgId === m.id ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", position: "relative", transition: "border-color 0.15s", outline: menuMsgId === m.id ? (esMio ? "2px solid rgba(200,0,0,0.15)" : "2px solid rgba(255,255,255,0.08)") : "none", outlineOffset: 1 }}>
 
                       {/* Reply preview */}
                       {m.reply && !eliminado && (
