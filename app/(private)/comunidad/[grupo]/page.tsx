@@ -493,10 +493,10 @@ export default function GrupoChatPage() {
                   {!eliminado && editandoId !== m.id && (
                     <div style={{ display: "flex", gap: 4, marginTop: 4, justifyContent: esMio ? "flex-end" : "flex-start", flexWrap: "wrap" }}>
                       {/* Emojis rápidos */}
-                      {EMOJIS_RAPIDOS.map(e => (
-                        <button key={e} onClick={() => reaccionar(m.id, e)}
+                      {EMOJIS_RAPIDOS.map(emoji => (
+                        <button key={emoji} onClick={() => reaccionar(m.id, emoji)}
                           style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "2px 6px", fontSize: 13, cursor: "pointer", lineHeight: 1.4 }}>
-                          {e}
+                          {emoji}
                         </button>
                       ))}
                       <div style={{ width: "100%", height: 0 }} />
