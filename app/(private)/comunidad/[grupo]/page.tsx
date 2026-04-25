@@ -405,8 +405,7 @@ export default function GrupoChatPage() {
               return (
                 <div key={m.id}
                   style={{ display: "flex", justifyContent: esMio ? "flex-end" : "flex-start", marginBottom: 4, padding: "0 4px", position: "relative" }}
-                  onMouseEnter={() => !eliminado && setMenuMsgId(m.id)}
-                  onMouseLeave={() => { setMenuMsgId(null); setEmojiMsgId(null); }}>
+>
 
                   <div style={{ maxWidth: "78%" }}>
                     {/* Nombre */}
@@ -490,38 +489,38 @@ export default function GrupoChatPage() {
                     )}
                   </div>
 
-                  {/* Menú hover */}
-                  {menuMsgId === m.id && !eliminado && editandoId !== m.id && (
-                    <div ref={menuRef} style={{ position: "absolute", [esMio ? "left" : "right"]: "100%", top: 0, display: "flex", flexDirection: "column", gap: 2, background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: 4, zIndex: 100, marginLeft: esMio ? 0 : 8, marginRight: esMio ? 8 : 0, boxShadow: "0 4px 16px rgba(0,0,0,0.5)", minWidth: 130 }}>
-
+                  {/* Botones de acción — siempre visibles, estilo WhatsApp */}
+                  {!eliminado && editandoId !== m.id && (
+                    <div style={{ display: "flex", gap: 4, marginTop: 4, justifyContent: esMio ? "flex-end" : "flex-start", flexWrap: "wrap" }}>
                       {/* Emojis rápidos */}
-                      <div style={{ display: "flex", gap: 3, padding: "4px 6px", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 2 }}>
-                        {EMOJIS_RAPIDOS.map(e => (
-                          <button key={e} onClick={() => reaccionar(m.id, e)}
-                            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: "2px", borderRadius: 4, transition: "background 0.1s" }}
-                            onMouseEnter={ev => (ev.currentTarget.style.background = "rgba(255,255,255,0.1)")}
-                            onMouseLeave={ev => (ev.currentTarget.style.background = "none")}>
-                            {e}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Acciones */}
-                      {[
-                        { label: "↩ Responder", action: () => { setReplyMsg(m); setMenuMsgId(null); inputRef.current?.focus(); } },
-                        { label: "↗ Reenviar", action: () => reenviar(m) },
-                        ...(esMio ? [
-                          { label: "✏ Editar", action: () => { setEditandoId(m.id); setTextoEdit(m.texto); setMenuMsgId(null); setTimeout(() => editRef.current?.focus(), 50); } },
-                          { label: "🗑 Eliminar", action: () => eliminarMensaje(m.id), danger: true },
-                        ] : []),
-                      ].map(({ label, action, danger }: any) => (
-                        <button key={label} onClick={action}
-                          style={{ background: "none", border: "none", color: danger ? "#ff4444" : "rgba(255,255,255,0.7)", fontSize: 11, fontFamily: "Inter,sans-serif", cursor: "pointer", padding: "6px 10px", textAlign: "left", borderRadius: 4, whiteSpace: "nowrap", transition: "background 0.1s" }}
-                          onMouseEnter={ev => (ev.currentTarget.style.background = danger ? "rgba(255,0,0,0.1)" : "rgba(255,255,255,0.06)")}
-                          onMouseLeave={ev => (ev.currentTarget.style.background = "none")}>
-                          {label}
+                      {EMOJIS_RAPIDOS.map(e => (
+                        <button key={e} onClick={() => reaccionar(m.id, e)}
+                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "2px 6px", fontSize: 13, cursor: "pointer", lineHeight: 1.4 }}>
+                          {e}
                         </button>
                       ))}
+                      <div style={{ width: "100%", height: 0 }} />
+                      {/* Acciones */}
+                      <button onClick={() => { setReplyMsg(m); inputRef.current?.focus(); }}
+                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "3px 10px", fontSize: 11, color: "rgba(255,255,255,0.6)", cursor: "pointer", fontFamily: "Inter,sans-serif" }}>
+                        ↩ Responder
+                      </button>
+                      <button onClick={() => reenviar(m)}
+                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "3px 10px", fontSize: 11, color: "rgba(255,255,255,0.6)", cursor: "pointer", fontFamily: "Inter,sans-serif" }}>
+                        ↗ Reenviar
+                      </button>
+                      {esMio && (
+                        <>
+                          <button onClick={() => { setEditandoId(m.id); setTextoEdit(m.texto); setTimeout(() => editRef.current?.focus(), 50); }}
+                            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "3px 10px", fontSize: 11, color: "rgba(255,255,255,0.6)", cursor: "pointer", fontFamily: "Inter,sans-serif" }}>
+                            ✏ Editar
+                          </button>
+                          <button onClick={() => eliminarMensaje(m.id)}
+                            style={{ background: "rgba(200,0,0,0.06)", border: "1px solid rgba(200,0,0,0.15)", borderRadius: 20, padding: "3px 10px", fontSize: 11, color: "rgba(255,80,80,0.7)", cursor: "pointer", fontFamily: "Inter,sans-serif" }}>
+                            🗑 Eliminar
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
