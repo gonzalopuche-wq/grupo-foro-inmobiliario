@@ -128,27 +128,31 @@ export default function GrupoChatPage() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const extraerPrimeraUrl = (texto: string): string | null => {
+    const m = texto.match(/https?:\/\/[^\s]+/);
+    return m ? m[0] : null;
+  };
+
   const cargarLinkPreview = async (url: string) => {
     if (linkPreviews[url] !== undefined) return;
-    setLinkPreviews(prev => ({ ...prev, [url]: null })); // mark as loading
+    setLinkPreviews(prev => ({ ...prev, [url]: "loading" }));
     try {
       const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
       const data = await res.json();
       setLinkPreviews(prev => ({ ...prev, [url]: data }));
     } catch {
-      setLinkPreviews(prev => ({ ...prev, [url]: null }));
+      setLinkPreviews(prev => ({ ...prev, [url]: "error" }));
     }
   };
 
-  // Cargar previews de links en mensajes nuevos
+  // Cargar previews al cambiar mensajes
   useEffect(() => {
-    const urlRegex = /https?:\/\/\S+/g;
     mensajes.forEach(m => {
       if (!m.texto || m.eliminado) return;
-      const urls = m.texto.match(urlRegex) ?? [];
-      urls.forEach(url => cargarLinkPreview(url));
+      const url = extraerPrimeraUrl(m.texto);
+      if (url) cargarLinkPreview(url);
     });
-  }, [mensajes]);
+  }, [mensajes.length]);
 
   const cargarMensajes = async () => {
     const { data } = await supabase.from("mensajes_chat")
@@ -168,6 +172,22 @@ export default function GrupoChatPage() {
     }
     const msgsConReply = data.map((m: any) => ({ ...m, reply: m.reply_id ? repliesMap[m.reply_id] ?? null : null }));
     setMensajes(msgsConReply as any);
+
+    // Cargar previews de links inmediatamente
+    const previews: Record<string, any> = {};
+    await Promise.all(msgsConReply.map(async (m: any) => {
+      if (!m.texto || m.eliminado) return;
+      const urlMatch = m.texto.match(/https?:\/\/[^\s]+/);
+      if (!urlMatch) return;
+      const url = urlMatch[0];
+      if (previews[url] !== undefined) return;
+      previews[url] = "loading";
+      try {
+        const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+        previews[url] = await res.json();
+      } catch { previews[url] = "error"; }
+    }));
+    setLinkPreviews(previews);
   };
 
   const enviar = async () => {
@@ -287,7 +307,8 @@ export default function GrupoChatPage() {
 
   const LinkPreview = ({ url }: { url: string }) => {
     const data = linkPreviews[url];
-    if (!data || (!data.title && !data.image)) return null;
+    if (!data || data === "loading" || data === "error") return null;
+    if (!data.title && !data.image) return null;
     return (
       <a href={url} target="_blank" rel="noopener noreferrer"
         style={{ display: "block", marginTop: 8, borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.3)", textDecoration: "none", transition: "border-color 0.15s" }}
