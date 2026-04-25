@@ -54,11 +54,9 @@ async function fetchLinkPreview(url: string): Promise<{ title?: string; descript
   }
 }
 
-// Extraer datos inmobiliarios directamente de la URL (slug del portal)
 function extraerDatosDeUrl(url: string): string {
   try {
     const slug = new URL(url).pathname;
-    // Eliminar guiones y extraer palabras clave del slug
     const palabras = slug.replace(/[-_/]/g, " ").replace(/\d+/g, " $& ").trim();
     return `Propiedad en portal inmobiliario. Slug: ${palabras}`;
   } catch {
@@ -78,9 +76,7 @@ export async function POST(req: NextRequest) {
     const subtipoPorGrupo = SUBTIPO_POR_GRUPO[grupo_id] ?? "ofrecido";
     const esOfrecido = subtipoPorGrupo === "ofrecido";
 
-    // ── Estrategia de enriquecimiento ────────────────────────────────────────
-    // 1. Texto con contenido descriptivo (con o sin link): usar el texto directamente
-    // 2. Solo URL sin texto: intentar fetch, si falla usar slug de la URL
+    // ── Enriquecimiento de texto ─────────────────────────────────────────────
     const urlEnMensaje = texto.match(/https?:\/\/\S+/)?.[0];
     const textoSinUrl = texto.replace(/https?:\/\/\S+/g, "").trim();
     const esSoloUrl = urlEnMensaje && textoSinUrl.length < 10;
@@ -88,34 +84,33 @@ export async function POST(req: NextRequest) {
     let textoParaParser = texto;
 
     if (esSoloUrl && urlEnMensaje) {
-      // Intentar fetch del link
       const preview = await fetchLinkPreview(urlEnMensaje);
       if (preview?.title || preview?.description) {
         textoParaParser = `${preview.title ?? ""}\n${preview.description ?? ""}\nURL: ${urlEnMensaje}`;
       } else {
-        // Portal bloqueó el scraping — usar datos del slug
         textoParaParser = extraerDatosDeUrl(urlEnMensaje);
       }
     }
-    // Si tiene texto descriptivo: usarlo tal cual — ya tiene toda la info necesaria
 
     const contextoGrupo = esOfrecido
       ? "Este mensaje viene del grupo de OFRECIDOS — es una propiedad disponible."
-      : "Este mensaje viene del grupo de BÚSQUEDAS — alguien está buscando una propiedad.";
+      : "Este mensaje viene del grupo de BÚSQUEDAS — un corredor busca propiedad para un cliente.";
 
-    // ── Prompts ──────────────────────────────────────────────────────────────
-    const promptOfrecido = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina y la región.
+    // ── Prompt ofrecidos ─────────────────────────────────────────────────────
+    const promptOfrecido = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina y la región (2da Circunscripción COCIR).
 ${contextoGrupo}
 
 MENSAJE: "${textoParaParser}"
 GRUPO: ${grupo_id}
 
 INSTRUCCIONES:
-- Extraé todos los datos que puedas del texto. Los corredores usan abreviaturas: "dorm" = dormitorios, "sup" = superficie, "cub" = cubierta, "m2" = metros cuadrados, "UDS/USD/U$S" = dólares, "$" = pesos.
-- Localidades comunes: Rosario, Zavalla, Funes, Roldán, Granadero Baigorria, Pérez, Soldini, etc.
-- Si mencionan precio con "USD/UDS/U$S", moneda = "USD". Si es "$" o "pesos", moneda = "ARS".
+- Extraé todos los datos que puedas. Abreviaturas frecuentes: "dorm"=dormitorios, "sup/m2"=superficie, "cub"=cubierta, "UDS/USD/U$S/u$d/u$s"=dólares, "$"=pesos ARS, "pb"=planta baja, "bº/brio"=barrio, "dpto"=departamento, "pje/pllo"=pasillo.
+- Localidades: Rosario, Funes, Roldán, Granadero Baigorria, Pérez, Soldini, Zavalla, Pueblo Esther, Alvear, Casilda, Carcarañá, General Lagos, Arroyo Seco, San Lorenzo, Capitán Bermúdez, Villa Gobernador Gálvez, Ricardone, Acebal, Totoras, Rufino, Venado Tuerto, Cañada de Gómez.
+- Moneda: "USD/UDS/U$S/u$d/u$s/dólares/dolares" → "USD". "$" o "pesos" → "ARS".
 - Links de portales (zonaprop, argenprop, mercadolibre, kiteprop, mariopuche, ficha.info, red.propia, ladedapropiedades, properati, navent) SIEMPRE son operaciones.
-- Booleans: true/false. "caracteristicas": array de strings.
+- "parrillero/parrilla" → agregar a caracteristicas. "pileta/piscina" → caracteristicas. "cochera/garage" → con_cochera=true. "barrio cerrado/country/club de campo" → barrio_cerrado=true. "apto crédito/hipotecario" → apto_credito=true. "acepta mascotas/pets" → acepta_mascotas=true.
+- NO es operación si el mensaje es: saludo, consulta de contacto de inmobiliaria, aviso de comisión compartida, respuesta a otro mensaje sin datos de propiedad.
+- Booleans: true/false. "caracteristicas": array de strings con amenities extras.
 
 Respondé SOLO con JSON válido, sin texto extra:
 
@@ -127,8 +122,8 @@ Si ES una operación:
   "dormitorios": número o null,
   "ambientes": número o null,
   "banos": número o null,
-  "zona": "barrio, calle o zona" o null,
-  "ciudad": "nombre de la ciudad/localidad o Rosario si no se menciona",
+  "zona": "barrio, calle o sector de la ciudad" o null,
+  "ciudad": "localidad exacta o Rosario si no se menciona",
   "precio": número o null,
   "moneda": "USD|ARS" o null,
   "superficie_total": número o null,
@@ -147,15 +142,41 @@ Si ES una operación:
 
 Si NO es una operación: { "es_operacion": false }`;
 
-    const promptBusqueda = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina y la región.
+    // ── Prompt búsquedas ─────────────────────────────────────────────────────
+    const promptBusqueda = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina y la región (2da Circunscripción COCIR).
 ${contextoGrupo}
 
 MENSAJE: "${textoParaParser}"
 GRUPO: ${grupo_id}
 
-INSTRUCCIONES:
-- Extraé todos los datos que puedas del texto. Los corredores usan abreviaturas: "dorm" = dormitorios, "sup" = superficie, "m2" = metros cuadrados, "UDS/USD/U$S" = dólares.
-- Booleans: true/false. "caracteristicas": array de strings.
+INSTRUCCIONES GENERALES:
+- Abreviaturas: "dorm"=dormitorios, "dpto"=departamento, "m2"=metros cuadrados, "UDS/USD/U$S/u$d/u$s/usd"=dólares, "$"=pesos, "pb"=planta baja, "pllo/pje"=pasillo, "monoambiente/mono"=1 ambiente.
+- Moneda: cualquier variante de USD → "USD". "$" o "pesos" → "ARS".
+- Localidades: Rosario, Funes, Roldán, Granadero Baigorria, Pérez, Soldini, Zavalla, Pueblo Esther, Alvear, Casilda, etc.
+
+INSTRUCCIONES ESPECÍFICAS PARA BÚSQUEDAS:
+- "con cochera/garage" → con_cochera=true
+- "apto crédito/hipotecario/nido" → apto_credito=true  
+- "acepta mascotas/perro/gato/pets" → acepta_mascotas=true
+- "barrio cerrado/country/club de campo" → barrio_cerrado=true
+- "no eléctrico" → agregar "no eléctrico" a caracteristicas
+- "al frente/contrafrente" → agregar a caracteristicas
+- "con balcón/terraza" → agregar a caracteristicas
+- "con parrillero/parrilla" → agregar a caracteristicas
+- "con pileta/piscina" → agregar a caracteristicas
+- "con patio/jardín" → agregar a caracteristicas
+- "luminoso/buena luz" → agregar a caracteristicas
+- "escriturable" → agregar a caracteristicas
+- "puede estar alquilado" → agregar a caracteristicas
+- "NO PB / no planta baja" → agregar "no planta baja" a caracteristicas
+- "NO último piso" → agregar "no último piso" a caracteristicas
+- "piso X en adelante" → agregar "piso mínimo X" a caracteristicas
+- "cocina separada" → agregar a caracteristicas
+- "con ascensor" → agregar a caracteristicas
+- "antigüedad hasta X años" → calcular: si hasta 10 años → antiguedad="muy bueno", hasta 15-20 → "bueno", hasta 25 → "bueno", a estrenar → "a estrenar"
+- Zona: si dicen "de calle X a calle Y" o "zona X/Y", capturalo como zona descriptiva
+- Si el mensaje es solo un saludo, consulta de contacto, pregunta por inmobiliaria, o aviso de comisión → es_operacion=false
+- presupuesto_max: el número que dicen como tope. Si dicen "aprox 1M" → 1000000 ARS. "1M pesos" → 1000000 ARS.
 
 Respondé SOLO con JSON válido, sin texto extra:
 
@@ -169,8 +190,8 @@ Si ES una búsqueda:
   "ambientes_min": número o null,
   "banos_min": número o null,
   "banos_max": número o null,
-  "zona": "barrio o zona" o null,
-  "ciudad": "nombre de la ciudad/localidad o Rosario si no se menciona",
+  "zona": "descripción de zona, barrio o rango de calles" o null,
+  "ciudad": "localidad exacta o Rosario si no se menciona",
   "presupuesto_min": número o null,
   "presupuesto_max": número o null,
   "moneda": "USD|ARS" o null,
@@ -187,11 +208,11 @@ Si ES una búsqueda:
   "descripcion_corta": "máximo 80 caracteres resumiendo la búsqueda"
 }
 
-Si NO es una búsqueda: { "es_operacion": false }`;
+Si NO es una búsqueda (saludo, consulta de contacto, pregunta por inmobiliaria, aviso de comisión compartida): { "es_operacion": false }`;
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 600,
+      max_tokens: 700,
       messages: [{ role: "user", content: esOfrecido ? promptOfrecido : promptBusqueda }],
     });
 
@@ -208,14 +229,11 @@ Si NO es una búsqueda: { "es_operacion": false }`;
     }
 
     if (!parsed.es_operacion) {
-      // Si es grupo MIR y tiene link de portal, forzar carga mínima
       const tienePortal =
         /zonaprop|argenprop|mercadolibre|kiteprop|mariopuche|properati|navent|ficha\.info|red\.propia|ladedapropiedades/i.test(texto);
-
       if (!tienePortal) {
         return NextResponse.json({ cargado: false, motivo: "no_es_operacion" });
       }
-
       parsed = {
         es_operacion: true,
         tipo_propiedad: "otro",
@@ -227,7 +245,7 @@ Si NO es una búsqueda: { "es_operacion": false }`;
         barrio_cerrado: false,
         uso_comercial: false,
         con_cochera: false,
-        caracteristicas: [],
+        caracteristicas: null,
       };
     }
 
@@ -258,7 +276,7 @@ Si NO es una búsqueda: { "es_operacion": false }`;
         barrio_cerrado:      parsed.barrio_cerrado ?? false,
         uso_comercial:       parsed.uso_comercial ?? false,
         con_cochera:         parsed.con_cochera ?? false,
-        caracteristicas:     parsed.caracteristicas ?? [],
+        caracteristicas:     (parsed.caracteristicas && parsed.caracteristicas.length > 0) ? parsed.caracteristicas : null,
         descripcion:         texto,
         activo:              true,
       };
@@ -280,14 +298,14 @@ Si NO es una búsqueda: { "es_operacion": false }`;
         banos_max:       parsed.banos_max ?? null,
         superficie_min:  parsed.superficie_min ?? null,
         superficie_max:  parsed.superficie_max ?? null,
-        tipo_superficie: parsed.tipo_superficie ?? null,
+        tipo_superficie: parsed.tipo_superficie ?? "total",
         apto_credito:    parsed.apto_credito ?? false,
         acepta_mascotas: parsed.acepta_mascotas ?? false,
         acepta_bitcoin:  parsed.acepta_bitcoin ?? false,
         barrio_cerrado:  parsed.barrio_cerrado ?? false,
         uso_comercial:   parsed.uso_comercial ?? false,
         con_cochera:     parsed.con_cochera ?? false,
-        caracteristicas: parsed.caracteristicas ?? [],
+        caracteristicas: (parsed.caracteristicas && parsed.caracteristicas.length > 0) ? parsed.caracteristicas : null,
         descripcion:     texto,
         activo:          true,
       };
