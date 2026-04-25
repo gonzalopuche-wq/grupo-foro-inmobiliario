@@ -94,6 +94,17 @@ export default function ForoPage() {
 
   // Chat estado completo
   const [chatMsgs, setChatMsgs] = useState<ChatMsg[]>([]);
+  const [mostrarModalEvento, setMostrarModalEvento] = useState(false);
+  const [eventoForm, setEventoForm] = useState({
+    titulo: "", descripcion: "", fecha: "", hora: "09:00",
+    lugar: "", plataforma: "presencial", link_reunion: "",
+    gratuito: true, precio_entrada: "", capacidad: "", link_externo: "",
+    tipo: "gfi",
+  });
+  const [guardandoEvento, setGuardandoEvento] = useState(false);
+  const [eventoMediaFiles, setEventoMediaFiles] = useState<{tipo:"foto"|"video";url:string;thumb?:string}[]>([]);
+  const [eventoLinkVideo, setEventoLinkVideo] = useState("");
+  const [eventoSubiendoFoto, setEventoSubiendoFoto] = useState(false);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [chatReplyMsg, setChatReplyMsg] = useState<ChatMsg | null>(null);
@@ -238,6 +249,66 @@ export default function ForoPage() {
         if (data) setChatMsgs(prev => prev.map(m => m.id === (data as any).id ? { ...data, reply: m.reply } as unknown as ChatMsg : m));
       })
       .subscribe();
+  };
+
+  const setEF = (k: string, v: any) => setEventoForm(p => ({ ...p, [k]: v }));
+
+  const subirFotosEvento = async (files: FileList) => {
+    if (!userId) return;
+    setEventoSubiendoFoto(true);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith("image/")) continue;
+      const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
+      const path = `${userId}/${Date.now()}_${i}.${ext}`;
+      const { data, error } = await supabase.storage.from("eventos").upload(path, file, { upsert: true, contentType: file.type });
+      if (!error && data) {
+        const { data: urlData } = supabase.storage.from("eventos").getPublicUrl(data.path);
+        setEventoMediaFiles(prev => [...prev, { tipo: "foto", url: urlData.publicUrl }]);
+      }
+    }
+    setEventoSubiendoFoto(false);
+  };
+
+  const agregarVideoEvento = () => {
+    if (!eventoLinkVideo.trim()) return;
+    const url = eventoLinkVideo.trim();
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    const thumb = ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/mqdefault.jpg` : undefined;
+    setEventoMediaFiles(prev => [...prev, { tipo: "video", url, thumb }]);
+    setEventoLinkVideo("");
+  };
+
+  const guardarEventoDesdeChat = async () => {
+    if (!userId || !eventoForm.titulo || !eventoForm.fecha) return;
+    setGuardandoEvento(true);
+    const fechaISO = new Date(`${eventoForm.fecha}T${eventoForm.hora}:00`).toISOString();
+    await supabase.from("eventos").insert({
+      titulo: eventoForm.titulo,
+      descripcion: eventoForm.descripcion || null,
+      fecha: fechaISO,
+      lugar: eventoForm.lugar || null,
+      plataforma: eventoForm.plataforma || null,
+      link_reunion: eventoForm.link_reunion || null,
+      gratuito: eventoForm.gratuito,
+      precio_entrada: eventoForm.gratuito ? null : (parseFloat(eventoForm.precio_entrada) || null),
+      capacidad: eventoForm.capacidad ? parseInt(eventoForm.capacidad) : null,
+      link_externo: eventoForm.link_externo || null,
+      tipo: eventoForm.tipo,
+      organizador_id: userId,
+      estado: "pendiente",
+      destacado: false,
+      media: eventoMediaFiles.length > 0 ? eventoMediaFiles : null,
+    });
+    setGuardandoEvento(false);
+    setMostrarModalEvento(false);
+    setEventoForm({ titulo: "", descripcion: "", fecha: "", hora: "09:00", lugar: "", plataforma: "presencial", link_reunion: "", gratuito: true, precio_entrada: "", capacidad: "", link_externo: "", tipo: "gfi" });
+    setEventoMediaFiles([]);
+    // Enviar mensaje al chat avisando del evento propuesto
+    await supabase.from("forum_chat_messages").insert({
+      user_id: userId,
+      body: `📅 Propuse un evento: "${eventoForm.titulo}" — pendiente de aprobación del admin.`,
+    });
   };
 
   const sendChat = async () => {
@@ -882,33 +953,48 @@ export default function ForoPage() {
                     <button onClick={() => setChatInputPreview(null)} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
                   </div>
                 )}
-                <div className="f-chat-input-row">
-                  <input
-                    ref={chatInputRef}
-                    placeholder="Escribí un mensaje..."
-                    value={chatInput}
-                    onChange={e => {
-                      const val = e.target.value;
-                      setChatInput(val);
-                      const urlMatch = val.match(/https?:\/\/[^\s]+/);
-                      if (urlMatch) {
-                        const url = urlMatch[0];
-                        if (chatInputPreviewTimer.current) clearTimeout(chatInputPreviewTimer.current);
-                        chatInputPreviewTimer.current = setTimeout(async () => {
-                          try {
-                            const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-                            const d = await res.json();
-                            if (d.title || d.image) setChatInputPreview({ url, data: d });
-                          } catch {}
-                        }, 600);
-                      } else {
-                        setChatInputPreview(null);
-                      }
-                    }}
-                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
-                    disabled={chatLoading}
-                  />
-                  <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || !chatInput.trim()}>Enviar</button>
+                {/* Botón + adjuntos */}
+                <div style={{ position: "relative" }}>
+                  <button
+                    onClick={() => setMostrarModalEvento(true)}
+                    style={{ width: 36, height: 36, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}
+                    title="Proponer evento"
+                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(200,0,0,0.1)")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}>
+                    📅
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", gap: 8, alignItems: "center", flex: 1 }}>
+                  <div style={{ flex: 1, display: "flex", gap: 8 }}>
+                    <input
+                      ref={chatInputRef}
+                      placeholder="Escribí un mensaje..."
+                      value={chatInput}
+                      style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setChatInput(val);
+                        const urlMatch = val.match(/https?:\/\/[^\s]+/);
+                        if (urlMatch) {
+                          const url = urlMatch[0];
+                          if (chatInputPreviewTimer.current) clearTimeout(chatInputPreviewTimer.current);
+                          chatInputPreviewTimer.current = setTimeout(async () => {
+                            try {
+                              const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+                              const d = await res.json();
+                              if (d.title || d.image) setChatInputPreview({ url, data: d });
+                            } catch {}
+                          }, 600);
+                        } else {
+                          setChatInputPreview(null);
+                        }
+                      }}
+                      onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
+                      disabled={chatLoading}
+                    />
+                    <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || !chatInput.trim()}>Enviar</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -960,6 +1046,174 @@ export default function ForoPage() {
           </div>
         </aside>
       </div>
+
+      {/* Modal proponer evento desde el chat del Foro */}
+      {mostrarModalEvento && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 500, padding: 20 }}
+          onClick={e => { if (e.target === e.currentTarget) setMostrarModalEvento(false); }}>
+          <div style={{ background: "#0f0f0f", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "28px 32px", width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#cc0000,transparent)", borderRadius: "8px 8px 0 0" }} />
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>
+              Proponer <span style={{ color: "#cc0000" }}>evento</span>
+            </div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>
+              💡 Tu propuesta será revisada por el admin antes de publicarse en el módulo de Eventos.
+            </div>
+
+            {/* Tipo */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Tipo</label>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {[["gfi","GFI®","#cc0000"],["cocir","COCIR","#f97316"],["cir","CIR","#818cf8"],["externo","Externo","#64748b"]].map(([k,l,c]) => (
+                  <button key={k} type="button" onClick={() => setEF("tipo", k)}
+                    style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${eventoForm.tipo === k ? c : "rgba(255,255,255,0.1)"}`, background: eventoForm.tipo === k ? `${c}22` : "transparent", color: eventoForm.tipo === k ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Título */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Título *</label>
+              <input value={eventoForm.titulo} onChange={e => setEF("titulo", e.target.value)}
+                placeholder="Ej: Desayuno GFI® — Agosto"
+                style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+            </div>
+
+            {/* Descripción */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Descripción</label>
+              <textarea value={eventoForm.descripcion} onChange={e => setEF("descripcion", e.target.value)}
+                placeholder="¿De qué trata el evento?"
+                style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", resize: "vertical", minHeight: 80 }} />
+            </div>
+
+            {/* Fecha y hora */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+              <div>
+                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Fecha *</label>
+                <input type="date" value={eventoForm.fecha} onChange={e => setEF("fecha", e.target.value)}
+                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Hora</label>
+                <input type="time" value={eventoForm.hora} onChange={e => setEF("hora", e.target.value)}
+                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              </div>
+            </div>
+
+            {/* Plataforma */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Plataforma</label>
+              <select value={eventoForm.plataforma} onChange={e => setEF("plataforma", e.target.value)}
+                style={{ width: "100%", padding: "9px 13px", background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}>
+                <option value="presencial">📍 Presencial</option>
+                <option value="zoom">🎥 Zoom</option>
+                <option value="meet">🎥 Google Meet</option>
+                <option value="youtube">▶️ YouTube Live</option>
+                <option value="teams">🎥 Teams</option>
+              </select>
+            </div>
+
+            {eventoForm.plataforma === "presencial" ? (
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Lugar</label>
+                <input value={eventoForm.lugar} onChange={e => setEF("lugar", e.target.value)}
+                  placeholder="Ej: Sede COCIR, San Martín 1234"
+                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              </div>
+            ) : (
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Link de reunión</label>
+                <input value={eventoForm.link_reunion} onChange={e => setEF("link_reunion", e.target.value)}
+                  placeholder="https://zoom.us/j/..."
+                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              </div>
+            )}
+
+            {/* Gratuito */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Costo</label>
+              <div style={{ display: "flex", gap: 10 }}>
+                {[["grat", true, "✓ Gratuito", "#22c55e"], ["pago", false, "💰 Con costo", "#eab308"]].map(([k, v, l, c]: any) => (
+                  <button key={k} type="button" onClick={() => setEF("gratuito", v)}
+                    style={{ flex: 1, padding: "8px", borderRadius: 4, border: `1px solid ${eventoForm.gratuito === v ? `${c}66` : "rgba(255,255,255,0.1)"}`, background: eventoForm.gratuito === v ? `${c}14` : "transparent", color: eventoForm.gratuito === v ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+              {!eventoForm.gratuito && (
+                <input type="number" value={eventoForm.precio_entrada} onChange={e => setEF("precio_entrada", e.target.value)}
+                  placeholder="Precio en ARS" style={{ width: "100%", marginTop: 8, padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              )}
+            </div>
+
+            {/* Capacidad y link externo */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+              <div>
+                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Capacidad (opcional)</label>
+                <input type="number" value={eventoForm.capacidad} onChange={e => setEF("capacidad", e.target.value)}
+                  placeholder="Sin límite"
+                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Link externo</label>
+                <input value={eventoForm.link_externo} onChange={e => setEF("link_externo", e.target.value)}
+                  placeholder="https://..."
+                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              </div>
+            </div>
+
+            {/* Fotos */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Fotos (opcional)</label>
+              <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "2px dashed rgba(255,255,255,0.1)", borderRadius: 6, cursor: "pointer" }}>
+                <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={e => e.target.files && subirFotosEvento(e.target.files)} />
+                <span style={{ fontSize: 22 }}>📷</span>
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{eventoSubiendoFoto ? "Subiendo..." : "Seleccionar fotos"}</span>
+              </label>
+              {/* Video */}
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <input value={eventoLinkVideo} onChange={e => setEventoLinkVideo(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); agregarVideoEvento(); } }}
+                  placeholder="Link de YouTube / video"
+                  style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 12, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <button type="button" onClick={agregarVideoEvento} disabled={!eventoLinkVideo.trim()}
+                  style={{ padding: "9px 14px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>
+                  + Video
+                </button>
+              </div>
+              {/* Preview media */}
+              {eventoMediaFiles.length > 0 && (
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+                  {eventoMediaFiles.map((m, i) => (
+                    <div key={i} style={{ position: "relative", width: 70, height: 70, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "#000" }}>
+                      {m.tipo === "foto"
+                        ? <img src={m.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
+                        : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>▶️</div>}
+                      <button type="button" onClick={() => setEventoMediaFiles(prev => prev.filter((_, j) => j !== i))}
+                        style={{ position: "absolute", top: 2, right: 2, background: "rgba(200,0,0,0.9)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Acciones */}
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20, borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 16 }}>
+              <button onClick={() => setMostrarModalEvento(false)}
+                style={{ padding: "9px 20px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer" }}>
+                Cancelar
+              </button>
+              <button onClick={guardarEventoDesdeChat} disabled={guardandoEvento || !eventoForm.titulo || !eventoForm.fecha}
+                style={{ padding: "9px 24px", background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoEvento || !eventoForm.titulo || !eventoForm.fecha ? 0.6 : 1 }}>
+                {guardandoEvento ? "Enviando..." : "Enviar propuesta"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {perfilRapidoId && (
         <PerfilRapidoModal
