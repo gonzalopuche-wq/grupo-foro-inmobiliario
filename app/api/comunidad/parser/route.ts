@@ -170,9 +170,18 @@ Si NO es una búsqueda: { "es_operacion": false }`;
 
     let parsed: any;
     try {
-      const content = response.content[0].type === "text" ? response.content[0].text : "";
-      parsed = JSON.parse(content);
-    } catch {
+      const raw = response.content[0].type === "text" ? response.content[0].text : "";
+      // Limpiar backticks y texto extra que la IA pueda agregar
+      const clean = raw
+        .replace(/```json\s*/gi, "")
+        .replace(/```\s*/g, "")
+        .trim();
+      // Extraer solo el objeto JSON si hay texto antes/después
+      const jsonMatch = clean.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON found");
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch (e) {
+      console.error("parse_error raw response:", response.content[0]);
       return NextResponse.json({ cargado: false, motivo: "parse_error" });
     }
 
