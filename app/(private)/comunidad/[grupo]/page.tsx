@@ -203,6 +203,24 @@ export default function GrupoChatPage() {
     ? mensajes.filter(m => m.texto.toLowerCase().includes(busqueda.toLowerCase()))
     : mensajes;
 
+  // Renderizar texto con links clickeables
+  const renderTexto = (texto: string) => {
+    const urlRegex = /(https?:\/\/\S+)/g;
+    const partes = texto.split(urlRegex);
+    return partes.map((parte, i) => {
+      if (parte.match(/^https?:\/\//)) {
+        return (
+          <a key={i} href={parte} target="_blank" rel="noopener noreferrer"
+            style={{ color: "#60a5fa", textDecoration: "underline", wordBreak: "break-all" }}
+            onClick={e => e.stopPropagation()}>
+            {parte}
+          </a>
+        );
+      }
+      return <span key={i}>{parte}</span>;
+    });
+  };
+
   const formatHora = (fecha: string) => new Date(fecha).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
   const formatFecha = (fecha: string) => {
     const d = new Date(fecha);
@@ -340,7 +358,7 @@ export default function GrupoChatPage() {
                         </div>
                       ) : (
                         <p style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                          {m.texto}
+                          {renderTexto(m.texto)}
                         </p>
                       )}
 
