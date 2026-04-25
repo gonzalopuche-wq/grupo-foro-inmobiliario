@@ -35,6 +35,22 @@ const SUBTIPO_POR_GRUPO: Record<string, "ofrecido" | "busqueda"> = {
   "ventas-vehiculos":       "ofrecido",
 };
 
+
+// Normalizar operación para mir_busquedas: "venta" → "compra", resto igual
+const OPERACION_BUSQUEDA_MAP: Record<string, string> = {
+  "venta": "compra",
+  "alquiler": "alquiler",
+  "alquiler_temporario": "alquiler_temporario",
+  "permuta": "permuta",
+  "campo": "campo",
+  "comercial": "comercial",
+  "fondo_comercio": "fondo_comercio",
+  "vehiculo": "vehiculo",
+  "compra": "compra",
+};
+const normalizeOperacionBusqueda = (op: string): string =>
+  OPERACION_BUSQUEDA_MAP[op] ?? op;
+
 async function fetchLinkPreview(url: string): Promise<{ title?: string; description?: string } | null> {
   try {
     const res = await fetch(url, {
@@ -284,7 +300,7 @@ Si NO es una búsqueda (saludo, consulta de contacto, pregunta por inmobiliaria,
       tabla = "mir_busquedas";
       payload = {
         perfil_id:       user_id,
-        operacion:       parsed.operacion ?? tipoOperacion,
+        operacion:       normalizeOperacionBusqueda(parsed.operacion ?? tipoOperacion),
         tipo_propiedad:  parsed.tipo_propiedad ?? "otro",
         zona:            parsed.zona ?? null,
         ciudad:          parsed.ciudad ?? "Rosario",
