@@ -23,7 +23,6 @@ const GRUPOS_MIR: Record<string, string> = {
   "ventas-vehiculos":       "vehiculo",
 };
 
-// Subtipo por grupo
 const SUBTIPO_POR_GRUPO: Record<string, "ofrecido" | "busqueda"> = {
   "ventas-ofrecidos":       "ofrecido",
   "ventas-busqueda":        "busqueda",
@@ -67,6 +66,7 @@ export async function POST(req: NextRequest) {
     }
 
     const subtipoPorGrupo = SUBTIPO_POR_GRUPO[grupo_id] ?? "ofrecido";
+    const esOfrecido = subtipoPorGrupo === "ofrecido";
 
     // Si el mensaje es solo un link, enriquecer con metadata
     let textoParaParser = texto;
@@ -78,33 +78,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Contexto del grupo para la IA
-    const contextoGrupo =
-      subtipoPorGrupo === "ofrecido"
-        ? "Este mensaje viene del grupo de OFRECIDOS — es una propiedad disponible para venta/alquiler."
-        : "Este mensaje viene del grupo de BÚSQUEDAS — alguien está buscando una propiedad.";
+    const contextoGrupo = esOfrecido
+      ? "Este mensaje viene del grupo de OFRECIDOS — es una propiedad disponible."
+      : "Este mensaje viene del grupo de BÚSQUEDAS — alguien está buscando una propiedad.";
 
-    // Parser IA
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 600,
-      messages: [
-        {
-          role: "user",
-          content: `Sos un parser de mensajes inmobiliarios. Analizá este mensaje de un corredor de Rosario, Argentina.
-
+    // ── Prompt diferenciado según subtipo ────────────────────────────────────
+    const promptOfrecido = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina.
 ${contextoGrupo}
 
 MENSAJE: "${textoParaParser}"
 GRUPO: ${grupo_id}
 
-IMPORTANTE:
-- Si contiene datos de una propiedad (incluso solo un link de portal inmobiliario), clasificalo como operación.
-- Links de portales (zonaprop, argenprop, mercadolibre, kiteprop, mariopuche, properati, navent) SIEMPRE son operaciones.
-- Booleans deben ser true/false, nunca strings.
-- Para "caracteristicas" devolvé un array de strings con lo que encuentres (ej: ["pileta","parrilla","cochera"]) o [].
+Links de portales (zonaprop, argenprop, mercadolibre, kiteprop, mariopuche, properati, navent) SIEMPRE son operaciones.
+Booleans: true/false, nunca strings. "caracteristicas": array de strings o [].
 
-Respondé SOLO con JSON válido, sin texto adicional:
+Respondé SOLO con JSON válido, sin texto extra:
 
 Si ES una operación:
 {
@@ -113,13 +101,13 @@ Si ES una operación:
   "operacion": "venta|alquiler|alquiler_temporario|permuta",
   "dormitorios": número o null,
   "ambientes": número o null,
-  "zona": "barrio o zona mencionada" o null,
-  "ciudad": "Rosario" (default si no se menciona otra),
+  "banos": número o null,
+  "zona": "barrio o zona" o null,
+  "ciudad": "Rosario",
   "precio": número o null,
   "moneda": "USD|ARS" o null,
   "superficie_total": número o null,
   "superficie_cubierta": número o null,
-  "superficie_min": número o null,
   "tipo_superficie": "cubierta|total|terreno" o null,
   "antiguedad": "a estrenar|reciclada|a reciclar|bueno|muy bueno|excelente" o null,
   "apto_credito": true o false,
@@ -129,32 +117,69 @@ Si ES una operación:
   "uso_comercial": true o false,
   "con_cochera": true o false,
   "caracteristicas": [],
-  "descripcion_corta": "resumen en máximo 80 caracteres"
+  "descripcion_corta": "máximo 80 caracteres"
 }
 
-Si NO es una operación (charla, consulta, saludo, etc.):
+Si NO es una operación: { "es_operacion": false }`;
+
+    const promptBusqueda = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina.
+${contextoGrupo}
+
+MENSAJE: "${textoParaParser}"
+GRUPO: ${grupo_id}
+
+Booleans: true/false, nunca strings. "caracteristicas": array de strings o [].
+
+Respondé SOLO con JSON válido, sin texto extra:
+
+Si ES una búsqueda:
 {
-  "es_operacion": false
-}`,
-        },
-      ],
+  "es_operacion": true,
+  "tipo_propiedad": "departamento|casa|local|terreno|campo|garage|cochera|oficina|ph|otro",
+  "operacion": "venta|alquiler|alquiler_temporario|permuta",
+  "dormitorios_min": número o null,
+  "dormitorios_max": número o null,
+  "ambientes_min": número o null,
+  "banos_min": número o null,
+  "banos_max": número o null,
+  "zona": "barrio o zona" o null,
+  "ciudad": "Rosario",
+  "presupuesto_min": número o null,
+  "presupuesto_max": número o null,
+  "moneda": "USD|ARS" o null,
+  "superficie_min": número o null,
+  "superficie_max": número o null,
+  "tipo_superficie": "cubierta|total|terreno" o null,
+  "apto_credito": true o false,
+  "acepta_mascotas": true o false,
+  "acepta_bitcoin": true o false,
+  "barrio_cerrado": true o false,
+  "uso_comercial": true o false,
+  "con_cochera": true o false,
+  "caracteristicas": [],
+  "descripcion_corta": "máximo 80 caracteres"
+}
+
+Si NO es una búsqueda: { "es_operacion": false }`;
+
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 600,
+      messages: [{ role: "user", content: esOfrecido ? promptOfrecido : promptBusqueda }],
     });
 
     let parsed: any;
     try {
-      const content =
-        response.content[0].type === "text" ? response.content[0].text : "";
+      const content = response.content[0].type === "text" ? response.content[0].text : "";
       parsed = JSON.parse(content);
     } catch {
       return NextResponse.json({ cargado: false, motivo: "parse_error" });
     }
 
     if (!parsed.es_operacion) {
-      // Si es grupo operacional y tiene link de portal, forzar carga mínima
+      // Si tiene link de portal inmobiliario, forzar carga mínima
       const tienePortal =
-        /zonaprop|argenprop|mercadolibre|kiteprop|mariopuche|properati|navent/i.test(
-          texto
-        );
+        /zonaprop|argenprop|mercadolibre|kiteprop|mariopuche|properati|navent/i.test(texto);
 
       if (!tienePortal) {
         return NextResponse.json({ cargado: false, motivo: "no_es_operacion" });
@@ -175,34 +200,67 @@ Si NO es una operación (charla, consulta, saludo, etc.):
       };
     }
 
-    // ── Insertar en la tabla correcta según subtipo ──────────────────────────
-    const tabla = subtipoPorGrupo === "ofrecido" ? "mir_ofrecidos" : "mir_busquedas";
+    // ── Construir payload según tabla destino ────────────────────────────────
+    let payload: Record<string, any>;
+    let tabla: string;
 
-    const payload = {
-      perfil_id:         user_id,
-      operacion:         parsed.operacion ?? tipoOperacion,
-      tipo_propiedad:    parsed.tipo_propiedad ?? "otro",
-      zona:              parsed.zona ?? null,
-      ciudad:            parsed.ciudad ?? "Rosario",
-      precio:            parsed.precio ?? null,
-      moneda:            parsed.moneda ?? null,
-      ambientes:         parsed.ambientes ?? null,
-      dormitorios:       parsed.dormitorios ?? null,
-      superficie_total:  parsed.superficie_total ?? null,
-      superficie_cubierta: parsed.superficie_cubierta ?? null,
-      superficie_min:    parsed.superficie_min ?? null,
-      tipo_superficie:   parsed.tipo_superficie ?? null,
-      antiguedad:        parsed.antiguedad ?? null,
-      apto_credito:      parsed.apto_credito ?? false,
-      acepta_mascotas:   parsed.acepta_mascotas ?? false,
-      acepta_bitcoin:    parsed.acepta_bitcoin ?? false,
-      barrio_cerrado:    parsed.barrio_cerrado ?? false,
-      uso_comercial:     parsed.uso_comercial ?? false,
-      con_cochera:       parsed.con_cochera ?? false,
-      caracteristicas:   parsed.caracteristicas ?? [],
-      descripcion:       texto,
-      activo:            true,
-    };
+    if (esOfrecido) {
+      tabla = "mir_ofrecidos";
+      payload = {
+        perfil_id:           user_id,
+        operacion:           parsed.operacion ?? tipoOperacion,
+        tipo_propiedad:      parsed.tipo_propiedad ?? "otro",
+        zona:                parsed.zona ?? null,
+        ciudad:              parsed.ciudad ?? "Rosario",
+        precio:              parsed.precio ?? null,
+        moneda:              parsed.moneda ?? null,
+        ambientes:           parsed.ambientes ?? null,
+        dormitorios:         parsed.dormitorios ?? null,
+        superficie_total:    parsed.superficie_total ?? null,
+        superficie_cubierta: parsed.superficie_cubierta ?? null,
+        superficie_min:      null,
+        tipo_superficie:     parsed.tipo_superficie ?? null,
+        antiguedad:          parsed.antiguedad ?? null,
+        apto_credito:        parsed.apto_credito ?? false,
+        acepta_mascotas:     parsed.acepta_mascotas ?? false,
+        acepta_bitcoin:      parsed.acepta_bitcoin ?? false,
+        barrio_cerrado:      parsed.barrio_cerrado ?? false,
+        uso_comercial:       parsed.uso_comercial ?? false,
+        con_cochera:         parsed.con_cochera ?? false,
+        caracteristicas:     parsed.caracteristicas ?? [],
+        descripcion:         texto,
+        activo:              true,
+      };
+    } else {
+      tabla = "mir_busquedas";
+      payload = {
+        perfil_id:       user_id,
+        operacion:       parsed.operacion ?? tipoOperacion,
+        tipo_propiedad:  parsed.tipo_propiedad ?? "otro",
+        zona:            parsed.zona ?? null,
+        ciudad:          parsed.ciudad ?? "Rosario",
+        presupuesto_min: parsed.presupuesto_min ?? null,
+        presupuesto_max: parsed.presupuesto_max ?? null,
+        moneda:          parsed.moneda ?? null,
+        ambientes_min:   parsed.ambientes_min ?? null,
+        dormitorios_min: parsed.dormitorios_min ?? null,
+        dormitorios_max: parsed.dormitorios_max ?? null,
+        banos_min:       parsed.banos_min ?? null,
+        banos_max:       parsed.banos_max ?? null,
+        superficie_min:  parsed.superficie_min ?? null,
+        superficie_max:  parsed.superficie_max ?? null,
+        tipo_superficie: parsed.tipo_superficie ?? null,
+        apto_credito:    parsed.apto_credito ?? false,
+        acepta_mascotas: parsed.acepta_mascotas ?? false,
+        acepta_bitcoin:  parsed.acepta_bitcoin ?? false,
+        barrio_cerrado:  parsed.barrio_cerrado ?? false,
+        uso_comercial:   parsed.uso_comercial ?? false,
+        con_cochera:     parsed.con_cochera ?? false,
+        caracteristicas: parsed.caracteristicas ?? [],
+        descripcion:     texto,
+        activo:          true,
+      };
+    }
 
     const { data: mirEntry, error: mirError } = await supabaseAdmin
       .from(tabla)
@@ -212,10 +270,16 @@ Si NO es una operación (charla, consulta, saludo, etc.):
 
     if (mirError) {
       console.error(`Error insertando en ${tabla}:`, mirError);
-      return NextResponse.json({ cargado: false, motivo: "db_error", detalle: mirError.message });
+      return NextResponse.json({
+        cargado: false,
+        motivo:  "db_error",
+        detalle: mirError.message,
+        tabla,
+        payload,
+      });
     }
 
-    // Actualizar el mensaje con referencia al MIR
+    // Actualizar mensaje con referencia al MIR
     if (mirEntry) {
       await supabaseAdmin
         .from("mensajes_chat")
@@ -228,11 +292,12 @@ Si NO es una operación (charla, consulta, saludo, etc.):
     }
 
     return NextResponse.json({
-      cargado:  true,
-      tipo:     subtipoPorGrupo,
+      cargado: true,
+      tipo:    subtipoPorGrupo,
       tabla,
-      mir_id:   mirEntry?.id,
+      mir_id:  mirEntry?.id,
     });
+
   } catch (err) {
     console.error("Error parser comunidad:", err);
     return NextResponse.json({ cargado: false, motivo: "error_interno" });
