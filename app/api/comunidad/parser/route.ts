@@ -9,6 +9,7 @@ const supabaseAdmin = createClient(
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
+// Grupos que van al MIR y su tipo de operación
 const GRUPOS_MIR: Record<string, string> = {
   "ventas-ofrecidos":       "venta",
   "ventas-busqueda":        "venta",
@@ -22,8 +23,8 @@ const GRUPOS_MIR: Record<string, string> = {
   "ventas-vehiculos":       "vehiculo",
 };
 
-// Inferir subtipo por nombre del grupo
-const SUBTIPO_POR_GRUPO: Record<string, string> = {
+// Subtipo por grupo
+const SUBTIPO_POR_GRUPO: Record<string, "ofrecido" | "busqueda"> = {
   "ventas-ofrecidos":       "ofrecido",
   "ventas-busqueda":        "busqueda",
   "alquileres-ofrecidos":   "ofrecido",
@@ -43,10 +44,12 @@ async function fetchLinkPreview(url: string): Promise<{ title?: string; descript
       signal: AbortSignal.timeout(4000),
     });
     const html = await res.text();
-    const title = html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i)?.[1]
-      ?? html.match(/<title>([^<]+)<\/title>/i)?.[1] ?? "";
-    const description = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i)?.[1]
-      ?? html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)?.[1] ?? "";
+    const title =
+      html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i)?.[1] ??
+      html.match(/<title>([^<]+)<\/title>/i)?.[1] ?? "";
+    const description =
+      html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i)?.[1] ??
+      html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)?.[1] ?? "";
     return { title, description };
   } catch {
     return null;
@@ -63,7 +66,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ cargado: false, motivo: "grupo_no_mir" });
     }
 
-    // Si el mensaje es solo un link, enriquecer con metadata del link
+    const subtipoPorGrupo = SUBTIPO_POR_GRUPO[grupo_id] ?? "ofrecido";
+
+    // Si el mensaje es solo un link, enriquecer con metadata
     let textoParaParser = texto;
     const urlMatch = texto.trim().match(/^https?:\/\/\S+$/);
     if (urlMatch) {
@@ -71,126 +76,163 @@ export async function POST(req: NextRequest) {
       if (preview?.title || preview?.description) {
         textoParaParser = `${preview.title ?? ""}\n${preview.description ?? ""}\nURL: ${texto}`;
       }
-      // Si no se puede obtener preview, igual intentar con el contexto del grupo
     }
 
-    // Contexto del grupo para ayudar a la IA
-    const contextoGrupo = grupo_id.includes("ofrecidos")
-      ? "Este mensaje viene del grupo de OFRECIDOS — probablemente es una propiedad en venta/alquiler."
-      : grupo_id.includes("busqueda") || grupo_id.includes("búsqueda")
-      ? "Este mensaje viene del grupo de BÚSQUEDAS — probablemente alguien busca una propiedad."
-      : "";
+    // Contexto del grupo para la IA
+    const contextoGrupo =
+      subtipoPorGrupo === "ofrecido"
+        ? "Este mensaje viene del grupo de OFRECIDOS — es una propiedad disponible para venta/alquiler."
+        : "Este mensaje viene del grupo de BÚSQUEDAS — alguien está buscando una propiedad.";
 
     // Parser IA
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 500,
-      messages: [{
-        role: "user",
-        content: `Sos un parser de mensajes inmobiliarios. Analizá este mensaje de un corredor inmobiliario de Rosario, Argentina.
+      max_tokens: 600,
+      messages: [
+        {
+          role: "user",
+          content: `Sos un parser de mensajes inmobiliarios. Analizá este mensaje de un corredor de Rosario, Argentina.
 
 ${contextoGrupo}
 
 MENSAJE: "${textoParaParser}"
 GRUPO: ${grupo_id}
 
-IMPORTANTE: Si el mensaje contiene datos de una propiedad (aunque sea solo un link con título de propiedad), clasificalo como operación. Los links de portales inmobiliarios (zonaprop, argenprop, mercadolibre, kiteprop, mariopuche, etc.) SIEMPRE son operaciones inmobiliarias.
+IMPORTANTE:
+- Si contiene datos de una propiedad (incluso solo un link de portal inmobiliario), clasificalo como operación.
+- Links de portales (zonaprop, argenprop, mercadolibre, kiteprop, mariopuche, properati, navent) SIEMPRE son operaciones.
+- Booleans deben ser true/false, nunca strings.
+- Para "caracteristicas" devolvé un array de strings con lo que encuentres (ej: ["pileta","parrilla","cochera"]) o [].
 
 Respondé SOLO con JSON válido, sin texto adicional:
 
 Si ES una operación:
 {
   "es_operacion": true,
-  "subtipo": "ofrecido" | "busqueda",
-  "tipo_inmueble": "departamento|casa|local|terreno|campo|vehiculo|otro",
-  "operacion": "venta|alquiler|alquiler_temporario|permuta|campo|comercial|fondo_comercio|vehiculo",
+  "tipo_propiedad": "departamento|casa|local|terreno|campo|garage|cochera|oficina|ph|otro",
+  "operacion": "venta|alquiler|alquiler_temporario|permuta",
   "dormitorios": número o null,
-  "zona": "zona/barrio mencionado o null",
+  "ambientes": número o null,
+  "zona": "barrio o zona mencionada" o null,
+  "ciudad": "Rosario" (default si no se menciona otra),
   "precio": número o null,
-  "moneda": "USD|ARS|null",
-  "superficie": número o null,
+  "moneda": "USD|ARS" o null,
+  "superficie_total": número o null,
+  "superficie_cubierta": número o null,
+  "superficie_min": número o null,
+  "tipo_superficie": "cubierta|total|terreno" o null,
+  "antiguedad": "a estrenar|reciclada|a reciclar|bueno|muy bueno|excelente" o null,
+  "apto_credito": true o false,
+  "acepta_mascotas": true o false,
+  "acepta_bitcoin": true o false,
+  "barrio_cerrado": true o false,
+  "uso_comercial": true o false,
+  "con_cochera": true o false,
+  "caracteristicas": [],
   "descripcion_corta": "resumen en máximo 80 caracteres"
 }
 
-Si NO es una operación (es charla, consulta, saludo, etc.):
+Si NO es una operación (charla, consulta, saludo, etc.):
 {
   "es_operacion": false
-}`
-      }]
+}`,
+        },
+      ],
     });
 
     let parsed: any;
     try {
-      const content = response.content[0].type === "text" ? response.content[0].text : "";
+      const content =
+        response.content[0].type === "text" ? response.content[0].text : "";
       parsed = JSON.parse(content);
     } catch {
       return NextResponse.json({ cargado: false, motivo: "parse_error" });
     }
 
     if (!parsed.es_operacion) {
-      // Si el grupo es de ofrecidos/búsquedas y tiene un link de portal, forzar la carga
-      const esGrupoOperacional = !!tipoOperacion;
-      const tienePortal = /zonaprop|argenprop|mercadolibre|kiteprop|mariopuche|properati|navent/i.test(texto);
-      
-      if (!(esGrupoOperacional && tienePortal)) {
+      // Si es grupo operacional y tiene link de portal, forzar carga mínima
+      const tienePortal =
+        /zonaprop|argenprop|mercadolibre|kiteprop|mariopuche|properati|navent/i.test(
+          texto
+        );
+
+      if (!tienePortal) {
         return NextResponse.json({ cargado: false, motivo: "no_es_operacion" });
       }
-      
-      // Forzar con datos mínimos del grupo
+
       parsed = {
         es_operacion: true,
-        subtipo: SUBTIPO_POR_GRUPO[grupo_id] ?? "ofrecido",
-        tipo_inmueble: "otro",
+        tipo_propiedad: "otro",
         operacion: tipoOperacion,
         descripcion_corta: texto.substring(0, 80),
+        apto_credito: false,
+        acepta_mascotas: false,
+        acepta_bitcoin: false,
+        barrio_cerrado: false,
+        uso_comercial: false,
+        con_cochera: false,
+        caracteristicas: [],
       };
     }
 
-    // Si la IA no determinó el subtipo, usar el del grupo
-    if (!parsed.subtipo) {
-      parsed.subtipo = SUBTIPO_POR_GRUPO[grupo_id] ?? "ofrecido";
-    }
+    // ── Insertar en la tabla correcta según subtipo ──────────────────────────
+    const tabla = subtipoPorGrupo === "ofrecido" ? "mir_ofrecidos" : "mir_busquedas";
 
-    // Cargar al MIR
-    const { data: mirEntry } = await supabaseAdmin
-      .from("mir")
-      .insert({
-        user_id,
-        subtipo: parsed.subtipo,
-        operacion: parsed.operacion ?? tipoOperacion,
-        tipo_inmueble: parsed.tipo_inmueble ?? "otro",
-        dormitorios: parsed.dormitorios ?? null,
-        zona: parsed.zona ?? null,
-        precio: parsed.precio ?? null,
-        moneda: parsed.moneda ?? null,
-        superficie: parsed.superficie ?? null,
-        descripcion: texto,
-        descripcion_corta: parsed.descripcion_corta ?? texto.substring(0, 80),
-        origen: "chat",
-        grupo_id,
-        activo: true,
-      })
+    const payload = {
+      perfil_id:         user_id,
+      operacion:         parsed.operacion ?? tipoOperacion,
+      tipo_propiedad:    parsed.tipo_propiedad ?? "otro",
+      zona:              parsed.zona ?? null,
+      ciudad:            parsed.ciudad ?? "Rosario",
+      precio:            parsed.precio ?? null,
+      moneda:            parsed.moneda ?? null,
+      ambientes:         parsed.ambientes ?? null,
+      dormitorios:       parsed.dormitorios ?? null,
+      superficie_total:  parsed.superficie_total ?? null,
+      superficie_cubierta: parsed.superficie_cubierta ?? null,
+      superficie_min:    parsed.superficie_min ?? null,
+      tipo_superficie:   parsed.tipo_superficie ?? null,
+      antiguedad:        parsed.antiguedad ?? null,
+      apto_credito:      parsed.apto_credito ?? false,
+      acepta_mascotas:   parsed.acepta_mascotas ?? false,
+      acepta_bitcoin:    parsed.acepta_bitcoin ?? false,
+      barrio_cerrado:    parsed.barrio_cerrado ?? false,
+      uso_comercial:     parsed.uso_comercial ?? false,
+      con_cochera:       parsed.con_cochera ?? false,
+      caracteristicas:   parsed.caracteristicas ?? [],
+      descripcion:       texto,
+      activo:            true,
+    };
+
+    const { data: mirEntry, error: mirError } = await supabaseAdmin
+      .from(tabla)
+      .insert(payload)
       .select("id")
       .single();
+
+    if (mirError) {
+      console.error(`Error insertando en ${tabla}:`, mirError);
+      return NextResponse.json({ cargado: false, motivo: "db_error", detalle: mirError.message });
+    }
 
     // Actualizar el mensaje con referencia al MIR
     if (mirEntry) {
       await supabaseAdmin
         .from("mensajes_chat")
         .update({
-          tipo: parsed.subtipo,
-          mir_id: mirEntry.id,
-          mir_tipo: parsed.subtipo,
+          tipo:     subtipoPorGrupo,
+          mir_id:   mirEntry.id,
+          mir_tipo: subtipoPorGrupo,
         })
         .eq("id", mensaje_id);
     }
 
     return NextResponse.json({
-      cargado: true,
-      tipo: parsed.subtipo,
-      mir_id: mirEntry?.id,
+      cargado:  true,
+      tipo:     subtipoPorGrupo,
+      tabla,
+      mir_id:   mirEntry?.id,
     });
-
   } catch (err) {
     console.error("Error parser comunidad:", err);
     return NextResponse.json({ cargado: false, motivo: "error_interno" });
