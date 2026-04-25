@@ -9,7 +9,6 @@ const supabaseAdmin = createClient(
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
-// Grupos que van al MIR y su tipo de operación
 const GRUPOS_MIR: Record<string, string> = {
   "ventas-ofrecidos":       "venta",
   "ventas-busqueda":        "venta",
@@ -39,8 +38,8 @@ const SUBTIPO_POR_GRUPO: Record<string, "ofrecido" | "busqueda"> = {
 async function fetchLinkPreview(url: string): Promise<{ title?: string; description?: string } | null> {
   try {
     const res = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0" },
-      signal: AbortSignal.timeout(4000),
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" },
+      signal: AbortSignal.timeout(5000),
     });
     const html = await res.text();
     const title =
@@ -49,9 +48,21 @@ async function fetchLinkPreview(url: string): Promise<{ title?: string; descript
     const description =
       html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i)?.[1] ??
       html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)?.[1] ?? "";
-    return { title, description };
+    return { title: title.trim(), description: description.trim() };
   } catch {
     return null;
+  }
+}
+
+// Extraer datos inmobiliarios directamente de la URL (slug del portal)
+function extraerDatosDeUrl(url: string): string {
+  try {
+    const slug = new URL(url).pathname;
+    // Eliminar guiones y extraer palabras clave del slug
+    const palabras = slug.replace(/[-_/]/g, " ").replace(/\d+/g, " $& ").trim();
+    return `Propiedad en portal inmobiliario. Slug: ${palabras}`;
+  } catch {
+    return `Link de propiedad: ${url}`;
   }
 }
 
@@ -59,7 +70,6 @@ export async function POST(req: NextRequest) {
   try {
     const { texto, grupo_id, user_id, mensaje_id } = await req.json();
 
-    // Verificar que el grupo va al MIR
     const tipoOperacion = GRUPOS_MIR[grupo_id];
     if (!tipoOperacion) {
       return NextResponse.json({ cargado: false, motivo: "grupo_no_mir" });
@@ -68,29 +78,44 @@ export async function POST(req: NextRequest) {
     const subtipoPorGrupo = SUBTIPO_POR_GRUPO[grupo_id] ?? "ofrecido";
     const esOfrecido = subtipoPorGrupo === "ofrecido";
 
-    // Si el mensaje es solo un link, enriquecer con metadata
+    // ── Estrategia de enriquecimiento ────────────────────────────────────────
+    // 1. Texto con contenido descriptivo (con o sin link): usar el texto directamente
+    // 2. Solo URL sin texto: intentar fetch, si falla usar slug de la URL
+    const urlEnMensaje = texto.match(/https?:\/\/\S+/)?.[0];
+    const textoSinUrl = texto.replace(/https?:\/\/\S+/g, "").trim();
+    const esSoloUrl = urlEnMensaje && textoSinUrl.length < 10;
+
     let textoParaParser = texto;
-    const urlMatch = texto.trim().match(/^https?:\/\/\S+$/);
-    if (urlMatch) {
-      const preview = await fetchLinkPreview(urlMatch[0]);
+
+    if (esSoloUrl && urlEnMensaje) {
+      // Intentar fetch del link
+      const preview = await fetchLinkPreview(urlEnMensaje);
       if (preview?.title || preview?.description) {
-        textoParaParser = `${preview.title ?? ""}\n${preview.description ?? ""}\nURL: ${texto}`;
+        textoParaParser = `${preview.title ?? ""}\n${preview.description ?? ""}\nURL: ${urlEnMensaje}`;
+      } else {
+        // Portal bloqueó el scraping — usar datos del slug
+        textoParaParser = extraerDatosDeUrl(urlEnMensaje);
       }
     }
+    // Si tiene texto descriptivo: usarlo tal cual — ya tiene toda la info necesaria
 
     const contextoGrupo = esOfrecido
       ? "Este mensaje viene del grupo de OFRECIDOS — es una propiedad disponible."
       : "Este mensaje viene del grupo de BÚSQUEDAS — alguien está buscando una propiedad.";
 
-    // ── Prompt diferenciado según subtipo ────────────────────────────────────
-    const promptOfrecido = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina.
+    // ── Prompts ──────────────────────────────────────────────────────────────
+    const promptOfrecido = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina y la región.
 ${contextoGrupo}
 
 MENSAJE: "${textoParaParser}"
 GRUPO: ${grupo_id}
 
-Links de portales (zonaprop, argenprop, mercadolibre, kiteprop, mariopuche, properati, navent) SIEMPRE son operaciones.
-Booleans: true/false, nunca strings. "caracteristicas": array de strings o [].
+INSTRUCCIONES:
+- Extraé todos los datos que puedas del texto. Los corredores usan abreviaturas: "dorm" = dormitorios, "sup" = superficie, "cub" = cubierta, "m2" = metros cuadrados, "UDS/USD/U$S" = dólares, "$" = pesos.
+- Localidades comunes: Rosario, Zavalla, Funes, Roldán, Granadero Baigorria, Pérez, Soldini, etc.
+- Si mencionan precio con "USD/UDS/U$S", moneda = "USD". Si es "$" o "pesos", moneda = "ARS".
+- Links de portales (zonaprop, argenprop, mercadolibre, kiteprop, mariopuche, ficha.info, red.propia, ladedapropiedades, properati, navent) SIEMPRE son operaciones.
+- Booleans: true/false. "caracteristicas": array de strings.
 
 Respondé SOLO con JSON válido, sin texto extra:
 
@@ -102,8 +127,8 @@ Si ES una operación:
   "dormitorios": número o null,
   "ambientes": número o null,
   "banos": número o null,
-  "zona": "barrio o zona" o null,
-  "ciudad": "Rosario",
+  "zona": "barrio, calle o zona" o null,
+  "ciudad": "nombre de la ciudad/localidad o Rosario si no se menciona",
   "precio": número o null,
   "moneda": "USD|ARS" o null,
   "superficie_total": número o null,
@@ -117,18 +142,20 @@ Si ES una operación:
   "uso_comercial": true o false,
   "con_cochera": true o false,
   "caracteristicas": [],
-  "descripcion_corta": "máximo 80 caracteres"
+  "descripcion_corta": "máximo 80 caracteres resumiendo la propiedad"
 }
 
 Si NO es una operación: { "es_operacion": false }`;
 
-    const promptBusqueda = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina.
+    const promptBusqueda = `Sos un parser de mensajes inmobiliarios de Rosario, Argentina y la región.
 ${contextoGrupo}
 
 MENSAJE: "${textoParaParser}"
 GRUPO: ${grupo_id}
 
-Booleans: true/false, nunca strings. "caracteristicas": array de strings o [].
+INSTRUCCIONES:
+- Extraé todos los datos que puedas del texto. Los corredores usan abreviaturas: "dorm" = dormitorios, "sup" = superficie, "m2" = metros cuadrados, "UDS/USD/U$S" = dólares.
+- Booleans: true/false. "caracteristicas": array de strings.
 
 Respondé SOLO con JSON válido, sin texto extra:
 
@@ -143,7 +170,7 @@ Si ES una búsqueda:
   "banos_min": número o null,
   "banos_max": número o null,
   "zona": "barrio o zona" o null,
-  "ciudad": "Rosario",
+  "ciudad": "nombre de la ciudad/localidad o Rosario si no se menciona",
   "presupuesto_min": número o null,
   "presupuesto_max": número o null,
   "moneda": "USD|ARS" o null,
@@ -157,7 +184,7 @@ Si ES una búsqueda:
   "uso_comercial": true o false,
   "con_cochera": true o false,
   "caracteristicas": [],
-  "descripcion_corta": "máximo 80 caracteres"
+  "descripcion_corta": "máximo 80 caracteres resumiendo la búsqueda"
 }
 
 Si NO es una búsqueda: { "es_operacion": false }`;
@@ -171,24 +198,19 @@ Si NO es una búsqueda: { "es_operacion": false }`;
     let parsed: any;
     try {
       const raw = response.content[0].type === "text" ? response.content[0].text : "";
-      // Limpiar backticks y texto extra que la IA pueda agregar
-      const clean = raw
-        .replace(/```json\s*/gi, "")
-        .replace(/```\s*/g, "")
-        .trim();
-      // Extraer solo el objeto JSON si hay texto antes/después
+      const clean = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
       const jsonMatch = clean.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("No JSON found");
       parsed = JSON.parse(jsonMatch[0]);
     } catch (e) {
-      console.error("parse_error raw response:", response.content[0]);
+      console.error("parse_error raw:", response.content[0]);
       return NextResponse.json({ cargado: false, motivo: "parse_error" });
     }
 
     if (!parsed.es_operacion) {
-      // Si tiene link de portal inmobiliario, forzar carga mínima
+      // Si es grupo MIR y tiene link de portal, forzar carga mínima
       const tienePortal =
-        /zonaprop|argenprop|mercadolibre|kiteprop|mariopuche|properati|navent/i.test(texto);
+        /zonaprop|argenprop|mercadolibre|kiteprop|mariopuche|properati|navent|ficha\.info|red\.propia|ladedapropiedades/i.test(texto);
 
       if (!tienePortal) {
         return NextResponse.json({ cargado: false, motivo: "no_es_operacion" });
@@ -198,7 +220,7 @@ Si NO es una búsqueda: { "es_operacion": false }`;
         es_operacion: true,
         tipo_propiedad: "otro",
         operacion: tipoOperacion,
-        descripcion_corta: texto.substring(0, 80),
+        descripcion_corta: textoSinUrl.substring(0, 80) || texto.substring(0, 80),
         apto_credito: false,
         acepta_mascotas: false,
         acepta_bitcoin: false,
@@ -209,7 +231,7 @@ Si NO es una búsqueda: { "es_operacion": false }`;
       };
     }
 
-    // ── Construir payload según tabla destino ────────────────────────────────
+    // ── Payload según tabla ──────────────────────────────────────────────────
     let payload: Record<string, any>;
     let tabla: string;
 
@@ -288,7 +310,6 @@ Si NO es una búsqueda: { "es_operacion": false }`;
       });
     }
 
-    // Actualizar mensaje con referencia al MIR
     if (mirEntry) {
       await supabaseAdmin
         .from("mensajes_chat")
