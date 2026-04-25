@@ -258,8 +258,11 @@ export default function GrupoChatPage() {
     } else {
       reacs[emoji] = [...usuarios, userId];
     }
-    await supabase.from("mensajes_chat").update({ reacciones: reacs }).eq("id", msgId);
+    // Optimistic update inmediato
+    setMensajes(prev => prev.map(m => m.id === msgId ? { ...m, reacciones: reacs } : m));
     setEmojiMsgId(null);
+    // Persistir en background
+    supabase.from("mensajes_chat").update({ reacciones: reacs }).eq("id", msgId);
   };
 
   const reenviar = (msg: Mensaje) => {
@@ -407,7 +410,11 @@ export default function GrupoChatPage() {
                   style={{ display: "flex", justifyContent: esMio ? "flex-end" : "flex-start", marginBottom: 4, padding: "0 4px", position: "relative" }}
                   onClick={() => !eliminado && setMenuMsgId(prev => prev === m.id ? null : m.id)}>
 
-                  <div style={{ maxWidth: "78%" }}>
+                  <div style={{ maxWidth: "78%", position: "relative" }}>
+                    {/* Indicador toqueable */}
+                    {!eliminado && (
+                      <div style={{ position: "absolute", [esMio ? "left" : "right"]: -18, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.2)", fontSize: 14, lineHeight: 1, userSelect: "none" }}>⋮</div>
+                    )}
                     {/* Nombre */}
                     {!esMio && !eliminado && (
                       <div style={{ fontSize: 10, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, paddingLeft: 4 }}>
