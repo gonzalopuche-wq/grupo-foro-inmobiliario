@@ -216,6 +216,16 @@ export default function MirPage() {
     supabase.from("indicadores").select("valor").eq("clave", "costo_match_mir").single()
       .then(({ data }) => { if (data?.valor) setCostoMatch(data.valor); });
     cargarDatos();
+
+    // ── Realtime: refrescar cuando el parser inserta desde el chat ───────────
+    const channelMir = supabase.channel(`mir_realtime_${Date.now()}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "mir_ofrecidos" },
+        () => { cargarDatos(); })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "mir_busquedas" },
+        () => { cargarDatos(); })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channelMir); };
   }, []);
 
   useEffect(() => {
@@ -236,10 +246,8 @@ export default function MirPage() {
           table: "mir_mensajes",
           filter: `chat_id=eq.${chatId}`
         }, (payload) => {
-          // Agregar mensaje directamente al estado sin hacer fetch
           const msg = payload.new as MirMensaje;
           setMensajes(prev => {
-            // Evitar duplicados
             if (prev.some(m => m.id === msg.id)) return prev;
             return [...prev, msg];
           });
@@ -288,7 +296,6 @@ export default function MirPage() {
     const chatsConInfo = await Promise.all((data as any[]).map(async (c) => {
       const esA = c.corredor_a === uid;
       const perfilOtro = esA ? c.perfil_b : c.perfil_a;
-      // Buscar título de la publicación
       let titulo = "";
       if (c.publicacion_tipo === "ofrecido") {
         const of = ofrecidos.find(o => o.id === c.publicacion_id);
@@ -297,7 +304,6 @@ export default function MirPage() {
         const bu = busquedas.find(b => b.id === c.publicacion_id);
         titulo = bu ? `${bu.tipo_propiedad} · ${bu.ciudad}` : "Búsqueda";
       }
-      // Contar no leídos
       const { count } = await supabase.from("mir_mensajes")
         .select("*", { count: "exact", head: true })
         .eq("chat_id", c.id).eq("leido", false).neq("autor_id", uid);
@@ -312,7 +318,6 @@ export default function MirPage() {
       .eq("chat_id", chatId)
       .order("created_at", { ascending: true });
     setMensajes((data as unknown as MirMensaje[]) ?? []);
-    // Marcar como leídos
     if (userId) {
       await supabase.from("mir_mensajes").update({ leido: true })
         .eq("chat_id", chatId).eq("leido", false).neq("autor_id", userId);
@@ -321,7 +326,6 @@ export default function MirPage() {
 
   const abrirChat = async (pubId: string, pubTipo: "ofrecido" | "busqueda", destinatarioId: string) => {
     if (!userId) return;
-    // Buscar chat existente o crear uno
     const { data: existente } = await supabase.from("mir_chats")
       .select("*")
       .eq("publicacion_id", pubId)
@@ -344,9 +348,8 @@ export default function MirPage() {
     if (!userId || !chatActivo || !textoMensaje.trim() || enviandoMsg) return;
     setEnviandoMsg(true);
     const texto = textoMensaje.trim();
-    setTextoMensaje(""); // limpiar inmediatamente
+    setTextoMensaje("");
 
-    // Optimistic update — mostrar el mensaje antes de que confirme el servidor
     const msgTemp: MirMensaje = {
       id: `temp-${Date.now()}`,
       chat_id: chatActivo.id,
@@ -361,7 +364,6 @@ export default function MirPage() {
       chat_id: chatActivo.id, autor_id: userId, texto,
     }).select().single();
 
-    // Reemplazar el temp por el real
     if (inserted) {
       setMensajes(prev => prev.map(m => m.id === msgTemp.id ? (inserted as MirMensaje) : m));
     }
@@ -375,13 +377,11 @@ export default function MirPage() {
     const { pub, tipo, pubTipo } = modalInteres;
     setInteresando(pub.id);
     const destinatarioId = pub.perfil_id;
-    // Insertar interés
     await supabase.from("mir_intereses").upsert({
       tipo, publicacion_id: pub.id, publicacion_tipo: pubTipo,
       remitente_id: userId, destinatario_id: destinatarioId,
       mensaje: msgInteres || null, leido: false,
     }, { onConflict: "publicacion_id,remitente_id,tipo" });
-    // Notificar
     await supabase.from("notificaciones").insert({
       perfil_id: destinatarioId,
       tipo: "mir_interes",
@@ -389,7 +389,6 @@ export default function MirPage() {
       mensaje: msgInteres || (tipo === "me_interesa" ? "Un colega está interesado en tu ofrecido." : "Un colega tiene algo que coincide con tu búsqueda."),
       leida: false,
     });
-    // Abrir chat directo
     setModalInteres(null);
     setMsgInteres("");
     await abrirChat(pub.id, pubTipo, destinatarioId);
@@ -538,7 +537,6 @@ export default function MirPage() {
     }));
   };
 
-  // Render botones Me interesa / Tengo
   const BotonesInteres = ({ pub, pubTipo }: { pub: Ofrecido | Busqueda; pubTipo: "ofrecido" | "busqueda" }) => {
     if (pub.perfil_id === userId) return null;
     const yaInteresa = yaMostreInteres(pub.id, "me_interesa");
@@ -618,7 +616,6 @@ export default function MirPage() {
         .mir-btn-desbloquear:disabled { opacity: 0.5; cursor: not-allowed; }
         .mir-costo { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 4px; text-align: center; }
         .mir-nota { font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; padding: 8px 16px; background: rgba(200,0,0,0.04); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; margin-bottom: 12px; }
-        /* Chat styles */
         .mir-chats-layout { display: grid; grid-template-columns: 280px 1fr; gap: 16px; height: calc(100vh - 200px); min-height: 400px; }
         .mir-chats-lista { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow-y: auto; }
         .mir-chat-item { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 10px; }
@@ -651,11 +648,9 @@ export default function MirPage() {
         .mir-chat-send:hover { background: #e60000; }
         .mir-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
         .mir-chat-vacio { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; color: rgba(255,255,255,0.2); }
-        /* Modal interes */
         .mir-interes-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
         .mir-interes-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; padding: 28px 32px; width: 100%; max-width: 420px; position: relative; }
         .mir-interes-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 8px 8px 0 0; }
-        /* Filtros */
         .filtro-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; display: flex; justify-content: flex-end; }
         .filtro-panel { width: 420px; max-width: 100vw; background: #111; border-left: 1px solid rgba(255,255,255,0.1); height: 100vh; overflow-y: auto; display: flex; flex-direction: column; animation: slideIn 0.25s ease; }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
@@ -912,7 +907,6 @@ export default function MirPage() {
       {/* CHATS */}
       {vista === "chats" && (
         <div className="mir-chats-layout">
-          {/* Lista de chats */}
           <div className="mir-chats-lista">
             {chats.length === 0 ? (
               <div style={{padding:32,textAlign:"center",color:"rgba(255,255,255,0.2)",fontSize:13,fontStyle:"italic"}}>
@@ -936,7 +930,6 @@ export default function MirPage() {
             })}
           </div>
 
-          {/* Ventana de chat */}
           <div className="mir-chat-ventana">
             {!chatActivo ? (
               <div className="mir-chat-vacio">
