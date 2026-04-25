@@ -51,6 +51,8 @@ export default function GrupoChatPage() {
   const [menuMsgId, setMenuMsgId] = useState<string | null>(null);
   const [emojiMsgId, setEmojiMsgId] = useState<string | null>(null);
   const [linkPreviews, setLinkPreviews] = useState<Record<string, any>>({});
+  const [inputPreview, setInputPreview] = useState<{ url: string; data: any } | null>(null);
+  const inputPreviewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const editRef = useRef<HTMLTextAreaElement>(null);
@@ -195,6 +197,7 @@ export default function GrupoChatPage() {
     setEnviando(true);
     const textoEnviar = texto.trim();
     setTexto("");
+    setInputPreview(null);
     const replyId = replyMsg?.id ?? null;
     setReplyMsg(null);
 
@@ -305,30 +308,36 @@ export default function GrupoChatPage() {
     else mensajesPorFecha.push({ fecha, msgs: [m] });
   });
 
+  const PreviewCard = ({ url, data, onClose }: { url: string; data: any; onClose?: () => void }) => (
+    <a href={url} target="_blank" rel="noopener noreferrer"
+      style={{ display: "flex", gap: 10, marginTop: 6, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.35)", textDecoration: "none", position: "relative", minHeight: 72 }}
+      onClick={e => e.stopPropagation()}>
+      {data.image && (
+        <div style={{ width: 72, minWidth: 72, background: "#000", flexShrink: 0 }}>
+          <img src={data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = "none"; }} />
+        </div>
+      )}
+      <div style={{ flex: 1, padding: "8px 10px 8px 0", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        {data.siteName && <div style={{ fontSize: 9, color: "#60a5fa", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>{data.siteName}</div>}
+        {data.title && <div style={{ fontSize: 12, color: "#fff", fontWeight: 600, fontFamily: "Inter,sans-serif", lineHeight: 1.3, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.title}</div>}
+        {data.description && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.description}</div>}
+        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginTop: 3, fontFamily: "Inter,sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{new URL(url).hostname}</div>
+      </div>
+      {onClose && (
+        <button onClick={e => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+          style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: 20, height: 20, color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>
+          ×
+        </button>
+      )}
+    </a>
+  );
+
   const LinkPreview = ({ url }: { url: string }) => {
     const data = linkPreviews[url];
     if (!data || data === "loading" || data === "error") return null;
     if (!data.title && !data.image) return null;
-    return (
-      <a href={url} target="_blank" rel="noopener noreferrer"
-        style={{ display: "block", marginTop: 8, borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.3)", textDecoration: "none", transition: "border-color 0.15s" }}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)")}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
-        onClick={e => e.stopPropagation()}>
-        {data.image && (
-          <div style={{ width: "100%", maxHeight: 180, overflow: "hidden", background: "#000" }}>
-            <img src={data.image} alt="" style={{ width: "100%", objectFit: "cover", display: "block", maxHeight: 180 }}
-              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-          </div>
-        )}
-        <div style={{ padding: "8px 10px" }}>
-          {data.siteName && <div style={{ fontSize: 9, color: "#60a5fa", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 3 }}>{data.siteName}</div>}
-          {data.title && <div style={{ fontSize: 12, color: "#fff", fontWeight: 600, fontFamily: "Inter,sans-serif", lineHeight: 1.3, marginBottom: 3 }}>{data.title}</div>}
-          {data.description && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif", lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.description}</div>}
-          <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", marginTop: 4, fontFamily: "Inter,sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{url}</div>
-        </div>
-      </a>
-    );
+    return <PreviewCard url={url} data={data} />;
   };
 
   if (loading || !grupo) return (
@@ -551,11 +560,34 @@ export default function GrupoChatPage() {
             Los mensajes de ofrecidos y búsquedas se cargan al MIR automáticamente
           </div>
         )}
-        <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+        {/* Preview del link mientras escribís */}
+        {inputPreview && (
+          <PreviewCard url={inputPreview.url} data={inputPreview.data} onClose={() => setInputPreview(null)} />
+        )}
+
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-end", marginTop: inputPreview ? 8 : 0 }}>
           <textarea
             ref={inputRef}
             value={texto}
-            onChange={e => setTexto(e.target.value)}
+            onChange={e => {
+              const val = e.target.value;
+              setTexto(val);
+              // Detectar URL y cargar preview
+              const urlMatch = val.match(/https?:\/\/[^\s]+/);
+              if (urlMatch) {
+                const url = urlMatch[0];
+                if (inputPreviewTimer.current) clearTimeout(inputPreviewTimer.current);
+                inputPreviewTimer.current = setTimeout(async () => {
+                  try {
+                    const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+                    const data = await res.json();
+                    if (data.title || data.image) setInputPreview({ url, data });
+                  } catch {}
+                }, 600);
+              } else {
+                setInputPreview(null);
+              }
+            }}
             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
             placeholder="Escribí un mensaje..."
             rows={1}
