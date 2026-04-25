@@ -454,6 +454,11 @@ export default function GrupoChatPage() {
                         </p>
                       )}
 
+                      {/* Link preview */}
+                      {!eliminado && extraerPrimeraUrl(m.texto ?? "") && (
+                        <LinkPreview url={extraerPrimeraUrl(m.texto ?? "")!} />
+                      )}
+
                       {/* Meta */}
                       {!eliminado && (
                         <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", textAlign: "right", marginTop: 4, fontFamily: "Inter,sans-serif", display: "flex", gap: 5, justifyContent: "flex-end", alignItems: "center" }}>
