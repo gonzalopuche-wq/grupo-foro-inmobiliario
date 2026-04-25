@@ -85,19 +85,28 @@ export default function GrupoChatPage() {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensajes_chat", filter: `grupo_id=eq.${grupoId}` },
         async (payload) => {
           const { data } = await supabase.from("mensajes_chat")
-            .select("*, perfiles(nombre,apellido,matricula), reply:reply_id(id,texto,user_id,perfiles(nombre,apellido))")
+            .select("*, perfiles(nombre,apellido,matricula)")
             .eq("id", payload.new.id).single();
-          if (data) setMensajes(prev => {
+          if (!data) return;
+          // Cargar reply si tiene
+          let reply = null;
+          if ((data as any).reply_id) {
+            const { data: r } = await supabase.from("mensajes_chat")
+              .select("id,texto,user_id,perfiles(nombre,apellido)").eq("id", (data as any).reply_id).single();
+            reply = r ?? null;
+          }
+          const msgConReply = { ...data, reply };
+          setMensajes(prev => {
             if (prev.some(m => m.id === (data as any).id)) return prev;
-            return [...prev, data as any];
+            return [...prev, msgConReply as any];
           });
         })
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "mensajes_chat", filter: `grupo_id=eq.${grupoId}` },
         async (payload) => {
           const { data } = await supabase.from("mensajes_chat")
-            .select("*, perfiles(nombre,apellido,matricula), reply:reply_id(id,texto,user_id,perfiles(nombre,apellido))")
+            .select("*, perfiles(nombre,apellido,matricula)")
             .eq("id", payload.new.id).single();
-          if (data) setMensajes(prev => prev.map(m => m.id === (data as any).id ? data as any : m));
+          if (data) setMensajes(prev => prev.map(m => m.id === (data as any).id ? { ...data, reply: m.reply } as any : m));
         })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -143,11 +152,22 @@ export default function GrupoChatPage() {
 
   const cargarMensajes = async () => {
     const { data } = await supabase.from("mensajes_chat")
-      .select("*, perfiles(nombre,apellido,matricula), reply:reply_id(id,texto,user_id,perfiles(nombre,apellido))")
+      .select("*, perfiles(nombre,apellido,matricula)")
       .eq("grupo_id", grupoId)
       .order("created_at", { ascending: true })
       .limit(200);
-    if (data) setMensajes(data as any);
+    if (!data) return;
+    // Cargar replies manualmente
+    const replyIds = [...new Set(data.map((m: any) => m.reply_id).filter(Boolean))];
+    let repliesMap: Record<string, any> = {};
+    if (replyIds.length > 0) {
+      const { data: replies } = await supabase.from("mensajes_chat")
+        .select("id, texto, user_id, perfiles(nombre,apellido)")
+        .in("id", replyIds);
+      (replies ?? []).forEach((r: any) => { repliesMap[r.id] = r; });
+    }
+    const msgsConReply = data.map((m: any) => ({ ...m, reply: m.reply_id ? repliesMap[m.reply_id] ?? null : null }));
+    setMensajes(msgsConReply as any);
   };
 
   const enviar = async () => {
@@ -171,7 +191,7 @@ export default function GrupoChatPage() {
     const { data: msg } = await supabase.from("mensajes_chat").insert({
       grupo_id: grupoId, user_id: userId, texto: textoEnviar, tipo: "mensaje",
       reply_id: replyId,
-    }).select("*, perfiles(nombre,apellido,matricula), reply:reply_id(id,texto,user_id,perfiles(nombre,apellido))").single();
+    }).select("*, perfiles(nombre,apellido,matricula)").single();
 
     if (msg) setMensajes(prev => prev.map(m => m.id === temp.id ? msg as any : m));
 
