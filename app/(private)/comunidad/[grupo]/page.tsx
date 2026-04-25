@@ -411,9 +411,13 @@ export default function GrupoChatPage() {
                   onClick={() => !eliminado && setMenuMsgId(prev => prev === m.id ? null : m.id)}>
 
                   <div style={{ maxWidth: "78%", position: "relative" }}>
-                    {/* Indicador toqueable */}
+                    {/* Indicador toqueable — flecha arriba a la derecha */}
                     {!eliminado && (
-                      <div style={{ position: "absolute", [esMio ? "left" : "right"]: -20, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.35)", fontSize: 18, lineHeight: 1, userSelect: "none", cursor: "pointer" }}>⋮</div>
+                      <div style={{ position: "absolute", right: 4, top: -10, background: "rgba(40,40,40,0.9)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 10 }}>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                          <path d="M2 6.5L5 3.5L8 6.5" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
                     )}
                     {/* Nombre */}
                     {!esMio && !eliminado && (
