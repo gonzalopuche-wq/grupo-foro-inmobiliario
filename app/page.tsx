@@ -600,8 +600,8 @@ export default function LandingPage() {
                 <div style={{fontSize:9,fontWeight:600,letterSpacing:".24em",textTransform:"uppercase",color:"var(--t4)",marginBottom:8}}>{cat}</div>
                 {items.map(({ic,n})=>(
                   <div key={n} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:1,marginBottom:3,transition:"border-color .2s"}}
-                    onMouseEnter={e=>(e.currentTarget.style.borderColor="rgba(204,0,0,0.3)")}
-                    onMouseLeave={e=>(e.currentTarget.style.borderColor="rgba(255,255,255,0.06)")}>
+                    onMouseEnter={e=>(e.currentTarget.style.borderColor='rgba(204,0,0,0.3)')}
+                    onMouseLeave={e=>(e.currentTarget.style.borderColor='rgba(255,255,255,0.06)')}>
                     <span style={{fontSize:16,flexShrink:0}}>{ic}</span>
                     <span style={{fontSize:12,color:"var(--t1)",flex:1}}>{n}</span>
                     <span style={{fontSize:10,color:"rgba(204,0,0,0.4)"}}>🔒</span>
@@ -638,8 +638,8 @@ export default function LandingPage() {
                 {ic:"🔔",t:"Alertas y notificaciones",d:"Push, mail y WhatsApp por módulo. Configurables"},
               ].map(({ic,t,d})=>(
                 <div key={t} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"11px 14px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:1,transition:"border-color .2s,background .2s"}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(204,0,0,0.25)";e.currentTarget.style.background="var(--s3)"}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.06)";e.currentTarget.style.background="var(--s2)"}}>
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(204,0,0,0.25)';e.currentTarget.style.background='var(--s3)'}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.06)';e.currentTarget.style.background='var(--s2)'}}>
                   <span style={{fontSize:17,flexShrink:0,marginTop:1}}>{ic}</span>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:12,fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#fff",marginBottom:2}}>{t}</div>
