@@ -17,7 +17,7 @@ const HEATMAP_DOTS = [
 ];
 
 const MODULOS = [
-  { ic:"◈", t:"Motor MIR", d:"Match Inmobiliario de Rosario. Cruzá ofrecidos y búsquedas entre colegas en tiempo real.", tag:"t", tl:"Activo" },
+  { ic:"◈", t:"Motor MIR", d:"Match Inmobiliario 2da Circ. COCIR. Cruzá ofrecidos y búsquedas entre colegas en tiempo real.", tag:"t", tl:"Activo" },
   { ic:"◉", t:"Cotizaciones", d:"Dólar blue, ICL, IPC, JUS actualizados al instante. Match entre colegas con extracción IA.", tag:"t", tl:"Activo" },
   { ic:"▣", t:"Padrón COCIR", d:"2.189 corredores matriculados. Actualización automática cada lunes desde la fuente oficial.", tag:"t", tl:"Activo" },
   { ic:"◎", t:"Eventos", d:"Desayunos del Foro, mesas de negocios y capacitaciones con inscripción integrada.", tag:"t", tl:"Activo" },
@@ -451,7 +451,7 @@ export default function LandingPage() {
 
             <div style={{position:'absolute',top:'43%',left:'53%',display:'flex',alignItems:'center',gap:8,zIndex:5,pointerEvents:'none'}}>
               <div style={{width:10,height:10,borderRadius:'50%',background:'#cc0000',boxShadow:'0 0 0 4px rgba(204,0,0,.2),0 0 0 8px rgba(204,0,0,.08)'}}/>
-              <span style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:'0.22em',textTransform:'uppercase',color:'rgba(255,255,255,0.65)'}}>Rosario</span>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:'0.22em',textTransform:'uppercase',color:'rgba(255,255,255,0.65)'}}>2da Circ.</span>
             </div>
           </div>
         </div>
@@ -462,7 +462,7 @@ export default function LandingPage() {
         <div className="hero-body">
           <div className="hero-tag">
             <span className="hero-tag-dot"/>
-            <span className="hero-tag-txt">Plataforma profesional · Rosario · Desde 2013</span>
+            <span className="hero-tag-txt">Plataforma profesional · 2da Circ. COCIR · Desde 2013</span>
           </div>
           <h1 className="hero-title">
             La inteligencia<br/>del mercado<br/>inmobiliario,<br/>
@@ -501,7 +501,7 @@ export default function LandingPage() {
       <div className="ticker">
         <div className="ticker-track">
           {[...Array(2)].map((_,rep)=>(
-            ["Corredores matriculados","Rosario · Santa Fe","COCIR","13 años de comunidad","Motor MIR","Observatorio de mercado","Cotizaciones en tiempo real","1.025 miembros activos","2.189 en el padrón","El que aporta, gana"].map((t,i)=>(
+            ["Corredores matriculados","2da Circ. COCIR · Santa Fe","COCIR","13 años de comunidad","Motor MIR","Observatorio de mercado","Cotizaciones en tiempo real","1.025 miembros activos","2.189 en el padrón","El que aporta, gana"].map((t,i)=>(
               <span key={`${rep}-${i}`} className="ticker-item">
                 <span className="ticker-txt">{t}</span>
                 <span className="ticker-sep"/>
@@ -528,7 +528,7 @@ export default function LandingPage() {
             <div className="sec-label">Sobre el Foro</div>
             <h2 className="sec-title">El espacio donde la comunidad crece.</h2>
             <p className="com-desc">
-              Desde 2013, reunimos a profesionales matriculados de Rosario para construir un espacio de apoyo mutuo, capacitación constante y una red de contactos basada en la confianza y la camaradería. Juntos fortalecemos la profesión.
+              Desde 2013, reunimos a profesionales matriculados de la 2da Circunscripción COCIR para construir un espacio de apoyo mutuo, capacitación constante y una red de contactos basada en la confianza y la camaradería. Juntos fortalecemos la profesión.
             </p>
             <div className="com-pills">
               {[
@@ -552,14 +552,14 @@ export default function LandingPage() {
         <h2 className="sec-title">Todo lo que necesitás,<br/>en un solo lugar.</h2>
         <div className="mods-grid">
           {[
-            {ic:"◈",t:"Motor MIR",d:"Match Inmobiliario de Rosario. Cruzá ofrecidos y búsquedas entre colegas en tiempo real. Parser IA que clasifica mensajes automáticamente.",tag:"t",tl:"Activo"},
+            {ic:"◈",t:"Motor MIR",d:"Match Inmobiliario de la 2da Circ. COCIR. Cruzá ofrecidos y búsquedas entre colegas en tiempo real. Parser IA que clasifica mensajes automáticamente.",tag:"t",tl:"Activo"},
             {ic:"◉",t:"Cotizaciones",d:"Dólar blue, ICL, IPC, JUS, USDT actualizados al instante. Match de compra/venta entre colegas con extracción IA.",tag:"t",tl:"Activo"},
             {ic:"▣",t:"Padrón COCIR",d:"2.189 corredores matriculados. Búsqueda por nombre, matrícula o zona. Actualización automática cada lunes.",tag:"t",tl:"Activo"},
             {ic:"◎",t:"Eventos",d:"Desayunos del Foro, mesas de negocios y capacitaciones. Inscripción integrada con control de acceso por QR.",tag:"t",tl:"Activo"},
             {ic:"⚙",t:"CRM Inmobiliario",d:"Gestión privada de contactos y clientes. Smart Prospecting: el sistema alerta cuando hay propiedades compatibles con tus clientes.",tag:"t",tl:"Activo"},
             {ic:"◐",t:"Calculadoras",d:"ICL, IPC, Casa Propia, CAC, CER, JUS. Calculá actualizaciones de alquileres y exportá en PDF.",tag:"t",tl:"Activo"},
             {ic:"▤",t:"Tasador IA",d:"Tasá propiedades con comparables reales del mercado. 3 escenarios: conservador, medio y agresivo. Informe PDF con firma.",tag:"r",tl:"Próximamente"},
-            {ic:"◑",t:"Comparables",d:"Valores reales de cierre de ventas en Rosario. Solo colegas matriculados. Base que crece con cada operación.",tag:"t",tl:"Activo"},
+            {ic:"◑",t:"Comparables",d:"Valores reales de cierre de ventas en la 2da Circ. Solo colegas matriculados. Base que crece con cada operación.",tag:"t",tl:"Activo"},
             {ic:"◆",t:"Biblioteca",d:"Documentos, modelos de contratos y guías prácticas. Subí material y ganás descuento en tu suscripción.",tag:"t",tl:"Activo"},
             {ic:"◍",t:"Web del Corredor",d:"Tu propio sitio web con subdominio GFI. Se actualiza automáticamente con tu cartera. Leads directo al CRM.",tag:"r",tl:"Próximamente"},
             {ic:"◬",t:"Foro Técnico",d:"Consulta técnica y debate profesional. Respuestas destacadas por Mentores GFI. Canal educativo semanal en vivo.",tag:"t",tl:"Activo"},
@@ -631,7 +631,7 @@ export default function LandingPage() {
                 {ic:"📅",t:"Eventos con inscripción",d:"Desayunos, after works, capacitaciones y webinars"},
                 {ic:"👥",t:"CRM inmobiliario",d:"Gestión de clientes con Smart Prospecting integrado"},
                 {ic:"◈",t:"Motor MIR",d:"Match de ofrecidos y búsquedas entre colegas en tiempo real"},
-                {ic:"📈",t:"Comparables de mercado",d:"Valores reales de cierre en Rosario. Base que crece con cada operación"},
+                {ic:"📈",t:"Comparables de mercado",d:"Valores reales de cierre en la 2da Circ. Base que crece con cada operación"},
                 {ic:"🌐",t:"Web propia del corredor",d:"Tu sitio con subdominio GFI, cartera actualizada automáticamente"},
                 {ic:"🤖",t:"IA del Foro",d:"Base de conocimiento colectiva. Debates → documentos permanentes"},
                 {ic:"🔗",t:"Bot de Telegram GFI",d:"Indicadores, cotizaciones y alertas en tiempo real"},
@@ -717,7 +717,7 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="cta-sec">
         <div className="cta-glow" />
-        <h2 className="cta-title">¿Sos corredor<br/>matriculado <em>en Rosario?</em></h2>
+        <h2 className="cta-title">¿Sos corredor<br/>matriculado en la <em>2da Circ. COCIR?</em></h2>
         <p className="cta-sub">Formá parte de la red profesional más activa de la ciudad.</p>
         <a href="/registro" className="btn-primary" style={{display:'inline-flex',margin:'0 auto',cursor:'none'}}>
           <span className="bm">Unirme al GFI</span>
@@ -727,7 +727,7 @@ export default function LandingPage() {
 
       {/* FOOTER */}
       <footer className="footer">
-        <div className="f-copy">© {new Date().getFullYear()} Grupo Foro Inmobiliario® · Rosario, Santa Fe · COCIR</div>
+        <div className="f-copy">© {new Date().getFullYear()} Grupo Foro Inmobiliario® · 2da Circunscripción COCIR · Santa Fe</div>
         <div className="f-links">
           <a href="#comunidad">Comunidad</a>
           <a href="#grupos">Grupos</a>
