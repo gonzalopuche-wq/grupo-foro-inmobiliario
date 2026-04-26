@@ -387,7 +387,9 @@ export default function LandingPage() {
       {/* NAV */}
       <nav className={`nav${scrolled ? " sc" : ""}`}>
         <a href="/" className="logo">
-          <img src="/logo_gfi.png" alt="GFI® Grupo Foro Inmobiliario" style={{height:44,width:"auto",objectFit:"contain"}} />
+          <img src="/logo.jpg" alt="GFI®" style={{height:44,width:"auto",objectFit:"contain",borderRadius:2}}
+            onError={e=>{(e.target as HTMLImageElement).style.display="none"}} />
+          <span className="logo-gfi" style={{marginLeft:4}}>GFI<span style={{color:"var(--red)"}}>®</span></span>
         </a>
         <div className="nav-links">
           <a href="#comunidad" className="nav-a">Comunidad</a>
