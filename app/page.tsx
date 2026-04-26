@@ -245,7 +245,7 @@ export default function LandingPage() {
         .sec-title{font-family:'Syne',sans-serif;font-size:clamp(28px,3.8vw,50px);font-weight:800;text-transform:uppercase;line-height:.93;letter-spacing:-.02em;color:#fff;max-width:560px;margin-bottom:56px}
 
         /* COMUNIDAD */
-        .com-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;max-width:1100px}
+        .com-grid{display:grid;grid-template-columns:1fr;gap:40px;max-width:720px}
         .com-desc{font-size:14px;font-weight:300;line-height:1.85;color:var(--t2);margin-bottom:36px}
         .com-pills{display:flex;flex-direction:column;gap:14px}
         .com-pill{display:flex;align-items:flex-start;gap:16px;padding:18px 22px;background:var(--s2);border:1px solid var(--bd);border-radius:2px;transition:border-color .25s,background .25s,transform .25s}
@@ -543,34 +543,6 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-          <div>
-            <div className="horarios-block">
-              <div className="block-head">
-                <span className="block-head-t">Horarios del Foro</span>
-                <span className="block-head-tag">Activo</span>
-              </div>
-              <div className="block-body">
-                <div className="hor-row"><span className="hor-day">Lunes a viernes</span><span className="hor-time">07:00 — 20:00</span></div>
-                <div className="hor-row"><span className="hor-day">Sábados</span><span className="hor-time">08:00 — 13:00</span></div>
-              </div>
-            </div>
-            <div className="eventos-block">
-              <div className="block-head" style={{borderBottomColor:'var(--red-bd)'}}>
-                <span className="block-head-t" style={{color:'var(--red)'}}>Encuentros destacados</span>
-              </div>
-              {[
-                {ic:"☕",t:"Desayunos del Foro",d:"Espacios para aprender e intercambiar experiencias"},
-                {ic:"🍹",t:"After Work",d:"Fortalecé lazos con colegas en un entorno distendido"},
-                {ic:"◎",t:"Capacitaciones",d:"Formación continua para el corredor moderno"},
-              ].map(({ic,t,d})=>(
-                <div key={t} className="ev-item">
-                  <div className="ev-icon">{ic}</div>
-                  <div><div className="ev-t">{t}</div><div className="ev-d">{d}</div></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </RevealSection>
 
       {/* MÓDULOS */}
