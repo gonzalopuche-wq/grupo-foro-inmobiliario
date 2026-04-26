@@ -577,79 +577,85 @@ export default function LandingPage() {
       {/* GRUPOS */}
       <RevealSection className="sec sec-alt" id="grupos">
         <div className="sec-label">Comunidad GFI®</div>
-        <h2 className="sec-title">24 grupos temáticos.<br/>Todo en la plataforma.</h2>
+        <h2 className="sec-title">12 grupos temáticos.<br/>Todo en la plataforma.</h2>
 
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:32,maxWidth:1100,marginBottom:32}}>
-          {/* WhatsApp */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:32,maxWidth:1100,marginBottom:40}}>
+
+          {/* Grupos de la comunidad GFI */}
           <div>
-            <div style={{display:"flex",alignItems:"center",gap:10,paddingBottom:14,borderBottom:"1px solid var(--bd)",marginBottom:18}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,paddingBottom:14,borderBottom:"1px solid var(--bd)",marginBottom:20}}>
               <div style={{width:32,height:32,background:"var(--red-glow)",border:"1px solid var(--red-bd)",borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>💬</div>
               <div>
-                <div style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:800,textTransform:"uppercase",letterSpacing:".08em",color:"#fff"}}>WhatsApp</div>
-                <div style={{fontSize:9,color:"var(--red)",fontFamily:"'Syne',sans-serif",fontWeight:700,letterSpacing:".14em",textTransform:"uppercase"}}>16 grupos</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:800,textTransform:"uppercase",letterSpacing:".08em",color:"#fff"}}>Grupos GFI</div>
+                <div style={{fontSize:9,color:"var(--red)",fontFamily:"'Syne',sans-serif",fontWeight:700,letterSpacing:".14em",textTransform:"uppercase"}}>12 grupos activos</div>
               </div>
             </div>
             {[
-              {cat:"Principal",items:["Foro Inmobiliario — 1.025 matriculados"]},
-              {cat:"Recursos",items:["Administración de Consorcios","Cursos y Eventos","Cotizaciones","Tasaciones","Material Colaborativo","Bolsa de Trabajo"]},
-              {cat:"Ventas",items:["Ventas — Búsqueda","Ventas — Ofrecidos"]},
-              {cat:"Alquileres",items:["Alquileres — Búsqueda","Alquileres — Ofrecidos","Temporarios — Búsqueda","Temporarios — Ofrecidos"]},
-              {cat:"Especiales",items:["Permutas","Inmuebles Comerciales","Campos y Chacras"]},
+              {cat:"Ventas",items:[{ic:"🏠",n:"Ventas — Ofrecidos"},{ic:"🔍",n:"Ventas — Búsqueda"}]},
+              {cat:"Alquileres",items:[{ic:"🏠",n:"Alquileres — Ofrecidos"},{ic:"🔍",n:"Alquileres — Búsqueda"},{ic:"⏱",n:"Alquileres Temporarios"}]},
+              {cat:"Especiales",items:[{ic:"🔄",n:"Permutas"},{ic:"🌾",n:"Campos y Chacras"},{ic:"🏢",n:"Inmuebles Comerciales"},{ic:"💼",n:"Fondos de Comercio"}]},
+              {cat:"Servicios",items:[{ic:"📊",n:"Tasaciones / Créditos"},{ic:"🏗",n:"Administración de Consorcios"},{ic:"🚗",n:"Venta de Mobiliario / Autos / Motos"}]},
             ].map(({cat,items})=>(
-              <div key={cat} style={{marginBottom:16}}>
-                <div style={{fontSize:9,fontWeight:600,letterSpacing:".24em",textTransform:"uppercase",color:"var(--t4)",marginBottom:7}}>{cat}</div>
-                {items.map(name=>(
-                  <div key={name} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 14px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:1,marginBottom:3,gap:10}}>
-                    <span style={{fontSize:12,color:"var(--t1)",flex:1,fontFamily:cat==="Principal"?"'Syne',sans-serif":"inherit",fontWeight:cat==="Principal"?700:400}}>{name}</span>
-                    <span style={{fontSize:10,color:"var(--red)",opacity:.5}}>🔒</span>
+              <div key={cat} style={{marginBottom:18}}>
+                <div style={{fontSize:9,fontWeight:600,letterSpacing:".24em",textTransform:"uppercase",color:"var(--t4)",marginBottom:8}}>{cat}</div>
+                {items.map(({ic,n})=>(
+                  <div key={n} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:1,marginBottom:3,transition:"border-color .2s"}}
+                    onMouseEnter={e=>(e.currentTarget.style.borderColor="rgba(204,0,0,0.3)")}
+                    onMouseLeave={e=>(e.currentTarget.style.borderColor="rgba(255,255,255,0.06)")}>
+                    <span style={{fontSize:16,flexShrink:0}}>{ic}</span>
+                    <span style={{fontSize:12,color:"var(--t1)",flex:1}}>{n}</span>
+                    <span style={{fontSize:10,color:"rgba(204,0,0,0.4)"}}>🔒</span>
                   </div>
                 ))}
               </div>
             ))}
           </div>
 
-          {/* Telegram */}
+          {/* Con tu suscripción también accedés a — AMPLIADO */}
           <div>
-            <div style={{display:"flex",alignItems:"center",gap:10,paddingBottom:14,borderBottom:"1px solid var(--bd)",marginBottom:18}}>
-              <div style={{width:32,height:32,background:"var(--red-glow)",border:"1px solid var(--red-bd)",borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>✈️</div>
+            <div style={{display:"flex",alignItems:"center",gap:10,paddingBottom:14,borderBottom:"1px solid var(--bd)",marginBottom:20}}>
+              <div style={{width:32,height:32,background:"var(--red-glow)",border:"1px solid var(--red-bd)",borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>⚡</div>
               <div>
-                <div style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:800,textTransform:"uppercase",letterSpacing:".08em",color:"#fff"}}>Telegram</div>
-                <div style={{fontSize:9,color:"var(--red)",fontFamily:"'Syne',sans-serif",fontWeight:700,letterSpacing:".14em",textTransform:"uppercase"}}>8 grupos</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:800,textTransform:"uppercase",letterSpacing:".08em",color:"#fff"}}>Con tu suscripción</div>
+                <div style={{fontSize:9,color:"var(--red)",fontFamily:"'Syne',sans-serif",fontWeight:700,letterSpacing:".14em",textTransform:"uppercase"}}>también accedés a</div>
               </div>
             </div>
-            {["Foro Inmobiliario — 400 matriculados","Campos y Chacras","Ventas — Búsqueda","Ventas — Ofrecidos","Alquileres — Búsqueda","Alquileres — Ofrecidos","Temporarios — Búsqueda","Temporarios — Ofrecidos"].map(name=>(
-              <div key={name} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 14px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:1,marginBottom:3,gap:10}}>
-                <span style={{fontSize:12,color:"var(--t1)",flex:1,fontFamily:name.startsWith("Foro")?"'Syne',sans-serif":"inherit",fontWeight:name.startsWith("Foro")?700:400}}>{name}</span>
-                <span style={{fontSize:10,color:"var(--red)",opacity:.5}}>🔒</span>
-              </div>
-            ))}
-
-            {/* Beneficios extra */}
-            <div style={{marginTop:28,padding:"20px 22px",background:"var(--red-glow)",border:"1px solid var(--red-bd)",borderRadius:2}}>
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",color:"var(--red)",marginBottom:12}}>Con tu suscripción también accedés a</div>
+            <div style={{display:"flex",flexDirection:"column",gap:3}}>
               {[
-                "📰 Noticias del sector inmobiliario",
-                "📋 Padrón COCIR con 2.189 matriculados",
-                "💱 Cotizaciones y match de monedas",
-                "📚 Biblioteca de documentos y contratos",
-                "📅 Eventos con inscripción integrada",
-                "🧮 Calculadoras ICL, IPC, JUS y más",
-                "👥 CRM inmobiliario con Smart Prospecting",
-                "🏆 Sistema de reputación y badges GFI®",
-                "🤖 IA del Foro — base de conocimiento colectiva",
-                "🔗 Bot de Telegram con indicadores en tiempo real",
-              ].map(b=>(
-                <div key={b} style={{fontSize:12,color:"var(--t2)",padding:"6px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",lineHeight:1.5}}>{b}</div>
+                {ic:"📰",t:"Noticias del sector",d:"Noticias aprobadas por la comunidad y el admin"},
+                {ic:"📋",t:"Padrón COCIR completo",d:"2.189 matriculados. Búsqueda por nombre o matrícula"},
+                {ic:"💱",t:"Cotizaciones en tiempo real",d:"Dólar blue, USDT, ICL, IPC, JUS. Match entre colegas"},
+                {ic:"🧮",t:"Calculadoras inmobiliarias",d:"ICL, IPC, Casa Propia, CAC, CER, JUS. Exportá en PDF"},
+                {ic:"📚",t:"Biblioteca colaborativa",d:"Contratos, modelos y documentos. Subí y ganás descuento"},
+                {ic:"📅",t:"Eventos con inscripción",d:"Desayunos, after works, capacitaciones y webinars"},
+                {ic:"👥",t:"CRM inmobiliario",d:"Gestión de clientes con Smart Prospecting integrado"},
+                {ic:"◈",t:"Motor MIR",d:"Match de ofrecidos y búsquedas entre colegas en tiempo real"},
+                {ic:"📈",t:"Comparables de mercado",d:"Valores reales de cierre en Rosario. Base que crece con cada operación"},
+                {ic:"🌐",t:"Web propia del corredor",d:"Tu sitio con subdominio GFI, cartera actualizada automáticamente"},
+                {ic:"🤖",t:"IA del Foro",d:"Base de conocimiento colectiva. Debates → documentos permanentes"},
+                {ic:"🔗",t:"Bot de Telegram GFI",d:"Indicadores, cotizaciones y alertas en tiempo real"},
+                {ic:"📊",t:"Tasador IA",d:"Tasaciones con comparables reales. Informe PDF con firma"},
+                {ic:"🔔",t:"Alertas y notificaciones",d:"Push, mail y WhatsApp por módulo. Configurables"},
+              ].map(({ic,t,d})=>(
+                <div key={t} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"11px 14px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:1,transition:"border-color .2s,background .2s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(204,0,0,0.25)";e.currentTarget.style.background="var(--s3)"}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.06)";e.currentTarget.style.background="var(--s2)"}}>
+                  <span style={{fontSize:17,flexShrink:0,marginTop:1}}>{ic}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:12,fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#fff",marginBottom:2}}>{t}</div>
+                    <div style={{fontSize:11,color:"var(--t3)",lineHeight:1.4}}>{d}</div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </div>
 
         <div className="grupos-banner" style={{marginBottom:0}}>
-          <div className="grupos-banner-title">Accedé a todo desde la plataforma</div>
+          <div className="grupos-banner-title">Todo esto en una sola plataforma</div>
           <p className="grupos-banner-sub">
-            Todos los grupos están integrados en GFI®. Historial, búsqueda, match automático, parser IA y notificaciones.
-            Sin límite de 1.024 miembros. La red crece sin techo.
+            Grupos integrados, match automático, parser IA, historial completo y sin límite de miembros.
+            GFI® es el sistema operativo del corredor inmobiliario rosarino.
           </p>
           <a href="/registro" className="grupos-cta">
             Suscribirme y acceder →
@@ -699,7 +705,6 @@ export default function LandingPage() {
               <li>Motor MIR — match de ofrecidos y búsquedas</li>
               <li>Comparables de mercado con valores reales</li>
               <li>Eventos con acceso prioritario e inscripción</li>
-              <li>Sistema de reputación y badges GFI®</li>
               <li>El que aporta, gana — bonificaciones por colaboración</li>
             </ul>
             <a href="/registro" className="p-btn">Suscribirme</a>
