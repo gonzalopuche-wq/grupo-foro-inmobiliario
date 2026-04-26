@@ -29,12 +29,13 @@ export default function NoticiasWidget() {
   useEffect(() => {
     supabase
       .from("noticias")
-      .select("*, perfiles!noticias_autor_id_fkey(nombre, apellido)")
+      .select("id, titulo, cuerpo, link, imagen_url, fuente, destacado, created_at, autor_id")
       .eq("estado", "aprobada")
       .order("destacado", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(6)
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) console.error("NoticiasWidget error:", error);
         setNoticias((data as unknown as Noticia[]) ?? []);
         setLoading(false);
       });
