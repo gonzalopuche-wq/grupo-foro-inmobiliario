@@ -596,7 +596,7 @@ export default function MirPage() {
         .mir-det { font-size: 11px; color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 3px; }
         .mir-extras { display: flex; gap: 6px; flex-wrap: wrap; }
         .mir-extra { font-size: 9px; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 2px 7px; border-radius: 10px; }
-        .mir-desc { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; }
+        .mir-desc { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .mir-card-footer { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 2px; }
         .mir-corredor { font-size: 11px; color: rgba(255,255,255,0.4); }
         .mir-corredor b { color: rgba(255,255,255,0.7); }

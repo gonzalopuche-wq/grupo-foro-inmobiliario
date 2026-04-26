@@ -388,7 +388,7 @@ export default function LandingPage() {
       <nav className={`nav${scrolled ? " sc" : ""}`}>
         <a href="/" className="logo">
           <img src="/logo.jpg" alt="GFI®" style={{height:44,width:"auto",objectFit:"contain",borderRadius:2}}
-            onError={e=>{(e.target as HTMLImageElement).style.display="none"}} />
+            onError={e=>{(e.target as HTMLImageElement).style.display='none'}} />
           <span className="logo-gfi" style={{marginLeft:4}}>GFI<span style={{color:"var(--red)"}}>®</span></span>
         </a>
         <div className="nav-links">
@@ -546,7 +546,7 @@ export default function LandingPage() {
         </div>
       </RevealSection>
 
-      {/* MÓDULOS */}
+      {/* MODULOS */}
       <RevealSection className="sec" id="modulos">
         <div className="sec-label">Módulos de la plataforma</div>
         <h2 className="sec-title">Todo lo que necesitás,<br/>en un solo lugar.</h2>
@@ -612,7 +612,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* Con tu suscripción también accedés a — AMPLIADO */}
+          {/* Beneficios */}
           <div>
             <div style={{display:"flex",alignItems:"center",gap:10,paddingBottom:14,borderBottom:"1px solid var(--bd)",marginBottom:20}}>
               <div style={{width:32,height:32,background:"var(--red-glow)",border:"1px solid var(--red-bd)",borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>⚡</div>
