@@ -74,7 +74,7 @@ function StatCell({ n, su, l }: { n: number; su: string; l: string }) {
   );
 }
 
-function RevealSection({ children, className }: { children: React.ReactNode; className?: string }) {
+function RevealSection({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
   const ref = useRef<HTMLElement>(null);
   const [vis, setVis] = useState(false);
   useEffect(() => {
@@ -83,7 +83,7 @@ function RevealSection({ children, className }: { children: React.ReactNode; cla
     return () => obs.disconnect();
   }, []);
   return (
-    <section ref={ref} className={className}
+    <section ref={ref} className={className} id={id}
       style={{ opacity: vis ? 1 : 0, transform: vis ? "translateY(0)" : "translateY(32px)", transition: "opacity 0.7s ease, transform 0.7s ease" }}>
       {children}
     </section>
