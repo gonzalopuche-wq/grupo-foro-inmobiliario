@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 import PerfilRapidoModal from "./PerfilRapidoModal";
+import NoticiasForoSection from "./NoticiasForoSection";
 
 interface Category { id: string; name: string; slug: string; description: string; }
 interface Tag { id: string; name: string; slug: string; }
@@ -31,7 +32,7 @@ interface ChatMsg {
   reply?: ChatMsg | null;
 }
 
-type MainTab = "temas" | "chat" | "faq";
+type MainTab = "temas" | "noticias" | "chat" | "faq";
 type Vista = "lista" | "detalle" | "nuevo";
 
 const EMOJIS_RAPIDOS = ["👍", "❤️", "🔥", "✅", "👀", "😂"];
@@ -92,7 +93,6 @@ export default function ForoPage() {
   const [nLoading, setNLoading] = useState(false);
   const [replyBody, setReplyBody] = useState("");
 
-  // Chat estado completo
   const [chatMsgs, setChatMsgs] = useState<ChatMsg[]>([]);
   const [mostrarModalEvento, setMostrarModalEvento] = useState(false);
   const [eventoForm, setEventoForm] = useState({
@@ -139,7 +139,6 @@ export default function ForoPage() {
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMsgs]);
 
-  // Cerrar menú al click afuera
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -203,7 +202,6 @@ export default function ForoPage() {
       .order("created_at", { ascending: true }).limit(100);
     const msgs = (data as unknown as ChatMsg[]) ?? [];
     setChatMsgs(msgs);
-    // Cargar previews
     const previews: Record<string, any> = {};
     await Promise.all(msgs.map(async (m) => {
       if (!m.body || m.eliminado) return;
@@ -234,7 +232,6 @@ export default function ForoPage() {
           if (prev.some(m => m.id === (data as any).id)) return prev;
           return [...prev, { ...data, reply } as unknown as ChatMsg];
         });
-        // Cargar preview del nuevo mensaje
         const url = extraerUrl((data as any).body ?? "");
         if (url) {
           fetch(`/api/link-preview?url=${encodeURIComponent(url)}`)
@@ -284,27 +281,19 @@ export default function ForoPage() {
     setGuardandoEvento(true);
     const fechaISO = new Date(`${eventoForm.fecha}T${eventoForm.hora}:00`).toISOString();
     await supabase.from("eventos").insert({
-      titulo: eventoForm.titulo,
-      descripcion: eventoForm.descripcion || null,
-      fecha: fechaISO,
-      lugar: eventoForm.lugar || null,
-      plataforma: eventoForm.plataforma || null,
-      link_reunion: eventoForm.link_reunion || null,
-      gratuito: eventoForm.gratuito,
+      titulo: eventoForm.titulo, descripcion: eventoForm.descripcion || null,
+      fecha: fechaISO, lugar: eventoForm.lugar || null, plataforma: eventoForm.plataforma || null,
+      link_reunion: eventoForm.link_reunion || null, gratuito: eventoForm.gratuito,
       precio_entrada: eventoForm.gratuito ? null : (parseFloat(eventoForm.precio_entrada) || null),
       capacidad: eventoForm.capacidad ? parseInt(eventoForm.capacidad) : null,
-      link_externo: eventoForm.link_externo || null,
-      tipo: eventoForm.tipo,
-      organizador_id: userId,
-      estado: "pendiente",
-      destacado: false,
+      link_externo: eventoForm.link_externo || null, tipo: eventoForm.tipo,
+      organizador_id: userId, estado: "pendiente", destacado: false,
       media: eventoMediaFiles.length > 0 ? eventoMediaFiles : null,
     });
     setGuardandoEvento(false);
     setMostrarModalEvento(false);
     setEventoForm({ titulo: "", descripcion: "", fecha: "", hora: "09:00", lugar: "", plataforma: "presencial", link_reunion: "", gratuito: true, precio_entrada: "", capacidad: "", link_externo: "", tipo: "gfi" });
     setEventoMediaFiles([]);
-    // Enviar mensaje al chat avisando del evento propuesto
     await supabase.from("forum_chat_messages").insert({
       user_id: userId,
       body: `📅 Propuse un evento: "${eventoForm.titulo}" — pendiente de aprobación del admin.`,
@@ -319,10 +308,8 @@ export default function ForoPage() {
     setChatInputPreview(null);
     const replyId = chatReplyMsg?.id ?? null;
     setChatReplyMsg(null);
-
     const insertData: any = { user_id: userId, body: textoEnviar };
     if (replyId) insertData.reply_id = replyId;
-
     await supabase.from("forum_chat_messages").insert(insertData);
     setChatLoading(false);
     chatInputRef.current?.focus();
@@ -653,6 +640,7 @@ export default function ForoPage() {
         <div className="f-center">
           <div className="f-tabs">
             <button className={`f-tab${mainTab === "temas" ? " active" : ""}`} onClick={() => { setMainTab("temas"); setVista("lista"); }}>💬 Temas</button>
+            <button className={`f-tab${mainTab === "noticias" ? " active" : ""}`} onClick={() => setMainTab("noticias")}>📰 Noticias</button>
             <button className={`f-tab${mainTab === "chat" ? " active" : ""}`} onClick={() => setMainTab("chat")}>⚡ Chat en vivo</button>
             <button className={`f-tab${mainTab === "faq" ? " active" : ""}`} onClick={() => setMainTab("faq")}>✓ Resueltos</button>
           </div>
@@ -790,6 +778,11 @@ export default function ForoPage() {
             </div>
           )}
 
+          {/* ── TAB NOTICIAS ─────────────────────────────────────────────── */}
+          {mainTab === "noticias" && (
+            <NoticiasForoSection userId={userId} />
+          )}
+
           {mainTab === "chat" && (
             <div className="f-chat">
               <div className="f-chat-header">
@@ -806,17 +799,13 @@ export default function ForoPage() {
                     <div key={m.id}
                       style={{ display: "flex", justifyContent: esMio ? "flex-end" : "flex-start", marginBottom: 4, position: "relative", cursor: "pointer" }}
                       onClick={() => !eliminado && setChatMenuId(prev => prev === m.id ? null : m.id)}>
-
-                      {/* Popup menú */}
                       {chatMenuId === m.id && !eliminado && chatEditId !== m.id && (
                         <div data-chat-menu onClick={e => e.stopPropagation()}
                           style={{ position: "absolute", [esMio ? "right" : "left"]: 0, bottom: "100%", marginBottom: 6, background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 12, padding: "8px 6px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", gap: 2, minWidth: 160 }}>
                           <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 2, flexWrap: "wrap" }}>
                             {["👍","❤️","😂","😮","😢","🙏","🔥","✅","👀","😡","💯","🎉"].map(emoji => (
                               <button key={emoji} onClick={() => reaccionarChat(m.id, emoji)}
-                                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: "2px 4px", borderRadius: 6 }}>
-                                {emoji}
-                              </button>
+                                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: "2px 4px", borderRadius: 6 }}>{emoji}</button>
                             ))}
                           </div>
                           {([
@@ -839,18 +828,12 @@ export default function ForoPage() {
                           ))}
                         </div>
                       )}
-
                       <div style={{ maxWidth: "75%", position: "relative" }}>
-                        {/* Indicador ▲ */}
                         {!eliminado && (
                           <div style={{ position: "absolute", right: 4, top: -10, background: "rgba(40,40,40,0.9)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                              <path d="M2 6.5L5 3.5L8 6.5" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 6.5L5 3.5L8 6.5" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           </div>
                         )}
-
-                        {/* Nombre */}
                         {!esMio && !eliminado && (
                           <div style={{ fontSize: 10, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, cursor: "pointer" }}
                             onClick={e => { e.stopPropagation(); setPerfilRapidoId(m.user_id); }}>
@@ -858,22 +841,13 @@ export default function ForoPage() {
                             {m.perfiles?.matricula && <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
                           </div>
                         )}
-
-                        {/* Burbuja */}
                         <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${chatMenuId === m.id ? "rgba(200,0,0,0.5)" : "rgba(200,0,0,0.25)"}` : `1px solid ${chatMenuId === m.id ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", transition: "border-color 0.15s" }}>
-
-                          {/* Reply preview */}
                           {m.reply && !eliminado && (
                             <div style={{ background: "rgba(255,255,255,0.04)", borderLeft: "2px solid #cc0000", borderRadius: "0 4px 4px 0", padding: "4px 8px", marginBottom: 6, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
-                              <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>
-                                {(m.reply as any).perfiles?.nombre ?? ""}
-                              </div>
-                              <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>
-                                {(m.reply as any).body}
-                              </div>
+                              <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>{(m.reply as any).perfiles?.nombre ?? ""}</div>
+                              <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>{(m.reply as any).body}</div>
                             </div>
                           )}
-
                           {eliminado ? (
                             <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>Mensaje eliminado</p>
                           ) : chatEditId === m.id ? (
@@ -889,13 +863,7 @@ export default function ForoPage() {
                           ) : (
                             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5, wordBreak: "break-word", whiteSpace: "pre-wrap", margin: 0 }}>{m.body}</p>
                           )}
-
-                          {/* Link preview */}
-                          {!eliminado && extraerUrl(m.body ?? "") && (
-                            <ChatLinkPreview url={extraerUrl(m.body ?? "")!} />
-                          )}
-
-                          {/* Meta */}
+                          {!eliminado && extraerUrl(m.body ?? "") && <ChatLinkPreview url={extraerUrl(m.body ?? "")!} />}
                           {!eliminado && (
                             <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", textAlign: "right", marginTop: 4, display: "flex", gap: 5, justifyContent: "flex-end" }}>
                               {m.editado && <span style={{ fontStyle: "italic" }}>editado</span>}
@@ -903,8 +871,6 @@ export default function ForoPage() {
                             </div>
                           )}
                         </div>
-
-                        {/* Reacciones */}
                         {!eliminado && m.reacciones && Object.keys(m.reacciones).length > 0 && (
                           <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4, justifyContent: esMio ? "flex-end" : "flex-start" }}>
                             {Object.entries(m.reacciones).map(([emoji, users]) => (
@@ -921,31 +887,19 @@ export default function ForoPage() {
                 })}
                 <div ref={chatEndRef}/>
               </div>
-
-              {/* Reply preview */}
               {chatReplyMsg && (
                 <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: "rgba(200,0,0,0.06)", borderTop: "1px solid rgba(200,0,0,0.15)" }}>
                   <div style={{ borderLeft: "2px solid #cc0000", paddingLeft: 8, flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>
-                      Respondiendo a {fullName(chatReplyMsg.perfiles)}
-                    </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {chatReplyMsg.body}
-                    </div>
+                    <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>Respondiendo a {fullName(chatReplyMsg.perfiles)}</div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatReplyMsg.body}</div>
                   </div>
                   <button onClick={() => setChatReplyMsg(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16, padding: 4 }}>×</button>
                 </div>
               )}
-
               <div className="f-chat-input-area">
-                {/* Link preview del input */}
                 {chatInputPreview && (
                   <div style={{ display: "flex", gap: 8, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.35)", position: "relative", minHeight: 56 }}>
-                    {chatInputPreview.data.image && (
-                      <div style={{ width: 56, minWidth: 56, background: "#000", flexShrink: 0 }}>
-                        <img src={chatInputPreview.data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                      </div>
-                    )}
+                    {chatInputPreview.data.image && <div style={{ width: 56, minWidth: 56, background: "#000", flexShrink: 0 }}><img src={chatInputPreview.data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></div>}
                     <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                       {chatInputPreview.data.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatInputPreview.data.title}</div>}
                       <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{(() => { try { return new URL(chatInputPreview.url).hostname; } catch { return ""; } })()}</div>
@@ -953,24 +907,16 @@ export default function ForoPage() {
                     <button onClick={() => setChatInputPreview(null)} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
                   </div>
                 )}
-                {/* Botón + adjuntos */}
                 <div style={{ position: "relative" }}>
-                  <button
-                    onClick={() => setMostrarModalEvento(true)}
+                  <button onClick={() => setMostrarModalEvento(true)}
                     style={{ width: 36, height: 36, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}
                     title="Proponer evento"
                     onMouseEnter={e => (e.currentTarget.style.background = "rgba(200,0,0,0.1)")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}>
-                    📅
-                  </button>
+                    onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}>📅</button>
                 </div>
-
                 <div style={{ display: "flex", gap: 8, alignItems: "center", flex: 1 }}>
                   <div style={{ flex: 1, display: "flex", gap: 8 }}>
-                    <input
-                      ref={chatInputRef}
-                      placeholder="Escribí un mensaje..."
-                      value={chatInput}
+                    <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
                       style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
                       onChange={e => {
                         const val = e.target.value;
@@ -986,13 +932,10 @@ export default function ForoPage() {
                               if (d.title || d.image) setChatInputPreview({ url, data: d });
                             } catch {}
                           }, 600);
-                        } else {
-                          setChatInputPreview(null);
-                        }
+                        } else { setChatInputPreview(null); }
                       }}
                       onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
-                      disabled={chatLoading}
-                    />
+                      disabled={chatLoading} />
                     <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || !chatInput.trim()}>Enviar</button>
                   </div>
                 </div>
@@ -1047,67 +990,43 @@ export default function ForoPage() {
         </aside>
       </div>
 
-      {/* Modal proponer evento desde el chat del Foro */}
+      {/* Modal proponer evento */}
       {mostrarModalEvento && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 500, padding: 20 }}
           onClick={e => { if (e.target === e.currentTarget) setMostrarModalEvento(false); }}>
           <div style={{ background: "#0f0f0f", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "28px 32px", width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#cc0000,transparent)", borderRadius: "8px 8px 0 0" }} />
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>
-              Proponer <span style={{ color: "#cc0000" }}>evento</span>
-            </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>
-              💡 Tu propuesta será revisada por el admin antes de publicarse en el módulo de Eventos.
-            </div>
-
-            {/* Tipo */}
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>Proponer <span style={{ color: "#cc0000" }}>evento</span></div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>💡 Tu propuesta será revisada por el admin antes de publicarse en el módulo de Eventos.</div>
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Tipo</label>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {[["gfi","GFI®","#cc0000"],["cocir","COCIR","#f97316"],["cir","CIR","#818cf8"],["externo","Externo","#64748b"]].map(([k,l,c]) => (
-                  <button key={k} type="button" onClick={() => setEF("tipo", k)}
-                    style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${eventoForm.tipo === k ? c : "rgba(255,255,255,0.1)"}`, background: eventoForm.tipo === k ? `${c}22` : "transparent", color: eventoForm.tipo === k ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
-                    {l}
-                  </button>
+                  <button key={k} type="button" onClick={() => setEF("tipo", k)} style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${eventoForm.tipo === k ? c : "rgba(255,255,255,0.1)"}`, background: eventoForm.tipo === k ? `${c}22` : "transparent", color: eventoForm.tipo === k ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>{l}</button>
                 ))}
               </div>
             </div>
-
-            {/* Título */}
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Título *</label>
-              <input value={eventoForm.titulo} onChange={e => setEF("titulo", e.target.value)}
-                placeholder="Ej: Desayuno GFI® — Agosto"
-                style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              <input value={eventoForm.titulo} onChange={e => setEF("titulo", e.target.value)} placeholder="Ej: Desayuno GFI® — Agosto" style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
             </div>
-
-            {/* Descripción */}
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Descripción</label>
-              <textarea value={eventoForm.descripcion} onChange={e => setEF("descripcion", e.target.value)}
-                placeholder="¿De qué trata el evento?"
-                style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", resize: "vertical", minHeight: 80 }} />
+              <textarea value={eventoForm.descripcion} onChange={e => setEF("descripcion", e.target.value)} placeholder="¿De qué trata el evento?" style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", resize: "vertical", minHeight: 80 }} />
             </div>
-
-            {/* Fecha y hora */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
               <div>
                 <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Fecha *</label>
-                <input type="date" value={eventoForm.fecha} onChange={e => setEF("fecha", e.target.value)}
-                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <input type="date" value={eventoForm.fecha} onChange={e => setEF("fecha", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
               <div>
                 <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Hora</label>
-                <input type="time" value={eventoForm.hora} onChange={e => setEF("hora", e.target.value)}
-                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <input type="time" value={eventoForm.hora} onChange={e => setEF("hora", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
             </div>
-
-            {/* Plataforma */}
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Plataforma</label>
-              <select value={eventoForm.plataforma} onChange={e => setEF("plataforma", e.target.value)}
-                style={{ width: "100%", padding: "9px 13px", background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}>
+              <select value={eventoForm.plataforma} onChange={e => setEF("plataforma", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}>
                 <option value="presencial">📍 Presencial</option>
                 <option value="zoom">🎥 Zoom</option>
                 <option value="meet">🎥 Google Meet</option>
@@ -1115,57 +1034,36 @@ export default function ForoPage() {
                 <option value="teams">🎥 Teams</option>
               </select>
             </div>
-
             {eventoForm.plataforma === "presencial" ? (
               <div style={{ marginBottom: 14 }}>
                 <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Lugar</label>
-                <input value={eventoForm.lugar} onChange={e => setEF("lugar", e.target.value)}
-                  placeholder="Ej: Sede COCIR, San Martín 1234"
-                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <input value={eventoForm.lugar} onChange={e => setEF("lugar", e.target.value)} placeholder="Ej: Sede COCIR, San Martín 1234" style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
             ) : (
               <div style={{ marginBottom: 14 }}>
                 <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Link de reunión</label>
-                <input value={eventoForm.link_reunion} onChange={e => setEF("link_reunion", e.target.value)}
-                  placeholder="https://zoom.us/j/..."
-                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <input value={eventoForm.link_reunion} onChange={e => setEF("link_reunion", e.target.value)} placeholder="https://zoom.us/j/..." style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
             )}
-
-            {/* Gratuito */}
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Costo</label>
               <div style={{ display: "flex", gap: 10 }}>
                 {[["grat", true, "✓ Gratuito", "#22c55e"], ["pago", false, "💰 Con costo", "#eab308"]].map(([k, v, l, c]: any) => (
-                  <button key={k} type="button" onClick={() => setEF("gratuito", v)}
-                    style={{ flex: 1, padding: "8px", borderRadius: 4, border: `1px solid ${eventoForm.gratuito === v ? `${c}66` : "rgba(255,255,255,0.1)"}`, background: eventoForm.gratuito === v ? `${c}14` : "transparent", color: eventoForm.gratuito === v ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
-                    {l}
-                  </button>
+                  <button key={k} type="button" onClick={() => setEF("gratuito", v)} style={{ flex: 1, padding: "8px", borderRadius: 4, border: `1px solid ${eventoForm.gratuito === v ? `${c}66` : "rgba(255,255,255,0.1)"}`, background: eventoForm.gratuito === v ? `${c}14` : "transparent", color: eventoForm.gratuito === v ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>{l}</button>
                 ))}
               </div>
-              {!eventoForm.gratuito && (
-                <input type="number" value={eventoForm.precio_entrada} onChange={e => setEF("precio_entrada", e.target.value)}
-                  placeholder="Precio en ARS" style={{ width: "100%", marginTop: 8, padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
-              )}
+              {!eventoForm.gratuito && <input type="number" value={eventoForm.precio_entrada} onChange={e => setEF("precio_entrada", e.target.value)} placeholder="Precio en ARS" style={{ width: "100%", marginTop: 8, padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />}
             </div>
-
-            {/* Capacidad y link externo */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
               <div>
                 <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Capacidad (opcional)</label>
-                <input type="number" value={eventoForm.capacidad} onChange={e => setEF("capacidad", e.target.value)}
-                  placeholder="Sin límite"
-                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <input type="number" value={eventoForm.capacidad} onChange={e => setEF("capacidad", e.target.value)} placeholder="Sin límite" style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
               <div>
                 <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Link externo</label>
-                <input value={eventoForm.link_externo} onChange={e => setEF("link_externo", e.target.value)}
-                  placeholder="https://..."
-                  style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <input value={eventoForm.link_externo} onChange={e => setEF("link_externo", e.target.value)} placeholder="https://..." style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
             </div>
-
-            {/* Fotos */}
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Fotos (opcional)</label>
               <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "2px dashed rgba(255,255,255,0.1)", borderRadius: 6, cursor: "pointer" }}>
@@ -1173,41 +1071,24 @@ export default function ForoPage() {
                 <span style={{ fontSize: 22 }}>📷</span>
                 <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{eventoSubiendoFoto ? "Subiendo..." : "Seleccionar fotos"}</span>
               </label>
-              {/* Video */}
               <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                <input value={eventoLinkVideo} onChange={e => setEventoLinkVideo(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); agregarVideoEvento(); } }}
-                  placeholder="Link de YouTube / video"
-                  style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 12, outline: "none", fontFamily: "Inter,sans-serif" }} />
-                <button type="button" onClick={agregarVideoEvento} disabled={!eventoLinkVideo.trim()}
-                  style={{ padding: "9px 14px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>
-                  + Video
-                </button>
+                <input value={eventoLinkVideo} onChange={e => setEventoLinkVideo(e.target.value)} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); agregarVideoEvento(); } }} placeholder="Link de YouTube / video" style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 12, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <button type="button" onClick={agregarVideoEvento} disabled={!eventoLinkVideo.trim()} style={{ padding: "9px 14px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>+ Video</button>
               </div>
-              {/* Preview media */}
               {eventoMediaFiles.length > 0 && (
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
                   {eventoMediaFiles.map((m, i) => (
                     <div key={i} style={{ position: "relative", width: 70, height: 70, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "#000" }}>
-                      {m.tipo === "foto"
-                        ? <img src={m.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
-                        : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>▶️</div>}
-                      <button type="button" onClick={() => setEventoMediaFiles(prev => prev.filter((_, j) => j !== i))}
-                        style={{ position: "absolute", top: 2, right: 2, background: "rgba(200,0,0,0.9)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>×</button>
+                      {m.tipo === "foto" ? <img src={m.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>▶️</div>}
+                      <button type="button" onClick={() => setEventoMediaFiles(prev => prev.filter((_, j) => j !== i))} style={{ position: "absolute", top: 2, right: 2, background: "rgba(200,0,0,0.9)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>×</button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-
-            {/* Acciones */}
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20, borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 16 }}>
-              <button onClick={() => setMostrarModalEvento(false)}
-                style={{ padding: "9px 20px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer" }}>
-                Cancelar
-              </button>
-              <button onClick={guardarEventoDesdeChat} disabled={guardandoEvento || !eventoForm.titulo || !eventoForm.fecha}
-                style={{ padding: "9px 24px", background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoEvento || !eventoForm.titulo || !eventoForm.fecha ? 0.6 : 1 }}>
+              <button onClick={() => setMostrarModalEvento(false)} style={{ padding: "9px 20px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer" }}>Cancelar</button>
+              <button onClick={guardarEventoDesdeChat} disabled={guardandoEvento || !eventoForm.titulo || !eventoForm.fecha} style={{ padding: "9px 24px", background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoEvento || !eventoForm.titulo || !eventoForm.fecha ? 0.6 : 1 }}>
                 {guardandoEvento ? "Enviando..." : "Enviar propuesta"}
               </button>
             </div>
@@ -1216,11 +1097,7 @@ export default function ForoPage() {
       )}
 
       {perfilRapidoId && (
-        <PerfilRapidoModal
-          perfilId={perfilRapidoId}
-          miUserId={userId}
-          onClose={() => setPerfilRapidoId(null)}
-        />
+        <PerfilRapidoModal perfilId={perfilRapidoId} miUserId={userId} onClose={() => setPerfilRapidoId(null)} />
       )}
     </>
   );
