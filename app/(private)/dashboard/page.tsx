@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
@@ -46,7 +47,7 @@ const fmtPeriodo = (p: string) => {
 // Íconos SVG del clima
 function IconoClima({ icon, size = 48 }: { icon: string; size?: number }) {
   const code = icon?.replace("n","d") ?? "01d";
-  const icons: Record<string, JSX.Element> = {
+  const icons: Record<string, React.ReactNode> = {
     "01d": ( // sol
       <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
         <circle cx="24" cy="24" r="10" fill="#FACC15" opacity="0.9"/>
