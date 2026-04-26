@@ -54,6 +54,24 @@ export default function NoticiasPage() {
   const [noticiaActiva, setNoticiaActiva] = useState<Noticia | null>(null);
   const [vista, setVista] = useState<"todas" | "pendientes">("todas");
   const [aprobando, setAprobando] = useState<string | null>(null);
+  const [fetchandoLink, setFetchandoLink] = useState(false);
+
+  const fetchLinkPreview = async (url: string) => {
+    if (!url.startsWith("http")) return;
+    setFetchandoLink(true);
+    try {
+      const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      setForm(prev => ({
+        ...prev,
+        titulo: prev.titulo || data.title || "",
+        cuerpo: prev.cuerpo || data.description || "",
+        imagen_url: prev.imagen_url || data.image || "",
+        fuente: prev.fuente || data.siteName || (new URL(url).hostname.replace("www.", "")) || "",
+      }));
+    } catch {}
+    setFetchandoLink(false);
+  };
 
   const esAdmin = perfil?.tipo === "admin" || perfil?.tipo === "admin_contenido";
 
@@ -380,7 +398,20 @@ export default function NoticiasPage() {
             </div>
             <div className="not-field">
               <label className="not-label">Link externo</label>
-              <input className="not-input" placeholder="https://..." value={form.link} onChange={e => setForm(p => ({ ...p, link: e.target.value }))} />
+              <div style={{position:"relative"}}>
+                <input
+                  className="not-input"
+                  placeholder="Pegá el link y se autocompleta..."
+                  value={form.link}
+                  onChange={e => setForm(p => ({ ...p, link: e.target.value }))}
+                  onBlur={e => fetchLinkPreview(e.target.value)}
+                  onPaste={e => { const url = e.clipboardData.getData("text"); setTimeout(() => fetchLinkPreview(url), 100); }}
+                  style={{paddingRight: fetchandoLink ? 36 : undefined}}
+                />
+                {fetchandoLink && (
+                  <div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",width:14,height:14,border:"2px solid rgba(200,0,0,0.3)",borderTopColor:"#cc0000",borderRadius:"50%",animation:"not-spin 0.7s linear infinite"}}/>
+                )}
+              </div>
             </div>
             <div className="not-field">
               <label className="not-label">URL de imagen</label>
