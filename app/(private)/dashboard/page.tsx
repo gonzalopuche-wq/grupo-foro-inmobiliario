@@ -235,6 +235,7 @@ export default function DashboardPage() {
       {/* 1. NOTICIAS */}
       <div style={{ marginBottom: 20 }}>
         <NoticiasWidget />
+      </div>
 
       {/* 2. ZÓCALO HOY EN GFI */}
       <div style={{
