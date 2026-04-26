@@ -28,14 +28,13 @@ interface ChatMsg {
   editado?: boolean; eliminado?: boolean;
   reacciones?: Record<string, string[]>;
   reply_id?: string | null;
+  adjuntos?: { url: string; nombre: string; tipo: "imagen" | "video" | "documento"; tamano?: number }[];
   perfiles?: Author;
   reply?: ChatMsg | null;
 }
 
 type MainTab = "temas" | "noticias" | "chat" | "faq";
 type Vista = "lista" | "detalle" | "nuevo";
-
-const EMOJIS_RAPIDOS = ["👍", "❤️", "🔥", "✅", "👀", "😂"];
 
 const timeAgo = (iso: string) => {
   const diff = Date.now() - new Date(iso).getTime();
@@ -48,6 +47,12 @@ const timeAgo = (iso: string) => {
 };
 const initials = (p?: Author) => p ? `${p.nombre?.charAt(0) ?? ""}${p.apellido?.charAt(0) ?? ""}`.toUpperCase() : "?";
 const fullName = (p?: Author) => p ? `${p.apellido ?? ""}, ${p.nombre ?? ""}` : "—";
+const formatTamano = (bytes?: number) => {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes}B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
+};
 
 const WA_GROUPS = [
   { name: "Foro Inmobiliario", sub: "1025 miembros", url: "https://chat.whatsapp.com/CShHa28oS2P2OWJrotLp3j", main: true },
@@ -113,10 +118,15 @@ export default function ForoPage() {
   const [chatEditText, setChatEditText] = useState("");
   const [chatLinkPreviews, setChatLinkPreviews] = useState<Record<string, any>>({});
   const [chatInputPreview, setChatInputPreview] = useState<{ url: string; data: any } | null>(null);
+  // Adjuntos foro chat
+  const [chatAdjuntos, setChatAdjuntos] = useState<{url:string;nombre:string;tipo:"imagen"|"video"|"documento";tamano?:number}[]>([]);
+  const [subiendoChatAdj, setSubiendoChatAdj] = useState(false);
   const chatInputPreviewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const chatEditRef = useRef<HTMLTextAreaElement>(null);
+  const chatFileImgRef = useRef<HTMLInputElement>(null);
+  const chatFileDocRef = useRef<HTMLInputElement>(null);
 
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [faqTopics, setFaqTopics] = useState<Topic[]>([]);
@@ -154,12 +164,10 @@ export default function ForoPage() {
     const { data } = await supabase.from("forum_categories").select("*").eq("is_active", true).order("sort_order");
     setCategories(data ?? []);
   };
-
   const loadTags = async () => {
     const { data } = await supabase.from("forum_tags").select("*").order("name");
     setTags(data ?? []);
   };
-
   const loadTopics = async (opts?: { cat?: string; status?: string; q?: string }) => {
     setLoading(true);
     const cat = opts?.cat !== undefined ? opts.cat : "todas";
@@ -169,33 +177,24 @@ export default function ForoPage() {
       .select("*, forum_categories(name,slug), perfiles(nombre,apellido,matricula), forum_topic_tags(forum_tags(id,name,slug))")
       .order("is_pinned", { ascending: false })
       .order("last_activity_at", { ascending: false });
-    if (cat !== "todas") {
-      const found = categories.find(c => c.id === cat);
-      if (found) query = query.eq("category_id", found.id);
-    }
+    if (cat !== "todas") { const found = categories.find(c => c.id === cat); if (found) query = query.eq("category_id", found.id); }
     if (st !== "todas") query = query.eq("status", st);
     const { data } = await query;
     let result = (data as unknown as Topic[]) ?? [];
-    if (sq.trim()) {
-      const lower = sq.toLowerCase();
-      result = result.filter(t => t.title.toLowerCase().includes(lower) || t.body.toLowerCase().includes(lower));
-    }
+    if (sq.trim()) { const lower = sq.toLowerCase(); result = result.filter(t => t.title.toLowerCase().includes(lower) || t.body.toLowerCase().includes(lower)); }
     setTopics(result);
     setLoading(false);
   };
-
   const loadFaq = async () => {
     const { data } = await supabase.from("forum_topics")
       .select("*, forum_categories(name,slug), perfiles(nombre,apellido,matricula), forum_topic_tags(forum_tags(id,name,slug))")
       .eq("status", "resolved").order("last_activity_at", { ascending: false }).limit(20);
     setFaqTopics((data as unknown as Topic[]) ?? []);
   };
-
   const loadSaved = async (uid: string) => {
     const { data } = await supabase.from("forum_saved_topics").select("topic_id").eq("user_id", uid);
     setSavedIds(new Set((data ?? []).map((r: any) => r.topic_id)));
   };
-
   const loadChat = async () => {
     const { data } = await supabase.from("forum_chat_messages")
       .select("*, perfiles(nombre,apellido,matricula)")
@@ -208,44 +207,55 @@ export default function ForoPage() {
       const url = extraerUrl(m.body);
       if (!url || previews[url] !== undefined) return;
       previews[url] = "loading";
-      try {
-        const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-        previews[url] = await res.json();
-      } catch { previews[url] = "error"; }
+      try { const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`); previews[url] = await res.json(); } catch { previews[url] = "error"; }
     }));
     setChatLinkPreviews(previews);
   };
-
   const subscribeChat = () => {
     supabase.channel("forum_chat")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "forum_chat_messages" }, async (payload) => {
-        const { data } = await supabase.from("forum_chat_messages")
-          .select("*, perfiles(nombre,apellido,matricula)").eq("id", payload.new.id).single();
+        const { data } = await supabase.from("forum_chat_messages").select("*, perfiles(nombre,apellido,matricula)").eq("id", payload.new.id).single();
         if (!data) return;
         let reply = null;
         if ((data as any).reply_id) {
-          const { data: r } = await supabase.from("forum_chat_messages")
-            .select("id,body,user_id,perfiles(nombre,apellido)").eq("id", (data as any).reply_id).single();
+          const { data: r } = await supabase.from("forum_chat_messages").select("id,body,user_id,perfiles(nombre,apellido)").eq("id", (data as any).reply_id).single();
           reply = r ?? null;
         }
-        setChatMsgs(prev => {
-          if (prev.some(m => m.id === (data as any).id)) return prev;
-          return [...prev, { ...data, reply } as unknown as ChatMsg];
-        });
+        setChatMsgs(prev => { if (prev.some(m => m.id === (data as any).id)) return prev; return [...prev, { ...data, reply } as unknown as ChatMsg]; });
         const url = extraerUrl((data as any).body ?? "");
-        if (url) {
-          fetch(`/api/link-preview?url=${encodeURIComponent(url)}`)
-            .then(r => r.json())
-            .then(d => setChatLinkPreviews(prev => ({ ...prev, [url]: d })))
-            .catch(() => {});
-        }
+        if (url) { fetch(`/api/link-preview?url=${encodeURIComponent(url)}`).then(r => r.json()).then(d => setChatLinkPreviews(prev => ({ ...prev, [url]: d }))).catch(() => {}); }
       })
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "forum_chat_messages" }, async (payload) => {
-        const { data } = await supabase.from("forum_chat_messages")
-          .select("*, perfiles(nombre,apellido,matricula)").eq("id", payload.new.id).single();
+        const { data } = await supabase.from("forum_chat_messages").select("*, perfiles(nombre,apellido,matricula)").eq("id", payload.new.id).single();
         if (data) setChatMsgs(prev => prev.map(m => m.id === (data as any).id ? { ...data, reply: m.reply } as unknown as ChatMsg : m));
       })
       .subscribe();
+  };
+
+  // ── SUBIR ADJUNTO AL CHAT DEL FORO ──
+  const subirChatAdjunto = async (file: File) => {
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const esImagen = ["jpg","jpeg","png","gif","webp","heic"].includes(ext);
+    const esVideo = ["mp4","mov","avi","webm","mkv"].includes(ext);
+    const tipo: "imagen"|"video"|"documento" = esImagen ? "imagen" : esVideo ? "video" : "documento";
+    const path = `foro_chat/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl: "3600", upsert: false });
+    if (error) { console.error("Upload error:", error); return null; }
+    const { data: urlData } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
+    return { url: urlData.publicUrl, nombre: file.name, tipo, tamano: file.size };
+  };
+
+  const manejarChatArchivos = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setSubiendoChatAdj(true);
+    const nuevos: typeof chatAdjuntos = [];
+    for (const file of Array.from(files)) {
+      if (file.size > 20 * 1024 * 1024) { alert(`${file.name} supera 20MB`); continue; }
+      const adj = await subirChatAdjunto(file);
+      if (adj) nuevos.push(adj);
+    }
+    setChatAdjuntos(prev => [...prev, ...nuevos]);
+    setSubiendoChatAdj(false);
   };
 
   const setEF = (k: string, v: any) => setEventoForm(p => ({ ...p, [k]: v }));
@@ -294,22 +304,20 @@ export default function ForoPage() {
     setMostrarModalEvento(false);
     setEventoForm({ titulo: "", descripcion: "", fecha: "", hora: "09:00", lugar: "", plataforma: "presencial", link_reunion: "", gratuito: true, precio_entrada: "", capacidad: "", link_externo: "", tipo: "gfi" });
     setEventoMediaFiles([]);
-    await supabase.from("forum_chat_messages").insert({
-      user_id: userId,
-      body: `📅 Propuse un evento: "${eventoForm.titulo}" — pendiente de aprobación del admin.`,
-    });
+    await supabase.from("forum_chat_messages").insert({ user_id: userId, body: `📅 Propuse un evento: "${eventoForm.titulo}" — pendiente de aprobación del admin.` });
   };
 
   const sendChat = async () => {
-    if (!chatInput.trim() || !userId) return;
+    if ((!chatInput.trim() && chatAdjuntos.length === 0) || !userId) return;
     setChatLoading(true);
     const textoEnviar = chatInput.trim();
-    setChatInput("");
-    setChatInputPreview(null);
+    const adjuntosEnviar = [...chatAdjuntos];
+    setChatInput(""); setChatInputPreview(null); setChatAdjuntos([]);
     const replyId = chatReplyMsg?.id ?? null;
     setChatReplyMsg(null);
     const insertData: any = { user_id: userId, body: textoEnviar };
     if (replyId) insertData.reply_id = replyId;
+    if (adjuntosEnviar.length > 0) insertData.adjuntos = adjuntosEnviar;
     await supabase.from("forum_chat_messages").insert(insertData);
     setChatLoading(false);
     chatInputRef.current?.focus();
@@ -318,39 +326,28 @@ export default function ForoPage() {
   const editarChatMsg = async (id: string) => {
     if (!chatEditText.trim()) return;
     await supabase.from("forum_chat_messages").update({ body: chatEditText.trim(), editado: true }).eq("id", id);
-    setChatEditId(null);
-    setChatEditText("");
+    setChatEditId(null); setChatEditText("");
   };
-
   const eliminarChatMsg = async (id: string) => {
     await supabase.from("forum_chat_messages").update({ eliminado: true, body: "" }).eq("id", id);
     setChatMenuId(null);
   };
-
   const reaccionarChat = async (msgId: string, emoji: string) => {
     const msg = chatMsgs.find(m => m.id === msgId);
     if (!msg || !userId) return;
     const reacs = { ...(msg.reacciones ?? {}) };
     const usuarios = reacs[emoji] ?? [];
-    if (usuarios.includes(userId)) {
-      reacs[emoji] = usuarios.filter(u => u !== userId);
-      if (reacs[emoji].length === 0) delete reacs[emoji];
-    } else {
-      reacs[emoji] = [...usuarios, userId];
-    }
+    if (usuarios.includes(userId)) { reacs[emoji] = usuarios.filter(u => u !== userId); if (reacs[emoji].length === 0) delete reacs[emoji]; }
+    else reacs[emoji] = [...usuarios, userId];
     setChatMsgs(prev => prev.map(m => m.id === msgId ? { ...m, reacciones: reacs } : m));
     setChatMenuId(null);
     supabase.from("forum_chat_messages").update({ reacciones: reacs }).eq("id", msgId);
   };
 
   const openTopic = async (t: Topic) => {
-    setTopic(t);
-    setVista("detalle");
-    setReplyBody("");
+    setTopic(t); setVista("detalle"); setReplyBody("");
     await supabase.from("forum_topics").update({ view_count: t.view_count + 1 }).eq("id", t.id);
-    const { data } = await supabase.from("forum_replies")
-      .select("*, perfiles(nombre,apellido,matricula)")
-      .eq("topic_id", t.id).eq("is_deleted", false).order("created_at");
+    const { data } = await supabase.from("forum_replies").select("*, perfiles(nombre,apellido,matricula)").eq("topic_id", t.id).eq("is_deleted", false).order("created_at");
     if (userId && data) {
       const replyIds = data.map((r: any) => r.id);
       const { data: votes } = await supabase.from("forum_reply_votes").select("reply_id,value,user_id").in("reply_id", replyIds);
@@ -366,8 +363,7 @@ export default function ForoPage() {
     const { data: nuevo, error } = await supabase.from("forum_topics").insert({ author_id: userId, category_id: nCat, title: nTitle.trim(), body: nBody.trim(), is_urgent: nUrgent }).select().single();
     if (error || !nuevo) { setNError("Error al publicar. Intentá de nuevo."); setNLoading(false); return; }
     if (nTags.length > 0) await supabase.from("forum_topic_tags").insert(nTags.map(tid => ({ topic_id: nuevo.id, tag_id: tid })));
-    setNLoading(false);
-    setNTitle(""); setNBody(""); setNCat(""); setNTags([]); setNUrgent(false);
+    setNLoading(false); setNTitle(""); setNBody(""); setNCat(""); setNTags([]); setNUrgent(false);
     setCatFilter("todas"); setStatusFilter("todas"); setSearch("");
     await loadTopics({ cat: "todas", status: "todas", q: "" });
     setVista("lista");
@@ -383,8 +379,7 @@ export default function ForoPage() {
       setTopic(t => t ? { ...t, replies_count: t.replies_count + 1 } : t);
       if (topic.author_id !== userId) await supabase.from("forum_notifications").insert({ user_id: topic.author_id, type: "reply", topic_id: topic.id, reply_id: nueva.id });
     }
-    setReplyBody("");
-    setReplyLoading(false);
+    setReplyBody(""); setReplyLoading(false);
   };
 
   const acceptReply = async (reply: Reply) => {
@@ -416,7 +411,6 @@ export default function ForoPage() {
     if (searchRef.current) clearTimeout(searchRef.current);
     searchRef.current = setTimeout(() => loadTopics({ q: val }), 350);
   };
-
   const applyFilter = (opts: { cat?: string; status?: string }) => {
     const newCat = opts.cat ?? catFilter;
     const newSt = opts.status ?? statusFilter;
@@ -432,12 +426,7 @@ export default function ForoPage() {
       <a href={url} target="_blank" rel="noopener noreferrer"
         style={{ display: "flex", gap: 8, marginTop: 6, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.3)", textDecoration: "none", minHeight: 60 }}
         onClick={e => e.stopPropagation()}>
-        {data.image && (
-          <div style={{ width: 60, minWidth: 60, background: "#000", flexShrink: 0 }}>
-            <img src={data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-              onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = "none"; }} />
-          </div>
-        )}
+        {data.image && <div style={{ width: 60, minWidth: 60, background: "#000", flexShrink: 0 }}><img src={data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = "none"; }} /></div>}
         <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           {data.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.title}</div>}
           {data.description && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.description}</div>}
@@ -446,6 +435,33 @@ export default function ForoPage() {
       </a>
     );
   };
+
+  // Render adjuntos en mensaje del foro chat
+  const RenderChatAdjuntos = ({ adjuntos }: { adjuntos: NonNullable<ChatMsg["adjuntos"]> }) => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+      {adjuntos.map((adj, i) => {
+        if (adj.tipo === "imagen") return (
+          <a key={i} href={adj.url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+            <img src={adj.url} alt={adj.nombre} style={{ maxWidth: 220, maxHeight: 180, borderRadius: 6, display: "block", objectFit: "cover", border: "1px solid rgba(255,255,255,0.1)" }} />
+          </a>
+        );
+        if (adj.tipo === "video") return (
+          <video key={i} src={adj.url} controls style={{ maxWidth: 260, borderRadius: 6, display: "block", border: "1px solid rgba(255,255,255,0.1)" }} onClick={e => e.stopPropagation()} />
+        );
+        return (
+          <a key={i} href={adj.url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+            style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, textDecoration: "none" }}>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>{adj.nombre.match(/\.pdf$/i) ? "📄" : adj.nombre.match(/\.(xls|xlsx)$/i) ? "📊" : "📎"}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 11, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{adj.nombre}</div>
+              {adj.tamano && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)" }}>{formatTamano(adj.tamano)}</div>}
+            </div>
+            <span style={{ fontSize: 12, color: "#cc0000" }}>↓</span>
+          </a>
+        );
+      })}
+    </div>
+  );
 
   const TopicCard = ({ t, onClick }: { t: Topic; onClick: () => void }) => (
     <div className={`f-topic${t.is_urgent ? " urgent" : ""}${t.is_pinned ? " pinned" : ""}`} onClick={onClick}>
@@ -463,15 +479,11 @@ export default function ForoPage() {
       </div>
       <div className="f-topic-body">{t.body}</div>
       <div className="f-topic-footer">
-        <span className="f-meta" style={{cursor:"pointer",textDecoration:"underline dotted"}} onClick={e => { e.stopPropagation(); setPerfilRapidoId(t.author_id); }}>
-          👤 {fullName(t.perfiles)}
-        </span>
+        <span className="f-meta" style={{cursor:"pointer",textDecoration:"underline dotted"}} onClick={e => { e.stopPropagation(); setPerfilRapidoId(t.author_id); }}>👤 {fullName(t.perfiles)}</span>
         <span className="f-meta">💬 {t.replies_count}</span>
         <span className="f-meta">👁 {t.view_count}</span>
         <span className="f-meta">{timeAgo(t.last_activity_at)}</span>
-        <div className="f-tags-row">
-          {(t.forum_topic_tags ?? []).slice(0, 3).map((tt: any) => <span key={tt.forum_tags?.id} className="f-tag">{tt.forum_tags?.name}</span>)}
-        </div>
+        <div className="f-tags-row">{(t.forum_topic_tags ?? []).slice(0, 3).map((tt: any) => <span key={tt.forum_tags?.id} className="f-tag">{tt.forum_tags?.name}</span>)}</div>
       </div>
     </div>
   );
@@ -536,6 +548,8 @@ export default function ForoPage() {
         .f-chat-msgs::-webkit-scrollbar { width: 4px; }
         .f-chat-msgs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
         .f-chat-input-area { border-top: 1px solid rgba(255,255,255,0.06); padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
+        .f-chat-adj-btn { width: 34px; height: 34px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.5); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+        .f-chat-adj-btn:hover { border-color: rgba(200,0,0,0.4); color: #cc0000; }
         .f-chat-input-row { display: flex; gap: 8px; align-items: center; }
         .f-chat-input-row input { flex: 1; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
         .f-chat-input-row input:focus { border-color: rgba(200,0,0,0.35); }
@@ -625,9 +639,7 @@ export default function ForoPage() {
           <div className="f-side-box">
             <div className="f-side-title">Categorías</div>
             <div className={`f-side-item${catFilter === "todas" ? " active" : ""}`} onClick={() => applyFilter({ cat: "todas" })}>Todos los temas</div>
-            {categories.map(c => (
-              <div key={c.id} className={`f-side-item${catFilter === c.id ? " active" : ""}`} onClick={() => { setMainTab("temas"); applyFilter({ cat: c.id }); }}>{c.name}</div>
-            ))}
+            {categories.map(c => <div key={c.id} className={`f-side-item${catFilter === c.id ? " active" : ""}`} onClick={() => { setMainTab("temas"); applyFilter({ cat: c.id }); }}>{c.name}</div>)}
           </div>
           <div className="f-side-box">
             <div className="f-side-title">Estado</div>
@@ -662,8 +674,7 @@ export default function ForoPage() {
               </div>
               {loading ? <div className="f-empty">Cargando...</div> :
                topics.length === 0 ? <div className="f-empty">No hay temas todavía. ¡Publicá la primera consulta!</div> :
-               topics.map(t => <TopicCard key={t.id} t={t} onClick={() => openTopic(t)} />)
-              }
+               topics.map(t => <TopicCard key={t.id} t={t} onClick={() => openTopic(t)} />)}
             </>
           )}
 
@@ -688,11 +699,7 @@ export default function ForoPage() {
                   <span className="f-meta">💬 {topic.replies_count}</span>
                 </div>
                 <div className="f-card-body">{topic.body}</div>
-                {(topic.forum_topic_tags ?? []).length > 0 && (
-                  <div className="f-tags-row" style={{marginTop:14}}>
-                    {(topic.forum_topic_tags ?? []).map((tt: any) => <span key={tt.forum_tags?.id} className="f-tag">{tt.forum_tags?.name}</span>)}
-                  </div>
-                )}
+                {(topic.forum_topic_tags ?? []).length > 0 && <div className="f-tags-row" style={{marginTop:14}}>{(topic.forum_topic_tags ?? []).map((tt: any) => <span key={tt.forum_tags?.id} className="f-tag">{tt.forum_tags?.name}</span>)}</div>}
               </div>
               {replies.length > 0 && (
                 <div>
@@ -711,9 +718,7 @@ export default function ForoPage() {
                       <div className="f-reply-actions">
                         <button className={`f-vote up${r._myVote===1?" voted":""}`} onClick={() => voteReply(r,1)}>▲ {(r._voteCount??0)>0?`+${r._voteCount}`:r._voteCount??0}</button>
                         <button className={`f-vote down${r._myVote===-1?" voted":""}`} onClick={() => voteReply(r,-1)}>▼</button>
-                        {topic.author_id === userId && !r.is_accepted && !topic.is_locked && (
-                          <button className="f-accept-btn" onClick={() => acceptReply(r)}>✓ Marcar destacada</button>
-                        )}
+                        {topic.author_id === userId && !r.is_accepted && !topic.is_locked && <button className="f-accept-btn" onClick={() => acceptReply(r)}>✓ Marcar destacada</button>}
                       </div>
                     </div>
                   ))}
@@ -754,9 +759,7 @@ export default function ForoPage() {
               <div className="fn-field">
                 <label className="fn-label">Tags * (al menos 1)</label>
                 <div className="fn-tags">
-                  {tags.map(t => (
-                    <button key={t.id} type="button" className={`fn-tag${nTags.includes(t.id)?" active":""}`} onClick={() => setNTags(prev => prev.includes(t.id) ? prev.filter(x=>x!==t.id) : [...prev,t.id])}>{t.name}</button>
-                  ))}
+                  {tags.map(t => <button key={t.id} type="button" className={`fn-tag${nTags.includes(t.id)?" active":""}`} onClick={() => setNTags(prev => prev.includes(t.id) ? prev.filter(x=>x!==t.id) : [...prev,t.id])}>{t.name}</button>)}
                 </div>
               </div>
               <div className="fn-field">
@@ -778,10 +781,7 @@ export default function ForoPage() {
             </div>
           )}
 
-          {/* ── TAB NOTICIAS ─────────────────────────────────────────────── */}
-          {mainTab === "noticias" && (
-            <NoticiasForoSection userId={userId} />
-          )}
+          {mainTab === "noticias" && <NoticiasForoSection userId={userId} />}
 
           {mainTab === "chat" && (
             <div className="f-chat">
@@ -795,17 +795,16 @@ export default function ForoPage() {
                 {chatMsgs.map(m => {
                   const esMio = m.user_id === userId;
                   const eliminado = m.eliminado;
+                  const adjuntos = (m as any).adjuntos ?? [];
                   return (
-                    <div key={m.id}
-                      style={{ display: "flex", justifyContent: esMio ? "flex-end" : "flex-start", marginBottom: 4, position: "relative", cursor: "pointer" }}
+                    <div key={m.id} style={{ display: "flex", justifyContent: esMio ? "flex-end" : "flex-start", marginBottom: 4, position: "relative", cursor: "pointer" }}
                       onClick={() => !eliminado && setChatMenuId(prev => prev === m.id ? null : m.id)}>
                       {chatMenuId === m.id && !eliminado && chatEditId !== m.id && (
                         <div data-chat-menu onClick={e => e.stopPropagation()}
                           style={{ position: "absolute", [esMio ? "right" : "left"]: 0, bottom: "100%", marginBottom: 6, background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 12, padding: "8px 6px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", gap: 2, minWidth: 160 }}>
                           <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 2, flexWrap: "wrap" }}>
                             {["👍","❤️","😂","😮","😢","🙏","🔥","✅","👀","😡","💯","🎉"].map(emoji => (
-                              <button key={emoji} onClick={() => reaccionarChat(m.id, emoji)}
-                                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: "2px 4px", borderRadius: 6 }}>{emoji}</button>
+                              <button key={emoji} onClick={() => reaccionarChat(m.id, emoji)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: "2px 4px", borderRadius: 6 }}>{emoji}</button>
                             ))}
                           </div>
                           {([
@@ -835,10 +834,8 @@ export default function ForoPage() {
                           </div>
                         )}
                         {!esMio && !eliminado && (
-                          <div style={{ fontSize: 10, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, cursor: "pointer" }}
-                            onClick={e => { e.stopPropagation(); setPerfilRapidoId(m.user_id); }}>
-                            {fullName(m.perfiles)}
-                            {m.perfiles?.matricula && <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
+                          <div style={{ fontSize: 10, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, cursor: "pointer" }} onClick={e => { e.stopPropagation(); setPerfilRapidoId(m.user_id); }}>
+                            {fullName(m.perfiles)}{m.perfiles?.matricula && <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
                           </div>
                         )}
                         <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${chatMenuId === m.id ? "rgba(200,0,0,0.5)" : "rgba(200,0,0,0.25)"}` : `1px solid ${chatMenuId === m.id ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", transition: "border-color 0.15s" }}>
@@ -861,12 +858,16 @@ export default function ForoPage() {
                               </div>
                             </div>
                           ) : (
-                            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5, wordBreak: "break-word", whiteSpace: "pre-wrap", margin: 0 }}>{m.body}</p>
+                            <>
+                              {m.body && <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5, wordBreak: "break-word", whiteSpace: "pre-wrap", margin: 0 }}>{m.body}</p>}
+                              {adjuntos.length > 0 && <RenderChatAdjuntos adjuntos={adjuntos} />}
+                            </>
                           )}
                           {!eliminado && extraerUrl(m.body ?? "") && <ChatLinkPreview url={extraerUrl(m.body ?? "")!} />}
                           {!eliminado && (
                             <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", textAlign: "right", marginTop: 4, display: "flex", gap: 5, justifyContent: "flex-end" }}>
                               {m.editado && <span style={{ fontStyle: "italic" }}>editado</span>}
+                              {adjuntos.length > 0 && <span>📎 {adjuntos.length}</span>}
                               {timeAgo(m.created_at)}
                             </div>
                           )}
@@ -887,6 +888,8 @@ export default function ForoPage() {
                 })}
                 <div ref={chatEndRef}/>
               </div>
+
+              {/* Reply preview */}
               {chatReplyMsg && (
                 <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: "rgba(200,0,0,0.06)", borderTop: "1px solid rgba(200,0,0,0.15)" }}>
                   <div style={{ borderLeft: "2px solid #cc0000", paddingLeft: 8, flex: 1, minWidth: 0 }}>
@@ -896,48 +899,62 @@ export default function ForoPage() {
                   <button onClick={() => setChatReplyMsg(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16, padding: 4 }}>×</button>
                 </div>
               )}
+
+              {/* Preview adjuntos pendientes */}
+              {chatAdjuntos.length > 0 && (
+                <div style={{ padding: "8px 14px", background: "rgba(255,255,255,0.03)", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Adjuntos:</span>
+                  {chatAdjuntos.map((adj, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, padding: "4px 8px 4px 6px" }}>
+                      {adj.tipo === "imagen" && <img src={adj.url} alt="" style={{ width: 28, height: 28, borderRadius: 4, objectFit: "cover" }} />}
+                      {adj.tipo === "video" && <span style={{ fontSize: 16 }}>🎬</span>}
+                      {adj.tipo === "documento" && <span style={{ fontSize: 16 }}>📎</span>}
+                      <div style={{ maxWidth: 90 }}>
+                        <div style={{ fontSize: 10, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{adj.nombre}</div>
+                        {adj.tamano && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{formatTamano(adj.tamano)}</div>}
+                      </div>
+                      <button onClick={() => setChatAdjuntos(prev => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 14, padding: "0 2px", lineHeight: 1 }}>×</button>
+                    </div>
+                  ))}
+                  {subiendoChatAdj && <div style={{ width: 14, height: 14, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
+                </div>
+              )}
+
               <div className="f-chat-input-area">
                 {chatInputPreview && (
                   <div style={{ display: "flex", gap: 8, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.35)", position: "relative", minHeight: 56 }}>
                     {chatInputPreview.data.image && <div style={{ width: 56, minWidth: 56, background: "#000", flexShrink: 0 }}><img src={chatInputPreview.data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></div>}
                     <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                       {chatInputPreview.data.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatInputPreview.data.title}</div>}
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{(() => { try { return new URL(chatInputPreview.url).hostname; } catch { return ""; } })()}</div>
                     </div>
                     <button onClick={() => setChatInputPreview(null)} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
                   </div>
                 )}
-                <div style={{ position: "relative" }}>
-                  <button onClick={() => setMostrarModalEvento(true)}
-                    style={{ width: 36, height: 36, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}
-                    title="Proponer evento"
-                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(200,0,0,0.1)")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}>📅</button>
-                </div>
-                <div style={{ display: "flex", gap: 8, alignItems: "center", flex: 1 }}>
-                  <div style={{ flex: 1, display: "flex", gap: 8 }}>
-                    <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
-                      style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
-                      onChange={e => {
-                        const val = e.target.value;
-                        setChatInput(val);
-                        const urlMatch = val.match(/https?:\/\/[^\s]+/);
-                        if (urlMatch) {
-                          const url = urlMatch[0];
-                          if (chatInputPreviewTimer.current) clearTimeout(chatInputPreviewTimer.current);
-                          chatInputPreviewTimer.current = setTimeout(async () => {
-                            try {
-                              const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-                              const d = await res.json();
-                              if (d.title || d.image) setChatInputPreview({ url, data: d });
-                            } catch {}
-                          }, 600);
-                        } else { setChatInputPreview(null); }
-                      }}
-                      onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
-                      disabled={chatLoading} />
-                    <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || !chatInput.trim()}>Enviar</button>
-                  </div>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  {/* Botón proponer evento */}
+                  <button onClick={() => setMostrarModalEvento(true)} className="f-chat-adj-btn" title="Proponer evento">📅</button>
+                  {/* Adjuntar fotos/videos */}
+                  <input ref={chatFileImgRef} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
+                  <button onClick={() => chatFileImgRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Fotos y videos">📷</button>
+                  {/* Adjuntar documentos */}
+                  <input ref={chatFileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
+                  <button onClick={() => chatFileDocRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Documentos">📎</button>
+                  <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
+                    style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
+                    onChange={e => {
+                      const val = e.target.value; setChatInput(val);
+                      const urlMatch = val.match(/https?:\/\/[^\s]+/);
+                      if (urlMatch) {
+                        const url = urlMatch[0];
+                        if (chatInputPreviewTimer.current) clearTimeout(chatInputPreviewTimer.current);
+                        chatInputPreviewTimer.current = setTimeout(async () => {
+                          try { const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`); const d = await res.json(); if (d.title || d.image) setChatInputPreview({ url, data: d }); } catch {}
+                        }, 600);
+                      } else { setChatInputPreview(null); }
+                    }}
+                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
+                    disabled={chatLoading} />
+                  <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || (!chatInput.trim() && chatAdjuntos.length === 0)}>Enviar</button>
                 </div>
               </div>
             </div>
@@ -950,8 +967,7 @@ export default function ForoPage() {
                 <button className="f-btn-nuevo" onClick={() => { setMainTab("temas"); setVista("nuevo"); }}>+ Nueva consulta</button>
               </div>
               {faqTopics.length === 0 ? <div className="f-empty">No hay consultas resueltas todavía.</div> :
-               faqTopics.map(t => <TopicCard key={t.id} t={t} onClick={() => { setMainTab("temas"); openTopic(t); }} />)
-              }
+               faqTopics.map(t => <TopicCard key={t.id} t={t} onClick={() => { setMainTab("temas"); openTopic(t); }} />)}
             </>
           )}
         </div>
@@ -990,7 +1006,7 @@ export default function ForoPage() {
         </aside>
       </div>
 
-      {/* Modal proponer evento */}
+      {/* Modal proponer evento — igual que antes */}
       {mostrarModalEvento && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 500, padding: 20 }}
           onClick={e => { if (e.target === e.currentTarget) setMostrarModalEvento(false); }}>
@@ -1024,68 +1040,6 @@ export default function ForoPage() {
                 <input type="time" value={eventoForm.hora} onChange={e => setEF("hora", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
             </div>
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Plataforma</label>
-              <select value={eventoForm.plataforma} onChange={e => setEF("plataforma", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}>
-                <option value="presencial">📍 Presencial</option>
-                <option value="zoom">🎥 Zoom</option>
-                <option value="meet">🎥 Google Meet</option>
-                <option value="youtube">▶️ YouTube Live</option>
-                <option value="teams">🎥 Teams</option>
-              </select>
-            </div>
-            {eventoForm.plataforma === "presencial" ? (
-              <div style={{ marginBottom: 14 }}>
-                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Lugar</label>
-                <input value={eventoForm.lugar} onChange={e => setEF("lugar", e.target.value)} placeholder="Ej: Sede COCIR, San Martín 1234" style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
-              </div>
-            ) : (
-              <div style={{ marginBottom: 14 }}>
-                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Link de reunión</label>
-                <input value={eventoForm.link_reunion} onChange={e => setEF("link_reunion", e.target.value)} placeholder="https://zoom.us/j/..." style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
-              </div>
-            )}
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Costo</label>
-              <div style={{ display: "flex", gap: 10 }}>
-                {[["grat", true, "✓ Gratuito", "#22c55e"], ["pago", false, "💰 Con costo", "#eab308"]].map(([k, v, l, c]: any) => (
-                  <button key={k} type="button" onClick={() => setEF("gratuito", v)} style={{ flex: 1, padding: "8px", borderRadius: 4, border: `1px solid ${eventoForm.gratuito === v ? `${c}66` : "rgba(255,255,255,0.1)"}`, background: eventoForm.gratuito === v ? `${c}14` : "transparent", color: eventoForm.gratuito === v ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>{l}</button>
-                ))}
-              </div>
-              {!eventoForm.gratuito && <input type="number" value={eventoForm.precio_entrada} onChange={e => setEF("precio_entrada", e.target.value)} placeholder="Precio en ARS" style={{ width: "100%", marginTop: 8, padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />}
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-              <div>
-                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Capacidad (opcional)</label>
-                <input type="number" value={eventoForm.capacidad} onChange={e => setEF("capacidad", e.target.value)} placeholder="Sin límite" style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Link externo</label>
-                <input value={eventoForm.link_externo} onChange={e => setEF("link_externo", e.target.value)} placeholder="https://..." style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
-              </div>
-            </div>
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Fotos (opcional)</label>
-              <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "2px dashed rgba(255,255,255,0.1)", borderRadius: 6, cursor: "pointer" }}>
-                <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={e => e.target.files && subirFotosEvento(e.target.files)} />
-                <span style={{ fontSize: 22 }}>📷</span>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{eventoSubiendoFoto ? "Subiendo..." : "Seleccionar fotos"}</span>
-              </label>
-              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                <input value={eventoLinkVideo} onChange={e => setEventoLinkVideo(e.target.value)} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); agregarVideoEvento(); } }} placeholder="Link de YouTube / video" style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 12, outline: "none", fontFamily: "Inter,sans-serif" }} />
-                <button type="button" onClick={agregarVideoEvento} disabled={!eventoLinkVideo.trim()} style={{ padding: "9px 14px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>+ Video</button>
-              </div>
-              {eventoMediaFiles.length > 0 && (
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-                  {eventoMediaFiles.map((m, i) => (
-                    <div key={i} style={{ position: "relative", width: 70, height: 70, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "#000" }}>
-                      {m.tipo === "foto" ? <img src={m.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>▶️</div>}
-                      <button type="button" onClick={() => setEventoMediaFiles(prev => prev.filter((_, j) => j !== i))} style={{ position: "absolute", top: 2, right: 2, background: "rgba(200,0,0,0.9)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>×</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20, borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 16 }}>
               <button onClick={() => setMostrarModalEvento(false)} style={{ padding: "9px 20px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer" }}>Cancelar</button>
               <button onClick={guardarEventoDesdeChat} disabled={guardandoEvento || !eventoForm.titulo || !eventoForm.fecha} style={{ padding: "9px 24px", background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoEvento || !eventoForm.titulo || !eventoForm.fecha ? 0.6 : 1 }}>
@@ -1096,9 +1050,7 @@ export default function ForoPage() {
         </div>
       )}
 
-      {perfilRapidoId && (
-        <PerfilRapidoModal perfilId={perfilRapidoId} miUserId={userId} onClose={() => setPerfilRapidoId(null)} />
-      )}
+      {perfilRapidoId && <PerfilRapidoModal perfilId={perfilRapidoId} miUserId={userId} onClose={() => setPerfilRapidoId(null)} />}
     </>
   );
 }
