@@ -43,6 +43,86 @@ const fmtPeriodo = (p: string) => {
   return ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][parseInt(m)-1] + " " + a;
 };
 
+// Íconos SVG del clima
+function IconoClima({ icon, size = 48 }: { icon: string; size?: number }) {
+  const code = icon?.replace("n","d") ?? "01d";
+  const icons: Record<string, JSX.Element> = {
+    "01d": ( // sol
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="10" fill="#FACC15" opacity="0.9"/>
+        {[0,45,90,135,180,225,270,315].map((a,i) => (
+          <line key={i} x1={24+15*Math.cos(a*Math.PI/180)} y1={24+15*Math.sin(a*Math.PI/180)}
+            x2={24+20*Math.cos(a*Math.PI/180)} y2={24+20*Math.sin(a*Math.PI/180)}
+            stroke="#FACC15" strokeWidth="2.5" strokeLinecap="round"/>
+        ))}
+      </svg>
+    ),
+    "02d": ( // sol con nube
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <circle cx="18" cy="20" r="7" fill="#FACC15" opacity="0.8"/>
+        {[0,60,120,180,240,300].map((a,i) => (
+          <line key={i} x1={18+9*Math.cos(a*Math.PI/180)} y1={20+9*Math.sin(a*Math.PI/180)}
+            x2={18+13*Math.cos(a*Math.PI/180)} y2={20+13*Math.sin(a*Math.PI/180)}
+            stroke="#FACC15" strokeWidth="2" strokeLinecap="round"/>
+        ))}
+        <ellipse cx="28" cy="30" rx="9" ry="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+        <ellipse cx="22" cy="32" rx="7" ry="5" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
+        <ellipse cx="32" cy="32" rx="6" ry="5" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
+      </svg>
+    ),
+    "03d": ( // nublado
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <ellipse cx="24" cy="26" rx="14" ry="9" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+        <ellipse cx="18" cy="27" rx="10" ry="8" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
+        <ellipse cx="30" cy="27" rx="9" ry="7" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
+        <ellipse cx="24" cy="22" rx="9" ry="7" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+      </svg>
+    ),
+    "09d": ( // lluvia
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <ellipse cx="24" cy="20" rx="12" ry="8" fill="rgba(148,163,184,0.25)" stroke="rgba(148,163,184,0.4)" strokeWidth="1.5"/>
+        <ellipse cx="18" cy="22" rx="9" ry="6" fill="rgba(148,163,184,0.2)" stroke="rgba(148,163,184,0.35)" strokeWidth="1.5"/>
+        <ellipse cx="30" cy="22" rx="8" ry="6" fill="rgba(148,163,184,0.2)" stroke="rgba(148,163,184,0.35)" strokeWidth="1.5"/>
+        {[[18,32],[22,36],[26,32],[30,36]].map(([x,y],i) => (
+          <line key={i} x1={x} y1={y} x2={x-2} y2={y+6} stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"/>
+        ))}
+      </svg>
+    ),
+    "10d": ( // lluvia con sol
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <circle cx="14" cy="16" r="6" fill="#FACC15" opacity="0.7"/>
+        <ellipse cx="26" cy="22" rx="11" ry="7" fill="rgba(148,163,184,0.25)" stroke="rgba(148,163,184,0.4)" strokeWidth="1.5"/>
+        <ellipse cx="20" cy="24" rx="8" ry="6" fill="rgba(148,163,184,0.2)" stroke="rgba(148,163,184,0.35)" strokeWidth="1.5"/>
+        {[[18,33],[22,37],[27,33]].map(([x,y],i) => (
+          <line key={i} x1={x} y1={y} x2={x-2} y2={y+5} stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"/>
+        ))}
+      </svg>
+    ),
+    "11d": ( // tormenta
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <ellipse cx="24" cy="18" rx="14" ry="9" fill="rgba(71,85,105,0.5)" stroke="rgba(100,116,139,0.5)" strokeWidth="1.5"/>
+        <polyline points="22,26 18,34 24,32 20,42" stroke="#FACC15" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      </svg>
+    ),
+    "13d": ( // nieve
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <ellipse cx="24" cy="20" rx="12" ry="8" fill="rgba(186,230,253,0.2)" stroke="rgba(186,230,253,0.4)" strokeWidth="1.5"/>
+        {[[18,32],[24,35],[30,32],[21,38],[27,38]].map(([x,y],i) => (
+          <circle key={i} cx={x} cy={y} r="2" fill="rgba(186,230,253,0.8)"/>
+        ))}
+      </svg>
+    ),
+    "50d": ( // neblina
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        {[20,26,32,38].map((y,i) => (
+          <line key={i} x1={10+i*2} y1={y} x2={38-i} y2={y} stroke="rgba(148,163,184,0.4)" strokeWidth="2" strokeLinecap="round"/>
+        ))}
+      </svg>
+    ),
+  };
+  return icons[code] ?? icons["03d"];
+}
+
 export default function DashboardPage() {
   const [hora, setHora] = useState("");
   const [clima, setClima] = useState<Clima | null>(null);
@@ -65,7 +145,7 @@ export default function DashboardPage() {
       const d = await r.json();
       if (d.cod && d.cod !== 200) throw new Error(d.message);
       const ic = d.weather?.[0]?.icon ?? "01d";
-      setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: `https://openweathermap.org/img/wn/${ic}@2x.png`, sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? "Tu ubicación", lat, lon, gpsActivo });
+      setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: ic, sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? "Tu ubicación", lat, lon, gpsActivo });
     } catch { setClimaError(true); }
     setClimaLoading(false);
   };
@@ -79,7 +159,7 @@ export default function DashboardPage() {
       const d = await r.json();
       if (d.cod && d.cod !== 200) throw new Error(d.message);
       const ic = d.weather?.[0]?.icon ?? "01d";
-      setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: `https://openweathermap.org/img/wn/${ic}@2x.png`, sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? ciudad, lat: d.coord?.lat ?? 0, lon: d.coord?.lon ?? 0, gpsActivo: false });
+      setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: ic, sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? ciudad, lat: d.coord?.lat ?? 0, lon: d.coord?.lon ?? 0, gpsActivo: false });
       localStorage.setItem("gfi_ciudad_clima", ciudad);
       setMostrarCiudadInput(false); setCiudadInput("");
     } catch { setClimaError(true); }
@@ -107,14 +187,13 @@ export default function DashboardPage() {
             .then(r => r.json()).then(d => {
               if (d.cod && d.cod !== 200) { setClimaError(true); setClimaLoading(false); return; }
               const ic = d.weather?.[0]?.icon ?? "01d";
-              setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: `https://openweathermap.org/img/wn/${ic}@2x.png`, sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? ciudad, lat: d.coord?.lat ?? 0, lon: d.coord?.lon ?? 0, gpsActivo: false });
+              setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: ic, sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? ciudad, lat: d.coord?.lat ?? 0, lon: d.coord?.lon ?? 0, gpsActivo: false });
               setClimaLoading(false);
             }).catch(() => { setClimaError(true); setClimaLoading(false); });
         }, { timeout: 5000 }
       );
     } else { setClimaError(true); setClimaLoading(false); }
 
-    // Dólar de referencia GFI® — proveedor con mayor promedio, fallback a blue
     supabase.from("divisas_proveedores").select("nombre, compra_usd, venta_usd").eq("activo", true)
       .then(({ data }) => {
         const provs = (data || []).filter(p => p.compra_usd !== null && p.venta_usd !== null);
@@ -127,14 +206,12 @@ export default function DashboardPage() {
           setDolar({ compra: mejor.compra_usd, venta: mejor.venta_usd, promedio: Math.round(((mejor.compra_usd + mejor.venta_usd) / 2) * 100) / 100 });
           setDolarLoading(false);
         } else {
-          // Fallback blue
           fetch("https://dolarapi.com/v1/dolares/blue")
             .then(r => r.json()).then(d => { const c = parseFloat(d.compra); const v = parseFloat(d.venta); setDolar({ compra: c, venta: v, promedio: Math.round(((c + v) / 2) * 100) / 100 }); setDolarLoading(false); })
             .catch(() => { setDolar(null); setDolarLoading(false); });
         }
       });
 
-    // Traer historial de 7 meses para calcular hasta semestral
     const hace7 = new Date();
     hace7.setMonth(hace7.getMonth() - 7);
     const desde = hace7.toISOString().substring(0, 7);
@@ -163,6 +240,7 @@ export default function DashboardPage() {
   const hoy = new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const formatPeso = (n: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
   const climaDesc = clima?.desc ? clima.desc.charAt(0).toUpperCase() + clima.desc.slice(1) : "";
+  const colorAcum = (n: number | null) => n !== null ? (n > 0 ? "#f87171" : "#22c55e") : "rgba(255,255,255,0.3)";
 
   const ACCESOS = [
     { icon: "🔍", label: "Publicar búsqueda", href: "/mir?nuevo=busqueda", primary: true },
@@ -175,53 +253,183 @@ export default function DashboardPage() {
     { icon: "💰", label: "Suscripción", href: "/suscripcion", primary: false },
   ];
 
-  // Colores acumulados
-  const colorAcum = (n: number | null) => n !== null ? (n > 0 ? "#f87171" : "#22c55e") : "rgba(255,255,255,0.3)";
-
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
-        .db-fecha { font-size: 12px; color: rgba(255,255,255,0.3); text-transform: capitalize; margin-bottom: 24px; }
-        .db-top-row { display: grid; grid-template-columns: 1fr auto; gap: 20px; margin-bottom: 20px; }
-        .db-panel { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 20px 24px; position: relative; overflow: hidden; }
+
+        .db-fecha { font-size: 12px; color: rgba(255,255,255,0.3); text-transform: capitalize; margin-bottom: 20px; }
+
+        /* ── NOTICIAS PRIMERO ── */
+        .db-noticias-top { margin-bottom: 20px; }
+
+        /* ── TOP ROW: stats + clima ── */
+        .db-top-row { display: grid; grid-template-columns: 1fr 220px; gap: 16px; margin-bottom: 20px; }
+
+        .db-panel { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 24px; position: relative; overflow: hidden; }
         .db-panel.red-top::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #cc0000, transparent); }
         .db-sec-titulo { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
         .db-hoy-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
         .db-hoy-num { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 800; color: #cc0000; line-height: 1; }
         .db-hoy-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
-        .db-clima-col { display: flex; flex-direction: column; gap: 8px; min-width: 165px; }
-        .db-clima-box { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 18px; display: flex; flex-direction: column; gap: 3px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
-        .db-clima-box:hover { border-color: rgba(255,255,255,0.15); }
-        .db-clima-box-static { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 18px; display: flex; flex-direction: column; gap: 3px; text-align: center; }
-        .db-clima-icon { width: 52px; height: 52px; margin: 0 auto; }
-        .db-clima-temp { font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 800; color: #fff; line-height: 1; }
-        .db-clima-desc { font-size: 11px; color: rgba(255,255,255,0.5); }
-        .db-clima-minmax { font-size: 10px; color: rgba(255,255,255,0.3); }
-        .db-clima-detalles { display: flex; justify-content: center; gap: 8px; margin-top: 3px; }
-        .db-clima-det { font-size: 10px; color: rgba(255,255,255,0.3); }
-        .db-clima-ciudad { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-top: 3px; }
-        .db-clima-hora { font-size: 11px; color: rgba(255,255,255,0.2); margin-top: 3px; }
-        .db-ciudad-box { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
-        .db-ciudad-label { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
-        .db-ciudad-form { display: flex; gap: 6px; }
-        .db-ciudad-input { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter', sans-serif; }
+
+        /* ── CLIMA REDISEÑADO ── */
+        .db-clima-card {
+          background: rgba(14,14,14,0.9);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 8px;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          cursor: pointer;
+          transition: border-color 0.2s;
+          position: relative;
+        }
+        .db-clima-card:hover { border-color: rgba(255,255,255,0.15); }
+        .db-clima-main {
+          padding: 16px 18px 12px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex: 1;
+        }
+        .db-clima-icon-wrap {
+          flex-shrink: 0;
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .db-clima-info { flex: 1; min-width: 0; }
+        .db-clima-temp {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 36px;
+          font-weight: 800;
+          color: #fff;
+          line-height: 1;
+          letter-spacing: -0.02em;
+        }
+        .db-clima-desc {
+          font-size: 11px;
+          color: rgba(255,255,255,0.5);
+          margin-top: 3px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .db-clima-minmax {
+          font-size: 10px;
+          color: rgba(255,255,255,0.3);
+          margin-top: 2px;
+          font-family: 'Montserrat', sans-serif;
+        }
+        .db-clima-footer {
+          border-top: 1px solid rgba(255,255,255,0.05);
+          padding: 8px 18px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .db-clima-detalles {
+          display: flex;
+          gap: 12px;
+        }
+        .db-clima-det {
+          font-size: 10px;
+          color: rgba(255,255,255,0.35);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .db-clima-ciudad {
+          font-size: 9px;
+          font-family: 'Montserrat', sans-serif;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.2);
+        }
+        .db-clima-hora {
+          font-size: 16px;
+          font-family: 'Montserrat', sans-serif;
+          font-weight: 800;
+          color: rgba(255,255,255,0.5);
+          text-align: center;
+          padding: 8px 18px;
+          border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .db-clima-ciudad-btn {
+          background: none;
+          border: none;
+          color: rgba(200,0,0,0.6);
+          font-size: 10px;
+          cursor: pointer;
+          font-family: 'Inter', sans-serif;
+          text-align: center;
+          padding: 6px 18px;
+          width: 100%;
+          transition: color 0.2s;
+        }
+        .db-clima-ciudad-btn:hover { color: #cc0000; }
+        .db-ciudad-form {
+          display: flex;
+          gap: 6px;
+          padding: 8px 14px;
+          background: rgba(255,255,255,0.03);
+          border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .db-ciudad-input {
+          flex: 1;
+          padding: 7px 10px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 4px;
+          color: #fff;
+          font-size: 12px;
+          outline: none;
+          font-family: 'Inter', sans-serif;
+        }
         .db-ciudad-input:focus { border-color: #cc0000; }
         .db-ciudad-input::placeholder { color: rgba(255,255,255,0.25); }
-        .db-ciudad-btn { padding: 8px 14px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-size: 14px; cursor: pointer; font-weight: 700; }
-        .db-ciudad-link { font-size: 10px; color: rgba(200,0,0,0.6); cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; text-align: center; padding: 0; width: 100%; }
-        .db-ciudad-link:hover { color: #cc0000; }
+        .db-ciudad-btn {
+          padding: 7px 12px;
+          background: #cc0000;
+          border: none;
+          border-radius: 4px;
+          color: #fff;
+          font-size: 13px;
+          cursor: pointer;
+          font-weight: 700;
+        }
+
+        /* ── ACCESOS ── */
         .db-accesos { margin-bottom: 20px; }
         .db-accesos-grid { display: grid; grid-template-columns: repeat(8,1fr); gap: 10px; }
-        .db-acceso { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
+        .db-acceso {
+          background: rgba(14,14,14,0.9);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 8px;
+          padding: 14px 8px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+          text-align: center;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
         .db-acceso:hover { border-color: rgba(200,0,0,0.4); background: rgba(200,0,0,0.06); transform: translateY(-2px); }
         .db-acceso.primary { border-color: rgba(200,0,0,0.3); background: rgba(200,0,0,0.07); }
         .db-acceso.primary:hover { background: rgba(200,0,0,0.14); border-color: #cc0000; }
-        .db-acceso-icon { font-size: 20px; }
+        .db-acceso-icon { font-size: 22px; }
         .db-acceso-label { font-size: 9px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.04em; line-height: 1.3; }
         .db-acceso.primary .db-acceso-label { color: rgba(255,255,255,0.8); }
+
+        /* ── INDICADORES ── */
         .db-indicadores { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-        .db-ind { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px 20px; }
+        .db-ind { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px 20px; }
         .db-ind-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.25); font-family: 'Montserrat', sans-serif; margin-bottom: 8px; }
         .db-ind-valor { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; line-height: 1; }
         .db-ind-valor.verde { color: #22c55e; }
@@ -232,12 +440,16 @@ export default function DashboardPage() {
         .db-acum-item { text-align: center; }
         .db-acum-label { font-size: 7px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 3px; }
         .db-acum-val { font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 800; }
+
+        /* ── BOTTOM ── */
         .db-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
         .db-panel-titulo { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
         .db-link-badge { font-size: 9px; padding: 3px 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.3); border-radius: 20px; color: #cc0000; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
         .db-empty { font-size: 13px; color: rgba(255,255,255,0.2); text-align: center; padding: 24px 0; font-style: italic; }
+
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 4px; animation: pulse 1.5s ease-in-out infinite; }
         @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
         @media (max-width: 900px) {
           .db-top-row { grid-template-columns: 1fr; }
           .db-accesos-grid { grid-template-columns: repeat(4,1fr); }
@@ -245,12 +457,19 @@ export default function DashboardPage() {
           .db-hoy-grid { grid-template-columns: repeat(2,1fr); }
           .db-indicadores { grid-template-columns: repeat(2,1fr); }
         }
-        @media (max-width: 600px) { .db-accesos-grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 600px) {
+          .db-accesos-grid { grid-template-columns: repeat(2,1fr); }
+        }
       `}</style>
 
       <div className="db-fecha">{hoy}</div>
 
-      {/* Hoy en GFI + Clima */}
+      {/* ── 1. NOTICIAS PRIMERO ── */}
+      <div className="db-noticias-top">
+        <NoticiasWidget />
+      </div>
+
+      {/* ── 2. HOY EN GFI + CLIMA ── */}
       <div className="db-top-row">
         <div className="db-panel red-top">
           <div className="db-sec-titulo">Hoy en GFI®</div>
@@ -260,38 +479,74 @@ export default function DashboardPage() {
             ))}
           </div>
         </div>
-        <div className="db-clima-col">
+
+        {/* ── CLIMA ── */}
+        <div className="db-clima-card" onClick={abrirClima}>
           {climaLoading ? (
-            <div className="db-clima-box-static"><div style={{fontSize:28}}>⏳</div><div className="db-clima-temp" style={{fontSize:16}}>Cargando...</div><div className="db-clima-hora">{hora}</div></div>
-          ) : climaError || !clima ? (
-            <div className="db-clima-box-static"><div style={{fontSize:28}}>🌡️</div><div className="db-clima-temp" style={{fontSize:14}}>Sin datos</div><div className="db-clima-hora">{hora}</div></div>
-          ) : (
-            <div className="db-clima-box" onClick={abrirClima}>
-              <img className="db-clima-icon" src={clima.icon} alt={clima.desc} />
-              <div className="db-clima-temp">{clima.temp}°</div>
-              <div className="db-clima-desc">{climaDesc}</div>
-              <div className="db-clima-minmax">↓{clima.tempMin}° ↑{clima.tempMax}°</div>
-              <div className="db-clima-detalles"><span className="db-clima-det">💧{clima.humedad}%</span><span className="db-clima-det">💨{clima.viento}km/h</span></div>
-              <div className="db-clima-ciudad">{clima.gpsActivo ? "📍" : "⚠️"} {clima.ciudad}</div>
-              <div className="db-clima-hora">{hora}</div>
+            <div className="db-clima-main">
+              <div className="db-clima-icon-wrap">
+                <div className="skeleton" style={{width:48,height:48,borderRadius:8}}/>
+              </div>
+              <div className="db-clima-info">
+                <div className="skeleton" style={{width:60,height:36,borderRadius:4,marginBottom:6}}/>
+                <div className="skeleton" style={{width:80,height:12,borderRadius:4}}/>
+              </div>
             </div>
+          ) : climaError || !clima ? (
+            <div className="db-clima-main">
+              <div className="db-clima-icon-wrap" style={{fontSize:36}}>🌡️</div>
+              <div className="db-clima-info">
+                <div className="db-clima-temp" style={{fontSize:18}}>Sin datos</div>
+                <div className="db-clima-desc">No disponible</div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="db-clima-main">
+                <div className="db-clima-icon-wrap">
+                  <IconoClima icon={clima.icon} size={52} />
+                </div>
+                <div className="db-clima-info">
+                  <div className="db-clima-temp">{clima.temp}°</div>
+                  <div className="db-clima-desc">{climaDesc}</div>
+                  <div className="db-clima-minmax">↓{clima.tempMin}° ↑{clima.tempMax}°</div>
+                </div>
+              </div>
+              <div className="db-clima-footer">
+                <div className="db-clima-detalles">
+                  <span className="db-clima-det">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <circle cx="6" cy="6" r="5" stroke="rgba(255,255,255,0.4)" strokeWidth="1.2"/>
+                      <path d="M6 3v3.5l2 1.5" stroke="rgba(96,165,250,0.8)" strokeWidth="1.2" strokeLinecap="round"/>
+                    </svg>
+                    {clima.humedad}%
+                  </span>
+                  <span className="db-clima-det">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6c1-2 3-3 5-2s3 3 2 4-2 1-3 0" stroke="rgba(255,255,255,0.4)" strokeWidth="1.2" strokeLinecap="round" fill="none"/>
+                    </svg>
+                    {clima.viento}km/h
+                  </span>
+                </div>
+                <span className="db-clima-ciudad">{clima.gpsActivo ? "📍" : ""} {clima.ciudad}</span>
+              </div>
+              <div className="db-clima-hora">{hora}</div>
+            </>
           )}
           {!mostrarCiudadInput ? (
-            <button className="db-ciudad-link" onClick={() => setMostrarCiudadInput(true)}>{clima ? "Cambiar ciudad" : "Ingresar ciudad"}</button>
+            <button className="db-clima-ciudad-btn" onClick={e => { e.stopPropagation(); setMostrarCiudadInput(true); }}>
+              {clima ? "Cambiar ciudad" : "Ingresar ciudad"}
+            </button>
           ) : (
-            <div className="db-ciudad-box">
-              <div className="db-ciudad-label">Ciudad</div>
-              <div className="db-ciudad-form">
-                <input ref={ciudadRef} className="db-ciudad-input" placeholder="Rosario" value={ciudadInput} onChange={e => setCiudadInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter") buscarCiudad(); }} autoFocus />
-                <button className="db-ciudad-btn" onClick={buscarCiudad}>→</button>
-              </div>
-              <button className="db-ciudad-link" onClick={() => setMostrarCiudadInput(false)}>Cancelar</button>
+            <div className="db-ciudad-form" onClick={e => e.stopPropagation()}>
+              <input ref={ciudadRef} className="db-ciudad-input" placeholder="Rosario" value={ciudadInput} onChange={e => setCiudadInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter") buscarCiudad(); }} autoFocus />
+              <button className="db-ciudad-btn" onClick={buscarCiudad}>→</button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Accesos rápidos */}
+      {/* ── 3. ACCESOS RÁPIDOS ── */}
       <div className="db-accesos">
         <div className="db-sec-titulo">Accesos rápidos</div>
         <div className="db-accesos-grid">
@@ -304,9 +559,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Indicadores */}
+      {/* ── 4. INDICADORES ── */}
       <div className="db-indicadores">
-
         {/* USD Blue */}
         <div className="db-ind">
           <div className="db-ind-label">USD Blue — Promedio</div>
@@ -327,20 +581,13 @@ export default function DashboardPage() {
           <div className="db-ind-label">ICL — Contratos Locación</div>
           {iclData.loading ? <div className="skeleton" style={{height:28,width:100,marginTop:6}} /> : (
             <>
-              <div className="db-ind-valor" style={{color: colorAcum(iclData.acum.mensual)}}>
-                {fmtAcum(iclData.acum.mensual)}
-              </div>
+              <div className="db-ind-valor" style={{color: colorAcum(iclData.acum.mensual)}}>{fmtAcum(iclData.acum.mensual)}</div>
               <div className="db-ind-sub">{iclData.periodo ? `Mensual · ${fmtPeriodo(iclData.periodo)} · BCRA` : "BCRA"}</div>
               <div className="db-acums">
-                {[
-                  { l: "1M", v: iclData.acum.mensual },
-                  { l: "3M", v: iclData.acum.trimestral },
-                  { l: "4M", v: iclData.acum.cuatrimestral },
-                  { l: "6M", v: iclData.acum.semestral },
-                ].map(({ l, v }) => (
+                {[{l:"1M",v:iclData.acum.mensual},{l:"3M",v:iclData.acum.trimestral},{l:"4M",v:iclData.acum.cuatrimestral},{l:"6M",v:iclData.acum.semestral}].map(({l,v}) => (
                   <div key={l} className="db-acum-item">
                     <div className="db-acum-label">{l}</div>
-                    <div className="db-acum-val" style={{color: colorAcum(v)}}>{fmtAcum(v)}</div>
+                    <div className="db-acum-val" style={{color:colorAcum(v)}}>{fmtAcum(v)}</div>
                   </div>
                 ))}
               </div>
@@ -353,20 +600,13 @@ export default function DashboardPage() {
           <div className="db-ind-label">IPC — Inflación Mensual</div>
           {ipcData.loading ? <div className="skeleton" style={{height:28,width:80,marginTop:6}} /> : (
             <>
-              <div className="db-ind-valor" style={{color: colorAcum(ipcData.acum.mensual)}}>
-                {fmtAcum(ipcData.acum.mensual)}
-              </div>
+              <div className="db-ind-valor" style={{color:colorAcum(ipcData.acum.mensual)}}>{fmtAcum(ipcData.acum.mensual)}</div>
               <div className="db-ind-sub">{ipcData.periodo ? `Mensual · ${fmtPeriodo(ipcData.periodo)} · INDEC` : "INDEC"}</div>
               <div className="db-acums">
-                {[
-                  { l: "1M", v: ipcData.acum.mensual },
-                  { l: "3M", v: ipcData.acum.trimestral },
-                  { l: "4M", v: ipcData.acum.cuatrimestral },
-                  { l: "6M", v: ipcData.acum.semestral },
-                ].map(({ l, v }) => (
+                {[{l:"1M",v:ipcData.acum.mensual},{l:"3M",v:ipcData.acum.trimestral},{l:"4M",v:ipcData.acum.cuatrimestral},{l:"6M",v:ipcData.acum.semestral}].map(({l,v}) => (
                   <div key={l} className="db-acum-item">
                     <div className="db-acum-label">{l}</div>
-                    <div className="db-acum-val" style={{color: colorAcum(v)}}>{fmtAcum(v)}</div>
+                    <div className="db-acum-val" style={{color:colorAcum(v)}}>{fmtAcum(v)}</div>
                   </div>
                 ))}
               </div>
@@ -380,10 +620,9 @@ export default function DashboardPage() {
           {jus.loading ? <div className="skeleton" style={{height:28,width:100,marginTop:6}} /> : <div className="db-ind-valor">{jus.valor}</div>}
           <div className="db-ind-sub">COCIR 2da Circ. · Ley 13.154</div>
         </div>
-
       </div>
 
-      {/* Bottom */}
+      {/* ── 5. BOTTOM ── */}
       <div className="db-bottom-row">
         <div className="db-panel">
           <div className="db-panel-titulo">Matches recientes<a href="/mir?vista=matches" className="db-link-badge">Ver todos</a></div>
@@ -395,7 +634,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <NoticiasWidget />
       <NotificacionesWidget />
     </>
   );
