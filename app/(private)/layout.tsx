@@ -122,9 +122,20 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         <div className={`sidebar-overlay${menuAbierto ? " visible" : ""}`} onClick={() => setMenuAbierto(false)} />
 
         <aside className={`sidebar${menuAbierto ? " abierto" : ""}`}>
-          <div className="sidebar-logo">
-            <div className="sidebar-logo-txt">GFI<span>®</span></div>
-            <div className="sidebar-logo-sub">Grupo Foro Inmobiliario</div>
+          <div className="sidebar-logo" style={{padding:"12px 16px 10px",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <img src="/logo_gfi.png" alt="GFI® Grupo Foro Inmobiliario"
+              style={{width:"100%",maxWidth:160,height:"auto",objectFit:"contain",filter:"brightness(1.15) contrast(1.1)"}}
+              onError={e=>{
+                const el = e.target as HTMLImageElement;
+                el.style.display="none";
+                const fallback = el.nextSibling as HTMLElement;
+                if(fallback) fallback.style.display="block";
+              }}
+            />
+            <div style={{display:"none"}}>
+              <div className="sidebar-logo-txt">GFI<span>®</span></div>
+              <div className="sidebar-logo-sub">Grupo Foro Inmobiliario</div>
+            </div>
           </div>
 
           <nav className="sidebar-nav">
