@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/mir", label: "MIR", icon: "🔄" },
   { href: "/comunidad", label: "Comunidad", icon: "💬" },
   { href: "/foro", label: "Foro", icon: "🗣️" },
+  { href: "/noticias", label: "Noticias", icon: "📰" },
   { href: "/eventos", label: "Eventos", icon: "📅" },
   { href: "/crm", label: "CRM", icon: "👥" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
