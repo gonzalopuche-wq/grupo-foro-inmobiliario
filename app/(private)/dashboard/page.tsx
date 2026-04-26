@@ -235,20 +235,42 @@ export default function DashboardPage() {
       {/* 1. NOTICIAS */}
       <div style={{ marginBottom: 20 }}>
         <NoticiasWidget />
-      </div>
 
-      {/* 2. HOY EN GFI + CLIMA */}
-      <div className="db-top-row">
-        <div className="db-panel red-top">
-          <div className="db-sec-titulo">Hoy en GFI®</div>
-          <div className="db-hoy-grid">
-            {[[stats.busquedas.toString(),"Búsquedas activas"],[stats.ofrecidos.toString(),"Ofrecidos activos"],[stats.matches.toString(),"Matches totales"],["0","Miembros activos"]].map(([n,l],i) => (
-              <div key={i}><div className="db-hoy-num">{n}</div><div className="db-hoy-label">{l}</div></div>
-            ))}
+      {/* 2. ZÓCALO HOY EN GFI */}
+      <div style={{
+        display:"flex",alignItems:"stretch",
+        background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",
+        borderRadius:8,overflow:"hidden",marginBottom:16,
+        borderTop:"2px solid #cc0000",flexWrap:"wrap"
+      }}>
+        {[
+          [stats.busquedas.toString(),"Búsquedas activas","🔍"],
+          [stats.ofrecidos.toString(),"Ofrecidos activos","🏠"],
+          [stats.matches.toString(),"Matches totales","🔗"],
+          ["0","Miembros activos","👥"]
+        ].map(([n,l,ic],i) => (
+          <div key={i} style={{flex:1,minWidth:120,padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderRight:"1px solid rgba(255,255,255,0.06)"}}>
+            <span style={{fontSize:22,flexShrink:0}}>{ic}</span>
+            <div>
+              <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:24,fontWeight:800,color:"#cc0000",lineHeight:1}}>{n}</div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:3,fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>{l}</div>
+            </div>
+          </div>
+        ))}
+        <div style={{padding:"14px 20px",display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+          <div>
+            <div style={{fontSize:8,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:"rgba(255,255,255,0.2)",marginBottom:3}}>Hoy en GFI®</div>
+            <div style={{fontSize:12,color:"rgba(255,255,255,0.35)",fontFamily:"'Montserrat',sans-serif",fontWeight:600}}>{new Date().toLocaleDateString("es-AR",{weekday:"short",day:"numeric",month:"short"})}</div>
           </div>
         </div>
+      </div>
 
-        {/* CLIMA */}
+      {/* 3. CLIMA */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 220px",gap:16,marginBottom:20,alignItems:"start"}}>
+        <div style={{background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 20px",minHeight:80,display:"flex",alignItems:"center"}}>
+          <div style={{fontSize:11,color:"rgba(255,255,255,0.15)",fontStyle:"italic"}}>Próximamente: indicador de mercado en tiempo real</div>
+        </div>
+
         <div className="db-clima-card" onClick={abrirClima}>
           {climaLoading ? (
             <div className="db-clima-main">
@@ -266,12 +288,7 @@ export default function DashboardPage() {
           ) : (
             <>
               <div className="db-clima-main">
-                <img
-                  src={`https://openweathermap.org/img/wn/${clima.icon}@2x.png`}
-                  alt={climaDesc}
-                  className="db-clima-icon"
-                  style={{filter:"brightness(1.2) contrast(1.1)"}}
-                />
+                <img src={`https://openweathermap.org/img/wn/${clima.icon}@2x.png`} alt={climaDesc} className="db-clima-icon" style={{filter:"brightness(1.2) contrast(1.1)"}} />
                 <div className="db-clima-info">
                   <div className="db-clima-temp">{clima.temp}°</div>
                   <div className="db-clima-desc">{climaDesc}</div>
