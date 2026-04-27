@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import AdminBeneficios from "../../components/AdminBeneficios";
 
 interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; }
 interface Indicador { clave: string; valor: number | string; label: string; tipo: "number" | "text"; }
@@ -853,6 +854,13 @@ export default function AdminPage() {
               ))}
             </div>
           </div>
+
+          {/* ── BENEFICIOS & DESCUENTOS ── */}
+          {adminId && (
+            <div style={{marginTop:32}}>
+              <AdminBeneficios adminId={adminId} />
+            </div>
+          )}
 
         </main>
       </div>
