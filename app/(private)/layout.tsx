@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../lib/supabase";
 
-const NAV_ITEMS = [
+// ── Nav corredor matriculado (acceso completo) ─────────────────────────────
+const NAV_CORREDOR = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/mir", label: "MIR", icon: "🔄" },
   { href: "/comunidad", label: "Comunidad", icon: "💬" },
@@ -25,15 +26,37 @@ const NAV_ITEMS = [
   { href: "/mi-web", label: "Mi Web", icon: "🌐" },
 ];
 
+// ── Nav colaborador (acceso restringido) ───────────────────────────────────
+// No puede acceder a: Comunidad, Foro, CRM, Cartera, Comparables, Mi Web
+// Dashboard redirige a vista de solo grupos de comunidad
+const NAV_COLABORADOR = [
+  { href: "/dashboard", label: "Inicio", icon: "🏠" },
+  { href: "/mir", label: "MIR", icon: "🔄" },
+  { href: "/noticias", label: "Noticias", icon: "📰" },
+  { href: "/eventos", label: "Eventos", icon: "📅" },
+  { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
+  { href: "/padron-gfi", label: "Padrón", icon: "📋" },
+  { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
+  { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
+  { href: "/enlaces", label: "Enlaces", icon: "🔗" },
+  { href: "/proveedores", label: "Proveedores", icon: "🏢" },
+  { href: "/perfil", label: "Mi Perfil", icon: "👤" },
+];
+
 const NAV_ADMIN = [
   { href: "/admin", label: "Admin", icon: "⚙️" },
+];
+
+// Rutas bloqueadas para colaboradores — redirigen al dashboard
+const RUTAS_SOLO_CORREDOR = [
+  "/comunidad", "/foro", "/crm", "/cartera", "/comparables", "/mi-web",
 ];
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [perfil, setPerfil] = useState<any>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [tipoUsuario, setTipoUsuario] = useState<"admin" | "corredor" | "colaborador">("corredor");
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -50,12 +73,19 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
 
       if (p) {
         setPerfil(p);
-        setIsAdmin(p.tipo === "admin");
+        const tipo = p.tipo === "admin" ? "admin" : p.tipo === "colaborador" ? "colaborador" : "corredor";
+        setTipoUsuario(tipo);
+
+        // Redirigir colaborador si intenta acceder a ruta bloqueada
+        if (tipo === "colaborador") {
+          const bloqueada = RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
+          if (bloqueada) { router.replace("/dashboard"); return; }
+        }
       }
       setLoading(false);
     };
     init();
-  }, []);
+  }, [pathname]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -66,6 +96,9 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     if (href === "/crm") return pathname.startsWith("/crm");
     return pathname === href || pathname.startsWith(href + "/");
   };
+
+  const navItems = tipoUsuario === "colaborador" ? NAV_COLABORADOR : NAV_CORREDOR;
+  const isAdmin = tipoUsuario === "admin";
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -94,6 +127,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         .nav-item:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.03); }
         .nav-item.active { color: #fff; background: rgba(200,0,0,0.08); border-left-color: #cc0000; font-weight: 500; }
         .nav-item-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+        .sidebar-rol-badge { margin: 0 16px 8px; padding: 4px 10px; border-radius: 10px; font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.2); color: rgba(255,165,0,0.7); }
         .sidebar-perfil { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; }
         .sidebar-avatar { width: 32px; height: 32px; border-radius: 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; color: #cc0000; flex-shrink: 0; overflow: hidden; }
         .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -140,8 +174,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           </div>
 
           <nav className="sidebar-nav">
+            {tipoUsuario === "colaborador" && (
+              <div className="sidebar-rol-badge">Colaborador</div>
+            )}
             <div className="sidebar-section-label">Plataforma</div>
-            {NAV_ITEMS.map(item => (
+            {navItems.map(item => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -182,7 +219,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
               <div className="sidebar-perfil-info">
                 <div className="sidebar-perfil-nombre">{perfil.nombre} {perfil.apellido}</div>
                 <div className="sidebar-perfil-mat">
-                  {perfil.matricula ? `Mat. ${perfil.matricula}` : "Sin matrícula"}
+                  {perfil.matricula ? `Mat. ${perfil.matricula}` : tipoUsuario === "colaborador" ? "Colaborador" : "Sin matrícula"}
                 </div>
               </div>
               <button className="sidebar-logout" onClick={handleLogout} title="Cerrar sesión">↩</button>

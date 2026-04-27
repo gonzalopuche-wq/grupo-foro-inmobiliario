@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import NotificacionesWidget from "./NotificacionesWidget";
 import NoticiasWidget from "./NoticiasWidget";
@@ -14,6 +15,11 @@ interface Clima {
 }
 interface HistItem { periodo: string; valor: number; }
 interface Acum { mensual: number | null; trimestral: number | null; cuatrimestral: number | null; semestral: number | null; }
+interface Grupo {
+  id: string; nombre: string; icono: string; tipo: string;
+  va_al_mir: boolean; solo_matriculado: boolean; orden: number;
+  ultimo_mensaje?: string; ultimo_autor?: string; ultimo_at?: string;
+}
 
 const OWM_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_KEY;
 
@@ -43,7 +49,19 @@ const fmtPeriodo = (p: string) => {
   return ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][parseInt(m)-1] + " " + a;
 };
 
+const fmtUltimoAt = (iso: string) => {
+  const d = new Date(iso);
+  const ahora = new Date();
+  const diff = Math.floor((ahora.getTime() - d.getTime()) / 1000);
+  if (diff < 60) return "Ahora";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+  return d.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" });
+};
+
 export default function DashboardPage() {
+  const router = useRouter();
+  const [tipoUsuario, setTipoUsuario] = useState<"admin"|"corredor"|"colaborador">("corredor");
   const [hora, setHora] = useState("");
   const [clima, setClima] = useState<Clima | null>(null);
   const [climaLoading, setClimaLoading] = useState(true);
@@ -56,6 +74,9 @@ export default function DashboardPage() {
   const [ipcData, setIpcData] = useState<{ acum: Acum; periodo: string; loading: boolean }>({ acum: { mensual: null, trimestral: null, cuatrimestral: null, semestral: null }, periodo: "", loading: true });
   const [jus, setJus] = useState<{ valor: string; loading: boolean }>({ valor: "", loading: true });
   const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0 });
+  // Colaborador: solo grupos
+  const [grupos, setGrupos] = useState<Grupo[]>([]);
+  const [loadingGrupos, setLoadingGrupos] = useState(false);
   const ciudadRef = useRef<HTMLInputElement>(null);
 
   const fetchClimaPorCoords = async (lat: number, lon: number, gpsActivo: boolean) => {
@@ -84,10 +105,45 @@ export default function DashboardPage() {
     setClimaLoading(false);
   };
 
+  const cargarGruposColaborador = async () => {
+    setLoadingGrupos(true);
+    const { data: gruposData } = await supabase
+      .from("grupos_chat").select("*").eq("activo", true).eq("solo_matriculado", false).order("orden");
+    if (!gruposData) { setLoadingGrupos(false); return; }
+    const grupoIds = gruposData.map((g: any) => g.id);
+    const { data: ultimos } = await supabase
+      .from("mensajes_chat").select("grupo_id, texto, created_at, perfiles(nombre, apellido)")
+      .in("grupo_id", grupoIds).order("created_at", { ascending: false }).limit(grupoIds.length * 3);
+    const ultimosPorGrupo: Record<string, any> = {};
+    (ultimos ?? []).forEach((m: any) => { if (!ultimosPorGrupo[m.grupo_id]) ultimosPorGrupo[m.grupo_id] = m; });
+    setGrupos(gruposData.map((g: any) => {
+      const u = ultimosPorGrupo[g.id];
+      return { ...g, ultimo_mensaje: u?.texto ?? null, ultimo_autor: u?.perfiles ? `${u.perfiles.nombre ?? ""} ${u.perfiles.apellido ?? ""}`.trim() : null, ultimo_at: u?.created_at ?? null };
+    }));
+    setLoadingGrupos(false);
+  };
+
   useEffect(() => {
+    // Detectar tipo de usuario
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) { router.push("/login"); return; }
+      supabase.from("perfiles").select("tipo").eq("id", data.user.id).single().then(({ data: p }) => {
+        const tipo = p?.tipo === "admin" ? "admin" : p?.tipo === "colaborador" ? "colaborador" : "corredor";
+        setTipoUsuario(tipo);
+        if (tipo === "colaborador") {
+          cargarGruposColaborador();
+          return; // colaborador no necesita cargar el resto
+        }
+        // Corredor / Admin: cargar todo
+        cargarDashboardCompleto();
+      });
+    });
+  }, []);
+
+  const cargarDashboardCompleto = () => {
     const tick = () => setHora(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }));
     tick();
-    const interval = setInterval(tick, 1000);
+    setInterval(tick, 1000);
 
     Promise.all([
       supabase.from("mir_busquedas").select("id", { count: "exact", head: true }).eq("activo", true),
@@ -134,9 +190,7 @@ export default function DashboardPage() {
 
     supabase.from("indicadores").select("valor").eq("clave", "valor_jus").single()
       .then(({ data }) => setJus({ valor: data?.valor ? new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(data.valor) : "Sin datos", loading: false }));
-
-    return () => clearInterval(interval);
-  }, []);
+  };
 
   const abrirClima = () => { if (clima) window.open(`https://weather.com/es-AR/tiempo/hoy/l/${clima.lat},${clima.lon}`, "_blank"); };
   const hoy = new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -150,11 +204,69 @@ export default function DashboardPage() {
     { icon: "💱", label: "Cotizaciones", href: "/cotizaciones", primary: false },
     { icon: "📅", label: "Eventos", href: "/eventos", primary: false },
     { icon: "💬", label: "Foro", href: "/foro", primary: false },
-    { icon: "📋", label: "Padrón", href: "/padron", primary: false },
+    { icon: "📋", label: "Padrón", href: "/padron-gfi", primary: false },
     { icon: "📚", label: "Biblioteca", href: "/biblioteca", primary: false },
     { icon: "💰", label: "Suscripción", href: "/suscripcion", primary: false },
   ];
 
+  // ── VISTA COLABORADOR ─────────────────────────────────────────────────────
+  if (tipoUsuario === "colaborador") {
+    return (
+      <>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+          .colab-titulo { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+          .colab-titulo span { color: #cc0000; }
+          .colab-sub { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 20px; font-family: 'Inter',sans-serif; }
+          .colab-grupos { display: flex; flex-direction: column; gap: 6px; }
+          .colab-grupo { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: border-color 0.15s; text-decoration: none; }
+          .colab-grupo:hover { border-color: rgba(200,0,0,0.3); background: rgba(200,0,0,0.03); }
+          .colab-grupo-ico { width: 44px; height: 44px; border-radius: 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+          .colab-grupo-info { flex: 1; min-width: 0; }
+          .colab-grupo-nombre { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+          .colab-grupo-ultimo { font-size: 11px; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+          .colab-grupo-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+          .colab-grupo-hora { font-size: 9px; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; }
+          .colab-grupo-autor { font-size: 9px; color: rgba(255,255,255,0.25); font-family: 'Inter',sans-serif; }
+          .colab-seccion { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin: 20px 0 10px; }
+          .colab-empty { padding: 32px; text-align: center; color: rgba(255,255,255,0.18); font-size: 12px; font-family: 'Inter',sans-serif; }
+        `}</style>
+
+        <div className="colab-titulo">Bienvenido a <span>GFI®</span></div>
+        <div className="colab-sub">{hoy}</div>
+
+        <div className="colab-seccion">Grupos de comunidad</div>
+
+        {loadingGrupos ? (
+          <div className="colab-empty">Cargando grupos...</div>
+        ) : grupos.length === 0 ? (
+          <div className="colab-empty">No hay grupos disponibles.</div>
+        ) : (
+          <div className="colab-grupos">
+            {grupos.map(g => (
+              <a key={g.id} href={`/comunidad/${g.id}`} className="colab-grupo">
+                <div className="colab-grupo-ico">{g.icono || "💬"}</div>
+                <div className="colab-grupo-info">
+                  <div className="colab-grupo-nombre">{g.nombre}</div>
+                  <div className="colab-grupo-ultimo">
+                    {g.ultimo_mensaje
+                      ? (g.ultimo_autor ? `${g.ultimo_autor}: ` : "") + g.ultimo_mensaje
+                      : "Sin mensajes aún"}
+                  </div>
+                </div>
+                <div className="colab-grupo-meta">
+                  {g.ultimo_at && <span className="colab-grupo-hora">{fmtUltimoAt(g.ultimo_at)}</span>}
+                  {g.va_al_mir && <span style={{fontSize:8,padding:"1px 5px",borderRadius:8,background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.2)",color:"rgba(200,0,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>MIR</span>}
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  }
+
+  // ── VISTA CORREDOR / ADMIN (dashboard completo) ───────────────────────────
   return (
     <>
       <style>{`
@@ -167,8 +279,6 @@ export default function DashboardPage() {
         .db-hoy-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
         .db-hoy-num { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 800; color: #cc0000; line-height: 1; }
         .db-hoy-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
-
-        /* CLIMA */
         .db-clima-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
         .db-clima-card:hover { border-color: rgba(255,255,255,0.15); }
         .db-clima-main { padding: 16px 18px 10px; display: flex; align-items: center; gap: 10px; }
@@ -189,8 +299,6 @@ export default function DashboardPage() {
         .db-ciudad-input:focus { border-color: #cc0000; }
         .db-ciudad-input::placeholder { color: rgba(255,255,255,0.25); }
         .db-ciudad-btn { padding: 7px 12px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-size: 13px; cursor: pointer; font-weight: 700; }
-
-        /* ACCESOS */
         .db-accesos { margin-bottom: 20px; }
         .db-accesos-grid { display: grid; grid-template-columns: repeat(8,1fr); gap: 10px; }
         .db-acceso { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
@@ -200,8 +308,6 @@ export default function DashboardPage() {
         .db-acceso-icon { font-size: 22px; }
         .db-acceso-label { font-size: 9px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.04em; line-height: 1.3; }
         .db-acceso.primary .db-acceso-label { color: rgba(255,255,255,0.8); }
-
-        /* INDICADORES */
         .db-indicadores { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
         .db-ind { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px 20px; }
         .db-ind-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.25); font-family: 'Montserrat', sans-serif; margin-bottom: 8px; }
@@ -322,7 +428,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 3. ACCESOS RÁPIDOS */}
+      {/* 4. ACCESOS RÁPIDOS */}
       <div className="db-accesos">
         <div className="db-sec-titulo">Accesos rápidos</div>
         <div className="db-accesos-grid">
@@ -335,7 +441,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 4. INDICADORES */}
+      {/* 5. INDICADORES */}
       <div className="db-indicadores">
         <div className="db-ind">
           <div className="db-ind-label">USD Blue — Promedio</div>
@@ -391,7 +497,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 5. BOTTOM */}
+      {/* 6. BOTTOM */}
       <div className="db-bottom-row">
         <div className="db-panel">
           <div className="db-panel-titulo">Matches recientes<a href="/mir?vista=matches" className="db-link-badge">Ver todos</a></div>
