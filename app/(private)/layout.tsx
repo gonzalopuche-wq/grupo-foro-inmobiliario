@@ -20,7 +20,7 @@ const NAV_ITEMS = [
   { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
   { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
   { href: "/enlaces", label: "Enlaces", icon: "🔗" },
-  { href: "/proveedores", label: c"Proveedores", icon: "🏢" },
+  { href: "/proveedores", label: "Proveedores", icon: "🏢" },
   { href: "/perfil", label: "Mi Perfil", icon: "👤" },
   { href: "/mi-web", label: "Mi Web", icon: "🌐" },
 ];
