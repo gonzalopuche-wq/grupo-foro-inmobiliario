@@ -127,6 +127,15 @@ export default function ForoPage() {
   const chatEditRef = useRef<HTMLTextAreaElement>(null);
   const chatFileImgRef = useRef<HTMLInputElement>(null);
   const chatFileDocRef = useRef<HTMLInputElement>(null);
+  // Audio grabación
+  const [grabando, setGrabando] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioSegundos, setAudioSegundos] = useState(0);
+  const [subiendoAudio, setSubiendoAudio] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<BlobPart[]>([]);
+  const audioTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [faqTopics, setFaqTopics] = useState<Topic[]>([]);
@@ -257,6 +266,63 @@ export default function ForoPage() {
     setChatAdjuntos(prev => [...prev, ...nuevos]);
     setSubiendoChatAdj(false);
   };
+
+  const iniciarGrabacion = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/ogg";
+      const mr = new MediaRecorder(stream, { mimeType });
+      mediaRecorderRef.current = mr;
+      audioChunksRef.current = [];
+      mr.ondataavailable = e => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
+      mr.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: mimeType });
+        setAudioBlob(blob);
+        setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mr.start();
+      setGrabando(true);
+      setAudioSegundos(0);
+      audioTimerRef.current = setInterval(() => setAudioSegundos(s => s + 1), 1000);
+    } catch { alert("No se pudo acceder al micrófono. Verificá los permisos del navegador."); }
+  };
+
+  const detenerGrabacion = () => {
+    mediaRecorderRef.current?.stop();
+    setGrabando(false);
+    if (audioTimerRef.current) clearInterval(audioTimerRef.current);
+  };
+
+  const cancelarAudio = () => {
+    mediaRecorderRef.current?.stop();
+    setGrabando(false);
+    setAudioBlob(null);
+    setAudioUrl(null);
+    setAudioSegundos(0);
+    if (audioTimerRef.current) clearInterval(audioTimerRef.current);
+  };
+
+  const enviarAudio = async () => {
+    if (!audioBlob || !userId) return;
+    setSubiendoAudio(true);
+    const ext = audioBlob.type.includes("webm") ? "webm" : "ogg";
+    const nombre = `audio_${Date.now()}.${ext}`;
+    const path = `foro_chat/${nombre}`;
+    const file = new File([audioBlob], nombre, { type: audioBlob.type });
+    const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl: "3600", upsert: false });
+    if (error) { alert("Error al subir audio"); setSubiendoAudio(false); return; }
+    const { data: urlData } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
+    const adj = { url: urlData.publicUrl, nombre, tipo: "audio" as any, tamano: audioBlob.size };
+    const insertData: any = { user_id: userId, body: "🎙 Audio", adjuntos: [adj] };
+    if (chatReplyMsg?.id) insertData.reply_id = chatReplyMsg.id;
+    await supabase.from("forum_chat_messages").insert(insertData);
+    setAudioBlob(null); setAudioUrl(null); setAudioSegundos(0);
+    setChatReplyMsg(null);
+    setSubiendoAudio(false);
+  };
+
+  const fmtSegundos = (s: number) => `${Math.floor(s/60).toString().padStart(2,"0")}:${(s%60).toString().padStart(2,"0")}`;
 
   const setEF = (k: string, v: any) => setEventoForm(p => ({ ...p, [k]: v }));
 
@@ -557,6 +623,10 @@ export default function ForoPage() {
         .f-chat-send { padding: 9px 16px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .f-chat-send:hover { background: #e60000; }
         .f-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+        .f-audio-grabando { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.25); border-radius: 6px; margin-bottom: 6px; }
+        .f-audio-dot { width: 10px; height: 10px; border-radius: 50%; background: #cc0000; animation: pulse-dot 1s ease-in-out infinite; flex-shrink: 0; }
+        .f-audio-preview { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 6px; }
+        @keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
         .f-detalle { display: flex; flex-direction: column; gap: 16px; }
         .f-back { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 12px; cursor: pointer; padding: 0; font-family: 'Inter',sans-serif; display: flex; align-items: center; gap: 5px; }
         .f-back:hover { color: #fff; }
@@ -921,6 +991,7 @@ export default function ForoPage() {
               )}
 
               <div className="f-chat-input-area">
+                {/* Preview link */}
                 {chatInputPreview && (
                   <div style={{ display: "flex", gap: 8, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.35)", position: "relative", minHeight: 56 }}>
                     {chatInputPreview.data.image && <div style={{ width: 56, minWidth: 56, background: "#000", flexShrink: 0 }}><img src={chatInputPreview.data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></div>}
@@ -930,32 +1001,57 @@ export default function ForoPage() {
                     <button onClick={() => setChatInputPreview(null)} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
                   </div>
                 )}
-                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  {/* Botón proponer evento */}
-                  <button onClick={() => setMostrarModalEvento(true)} className="f-chat-adj-btn" title="Proponer evento">📅</button>
-                  {/* Adjuntar fotos/videos */}
-                  <input ref={chatFileImgRef} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
-                  <button onClick={() => chatFileImgRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Fotos y videos">📷</button>
-                  {/* Adjuntar documentos */}
-                  <input ref={chatFileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
-                  <button onClick={() => chatFileDocRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Documentos">📎</button>
-                  <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
-                    style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
-                    onChange={e => {
-                      const val = e.target.value; setChatInput(val);
-                      const urlMatch = val.match(/https?:\/\/[^\s]+/);
-                      if (urlMatch) {
-                        const url = urlMatch[0];
-                        if (chatInputPreviewTimer.current) clearTimeout(chatInputPreviewTimer.current);
-                        chatInputPreviewTimer.current = setTimeout(async () => {
-                          try { const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`); const d = await res.json(); if (d.title || d.image) setChatInputPreview({ url, data: d }); } catch {}
-                        }, 600);
-                      } else { setChatInputPreview(null); }
-                    }}
-                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
-                    disabled={chatLoading} />
-                  <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || (!chatInput.trim() && chatAdjuntos.length === 0)}>Enviar</button>
-                </div>
+                {/* UI grabando audio */}
+                {grabando && (
+                  <div className="f-audio-grabando">
+                    <div className="f-audio-dot" />
+                    <span style={{fontSize:12,color:"rgba(255,255,255,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Grabando {fmtSegundos(audioSegundos)}</span>
+                    <button onClick={detenerGrabacion} style={{marginLeft:"auto",padding:"4px 12px",background:"#cc0000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>⏹ Detener</button>
+                    <button onClick={cancelarAudio} style={{padding:"4px 10px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:4,color:"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>✕ Cancelar</button>
+                  </div>
+                )}
+                {/* UI preview audio grabado */}
+                {audioUrl && !grabando && (
+                  <div className="f-audio-preview">
+                    <span style={{fontSize:16}}>🎙</span>
+                    <audio src={audioUrl} controls style={{flex:1,height:32,minWidth:0}} />
+                    <span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif"}}>{fmtSegundos(audioSegundos)}</span>
+                    <button onClick={enviarAudio} disabled={subiendoAudio} style={{padding:"5px 12px",background:"#cc0000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>
+                      {subiendoAudio ? "Enviando..." : "Enviar"}
+                    </button>
+                    <button onClick={cancelarAudio} style={{padding:"5px 8px",background:"transparent",border:"1px solid rgba(200,0,0,0.2)",borderRadius:4,color:"rgba(200,0,0,0.5)",fontSize:14,cursor:"pointer",flexShrink:0}}>✕</button>
+                  </div>
+                )}
+                {!grabando && !audioUrl && (
+                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    {/* Botón proponer evento */}
+                    <button onClick={() => setMostrarModalEvento(true)} className="f-chat-adj-btn" title="Proponer evento">📅</button>
+                    {/* Adjuntar fotos/videos */}
+                    <input ref={chatFileImgRef} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
+                    <button onClick={() => chatFileImgRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Fotos y videos">📷</button>
+                    {/* Adjuntar documentos */}
+                    <input ref={chatFileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
+                    <button onClick={() => chatFileDocRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Documentos">📎</button>
+                    {/* Grabar audio */}
+                    <button onClick={iniciarGrabacion} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Grabar audio" style={{color:"rgba(200,0,0,0.7)"}}>🎙</button>
+                    <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
+                      style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
+                      onChange={e => {
+                        const val = e.target.value; setChatInput(val);
+                        const urlMatch = val.match(/https?:\/\/[^\s]+/);
+                        if (urlMatch) {
+                          const url = urlMatch[0];
+                          if (chatInputPreviewTimer.current) clearTimeout(chatInputPreviewTimer.current);
+                          chatInputPreviewTimer.current = setTimeout(async () => {
+                            try { const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`); const d = await res.json(); if (d.title || d.image) setChatInputPreview({ url, data: d }); } catch {}
+                          }, 600);
+                        } else { setChatInputPreview(null); }
+                      }}
+                      onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
+                      disabled={chatLoading} />
+                    <button className="f-chat-send" onClick={sendChat} disabled={chatLoading || (!chatInput.trim() && chatAdjuntos.length === 0)}>Enviar</button>
+                  </div>
+                )}
               </div>
             </div>
           )}
