@@ -1,18 +1,19 @@
 // app/api/cartera/sync/route.ts
 // ═══════════════════════════════════════════════════════════════════════════
 // GFI® — Sincronización Cartera → Tokko Broker + KiteProp
-// Si las API keys no están configuradas, devuelve mensaje claro.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+
+// Evita que Next.js intente pre-renderizar esta route en build time
+export const dynamic = "force-dynamic";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// ── Mapeo GFI → Tokko ─────────────────────────────────────────────────────
 function mapTipoTokko(tipo: string): number {
   const m: Record<string, number> = {
     "Departamento": 2, "Casa": 3, "PH": 13, "Local": 7,
@@ -57,7 +58,6 @@ function mapearATokko(p: any) {
   };
 }
 
-// ── Mapeo GFI → KiteProp ──────────────────────────────────────────────────
 function mapTipoKiteProp(tipo: string): string {
   const m: Record<string, string> = {
     "Departamento": "apartment", "Casa": "house", "PH": "ph",
@@ -94,41 +94,23 @@ function mapearAKiteProp(p: any) {
   };
 }
 
-// ── Sync Tokko ────────────────────────────────────────────────────────────
 async function syncTokko(p: any, tokkoId: string | null) {
   const apiKey = process.env.TOKKO_API_KEY;
   if (!apiKey) {
     return {
       ok: false,
       pendiente: true,
-      error: "API key de Tokko no configurada. Cuando tengas el acceso API activo en tu plan de Tokko, agregá TOKKO_API_KEY en las variables de entorno.",
+      error: "API key de Tokko no configurada. Cuando tengas el acceso API activo en tu plan de Tokko Broker, agregá TOKKO_API_KEY en las variables de entorno de Vercel.",
     };
   }
-
   const body = mapearATokko(p);
   const url = tokkoId
     ? `https://www.tokkobroker.com/api/v1/property/${tokkoId}/?key=${apiKey}`
     : `https://www.tokkobroker.com/api/v1/property/?key=${apiKey}`;
-
   try {
-    const res = await fetch(url, {
-      method: tokkoId ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    if (res.status === 401 || res.status === 403) {
-      return {
-        ok: false,
-        error: "Sin acceso a la API de Tokko. Verificá que tengas el add-on 'Acceso APIs' activo en tu plan de Tokko Broker.",
-      };
-    }
-
-    if (!res.ok) {
-      const err = await res.text();
-      return { ok: false, error: `Tokko ${res.status}: ${err}` };
-    }
-
+    const res = await fetch(url, { method: tokkoId ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (res.status === 401 || res.status === 403) return { ok: false, error: "Sin acceso a la API de Tokko. Verificá que tengas el add-on 'Acceso APIs' activo en tu plan de Tokko Broker." };
+    if (!res.ok) { const err = await res.text(); return { ok: false, error: `Tokko ${res.status}: ${err}` }; }
     const data = await res.json();
     return { ok: true, id: data.id ?? tokkoId };
   } catch (e: any) {
@@ -136,44 +118,22 @@ async function syncTokko(p: any, tokkoId: string | null) {
   }
 }
 
-// ── Sync KiteProp ─────────────────────────────────────────────────────────
 async function syncKiteProp(p: any, kiteId: string | null) {
   const apiKey = process.env.KITEPROP_API_KEY;
   const apiUrl = process.env.KITEPROP_API_URL ?? "https://api.kiteprop.com/v1";
-
   if (!apiKey) {
     return {
       ok: false,
       pendiente: true,
-      error: "API key de KiteProp no configurada. Cuando tengas el acceso API activo, agregá KITEPROP_API_KEY en las variables de entorno.",
+      error: "API key de KiteProp no configurada. Cuando tengas el acceso API activo, agregá KITEPROP_API_KEY en las variables de entorno de Vercel.",
     };
   }
-
   const body = mapearAKiteProp(p);
   const url = kiteId ? `${apiUrl}/properties/${kiteId}` : `${apiUrl}/properties`;
-
   try {
-    const res = await fetch(url, {
-      method: kiteId ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (res.status === 401 || res.status === 403) {
-      return {
-        ok: false,
-        error: "Sin acceso a la API de KiteProp. Verificá que tu API key sea válida.",
-      };
-    }
-
-    if (!res.ok) {
-      const err = await res.text();
-      return { ok: false, error: `KiteProp ${res.status}: ${err}` };
-    }
-
+    const res = await fetch(url, { method: kiteId ? "PUT" : "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` }, body: JSON.stringify(body) });
+    if (res.status === 401 || res.status === 403) return { ok: false, error: "Sin acceso a la API de KiteProp. Verificá que tu API key sea válida." };
+    if (!res.ok) { const err = await res.text(); return { ok: false, error: `KiteProp ${res.status}: ${err}` }; }
     const data = await res.json();
     return { ok: true, id: data.id ?? kiteId };
   } catch (e: any) {
@@ -181,94 +141,40 @@ async function syncKiteProp(p: any, kiteId: string | null) {
   }
 }
 
-// ── Handler principal ─────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
     const { propiedad_id, portales } = await req.json();
-
     if (!propiedad_id || !portales?.length) {
       return NextResponse.json({ error: "propiedad_id y portales requeridos" }, { status: 400 });
     }
-
-    // Verificar service role key
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return NextResponse.json({ error: "SUPABASE_SERVICE_ROLE_KEY no configurada" }, { status: 500 });
+      return NextResponse.json({ error: "SUPABASE_SERVICE_ROLE_KEY no configurada en variables de entorno de Vercel" }, { status: 500 });
     }
-
-    const { data: prop, error: propErr } = await supabase
-      .from("cartera_propiedades")
-      .select("*")
-      .eq("id", propiedad_id)
-      .single();
-
-    if (propErr || !prop) {
-      return NextResponse.json({ error: "Propiedad no encontrada" }, { status: 404 });
-    }
-
-    const { data: sync } = await supabase
-      .from("cartera_sync_portales")
-      .select("*")
-      .eq("propiedad_id", propiedad_id)
-      .single();
-
+    const { data: prop, error: propErr } = await supabase.from("cartera_propiedades").select("*").eq("id", propiedad_id).single();
+    if (propErr || !prop) return NextResponse.json({ error: "Propiedad no encontrada" }, { status: 404 });
+    const { data: sync } = await supabase.from("cartera_sync_portales").select("*").eq("propiedad_id", propiedad_id).single();
     const resultados: Record<string, any> = {};
-
     if (portales.includes("tokko")) {
       const r = await syncTokko(prop, sync?.tokko_id ?? null);
       resultados.tokko = r;
-      if (r.ok) {
-        await supabase.from("cartera_sync_portales").upsert({
-          propiedad_id,
-          tokko_id: r.id,
-          tokko_synced_at: new Date().toISOString(),
-          tokko_error: null,
-        }, { onConflict: "propiedad_id" });
-      } else if (!r.pendiente) {
-        await supabase.from("cartera_sync_portales").upsert({
-          propiedad_id,
-          tokko_error: r.error,
-        }, { onConflict: "propiedad_id" });
-      }
+      if (r.ok) await supabase.from("cartera_sync_portales").upsert({ propiedad_id, tokko_id: r.id, tokko_synced_at: new Date().toISOString(), tokko_error: null }, { onConflict: "propiedad_id" });
+      else if (!r.pendiente) await supabase.from("cartera_sync_portales").upsert({ propiedad_id, tokko_error: r.error }, { onConflict: "propiedad_id" });
     }
-
     if (portales.includes("kiteprop")) {
       const r = await syncKiteProp(prop, sync?.kiteprop_id ?? null);
       resultados.kiteprop = r;
-      if (r.ok) {
-        await supabase.from("cartera_sync_portales").upsert({
-          propiedad_id,
-          kiteprop_id: r.id,
-          kiteprop_synced_at: new Date().toISOString(),
-          kiteprop_error: null,
-        }, { onConflict: "propiedad_id" });
-      } else if (!r.pendiente) {
-        await supabase.from("cartera_sync_portales").upsert({
-          propiedad_id,
-          kiteprop_error: r.error,
-        }, { onConflict: "propiedad_id" });
-      }
+      if (r.ok) await supabase.from("cartera_sync_portales").upsert({ propiedad_id, kiteprop_id: r.id, kiteprop_synced_at: new Date().toISOString(), kiteprop_error: null }, { onConflict: "propiedad_id" });
+      else if (!r.pendiente) await supabase.from("cartera_sync_portales").upsert({ propiedad_id, kiteprop_error: r.error }, { onConflict: "propiedad_id" });
     }
-
     return NextResponse.json({ ok: true, resultados });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
 
-// ── GET: verificar estado de configuración ────────────────────────────────
 export async function GET() {
   return NextResponse.json({
-    tokko: {
-      configurado: !!process.env.TOKKO_API_KEY,
-      mensaje: !process.env.TOKKO_API_KEY
-        ? "Pendiente — necesitás el add-on 'Acceso APIs' en tu plan Tokko Broker"
-        : "Configurado",
-    },
-    kiteprop: {
-      configurado: !!process.env.KITEPROP_API_KEY,
-      mensaje: !process.env.KITEPROP_API_KEY
-        ? "Pendiente — necesitás tu API key de KiteProp"
-        : "Configurado",
-    },
+    tokko: { configurado: !!process.env.TOKKO_API_KEY, mensaje: !process.env.TOKKO_API_KEY ? "Pendiente — necesitás el add-on 'Acceso APIs' en tu plan Tokko Broker" : "Configurado" },
+    kiteprop: { configurado: !!process.env.KITEPROP_API_KEY, mensaje: !process.env.KITEPROP_API_KEY ? "Pendiente — necesitás tu API key de KiteProp" : "Configurado" },
   });
 }
