@@ -73,6 +73,9 @@ interface Ofrecido {
   apto_credito: boolean; uso_comercial: boolean; barrio_cerrado: boolean;
   con_cochera: boolean; acepta_mascotas: boolean; acepta_bitcoin: boolean;
   descripcion: string | null; activo: boolean; created_at: string;
+  nombre_publicante?: string | null;
+  ci_responsable_id?: string | null;
+  ci_responsable?: { nombre: string; apellido: string; matricula: string | null; } | null;
   perfiles?: { nombre: string; apellido: string; matricula: string | null; telefono: string | null; email: string | null; };
 }
 
@@ -87,6 +90,9 @@ interface Busqueda {
   apto_credito: boolean; uso_comercial: boolean; con_cochera: boolean;
   barrio_cerrado: boolean; acepta_mascotas: boolean; acepta_bitcoin: boolean;
   descripcion: string | null; activo: boolean; created_at: string;
+  nombre_publicante?: string | null;
+  ci_responsable_id?: string | null;
+  ci_responsable?: { nombre: string; apellido: string; matricula: string | null; } | null;
   perfiles?: { nombre: string; apellido: string; matricula: string | null; telefono: string | null; email: string | null; };
 }
 
@@ -132,6 +138,7 @@ const FILTRO_VACIO: FiltroLista = {
 
 const FORM_O = {
   operacion: "venta", tipo_propiedad: "Departamento",
+  nombre_publicante: "", ci_responsable_id: "",
   zona: "", ciudad: "Rosario", precio: "", moneda: "USD",
   dormitorios: "", banos: "", superficie_cubierta: "", superficie_total: "",
   antiguedad: "",
@@ -142,6 +149,7 @@ const FORM_O = {
 
 const FORM_B = {
   operacion: "compra", tipo_propiedad: "Departamento",
+  nombre_publicante: "", ci_responsable_id: "",
   zona: "", ciudad: "Rosario",
   presupuesto_min: "", presupuesto_max: "", moneda: "USD",
   dormitorios_min: "", dormitorios_max: "", banos_min: "", banos_max: "",
@@ -193,6 +201,8 @@ export default function MirPage() {
   const [filtro, setFiltro] = useState<FiltroLista>(FILTRO_VACIO);
   const [filtroTemp, setFiltroTemp] = useState<FiltroLista>(FILTRO_VACIO);
   const [guardando, setGuardando] = useState(false);
+  const [esColaborador, setEsColaborador] = useState(false);
+  const [corredoresColegas, setCorredoresColegas] = useState<{id:string;nombre:string;apellido:string;matricula:string|null}[]>([]);
   const [desbloqueando, setDesbloqueando] = useState<string | null>(null);
   const [interesando, setInteresando] = useState<string | null>(null);
   const [modalInteres, setModalInteres] = useState<{ pub: Ofrecido | Busqueda; tipo: "me_interesa" | "tengo"; pubTipo: "ofrecido" | "busqueda" } | null>(null);
@@ -205,6 +215,21 @@ export default function MirPage() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
+
+      // Detectar si es colaborador y cargar CI colegas
+      const { data: perfil } = await supabase.from("perfiles").select("tipo, corredor_ref_id").eq("id", data.user.id).single();
+      if (perfil?.tipo === "colaborador") {
+        setEsColaborador(true);
+        // Cargar el CI titular y sus colegas matriculados
+        const { data: colegas } = await supabase
+          .from("perfiles")
+          .select("id,nombre,apellido,matricula")
+          .eq("tipo", "corredor")
+          .not("matricula", "is", null)
+          .order("apellido");
+        setCorredoresColegas(colegas ?? []);
+      }
+
       const params = new URLSearchParams(window.location.search);
       const nuevo = params.get("nuevo");
       const vistaParam = params.get("vista");
@@ -268,8 +293,8 @@ export default function MirPage() {
   const cargarDatos = async () => {
     setLoading(true);
     const [{ data: of }, { data: bu }, { data: ma }] = await Promise.all([
-      supabase.from("mir_ofrecidos").select("*, perfiles(nombre,apellido,matricula,telefono,email)").eq("activo", true).order("created_at", { ascending: false }),
-      supabase.from("mir_busquedas").select("*, perfiles(nombre,apellido,matricula,telefono,email)").eq("activo", true).order("created_at", { ascending: false }),
+      supabase.from("mir_ofrecidos").select("*, perfiles(nombre,apellido,matricula,telefono,email), ci_responsable:perfiles!ci_responsable_id(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
+      supabase.from("mir_busquedas").select("*, perfiles(nombre,apellido,matricula,telefono,email), ci_responsable:perfiles!ci_responsable_id(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
       supabase.from("mir_matches").select("*").order("created_at", { ascending: false }).limit(100),
     ]);
     setOfrecidos((of as unknown as Ofrecido[]) ?? []);
@@ -482,6 +507,8 @@ export default function MirPage() {
     setGuardando(true);
     const { data: nuevo, error } = await supabase.from("mir_ofrecidos").insert({
       perfil_id: userId, operacion: formO.operacion, tipo_propiedad: formO.tipo_propiedad,
+      nombre_publicante: formO.nombre_publicante || null,
+      ci_responsable_id: formO.ci_responsable_id || null,
       zona: formO.zona || null, ciudad: formO.ciudad,
       precio: n(formO.precio), moneda: formO.moneda,
       dormitorios: ni(formO.dormitorios), banos: ni(formO.banos),
@@ -501,6 +528,8 @@ export default function MirPage() {
     setGuardando(true);
     const { data: nueva, error } = await supabase.from("mir_busquedas").insert({
       perfil_id: userId, operacion: formB.operacion, tipo_propiedad: formB.tipo_propiedad,
+      nombre_publicante: formB.nombre_publicante || null,
+      ci_responsable_id: formB.ci_responsable_id || null,
       zona: formB.zona || null, ciudad: formB.ciudad,
       presupuesto_min: n(formB.presupuesto_min), presupuesto_max: n(formB.presupuesto_max), moneda: formB.moneda,
       dormitorios_min: ni(formB.dormitorios_min), dormitorios_max: ni(formB.dormitorios_max),
@@ -783,7 +812,18 @@ export default function MirPage() {
                 {!esPropia && <BotonesInteres pub={o} pubTipo="ofrecido" />}
                 <div className="mir-card-footer">
                   <div>
-                    {esPropia ? <span className="mir-corredor">📌 Tu publicacion</span> : <span className="mir-corredor">C.I. <b>{o.perfiles?.apellido}, {o.perfiles?.nombre}</b> · Mat. {o.perfiles?.matricula ?? "—"}</span>}
+                    {esPropia ? (
+                      <span className="mir-corredor">📌 Tu publicacion</span>
+                    ) : o.nombre_publicante ? (
+                      <span className="mir-corredor">
+                        👤 <b>{o.nombre_publicante}</b>
+                        {o.ci_responsable ? (
+                          <> · C.I. responsable: <b>{o.ci_responsable.apellido}, {o.ci_responsable.nombre}</b> · Mat. {o.ci_responsable.matricula ?? "—"}</>
+                        ) : null}
+                      </span>
+                    ) : (
+                      <span className="mir-corredor">C.I. <b>{o.perfiles?.apellido}, {o.perfiles?.nombre}</b> · Mat. {o.perfiles?.matricula ?? "—"}</span>
+                    )}
                     <div className="mir-fecha">{formatFecha(o.created_at)}</div>
                   </div>
                   {esPropia && <button className="mir-btn-baja" onClick={() => desactivar("mir_ofrecidos", o.id)}>Dar de baja</button>}
@@ -828,7 +868,18 @@ export default function MirPage() {
                 {!esPropia && <BotonesInteres pub={b} pubTipo="busqueda" />}
                 <div className="mir-card-footer">
                   <div>
-                    {esPropia ? <span className="mir-corredor">📌 Tu publicacion</span> : <span className="mir-corredor">C.I. <b>{b.perfiles?.apellido}, {b.perfiles?.nombre}</b> · Mat. {b.perfiles?.matricula ?? "—"}</span>}
+                    {esPropia ? (
+                      <span className="mir-corredor">📌 Tu publicacion</span>
+                    ) : b.nombre_publicante ? (
+                      <span className="mir-corredor">
+                        👤 <b>{b.nombre_publicante}</b>
+                        {b.ci_responsable ? (
+                          <> · C.I. responsable: <b>{b.ci_responsable.apellido}, {b.ci_responsable.nombre}</b> · Mat. {b.ci_responsable.matricula ?? "—"}</>
+                        ) : null}
+                      </span>
+                    ) : (
+                      <span className="mir-corredor">C.I. <b>{b.perfiles?.apellido}, {b.perfiles?.nombre}</b> · Mat. {b.perfiles?.matricula ?? "—"}</span>
+                    )}
                     <div className="mir-fecha">{formatFecha(b.created_at)}</div>
                   </div>
                   {esPropia && <button className="mir-btn-baja" onClick={() => desactivar("mir_busquedas", b.id)}>Dar de baja</button>}
@@ -1099,6 +1150,34 @@ export default function MirPage() {
             <h2>Publicar <span>ofrecido</span></h2>
             <div className="fn-field">
               <label className="fn-label">Operacion *</label>
+              {esColaborador && (
+                <div style={{background:"rgba(200,0,0,0.05)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:"12px 14px",marginBottom:12}}>
+                  <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:10}}>⚠️ Publicación como colaborador — datos obligatorios</div>
+                  <div style={{marginBottom:10}}>
+                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:5}}>Tu nombre completo *</label>
+                    <input
+                      style={{width:"100%",padding:"8px 11px",background:"rgba(255,255,255,0.035)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif",boxSizing:"border-box"}}
+                      placeholder="Ej: María García"
+                      value={formO.nombre_publicante}
+                      onChange={e => setFormO(p => ({...p, nombre_publicante: e.target.value}))}
+                    />
+                  </div>
+                  <div>
+                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:5}}>C.I. responsable (matriculado) *</label>
+                    <select
+                      style={{width:"100%",padding:"8px 11px",background:"rgba(12,12,12,0.95)",border:`1px solid ${!formO.ci_responsable_id?"rgba(200,0,0,0.3)":"rgba(255,255,255,0.09)"}`,borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif"}}
+                      value={formO.ci_responsable_id}
+                      onChange={e => setFormO(p => ({...p, ci_responsable_id: e.target.value}))}
+                    >
+                      <option value="">Seleccioná el C.I. responsable...</option>
+                      {corredoresColegas.map(c => (
+                        <option key={c.id} value={c.id}>{c.apellido}, {c.nombre} — Mat. {c.matricula}</option>
+                      ))}
+                    </select>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:4,fontFamily:"Inter,sans-serif"}}>El corredor inmobiliario matriculado que avala esta publicación. Obligatorio por normativa COCIR.</div>
+                  </div>
+                </div>
+              )}
               <div className="fn-chips">{OPS_OFRECIDO.map(op => <button key={op.value} type="button" className={`fn-chip${formO.operacion === op.value ? " activo" : ""}`} onClick={() => setFormO(p => ({...p, operacion: op.value}))}>{op.label}</button>)}</div>
             </div>
             <div className="fn-field">
@@ -1169,6 +1248,34 @@ export default function MirPage() {
             <h2>Publicar <span>busqueda</span></h2>
             <div className="fn-field">
               <label className="fn-label">Operacion *</label>
+              {esColaborador && (
+                <div style={{background:"rgba(200,0,0,0.05)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:"12px 14px",marginBottom:12}}>
+                  <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:10}}>⚠️ Publicación como colaborador — datos obligatorios</div>
+                  <div style={{marginBottom:10}}>
+                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:5}}>Tu nombre completo *</label>
+                    <input
+                      style={{width:"100%",padding:"8px 11px",background:"rgba(255,255,255,0.035)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif",boxSizing:"border-box"}}
+                      placeholder="Ej: María García"
+                      value={formB.nombre_publicante}
+                      onChange={e => setFormB(p => ({...p, nombre_publicante: e.target.value}))}
+                    />
+                  </div>
+                  <div>
+                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:5}}>C.I. responsable (matriculado) *</label>
+                    <select
+                      style={{width:"100%",padding:"8px 11px",background:"rgba(12,12,12,0.95)",border:`1px solid ${!formB.ci_responsable_id?"rgba(200,0,0,0.3)":"rgba(255,255,255,0.09)"}`,borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif"}}
+                      value={formB.ci_responsable_id}
+                      onChange={e => setFormB(p => ({...p, ci_responsable_id: e.target.value}))}
+                    >
+                      <option value="">Seleccioná el C.I. responsable...</option>
+                      {corredoresColegas.map(c => (
+                        <option key={c.id} value={c.id}>{c.apellido}, {c.nombre} — Mat. {c.matricula}</option>
+                      ))}
+                    </select>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:4,fontFamily:"Inter,sans-serif"}}>El corredor inmobiliario matriculado que avala esta publicación. Obligatorio por normativa COCIR.</div>
+                  </div>
+                </div>
+              )}
               <div className="fn-chips">{OPS_BUSQUEDA.map(op => <button key={op.value} type="button" className={`fn-chip${formB.operacion === op.value ? " activo" : ""}`} onClick={() => setFormB(p => ({...p, operacion: op.value}))}>{op.label}</button>)}</div>
             </div>
             <div className="fn-field">
