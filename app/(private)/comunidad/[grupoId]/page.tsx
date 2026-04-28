@@ -95,7 +95,7 @@ export default function GrupoChatPage() {
       const { data: replies } = await supabase.from("mensajes_chat").select("id,texto,perfiles(nombre,apellido)").in("id", rids);
       (replies ?? []).forEach((r:any) => { rm[r.id] = r; });
     }
-    const msgs = data.map((m:any) => ({ ...m, _reply: m.reply_id ? (rm[m.reply_id] ?? undefined) : undefined }));
+    const msgs = data.map((m:any) => { const r = m.reply_id ? rm[m.reply_id] : null; return { ...m, _reply: r ? { texto: r.texto, perfiles: Array.isArray(r.perfiles) ? r.perfiles[0] : r.perfiles } : undefined }; });
     setMensajes(msgs as any);
     // link previews
     const pv: Record<string,any> = {};
@@ -114,7 +114,7 @@ export default function GrupoChatPage() {
         const { data } = await supabase.from("mensajes_chat").select("*, perfiles(id,nombre,apellido,matricula,foto_url)").eq("id",(row as any).id).single();
         if (!data) return;
         let msg = data as Mensaje;
-        if (msg.reply_id) { const {data:r} = await supabase.from("mensajes_chat").select("texto,perfiles(nombre,apellido)").eq("id",msg.reply_id).single(); msg = {...msg, _reply: r ?? undefined}; }
+        if (msg.reply_id) { const {data:r} = await supabase.from("mensajes_chat").select("texto,perfiles(nombre,apellido)").eq("id",msg.reply_id).single(); const rData = r as any; msg = {...msg, _reply: rData ? { texto: rData.texto, perfiles: Array.isArray(rData.perfiles) ? rData.perfiles[0] : rData.perfiles } : undefined}; }
         setMensajes(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
       })
       .on("postgres_changes", { event:"UPDATE", schema:"public", table:"mensajes_chat", filter:`grupo_id=eq.${grupoId}` }, async ({new:row}) => {
