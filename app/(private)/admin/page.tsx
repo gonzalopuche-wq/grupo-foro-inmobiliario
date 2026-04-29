@@ -520,6 +520,7 @@ export default function AdminPage() {
           <div className="adm-topbar-logo"><span>GFI</span>® Admin</div>
           <div className="adm-topbar-right">
             <span className="adm-topbar-tag">Admin Master</span>
+            <a className="adm-btn-volver" href="/admin/enlaces" style={{marginRight:6}}>🔗 Gestionar enlaces</a>
             <a className="adm-btn-volver" href="/dashboard">← Dashboard</a>
           </div>
         </header>

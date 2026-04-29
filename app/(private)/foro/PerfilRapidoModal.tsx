@@ -253,8 +253,8 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
                     {enCRM ? "✓ En tu CRM" : guardandoCRM ? "Guardando..." : "💾 Guardar en CRM"}
                   </button>
                 )}
-                <a className="prm-btn prm-btn-perfil" href={`/perfil/${perfilId}`}>
-                  👤 Ver perfil
+                <a className="prm-btn prm-btn-perfil" href="/padron-gfi">
+                  👤 Ver padrón
                 </a>
               </div>
             </>

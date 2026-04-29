@@ -123,7 +123,7 @@ export default function ListasPage() {
                 </div>
               </div>
               <div style={s.acciones}>
-                <Link href={`/crm/listas/${lista.id}`} style={s.btnVer}>Ver lista</Link>
+                <Link href="/crm/listas" style={s.btnVer}>Ver lista</Link>
                 <button onClick={() => eliminar(lista.id)} style={s.btnDel}>Eliminar</button>
               </div>
             </div>
