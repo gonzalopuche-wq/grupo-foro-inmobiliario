@@ -243,6 +243,7 @@ export default function CrmPage() {
   // Plantillas
   const [plantillas, setPlantillas] = useState<{id:string;titulo:string;contenido:string;tipo:string}[]>([]);
   const [mostrarPlantillas, setMostrarPlantillas] = useState(false);
+  const [cargandoIA, setCargandoIA] = useState(false);
   const [guardandoPlantilla, setGuardandoPlantilla] = useState(false);
   const [tituloNuevaPlantilla, setTituloNuevaPlantilla] = useState("");
   const [mostrarGuardarPlantilla, setMostrarGuardarPlantilla] = useState(false);
@@ -422,6 +423,21 @@ export default function CrmPage() {
       const { data } = await supabase.from("crm_plantillas").select("id,titulo,contenido,tipo").eq("perfil_id", userId).order("titulo");
       setPlantillas((data as any[]) ?? []);
     } catch { setPlantillas([]); }
+  };
+
+  const sugerirConIA = async () => {
+    if (!contactoSeleccionado) return;
+    setCargandoIA(true);
+    try {
+      const resp = await fetch("/api/ia-respuesta", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ contacto: contactoSeleccionado, interacciones: interacciones.slice(0, 8), tipo: nuevaInteraccion.tipo }),
+      });
+      const { text } = await resp.json();
+      setNuevaInteraccion(prev => ({ ...prev, descripcion: text }));
+    } catch {}
+    setCargandoIA(false);
   };
 
   const guardarPlantilla = async () => {
@@ -1264,6 +1280,13 @@ export default function CrmPage() {
                                   </div>
                                 )}
                               </div>
+                              <button
+                                onClick={sugerirConIA}
+                                disabled={cargandoIA}
+                                style={{alignSelf:"flex-start",padding:"4px 10px",background:"rgba(147,51,234,0.12)",border:"1px solid rgba(147,51,234,0.25)",borderRadius:4,color:"rgba(147,51,234,0.8)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.08em",cursor:"pointer",transition:"all 0.15s"}}
+                              >
+                                {cargandoIA ? "Generando..." : "✨ Sugerir con IA"}
+                              </button>
                               <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                                 <button className="crm-btn-guardar-int" onClick={guardarInteraccion} disabled={guardandoInteraccion || !nuevaInteraccion.descripcion.trim()}>{guardandoInteraccion ? <><span className="crm-spinner"/>Guardando</> : "Registrar"}</button>
                                 <button style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:3,color:"rgba(255,255,255,0.45)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.08em",cursor:"pointer"}} onClick={() => { setMostrarPlantillas(v => !v); if (!mostrarPlantillas) cargarPlantillas(); }}>📋 Plantillas</button>
@@ -1377,6 +1400,37 @@ export default function CrmPage() {
                           {n.valor_operacion && <div style={{display:"flex",alignItems:"baseline",gap:4}}><span className="neg-card-valor">{n.moneda} {n.valor_operacion.toLocaleString("es-AR")}</span>{honEstimado && <span className="neg-card-honor">Hon. est. {n.moneda} {honEstimado.toLocaleString("es-AR")}</span>}</div>}
                           {nombreContacto(n.contacto_id) && <div className="neg-card-contacto">👤 {nombreContacto(n.contacto_id)}</div>}
                           {(n.etiquetas ?? []).length > 0 && <div className="crm-item-etqs" style={{marginTop:5}}>{(n.etiquetas ?? []).map(e => <span key={e} className="crm-etq">{e}</span>)}</div>}
+                        </div>
+                        {/* Timeline visual */}
+                        <div style={{padding:"8px 12px 4px",borderTop:"1px solid rgba(255,255,255,0.04)"}}>
+                          {(() => {
+                            const pasos = [
+                              { key: "fecha_primer_contacto", label: "Contacto", icon: "📞" },
+                              { key: "fecha_visita", label: "Visita", icon: "🏠" },
+                              { key: "fecha_reserva", label: "Reserva", icon: "📝" },
+                              { key: "fecha_escritura", label: "Escritura", icon: "📄" },
+                              { key: "fecha_cierre", label: "Cierre", icon: "✅" },
+                            ] as const;
+                            const tieneAlguno = pasos.some(p => n[p.key]);
+                            if (!tieneAlguno) return null;
+                            return (
+                              <div style={{display:"flex",alignItems:"center",gap:0}}>
+                                {pasos.map((paso, i) => {
+                                  const fecha = n[paso.key as keyof typeof n] as string | null;
+                                  const hecho = !!fecha;
+                                  return (
+                                    <div key={paso.key} style={{display:"flex",alignItems:"center",flex:i < pasos.length-1 ? 1 : "none"}}>
+                                      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+                                        <div style={{width:22,height:22,borderRadius:"50%",background:hecho ? "rgba(200,0,0,0.2)" : "rgba(255,255,255,0.04)",border:`1px solid ${hecho ? "#cc0000" : "rgba(255,255,255,0.1)"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,flexShrink:0}}>{hecho ? paso.icon : "·"}</div>
+                                        <div style={{fontSize:8,color:hecho ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.15)",fontFamily:"Montserrat,sans-serif",fontWeight:600,letterSpacing:"0.06em",whiteSpace:"nowrap"}}>{fecha ? new Date(fecha).toLocaleDateString("es-AR",{day:"2-digit",month:"2-digit"}) : paso.label}</div>
+                                      </div>
+                                      {i < pasos.length-1 && <div style={{flex:1,height:1,background:hecho && (n[pasos[i+1].key as keyof typeof n]) ? "#cc000040" : "rgba(255,255,255,0.06)",margin:"0 3px",marginBottom:16}} />}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })()}
                         </div>
                         <div className="neg-card-acciones">
                           {idxEtapa < ETAPAS_NEGOCIO.length - 1 && <button className="neg-btn-avanzar" onClick={() => avanzarEtapa(n)}>→ {ETAPAS_NEGOCIO[idxEtapa + 1]?.label}</button>}
