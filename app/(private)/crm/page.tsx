@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../lib/supabase";
+import * as XLSX from "xlsx";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -492,6 +493,32 @@ export default function CrmPage() {
   const nombreContacto = (id: string | null) => { if (!id) return null; const c = contactos.find(x => x.id === id); return c ? `${c.apellido ? c.apellido + ", " : ""}${c.nombre}` : null; };
   const tituloNegocio = (id: string | null) => { if (!id) return null; const n = negocios.find(x => x.id === id); return n?.titulo ?? null; };
 
+  // ── Export Excel ─────────────────────────────────────────────────────────
+  const exportarContactosExcel = () => {
+    const filas = contactosFiltrados.map(c => ({
+      Nombre: c.nombre,
+      Apellido: c.apellido ?? "",
+      Tipo: c.tipo ?? "",
+      Teléfono: c.telefono ?? "",
+      Email: c.email ?? "",
+      Inmobiliaria: c.inmobiliaria ?? "",
+      Matrícula: c.matricula ?? "",
+      Etiquetas: (c.etiquetas ?? []).join(", "),
+      Interés: c.interes ?? "",
+      Zona: c.zona_interes ?? "",
+      "Presup. min": c.presupuesto_min ?? "",
+      "Presup. max": c.presupuesto_max ?? "",
+      Moneda: c.moneda ?? "",
+      Origen: c.origen ?? "",
+      Notas: c.notas ?? "",
+      "Creado": formatFecha(c.created_at),
+    }));
+    const ws = XLSX.utils.json_to_sheet(filas);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Contactos");
+    XLSX.writeFile(wb, `contactos-gfi-${new Date().toISOString().split("T")[0]}.xlsx`);
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <>
@@ -540,6 +567,9 @@ export default function CrmPage() {
         .crm-count { font-size: 10px; color: rgba(255,255,255,0.22); font-family: 'Inter',sans-serif; }
         .crm-btn-nuevo { padding: 5px 12px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
         .crm-btn-nuevo:hover { background: #e60000; }
+        .crm-btn-export { padding: 5px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .crm-btn-export:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.2); }
+        .crm-btn-export:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* ── Items lista ── */
         .crm-lista-items { flex: 1; overflow-y: auto; }
@@ -750,7 +780,10 @@ export default function CrmPage() {
                 </div>
                 <div className="crm-lista-barra">
                   <span className="crm-count">{contactosFiltrados.length} contacto{contactosFiltrados.length !== 1 ? "s" : ""}</span>
-                  <button className="crm-btn-nuevo" onClick={abrirFormNuevoContacto}>+ Nuevo</button>
+                  <div style={{display:"flex",gap:"6px"}}>
+                    <button className="crm-btn-export" onClick={exportarContactosExcel} title="Exportar a Excel" disabled={contactosFiltrados.length === 0}>↓ Excel</button>
+                    <button className="crm-btn-nuevo" onClick={abrirFormNuevoContacto}>+ Nuevo</button>
+                  </div>
                 </div>
                 <div className="crm-lista-items">
                   {loadingContactos ? <div className="crm-empty-lista">Cargando...</div>
