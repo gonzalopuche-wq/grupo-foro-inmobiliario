@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { supabase } from "../../lib/supabase";
 
 interface Documento {
@@ -310,6 +311,9 @@ export default function BibliotecaPage() {
                 <div className="bib-stat-label">Descargas</div>
               </div>
             </div>
+            <Link href="/biblioteca/drive" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
+              📁 Google Drive
+            </Link>
             <button className="bib-btn-subir" onClick={() => setMostrarForm(true)}>
               ↑ Subir documento
             </button>
