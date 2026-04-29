@@ -237,6 +237,7 @@ export default function CrmPage() {
   const [gruposDuplicados, setGruposDuplicados] = useState<Contacto[][]>([]);
   const [mergeSeleccion, setMergeSeleccion] = useState<Record<number, string>>({});
   const [mergeando, setMergeando] = useState(false);
+  const [mostrarArchivados, setMostrarArchivados] = useState(false);
 
   // ── Negocios ──────────────────────────────────────────────────────────────
   const [negocios, setNegocios] = useState<Negocio[]>([]);
@@ -344,6 +345,13 @@ export default function CrmPage() {
     if (!confirm("¿Eliminar este contacto y todo su historial?")) return;
     await supabase.from("crm_contactos").delete().eq("id", id);
     if (contactoSeleccionado?.id === id) setContactoSeleccionado(null);
+    if (userId) cargarContactos(userId);
+  };
+
+  const archivarContacto = async (c: Contacto) => {
+    const nuevoEstado = c.estado === "archivado" ? null : "archivado";
+    await supabase.from("crm_contactos").update({ estado: nuevoEstado, updated_at: new Date().toISOString() }).eq("id", c.id);
+    setContactoSeleccionado(null);
     if (userId) cargarContactos(userId);
   };
 
@@ -471,10 +479,13 @@ export default function CrmPage() {
   const todasEtiquetas = useMemo(() => { const set = new Set<string>(); contactos.forEach(c => (c.etiquetas ?? []).forEach(e => set.add(e))); return Array.from(set).sort(); }, [contactos]);
 
   const contactosFiltrados = useMemo(() => contactos.filter(c => {
+    const archivado = c.estado === "archivado";
+    if (!mostrarArchivados && archivado) return false;
+    if (mostrarArchivados && !archivado) return false;
     if (filtroEtiqueta && !(c.etiquetas ?? []).includes(filtroEtiqueta)) return false;
     if (busqueda.trim()) { const q = busqueda.toLowerCase(); return c.nombre?.toLowerCase().includes(q) || c.apellido?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q) || c.telefono?.toLowerCase().includes(q) || c.inmobiliaria?.toLowerCase().includes(q) || (c.etiquetas ?? []).some(e => e.toLowerCase().includes(q)); }
     return true;
-  }), [contactos, busqueda, filtroEtiqueta]);
+  }), [contactos, busqueda, filtroEtiqueta, mostrarArchivados]);
 
   const negociosFiltrados = useMemo(() => negocios.filter(n => {
     if (filtroEtapaNegocio && n.etapa !== filtroEtapaNegocio) return false;
@@ -691,6 +702,7 @@ export default function CrmPage() {
         .crm-btn-export { padding: 5px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .crm-btn-export:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.2); }
         .crm-btn-export:disabled { opacity: 0.3; cursor: not-allowed; }
+        .crm-btn-export-activo { background: rgba(255,165,0,0.08) !important; border-color: rgba(255,165,0,0.3) !important; color: rgba(255,165,0,0.8) !important; }
 
         /* ── Items lista ── */
         .crm-lista-items { flex: 1; overflow-y: auto; }
@@ -868,7 +880,7 @@ export default function CrmPage() {
         <div className="crm-tabs-bar">
           {(["contactos", "negocios", "tareas", "notas"] as const).map(tab => (
             <button key={tab} className={`crm-tab-main${tabPrincipal === tab ? " activo" : ""}`} onClick={() => setTabPrincipal(tab)}>
-              {tab === "contactos" && <>Contactos {contactos.length > 0 && <span className="crm-tab-badge">{contactos.length}</span>}</>}
+              {tab === "contactos" && <>{mostrarArchivados ? "Archivados" : "Contactos"} {contactos.filter(c => c.estado !== "archivado").length > 0 && <span className="crm-tab-badge">{contactos.filter(c => c.estado !== "archivado").length}</span>}</>}
               {tab === "negocios" && <>Negocios {negocios.length > 0 && <span className="crm-tab-badge">{negocios.length}</span>}</>}
               {tab === "tareas" && <>Tareas {tareasVencidas > 0 && <span className="crm-tab-badge">{tareasVencidas}</span>}</>}
               {tab === "notas" && <>Notas {notas.length > 0 && <span className="crm-tab-badge">{notas.length}</span>}</>}
@@ -900,8 +912,14 @@ export default function CrmPage() {
                   )}
                 </div>
                 <div className="crm-lista-barra">
-                  <span className="crm-count">{contactosFiltrados.length} contacto{contactosFiltrados.length !== 1 ? "s" : ""}</span>
+                  <span className="crm-count">
+                    {contactosFiltrados.length} contacto{contactosFiltrados.length !== 1 ? "s" : ""}
+                    {!mostrarArchivados && contactos.filter(c => c.estado === "archivado").length > 0 && (
+                      <span style={{marginLeft:6,color:"rgba(255,255,255,0.22)",fontSize:9}}>(+{contactos.filter(c => c.estado === "archivado").length} arch.)</span>
+                    )}
+                  </span>
                   <div style={{display:"flex",gap:"6px"}}>
+                    <button className={`crm-btn-export${mostrarArchivados ? " crm-btn-export-activo" : ""}`} onClick={() => { setMostrarArchivados(v => !v); setContactoSeleccionado(null); }} title={mostrarArchivados ? "Ver activos" : "Ver archivados"}>⊘ {mostrarArchivados ? "Activos" : "Archivados"}</button>
                     <button className="crm-btn-export" onClick={abrirDuplicados} title="Detectar duplicados" disabled={contactos.length < 2}>⊕ Duplicados</button>
                     <button className="crm-btn-export" onClick={() => { setImportRows([]); setImportError(""); setMostrarImport(true); }} title="Importar desde Excel">↑ Importar</button>
                     <button className="crm-btn-export" onClick={exportarContactosExcel} title="Exportar a Excel" disabled={contactosFiltrados.length === 0}>↓ Excel</button>
@@ -937,6 +955,8 @@ export default function CrmPage() {
                         {(contactoSeleccionado.etiquetas ?? []).length > 0 && <div style={{display:"flex",gap:4,flexWrap:"wrap",marginTop:5}}>{(contactoSeleccionado.etiquetas ?? []).map(e => <span key={e} className="crm-etq" style={{fontSize:8,padding:"2px 6px"}}>{e}</span>)}</div>}
                       </div>
                       <div className="crm-detalle-acciones">
+                        {contactoSeleccionado.estado === "archivado" && <span style={{fontSize:9,padding:"3px 7px",background:"rgba(255,165,0,0.08)",border:"1px solid rgba(255,165,0,0.25)",borderRadius:3,color:"rgba(255,165,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase"}}>Archivado</span>}
+                        <button className="crm-btn-editar" onClick={() => archivarContacto(contactoSeleccionado)} title={contactoSeleccionado.estado === "archivado" ? "Quitar del archivo" : "Archivar contacto"}>{contactoSeleccionado.estado === "archivado" ? "↩ Restaurar" : "⊘ Archivar"}</button>
                         <button className="crm-btn-editar" onClick={() => abrirFormEditarContacto(contactoSeleccionado)}>Editar</button>
                         <button className="crm-btn-eliminar" onClick={() => eliminarContacto(contactoSeleccionado.id)}>Eliminar</button>
                       </div>
