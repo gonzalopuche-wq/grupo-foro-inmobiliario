@@ -8,6 +8,7 @@ import { supabase } from "../lib/supabase";
 // ── Nav corredor matriculado (acceso completo) ─────────────────────────────
 const NAV_CORREDOR = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
+  { href: "/actividades", label: "Actividades", icon: "⚡" },
   { href: "/mir", label: "MIR", icon: "🔄" },
   { href: "/comunidad", label: "Comunidad", icon: "💬" },
   { href: "/foro", label: "Foro", icon: "🗣️" },
@@ -16,6 +17,7 @@ const NAV_CORREDOR = [
   { href: "/canal-educativo", label: "Canal Educativo", icon: "📡" },
   { href: "/crm", label: "CRM", icon: "👥" },
   { href: "/cartera", label: "Cartera", icon: "🏠" },
+  { href: "/emprendimientos", label: "Emprendimientos", icon: "🏗️" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
   { href: "/comparables", label: "Comparables", icon: "📈" },
   { href: "/padron-gfi", label: "Padrón", icon: "📋" },
@@ -32,6 +34,7 @@ const NAV_CORREDOR = [
 // Dashboard redirige a vista de solo grupos de comunidad
 const NAV_COLABORADOR = [
   { href: "/dashboard", label: "Inicio", icon: "🏠" },
+  { href: "/actividades", label: "Actividades", icon: "⚡" },
   { href: "/mir", label: "MIR", icon: "🔄" },
   { href: "/noticias", label: "Noticias", icon: "📰" },
   { href: "/eventos", label: "Eventos", icon: "📅" },
