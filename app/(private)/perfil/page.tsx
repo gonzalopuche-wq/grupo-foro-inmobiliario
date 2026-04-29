@@ -641,11 +641,11 @@ export default function PerfilPage() {
 
               <div className="sus-plan">
                 <div>
-                  <div className="sus-plan-nombre">Plan GFI® — Corredor Matriculado</div>
+                  <div className="sus-plan-nombre">Plan GFI® — {perfil.tipo === "colaborador" ? "Colaborador" : "Corredor Matriculado"}</div>
                   <div className="sus-plan-sub">Acceso completo a todos los módulos</div>
                 </div>
                 <div>
-                  <div className="sus-plan-precio">USD 10<span style={{ fontSize: 13, fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>/mes</span></div>
+                  <div className="sus-plan-precio">USD {perfil.tipo === "colaborador" ? "5" : "15"}<span style={{ fontSize: 13, fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>/mes</span></div>
                   <div className="sus-plan-sub">Equivalente en ARS al tipo de cambio del día</div>
                 </div>
               </div>
