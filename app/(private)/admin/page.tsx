@@ -92,6 +92,9 @@ export default function AdminPage() {
   const [loadingColab, setLoadingColab] = useState(true);
   const [filtroColab, setFiltroColab] = useState<"pendiente"|"activo"|"suspendido"|"todos">("pendiente");
   const [procesandoColab, setProcesandoColab] = useState<string | null>(null);
+  // Stats colaboradores
+  const [statsColab, setStatsColab] = useState<any[]>([]);
+  const [loadingStats, setLoadingStats] = useState(false);
 
   useEffect(() => {
     const verificar = async () => {
@@ -102,7 +105,7 @@ export default function AdminPage() {
       setEsAdmin(true);
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
-      cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos();
+      cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab();
     };
     verificar();
   }, []);
@@ -148,6 +151,22 @@ export default function AdminPage() {
   };
 
   const TIPOS_EV: Record<string, string> = { gfi: "GFI®", cocir: "COCIR", cir: "CIR", comercial: "Comercial", privado: "Privado", externo: "Externo" };
+
+  const cargarStatsColab = async () => {
+    setLoadingStats(true);
+    const { data: colabs } = await supabase.from("perfiles").select("id, nombre, apellido, matricula, tipo").in("tipo", ["colaborador", "corredor"]).order("nombre");
+    if (!colabs) { setLoadingStats(false); return; }
+    const stats = await Promise.all(colabs.map(async (c: any) => {
+      const [{ count: nContacts }, { count: nInts }, { count: nNegocios }] = await Promise.all([
+        supabase.from("crm_contactos").select("id", { count: "exact", head: true }).eq("perfil_id", c.id),
+        supabase.from("crm_interacciones").select("id", { count: "exact", head: true }).eq("perfil_id", c.id),
+        supabase.from("crm_negocios").select("id", { count: "exact", head: true }).eq("perfil_id", c.id),
+      ]);
+      return { ...c, nContacts: nContacts ?? 0, nInts: nInts ?? 0, nNegocios: nNegocios ?? 0 };
+    }));
+    setStatsColab(stats);
+    setLoadingStats(false);
+  };
 
   const cargarColaboradores = async (estado: string) => {
     setLoadingColab(true);
@@ -862,6 +881,46 @@ export default function AdminPage() {
               <AdminBeneficios adminId={adminId} />
             </div>
           )}
+
+          {/* ── Estadísticas por usuario ── */}
+          <div style={{marginTop:32}}>
+            <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:14}}>Actividad CRM por usuario</div>
+            {loadingStats ? <div style={{color:"rgba(255,255,255,0.3)",fontSize:12}}>Cargando...</div> : statsColab.length === 0 ? <div style={{color:"rgba(255,255,255,0.2)",fontSize:12}}>No hay datos.</div> : (
+              <div style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"Inter,sans-serif",fontSize:12}}>
+                  <thead>
+                    <tr style={{borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
+                      {["Nombre","Tipo","Contactos","Interacciones","Negocios","Actividad"].map(h => (
+                        <th key={h} style={{padding:"8px 12px",textAlign:"left",color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase"}}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {statsColab.map((s: any) => {
+                      const actColor = s.nInts > 5 ? "#22c55e" : s.nInts > 0 ? "#eab308" : "#ef4444";
+                      return (
+                        <tr key={s.id} style={{borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                          <td style={{padding:"10px 12px",color:"#fff"}}>{s.nombre} {s.apellido}</td>
+                          <td style={{padding:"10px 12px"}}><span style={{padding:"2px 8px",borderRadius:8,background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.4)",fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em"}}>{s.tipo}</span></td>
+                          <td style={{padding:"10px 12px",color:"rgba(255,255,255,0.6)"}}>{s.nContacts}</td>
+                          <td style={{padding:"10px 12px",color:"rgba(255,255,255,0.6)"}}>{s.nInts}</td>
+                          <td style={{padding:"10px 12px",color:"rgba(255,255,255,0.6)"}}>{s.nNegocios}</td>
+                          <td style={{padding:"10px 12px"}}>
+                            <div style={{display:"flex",alignItems:"center",gap:6}}>
+                              <div style={{width:48,height:4,borderRadius:2,background:"rgba(255,255,255,0.06)"}}>
+                                <div style={{width:`${Math.min(100,(s.nInts/10)*100)}%`,height:"100%",background:actColor,borderRadius:2,transition:"width 0.3s"}} />
+                              </div>
+                              <span style={{fontSize:10,color:actColor,fontFamily:"Montserrat,sans-serif",fontWeight:700}}>{s.nInts > 5 ? "Alta" : s.nInts > 0 ? "Media" : "Sin act."}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
 
         </main>
       </div>
