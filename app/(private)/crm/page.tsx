@@ -233,6 +233,10 @@ export default function CrmPage() {
   const [importRows, setImportRows] = useState<Record<string, string>[]>([]);
   const [importando, setImportando] = useState(false);
   const [importError, setImportError] = useState("");
+  const [mostrarDuplicados, setMostrarDuplicados] = useState(false);
+  const [gruposDuplicados, setGruposDuplicados] = useState<Contacto[][]>([]);
+  const [mergeSeleccion, setMergeSeleccion] = useState<Record<number, string>>({});
+  const [mergeando, setMergeando] = useState(false);
 
   // ── Negocios ──────────────────────────────────────────────────────────────
   const [negocios, setNegocios] = useState<Negocio[]>([]);
@@ -496,6 +500,70 @@ export default function CrmPage() {
   const tareasVencidas = tareas.filter(t => t.estado !== "completada" && t.fecha_vencimiento && t.fecha_vencimiento < hoy).length;
   const nombreContacto = (id: string | null) => { if (!id) return null; const c = contactos.find(x => x.id === id); return c ? `${c.apellido ? c.apellido + ", " : ""}${c.nombre}` : null; };
   const tituloNegocio = (id: string | null) => { if (!id) return null; const n = negocios.find(x => x.id === id); return n?.titulo ?? null; };
+
+  // ── Duplicados ────────────────────────────────────────────────────────────
+  const abrirDuplicados = () => {
+    const norm = (s: string | null) => (s ?? "").toLowerCase().trim().replace(/\s+/g, " ");
+    const grupos: Contacto[][] = [];
+    const vistos = new Set<string>();
+    contactos.forEach(c => {
+      if (vistos.has(c.id)) return;
+      const matches = contactos.filter(x => {
+        if (x.id === c.id) return false;
+        const mismoNombre = norm(c.nombre) && norm(x.nombre) && norm(`${c.nombre} ${c.apellido}`) === norm(`${x.nombre} ${x.apellido}`);
+        const mismoTel = c.telefono && x.telefono && norm(c.telefono) === norm(x.telefono);
+        const mismoEmail = c.email && x.email && norm(c.email) === norm(x.email);
+        return mismoNombre || mismoTel || mismoEmail;
+      });
+      if (matches.length > 0) {
+        const grupo = [c, ...matches];
+        grupo.forEach(x => vistos.add(x.id));
+        grupos.push(grupo);
+      }
+    });
+    const seleccion: Record<number, string> = {};
+    grupos.forEach((g, i) => { seleccion[i] = g[0].id; });
+    setGruposDuplicados(grupos);
+    setMergeSeleccion(seleccion);
+    setMostrarDuplicados(true);
+  };
+
+  const ejecutarMerge = async (grupo: Contacto[], masterId: string, idx: number) => {
+    setMergeando(true);
+    const master = grupo.find(c => c.id === masterId)!;
+    const duplicados = grupo.filter(c => c.id !== masterId);
+    const etiquetasUnion = Array.from(new Set([
+      ...(master.etiquetas ?? []),
+      ...duplicados.flatMap(d => d.etiquetas ?? []),
+    ]));
+    const patch: Partial<Contacto> = {
+      telefono: master.telefono ?? duplicados.find(d => d.telefono)?.telefono ?? null,
+      email: master.email ?? duplicados.find(d => d.email)?.email ?? null,
+      inmobiliaria: master.inmobiliaria ?? duplicados.find(d => d.inmobiliaria)?.inmobiliaria ?? null,
+      matricula: master.matricula ?? duplicados.find(d => d.matricula)?.matricula ?? null,
+      origen: master.origen ?? duplicados.find(d => d.origen)?.origen ?? null,
+      interes: master.interes ?? duplicados.find(d => d.interes)?.interes ?? null,
+      zona_interes: master.zona_interes ?? duplicados.find(d => d.zona_interes)?.zona_interes ?? null,
+      presupuesto_min: master.presupuesto_min ?? duplicados.find(d => d.presupuesto_min)?.presupuesto_min ?? null,
+      presupuesto_max: master.presupuesto_max ?? duplicados.find(d => d.presupuesto_max)?.presupuesto_max ?? null,
+      etiquetas: etiquetasUnion.length > 0 ? etiquetasUnion : null,
+      notas: [master.notas, ...duplicados.map(d => d.notas)].filter(Boolean).join("\n---\n") || null,
+      updated_at: new Date().toISOString(),
+    };
+    await supabase.from("crm_contactos").update(patch).eq("id", masterId);
+    for (const dup of duplicados) {
+      await supabase.from("crm_interacciones").update({ contacto_id: masterId }).eq("contacto_id", dup.id);
+      await supabase.from("crm_recordatorios").update({ contacto_id: masterId }).eq("contacto_id", dup.id);
+      await supabase.from("crm_negocios").update({ contacto_id: masterId }).eq("contacto_id", dup.id);
+      await supabase.from("crm_tareas").update({ contacto_id: masterId }).eq("contacto_id", dup.id);
+      await supabase.from("crm_notas").update({ contacto_id: masterId }).eq("contacto_id", dup.id);
+      await supabase.from("crm_contactos").delete().eq("id", dup.id);
+    }
+    setGruposDuplicados(prev => prev.filter((_, i) => i !== idx));
+    setMergeSeleccion(prev => { const n = {...prev}; delete n[idx]; return n; });
+    setMergeando(false);
+    if (userId) cargarContactos(userId);
+  };
 
   // ── Import Excel ─────────────────────────────────────────────────────────
   const handleArchivoImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -834,6 +902,7 @@ export default function CrmPage() {
                 <div className="crm-lista-barra">
                   <span className="crm-count">{contactosFiltrados.length} contacto{contactosFiltrados.length !== 1 ? "s" : ""}</span>
                   <div style={{display:"flex",gap:"6px"}}>
+                    <button className="crm-btn-export" onClick={abrirDuplicados} title="Detectar duplicados" disabled={contactos.length < 2}>⊕ Duplicados</button>
                     <button className="crm-btn-export" onClick={() => { setImportRows([]); setImportError(""); setMostrarImport(true); }} title="Importar desde Excel">↑ Importar</button>
                     <button className="crm-btn-export" onClick={exportarContactosExcel} title="Exportar a Excel" disabled={contactosFiltrados.length === 0}>↓ Excel</button>
                     <button className="crm-btn-nuevo" onClick={abrirFormNuevoContacto}>+ Nuevo</button>
@@ -1239,6 +1308,50 @@ export default function CrmPage() {
               <button className="crm-btn-save" onClick={confirmarImport} disabled={importando || importRows.length === 0}>
                 {importando ? <><span className="crm-spinner"/>Importando...</> : `Importar ${importRows.length > 0 ? importRows.length + " contactos" : ""}`}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mostrarDuplicados && (
+        <div className="crm-modal-overlay" onClick={() => !mergeando && setMostrarDuplicados(false)}>
+          <div className="crm-modal" style={{maxWidth:660,width:"95vw",maxHeight:"80vh",display:"flex",flexDirection:"column"}} onClick={e => e.stopPropagation()}>
+            <div className="crm-modal-titulo">Contactos duplicados</div>
+            {gruposDuplicados.length === 0 ? (
+              <div style={{fontSize:13,color:"rgba(255,255,255,0.4)",padding:"20px 0",textAlign:"center"}}>No se encontraron duplicados.</div>
+            ) : (
+              <div style={{overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:14,paddingBottom:4}}>
+                {gruposDuplicados.map((grupo, idx) => (
+                  <div key={idx} style={{border:"1px solid rgba(255,255,255,0.1)",borderRadius:7,overflow:"hidden"}}>
+                    <div style={{background:"rgba(255,255,255,0.03)",padding:"8px 13px",fontSize:10,fontFamily:"Montserrat,sans-serif",letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>
+                      Grupo {idx + 1} — {grupo.length} registros
+                    </div>
+                    {grupo.map(c => (
+                      <div key={c.id} style={{padding:"10px 13px",borderTop:"1px solid rgba(255,255,255,0.05)",display:"flex",alignItems:"center",gap:10,cursor:"pointer",background:mergeSeleccion[idx]===c.id?"rgba(200,0,0,0.08)":"transparent",transition:"background 0.12s"}} onClick={() => setMergeSeleccion(p => ({...p,[idx]:c.id}))}>
+                        <div style={{width:16,height:16,borderRadius:"50%",border:`2px solid ${mergeSeleccion[idx]===c.id?"#cc0000":"rgba(255,255,255,0.2)"}`,background:mergeSeleccion[idx]===c.id?"#cc0000":"transparent",flexShrink:0,transition:"all 0.12s"}}/>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:13,fontWeight:600,color:"#fff",fontFamily:"Montserrat,sans-serif"}}>{c.apellido?`${c.apellido}, ${c.nombre}`:c.nombre}</div>
+                          <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:2,display:"flex",gap:10,flexWrap:"wrap"}}>
+                            {c.telefono && <span>{c.telefono}</span>}
+                            {c.email && <span>{c.email}</span>}
+                            {c.tipo && <span>{c.tipo}</span>}
+                            <span style={{color:"rgba(255,255,255,0.18)"}}>{formatFecha(c.created_at)}</span>
+                          </div>
+                        </div>
+                        {mergeSeleccion[idx]===c.id && <span style={{fontSize:9,fontFamily:"Montserrat,sans-serif",letterSpacing:"0.1em",textTransform:"uppercase",color:"#cc0000",fontWeight:700}}>Conservar</span>}
+                      </div>
+                    ))}
+                    <div style={{padding:"10px 13px",borderTop:"1px solid rgba(255,255,255,0.05)",display:"flex",justifyContent:"flex-end"}}>
+                      <button className="crm-btn-save" style={{fontSize:10,padding:"5px 14px"}} disabled={mergeando} onClick={() => ejecutarMerge(grupo, mergeSeleccion[idx], idx)}>
+                        {mergeando ? <><span className="crm-spinner"/>Fusionando...</> : "Fusionar"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="crm-modal-actions" style={{marginTop:12}}>
+              <button className="crm-btn-cancel" onClick={() => setMostrarDuplicados(false)} disabled={mergeando}>Cerrar</button>
             </div>
           </div>
         </div>
