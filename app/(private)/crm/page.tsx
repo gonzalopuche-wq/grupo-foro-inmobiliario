@@ -209,7 +209,7 @@ export default function CrmPage() {
   const [userId, setUserId] = useState<string | null>(null);
 
   // Tab principal
-  const [tabPrincipal, setTabPrincipal] = useState<"contactos" | "negocios" | "tareas" | "notas">("contactos");
+  const [tabPrincipal, setTabPrincipal] = useState<"dashboard" | "contactos" | "negocios" | "tareas" | "notas">("dashboard");
 
   // ── Contactos ─────────────────────────────────────────────────────────────
   const [contactos, setContactos] = useState<Contacto[]>([]);
@@ -913,6 +913,7 @@ export default function CrmPage() {
 
         {/* ── Tabs principales ── */}
         <div className="crm-tabs-bar">
+          <button className={`crm-tab-main${tabPrincipal === "dashboard" ? " activo" : ""}`} onClick={() => setTabPrincipal("dashboard")}>Dashboard</button>
           {(["contactos", "negocios", "tareas", "notas"] as const).map(tab => (
             <button key={tab} className={`crm-tab-main${tabPrincipal === tab ? " activo" : ""}`} onClick={() => setTabPrincipal(tab)}>
               {tab === "contactos" && <>{mostrarArchivados ? "Archivados" : "Contactos"} {contactos.filter(c => c.estado !== "archivado").length > 0 && <span className="crm-tab-badge">{contactos.filter(c => c.estado !== "archivado").length}</span>}</>}
@@ -924,6 +925,109 @@ export default function CrmPage() {
         </div>
 
         <div className="crm-tab-content">
+
+          {/* ══════════════════════════════════════════════════
+              TAB DASHBOARD
+          ══════════════════════════════════════════════════ */}
+          {tabPrincipal === "dashboard" && (() => {
+            const contactosActivos = contactos.filter(c => c.estado !== "archivado");
+            const negociosActivos = negocios.filter(n => !["cerrado","perdido"].includes(n.etapa));
+            const tareasPendientes = tareas.filter(t => t.estado !== "completada");
+            const tareasHoy = tareasPendientes.filter(t => t.fecha_vencimiento === hoy);
+            const tareasAtrasadas = tareasPendientes.filter(t => t.fecha_vencimiento && t.fecha_vencimiento < hoy);
+            const valorPipeline = negociosActivos.reduce((s, n) => s + (n.valor_operacion ?? 0), 0);
+            const negCerrados = negocios.filter(n => n.etapa === "cerrado");
+            const honorariosEst = negociosActivos.reduce((s, n) => s + ((n.valor_operacion ?? 0) * ((n.honorarios_pct ?? 3) / 100)), 0);
+            const etapaConteo = ETAPAS_NEGOCIO.map(e => ({ ...e, count: negocios.filter(n => n.etapa === e.value).length })).filter(e => e.count > 0);
+            const maxEtapa = Math.max(...etapaConteo.map(e => e.count), 1);
+            const interaccRecientes = [] as { tipo: string; desc: string; fecha: string }[];
+            return (
+              <div style={{flex:1,overflowY:"auto",padding:"20px 24px",display:"flex",flexDirection:"column",gap:20,background:"#080808"}}>
+                {/* KPIs */}
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
+                  {[
+                    { label:"Contactos activos", val: contactosActivos.length, color:"#cc0000", icon:"👥" },
+                    { label:"Negocios activos", val: negociosActivos.length, color:"#3b82f6", icon:"🏠" },
+                    { label:"Tareas pendientes", val: tareasPendientes.length, color:"#f59e0b", icon:"📋" },
+                    { label:"Vencidas / Hoy", val: `${tareasAtrasadas.length} / ${tareasHoy.length}`, color: tareasAtrasadas.length > 0 ? "#ef4444" : "#22c55e", icon:"⚠️" },
+                    { label:"Pipeline (valor)", val: valorPipeline > 0 ? `USD ${(valorPipeline/1000).toFixed(0)}k` : "—", color:"#a78bfa", icon:"💰" },
+                    { label:"Hon. estimados", val: honorariosEst > 0 ? `USD ${(honorariosEst/1000).toFixed(1)}k` : "—", color:"#22c55e", icon:"✓" },
+                    { label:"Cerrados", val: negCerrados.length, color:"#22c55e", icon:"🏆" },
+                    { label:"Matches prospec.", val: matchesProspeccion.length, color:"#fbbf24", icon:"🎯" },
+                  ].map((k,i) => (
+                    <div key={i} style={{background:"#0d0d0d",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"14px 16px"}}>
+                      <div style={{fontSize:16,marginBottom:6}}>{k.icon}</div>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:20,fontWeight:800,color:k.color,lineHeight:1}}>{k.val}</div>
+                      <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginTop:5}}>{k.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pipeline por etapa */}
+                {etapaConteo.length > 0 && (
+                  <div style={{background:"#0d0d0d",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 18px"}}>
+                    <div style={{fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:14}}>Pipeline — negocios por etapa</div>
+                    <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                      {etapaConteo.map(e => (
+                        <div key={e.value} style={{display:"flex",alignItems:"center",gap:10}}>
+                          <div style={{width:120,fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"Inter,sans-serif",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",flexShrink:0}}>{e.label}</div>
+                          <div style={{flex:1,height:8,background:"rgba(255,255,255,0.05)",borderRadius:4,overflow:"hidden"}}>
+                            <div style={{height:"100%",width:`${(e.count/maxEtapa)*100}%`,background:e.color,borderRadius:4,transition:"width 0.4s"}}/>
+                          </div>
+                          <div style={{width:20,textAlign:"right",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:e.color,flexShrink:0}}>{e.count}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tareas vencidas + accesos rápidos */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                  {/* Tareas atrasadas */}
+                  <div style={{background:"#0d0d0d",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 18px"}}>
+                    <div style={{fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:12}}>Tareas vencidas</div>
+                    {tareasAtrasadas.length === 0 ? (
+                      <div style={{fontSize:12,color:"rgba(255,255,255,0.2)",fontFamily:"Inter,sans-serif",padding:"8px 0"}}>Sin tareas vencidas ✓</div>
+                    ) : tareasAtrasadas.slice(0,5).map(t => {
+                      const prioridad = PRIORIDADES_TAREA.find(p => p.value === t.prioridad);
+                      return (
+                        <div key={t.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"7px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                          <div style={{width:6,height:6,borderRadius:"50%",background:prioridad?.color ?? "#6b7280",marginTop:4,flexShrink:0}}/>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontSize:12,color:"rgba(255,255,255,0.7)",fontFamily:"Inter,sans-serif",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.titulo}</div>
+                            <div style={{fontSize:10,color:"#ef4444",marginTop:1}}>{formatFecha(t.fecha_vencimiento!)}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {tareasAtrasadas.length > 5 && <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:8}}>+{tareasAtrasadas.length-5} más</div>}
+                  </div>
+
+                  {/* Accesos rápidos */}
+                  <div style={{background:"#0d0d0d",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 18px"}}>
+                    <div style={{fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:12}}>Accesos rápidos</div>
+                    <div style={{display:"flex",flexDirection:"column",gap:7}}>
+                      {[
+                        { label:"+ Nuevo contacto", tab:"contactos" as const, action: () => { setTabPrincipal("contactos"); setTimeout(abrirFormNuevoContacto, 50); } },
+                        { label:"+ Nuevo negocio",  tab:"negocios" as const,  action: () => { setTabPrincipal("negocios"); setTimeout(abrirFormNuevoNegocio, 50); } },
+                        { label:"+ Nueva tarea",    tab:"tareas" as const,    action: () => { setTabPrincipal("tareas"); setTimeout(abrirFormNuevaTarea, 50); } },
+                        { label:"Ver contactos",    tab:"contactos" as const, action: () => setTabPrincipal("contactos") },
+                        { label:"Ver pipeline",     tab:"negocios" as const,  action: () => setTabPrincipal("negocios") },
+                        { label:"🎯 Prospección",   tab:"contactos" as const, action: () => { setTabPrincipal("contactos"); setTimeout(() => setMostrarProspeccion(true), 50); } },
+                      ].map((a,i) => (
+                        <button key={i} onClick={a.action} style={{textAlign:"left",padding:"8px 11px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:5,color:"rgba(255,255,255,0.55)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.07em",cursor:"pointer",transition:"all 0.12s"}}
+                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background="rgba(200,0,0,0.07)"; (e.currentTarget as HTMLButtonElement).style.borderColor="rgba(200,0,0,0.2)"; (e.currentTarget as HTMLButtonElement).style.color="#fff"; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background="rgba(255,255,255,0.03)"; (e.currentTarget as HTMLButtonElement).style.borderColor="rgba(255,255,255,0.07)"; (e.currentTarget as HTMLButtonElement).style.color="rgba(255,255,255,0.55)"; }}>
+                          {a.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                {interaccRecientes.length > 0 && null}
+              </div>
+            );
+          })()}
 
           {/* ══════════════════════════════════════════════════
               TAB CONTACTOS
