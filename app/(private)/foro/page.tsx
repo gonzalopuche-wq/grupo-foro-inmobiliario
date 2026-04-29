@@ -63,13 +63,6 @@ const WA_GROUPS = [
   { name: "Cotizaciones", sub: "", url: "https://chat.whatsapp.com/F4Tp8bGBZ7670HPmu4RvIn", main: false },
   { name: "Tasaciones", sub: "", url: "https://chat.whatsapp.com/GwtTHC2Qol90kUSZ46HEQk", main: false },
 ];
-const TG_GROUPS = [
-  { name: "Foro Inmobiliario", sub: "400 miembros", url: "https://t.me/foroinmobiliario", main: true },
-  { name: "Ventas — Búsqueda", sub: "", url: "https://t.me/ventasbusqueda", main: false },
-  { name: "Ventas — Ofrecidos", sub: "", url: "https://t.me/ventasofrecidos", main: false },
-  { name: "Alquileres — Búsqueda", sub: "", url: "https://t.me/alquileresbusqueda", main: false },
-  { name: "Alquileres — Ofrecidos", sub: "", url: "https://t.me/alquileresofrecidos", main: false },
-];
 
 export default function ForoPage() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -1073,16 +1066,6 @@ export default function ForoPage() {
             <div className="f-right-title wa">💬 Grupos WhatsApp</div>
             {WA_GROUPS.map(g => (
               <a key={g.name} href={g.url} target="_blank" rel="noopener noreferrer" className={`f-ext-link${g.main?" main":""}`}>
-                <span className="f-ext-name">{g.name}</span>
-                {g.sub && <span className="f-ext-sub">{g.sub}</span>}
-                <span className="f-ext-arrow">↗</span>
-              </a>
-            ))}
-          </div>
-          <div className="f-right-box">
-            <div className="f-right-title tg">✈️ Grupos Telegram</div>
-            {TG_GROUPS.map(g => (
-              <a key={g.name} href={g.url} target="_blank" rel="noopener noreferrer" className={`f-ext-link${g.main?" main-tg":""}`}>
                 <span className="f-ext-name">{g.name}</span>
                 {g.sub && <span className="f-ext-sub">{g.sub}</span>}
                 <span className="f-ext-arrow">↗</span>

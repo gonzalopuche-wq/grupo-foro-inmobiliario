@@ -77,6 +77,7 @@ export default function PerfilPage() {
   const [pushCargando, setPushCargando] = useState(false);
   const [cambioPassword, setCambioPassword] = useState({ actual: "", nueva: "", confirmar: "" });
   const [cambiandoPassword, setCambiandoPassword] = useState(false);
+  const [repStats, setRepStats] = useState({ docs: 0, comparables: 0, meses: 0 });
 
   useEffect(() => {
     const init = async () => {
@@ -84,7 +85,15 @@ export default function PerfilPage() {
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
       const { data: p } = await supabase.from("perfiles").select("*").eq("id", data.user.id).single();
-      if (p) setPerfil(p as Perfil);
+      if (p) {
+        setPerfil(p as Perfil);
+        const meses = Math.floor((Date.now() - new Date(p.created_at).getTime()) / (1000 * 60 * 60 * 24 * 30));
+        const [{ count: docs }, { count: comparables }] = await Promise.all([
+          supabase.from("biblioteca").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).eq("estado", "aprobado"),
+          supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id),
+        ]);
+        setRepStats({ docs: docs ?? 0, comparables: comparables ?? 0, meses });
+      }
       setLoading(false);
 
       // Verificar push
@@ -673,9 +682,9 @@ export default function PerfilPage() {
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 20 }}>
                 {[
-                  { val: "0", label: "Puntos acumulados" },
-                  { val: "0", label: "Documentos aportados" },
-                  { val: "0", label: "Comparables cargados" },
+                  { val: (repStats.docs * 10 + repStats.comparables * 5).toString(), label: "Puntos acumulados" },
+                  { val: repStats.docs.toString(), label: "Documentos aportados" },
+                  { val: repStats.comparables.toString(), label: "Comparables cargados" },
                 ].map((s, i) => (
                   <div key={i} className="rep-stat">
                     <div className="rep-stat-val">{s.val}</div>
@@ -685,21 +694,21 @@ export default function PerfilPage() {
               </div>
 
               <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>
-                Insignias disponibles
+                Insignias
               </div>
               <div className="rep-badges">
                 {[
-                  { ico: "🎯", label: "Tasador Experto", desc: "10+ tasaciones realizadas" },
-                  { ico: "📍", label: "Referente de Zona", desc: "Especialista en una zona" },
-                  { ico: "📊", label: "Aportante del Observatorio", desc: "20+ comparables cargados" },
-                  { ico: "🏆", label: "Corredor Senior", desc: "+5 años en GFI®" },
-                  { ico: "🎓", label: "Mentor GFI®", desc: "Designado por el admin" },
+                  { ico: "📍", label: "Referente de Zona", desc: "Especialidades de zona registradas", earned: (perfil.especialidades?.length ?? 0) > 0 },
+                  { ico: "📊", label: "Aportante del Observatorio", desc: "20+ comparables cargados", earned: repStats.comparables >= 20 },
+                  { ico: "📚", label: "Aportante Biblioteca", desc: "5+ documentos aprobados", earned: repStats.docs >= 5 },
+                  { ico: "🏆", label: "Corredor Senior", desc: "+5 años en GFI®", earned: repStats.meses >= 60 },
+                  { ico: "🎓", label: "Mentor GFI®", desc: "Designado por el admin", earned: false },
                 ].map((b, i) => (
-                  <div key={i} className="rep-badge" style={{ opacity: 0.4 }}>
+                  <div key={i} className="rep-badge" style={{ opacity: b.earned ? 1 : 0.35, border: b.earned ? "1px solid rgba(200,0,0,0.4)" : undefined, background: b.earned ? "rgba(200,0,0,0.1)" : undefined }}>
                     <span>{b.ico}</span>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 700 }}>{b.label}</div>
-                      <div style={{ fontSize: 10, fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>{b.desc}</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: b.earned ? "#fff" : undefined }}>{b.label}</div>
+                      <div style={{ fontSize: 10, fontWeight: 400, color: b.earned ? "rgba(200,0,0,0.8)" : "rgba(255,255,255,0.4)" }}>{b.earned ? "✓ Obtenida" : b.desc}</div>
                     </div>
                   </div>
                 ))}

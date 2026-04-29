@@ -73,7 +73,9 @@ export default function DashboardPage() {
   const [iclData, setIclData] = useState<{ acum: Acum; periodo: string; loading: boolean }>({ acum: { mensual: null, trimestral: null, cuatrimestral: null, semestral: null }, periodo: "", loading: true });
   const [ipcData, setIpcData] = useState<{ acum: Acum; periodo: string; loading: boolean }>({ acum: { mensual: null, trimestral: null, cuatrimestral: null, semestral: null }, periodo: "", loading: true });
   const [jus, setJus] = useState<{ valor: string; loading: boolean }>({ valor: "", loading: true });
-  const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0 });
+  const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0, miembros: 0 });
+  const [matchesRecientes, setMatchesRecientes] = useState<{ id: string; created_at: string }[]>([]);
+  const [proximosEventos, setProximosEventos] = useState<{ id: string; titulo: string; fecha: string; tipo: string; gratuito: boolean }[]>([]);
   // Colaborador: solo grupos
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [loadingGrupos, setLoadingGrupos] = useState(false);
@@ -149,7 +151,18 @@ export default function DashboardPage() {
       supabase.from("mir_busquedas").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_ofrecidos").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_matches").select("id", { count: "exact", head: true }),
-    ]).then(([b, o, m]) => setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0 }));
+      supabase.from("perfiles").select("id", { count: "exact", head: true }).eq("estado", "activo"),
+    ]).then(([b, o, m, p]) => setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0, miembros: p.count ?? 0 }));
+
+    supabase.from("mir_matches").select("id, created_at").order("created_at", { ascending: false }).limit(5)
+      .then(({ data }) => setMatchesRecientes(data ?? []));
+
+    supabase.from("eventos").select("id, titulo, fecha, tipo, gratuito")
+      .eq("estado", "publicado")
+      .gte("fecha", new Date().toISOString().split("T")[0])
+      .order("fecha", { ascending: true })
+      .limit(3)
+      .then(({ data }) => setProximosEventos(data ?? []));
 
     const ciudadGuardada = localStorage.getItem("gfi_ciudad_clima");
     if (navigator.geolocation) {
@@ -354,7 +367,7 @@ export default function DashboardPage() {
           [stats.busquedas.toString(),"Búsquedas activas","🔍"],
           [stats.ofrecidos.toString(),"Ofrecidos activos","🏠"],
           [stats.matches.toString(),"Matches totales","🔗"],
-          ["0","Miembros activos","👥"]
+          [stats.miembros.toString(),"Miembros activos","👥"]
         ].map(([n,l,ic],i) => (
           <div key={i} style={{flex:1,minWidth:120,padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderRight:"1px solid rgba(255,255,255,0.06)"}}>
             <span style={{fontSize:22,flexShrink:0}}>{ic}</span>
@@ -501,11 +514,40 @@ export default function DashboardPage() {
       <div className="db-bottom-row">
         <div className="db-panel">
           <div className="db-panel-titulo">Matches recientes<a href="/mir?vista=matches" className="db-link-badge">Ver todos</a></div>
-          <div className="db-empty">No hay matches todavía</div>
+          {matchesRecientes.length === 0
+            ? <div className="db-empty">No hay matches todavía</div>
+            : matchesRecientes.map((m, i) => (
+              <div key={m.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"9px 0", borderBottom: i < matchesRecientes.length-1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                  <span style={{ fontSize:16 }}>🔗</span>
+                  <span style={{ fontSize:12, color:"rgba(255,255,255,0.6)" }}>Nuevo match generado</span>
+                </div>
+                <span style={{ fontSize:10, color:"rgba(255,255,255,0.25)", fontFamily:"'Montserrat',sans-serif" }}>
+                  {new Date(m.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"2-digit"})}
+                </span>
+              </div>
+            ))
+          }
         </div>
         <div className="db-panel">
           <div className="db-panel-titulo">Próximos eventos<a href="/eventos" className="db-link-badge">Ver todos</a></div>
-          <div className="db-empty">No hay eventos programados</div>
+          {proximosEventos.length === 0
+            ? <div className="db-empty">No hay eventos programados</div>
+            : proximosEventos.map((e, i) => {
+              const TIPO_COLOR: Record<string,string> = { gfi:"#cc0000", cocir:"#f97316", cir:"#818cf8", comercial:"#eab308" };
+              return (
+                <a key={e.id} href="/eventos" style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 0", borderBottom: i < proximosEventos.length-1 ? "1px solid rgba(255,255,255,0.05)" : "none", textDecoration:"none" }}>
+                  <div style={{ width:6, height:6, borderRadius:"50%", background: TIPO_COLOR[e.tipo] ?? "rgba(255,255,255,0.3)", flexShrink:0 }} />
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:12, color:"rgba(255,255,255,0.7)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{e.titulo}</div>
+                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.3)", marginTop:2 }}>
+                      {new Date(e.fecha).toLocaleDateString("es-AR",{day:"2-digit",month:"long"})} · {e.gratuito ? "Gratuito" : "Con entrada"}
+                    </div>
+                  </div>
+                </a>
+              );
+            })
+          }
         </div>
       </div>
 
