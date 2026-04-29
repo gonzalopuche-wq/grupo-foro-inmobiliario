@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { supabase } from "../../lib/supabase";
 
 // ── Plantillas ──────────────────────────────────────────────────────────────
@@ -375,6 +376,16 @@ export default function MiWebPage() {
                 </a>
               )}
             </div>
+          </div>
+
+          {/* Blog link */}
+          <div style={{ margin: "12px 22px 0", padding: "10px 14px", borderRadius: 6, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Contenido</div>
+            <Link href="/mi-web/blog" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0" }}>
+              <span style={{ fontSize: 14 }}>✍️</span>
+              <span style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", fontWeight: 500 }}>Ver mi Blog</span>
+              <span style={{ marginLeft: "auto", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>→</span>
+            </Link>
           </div>
         </div>
 
