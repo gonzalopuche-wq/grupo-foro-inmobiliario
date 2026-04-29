@@ -229,6 +229,10 @@ export default function CrmPage() {
   const [guardandoInteraccion, setGuardandoInteraccion] = useState(false);
   const [guardandoRecordatorio, setGuardandoRecordatorio] = useState(false);
   const [tabDetalle, setTabDetalle] = useState<"historial" | "recordatorios">("historial");
+  const [mostrarImport, setMostrarImport] = useState(false);
+  const [importRows, setImportRows] = useState<Record<string, string>[]>([]);
+  const [importando, setImportando] = useState(false);
+  const [importError, setImportError] = useState("");
 
   // ── Negocios ──────────────────────────────────────────────────────────────
   const [negocios, setNegocios] = useState<Negocio[]>([]);
@@ -492,6 +496,55 @@ export default function CrmPage() {
   const tareasVencidas = tareas.filter(t => t.estado !== "completada" && t.fecha_vencimiento && t.fecha_vencimiento < hoy).length;
   const nombreContacto = (id: string | null) => { if (!id) return null; const c = contactos.find(x => x.id === id); return c ? `${c.apellido ? c.apellido + ", " : ""}${c.nombre}` : null; };
   const tituloNegocio = (id: string | null) => { if (!id) return null; const n = negocios.find(x => x.id === id); return n?.titulo ?? null; };
+
+  // ── Import Excel ─────────────────────────────────────────────────────────
+  const handleArchivoImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImportError("");
+    setImportRows([]);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const wb = XLSX.read(ev.target?.result, { type: "binary" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: "" });
+        if (rows.length === 0) { setImportError("El archivo está vacío."); return; }
+        setImportRows(rows);
+      } catch {
+        setImportError("No se pudo leer el archivo. Verificá que sea un .xlsx válido.");
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  const confirmarImport = async () => {
+    if (!userId || importRows.length === 0) return;
+    setImportando(true);
+    const registros = importRows.map(r => ({
+      perfil_id: userId,
+      nombre: r["Nombre"] || r["nombre"] || "Sin nombre",
+      apellido: r["Apellido"] || r["apellido"] || null,
+      telefono: r["Teléfono"] || r["Telefono"] || r["telefono"] || null,
+      email: r["Email"] || r["email"] || null,
+      inmobiliaria: r["Inmobiliaria"] || r["inmobiliaria"] || null,
+      matricula: r["Matrícula"] || r["Matricula"] || r["matricula"] || null,
+      tipo: r["Tipo"] || r["tipo"] || "cliente",
+      origen: r["Origen"] || r["origen"] || null,
+      interes: r["Interés"] || r["Interes"] || r["interes"] || null,
+      zona_interes: r["Zona"] || r["zona_interes"] || null,
+      presupuesto_min: r["Presup. min"] ? parseFloat(r["Presup. min"]) || null : null,
+      presupuesto_max: r["Presup. max"] ? parseFloat(r["Presup. max"]) || null : null,
+      moneda: r["Moneda"] || r["moneda"] || "USD",
+      etiquetas: r["Etiquetas"] ? r["Etiquetas"].split(",").map((x: string) => x.trim()).filter(Boolean) : null,
+      notas: r["Notas"] || r["notas"] || null,
+    }));
+    await supabase.from("crm_contactos").insert(registros);
+    setImportando(false);
+    setMostrarImport(false);
+    setImportRows([]);
+    cargarContactos(userId);
+  };
 
   // ── Export Excel ─────────────────────────────────────────────────────────
   const exportarContactosExcel = () => {
@@ -781,6 +834,7 @@ export default function CrmPage() {
                 <div className="crm-lista-barra">
                   <span className="crm-count">{contactosFiltrados.length} contacto{contactosFiltrados.length !== 1 ? "s" : ""}</span>
                   <div style={{display:"flex",gap:"6px"}}>
+                    <button className="crm-btn-export" onClick={() => { setImportRows([]); setImportError(""); setMostrarImport(true); }} title="Importar desde Excel">↑ Importar</button>
                     <button className="crm-btn-export" onClick={exportarContactosExcel} title="Exportar a Excel" disabled={contactosFiltrados.length === 0}>↓ Excel</button>
                     <button className="crm-btn-nuevo" onClick={abrirFormNuevoContacto}>+ Nuevo</button>
                   </div>
@@ -1145,6 +1199,51 @@ export default function CrmPage() {
       {/* ══════════════════════════════════════════════════
           MODAL NOTA
       ══════════════════════════════════════════════════ */}
+      {mostrarImport && (
+        <div className="crm-modal-overlay" onClick={() => !importando && setMostrarImport(false)}>
+          <div className="crm-modal" style={{maxWidth:600,width:"95vw"}} onClick={e => e.stopPropagation()}>
+            <div className="crm-modal-titulo">Importar contactos desde Excel</div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",marginBottom:12,lineHeight:1.6}}>
+              El archivo debe tener columnas: <strong style={{color:"rgba(255,255,255,0.6)"}}>Nombre, Apellido, Tipo, Teléfono, Email, Inmobiliaria, Matrícula, Etiquetas, Interés, Zona, Presup. min, Presup. max, Moneda, Origen, Notas</strong>.<br/>
+              Podés usar el export de este CRM como plantilla.
+            </div>
+            <input type="file" accept=".xlsx,.xls" onChange={handleArchivoImport} style={{fontSize:12,color:"rgba(255,255,255,0.6)",marginBottom:10}} />
+            {importError && <div style={{fontSize:12,color:"#ff6b6b",marginBottom:10}}>{importError}</div>}
+            {importRows.length > 0 && (
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginBottom:8}}>{importRows.length} contacto{importRows.length !== 1 ? "s" : ""} encontrado{importRows.length !== 1 ? "s" : ""}. Vista previa (primeros 5):</div>
+                <div style={{overflowX:"auto",borderRadius:5,border:"1px solid rgba(255,255,255,0.07)"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:10}}>
+                    <thead>
+                      <tr style={{background:"rgba(255,255,255,0.04)"}}>
+                        {["Nombre","Apellido","Tipo","Teléfono","Email"].map(h => (
+                          <th key={h} style={{padding:"6px 10px",textAlign:"left",color:"rgba(255,255,255,0.35)",fontFamily:"Montserrat,sans-serif",letterSpacing:"0.08em",textTransform:"uppercase",whiteSpace:"nowrap"}}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {importRows.slice(0,5).map((r,i) => (
+                        <tr key={i} style={{borderTop:"1px solid rgba(255,255,255,0.04)"}}>
+                          {["Nombre","Apellido","Tipo","Teléfono","Email"].map(h => (
+                            <td key={h} style={{padding:"6px 10px",color:"rgba(255,255,255,0.6)",whiteSpace:"nowrap",overflow:"hidden",maxWidth:120,textOverflow:"ellipsis"}}>{r[h] ?? ""}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+            <div className="crm-modal-actions">
+              <button className="crm-btn-cancel" onClick={() => setMostrarImport(false)} disabled={importando}>Cancelar</button>
+              <button className="crm-btn-save" onClick={confirmarImport} disabled={importando || importRows.length === 0}>
+                {importando ? <><span className="crm-spinner"/>Importando...</> : `Importar ${importRows.length > 0 ? importRows.length + " contactos" : ""}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {mostrarFormNota && (
         <div className="crm-modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFormNota(false); }}>
           <div className="crm-modal">
