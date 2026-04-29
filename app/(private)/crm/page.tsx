@@ -121,6 +121,16 @@ const TIPOS_CONTACTO = ["cliente", "propietario", "colega", "proveedor", "otro"]
 const ORIGENES = ["WhatsApp", "Referido", "Portal", "Web propia", "Redes", "Directo", "Otro"];
 const INTERESES = ["Comprar", "Vender", "Alquilar", "Alquilar (dueño)", "Invertir", "Otro"];
 
+const ESTADOS_LEAD = [
+  { value: "lead:nuevo", label: "Nuevo", color: "#6b7280" },
+  { value: "lead:esperando", label: "Esperando resp.", color: "#3b82f6" },
+  { value: "lead:evolucionando", label: "Evolucionando", color: "#10b981" },
+  { value: "lead:congelado", label: "Congelado", color: "#94a3b8" },
+  { value: "lead:tomar_accion", label: "Tomar acción", color: "#f97316" },
+  { value: "lead:pendiente", label: "Pend. contactar", color: "#eab308" },
+  { value: "lead:cerrado_lead", label: "Cerrado", color: "#22c55e" },
+];
+
 const ETAPAS_NEGOCIO = [
   { value: "prospecto", label: "Prospecto", color: "#6b7280" },
   { value: "contactado", label: "Contactado", color: "#3b82f6" },
@@ -228,7 +238,17 @@ export default function CrmPage() {
   const [nuevoRecordatorio, setNuevoRecordatorio] = useState({ descripcion: "", fecha: "" });
   const [guardandoInteraccion, setGuardandoInteraccion] = useState(false);
   const [guardandoRecordatorio, setGuardandoRecordatorio] = useState(false);
-  const [tabDetalle, setTabDetalle] = useState<"historial" | "recordatorios">("historial");
+  const [tabDetalle, setTabDetalle] = useState<"historial" | "recordatorios" | "propiedades">("historial");
+  const [filtroEstadoLead, setFiltroEstadoLead] = useState("");
+  // Plantillas
+  const [plantillas, setPlantillas] = useState<{id:string;titulo:string;contenido:string;tipo:string}[]>([]);
+  const [mostrarPlantillas, setMostrarPlantillas] = useState(false);
+  const [guardandoPlantilla, setGuardandoPlantilla] = useState(false);
+  const [tituloNuevaPlantilla, setTituloNuevaPlantilla] = useState("");
+  const [mostrarGuardarPlantilla, setMostrarGuardarPlantilla] = useState(false);
+  // Propiedades sugeridas
+  const [propiedadesSugeridas, setPropiedadesSugeridas] = useState<any[]>([]);
+  const [loadingPropiedades, setLoadingPropiedades] = useState(false);
   const [mostrarImport, setMostrarImport] = useState(false);
   const [importRows, setImportRows] = useState<Record<string, string>[]>([]);
   const [importando, setImportando] = useState(false);
@@ -388,6 +408,60 @@ export default function CrmPage() {
     if (contactoSeleccionado) cargarDetalle(contactoSeleccionado);
   };
 
+  // ── Lead Estado ──────────────────────────────────────────────────────────
+  const actualizarEstadoLead = async (contacto: Contacto, nuevoEstado: string) => {
+    await supabase.from("crm_contactos").update({ estado: nuevoEstado, updated_at: new Date().toISOString() }).eq("id", contacto.id);
+    setContactoSeleccionado(prev => prev ? { ...prev, estado: nuevoEstado } : prev);
+    if (userId) cargarContactos(userId);
+  };
+
+  // ── Plantillas ────────────────────────────────────────────────────────────
+  const cargarPlantillas = async () => {
+    if (!userId) return;
+    try {
+      const { data } = await supabase.from("crm_plantillas").select("id,titulo,contenido,tipo").eq("perfil_id", userId).order("titulo");
+      setPlantillas((data as any[]) ?? []);
+    } catch { setPlantillas([]); }
+  };
+
+  const guardarPlantilla = async () => {
+    if (!userId || !nuevaInteraccion.descripcion.trim() || !tituloNuevaPlantilla.trim()) return;
+    setGuardandoPlantilla(true);
+    try {
+      await supabase.from("crm_plantillas").insert({ perfil_id: userId, titulo: tituloNuevaPlantilla.trim(), contenido: nuevaInteraccion.descripcion, tipo: nuevaInteraccion.tipo });
+      setTituloNuevaPlantilla(""); setMostrarGuardarPlantilla(false);
+      cargarPlantillas();
+    } catch { /* tabla puede no existir */ }
+    setGuardandoPlantilla(false);
+  };
+
+  const eliminarPlantilla = async (id: string) => {
+    try { await supabase.from("crm_plantillas").delete().eq("id", id); cargarPlantillas(); } catch { /* */ }
+  };
+
+  // ── Propiedades sugeridas ─────────────────────────────────────────────────
+  const cargarPropiedadesSugeridas = async (contacto: Contacto) => {
+    if (!userId) return;
+    setLoadingPropiedades(true);
+    try {
+      let query = supabase.from("cartera").select("id, titulo, precio, moneda, tipo_operacion, direccion, barrio").eq("perfil_id", userId);
+      if (contacto.interes === "Comprar") query = query.eq("tipo_operacion", "venta");
+      else if (contacto.interes === "Alquilar") query = query.eq("tipo_operacion", "alquiler");
+      const { data } = await query.limit(20);
+      let resultado = (data as any[]) ?? [];
+      // filtrar por presupuesto si existe
+      if (contacto.presupuesto_min || contacto.presupuesto_max) {
+        resultado = resultado.filter((p: any) => {
+          if (contacto.presupuesto_min && p.precio && p.precio < contacto.presupuesto_min) return false;
+          if (contacto.presupuesto_max && p.precio && p.precio > contacto.presupuesto_max) return false;
+          return true;
+        });
+      }
+      setPropiedadesSugeridas(resultado);
+    } catch { setPropiedadesSugeridas([]); }
+    setLoadingPropiedades(false);
+  };
+
   // ── CRUD Negocios ─────────────────────────────────────────────────────────
   const abrirFormNuevoNegocio = () => { setEditandoNegocioId(null); setFormNegocio(FORM_NEGOCIO_VACIO); setMostrarFormNegocio(true); };
   const abrirFormEditarNegocio = (n: Negocio) => {
@@ -485,9 +559,10 @@ export default function CrmPage() {
     if (!mostrarArchivados && archivado) return false;
     if (mostrarArchivados && !archivado) return false;
     if (filtroEtiqueta && !(c.etiquetas ?? []).includes(filtroEtiqueta)) return false;
+    if (filtroEstadoLead && c.estado !== filtroEstadoLead) return false;
     if (busqueda.trim()) { const q = busqueda.toLowerCase(); return c.nombre?.toLowerCase().includes(q) || c.apellido?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q) || c.telefono?.toLowerCase().includes(q) || c.inmobiliaria?.toLowerCase().includes(q) || (c.etiquetas ?? []).some(e => e.toLowerCase().includes(q)); }
     return true;
-  }), [contactos, busqueda, filtroEtiqueta, mostrarArchivados]);
+  }), [contactos, busqueda, filtroEtiqueta, mostrarArchivados, filtroEstadoLead]);
 
   const negociosFiltrados = useMemo(() => negocios.filter(n => {
     if (filtroEtapaNegocio && n.etapa !== filtroEtapaNegocio) return false;
@@ -902,6 +977,24 @@ export default function CrmPage() {
         .etapa-grid { display: flex; flex-wrap: wrap; gap: 5px; }
         .etapa-btn { padding: 4px 10px; border-radius: 4px; border: 1px solid; font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; transition: all 0.12s; background: transparent; }
 
+        /* ── Lead estado badge ── */
+        .lead-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700; border: 1px solid; margin-top: 3px; }
+        /* ── Pipeline section ── */
+        .pipeline-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+        .pipeline-btn { padding: 5px 11px; border-radius: 5px; border: 1px solid; font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; transition: all 0.15s; background: transparent; }
+        .pipeline-btn:hover { opacity: 0.9; }
+        /* ── Plantillas popup ── */
+        .plantillas-popup { position: absolute; bottom: 110%; left: 0; background: #141414; border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; padding: 10px; min-width: 280px; max-width: 340px; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+        .plantilla-item { padding: 7px 9px; border-radius: 4px; cursor: pointer; transition: background 0.12s; display: flex; align-items: flex-start; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .plantilla-item:last-child { border-bottom: none; }
+        .plantilla-item:hover { background: rgba(255,255,255,0.04); }
+        .plantilla-titulo { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; color: #fff; }
+        .plantilla-preview { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+        /* ── Prop sugeridas ── */
+        .prop-card { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; }
+        .prop-card-dir { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .prop-card-meta { font-size: 10px; color: rgba(255,255,255,0.4); display: flex; gap: 8px; flex-wrap: wrap; }
+
         @media (max-width: 768px) {
           .crm-split { flex-direction: column; }
           .crm-panel-izq { width: 100%; height: 280px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
@@ -1049,6 +1142,14 @@ export default function CrmPage() {
                       ))}
                     </div>
                   )}
+                  {!mostrarArchivados && (
+                    <div style={{display:"flex",gap:4,flexWrap:"wrap",marginTop:4}}>
+                      {filtroEstadoLead && <button onClick={() => setFiltroEstadoLead("")} style={{padding:"2px 7px",borderRadius:10,border:"1px solid rgba(255,255,255,0.15)",background:"transparent",color:"rgba(255,255,255,0.5)",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer"}}>✕ Pipeline</button>}
+                      {ESTADOS_LEAD.map(e => (
+                        <button key={e.value} onClick={() => setFiltroEstadoLead(filtroEstadoLead === e.value ? "" : e.value)} style={{padding:"2px 7px",borderRadius:10,border:`1px solid ${filtroEstadoLead===e.value?e.color:e.color+"40"}`,background:filtroEstadoLead===e.value?`${e.color}20`:"transparent",color:filtroEstadoLead===e.value?e.color:`${e.color}90`,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",transition:"all 0.12s"}}>{e.label}</button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="crm-lista-barra">
                   <span className="crm-count">
@@ -1069,16 +1170,20 @@ export default function CrmPage() {
                 <div className="crm-lista-items">
                   {loadingContactos ? <div className="crm-empty-lista">Cargando...</div>
                     : contactosFiltrados.length === 0 ? <div className="crm-empty-lista">{busqueda || filtroEtiqueta ? "Sin resultados" : "No hay contactos.\nHacé clic en + Nuevo."}</div>
-                    : contactosFiltrados.map(c => (
-                      <div key={c.id} className={`crm-item${contactoSeleccionado?.id === c.id ? " activo" : ""}`} onClick={() => cargarDetalle(c)}>
-                        <div className="crm-avatar">{iniciales(c)}</div>
-                        <div className="crm-item-info">
-                          <div className="crm-item-nombre">{c.apellido ? `${c.apellido}, ${c.nombre}` : c.nombre}</div>
-                          <div className="crm-item-sub">{c.telefono ?? c.email ?? c.inmobiliaria ?? c.tipo ?? ""}</div>
-                          {(c.etiquetas ?? []).length > 0 && <div className="crm-item-etqs">{(c.etiquetas ?? []).slice(0, 3).map(e => <span key={e} className="crm-etq">{e}</span>)}</div>}
+                    : contactosFiltrados.map(c => {
+                      const estadoLead = ESTADOS_LEAD.find(e => e.value === c.estado);
+                      return (
+                        <div key={c.id} className={`crm-item${contactoSeleccionado?.id === c.id ? " activo" : ""}`} onClick={() => cargarDetalle(c)}>
+                          <div className="crm-avatar">{iniciales(c)}</div>
+                          <div className="crm-item-info">
+                            <div className="crm-item-nombre">{c.apellido ? `${c.apellido}, ${c.nombre}` : c.nombre}</div>
+                            <div className="crm-item-sub">{c.telefono ?? c.email ?? c.inmobiliaria ?? c.tipo ?? ""}</div>
+                            {estadoLead && <span className="lead-badge" style={{color:estadoLead.color,borderColor:`${estadoLead.color}40`,background:`${estadoLead.color}12`}}>{estadoLead.label}</span>}
+                            {(c.etiquetas ?? []).length > 0 && <div className="crm-item-etqs">{(c.etiquetas ?? []).slice(0, 3).map(e => <span key={e} className="crm-etq">{e}</span>)}</div>}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
               </div>
 
@@ -1110,9 +1215,29 @@ export default function CrmPage() {
                       {contactoSeleccionado.notas && <div className="crm-dato" style={{gridColumn:"1/-1"}}><span className="crm-dato-label">📋 Notas</span><span className="crm-dato-val" style={{fontSize:11,lineHeight:1.5}}>{contactoSeleccionado.notas}</span></div>}
                       <div className="crm-dato"><span className="crm-dato-label">📅 Cargado</span><span className="crm-dato-val">{formatFecha(contactoSeleccionado.created_at)}</span></div>
                     </div>
+                    {/* Pipeline section */}
+                    {contactoSeleccionado.estado !== "archivado" && (
+                      <div style={{padding:"10px 18px",borderBottom:"1px solid rgba(255,255,255,0.06)",flexShrink:0}}>
+                        <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.22)",marginBottom:6}}>Pipeline</div>
+                        <div className="pipeline-grid">
+                          {ESTADOS_LEAD.map(e => {
+                            const isActive = contactoSeleccionado.estado === e.value;
+                            return (
+                              <button key={e.value} className="pipeline-btn" style={{borderColor:isActive?e.color:`${e.color}35`,color:isActive?"#fff":e.color,background:isActive?`${e.color}25`:"transparent",opacity:isActive?1:0.75}} onClick={() => actualizarEstadoLead(contactoSeleccionado, e.value)}>
+                                {isActive && "✓ "}{e.label}
+                              </button>
+                            );
+                          })}
+                          {contactoSeleccionado.estado?.startsWith("lead:") && (
+                            <button className="pipeline-btn" style={{borderColor:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.35)"}} onClick={() => actualizarEstadoLead(contactoSeleccionado, "")}>✕ Sin estado</button>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     <div className="crm-detalle-tabs">
                       <button className={`crm-tab${tabDetalle === "historial" ? " activo" : ""}`} onClick={() => setTabDetalle("historial")}>Historial {interacciones.length > 0 && `(${interacciones.length})`}</button>
                       <button className={`crm-tab${tabDetalle === "recordatorios" ? " activo" : ""}`} onClick={() => setTabDetalle("recordatorios")}>Recordatorios{recordatoriosVencidos.length > 0 && <span className="crm-tab-badge">{recordatoriosVencidos.length}</span>}</button>
+                      <button className={`crm-tab${tabDetalle === "propiedades" ? " activo" : ""}`} onClick={() => { setTabDetalle("propiedades"); cargarPropiedadesSugeridas(contactoSeleccionado); }}>Propiedades</button>
                     </div>
                     <div className="crm-detalle-body">
                       {loadingDetalle ? <div style={{textAlign:"center",color:"rgba(255,255,255,0.2)",padding:28}}>Cargando...</div>
