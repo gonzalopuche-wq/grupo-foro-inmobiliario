@@ -1245,8 +1245,38 @@ export default function CrmPage() {
                           <>
                             <div className="crm-nueva-interaccion">
                               <div className="crm-tipo-btns">{TIPOS_INTERACCION.map(t => <button key={t.value} className={`crm-tipo-btn${nuevaInteraccion.tipo === t.value ? " activo" : ""}`} onClick={() => setNuevaInteraccion(p => ({...p, tipo: t.value}))}>{t.label}</button>)}</div>
-                              <textarea className="crm-textarea" placeholder="Escribí una nota, registrá una llamada..." value={nuevaInteraccion.descripcion} onChange={e => setNuevaInteraccion(p => ({...p, descripcion: e.target.value}))} rows={2} />
-                              <button className="crm-btn-guardar-int" onClick={guardarInteraccion} disabled={guardandoInteraccion || !nuevaInteraccion.descripcion.trim()}>{guardandoInteraccion ? <><span className="crm-spinner"/>Guardando</> : "Registrar"}</button>
+                              <div style={{position:"relative"}}>
+                                <textarea className="crm-textarea" placeholder="Escribí una nota, registrá una llamada..." value={nuevaInteraccion.descripcion} onChange={e => setNuevaInteraccion(p => ({...p, descripcion: e.target.value}))} rows={2} />
+                                {mostrarPlantillas && (
+                                  <div className="plantillas-popup">
+                                    <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:7}}>Plantillas guardadas</div>
+                                    {plantillas.length === 0 ? (
+                                      <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",padding:"6px 0"}}>No hay plantillas guardadas.</div>
+                                    ) : plantillas.map(pl => (
+                                      <div key={pl.id} className="plantilla-item" onClick={() => { setNuevaInteraccion(prev => ({...prev, descripcion: pl.contenido})); setMostrarPlantillas(false); }}>
+                                        <div style={{flex:1,minWidth:0}}>
+                                          <div className="plantilla-titulo">{pl.titulo}</div>
+                                          <div className="plantilla-preview">{pl.contenido}</div>
+                                        </div>
+                                        <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.2)",cursor:"pointer",padding:"0 2px",fontSize:13,flexShrink:0}} onClick={ev => { ev.stopPropagation(); eliminarPlantilla(pl.id); }} title="Eliminar">×</button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
+                                <button className="crm-btn-guardar-int" onClick={guardarInteraccion} disabled={guardandoInteraccion || !nuevaInteraccion.descripcion.trim()}>{guardandoInteraccion ? <><span className="crm-spinner"/>Guardando</> : "Registrar"}</button>
+                                <button style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:3,color:"rgba(255,255,255,0.45)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.08em",cursor:"pointer"}} onClick={() => { setMostrarPlantillas(v => !v); if (!mostrarPlantillas) cargarPlantillas(); }}>📋 Plantillas</button>
+                                {nuevaInteraccion.descripcion.trim() && (
+                                  <button style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:3,color:"rgba(255,255,255,0.45)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.08em",cursor:"pointer"}} onClick={() => setMostrarGuardarPlantilla(v => !v)}>💾 Guardar como plantilla</button>
+                                )}
+                              </div>
+                              {mostrarGuardarPlantilla && (
+                                <div style={{display:"flex",gap:6,alignItems:"center",paddingTop:4}}>
+                                  <input className="crm-input-sm" placeholder="Nombre de la plantilla..." value={tituloNuevaPlantilla} onChange={e => setTituloNuevaPlantilla(e.target.value)} style={{flex:1}} />
+                                  <button className="crm-btn-guardar-int" onClick={guardarPlantilla} disabled={guardandoPlantilla || !tituloNuevaPlantilla.trim()}>{guardandoPlantilla ? "..." : "Guardar"}</button>
+                                </div>
+                              )}
                             </div>
                             {interacciones.length === 0 ? <div style={{textAlign:"center",color:"rgba(255,255,255,0.18)",fontSize:12,padding:20}}>Sin interacciones todavía</div>
                               : interacciones.map(int => { const tipo = TIPOS_INTERACCION.find(t => t.value === int.tipo); return (
@@ -1257,7 +1287,7 @@ export default function CrmPage() {
                                 </div>
                               );})}
                           </>
-                        ) : (
+                        ) : tabDetalle === "recordatorios" ? (
                           <>
                             <div className="crm-nuevo-rec">
                               <input className="crm-input-sm" placeholder="Descripción..." value={nuevoRecordatorio.descripcion} onChange={e => setNuevoRecordatorio(p => ({...p, descripcion: e.target.value}))} style={{flex:1,minWidth:140}} />
@@ -1272,6 +1302,33 @@ export default function CrmPage() {
                                   <button className="crm-rec-del" onClick={() => eliminarRecordatorio(r.id)}>×</button>
                                 </div>
                               );})}
+                          </>
+                        ) : (
+                          /* ── Tab Propiedades sugeridas ── */
+                          <>
+                            {loadingPropiedades ? (
+                              <div style={{textAlign:"center",color:"rgba(255,255,255,0.2)",padding:28}}>Buscando propiedades...</div>
+                            ) : propiedadesSugeridas.length === 0 ? (
+                              <div style={{textAlign:"center",color:"rgba(255,255,255,0.18)",fontSize:12,padding:28,lineHeight:1.7}}>
+                                Sin propiedades sugeridas.<br/>
+                                <span style={{fontSize:11,color:"rgba(255,255,255,0.12)"}}>Verificá que el contacto tenga interés y presupuesto cargados.</span>
+                              </div>
+                            ) : (
+                              <>
+                                <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>{propiedadesSugeridas.length} propiedad{propiedadesSugeridas.length !== 1 ? "es" : ""} sugerida{propiedadesSugeridas.length !== 1 ? "s" : ""}</div>
+                                {propiedadesSugeridas.map((prop: any) => (
+                                  <div key={prop.id} className="prop-card">
+                                    <div className="prop-card-dir">{prop.titulo ?? prop.direccion ?? "Sin título"}</div>
+                                    {prop.direccion && prop.titulo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Inter,sans-serif"}}>📍 {prop.direccion}{prop.barrio ? `, ${prop.barrio}` : ""}</div>}
+                                    <div className="prop-card-meta">
+                                      {prop.precio && <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#fff"}}>{prop.moneda ?? "USD"} {prop.precio.toLocaleString("es-AR")}</span>}
+                                      {prop.tipo_operacion && <span style={{padding:"1px 6px",borderRadius:8,border:"1px solid rgba(255,255,255,0.1)",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.4)"}}>{prop.tipo_operacion}</span>}
+                                      {prop.barrio && !prop.titulo && <span>{prop.barrio}</span>}
+                                    </div>
+                                  </div>
+                                ))}
+                              </>
+                            )}
                           </>
                         )}
                     </div>

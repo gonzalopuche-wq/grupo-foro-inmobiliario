@@ -536,6 +536,177 @@ export default function CalculadorasPage() {
           </div>
         )}
       </div>
+
+      {/* ══════════════════════════════════════════════════
+          CALCULADORA DE ACTUALIZACIÓN DE ALQUILER
+      ══════════════════════════════════════════════════ */}
+      <ActualizacionAlquilerSection indicesData={indicesData} loadingIndices={loadingIndices} />
     </>
+  );
+}
+
+// ── Sección: Calculadora de Actualización de Alquiler ─────────────────────────
+
+const PERIODOS_ACT = [
+  { value: "3", label: "Trimestral", meses: 3 },
+  { value: "4", label: "Cuatrimestral", meses: 4 },
+  { value: "6", label: "Semestral", meses: 6 },
+  { value: "12", label: "Anual", meses: 12 },
+];
+
+function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indicesData: IndicesData | null; loadingIndices: boolean }) {
+  const defaultFechaContrato = (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 1);
+    return d.toISOString().split("T")[0];
+  })();
+
+  const [fechaContrato, setFechaContrato] = useState(defaultFechaContrato);
+  const [montoInicial, setMontoInicial] = useState("");
+  const [indiceAct, setIndiceAct] = useState("ICL");
+  const [periodicidad, setPeriodicidad] = useState("6");
+
+  const datosIndiceAct = indicesData?.indices?.[indiceAct] ?? {};
+  const montoNum = parseFloat(montoInicial.replace(/\./g, "").replace(",", ".")) || 0;
+
+  // Convertir fecha contrato a yyyymm
+  const fechaContratoMes = fechaContrato.slice(0, 7);
+
+  // Calcular tabla de períodos de ajuste desde la fecha del contrato hasta hoy
+  const tablaActualizacion = useMemo(() => {
+    if (!montoNum || Object.keys(datosIndiceAct).length === 0) return [];
+    const periodoMeses = parseInt(periodicidad);
+    const hoyMes = new Date().toISOString().slice(0, 7);
+    const filas: { fecha: string; monto: number; variacion: number; acumuladoPct: number }[] = [];
+    let montoActual = montoNum;
+    let desde = fechaContratoMes;
+    let acumFactor = 1;
+    // primera fila: monto inicial
+    filas.push({ fecha: desde, monto: montoNum, variacion: 0, acumuladoPct: 0 });
+    while (true) {
+      const hasta = sumarMeses(desde, periodoMeses);
+      if (hasta > hoyMes) break;
+      const { factor } = calcularAcumulado(datosIndiceAct, desde, periodoMeses);
+      montoActual = montoActual * factor;
+      acumFactor = acumFactor * factor;
+      filas.push({ fecha: hasta, monto: montoActual, variacion: (factor - 1) * 100, acumuladoPct: (acumFactor - 1) * 100 });
+      desde = hasta;
+      if (filas.length > 50) break; // seguridad
+    }
+    return filas;
+  }, [montoNum, datosIndiceAct, fechaContratoMes, periodicidad]);
+
+  const montoActual = tablaActualizacion.length > 0 ? tablaActualizacion[tablaActualizacion.length - 1].monto : montoNum;
+  const pctAcumulado = tablaActualizacion.length > 1 ? tablaActualizacion[tablaActualizacion.length - 1].acumuladoPct : 0;
+
+  return (
+    <div style={{ maxWidth: 900, display: "flex", flexDirection: "column", gap: 16, marginTop: 20, paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div>
+        <div className="c-titulo">Calculadora de <span style={{ color: "#cc0000" }}>Actualización</span> de Alquiler</div>
+        <div className="c-sub">Calculá el monto actual de un contrato según su fecha de inicio, índice y periodicidad.</div>
+      </div>
+
+      <div className="c-grid">
+        {/* Inputs */}
+        <div className="c-card">
+          <div className="c-card-t">Datos del contrato</div>
+
+          <div className="c-field">
+            <label className="c-label">Fecha del contrato</label>
+            <input className="c-input" type="date" value={fechaContrato} onChange={e => setFechaContrato(e.target.value)} />
+          </div>
+
+          <div className="c-field">
+            <label className="c-label">Monto mensual inicial ($)</label>
+            <input
+              className="c-input"
+              type="text"
+              inputMode="numeric"
+              placeholder="Ej: 200.000"
+              value={montoInicial}
+              onChange={e => setMontoInicial(e.target.value.replace(/[^0-9.,]/g, ""))}
+            />
+          </div>
+
+          <div className="c-field">
+            <label className="c-label">Índice de ajuste</label>
+            <select className="c-select" value={indiceAct} onChange={e => setIndiceAct(e.target.value)}>
+              <option value="ICL">ICL — Índice para Contratos de Locación</option>
+              <option value="IPC">IPC — Índice de Precios al Consumidor</option>
+            </select>
+          </div>
+
+          <div className="c-field">
+            <label className="c-label">Periodicidad de ajuste</label>
+            <select className="c-select" value={periodicidad} onChange={e => setPeriodicidad(e.target.value)}>
+              {PERIODOS_ACT.map(p => <option key={p.value} value={p.value}>{p.label} (cada {p.meses} meses)</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* Resultado */}
+        <div>
+          {!montoNum ? (
+            <div className="c-card" style={{ height: "100%" }}>
+              <div className="c-vacio">
+                <div className="c-vacio-icon">🏠</div>
+                <div className="c-vacio-txt">Ingresá el monto inicial</div>
+                <div className="c-vacio-sub">El monto actualizado se calcula automáticamente según los ajustes aplicados.</div>
+              </div>
+            </div>
+          ) : (
+            <div className="c-resultado" style={{ background: "rgba(204,0,0,0.05)", border: "1px solid rgba(204,0,0,0.18)" }}>
+              <div className="c-res-label">{indiceAct} · {PERIODOS_ACT.find(p => p.value === periodicidad)?.label} · desde {new Date(fechaContrato + "T12:00:00").toLocaleDateString("es-AR")}</div>
+              <div className="c-res-monto" style={{ color: "#22c55e" }}>{formatARS(montoActual)}</div>
+              <div className="c-res-original">Monto inicial: {formatARS(montoNum)}</div>
+              <div className="c-res-grid">
+                <div className="c-res-stat">
+                  <div className="c-res-stat-val" style={{ color: "#22c55e" }}>{pctAcumulado > 0 ? `+${pctAcumulado.toFixed(1)}%` : "0%"}</div>
+                  <div className="c-res-stat-label">Aumento acumulado</div>
+                </div>
+                <div className="c-res-stat">
+                  <div className="c-res-stat-val" style={{ color: "#eab308", fontSize: 15 }}>{tablaActualizacion.length > 1 ? tablaActualizacion.length - 1 : 0} ajuste{tablaActualizacion.length !== 2 ? "s" : ""}</div>
+                  <div className="c-res-stat-label">Aplicados</div>
+                </div>
+              </div>
+              {loadingIndices && <div className="c-loading"><div className="c-spinner" />Cargando índices...</div>}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Tabla de períodos */}
+      {tablaActualizacion.length > 1 && (
+        <div className="c-card">
+          <div className="c-card-t">Tabla de ajustes aplicados</div>
+          <div style={{ overflowX: "auto" }}>
+            <table className="c-tabla">
+              <thead>
+                <tr>
+                  <th>Período</th>
+                  <th>Monto</th>
+                  <th>Variación del período</th>
+                  <th>Acumulado total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tablaActualizacion.map((fila, i) => (
+                  <tr key={i}>
+                    <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: i === tablaActualizacion.length - 1 ? "#fff" : "rgba(255,255,255,0.6)" }}>
+                      {nombreMes(fila.fecha.slice(0, 7))}
+                      {i === 0 && <span style={{ fontSize: 9, marginLeft: 5, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif" }}>INICIO</span>}
+                      {i === tablaActualizacion.length - 1 && i > 0 && <span style={{ fontSize: 9, marginLeft: 5, color: "#22c55e", fontFamily: "Montserrat,sans-serif" }}>ACTUAL</span>}
+                    </td>
+                    <td style={{ color: i === tablaActualizacion.length - 1 ? "#22c55e" : "rgba(255,255,255,0.65)", fontFamily: "Montserrat,sans-serif", fontWeight: i === tablaActualizacion.length - 1 ? 700 : 400 }}>{formatARS(fila.monto)}</td>
+                    <td style={{ color: fila.variacion > 0 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>{fila.variacion > 0 ? `+${fila.variacion.toFixed(2)}%` : "—"}</td>
+                    <td style={{ color: fila.acumuladoPct > 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.2)" }}>{fila.acumuladoPct > 0 ? `+${fila.acumuladoPct.toFixed(2)}%` : "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
