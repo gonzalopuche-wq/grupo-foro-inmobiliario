@@ -238,6 +238,8 @@ export default function CrmPage() {
   const [mergeSeleccion, setMergeSeleccion] = useState<Record<number, string>>({});
   const [mergeando, setMergeando] = useState(false);
   const [mostrarArchivados, setMostrarArchivados] = useState(false);
+  const [mostrarProspeccion, setMostrarProspeccion] = useState(false);
+  const [filtroScoreProspeccion, setFiltroScoreProspeccion] = useState<"" | "alta" | "media" | "baja">("");
 
   // ── Negocios ──────────────────────────────────────────────────────────────
   const [negocios, setNegocios] = useState<Negocio[]>([]);
@@ -512,6 +514,37 @@ export default function CrmPage() {
   const nombreContacto = (id: string | null) => { if (!id) return null; const c = contactos.find(x => x.id === id); return c ? `${c.apellido ? c.apellido + ", " : ""}${c.nombre}` : null; };
   const tituloNegocio = (id: string | null) => { if (!id) return null; const n = negocios.find(x => x.id === id); return n?.titulo ?? null; };
 
+  // ── Smart Prospecting ─────────────────────────────────────────────────────
+  type MatchProspeccion = { contacto: Contacto; negocio: Negocio; score: number; razon: string[] };
+  const matchesProspeccion = useMemo((): MatchProspeccion[] => {
+    const norm = (s: string | null | undefined) => (s ?? "").toLowerCase().trim();
+    const negociosActivos = negocios.filter(n => !["cerrado","perdido"].includes(n.etapa) && !n.archivado);
+    const contactosBuscadores = contactos.filter(c => c.estado !== "archivado" && ["Comprar","Alquilar","Invertir"].includes(c.interes ?? ""));
+    const matches: MatchProspeccion[] = [];
+    for (const c of contactosBuscadores) {
+      const tiposNeg = c.interes === "Alquilar" ? ["alquiler","alquiler_temporal"] : ["venta"];
+      for (const n of negociosActivos) {
+        if (!tiposNeg.includes(n.tipo_operacion)) continue;
+        const razon: string[] = [];
+        let score = 0;
+        if (c.presupuesto_min != null || c.presupuesto_max != null) {
+          if (n.valor_operacion != null) {
+            const min = c.presupuesto_min ?? 0;
+            const max = c.presupuesto_max ?? Infinity;
+            if (n.valor_operacion >= min && n.valor_operacion <= max) { score++; razon.push("Presupuesto compatible"); }
+          }
+        }
+        if (c.zona_interes && n.direccion) {
+          const zona = norm(c.zona_interes);
+          const dir = norm(n.direccion);
+          if (zona.split(/\s+/).some(w => w.length > 2 && dir.includes(w))) { score++; razon.push("Zona coincide"); }
+        }
+        matches.push({ contacto: c, negocio: n, score, razon });
+      }
+    }
+    return matches.sort((a, b) => b.score - a.score);
+  }, [contactos, negocios]);
+
   // ── Duplicados ────────────────────────────────────────────────────────────
   const abrirDuplicados = () => {
     const norm = (s: string | null) => (s ?? "").toLowerCase().trim().replace(/\s+/g, " ");
@@ -703,6 +736,8 @@ export default function CrmPage() {
         .crm-btn-export:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.2); }
         .crm-btn-export:disabled { opacity: 0.3; cursor: not-allowed; }
         .crm-btn-export-activo { background: rgba(255,165,0,0.08) !important; border-color: rgba(255,165,0,0.3) !important; color: rgba(255,165,0,0.8) !important; }
+        .crm-btn-export-prospeccion:not(:disabled) { border-color: rgba(251,191,36,0.25) !important; color: rgba(251,191,36,0.75) !important; }
+        .crm-btn-export-prospeccion:not(:disabled):hover { background: rgba(251,191,36,0.07) !important; color: rgba(251,191,36,1) !important; }
 
         /* ── Items lista ── */
         .crm-lista-items { flex: 1; overflow-y: auto; }
@@ -920,6 +955,7 @@ export default function CrmPage() {
                   </span>
                   <div style={{display:"flex",gap:"6px"}}>
                     <button className={`crm-btn-export${mostrarArchivados ? " crm-btn-export-activo" : ""}`} onClick={() => { setMostrarArchivados(v => !v); setContactoSeleccionado(null); }} title={mostrarArchivados ? "Ver activos" : "Ver archivados"}>⊘ {mostrarArchivados ? "Activos" : "Archivados"}</button>
+                    <button className="crm-btn-export crm-btn-export-prospeccion" onClick={() => setMostrarProspeccion(true)} title="Prospección inteligente" disabled={matchesProspeccion.length === 0}>🎯 Prospección{matchesProspeccion.length > 0 && <span style={{marginLeft:4,background:"rgba(251,191,36,0.25)",borderRadius:8,padding:"0 4px",fontSize:8}}>{matchesProspeccion.length}</span>}</button>
                     <button className="crm-btn-export" onClick={abrirDuplicados} title="Detectar duplicados" disabled={contactos.length < 2}>⊕ Duplicados</button>
                     <button className="crm-btn-export" onClick={() => { setImportRows([]); setImportError(""); setMostrarImport(true); }} title="Importar desde Excel">↑ Importar</button>
                     <button className="crm-btn-export" onClick={exportarContactosExcel} title="Exportar a Excel" disabled={contactosFiltrados.length === 0}>↓ Excel</button>
@@ -1398,6 +1434,102 @@ export default function CrmPage() {
           </div>
         </div>
       )}
+
+      {/* ══════════════════════════════════════════════════
+          MODAL PROSPECCIÓN INTELIGENTE
+      ══════════════════════════════════════════════════ */}
+      {mostrarProspeccion && (() => {
+        const scoreLabel = (s: number) => s === 2 ? "Alta" : s === 1 ? "Media" : "Baja";
+        const scoreColor = (s: number) => s === 2 ? "#22c55e" : s === 1 ? "#f59e0b" : "#6b7280";
+        const matchesFiltrados = filtroScoreProspeccion
+          ? matchesProspeccion.filter(m => scoreLabel(m.score).toLowerCase() === filtroScoreProspeccion)
+          : matchesProspeccion;
+        return (
+          <div className="crm-modal-overlay" onClick={() => setMostrarProspeccion(false)}>
+            <div style={{background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,width:"min(820px,96vw)",maxHeight:"85vh",display:"flex",flexDirection:"column",overflow:"hidden"}} onClick={e => e.stopPropagation()}>
+              {/* Header */}
+              <div style={{padding:"16px 20px",borderBottom:"1px solid rgba(255,255,255,0.07)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+                <div>
+                  <div style={{fontFamily:"Montserrat,sans-serif",fontSize:15,fontWeight:800,color:"#fff"}}>🎯 Prospección <span style={{color:"#fbbf24"}}>inteligente</span></div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:3}}>{matchesProspeccion.length} coincidencia{matchesProspeccion.length !== 1 ? "s" : ""} entre compradores/inquilinos y propiedades activas</div>
+                </div>
+                <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                  {(["","alta","media","baja"] as const).map(f => (
+                    <button key={f} onClick={() => setFiltroScoreProspeccion(f)} style={{padding:"3px 10px",borderRadius:10,border:`1px solid ${filtroScoreProspeccion===f?"rgba(251,191,36,0.5)":"rgba(255,255,255,0.1)"}`,background:filtroScoreProspeccion===f?"rgba(251,191,36,0.1)":"transparent",color:filtroScoreProspeccion===f?"#fbbf24":"rgba(255,255,255,0.4)",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",cursor:"pointer"}}>
+                      {f === "" ? "Todas" : f.charAt(0).toUpperCase() + f.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Lista */}
+              <div style={{overflowY:"auto",flex:1,padding:"12px 16px",display:"flex",flexDirection:"column",gap:8}}>
+                {matchesFiltrados.length === 0 ? (
+                  <div style={{padding:"40px 0",textAlign:"center",color:"rgba(255,255,255,0.25)",fontSize:13,fontFamily:"Inter,sans-serif"}}>
+                    {matchesProspeccion.length === 0
+                      ? "Cargá contactos con interés (Comprar/Alquilar) y negocios activos para ver matches."
+                      : "Sin coincidencias para este filtro."}
+                  </div>
+                ) : matchesFiltrados.map((m, i) => {
+                  const c = m.contacto;
+                  const n = m.negocio;
+                  const etapaNeg = ETAPAS_NEGOCIO.find(e => e.value === n.etapa);
+                  const tipoOpLabel = TIPOS_OPERACION.find(t => t.value === n.tipo_operacion)?.label ?? n.tipo_operacion;
+                  return (
+                    <div key={i} style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:12,alignItems:"center",background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:8,padding:"12px 14px"}}>
+                      {/* Contacto */}
+                      <div style={{minWidth:0}}>
+                        <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:4}}>Buscador</div>
+                        <div style={{fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:700,color:"#fff",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.apellido ? `${c.apellido}, ${c.nombre}` : c.nombre}</div>
+                        <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",marginTop:2,display:"flex",gap:8,flexWrap:"wrap"}}>
+                          {c.interes && <span style={{color:"#a78bfa"}}>{c.interes}</span>}
+                          {c.zona_interes && <span>📍 {c.zona_interes}</span>}
+                        </div>
+                        {(c.presupuesto_min || c.presupuesto_max) && (
+                          <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:3}}>
+                            💰 {c.moneda} {c.presupuesto_min?.toLocaleString("es-AR")}{c.presupuesto_max ? ` – ${c.presupuesto_max.toLocaleString("es-AR")}` : "+"}
+                          </div>
+                        )}
+                        {c.telefono && (
+                          <a href={`https://wa.me/54${c.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-block",marginTop:6,padding:"3px 9px",background:"rgba(37,211,102,0.1)",border:"1px solid rgba(37,211,102,0.25)",borderRadius:4,color:"#25d366",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",textDecoration:"none",textTransform:"uppercase"}}>
+                            💬 WhatsApp
+                          </a>
+                        )}
+                      </div>
+                      {/* Score central */}
+                      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flexShrink:0}}>
+                        <div style={{width:40,height:40,borderRadius:"50%",border:`2px solid ${scoreColor(m.score)}`,display:"flex",alignItems:"center",justifyContent:"center",background:`${scoreColor(m.score)}18`}}>
+                          <span style={{fontSize:14,fontWeight:800,fontFamily:"Montserrat,sans-serif",color:scoreColor(m.score)}}>{m.score === 2 ? "★★" : m.score === 1 ? "★" : "·"}</span>
+                        </div>
+                        <div style={{fontSize:8,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:scoreColor(m.score)}}>{scoreLabel(m.score)}</div>
+                        {m.razon.length > 0 && (
+                          <div style={{display:"flex",flexDirection:"column",gap:2,alignItems:"center"}}>
+                            {m.razon.map((r,ri) => <span key={ri} style={{fontSize:8,color:"rgba(255,255,255,0.25)",whiteSpace:"nowrap"}}>{r}</span>)}
+                          </div>
+                        )}
+                      </div>
+                      {/* Negocio */}
+                      <div style={{minWidth:0}}>
+                        <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:4}}>Propiedad</div>
+                        <div style={{fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:700,color:"#fff",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{n.titulo}</div>
+                        <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",marginTop:2,display:"flex",gap:8,flexWrap:"wrap"}}>
+                          <span style={{color:"#cc0000"}}>{tipoOpLabel}</span>
+                          {etapaNeg && <span style={{color:etapaNeg.color}}>{etapaNeg.label}</span>}
+                        </div>
+                        {n.direccion && <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:2}}>📍 {n.direccion}</div>}
+                        {n.valor_operacion && <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",marginTop:3}}>💰 {n.moneda} {n.valor_operacion.toLocaleString("es-AR")}</div>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Footer */}
+              <div style={{padding:"12px 20px",borderTop:"1px solid rgba(255,255,255,0.07)",display:"flex",justifyContent:"flex-end",flexShrink:0}}>
+                <button className="crm-btn-cancel" onClick={() => setMostrarProspeccion(false)}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }
