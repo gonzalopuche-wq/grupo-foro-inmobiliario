@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import { supabase } from "../../lib/supabase";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
@@ -143,6 +144,10 @@ const COMODIDADES_LIST = [
 const FORM_VACIO: any = {
   // Paso 1
   titulo: "", tipo: "Departamento", estado: "activa", codigo: "",
+  // Paso 7 — documentación
+  contacto_propietario_id: "", ci_url: "", ci_fecha_obtencion: "", ci_fecha_vencimiento: "",
+  ci_numero: "", ci_observaciones: "", escritura_url: "", plano_url: "", reglamento_url: "",
+  api_ninios: false, api_ninios_numero: "", url_portal_origen: "",
   // Paso 2
   operacion: "Venta", precio: "", moneda: "USD",
   expensas: "", moneda_expensas: "ARS",
@@ -190,6 +195,7 @@ const PASOS = [
   { n: 4, label: "Características", sub: "Detalles y superficies" },
   { n: 5, label: "Descripción", sub: "Textos de la propiedad" },
   { n: 6, label: "Amenities", sub: "Características adicionales" },
+  { n: 7, label: "Documentación / CI", sub: "Certificado de Inhibición y dueño" },
 ];
 
 const fmt = (n: number | null) => n ? n.toLocaleString("es-AR") : "-";
@@ -229,6 +235,15 @@ export default function CarteraPage() {
   const [form, setForm] = useState<any>(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
 
+  // Importar desde URL de portal
+  const [mostrarImportar, setMostrarImportar] = useState(false);
+  const [urlImport, setUrlImport] = useState("");
+  const [importando, setImportando] = useState(false);
+  const [importError, setImportError] = useState("");
+
+  // Contactos CRM (para vincular propietario)
+  const [contactosCRM, setContactosCRM] = useState<{id:string;nombre:string|null;apellido:string|null}[]>([]);
+
   // Fotos
   const [fotosNuevas, setFotosNuevas] = useState<File[]>([]);
   const [fotosExistentes, setFotosExistentes] = useState<string[]>([]);
@@ -245,6 +260,13 @@ export default function CarteraPage() {
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
       await cargar(data.user.id);
+      // Cargar contactos CRM para vincular propietario
+      const { data: ctcs } = await supabase
+        .from("crm_contactos")
+        .select("id,nombre,apellido")
+        .eq("perfil_id", data.user.id)
+        .order("nombre", { ascending: true });
+      setContactosCRM(ctcs ?? []);
     };
     init();
   }, []);
@@ -289,6 +311,56 @@ export default function CarteraPage() {
     setSubiendoFotos(false);
     setProgresoFotos(0);
     return urls;
+  };
+
+  // ── Importar desde URL de portal ─────────────────────────────────────────
+  const importarDesdeUrl = async () => {
+    if (!urlImport.trim()) return;
+    setImportando(true);
+    setImportError("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/importar-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ url: urlImport.trim() }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || "Error al importar");
+
+      const d = json.data;
+      setForm({
+        ...FORM_VACIO,
+        titulo: d.titulo || "",
+        tipo: d.tipo || "Departamento",
+        operacion: d.operacion || "Venta",
+        precio: d.precio ? String(d.precio) : "",
+        moneda: d.moneda || "USD",
+        expensas: d.expensas ? String(d.expensas) : "",
+        ciudad: d.ciudad || "Rosario",
+        zona: d.zona || "",
+        direccion: d.direccion || "",
+        dormitorios: d.dormitorios ? String(d.dormitorios) : "",
+        banos: d.banos ? String(d.banos) : "",
+        ambientes: d.ambientes ? String(d.ambientes) : "",
+        superficie_cubierta: d.superficie_cubierta ? String(d.superficie_cubierta) : "",
+        superficie_total: d.superficie_total ? String(d.superficie_total) : "",
+        descripcion: d.descripcion || "",
+        url_portal_origen: urlImport.trim(),
+      });
+      if (d.fotos && d.fotos.length > 0) {
+        // Fotos externas: guardar URLs directamente (no subimos, el corredor puede reemplazarlas)
+        setFotosExistentes(d.fotos);
+      }
+      setMostrarImportar(false);
+      setUrlImport("");
+      setEditandoId(null);
+      setPaso(1);
+      setMostrarWizard(true);
+    } catch (e: any) {
+      setImportError(e.message || "Error desconocido");
+    }
+    setImportando(false);
   };
 
   // ── Abrir wizard ──────────────────────────────────────────────────────────
@@ -364,6 +436,19 @@ export default function CarteraPage() {
       comentarios_colegas: form.comentarios_colegas || null,
       aviso_legal: form.aviso_legal || null,
       video_url: form.video_url || null,
+      // Documentación / CI
+      contacto_propietario_id: form.contacto_propietario_id || null,
+      ci_url: form.ci_url || null,
+      ci_fecha_obtencion: form.ci_fecha_obtencion || null,
+      ci_fecha_vencimiento: form.ci_fecha_vencimiento || null,
+      ci_numero: form.ci_numero || null,
+      ci_observaciones: form.ci_observaciones || null,
+      escritura_url: form.escritura_url || null,
+      plano_url: form.plano_url || null,
+      reglamento_url: form.reglamento_url || null,
+      api_ninios: form.api_ninios || false,
+      api_ninios_numero: form.api_ninios_numero || null,
+      url_portal_origen: form.url_portal_origen || null,
       updated_at: new Date().toISOString(),
     };
 
@@ -424,7 +509,7 @@ export default function CarteraPage() {
   }), [propiedades, filtroOp, filtroTipo, filtroEstado, busqueda]);
 
   const estadoInfo = (e: string) => ESTADOS.find(x => x.value === e) ?? { value: e, label: e.toUpperCase(), color: "#6b7280" };
-  const pct = Math.round((paso / 6) * 100);
+  const pct = Math.round((paso / 7) * 100);
   const setF = (k: string, v: any) => setForm((p: any) => ({ ...p, [k]: v }));
   const toggleF = (k: string) => setForm((p: any) => ({ ...p, [k]: !p[k] }));
 
@@ -594,7 +679,11 @@ export default function CarteraPage() {
             <div className="cart-stat"><span className="cart-stat-val">{propiedades.length}</span><span className="cart-stat-label">Total</span></div>
             <div className="cart-stat"><span className="cart-stat-val" style={{color:"#22c55e"}}>{propiedades.filter(p=>p.estado==="activa").length}</span><span className="cart-stat-label">Activas</span></div>
           </div>
-          <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <Link href="/cartera/parametros" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>⚙ Parámetros</Link>
+            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setUrlImport(""); }}>↓ Importar</button>
+            <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
+          </div>
         </div>
 
         {/* Toolbar */}
@@ -735,7 +824,7 @@ export default function CarteraPage() {
           {/* Contenido */}
           <div className="wiz-main">
             <div className="wiz-main-header">
-              <div className="wiz-paso-label">Paso {paso} de 6</div>
+              <div className="wiz-paso-label">Paso {paso} de 7</div>
               <div className="wiz-paso-titulo">{PASOS[paso-1].label}</div>
               <div className="wiz-paso-sub">{PASOS[paso-1].sub}</div>
             </div>
@@ -1097,6 +1186,85 @@ export default function CarteraPage() {
                 </>
               )}
 
+              {/* ── PASO 7: Documentación / CI ── */}
+              {paso === 7 && (
+                <>
+                  {/* Dueño / Propietario */}
+                  <div className="wiz-section">
+                    <div className="wiz-section-title"><span className="wiz-section-ico">👤</span>Propietario</div>
+                    <div className="wiz-field">
+                      <label className="wiz-label">Vincular dueño del CRM</label>
+                      <select className="wiz-select" value={form.contacto_propietario_id} onChange={e => setF("contacto_propietario_id", e.target.value)}>
+                        <option value="">— Sin vincular —</option>
+                        {contactosCRM.map(c => (
+                          <option key={c.id} value={c.id}>{[c.nombre, c.apellido].filter(Boolean).join(" ")}</option>
+                        ))}
+                      </select>
+                      <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginTop:4}}>Vinculá al propietario para acceder a su info de contacto desde esta ficha.</div>
+                    </div>
+                  </div>
+
+                  {/* Certificado de Inhibición */}
+                  <div className="wiz-section">
+                    <div className="wiz-section-title"><span className="wiz-section-ico">📋</span>Certificado de Inhibición (CI)</div>
+                    <div className="wiz-grid-3">
+                      <div className="wiz-field">
+                        <label className="wiz-label">N° de certificado</label>
+                        <input className="wiz-input" value={form.ci_numero} onChange={e => setF("ci_numero", e.target.value)} placeholder="Ej: 2024-00001" />
+                      </div>
+                      <div className="wiz-field">
+                        <label className="wiz-label">Fecha de obtención</label>
+                        <input className="wiz-input" type="date" value={form.ci_fecha_obtencion} onChange={e => setF("ci_fecha_obtencion", e.target.value)} />
+                      </div>
+                      <div className="wiz-field">
+                        <label className="wiz-label">Vencimiento</label>
+                        <input className="wiz-input" type="date" value={form.ci_fecha_vencimiento} onChange={e => setF("ci_fecha_vencimiento", e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="wiz-field" style={{marginTop:8}}>
+                      <label className="wiz-label">Link al documento (Drive, Dropbox, etc.)</label>
+                      <input className="wiz-input" value={form.ci_url} onChange={e => setF("ci_url", e.target.value)} placeholder="https://drive.google.com/..." />
+                    </div>
+                    <div className="wiz-field" style={{marginTop:8}}>
+                      <label className="wiz-label">Observaciones</label>
+                      <textarea className="wiz-textarea" rows={2} value={form.ci_observaciones} onChange={e => setF("ci_observaciones", e.target.value)} placeholder="Estado del CI, pendiente de renovar, etc." />
+                    </div>
+                  </div>
+
+                  {/* API de niños */}
+                  <div className="wiz-section">
+                    <div className="wiz-section-title"><span className="wiz-section-ico">📝</span>Otros documentos</div>
+                    <div className="wiz-field">
+                      <label className="wiz-label">Escritura (link)</label>
+                      <input className="wiz-input" value={form.escritura_url} onChange={e => setF("escritura_url", e.target.value)} placeholder="https://..." />
+                    </div>
+                    <div className="wiz-field" style={{marginTop:8}}>
+                      <label className="wiz-label">Plano / Mensura (link)</label>
+                      <input className="wiz-input" value={form.plano_url} onChange={e => setF("plano_url", e.target.value)} placeholder="https://..." />
+                    </div>
+                    <div className="wiz-field" style={{marginTop:8}}>
+                      <label className="wiz-label">Reglamento de copropiedad (link)</label>
+                      <input className="wiz-input" value={form.reglamento_url} onChange={e => setF("reglamento_url", e.target.value)} placeholder="https://..." />
+                    </div>
+                    <div style={{marginTop:12}}>
+                      <div className={`wiz-check-item${form.api_ninios ? " on" : ""}`} onClick={() => toggleF("api_ninios")} style={{display:"inline-flex",gap:8}}>
+                        <div className={`wiz-check-box${form.api_ninios ? " on" : ""}`}>{form.api_ninios && <span style={{fontSize:8,color:"#fff"}}>✓</span>}</div>
+                        <span className="wiz-check-label">API de niños / ANSES presentado</span>
+                      </div>
+                      {form.api_ninios && (
+                        <input className="wiz-input" style={{marginTop:8}} value={form.api_ninios_numero} onChange={e => setF("api_ninios_numero", e.target.value)} placeholder="N° de expediente API" />
+                      )}
+                    </div>
+                    {form.url_portal_origen && (
+                      <div className="wiz-field" style={{marginTop:12}}>
+                        <label className="wiz-label">Origen (portal importado)</label>
+                        <a href={form.url_portal_origen} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"rgba(100,160,255,0.7)",wordBreak:"break-all"}}>{form.url_portal_origen}</a>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
             </div>{/* fin wiz-body */}
 
             {/* Footer navegación */}
@@ -1105,13 +1273,57 @@ export default function CarteraPage() {
                 {paso > 1 && <button className="wiz-btn-prev" onClick={() => setPaso(p => p - 1)}>← Anterior</button>}
                 <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.25)",cursor:"pointer",fontSize:11,fontFamily:"Inter,sans-serif"}} onClick={() => setMostrarWizard(false)}>Cancelar</button>
               </div>
-              {paso < 6
+              {paso < 7
                 ? <button className="wiz-btn-next" onClick={() => setPaso(p => p + 1)} disabled={paso === 1 && !form.titulo}>Siguiente →</button>
                 : <button className="wiz-btn-next" onClick={guardar} disabled={guardando || subiendoFotos}>
                     {guardando || subiendoFotos ? <><span className="cart-spinner"/>{subiendoFotos ? `Subiendo ${progresoFotos}%...` : "Guardando..."}</> : editandoId ? "Guardar cambios" : "Crear propiedad"}
                   </button>
               }
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════
+          MODAL IMPORTAR DESDE URL DE PORTAL
+      ═══════════════════════════════════════ */}
+      {mostrarImportar && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 32, width: "100%", maxWidth: 520 }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 6 }}>↓ Importar desde portal</div>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 20, lineHeight: 1.5 }}>
+              Pegá la URL de una propiedad de ZonaProp, Argenprop, MercadoLibre, Red Propia u otros portales. Los datos disponibles se pre-cargarán en el formulario para que los completes o corrijas.
+            </p>
+            <div style={{ display: "flex", gap: 8, marginBottom: importError ? 8 : 20 }}>
+              <input
+                value={urlImport}
+                onChange={e => setUrlImport(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && importarDesdeUrl()}
+                placeholder="https://www.zonaprop.com.ar/..."
+                style={{ flex: 1, padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none" }}
+              />
+              <button
+                onClick={importarDesdeUrl}
+                disabled={importando || !urlImport.trim()}
+                style={{ padding: "10px 18px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 6, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
+              >
+                {importando ? "Importando…" : "Importar"}
+              </button>
+            </div>
+            {importError && (
+              <div style={{ fontSize: 12, color: "#f87171", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: 6, padding: "8px 12px", marginBottom: 14 }}>
+                ⚠️ {importError}
+              </div>
+            )}
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginBottom: 20 }}>
+              Portales soportados: ZonaProp · Argenprop · MercadoLibre · Red Propia · Ficha.info · Properati
+            </div>
+            <button
+              onClick={() => { setMostrarImportar(false); setImportError(""); }}
+              style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 12, cursor: "pointer", fontFamily: "Inter,sans-serif" }}
+            >
+              Cancelar
+            </button>
           </div>
         </div>
       )}
