@@ -1,42 +1,66 @@
 import { NextResponse } from "next/server";
 
-// ── Variables BCRA ──────────────────────────────────────────────────────────
-// https://api.bcra.gob.ar/estadisticas/v2.0/datosvariable/{idVariable}/{desde}/{hasta}
+// ── Variables BCRA v4.0 ─────────────────────────────────────────────────────
+// https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/{idVariable}?desde=...&hasta=...
 // idVariable:
-//   41 = ICL (Índice para Contratos de Locación)
-//   27 = IPC (Índice de Precios al Consumidor - variación mensual)
-//   30 = CER (Coeficiente de Estabilización de Referencia)
+//   27 = IPC (Inflación mensual %) — publica un dato por mes
+//   40 = ICL (Índice para Contratos de Locación, base 30.6.20=1) — dato diario
+//   30 = CER (Coeficiente de Estabilización de Referencia) — dato diario
 
-const BCRA_VARS: Record<string, number> = {
-  ICL: 41,
+const BCRA_BASE = "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias";
+
+// Variables que devuelven variación mensual directamente
+const BCRA_MENSUAL: Record<string, number> = {
   IPC: 27,
-  CER: 30,
 };
 
-const BCRA_BASE = "https://api.bcra.gob.ar/estadisticas/v2.0/datosvariable";
+// Variables que devuelven índice diario → hay que calcular variación mensual
+const BCRA_DIARIO: Record<string, number> = {
+  ICL: 40,
+  CER: 30,
+};
 
 function fechaDesde(): string {
   const d = new Date();
   d.setFullYear(d.getFullYear() - 2);
-  return d.toISOString().split("T")[0]; // YYYY-MM-DD
+  d.setMonth(d.getMonth() - 1); // un mes extra para calcular la variación del primer mes del rango
+  return d.toISOString().split("T")[0];
 }
 
 function fechaHasta(): string {
   return new Date().toISOString().split("T")[0];
 }
 
-// Convierte array de datos BCRA {fecha, valor} a Record<YYYY-MM, variacion%>
-function procesarBCRA(datos: { fecha: string; valor: number }[]): Record<string, number> {
-  const resultado: Record<string, number> = {};
+// IPC: una entrada por mes, valor = variación mensual %
+function procesarMensual(datos: { fecha: string; valor: number }[]): Record<string, number> {
+  const r: Record<string, number> = {};
   for (const d of datos) {
-    const mes = d.fecha.slice(0, 7); // YYYY-MM
-    resultado[mes] = d.valor;
+    r[d.fecha.slice(0, 7)] = d.valor;
   }
-  return resultado;
+  return r;
 }
 
-// CAC: no tiene API pública — usamos valores del último año publicados en el sitio
-// En producción se puede hacer scraping del PDF mensual de CAC
+// ICL / CER: entradas diarias, valor = índice acumulado.
+// Variación mensual = (valorUltimoDíaDelMes / valorUltimoDíaMesAnterior - 1) × 100
+function procesarDiarioAMensual(datos: { fecha: string; valor: number }[]): Record<string, number> {
+  // Último valor disponible por mes
+  const byMonth: Record<string, { fecha: string; valor: number }> = {};
+  for (const d of datos) {
+    const mes = d.fecha.slice(0, 7);
+    if (!byMonth[mes] || d.fecha > byMonth[mes].fecha) byMonth[mes] = d;
+  }
+  const sorted = Object.keys(byMonth).sort();
+  const r: Record<string, number> = {};
+  for (let i = 1; i < sorted.length; i++) {
+    const mes = sorted[i];
+    const prev = sorted[i - 1];
+    const variation = (byMonth[mes].valor / byMonth[prev].valor - 1) * 100;
+    r[mes] = parseFloat(variation.toFixed(4));
+  }
+  return r;
+}
+
+// CAC: sin API pública — valores manuales del sitio de la Cámara Argentina de la Construcción
 const CAC_FALLBACK: Record<string, number> = {
   "2023-01": 7.20, "2023-02": 7.80, "2023-03": 8.90, "2023-04": 9.60,
   "2023-05": 10.20,"2023-06": 9.10, "2023-07": 7.50, "2023-08": 8.40,
@@ -44,18 +68,17 @@ const CAC_FALLBACK: Record<string, number> = {
   "2024-01": 23.40,"2024-02": 17.10,"2024-03": 15.30,"2024-04": 12.80,
   "2024-05": 10.20,"2024-06": 8.90, "2024-07": 7.80, "2024-08": 5.30,
   "2024-09": 4.60, "2024-10": 4.10, "2024-11": 3.80, "2024-12": 4.20,
-  "2025-01": 4.50, "2025-02": 3.90, "2025-03": 4.10, "2025-04": 4.00,
-  "2025-05": 3.80, "2025-06": 3.70, "2025-07": 3.60, "2025-08": 3.50,
-  "2025-09": 3.60, "2025-10": 3.80, "2025-11": 4.00, "2025-12": 4.20,
-  "2026-01": 4.10, "2026-02": 4.00, "2026-03": 3.90,
+  "2025-01": 4.50, "2025-02": 3.90, "2025-03": 4.10, "2025-04": 3.80,
+  "2025-05": 3.40, "2025-06": 2.80, "2025-07": 2.50, "2025-08": 2.70,
+  "2025-09": 2.60, "2025-10": 2.80, "2025-11": 3.00, "2025-12": 3.20,
+  "2026-01": 3.40, "2026-02": 3.50, "2026-03": 3.60,
 };
 
 // Cache en memoria (se limpia en cada cold start de serverless)
-let cache: { data: any; ts: number } | null = null;
+let cache: { data: unknown; ts: number } | null = null;
 const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 horas
 
 export async function GET() {
-  // Servir desde cache si está vigente
   if (cache && Date.now() - cache.ts < CACHE_TTL) {
     return NextResponse.json(cache.data);
   }
@@ -64,39 +87,52 @@ export async function GET() {
   const hasta = fechaHasta();
 
   try {
-    // Fetch paralelo de las 3 variables BCRA
-    const fetches = await Promise.allSettled(
-      Object.entries(BCRA_VARS).map(async ([nombre, id]) => {
-        const url = `${BCRA_BASE}/${id}/${desde}/${hasta}`;
-        const res = await fetch(url, {
-          headers: { "Accept": "application/json" },
-          next: { revalidate: 21600 }, // 6hs cache Next.js
-        });
-        if (!res.ok) throw new Error(`BCRA ${nombre}: ${res.status}`);
-        const json = await res.json();
-        return { nombre, datos: procesarBCRA(json.results ?? []) };
-      })
-    );
+    const mensualFetches = Object.entries(BCRA_MENSUAL).map(async ([nombre, id]) => {
+      const url = `${BCRA_BASE}/${id}?desde=${desde}&hasta=${hasta}&limit=1000`;
+      const res = await fetch(url, {
+        headers: { "Accept": "application/json" },
+        next: { revalidate: 21600 },
+      });
+      if (!res.ok) throw new Error(`BCRA ${nombre}: ${res.status}`);
+      const json = await res.json();
+      const detalle: { fecha: string; valor: number }[] = json.results?.[0]?.detalle ?? [];
+      return { nombre, datos: procesarMensual(detalle) };
+    });
+
+    const diarioFetches = Object.entries(BCRA_DIARIO).map(async ([nombre, id]) => {
+      const url = `${BCRA_BASE}/${id}?desde=${desde}&hasta=${hasta}&limit=2000`;
+      const res = await fetch(url, {
+        headers: { "Accept": "application/json" },
+        next: { revalidate: 21600 },
+      });
+      if (!res.ok) throw new Error(`BCRA ${nombre}: ${res.status}`);
+      const json = await res.json();
+      const detalle: { fecha: string; valor: number }[] = json.results?.[0]?.detalle ?? [];
+      return { nombre, datos: procesarDiarioAMensual(detalle) };
+    });
+
+    const fetches = await Promise.allSettled([...mensualFetches, ...diarioFetches]);
 
     const indices: Record<string, Record<string, number>> = {
       CAC: CAC_FALLBACK,
     };
 
+    let anySuccess = false;
     for (const result of fetches) {
       if (result.status === "fulfilled") {
         indices[result.value.nombre] = result.value.datos;
+        anySuccess = true;
       }
     }
 
-    // Si algún índice no se pudo traer, usar fallback básico
     if (!indices.ICL) indices.ICL = {};
     if (!indices.IPC) indices.IPC = {};
     if (!indices.CER) indices.CER = {};
 
     const response = {
-      ok: true,
+      ok: anySuccess,
       actualizado: new Date().toISOString(),
-      fuente: "BCRA API + CAC manual",
+      fuente: "BCRA API v4.0 + CAC manual",
       indices,
     };
 
@@ -105,41 +141,16 @@ export async function GET() {
 
   } catch (error) {
     console.error("Error fetching indices BCRA:", error);
-    // Devolver fallback si la API del BCRA falla
     return NextResponse.json({
       ok: false,
       error: "No se pudo conectar con la API del BCRA",
       actualizado: null,
       fuente: "fallback",
       indices: {
-        ICL: {
-          "2024-01": 20.61,"2024-02": 15.02,"2024-03": 13.22,"2024-04": 10.73,
-          "2024-05": 8.85, "2024-06": 7.26, "2024-07": 6.41, "2024-08": 4.19,
-          "2024-09": 3.48, "2024-10": 3.21, "2024-11": 2.89, "2024-12": 3.12,
-          "2025-01": 3.38, "2025-02": 2.91, "2025-03": 3.05, "2025-04": 2.98,
-          "2025-05": 3.12, "2025-06": 2.87, "2025-07": 2.75, "2025-08": 2.70,
-          "2025-09": 2.65, "2025-10": 2.80, "2025-11": 2.95, "2025-12": 3.10,
-          "2026-01": 2.90, "2026-02": 2.85, "2026-03": 2.80,
-        },
-        IPC: {
-          "2024-01": 20.60,"2024-02": 13.20,"2024-03": 11.00,"2024-04": 8.80,
-          "2024-05": 4.20, "2024-06": 4.60, "2024-07": 4.00, "2024-08": 4.20,
-          "2024-09": 3.50, "2024-10": 2.40, "2024-11": 2.40, "2024-12": 2.70,
-          "2025-01": 2.30, "2025-02": 2.40, "2025-03": 3.70, "2025-04": 3.20,
-          "2025-05": 3.30, "2025-06": 2.90, "2025-07": 2.80, "2025-08": 2.90,
-          "2025-09": 3.10, "2025-10": 2.80, "2025-11": 2.70, "2025-12": 2.90,
-          "2026-01": 2.60, "2026-02": 2.50, "2026-03": 2.40,
-        },
+        ICL: {},
+        IPC: {},
         CAC: CAC_FALLBACK,
-        CER: {
-          "2024-01": 20.30,"2024-02": 13.00,"2024-03": 10.80,"2024-04": 8.60,
-          "2024-05": 4.00, "2024-06": 4.40, "2024-07": 3.80, "2024-08": 4.00,
-          "2024-09": 3.30, "2024-10": 2.30, "2024-11": 2.30, "2024-12": 2.50,
-          "2025-01": 2.20, "2025-02": 2.30, "2025-03": 3.60, "2025-04": 3.10,
-          "2025-05": 3.20, "2025-06": 2.80, "2025-07": 2.70, "2025-08": 2.80,
-          "2025-09": 3.00, "2025-10": 2.70, "2025-11": 2.60, "2025-12": 2.80,
-          "2026-01": 2.50, "2026-02": 2.40, "2026-03": 2.30,
-        },
+        CER: {},
       },
     });
   }
