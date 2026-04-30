@@ -95,6 +95,10 @@ export default function AdminPage() {
   // Stats colaboradores
   const [statsColab, setStatsColab] = useState<any[]>([]);
   const [loadingStats, setLoadingStats] = useState(false);
+  // Redes sociales
+  const [redesConfig, setRedesConfig] = useState<Record<string,string>>({});
+  const [guardandoRedes, setGuardandoRedes] = useState(false);
+  const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -106,6 +110,8 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab();
+      const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
+      setRedesConfig(adminSocial?.configuracion?.redes_sociales ?? {});
     };
     verificar();
   }, []);
@@ -258,6 +264,19 @@ export default function AdminPage() {
       await supabase.from("indicadores").upsert({ clave: c.clave, valor_texto: cbuValues[c.clave] ?? "", valor: 0 }, { onConflict: "clave" });
     }
     setGuardandoCbu(false); setCbuOk(true); setTimeout(() => setCbuOk(false), 2000);
+  };
+
+  const guardarRedes = async () => {
+    setGuardandoRedes(true);
+    const { data: adminProf } = await supabase.from("perfiles").select("configuracion, id").eq("tipo", "admin").limit(1).single();
+    await supabase.from("perfiles").update({ configuracion: { ...(adminProf?.configuracion ?? {}), redes_sociales: redesConfig } }).eq("id", adminProf.id);
+    setGuardandoRedes(false);
+    mostrarToast("Configuración guardada");
+  };
+
+  const mostrarToast = (msg: string, tipo: "ok"|"err" = "ok") => {
+    setToast({ msg, tipo });
+    setTimeout(() => setToast(null), 3000);
   };
 
   const cargarPagos = async () => {
@@ -532,6 +551,20 @@ export default function AdminPage() {
         .modal-btn-save { padding: 10px 24px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .modal-btn-save:hover { background: #e60000; }
         .modal-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+        .adm-redes-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 22px 24px; }
+        .adm-redes-desc { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 20px; line-height: 1.6; }
+        .adm-redes-seccion { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin: 18px 0 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .adm-redes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .adm-redes-btn { padding: 10px 22px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; margin-top: 8px; }
+        .adm-redes-btn:hover { background: #e60000; }
+        .adm-redes-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .adm-section-title { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+        .adm-section-title span { color: #cc0000; }
+        .adm-section-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 20px; }
+        .adm-toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
+        .adm-toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
+        .adm-toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
+        @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         @media (max-width: 768px) {
           .adm-ind-grid { grid-template-columns: 1fr; }
           .cbu-grid { grid-template-columns: 1fr; }
@@ -539,6 +572,7 @@ export default function AdminPage() {
           .adm-tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
           .adm-tabla th, .adm-tabla td { white-space: nowrap; }
           .modal-inner { width: 95vw; max-height: 90vh; }
+          .adm-redes-grid { grid-template-columns: 1fr; }
         }
       `}</style>
 
@@ -930,8 +964,127 @@ export default function AdminPage() {
             )}
           </div>
 
+          {/* ── REDES SOCIALES ── */}
+          <div>
+            <div className="adm-header">
+              <h1>📱 Redes <span>Sociales</span></h1>
+              <p>Configurá los tokens para que los eventos publicados aparezcan automáticamente en las redes sociales de GFI.</p>
+            </div>
+            <div className="adm-redes-card">
+              <div className="adm-redes-desc">
+                Cuando un admin publica un evento, se intentará publicar automáticamente en las redes configuradas. Si alguna red no tiene token, se omite sin error.
+              </div>
+
+              <div className="adm-redes-seccion">Facebook</div>
+              <div className="adm-redes-grid">
+                <div className="modal-field">
+                  <label className="modal-label">Facebook Page ID</label>
+                  <input
+                    className="modal-input"
+                    type="text"
+                    value={redesConfig.facebook_page_id ?? ""}
+                    onChange={e => setRedesConfig(prev => ({ ...prev, facebook_page_id: e.target.value }))}
+                    placeholder="123456789"
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="modal-field">
+                  <label className="modal-label">Facebook / Instagram Page Token</label>
+                  <input
+                    className="modal-input"
+                    type="password"
+                    value={redesConfig.facebook_page_token ?? ""}
+                    onChange={e => setRedesConfig(prev => ({ ...prev, facebook_page_token: e.target.value }))}
+                    placeholder="Token de página de Meta"
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+
+              <div className="adm-redes-seccion">Instagram</div>
+              <div className="modal-field">
+                <label className="modal-label">Instagram User ID</label>
+                <input
+                  className="modal-input"
+                  type="text"
+                  value={redesConfig.instagram_user_id ?? ""}
+                  onChange={e => setRedesConfig(prev => ({ ...prev, instagram_user_id: e.target.value }))}
+                  placeholder="ID de cuenta business de Instagram"
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="adm-redes-seccion">Twitter / X</div>
+              <div className="adm-redes-grid">
+                <div className="modal-field">
+                  <label className="modal-label">Twitter/X API Key</label>
+                  <input
+                    className="modal-input"
+                    type="text"
+                    value={redesConfig.twitter_api_key ?? ""}
+                    onChange={e => setRedesConfig(prev => ({ ...prev, twitter_api_key: e.target.value }))}
+                    placeholder="API Key"
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="modal-field">
+                  <label className="modal-label">Twitter/X API Secret</label>
+                  <input
+                    className="modal-input"
+                    type="password"
+                    value={redesConfig.twitter_api_secret ?? ""}
+                    onChange={e => setRedesConfig(prev => ({ ...prev, twitter_api_secret: e.target.value }))}
+                    placeholder="API Secret"
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="modal-field">
+                  <label className="modal-label">Twitter/X Access Token</label>
+                  <input
+                    className="modal-input"
+                    type="text"
+                    value={redesConfig.twitter_access_token ?? ""}
+                    onChange={e => setRedesConfig(prev => ({ ...prev, twitter_access_token: e.target.value }))}
+                    placeholder="Access Token"
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="modal-field">
+                  <label className="modal-label">Twitter/X Access Secret</label>
+                  <input
+                    className="modal-input"
+                    type="password"
+                    value={redesConfig.twitter_access_secret ?? ""}
+                    onChange={e => setRedesConfig(prev => ({ ...prev, twitter_access_secret: e.target.value }))}
+                    placeholder="Access Secret"
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+
+              <div className="adm-redes-seccion">TikTok</div>
+              <div className="modal-field">
+                <label className="modal-label">TikTok Access Token</label>
+                <input
+                  className="modal-input"
+                  type="password"
+                  value={redesConfig.tiktok_access_token ?? ""}
+                  onChange={e => setRedesConfig(prev => ({ ...prev, tiktok_access_token: e.target.value }))}
+                  placeholder="TikTok Access Token"
+                  autoComplete="off"
+                />
+              </div>
+
+              <button className="adm-redes-btn" onClick={guardarRedes} disabled={guardandoRedes}>
+                {guardandoRedes ? "Guardando..." : "Guardar configuración de redes"}
+              </button>
+            </div>
+          </div>
+
         </main>
       </div>
+
+      {toast && <div className={`adm-toast ${toast.tipo}`}>{toast.msg}</div>}
 
       {/* MODAL PROVEEDOR */}
       {mostrarFormProv && (
