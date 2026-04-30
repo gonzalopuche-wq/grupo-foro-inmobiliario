@@ -63,6 +63,25 @@ export default function DifusionPage() {
     if (!mensaje.trim() || seleccionados.size === 0) return;
     setEnviando(true);
     const contactosSelec = contactos.filter(c => seleccionados.has(c.id));
+
+    // Enviar emails a contactos que tienen dirección de email
+    const conEmail = contactosSelec.filter(c => c.email);
+    await Promise.allSettled(
+      conEmail.map(c => {
+        const cuerpo = mensaje.replace("{nombre}", c.nombre ?? "").replace("{apellido}", c.apellido ?? "");
+        return fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: c.email,
+            subject: "Mensaje de Grupo Foro Inmobiliario",
+            html: `<p style="font-family:Arial,sans-serif;font-size:15px;color:#222;white-space:pre-wrap">${cuerpo.replace(/\n/g, "<br>")}</p>`,
+          }),
+        });
+      })
+    );
+
+    // Registrar interacción en CRM para todos los contactos seleccionados
     const inserts = contactosSelec.map(c => ({
       perfil_id: userId,
       contacto_id: c.id,
@@ -70,6 +89,7 @@ export default function DifusionPage() {
       descripcion: mensaje.replace("{nombre}", c.nombre ?? "").replace("{apellido}", c.apellido ?? ""),
     }));
     await supabase.from("crm_interacciones").insert(inserts);
+
     setReporte({ total: contactosSelec.length, nombres: contactosSelec.map(c => `${c.nombre ?? ""} ${c.apellido ?? ""}`.trim()) });
     setSeleccionados(new Set());
     setMensaje("");

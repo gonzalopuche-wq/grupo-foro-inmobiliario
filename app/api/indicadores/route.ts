@@ -9,23 +9,23 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-// Intentar traer ICL desde API del BCRA
+// Intentar traer ICL desde API del BCRA v4.0
+// Variable 40 = ICL (índice diario). Guardamos el valor del último día disponible.
+// calcICL en el dashboard usa (valorActual / valorAnterior - 1) * 100 para calcular variación.
 async function fetchICLBCRA(): Promise<{ valor: number; periodo: string } | null> {
   try {
-    // BCRA API pública — serie ICL
     const res = await fetch(
-      'https://api.bcra.gob.ar/estadisticas/v2.0/datosvariable/40/1/10',
-      { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(5000) }
+      'https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/40?limit=1',
+      { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(8000) }
     )
     if (!res.ok) return null
     const data = await res.json()
-    const resultados = data?.results
-    if (!resultados || resultados.length === 0) return null
-    // El más reciente primero
-    const ultimo = resultados[0]
+    const detalle = data?.results?.[0]?.detalle
+    if (!detalle || detalle.length === 0) return null
+    const ultimo = detalle[0]
     return {
       valor: ultimo.valor,
-      periodo: ultimo.fecha?.substring(0, 7) ?? '' // '2026-03'
+      periodo: ultimo.fecha?.substring(0, 7) ?? '',
     }
   } catch {
     return null

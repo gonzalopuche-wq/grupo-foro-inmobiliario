@@ -145,7 +145,9 @@ export default function DashboardPage() {
   const cargarDashboardCompleto = () => {
     const tick = () => setHora(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }));
     tick();
-    setInterval(tick, 1000);
+    const clockTimer = setInterval(tick, 1000);
+    // Cleanup al desmontar
+    return () => clearInterval(clockTimer);
 
     Promise.all([
       supabase.from("mir_busquedas").select("id", { count: "exact", head: true }).eq("activo", true),
