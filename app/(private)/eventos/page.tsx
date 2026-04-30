@@ -289,6 +289,37 @@ export default function EventosPage() {
     setGuardando(false);
     if (error) { mostrarToast("Error al guardar", "err"); return; }
     mostrarToast(esAdmin ? "Evento publicado" : "Propuesta enviada — el admin la revisará");
+
+    // Get the inserted event to pass to the API
+    const { data: eventoCreado } = await supabase.from("eventos")
+      .select("*")
+      .eq("organizador_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (esAdmin && eventoCreado) {
+      mostrarToast("Publicando en redes sociales...");
+      try {
+        const resp = await fetch("/api/publicar-redes", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ evento: eventoCreado }),
+        });
+        const { resultados } = await resp.json();
+        const exitosos = Object.entries(resultados).filter(([, v]: any) => v.ok).map(([k]) => k);
+        const fallidos = Object.entries(resultados).filter(([, v]: any) => !v.ok).map(([k]) => k);
+        if (exitosos.length > 0) {
+          mostrarToast(`✅ Publicado en: ${exitosos.join(", ")}`);
+        }
+        if (fallidos.length > 0) {
+          mostrarToast(`⚠️ No se pudo publicar en: ${fallidos.join(", ")} (configurá las redes en Admin)`);
+        }
+      } catch {
+        mostrarToast("Evento guardado (redes no disponibles)", "err");
+      }
+    }
+
     setMostrarForm(false);
     setForm(FORM_VACIO);
     setMedia([]);
