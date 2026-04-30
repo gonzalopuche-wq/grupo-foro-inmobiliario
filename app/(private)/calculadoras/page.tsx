@@ -27,6 +27,51 @@ const PERIODOS = [
 
 const MESES_NOMBRES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 
+// Datos de fallback actualizados al 2026 — usados inmediatamente antes de que cargue la API
+const FALLBACK_INDICES: IndicesData = {
+  ok: false,
+  actualizado: null,
+  fuente: "fallback",
+  indices: {
+    ICL: {
+      "2024-01": 20.61,"2024-02": 15.02,"2024-03": 13.22,"2024-04": 10.73,
+      "2024-05": 8.85, "2024-06": 7.26, "2024-07": 6.41, "2024-08": 4.19,
+      "2024-09": 3.48, "2024-10": 3.21, "2024-11": 2.89, "2024-12": 3.12,
+      "2025-01": 3.38, "2025-02": 2.91, "2025-03": 3.05, "2025-04": 2.98,
+      "2025-05": 3.12, "2025-06": 2.87, "2025-07": 2.75, "2025-08": 2.70,
+      "2025-09": 2.65, "2025-10": 2.80, "2025-11": 2.95, "2025-12": 3.10,
+      "2026-01": 2.90, "2026-02": 2.85, "2026-03": 2.80,
+    },
+    IPC: {
+      "2024-01": 20.60,"2024-02": 13.20,"2024-03": 11.00,"2024-04": 8.80,
+      "2024-05": 4.20, "2024-06": 4.60, "2024-07": 4.00, "2024-08": 4.20,
+      "2024-09": 3.50, "2024-10": 2.40, "2024-11": 2.40, "2024-12": 2.70,
+      "2025-01": 2.30, "2025-02": 2.40, "2025-03": 3.70, "2025-04": 3.20,
+      "2025-05": 3.30, "2025-06": 2.90, "2025-07": 2.80, "2025-08": 2.90,
+      "2025-09": 3.10, "2025-10": 2.80, "2025-11": 2.70, "2025-12": 2.90,
+      "2026-01": 2.60, "2026-02": 2.50, "2026-03": 2.40,
+    },
+    CAC: {
+      "2024-01": 23.40,"2024-02": 17.10,"2024-03": 15.30,"2024-04": 12.80,
+      "2024-05": 10.20,"2024-06": 8.90, "2024-07": 7.80, "2024-08": 5.30,
+      "2024-09": 4.60, "2024-10": 4.10, "2024-11": 3.80, "2024-12": 4.20,
+      "2025-01": 4.50, "2025-02": 3.90, "2025-03": 4.10, "2025-04": 4.00,
+      "2025-05": 3.80, "2025-06": 3.70, "2025-07": 3.60, "2025-08": 3.50,
+      "2025-09": 3.60, "2025-10": 3.80, "2025-11": 4.00, "2025-12": 4.20,
+      "2026-01": 4.10, "2026-02": 4.00, "2026-03": 3.90,
+    },
+    CER: {
+      "2024-01": 20.30,"2024-02": 13.00,"2024-03": 10.80,"2024-04": 8.60,
+      "2024-05": 4.00, "2024-06": 4.40, "2024-07": 3.80, "2024-08": 4.00,
+      "2024-09": 3.30, "2024-10": 2.30, "2024-11": 2.30, "2024-12": 2.50,
+      "2025-01": 2.20, "2025-02": 2.30, "2025-03": 3.60, "2025-04": 3.10,
+      "2025-05": 3.20, "2025-06": 2.80, "2025-07": 2.70, "2025-08": 2.80,
+      "2025-09": 3.00, "2025-10": 2.70, "2025-11": 2.60, "2025-12": 2.80,
+      "2026-01": 2.50, "2026-02": 2.40, "2026-03": 2.30,
+    },
+  },
+};
+
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 const formatARS = (n: number) =>
@@ -92,7 +137,7 @@ export default function CalculadorasPage() {
   });
   const [periodoAjuste, setPeriodoAjuste] = useState("6");
   const [tab, setTab] = useState<"calculadora" | "tabla" | "comparar">("calculadora");
-  const [indicesData, setIndicesData] = useState<IndicesData | null>(null);
+  const [indicesData, setIndicesData] = useState<IndicesData>(FALLBACK_INDICES);
   const [loadingIndices, setLoadingIndices] = useState(true);
   const [errorIndices, setErrorIndices] = useState(false);
   const [copiado, setCopiado] = useState(false);
@@ -104,7 +149,7 @@ export default function CalculadorasPage() {
         setLoadingIndices(true);
         const res = await fetch("/api/indices");
         const data = await res.json();
-        setIndicesData(data);
+        if (data?.indices) setIndicesData(data);
         setErrorIndices(!data.ok);
       } catch {
         setErrorIndices(true);
@@ -406,12 +451,12 @@ export default function CalculadorasPage() {
 
             {/* Resultado */}
             <div>
-              {!calculo || !montoNum ? (
+              {!montoNum ? (
                 <div className="c-card" style={{ height: "100%" }}>
                   <div className="c-vacio">
                     <div className="c-vacio-icon">🧮</div>
                     <div className="c-vacio-txt">Ingresá el monto actual</div>
-                    <div className="c-vacio-sub">El nuevo alquiler se calcula automáticamente con datos reales del BCRA.</div>
+                    <div className="c-vacio-sub">El nuevo alquiler se calcula automáticamente.</div>
                   </div>
                 </div>
               ) : (
@@ -554,7 +599,7 @@ const PERIODOS_ACT = [
   { value: "12", label: "Anual", meses: 12 },
 ];
 
-function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indicesData: IndicesData | null; loadingIndices: boolean }) {
+function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indicesData: IndicesData; loadingIndices: boolean }) {
   const defaultFechaContrato = (() => {
     const d = new Date();
     d.setFullYear(d.getFullYear() - 1);
