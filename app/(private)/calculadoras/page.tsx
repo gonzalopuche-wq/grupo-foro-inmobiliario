@@ -654,6 +654,30 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
   const montoActual = tablaActualizacion.length > 0 ? tablaActualizacion[tablaActualizacion.length - 1].monto : montoNum;
   const pctAcumulado = tablaActualizacion.length > 1 ? tablaActualizacion[tablaActualizacion.length - 1].acumuladoPct : 0;
 
+  // Calcular próximo ajuste (el siguiente período que aún no llegó)
+  const proximoAjuste = useMemo(() => {
+    if (!montoNum || Object.keys(datosIndiceAct).length === 0) return null;
+    const periodoMeses = parseInt(periodicidad);
+    const hoyMes = new Date().toISOString().slice(0, 7);
+    // El próximo es el primer período que empieza >= hoy
+    let desde = fechaContratoMes;
+    // Avanzar hasta que "hasta" sea > hoyMes (ese es el próximo)
+    for (let i = 0; i < 100; i++) {
+      const hasta = sumarMeses(desde, periodoMeses);
+      if (hasta > hoyMes) {
+        // "desde" a "hasta" es el próximo período
+        const { factor } = calcularAcumulado(datosIndiceAct, desde, periodoMeses);
+        return {
+          fechaAjuste: hasta,
+          montoEstimado: montoActual * factor,
+          variacionEstimada: (factor - 1) * 100,
+        };
+      }
+      desde = hasta;
+    }
+    return null;
+  }, [montoNum, datosIndiceAct, fechaContratoMes, periodicidad, montoActual]);
+
   return (
     <div style={{ maxWidth: 900, display: "flex", flexDirection: "column", gap: 16, marginTop: 20, paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div>
@@ -725,6 +749,22 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
                 </div>
               </div>
               {loadingIndices && <div className="c-loading"><div className="c-spinner" />Cargando índices...</div>}
+
+              {/* Próximo ajuste — siempre visible si hay dato */}
+              {proximoAjuste && montoNum > 0 && (
+                <div style={{ marginTop: 14, padding: "12px 14px", background: "rgba(234,179,8,0.07)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 7 }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(234,179,8,0.7)", marginBottom: 6 }}>Próximo ajuste</div>
+                  <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+                    <div>
+                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#eab308" }}>{formatARS(proximoAjuste.montoEstimado)}</div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>Estimado para {nombreMes(proximoAjuste.fechaAjuste)}</div>
+                    </div>
+                    <div style={{ fontSize: 13, color: "rgba(234,179,8,0.8)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                      +{proximoAjuste.variacionEstimada.toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
