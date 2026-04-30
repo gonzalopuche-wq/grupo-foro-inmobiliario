@@ -314,6 +314,9 @@ export default function ComparablesPage() {
             <Link href="/comparables/barrios" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
               📍 Consulta Barrios
             </Link>
+            <Link href="/comparables/tasador" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 4, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
+              🤖 Tasador IA
+            </Link>
             <button className="cmp-btn-nuevo" onClick={() => { setForm({...FORM_VACIO,cotizacion_dolar:dolarBlue?.toString()??""}); setEditandoId(null); setMostrarForm(true); }}>
               + Cargar comparable
             </button>
