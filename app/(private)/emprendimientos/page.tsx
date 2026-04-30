@@ -241,6 +241,12 @@ export default function EmprendimientosPage() {
         .emp-modal-btn-save { padding: 9px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
         .emp-modal-btn-save:hover:not(:disabled) { background: #aa0000; }
         .emp-modal-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+        @media (max-width: 768px) {
+          .emp-toolbar { flex-wrap: wrap; gap: 8px; }
+          .emp-filters { flex-wrap: wrap; }
+          .emp-grid { grid-template-columns: 1fr; }
+          .emp-modal-inner { width: 95vw; padding: 20px 16px; }
+        }
       `}</style>
 
       <div className="emp-root">

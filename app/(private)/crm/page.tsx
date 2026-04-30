@@ -1012,9 +1012,13 @@ export default function CrmPage() {
         .prop-card-meta { font-size: 10px; color: rgba(255,255,255,0.4); display: flex; gap: 8px; flex-wrap: wrap; }
 
         @media (max-width: 768px) {
+          .crm-tabs-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 8px; }
+          .crm-tab-main { padding: 12px 12px; font-size: 9px; letter-spacing: 0.08em; flex-shrink: 0; }
           .crm-split { flex-direction: column; }
-          .crm-panel-izq { width: 100%; height: 280px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+          .crm-panel-izq { width: 100%; height: 300px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
           .not-grid { grid-template-columns: 1fr; }
+          .neg-filtros-etapa { flex-wrap: wrap; gap: 4px; }
+          .tar-toolbar { flex-wrap: wrap; gap: 6px; }
         }
       `}</style>
 

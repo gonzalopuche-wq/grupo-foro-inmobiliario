@@ -447,10 +447,20 @@ export default function CalculadorasPage() {
                 <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: indiceInfo.color, marginBottom: 3 }}>{indiceInfo.nombre}</div>
                 <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>{indiceInfo.detalle}</div>
               </div>
+
+              {/* Botón calcular — útil en mobile para bajar al resultado */}
+              {montoNum > 0 && (
+                <button
+                  onClick={() => document.getElementById("resultado-alquiler")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  style={{ width: "100%", marginTop: 14, padding: "13px", background: "#cc0000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
+                >
+                  Ver resultado ↓
+                </button>
+              )}
             </div>
 
             {/* Resultado */}
-            <div>
+            <div id="resultado-alquiler">
               {!montoNum ? (
                 <div className="c-card" style={{ height: "100%" }}>
                   <div className="c-vacio">

@@ -229,6 +229,13 @@ export default function InstagramPage() {
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+        @media (max-width: 600px) {
+          .ig-chips { gap: 6px; }
+          .ig-card { flex-direction: column; gap: 10px; }
+          .ig-thumb { width: 100%; height: 140px; border-radius: 6px; }
+          .ig-card-acciones { flex-wrap: wrap; }
+          .ig-modal-inner { width: 96vw; padding: 20px 14px; }
+        }
       `}</style>
 
       <div className="ig-wrap">

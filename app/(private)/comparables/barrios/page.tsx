@@ -132,6 +132,11 @@ export default function BarriosPage() {
         .bar-detail-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 2px; }
         .bar-detail-value { font-size: 13px; color: rgba(255,255,255,0.7); }
         .bar-empty { padding: 60px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
+        @media (max-width: 768px) {
+          .bar-filters { flex-wrap: wrap; }
+          .bar-tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .bar-tabla th, .bar-tabla td { padding: 10px 8px; font-size: 11px; white-space: nowrap; }
+        }
       `}</style>
 
       <div className="bar-wrap">

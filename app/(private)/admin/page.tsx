@@ -532,6 +532,14 @@ export default function AdminPage() {
         .modal-btn-save { padding: 10px 24px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .modal-btn-save:hover { background: #e60000; }
         .modal-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+        @media (max-width: 768px) {
+          .adm-ind-grid { grid-template-columns: 1fr; }
+          .cbu-grid { grid-template-columns: 1fr; }
+          .modal-row { grid-template-columns: 1fr; }
+          .adm-tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .adm-tabla th, .adm-tabla td { white-space: nowrap; }
+          .modal-inner { width: 95vw; max-height: 90vh; }
+        }
       `}</style>
 
       <div className="adm-root">
