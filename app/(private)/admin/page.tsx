@@ -269,7 +269,7 @@ export default function AdminPage() {
   const guardarRedes = async () => {
     setGuardandoRedes(true);
     const { data: adminProf } = await supabase.from("perfiles").select("configuracion, id").eq("tipo", "admin").limit(1).single();
-    await supabase.from("perfiles").update({ configuracion: { ...(adminProf?.configuracion ?? {}), redes_sociales: redesConfig } }).eq("id", adminProf.id);
+    if (adminProf) await supabase.from("perfiles").update({ configuracion: { ...(adminProf.configuracion ?? {}), redes_sociales: redesConfig } }).eq("id", adminProf.id);
     setGuardandoRedes(false);
     mostrarToast("Configuración guardada");
   };

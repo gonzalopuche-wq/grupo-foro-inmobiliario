@@ -48,7 +48,7 @@ function formatFechaCorta(fecha: string) {
 
 const FORM_VACIO = {
   titulo: "", mentor_nombre: "", descripcion: "", fecha: "", hora: "18:00",
-  plataforma: "youtube" as const, link_live: "", link_grabacion: "", estado: "proxima" as const,
+  plataforma: "youtube" as "youtube" | "zoom" | "meet", link_live: "", link_grabacion: "", estado: "proxima" as "proxima" | "en_vivo" | "grabada",
 };
 
 export default function CanalEducativoPage() {
@@ -178,10 +178,10 @@ export default function CanalEducativoPage() {
       descripcion: s.descripcion ?? "",
       fecha: s.fecha,
       hora: s.hora.slice(0, 5),
-      plataforma: s.plataforma,
+      plataforma: s.plataforma as "youtube" | "zoom" | "meet",
       link_live: s.link_live ?? "",
       link_grabacion: s.link_grabacion ?? "",
-      estado: s.estado,
+      estado: s.estado as "proxima" | "en_vivo" | "grabada",
     });
     setEditandoId(s.id);
     setMostrarForm(true);

@@ -461,7 +461,7 @@ export default function CalculadorasPage() {
 
             {/* Resultado */}
             <div id="resultado-alquiler">
-              {!montoNum ? (
+              {!montoNum || !calculo ? (
                 <div className="c-card" style={{ height: "100%" }}>
                   <div className="c-vacio">
                     <div className="c-vacio-icon">🧮</div>
