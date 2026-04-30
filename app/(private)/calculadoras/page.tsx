@@ -620,6 +620,13 @@ const PERIODOS_ACT = [
   { value: "12", label: "Anual", meses: 12 },
 ];
 
+// Mes anterior en texto
+function mesAnterior(yyyymm: string): string {
+  const [y, m] = yyyymm.split("-").map(Number);
+  const d = new Date(y, m - 2, 1);
+  return `${MESES_NOMBRES[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indicesData: IndicesData; loadingIndices: boolean }) {
   const defaultFechaContrato = (() => {
     const d = new Date();
@@ -631,182 +638,353 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
   const [montoInicial, setMontoInicial] = useState("");
   const [indiceAct, setIndiceAct] = useState("ICL");
   const [periodicidad, setPeriodicidad] = useState("6");
+  const [expandidos, setExpandidos] = useState<Set<number>>(new Set());
 
   const datosIndiceAct = indicesData?.indices?.[indiceAct] ?? {};
   const montoNum = parseFloat(montoInicial.replace(/\./g, "").replace(",", ".")) || 0;
-
-  // Convertir fecha contrato a yyyymm
   const fechaContratoMes = fechaContrato.slice(0, 7);
 
-  // Calcular tabla de períodos de ajuste desde la fecha del contrato hasta hoy
-  const tablaActualizacion = useMemo(() => {
+  // Último mes con datos reales (no fallback)
+  const ultimoMesReal = useMemo(() => {
+    const claves = Object.keys(datosIndiceAct).sort();
+    return claves.length > 0 ? claves[claves.length - 1] : "";
+  }, [datosIndiceAct]);
+
+  // Tabla de ajustes con detalle mes a mes por período
+  const ajustes = useMemo(() => {
     if (!montoNum || Object.keys(datosIndiceAct).length === 0) return [];
     const periodoMeses = parseInt(periodicidad);
     const hoyMes = new Date().toISOString().slice(0, 7);
-    const filas: { fecha: string; monto: number; variacion: number; acumuladoPct: number }[] = [];
+    type AjusteFila = {
+      numero: number;
+      fechaDesde: string;
+      fechaHasta: string;
+      monto: number;
+      variacion: number;
+      acumuladoPct: number;
+      estimado: boolean;
+      detalles: { mes: string; variacion: number; acumulado: number; estimado: boolean }[];
+    };
+    const filas: AjusteFila[] = [];
     let montoActual = montoNum;
     let desde = fechaContratoMes;
     let acumFactor = 1;
-    // primera fila: monto inicial
-    filas.push({ fecha: desde, monto: montoNum, variacion: 0, acumuladoPct: 0 });
+    let num = 0;
+
     while (true) {
       const hasta = sumarMeses(desde, periodoMeses);
       if (hasta > hoyMes) break;
-      const { factor } = calcularAcumulado(datosIndiceAct, desde, periodoMeses);
-      montoActual = montoActual * factor;
-      acumFactor = acumFactor * factor;
-      filas.push({ fecha: hasta, monto: montoActual, variacion: (factor - 1) * 100, acumuladoPct: (acumFactor - 1) * 100 });
+      num++;
+      let acumPeriodo = 1;
+      const detalles: AjusteFila["detalles"] = [];
+      for (let i = 0; i < periodoMeses; i++) {
+        const mes = sumarMeses(desde, i);
+        const v = datosIndiceAct[mes] ?? obtenerFallback(datosIndiceAct, mes);
+        const esEstimado = mes > ultimoMesReal;
+        acumPeriodo *= (1 + v / 100);
+        detalles.push({ mes, variacion: v, acumulado: (acumPeriodo - 1) * 100, estimado: esEstimado });
+      }
+      montoActual = montoActual * acumPeriodo;
+      acumFactor = acumFactor * acumPeriodo;
+      const tieneEstimado = detalles.some(d => d.estimado);
+      filas.push({
+        numero: num,
+        fechaDesde: desde,
+        fechaHasta: hasta,
+        monto: montoActual,
+        variacion: (acumPeriodo - 1) * 100,
+        acumuladoPct: (acumFactor - 1) * 100,
+        estimado: tieneEstimado,
+        detalles,
+      });
       desde = hasta;
-      if (filas.length > 50) break; // seguridad
+      if (filas.length > 50) break;
     }
     return filas;
-  }, [montoNum, datosIndiceAct, fechaContratoMes, periodicidad]);
+  }, [montoNum, datosIndiceAct, fechaContratoMes, periodicidad, ultimoMesReal]);
 
-  const montoActual = tablaActualizacion.length > 0 ? tablaActualizacion[tablaActualizacion.length - 1].monto : montoNum;
-  const pctAcumulado = tablaActualizacion.length > 1 ? tablaActualizacion[tablaActualizacion.length - 1].acumuladoPct : 0;
+  const montoAnterior = ajustes.length > 1 ? ajustes[ajustes.length - 2].monto : montoNum;
+  const montoActualFinal = ajustes.length > 0 ? ajustes[ajustes.length - 1].monto : montoNum;
+  const pctAcumulado = ajustes.length > 0 ? ajustes[ajustes.length - 1].acumuladoPct : 0;
+  const mesAnteriorLabel = ajustes.length > 0 ? mesAnterior(ajustes[ajustes.length - 1].fechaHasta) : "";
+  const mesActualLabel = ajustes.length > 0 ? nombreMes(ajustes[ajustes.length - 1].fechaHasta) : "";
+  const hayEstimados = ajustes.some(a => a.estimado);
 
-  // Calcular próximo ajuste (el siguiente período que aún no llegó)
+  // Próximo ajuste
   const proximoAjuste = useMemo(() => {
     if (!montoNum || Object.keys(datosIndiceAct).length === 0) return null;
     const periodoMeses = parseInt(periodicidad);
     const hoyMes = new Date().toISOString().slice(0, 7);
-    // El próximo es el primer período que empieza >= hoy
     let desde = fechaContratoMes;
-    // Avanzar hasta que "hasta" sea > hoyMes (ese es el próximo)
     for (let i = 0; i < 100; i++) {
       const hasta = sumarMeses(desde, periodoMeses);
       if (hasta > hoyMes) {
-        // "desde" a "hasta" es el próximo período
         const { factor } = calcularAcumulado(datosIndiceAct, desde, periodoMeses);
-        return {
-          fechaAjuste: hasta,
-          montoEstimado: montoActual * factor,
-          variacionEstimada: (factor - 1) * 100,
-        };
+        return { fechaAjuste: hasta, montoEstimado: montoActualFinal * factor, variacionEstimada: (factor - 1) * 100 };
       }
       desde = hasta;
     }
     return null;
-  }, [montoNum, datosIndiceAct, fechaContratoMes, periodicidad, montoActual]);
+  }, [montoNum, datosIndiceAct, fechaContratoMes, periodicidad, montoActualFinal]);
+
+  const toggleExpand = (i: number) => {
+    setExpandidos(prev => {
+      const s = new Set(prev);
+      s.has(i) ? s.delete(i) : s.add(i);
+      return s;
+    });
+  };
+
+  const indiceInfo = INDICES_INFO.find(x => x.id === indiceAct)!;
 
   return (
     <div style={{ maxWidth: 900, display: "flex", flexDirection: "column", gap: 16, marginTop: 20, paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <style>{`
+        .act-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .act-card { border-radius: 10px; padding: 0 0 14px; overflow: hidden; position: relative; text-align: center; }
+        .act-card-badge { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 20px; display: inline-block; border-radius: 0 0 10px 10px; margin-bottom: 10px; }
+        .act-card-mes { font-size: 13px; font-family: 'Montserrat',sans-serif; font-weight: 600; text-transform: capitalize; color: rgba(255,255,255,0.55); margin-bottom: 4px; }
+        .act-card-monto { font-family: 'Montserrat',sans-serif; font-size: 28px; font-weight: 800; }
+        .act-tabla { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .act-tabla th { padding: 8px 10px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .act-tabla td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+        .act-tabla tr:last-child td { border-bottom: none; }
+        .act-det-tabla { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .act-det-tabla th { padding: 5px 8px; text-align: left; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .act-det-tabla td { padding: 5px 8px; color: rgba(255,255,255,0.5); border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .act-expand-btn { background: rgba(255,255,255,0.07); border: none; border-radius: 4px; color: rgba(255,255,255,0.4); cursor: pointer; padding: 4px 8px; font-size: 10px; transition: background 0.15s; }
+        .act-expand-btn:hover { background: rgba(255,255,255,0.12); }
+        @media (max-width: 600px) {
+          .act-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+          .act-card-monto { font-size: 20px; }
+          .c-grid { grid-template-columns: 1fr !important; }
+          .act-tabla th:last-child, .act-tabla td:last-child { display: none; }
+        }
+      `}</style>
+
       <div>
         <div className="c-titulo">Calculadora de <span style={{ color: "#cc0000" }}>Actualización</span> de Alquiler</div>
-        <div className="c-sub">Calculá el monto actual de un contrato según su fecha de inicio, índice y periodicidad.</div>
+        <div className="c-sub">Calculá el monto actualizado de tu contrato según fecha de inicio, índice y periodicidad.</div>
       </div>
 
       <div className="c-grid">
-        {/* Inputs */}
+        {/* ── Formulario ── */}
         <div className="c-card">
           <div className="c-card-t">Datos del contrato</div>
 
           <div className="c-field">
-            <label className="c-label">Fecha del contrato</label>
+            <label className="c-label">Fecha de inicio del contrato</label>
             <input className="c-input" type="date" value={fechaContrato} onChange={e => setFechaContrato(e.target.value)} />
           </div>
 
           <div className="c-field">
             <label className="c-label">Monto mensual inicial ($)</label>
             <input
-              className="c-input"
-              type="text"
-              inputMode="numeric"
-              placeholder="Ej: 200.000"
-              value={montoInicial}
+              className="c-input" type="text" inputMode="numeric"
+              placeholder="Ej: 200.000" value={montoInicial}
               onChange={e => setMontoInicial(e.target.value.replace(/[^0-9.,]/g, ""))}
             />
           </div>
 
           <div className="c-field">
             <label className="c-label">Índice de ajuste</label>
-            <select className="c-select" value={indiceAct} onChange={e => setIndiceAct(e.target.value)}>
-              <option value="ICL">ICL — Índice para Contratos de Locación</option>
-              <option value="IPC">IPC — Índice de Precios al Consumidor</option>
-            </select>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              {INDICES_INFO.map(ind => (
+                <button key={ind.id} onClick={() => setIndiceAct(ind.id)}
+                  style={{ padding: "8px 10px", background: indiceAct === ind.id ? `${ind.color}20` : "rgba(255,255,255,0.03)", border: `1.5px solid ${indiceAct === ind.id ? ind.color : "rgba(255,255,255,0.08)"}`, borderRadius: 6, cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 800, color: indiceAct === ind.id ? ind.color : "#fff" }}>{ind.id}</div>
+                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{ind.descripcion}</div>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="c-field">
             <label className="c-label">Periodicidad de ajuste</label>
-            <select className="c-select" value={periodicidad} onChange={e => setPeriodicidad(e.target.value)}>
-              {PERIODOS_ACT.map(p => <option key={p.value} value={p.value}>{p.label} (cada {p.meses} meses)</option>)}
-            </select>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              {PERIODOS_ACT.map(p => (
+                <button key={p.value} onClick={() => setPeriodicidad(p.value)}
+                  style={{ padding: "8px 10px", background: periodicidad === p.value ? "rgba(204,0,0,0.12)" : "rgba(255,255,255,0.03)", border: `1.5px solid ${periodicidad === p.value ? "#cc0000" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, cursor: "pointer", textAlign: "center", transition: "all 0.15s" }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: periodicidad === p.value ? "#cc0000" : "rgba(255,255,255,0.6)" }}>{p.label}</div>
+                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>c/ {p.meses} meses</div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Resultado */}
+        {/* ── Resultado principal ── */}
         <div>
           {!montoNum ? (
             <div className="c-card" style={{ height: "100%" }}>
               <div className="c-vacio">
                 <div className="c-vacio-icon">🏠</div>
                 <div className="c-vacio-txt">Ingresá el monto inicial</div>
-                <div className="c-vacio-sub">El monto actualizado se calcula automáticamente según los ajustes aplicados.</div>
+                <div className="c-vacio-sub">El monto actualizado se calcula automáticamente.</div>
               </div>
             </div>
           ) : (
-            <div className="c-resultado" style={{ background: "rgba(204,0,0,0.05)", border: "1px solid rgba(204,0,0,0.18)" }}>
-              <div className="c-res-label">{indiceAct} · {PERIODOS_ACT.find(p => p.value === periodicidad)?.label} · desde {new Date(fechaContrato + "T12:00:00").toLocaleDateString("es-AR")}</div>
-              <div className="c-res-monto" style={{ color: "#22c55e" }}>{formatARS(montoActual)}</div>
-              <div className="c-res-original">Monto inicial: {formatARS(montoNum)}</div>
-              <div className="c-res-grid">
-                <div className="c-res-stat">
-                  <div className="c-res-stat-val" style={{ color: "#22c55e" }}>{pctAcumulado > 0 ? `+${pctAcumulado.toFixed(1)}%` : "0%"}</div>
-                  <div className="c-res-stat-label">Aumento acumulado</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+              {/* HASTA / DESDE — estilo arquiler.com */}
+              <div className="act-cards">
+                <div className="act-card" style={{ background: "rgba(14,14,14,0.9)", border: "1.5px solid rgba(255,100,0,0.25)" }}>
+                  <div className="act-card-badge" style={{ background: "rgba(255,100,0,0.6)", color: "#fff" }}>HASTA</div>
+                  <div className="act-card-mes">{ajustes.length > 0 ? mesAnteriorLabel : "—"}</div>
+                  <div className="act-card-monto" style={{ color: "rgba(255,255,255,0.7)" }}>
+                    {ajustes.length > 0 ? formatARS(montoAnterior) : formatARS(montoNum)}
+                  </div>
                 </div>
-                <div className="c-res-stat">
-                  <div className="c-res-stat-val" style={{ color: "#eab308", fontSize: 15 }}>{tablaActualizacion.length > 1 ? tablaActualizacion.length - 1 : 0} ajuste{tablaActualizacion.length !== 2 ? "s" : ""}</div>
-                  <div className="c-res-stat-label">Aplicados</div>
+                <div className="act-card" style={{ background: "rgba(14,14,14,0.9)", border: `1.5px solid ${indiceInfo.color}40` }}>
+                  <div className="act-card-badge" style={{ background: indiceInfo.color, color: "#fff" }}>DESDE</div>
+                  <div className="act-card-mes">{ajustes.length > 0 ? mesActualLabel : nombreMes(fechaContratoMes)}</div>
+                  <div className="act-card-monto" style={{ color: "#22c55e" }}>
+                    {formatARS(montoActualFinal)}
+                    {ajustes.length > 0 && ajustes[ajustes.length-1].estimado && (
+                      <span style={{ fontSize: 11, color: "#eab308", marginLeft: 6 }}>~</span>
+                    )}
+                  </div>
                 </div>
               </div>
-              {loadingIndices && <div className="c-loading"><div className="c-spinner" />Cargando índices...</div>}
 
-              {/* Próximo ajuste — siempre visible si hay dato */}
-              {proximoAjuste && montoNum > 0 && (
-                <div style={{ marginTop: 14, padding: "12px 14px", background: "rgba(234,179,8,0.07)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 7 }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(234,179,8,0.7)", marginBottom: 6 }}>Próximo ajuste</div>
+              {/* Resumen */}
+              <div className="c-card" style={{ padding: "12px 16px" }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
+                  <span>📅 {new Date(fechaContrato + "T12:00:00").toLocaleDateString("es-AR")}</span>
+                  <span>·</span>
+                  <span>💰 {formatARS(montoNum)}</span>
+                  <span>·</span>
+                  <span>{PERIODOS_ACT.find(p => p.value === periodicidad)?.label}</span>
+                  <span>·</span>
+                  <span style={{ color: indiceInfo.color }}>{indiceAct}</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 10 }}>
+                  <div className="c-res-stat">
+                    <div className="c-res-stat-val" style={{ color: "#22c55e", fontSize: 16 }}>{pctAcumulado > 0 ? `+${pctAcumulado.toFixed(1)}%` : "0%"}</div>
+                    <div className="c-res-stat-label">Aumento total</div>
+                  </div>
+                  <div className="c-res-stat">
+                    <div className="c-res-stat-val" style={{ color: "#eab308", fontSize: 16 }}>{ajustes.length}</div>
+                    <div className="c-res-stat-label">Ajuste{ajustes.length !== 1 ? "s" : ""} aplicados</div>
+                  </div>
+                  <div className="c-res-stat">
+                    <div className="c-res-stat-val" style={{ color: "#f97316", fontSize: 16 }}>{ajustes.length > 0 ? `+${formatARS(montoActualFinal - montoNum).replace("$", "")}` : "—"}</div>
+                    <div className="c-res-stat-label">Diferencia total</div>
+                  </div>
+                </div>
+                {loadingIndices && <div className="c-loading" style={{ marginTop: 8 }}><div className="c-spinner" />Actualizando índices...</div>}
+              </div>
+
+              {/* Advertencia de valores estimados */}
+              {hayEstimados && (
+                <div style={{ padding: "10px 14px", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: 7, fontSize: 11, color: "rgba(234,179,8,0.85)", fontFamily: "Inter,sans-serif" }}>
+                  ⚠️ Los valores marcados con <strong>~</strong> son estimados — el BCRA aún no publicó esos datos. Se usan los últimos valores disponibles.
+                </div>
+              )}
+
+              {/* Próximo ajuste */}
+              {proximoAjuste && (
+                <div style={{ padding: "12px 14px", background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 7 }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(99,102,241,0.7)", marginBottom: 6 }}>Próximo ajuste estimado</div>
                   <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
                     <div>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#eab308" }}>{formatARS(proximoAjuste.montoEstimado)}</div>
-                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>Estimado para {nombreMes(proximoAjuste.fechaAjuste)}</div>
+                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#818cf8" }}>{formatARS(proximoAjuste.montoEstimado)} <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>~</span></div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{nombreMes(proximoAjuste.fechaAjuste)}</div>
                     </div>
-                    <div style={{ fontSize: 13, color: "rgba(234,179,8,0.8)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
-                      +{proximoAjuste.variacionEstimada.toFixed(1)}%
-                    </div>
+                    <div style={{ fontSize: 14, color: "#818cf8", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>+{proximoAjuste.variacionEstimada.toFixed(1)}%</div>
                   </div>
                 </div>
               )}
+
+              {/* Botones */}
+              <div className="c-btns">
+                <button className="c-btn-wa" onClick={() => {
+                  const txt = `🏠 *Actualización de Alquiler — ${indiceAct}*\n\nInicio: ${new Date(fechaContrato + "T12:00:00").toLocaleDateString("es-AR")}\nMonto inicial: ${formatARS(montoNum)}\n${mesAnteriorLabel ? `Hasta ${mesAnteriorLabel}: ${formatARS(montoAnterior)}\n` : ""}Desde ${mesActualLabel || nombreMes(fechaContratoMes)}: *${formatARS(montoActualFinal)}*\nAumento acumulado: +${pctAcumulado.toFixed(1)}%\n\nCalculado con GFI® Grupo Foro Inmobiliario`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, "_blank");
+                }}>💬 Compartir por WhatsApp</button>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Tabla de períodos */}
-      {tablaActualizacion.length > 1 && (
+      {/* ── Tabla detallada de ajustes ── */}
+      {ajustes.length > 0 && montoNum > 0 && (
         <div className="c-card">
-          <div className="c-card-t">Tabla de ajustes aplicados</div>
+          <div className="c-card-t">Historial de ajustes</div>
           <div style={{ overflowX: "auto" }}>
-            <table className="c-tabla">
+            <table className="act-tabla">
               <thead>
                 <tr>
                   <th>Período</th>
+                  <th>Fecha</th>
+                  <th>Aumento</th>
                   <th>Monto</th>
-                  <th>Variación del período</th>
-                  <th>Acumulado total</th>
+                  <th>Acumulado</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {tablaActualizacion.map((fila, i) => (
-                  <tr key={i}>
-                    <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: i === tablaActualizacion.length - 1 ? "#fff" : "rgba(255,255,255,0.6)" }}>
-                      {nombreMes(fila.fecha.slice(0, 7))}
-                      {i === 0 && <span style={{ fontSize: 9, marginLeft: 5, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif" }}>INICIO</span>}
-                      {i === tablaActualizacion.length - 1 && i > 0 && <span style={{ fontSize: 9, marginLeft: 5, color: "#22c55e", fontFamily: "Montserrat,sans-serif" }}>ACTUAL</span>}
-                    </td>
-                    <td style={{ color: i === tablaActualizacion.length - 1 ? "#22c55e" : "rgba(255,255,255,0.65)", fontFamily: "Montserrat,sans-serif", fontWeight: i === tablaActualizacion.length - 1 ? 700 : 400 }}>{formatARS(fila.monto)}</td>
-                    <td style={{ color: fila.variacion > 0 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>{fila.variacion > 0 ? `+${fila.variacion.toFixed(2)}%` : "—"}</td>
-                    <td style={{ color: fila.acumuladoPct > 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.2)" }}>{fila.acumuladoPct > 0 ? `+${fila.acumuladoPct.toFixed(2)}%` : "—"}</td>
-                  </tr>
+                {/* Fila inicial */}
+                <tr>
+                  <td style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Inicio</td>
+                  <td style={{ color: "rgba(255,255,255,0.5)" }}>{nombreMes(fechaContratoMes)}</td>
+                  <td style={{ color: "rgba(255,255,255,0.2)" }}>—</td>
+                  <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>{formatARS(montoNum)}</td>
+                  <td style={{ color: "rgba(255,255,255,0.2)" }}>—</td>
+                  <td></td>
+                </tr>
+                {ajustes.map((aj, i) => (
+                  <>
+                    <tr key={`aj-${i}`} style={{ background: i === ajustes.length - 1 ? "rgba(34,197,94,0.05)" : undefined }}>
+                      <td>
+                        <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: i === ajustes.length - 1 ? "#22c55e" : "rgba(255,255,255,0.5)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                          {PERIODOS_ACT.find(p => p.value === periodicidad)?.label} {aj.numero}
+                          {aj.estimado && <span style={{ marginLeft: 4, color: "#eab308" }}>~</span>}
+                        </span>
+                      </td>
+                      <td style={{ color: i === ajustes.length - 1 ? "#fff" : "rgba(255,255,255,0.6)" }}>
+                        {nombreMes(aj.fechaHasta)}
+                      </td>
+                      <td style={{ color: "#22c55e", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>+{aj.variacion.toFixed(2)}%</td>
+                      <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: i === ajustes.length - 1 ? 800 : 500, color: i === ajustes.length - 1 ? "#22c55e" : "rgba(255,255,255,0.8)", fontSize: i === ajustes.length - 1 ? 15 : 13 }}>
+                        {formatARS(aj.monto)}
+                      </td>
+                      <td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>+{aj.acumuladoPct.toFixed(1)}%</td>
+                      <td>
+                        <button className="act-expand-btn" onClick={() => toggleExpand(i)}>
+                          {expandidos.has(i) ? "▲" : "▼"}
+                        </button>
+                      </td>
+                    </tr>
+                    {expandidos.has(i) && (
+                      <tr key={`det-${i}`} style={{ background: "rgba(0,0,0,0.3)" }}>
+                        <td colSpan={6} style={{ padding: "10px 14px" }}>
+                          <table className="act-det-tabla">
+                            <thead>
+                              <tr>
+                                <th>Mes</th>
+                                <th>Variación mensual</th>
+                                <th>Acumulado del período</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {aj.detalles.map((det, j) => (
+                                <tr key={j} style={{ background: det.estimado ? "rgba(234,179,8,0.05)" : undefined }}>
+                                  <td style={{ color: det.estimado ? "#eab308" : "rgba(255,255,255,0.6)" }}>
+                                    {nombreMes(det.mes)}
+                                    {det.estimado && <span style={{ fontSize: 9, marginLeft: 4, color: "#eab308" }}>est.</span>}
+                                  </td>
+                                  <td style={{ color: "#22c55e" }}>+{det.variacion.toFixed(2)}%</td>
+                                  <td style={{ color: "rgba(255,255,255,0.4)" }}>+{det.acumulado.toFixed(2)}%</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    )}
+                  </>
                 ))}
               </tbody>
             </table>
