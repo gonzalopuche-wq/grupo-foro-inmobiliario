@@ -149,7 +149,18 @@ export default function CalculadorasPage() {
         setLoadingIndices(true);
         const res = await fetch("/api/indices");
         const data = await res.json();
-        if (data?.indices) setIndicesData(data);
+        if (data?.indices) {
+          // Mergear: API sobre fallback — si la API devuelve vacío para algún índice, se usa el fallback
+          setIndicesData({
+            ...data,
+            indices: {
+              ICL: { ...FALLBACK_INDICES.indices.ICL, ...(data.indices.ICL ?? {}) },
+              IPC: { ...FALLBACK_INDICES.indices.IPC, ...(data.indices.IPC ?? {}) },
+              CAC: { ...FALLBACK_INDICES.indices.CAC, ...(data.indices.CAC ?? {}) },
+              CER: { ...FALLBACK_INDICES.indices.CER, ...(data.indices.CER ?? {}) },
+            },
+          });
+        }
         setErrorIndices(!data.ok);
       } catch {
         setErrorIndices(true);
