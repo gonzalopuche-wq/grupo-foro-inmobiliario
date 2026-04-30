@@ -139,13 +139,11 @@ export default function ActualizarCotizacionModal({ proveedor, userId, esAdmin, 
         body: JSON.stringify(body),
       });
       const data = await response.json();
-      const texto = data.content?.[0]?.text ?? "";
-      try {
-        const parsed = JSON.parse(texto.replace(/```json|```/g, "").trim());
-        if (parsed.compra) setCompra(parsed.compra.toString());
-        if (parsed.venta) setVenta(parsed.venta.toString());
+      if (data.compra != null || data.venta != null) {
+        if (data.compra != null) setCompra(data.compra.toString());
+        if (data.venta != null) setVenta(data.venta.toString());
         setExtraido(true);
-      } catch {
+      } else {
         setError("No se pudieron extraer los valores. Revisalos y cargalos manualmente.");
       }
     } catch {

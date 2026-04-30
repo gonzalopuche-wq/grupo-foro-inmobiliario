@@ -8,6 +8,7 @@ const CRM_NAV = [
   { href: "/crm/negocios", label: "Negocios", icon: "🤝", exact: false },
   { href: "/crm/tareas", label: "Tareas", icon: "✅", exact: false },
   { href: "/crm/notas", label: "Notas", icon: "📝", exact: false },
+  { href: "/crm/smart-prospecting", label: "Prospectos", icon: "🎯", exact: false },
 ];
 
 export default function CrmLayout({ children }: { children: React.ReactNode }) {

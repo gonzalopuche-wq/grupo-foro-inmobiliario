@@ -1,11 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+const tasacionTool: Anthropic.Tool = {
+  name: "tasacion_result",
+  description: "Devuelve el resultado de la tasación inmobiliaria profesional",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      valor_min:          { type: "number",  description: "Valor mínimo de tasación en USD" },
+      valor_max:          { type: "number",  description: "Valor máximo de tasación en USD" },
+      valor_sugerido:     { type: "number",  description: "Valor sugerido de tasación en USD" },
+      precio_m2:          { type: "number",  description: "Precio por m² en USD" },
+      moneda:             { type: "string",  enum: ["USD"] },
+      alquiler_estimado:  { type: ["number","null"], description: "Alquiler estimado mensual en ARS, o null" },
+      analisis:           { type: "string",  description: "2-3 párrafos de análisis del mercado y justificación" },
+      factores_positivos: { type: "array",   items: { type: "string" } },
+      factores_negativos: { type: "array",   items: { type: "string" } },
+      comparables: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            descripcion: { type: "string" },
+            precio:      { type: "number" },
+            m2:          { type: "number" },
+          },
+          required: ["descripcion","precio","m2"],
+        },
+      },
+      recomendacion: { type: "string", description: "Recomendación corta para el corredor" },
+    },
+    required: ["valor_min","valor_max","valor_sugerido","precio_m2","moneda","analisis","factores_positivos","factores_negativos","comparables","recomendacion"],
+  },
+};
 
 export async function POST(req: NextRequest) {
   const datos = await req.json();
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: "No hay clave de IA configurada." }, { status: 500 });
 
-  const prompt = `Sos un tasador inmobiliario experto en el mercado argentino (especialmente Buenos Aires y Gran Buenos Aires).
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: "No hay clave de IA configurada." }, { status: 500 });
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      tools: [tasacionTool],
+      tool_choice: { type: "tool", name: "tasacion_result" },
+      messages: [{
+        role: "user",
+        content: `Sos un tasador inmobiliario experto en el mercado argentino (especialmente Rosario y Gran Buenos Aires).
 Analizá la siguiente propiedad y generá una tasación profesional:
 
 DATOS DE LA PROPIEDAD:
@@ -25,45 +71,17 @@ ${datos.sup_total ? `- Superficie total: ${datos.sup_total} m²` : ""}
 - Amenities: ${datos.amenities || "Ninguno"}
 - Observaciones: ${datos.observaciones || "Ninguna"}
 
-Respondé con un JSON con exactamente esta estructura (sin texto adicional fuera del JSON):
-{
-  "valor_min": número en USD,
-  "valor_max": número en USD,
-  "valor_sugerido": número en USD,
-  "precio_m2": número en USD,
-  "moneda": "USD",
-  "alquiler_estimado": número en ARS (si aplica, sino null),
-  "analisis": "2-3 párrafos de análisis del mercado y justificación del precio",
-  "factores_positivos": ["factor1", "factor2", ...],
-  "factores_negativos": ["factor1", "factor2", ...],
-  "comparables": [
-    { "descripcion": "texto breve", "precio": número en USD, "m2": número }
-  ],
-  "recomendacion": "texto corto con recomendación para el corredor"
-}`;
-
-  try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1500,
-        messages: [{ role: "user", content: prompt }],
-      }),
+Usá la herramienta tasacion_result para devolver el análisis completo.`,
+      }],
     });
-    const data = await resp.json();
-    const text = data.content?.[0]?.text ?? "";
-    // Extract JSON from response
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return NextResponse.json({ error: "Respuesta inválida de IA." }, { status: 500 });
-    const resultado = JSON.parse(jsonMatch[0]);
-    return NextResponse.json(resultado);
-  } catch (e) {
+
+    const toolUse = response.content.find(b => b.type === "tool_use");
+    if (!toolUse || toolUse.type !== "tool_use") {
+      return NextResponse.json({ error: "Respuesta inválida de IA." }, { status: 500 });
+    }
+
+    return NextResponse.json(toolUse.input);
+  } catch {
     return NextResponse.json({ error: "Error al procesar la tasación." }, { status: 500 });
   }
 }

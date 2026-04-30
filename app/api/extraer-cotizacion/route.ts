@@ -1,90 +1,81 @@
 import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+const cotizacionTool: Anthropic.Tool = {
+  name: "cotizacion_extraida",
+  description: "Valores de compra y venta del dólar USD en pesos argentinos ARS",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      compra: { type: ["number","null"], description: "Precio de compra del USD en ARS (número entero)" },
+      venta:  { type: ["number","null"], description: "Precio de venta del USD en ARS (número entero)" },
+    },
+    required: ["compra","venta"],
+  },
+};
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { imageBase64, mediaType, texto } = body;
 
-    // Debe venir imagen O texto
     if (!imageBase64 && !texto) {
-      return NextResponse.json(
-        { error: "Falta imageBase64 o texto." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Falta imageBase64 o texto." }, { status: 400 });
     }
 
-    // Construir el contenido del mensaje según el modo
-    const content: object[] = [];
+    const content: Anthropic.MessageParam["content"] = [];
 
     if (imageBase64 && mediaType) {
       content.push({
         type: "image",
         source: {
           type: "base64",
-          media_type: mediaType,
+          media_type: mediaType as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
           data: imageBase64,
         },
       });
       content.push({
         type: "text",
-        text: `Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). Respondé SOLO con un JSON con este formato exacto, sin texto adicional: {"compra": 1380, "venta": 1420}. Si no podés determinar algún valor con certeza, ponelo como null. Si hay múltiples cotizaciones, tomá la del dólar blue o informal. Los valores deben ser números enteros sin puntos ni comas.`,
+        text: "Analizá esta imagen de cotización de divisas. Extraé los valores de compra y venta del dólar estadounidense (USD) en pesos argentinos (ARS). Si hay múltiples cotizaciones, tomá la del dólar blue o informal. Los valores deben ser números enteros. Usá la herramienta cotizacion_extraida.",
       });
     } else {
-      // Modo texto libre
       content.push({
         type: "text",
         text: `Sos un experto en cotizaciones de casas de cambio argentinas.
 Analizá el siguiente texto y extraé los valores de compra y venta del dólar (USD) en pesos argentinos (ARS).
 
-El texto puede venir en cualquier formato informal de WhatsApp, por ejemplo:
-- "USD 1400/1450"
-- "compra 1400 venta 1450"
-- "dólar: c $1.400 v $1.450"
-- mensajes de catálogo con listas de precios
-- textos con emojis, viñetas, formato libre
-- puede tener muchas otras cotizaciones (EUR, BRL, etc.) — solo extraé USD/ARS
+El texto puede venir en cualquier formato informal de WhatsApp:
+- "USD 1400/1450", "compra 1400 venta 1450", "dólar: c $1.400 v $1.450"
 - puede llamarlo "blue", "informal", "paralelo", "billete", o simplemente "dólar"
+- puede tener otras cotizaciones (EUR, BRL, etc.) — solo extraé USD/ARS
 
-TEXTO A ANALIZAR:
+TEXTO:
 """
 ${texto}
 """
 
-Respondé ÚNICAMENTE con un JSON, sin texto adicional, sin markdown, sin explicaciones:
-{"compra": 1400, "venta": 1450}
-Si no podés determinar un valor con certeza, usá null. Los valores son números enteros sin puntos ni comas.`,
+Usá la herramienta cotizacion_extraida con los valores encontrados. Si no podés determinar un valor, usá null.`,
       });
     }
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY!,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 256,
-        messages: [{ role: "user", content }],
-      }),
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 256,
+      tools: [cotizacionTool],
+      tool_choice: { type: "tool", name: "cotizacion_extraida" },
+      messages: [{ role: "user", content }],
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      return NextResponse.json(
-        { error: "Error en Anthropic API", detail: errorData },
-        { status: response.status }
-      );
+    const toolUse = response.content.find(b => b.type === "tool_use");
+    if (!toolUse || toolUse.type !== "tool_use") {
+      return NextResponse.json({ error: "No se pudo extraer la cotización." }, { status: 500 });
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json(toolUse.input);
   } catch (error) {
     console.error("Error en extraer-cotizacion:", error);
-    return NextResponse.json(
-      { error: "Error interno del servidor." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Error interno del servidor." }, { status: 500 });
   }
 }
