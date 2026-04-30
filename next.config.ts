@@ -21,8 +21,8 @@ const securityHeaders = [
     value: [
       // Solo recursos del mismo origen por defecto
       "default-src 'self'",
-      // Scripts: propio + Vercel analytics + scripts inline necesarios para Next.js
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://cdn.vercel-insights.com",
+      // Scripts: propio + Vercel analytics + Google Analytics + scripts inline necesarios para Next.js
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://cdn.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com",
       // Estilos: propio + Google Fonts + inline (necesario para styled-jsx)
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Fuentes: propio + Google Fonts
@@ -30,7 +30,7 @@ const securityHeaders = [
       // Imágenes: propio + data URIs + servicios externos usados en GFI
       "img-src 'self' data: blob: https: http:",
       // Conexiones fetch/XHR/WebSocket
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://dolarapi.com https://argentinadatos.com https://api.openweathermap.org https://api.mercadolibre.com https://api.bcra.gob.ar https://apis.datos.gob.ar https://api.anthropic.com https://vercel.live",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://dolarapi.com https://argentinadatos.com https://api.openweathermap.org https://api.mercadolibre.com https://api.bcra.gob.ar https://apis.datos.gob.ar https://api.anthropic.com https://vercel.live https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com",
       // Frames: solo Vercel preview
       "frame-src 'self' https://vercel.live",
       // Manifest y workers

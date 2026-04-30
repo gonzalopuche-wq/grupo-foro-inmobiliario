@@ -227,7 +227,7 @@ Si ES una búsqueda:
 Si NO es una búsqueda (saludo, consulta de contacto, pregunta por inmobiliaria, aviso de comisión compartida): { "es_operacion": false }`;
 
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 700,
       messages: [{ role: "user", content: esOfrecido ? promptOfrecido : promptBusqueda }],
     });
