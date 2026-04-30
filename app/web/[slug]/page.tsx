@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
+import { ContactForm, TasacionForm } from "./WebForms";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -316,16 +317,7 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
             <p className="w-section-desc" style={{ margin: "0 auto 28px" }}>
               Solicitá una tasación profesional sin cargo. Respondemos en menos de 24 horas.
             </p>
-            <div className="w-form">
-              <input className="w-form-input" placeholder="Tu nombre" />
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <input className="w-form-input" placeholder="Email" type="email" />
-                <input className="w-form-input" placeholder="Teléfono / WhatsApp" />
-              </div>
-              <input className="w-form-input" placeholder="Dirección de la propiedad" />
-              <textarea className="w-form-textarea" placeholder="Contanos más sobre la propiedad (tipo, metros, antigüedad...)" />
-              <button className="w-form-btn">Solicitar tasación gratuita</button>
-            </div>
+            <TasacionForm slug={cfg.slug} accent={t.accent} card={t.card} cardBorder={t.cardBorder} text={t.text} textMuted={t.textMuted} />
           </div>
         </section>
       )}
@@ -337,13 +329,7 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
           <h2 className="w-section-h2">Hablemos</h2>
           <p className="w-section-desc">Tengo disponibilidad para atenderte. Completá el formulario o escribime por WhatsApp.</p>
           <div className="w-contacto-grid">
-            <div className="w-form">
-              <input className="w-form-input" placeholder="Tu nombre" />
-              <input className="w-form-input" placeholder="Email" type="email" />
-              <input className="w-form-input" placeholder="Teléfono / WhatsApp" />
-              <textarea className="w-form-textarea" placeholder="¿En qué puedo ayudarte?" />
-              <button className="w-form-btn">Enviar mensaje</button>
-            </div>
+            <ContactForm slug={cfg.slug} accent={t.accent} card={t.card} cardBorder={t.cardBorder} text={t.text} textMuted={t.textMuted} />
             <div className="w-contacto-info">
               {(cfg.whatsapp || perfil.telefono) && (
                 <a href={`https://wa.me/${(cfg.whatsapp || perfil.telefono || "").replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" className="w-contacto-item" style={{ textDecoration:"none" }}>
@@ -418,14 +404,16 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
 
 // ── Page ────────────────────────────────────────────────────────────────────
 
-export default async function WebCorredorPage({ params }: { params: { slug: string } }) {
-  const data = await getData(params.slug);
+export default async function WebCorredorPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const data = await getData(slug);
   if (!data) return notFound();
   return <WebTemplate {...data} />;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const data = await getData(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const data = await getData(slug);
   if (!data) return {};
   const { cfg, perfil } = data;
   return {
