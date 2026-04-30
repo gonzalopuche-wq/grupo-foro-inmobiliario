@@ -129,6 +129,8 @@ export default function ForoPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<BlobPart[]>([]);
   const audioTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
 
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [faqTopics, setFaqTopics] = useState<Topic[]>([]);
@@ -252,7 +254,7 @@ export default function ForoPage() {
     setSubiendoChatAdj(true);
     const nuevos: typeof chatAdjuntos = [];
     for (const file of Array.from(files)) {
-      if (file.size > 20 * 1024 * 1024) { alert(`${file.name} supera 20MB`); continue; }
+      if (file.size > 20 * 1024 * 1024) { showToast(`${file.name} supera 20MB`); continue; }
       const adj = await subirChatAdjunto(file);
       if (adj) nuevos.push(adj);
     }
@@ -278,7 +280,7 @@ export default function ForoPage() {
       setGrabando(true);
       setAudioSegundos(0);
       audioTimerRef.current = setInterval(() => setAudioSegundos(s => s + 1), 1000);
-    } catch { alert("No se pudo acceder al micrófono. Verificá los permisos del navegador."); }
+    } catch { showToast("No se pudo acceder al micrófono. Verificá los permisos del navegador."); }
   };
 
   const detenerGrabacion = () => {
@@ -304,7 +306,7 @@ export default function ForoPage() {
     const path = `foro_chat/${nombre}`;
     const file = new File([audioBlob], nombre, { type: audioBlob.type });
     const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl: "3600", upsert: false });
-    if (error) { alert("Error al subir audio"); setSubiendoAudio(false); return; }
+    if (error) { showToast("Error al subir audio"); setSubiendoAudio(false); return; }
     const { data: urlData } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
     const adj = { url: urlData.publicUrl, nombre, tipo: "audio" as any, tamano: audioBlob.size };
     const insertData: any = { user_id: userId, body: "🎙 Audio", adjuntos: [adj] };
@@ -878,7 +880,7 @@ export default function ForoPage() {
                               { icon: "✏", label: "Editar", action: () => { setChatEditId(m.id); setChatEditText(m.body); setChatMenuId(null); setTimeout(() => chatEditRef.current?.focus(), 50); } },
                               { icon: "🗑", label: "Eliminar", action: () => eliminarChatMsg(m.id), danger: true },
                             ] : [
-                              { icon: "🚩", label: "Reportar", action: () => { alert("Mensaje reportado al admin."); setChatMenuId(null); } },
+                              { icon: "🚩", label: "Reportar", action: () => { showToast("Mensaje reportado al admin."); setChatMenuId(null); } },
                             ]),
                           ] as any[]).map(({ icon, label, action, danger }) => (
                             <button key={label} onClick={action}
@@ -1130,6 +1132,12 @@ export default function ForoPage() {
       )}
 
       {perfilRapidoId && <PerfilRapidoModal perfilId={perfilRapidoId} miUserId={userId} onClose={() => setPerfilRapidoId(null)} />}
+
+      {toast && (
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "90vw", textAlign: "center" }}>
+          {toast}
+        </div>
+      )}
     </>
   );
 }

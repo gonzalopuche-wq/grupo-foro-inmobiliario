@@ -50,6 +50,8 @@ export default function GrupoChatPage() {
   const [audioUrl, setAudioUrl] = useState<string|null>(null);
   const [audioSeg, setAudioSeg] = useState(0);
   const [subiendoAudio, setSubiendoAudio] = useState(false);
+  const [toast, setToast] = useState<string|null>(null);
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
   const mrRef = useRef<MediaRecorder|null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval>|null>(null);
@@ -138,7 +140,7 @@ export default function GrupoChatPage() {
   const manejarArchivos = async (files: FileList|null) => {
     if (!files) return; setSubiendoAdj(true);
     const nuevos: Adjunto[] = [];
-    for (const f of Array.from(files)) { if (f.size > 20*1024*1024) { alert(`${f.name} supera 20MB`); continue; } const a = await subirAdj(f); if (a) nuevos.push(a); }
+    for (const f of Array.from(files)) { if (f.size > 20*1024*1024) { showToast(`${f.name} supera 20MB`); continue; } const a = await subirAdj(f); if (a) nuevos.push(a); }
     setAdjuntos(prev => [...prev, ...nuevos]); setSubiendoAdj(false);
   };
 
@@ -152,7 +154,7 @@ export default function GrupoChatPage() {
       mr.onstop = () => { const blob = new Blob(chunksRef.current, {type:mime}); setAudioBlob(blob); setAudioUrl(URL.createObjectURL(blob)); stream.getTracks().forEach(t => t.stop()); };
       mr.start(); setGrabando(true); setAudioSeg(0);
       timerRef.current = setInterval(() => setAudioSeg(s => s+1), 1000);
-    } catch { alert("No se pudo acceder al micrófono."); }
+    } catch { showToast("No se pudo acceder al micrófono. Verificá los permisos del navegador."); }
   };
 
   const detenerGrab = () => { mrRef.current?.stop(); setGrabando(false); if (timerRef.current) clearInterval(timerRef.current); };
@@ -165,7 +167,7 @@ export default function GrupoChatPage() {
     const path = `grupos/${grupoId}/${nombre}`;
     const file = new File([audioBlob], nombre, { type: audioBlob.type });
     const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl:"3600", upsert:false });
-    if (error) { alert("Error al subir audio"); setSubiendoAudio(false); return; }
+    if (error) { showToast("Error al subir audio"); setSubiendoAudio(false); return; }
     const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
     const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
     if (replyMsg?.id) ins.reply_id = replyMsg.id;
@@ -334,7 +336,7 @@ export default function GrupoChatPage() {
                             {m.texto && <button className="gc-mb" onClick={()=>{navigator.clipboard.writeText(m.texto??"");setMenuId(null);}}><span style={{width:22,textAlign:"center"}}>📋</span>Copiar</button>}
                             {mio && m.texto && <button className="gc-mb" onClick={()=>{setEditandoId(m.id);setEditText(m.texto??"");setMenuId(null);setTimeout(()=>editRef.current?.focus(),50);}}><span style={{width:22,textAlign:"center"}}>✏️</span>Editar</button>}
                             {mio && <button className="gc-mb r" onClick={()=>eliminar(m.id)}><span style={{width:22,textAlign:"center"}}>🗑</span>Eliminar</button>}
-                            {!mio && <button className="gc-mb" onClick={()=>{alert("Reportado al admin.");setMenuId(null);}}><span style={{width:22,textAlign:"center"}}>🚩</span>Reportar</button>}
+                            {!mio && <button className="gc-mb" onClick={()=>{showToast("Mensaje reportado al admin.");setMenuId(null);}}><span style={{width:22,textAlign:"center"}}>🚩</span>Reportar</button>}
                           </div>
                         )}
 
@@ -418,6 +420,12 @@ export default function GrupoChatPage() {
           )}
         </div>
       </div>
+
+      {toast && (
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "90vw", textAlign: "center" }}>
+          {toast}
+        </div>
+      )}
     </>
   );
 }
