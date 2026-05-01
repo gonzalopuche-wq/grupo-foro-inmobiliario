@@ -32,6 +32,9 @@ export default function TasadorIAPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState<string | null>(null);
+  const [historial, setHistorial] = useState<any[]>([]);
+  const [historialLoading, setHistorialLoading] = useState(false);
+  const [mostrarHistorial, setMostrarHistorial] = useState(false);
 
   const mostrarToast = (msg: string) => {
     setToast(msg);
@@ -56,6 +59,27 @@ export default function TasadorIAPage() {
       if (data.error) { setError(data.error); } else { setResultado(data); }
     } catch { setError("Error de conexión."); }
     setLoading(false);
+  };
+
+  const cargarHistorial = async () => {
+    if (historialLoading) return;
+    setHistorialLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setHistorialLoading(false); return; }
+    const { data } = await supabase
+      .from("tasaciones_historial")
+      .select("id, datos_propiedad, resultado, created_at")
+      .eq("perfil_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    setHistorial(data ?? []);
+    setHistorialLoading(false);
+  };
+
+  const toggleHistorial = () => {
+    const nuevo = !mostrarHistorial;
+    setMostrarHistorial(nuevo);
+    if (nuevo && historial.length === 0) cargarHistorial();
   };
 
   const guardarHistorial = async () => {
@@ -408,6 +432,62 @@ export default function TasadorIAPage() {
       </div>
 
       {toast && <div className="toast-fixed">{toast}</div>}
+
+      {/* Historial de tasaciones */}
+      <div style={{ maxWidth: 900, margin: "28px 0 0" }}>
+        <button
+          onClick={toggleHistorial}
+          style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", cursor: "pointer", padding: "0 0 14px" }}
+        >
+          <span>{mostrarHistorial ? "▲" : "▼"}</span>
+          Historial de tasaciones
+          {historial.length > 0 && <span style={{ color: "rgba(255,255,255,0.25)" }}>({historial.length})</span>}
+        </button>
+
+        {mostrarHistorial && (
+          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "16px 20px" }}>
+            {historialLoading ? (
+              <div style={{ textAlign: "center", padding: 24, color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Cargando historial…</div>
+            ) : historial.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 24, color: "rgba(255,255,255,0.25)", fontSize: 13 }}>
+                Todavía no guardaste ninguna tasación.
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {historial.map(h => {
+                  const dp = h.datos_propiedad ?? {};
+                  const res = h.resultado ?? {};
+                  const fecha = new Date(h.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "2-digit" });
+                  return (
+                    <div key={h.id} style={{ display: "flex", alignItems: "center", gap: 16, padding: "12px 16px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, flexWrap: "wrap" }}>
+                      <div style={{ flex: 1, minWidth: 200 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", fontFamily: "Montserrat,sans-serif", marginBottom: 3 }}>
+                          {dp.tipo ?? "Propiedad"} {dp.operacion ? `· ${dp.operacion}` : ""}
+                          {dp.barrio ? ` · ${dp.barrio}` : ""}
+                          {dp.ciudad ? `, ${dp.ciudad}` : ""}
+                        </div>
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+                          {[dp.superficie_cubierta && `${dp.superficie_cubierta}m²`, dp.dormitorios && `${dp.dormitorios} dorm.`, dp.estado].filter(Boolean).join(" · ")}
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        {res.valor_sugerido ? (
+                          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#22c55e" }}>
+                            USD {Number(res.valor_sugerido).toLocaleString("es-AR")}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Sin valor</div>
+                        )}
+                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>{fecha}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </>
   );
 }
