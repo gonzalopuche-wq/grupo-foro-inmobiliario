@@ -239,7 +239,7 @@ export default function DashboardPage() {
     { icon: "🌐", label: "Mi web", href: "/mi-web", primary: false },
     { icon: "📬", label: "Leads", href: "/mi-web/leads", primary: false, badge: miStats.leads > 0 ? miStats.leads : 0 },
     { icon: "🎯", label: "Prospectos", href: "/crm/smart-prospecting", primary: false },
-    { icon: "📊", label: "Tasador IA", href: "/cartera/tasador-ia", primary: false },
+    { icon: "📊", label: "Tasador IA", href: "/comparables/tasador", primary: false },
     { icon: "⚙️", label: "Parámetros", href: "/cartera/parametros", primary: false },
   ];
 
