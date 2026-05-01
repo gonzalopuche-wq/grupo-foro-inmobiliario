@@ -201,7 +201,7 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
             : <>{titulo.split(" ")[0]}<span>.</span></>}
         </div>
         <nav className="w-nav">
-          <a href="#propiedades">Propiedades</a>
+          <a href={`/web/${cfg.slug}/propiedades`}>Propiedades</a>
           {cfg.mostrar_sobre_mi && <a href="#sobre-mi">Sobre mí</a>}
           {cfg.mostrar_formulario_tasacion && <a href="#tasacion">Tasación</a>}
           <a href="#contacto">Contacto</a>
@@ -251,9 +251,16 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
       {/* ── PROPIEDADES ── */}
       {cfg.mostrar_propiedades_destacadas && propiedades.length > 0 && (
         <section className="w-section" id="propiedades">
-          <div className="w-section-tag">Propiedades</div>
-          <h2 className="w-section-h2">Disponibles ahora</h2>
-          <p className="w-section-desc">Explorá las propiedades que tengo disponibles. Todas verificadas y listas para mostrarte.</p>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 36, flexWrap: "wrap", gap: 12 }}>
+            <div>
+              <div className="w-section-tag">Propiedades</div>
+              <h2 className="w-section-h2" style={{ marginBottom: 6 }}>Disponibles ahora</h2>
+              <p className="w-section-desc" style={{ marginBottom: 0 }}>Explorá las propiedades que tengo disponibles. Todas verificadas y listas para mostrarte.</p>
+            </div>
+            <a href={`/web/${cfg.slug}/propiedades`} style={{ padding: "10px 20px", border: `2px solid ${t.accent}`, borderRadius: 6, fontSize: 12, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: t.accent, letterSpacing: "0.06em", whiteSpace: "nowrap", flexShrink: 0 }}>
+              Ver todas →
+            </a>
+          </div>
           <div className="w-props-grid">
             {propiedades.map(p => (
               <a key={p.id} href={`/web/${cfg.slug}/propiedad/${p.id}`} className="w-prop-card">
