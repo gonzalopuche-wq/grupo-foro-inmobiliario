@@ -47,16 +47,16 @@ export default async function FichaPage({ params }: Props) {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { background: #f5f5f5; }
-        body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #111; }
+        body { font-family: 'Inter', sans-serif; }
         a { text-decoration: none; color: inherit; }
 
-        .toolbar { background: #0a0a0a; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .toolbar-back { color: rgba(255,255,255,0.5); font-size: 12px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; text-decoration: none; transition: color 0.15s; }
+        .toolbar { padding: 0 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .toolbar-back { color: rgba(255,255,255,0.4); font-size: 12px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; text-decoration: none; transition: color 0.15s; }
         .toolbar-back:hover { color: #fff; }
-        .toolbar-title { color: rgba(255,255,255,0.4); font-size: 11px; font-family: 'Montserrat',sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+        .toolbar-title { color: rgba(255,255,255,0.25); font-size: 11px; font-family: 'Montserrat',sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
         .toolbar-actions { display: flex; gap: 10px; align-items: center; }
 
-        .ficha { max-width: 800px; margin: 24px auto 64px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 40px rgba(0,0,0,0.1); }
+        .ficha { max-width: 800px; margin: 0 auto 64px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 40px rgba(0,0,0,0.15); }
 
         /* Photo gallery */
         .ficha-fotos { position: relative; height: 340px; background: #e5e5e5; overflow: hidden; }
