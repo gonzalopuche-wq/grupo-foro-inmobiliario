@@ -46,6 +46,11 @@ function formatFechaCorta(fecha: string) {
   return `${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+function extractYouTubeId(url: string): string | null {
+  const match = url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
 const FORM_VACIO = {
   titulo: "", mentor_nombre: "", descripcion: "", fecha: "", hora: "18:00",
   plataforma: "youtube" as "youtube" | "zoom" | "meet", link_live: "", link_grabacion: "", estado: "proxima" as "proxima" | "en_vivo" | "grabada",
@@ -71,6 +76,7 @@ export default function CanalEducativoPage() {
   const [form, setForm] = useState(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
   const [toast, setToast] = useState<{ msg: string; tipo: "ok" | "err" } | null>(null);
+  const [reproduciendo, setReproduciendo] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -465,34 +471,58 @@ export default function CanalEducativoPage() {
                 ) : (
                   grabadas.map(s => {
                     const d = new Date(s.fecha + "T12:00:00");
+                    const ytId = s.link_grabacion ? extractYouTubeId(s.link_grabacion) : null;
+                    const isPlaying = reproduciendo === s.id;
                     return (
-                      <div key={s.id} className="ce-archivo-item">
-                        <div className="ce-archivo-fecha">
-                          <div className="ce-archivo-fecha-dia">{d.getDate()}</div>
-                          <div className="ce-archivo-fecha-mes">{MESES[d.getMonth()]}</div>
+                      <div key={s.id} style={{ marginBottom: 10 }}>
+                        <div className="ce-archivo-item" style={{ marginBottom: 0, borderBottomLeftRadius: isPlaying ? 0 : undefined, borderBottomRightRadius: isPlaying ? 0 : undefined, borderBottom: isPlaying ? "none" : undefined }}>
+                          <div className="ce-archivo-fecha">
+                            <div className="ce-archivo-fecha-dia">{d.getDate()}</div>
+                            <div className="ce-archivo-fecha-mes">{MESES[d.getMonth()]}</div>
+                          </div>
+                          <div className="ce-archivo-info">
+                            <div className="ce-archivo-titulo">{s.titulo}</div>
+                            <div className="ce-archivo-mentor">Mentor: {s.mentor_nombre} · {formatFechaCorta(s.fecha)}</div>
+                            {s.descripcion && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>{s.descripcion}</div>}
+                          </div>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                            {s.link_grabacion ? (
+                              ytId ? (
+                                <button
+                                  className="ce-btn ce-btn-plat"
+                                  style={{ fontSize: 12, padding: "6px 14px", background: isPlaying ? "rgba(255,50,50,0.15)" : undefined, borderColor: isPlaying ? "rgba(255,50,50,0.35)" : undefined, color: isPlaying ? "#ff6666" : undefined }}
+                                  onClick={() => setReproduciendo(isPlaying ? null : s.id)}
+                                >
+                                  {isPlaying ? "✕ Cerrar" : "▶ Reproducir"}
+                                </button>
+                              ) : (
+                                <a href={s.link_grabacion} target="_blank" rel="noreferrer">
+                                  <button className="ce-btn ce-btn-plat" style={{ fontSize: 12, padding: "6px 14px" }}>
+                                    ▶ Ver grabación
+                                  </button>
+                                </a>
+                              )
+                            ) : (
+                              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.2)" }}>Sin grabación</span>
+                            )}
+                            {esAdmin && (
+                              <>
+                                <button className="ce-btn ce-btn-ghost" style={{ fontSize: 11, padding: "4px 10px" }} onClick={() => editarSesion(s)}>Editar</button>
+                                <button className="ce-btn ce-btn-ghost" style={{ fontSize: 11, padding: "4px 10px", color: "#f87171" }} onClick={() => eliminarSesion(s.id)}>✕</button>
+                              </>
+                            )}
+                          </div>
                         </div>
-                        <div className="ce-archivo-info">
-                          <div className="ce-archivo-titulo">{s.titulo}</div>
-                          <div className="ce-archivo-mentor">Mentor: {s.mentor_nombre} · {formatFechaCorta(s.fecha)}</div>
-                          {s.descripcion && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>{s.descripcion}</div>}
-                        </div>
-                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                          {s.link_grabacion ? (
-                            <a href={s.link_grabacion} target="_blank" rel="noreferrer">
-                              <button className="ce-btn ce-btn-plat" style={{ fontSize: 12, padding: "6px 14px" }}>
-                                ▶ Ver grabación
-                              </button>
-                            </a>
-                          ) : (
-                            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.2)" }}>Sin grabación</span>
-                          )}
-                          {esAdmin && (
-                            <>
-                              <button className="ce-btn ce-btn-ghost" style={{ fontSize: 11, padding: "4px 10px" }} onClick={() => editarSesion(s)}>Editar</button>
-                              <button className="ce-btn ce-btn-ghost" style={{ fontSize: 11, padding: "4px 10px", color: "#f87171" }} onClick={() => eliminarSesion(s.id)}>✕</button>
-                            </>
-                          )}
-                        </div>
+                        {isPlaying && ytId && (
+                          <div style={{ background: "#000", border: "1px solid rgba(255,255,255,0.06)", borderTop: "none", borderBottomLeftRadius: 10, borderBottomRightRadius: 10, overflow: "hidden", aspectRatio: "16/9" }}>
+                            <iframe
+                              src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`}
+                              style={{ width: "100%", height: "100%", border: "none", display: "block" }}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
+                        )}
                       </div>
                     );
                   })
