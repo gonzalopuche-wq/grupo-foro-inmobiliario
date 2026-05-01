@@ -364,9 +364,46 @@ export default function CarteraPage() {
   };
 
   // ── Abrir wizard ──────────────────────────────────────────────────────────
-  const abrirNueva = () => {
-    setEditandoId(null); setForm(FORM_VACIO);
+  const abrirNueva = async () => {
+    setEditandoId(null);
     setFotosNuevas([]); setFotosExistentes([]);
+
+    // Cargar parámetros del corredor para pre-llenar defaults
+    let base = { ...FORM_VACIO };
+    if (userId) {
+      const { data: params } = await supabase
+        .from("cartera_parametros")
+        .select("*")
+        .eq("perfil_id", userId)
+        .single();
+      if (params) {
+        base = {
+          ...base,
+          operacion: params.operacion_default ?? "Venta",
+          tipo: params.tipo_default ?? "Departamento",
+          moneda: params.moneda_default ?? "USD",
+          ciudad: params.ciudad_default ?? "Rosario",
+          zona: params.zona_default ?? "",
+          honorario_propietario: params.honorario_propietario_default ? String(params.honorario_propietario_default) : "",
+          honorario_comprador: params.honorario_comprador_default ? String(params.honorario_comprador_default) : "",
+          honorario_compartir: params.honorario_compartir_default ?? "No comparte",
+          descripcion_privada: params.nota_interna_default ?? "",
+          // Código automático
+          codigo: params.codigo_prefijo
+            ? `${params.codigo_prefijo}-${String(params.codigo_contador).padStart(3, "0")}`
+            : "",
+        };
+        // Incrementar contador si hay prefijo
+        if (params.codigo_prefijo) {
+          await supabase
+            .from("cartera_parametros")
+            .update({ codigo_contador: (params.codigo_contador ?? 0) + 1 })
+            .eq("perfil_id", userId);
+        }
+      }
+    }
+
+    setForm(base);
     setPaso(1); setMostrarWizard(true);
   };
 
