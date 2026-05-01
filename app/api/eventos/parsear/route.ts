@@ -33,13 +33,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Sin texto" }, { status: 400 });
     }
 
-    const response = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1000,
-      tools: [eventoTool],
-      tool_choice: { type: "tool", name: "evento_parseado" },
-      messages: [{
-        role: "user",
+    const messages = [
+      {
+        role: "user" as const,
         content: `Analiza este texto de un evento inmobiliario y extraé los datos estructurados.
 
 Reglas:
@@ -53,7 +49,23 @@ Reglas:
 
 TEXTO:
 ${texto}`,
-      }],
+      },
+    ];
+
+    const safeMessages = messages
+      .map(m => ({ role: m.role, content: (m.content || "").trim() }))
+      .filter(m => m.content.length > 0);
+
+    if (safeMessages.length === 0) {
+      return NextResponse.json({ error: "Sin texto para procesar" }, { status: 400 });
+    }
+
+    const response = await anthropic.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 1000,
+      tools: [eventoTool],
+      tool_choice: { type: "tool", name: "evento_parseado" },
+      messages: safeMessages,
     });
 
     const toolUse = response.content.find(b => b.type === "tool_use");

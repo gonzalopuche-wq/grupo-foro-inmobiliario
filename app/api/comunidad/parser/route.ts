@@ -226,10 +226,20 @@ Si ES una búsqueda:
 
 Si NO es una búsqueda (saludo, consulta de contacto, pregunta por inmobiliaria, aviso de comisión compartida): { "es_operacion": false }`;
 
+    const messages = [{ role: "user" as const, content: esOfrecido ? promptOfrecido : promptBusqueda }];
+
+    const safeMessages = messages
+      .map(m => ({ role: m.role, content: (m.content || "").trim() }))
+      .filter(m => m.content.length > 0);
+
+    if (safeMessages.length === 0) {
+      return NextResponse.json({ cargado: false, motivo: "empty_content" });
+    }
+
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 700,
-      messages: [{ role: "user", content: esOfrecido ? promptOfrecido : promptBusqueda }],
+      messages: safeMessages,
     });
 
     let parsed: any;

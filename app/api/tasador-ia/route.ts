@@ -44,13 +44,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1500,
-      tools: [tasacionTool],
-      tool_choice: { type: "tool", name: "tasacion_result" },
-      messages: [{
-        role: "user",
+    const messages = [
+      {
+        role: "user" as const,
         content: `Sos un tasador inmobiliario experto en el mercado argentino (especialmente Rosario y Gran Buenos Aires).
 Analizá la siguiente propiedad y generá una tasación profesional:
 
@@ -72,7 +68,23 @@ ${datos.sup_total ? `- Superficie total: ${datos.sup_total} m²` : ""}
 - Observaciones: ${datos.observaciones || "Ninguna"}
 
 Usá la herramienta tasacion_result para devolver el análisis completo.`,
-      }],
+      },
+    ];
+
+    const safeMessages = messages
+      .map(m => ({ role: m.role, content: (m.content || "").trim() }))
+      .filter(m => m.content.length > 0);
+
+    if (safeMessages.length === 0) {
+      return NextResponse.json({ error: "Sin contenido para procesar." }, { status: 400 });
+    }
+
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      tools: [tasacionTool],
+      tool_choice: { type: "tool", name: "tasacion_result" },
+      messages: safeMessages,
     });
 
     const toolUse = response.content.find(b => b.type === "tool_use");

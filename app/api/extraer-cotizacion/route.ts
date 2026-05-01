@@ -60,12 +60,27 @@ Usá la herramienta cotizacion_extraida con los valores encontrados. Si no podé
       });
     }
 
+    const messages = [{ role: "user" as const, content }];
+
+    const safeMessages = messages
+      .map(m => ({
+        role: m.role,
+        content: Array.isArray(m.content)
+          ? m.content.filter(b => b.type !== "text" || (b.type === "text" && (b.text || "").trim().length > 0))
+          : m.content,
+      }))
+      .filter(m => (Array.isArray(m.content) ? m.content.length > 0 : (m.content || "").trim().length > 0));
+
+    if (safeMessages.length === 0) {
+      return NextResponse.json({ error: "Sin contenido para procesar." }, { status: 400 });
+    }
+
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 256,
       tools: [cotizacionTool],
       tool_choice: { type: "tool", name: "cotizacion_extraida" },
-      messages: [{ role: "user", content }],
+      messages: safeMessages,
     });
 
     const toolUse = response.content.find(b => b.type === "tool_use");
