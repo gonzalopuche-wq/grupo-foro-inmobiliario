@@ -32,6 +32,11 @@ const NAV_CORREDOR = [
   { href: "/referidos", label: "Referidos", icon: "🤝" },
   { href: "/contratos", label: "Contratos", icon: "📄" },
   { href: "/notificaciones", label: "Notificaciones", icon: "🔔" },
+  { href: "/ideas", label: "Ideas", icon: "💡" },
+  { href: "/metas", label: "Metas", icon: "🎯" },
+  { href: "/legal", label: "Legal", icon: "⚖️" },
+  { href: "/marketplace", label: "Marketplace", icon: "🏪" },
+  { href: "/directorios", label: "Directorios", icon: "📒" },
 ];
 
 // ── Nav colaborador (acceso restringido) ───────────────────────────────────
