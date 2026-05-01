@@ -253,6 +253,8 @@ export default function CarteraPage() {
   // Sync
   const [syncData, setSyncData] = useState<Record<string, any>>({});
   const [sincronizando, setSincronizando] = useState<string | null>(null);
+  const [generandoDesc, setGenerandoDesc] = useState(false);
+  const [tonoDesc, setTonoDesc] = useState<'profesional' | 'premium' | 'amigable' | 'vendedor'>('profesional');
 
   useEffect(() => {
     const init = async () => {
@@ -1130,6 +1132,28 @@ export default function CarteraPage() {
                   <div className="wiz-section">
                     <div className="wiz-section-title"><span className="wiz-section-ico">📝</span>Descripción pública</div>
                     <div className="wiz-field">
+                      {/* IA Descripción */}
+                      <div style={{marginBottom:10,padding:"10px 12px",background:"rgba(204,0,0,0.06)",border:"1px solid rgba(204,0,0,0.15)",borderRadius:8}}>
+                        <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginBottom:8,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em"}}>🤖 GENERAR CON IA</div>
+                        <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                          {(["profesional","premium","amigable","vendedor"] as const).map(t => (
+                            <button key={t} onClick={() => setTonoDesc(t)} type="button" style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,textTransform:"capitalize",background:tonoDesc===t?"rgba(204,0,0,0.2)":"rgba(255,255,255,0.05)",color:tonoDesc===t?"#ff6666":"rgba(255,255,255,0.4)",outline:tonoDesc===t?"1px solid rgba(204,0,0,0.3)":"none"}}>
+                              {t}
+                            </button>
+                          ))}
+                        </div>
+                        <button type="button" disabled={generandoDesc} onClick={async () => {
+                          setGenerandoDesc(true);
+                          try {
+                            const res = await fetch("/api/ia-descripcion", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({propiedad:form,tono:tonoDesc})});
+                            const {descripcion} = await res.json();
+                            if (descripcion) setF("descripcion", descripcion);
+                          } catch {}
+                          setGenerandoDesc(false);
+                        }} style={{padding:"6px 14px",background:"#cc0000",color:"#fff",border:"none",borderRadius:6,fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer",opacity:generandoDesc?0.5:1}}>
+                          {generandoDesc ? "Generando..." : "✨ Generar descripción"}
+                        </button>
+                      </div>
                       <textarea className="wiz-textarea" value={form.descripcion} onChange={e => setF("descripcion", e.target.value)} rows={5} placeholder="Descripción que verán los interesados..." style={{width:"100%",boxSizing:"border-box"}} />
                     </div>
                     <div className="wiz-field">

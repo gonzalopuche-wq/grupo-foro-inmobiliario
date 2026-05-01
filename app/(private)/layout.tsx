@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../lib/supabase";
+import IAChatFlotante from "./components/IAChatFlotante";
 
 // ── Nav corredor matriculado (acceso completo) ─────────────────────────────
 const NAV_CORREDOR = [
@@ -27,6 +28,10 @@ const NAV_CORREDOR = [
   { href: "/proveedores", label: "Proveedores", icon: "🏢" },
   { href: "/perfil", label: "Mi Perfil", icon: "👤" },
   { href: "/mi-web", label: "Mi Web", icon: "🌐" },
+  { href: "/reportes", label: "Reportes", icon: "📉" },
+  { href: "/referidos", label: "Referidos", icon: "🤝" },
+  { href: "/contratos", label: "Contratos", icon: "📄" },
+  { href: "/notificaciones", label: "Notificaciones", icon: "🔔" },
 ];
 
 // ── Nav colaborador (acceso restringido) ───────────────────────────────────
@@ -242,6 +247,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           </div>
         </main>
       </div>
+      <IAChatFlotante />
     </>
   );
 }
