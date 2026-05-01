@@ -160,9 +160,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug, postSlug } = await params;
   const { data: cfg } = await supabase.from("web_corredor_config").select("perfil_id, titulo_sitio").eq("slug", slug).single();
   if (!cfg) return {};
-  const { data: post } = await supabase.from("mi_web_posts").select("titulo, resumen").eq("perfil_id", cfg.perfil_id).eq("slug", postSlug).single();
+  const { data: post } = await supabase.from("mi_web_posts").select("titulo, resumen, imagen_url").eq("perfil_id", cfg.perfil_id).eq("slug", postSlug).single();
+  const title = post?.titulo ?? "Artículo";
+  const description = (post as any)?.resumen ?? "";
+  const url = `https://foroinmobiliario.com.ar/web/${slug}/blog/${postSlug}`;
+  const image = (post as any)?.imagen_url ?? null;
   return {
-    title: post?.titulo ?? "Artículo",
-    description: post?.resumen ?? "",
+    title,
+    description,
+    openGraph: {
+      title, description, url, type: "article" as const,
+      ...(image ? { images: [{ url: image, width: 1200, height: 630 }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image" as const, title, description,
+      ...(image ? { images: [image] } : {}),
+    },
   };
 }

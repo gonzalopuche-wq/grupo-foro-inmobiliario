@@ -423,8 +423,25 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const data = await getData(slug);
   if (!data) return {};
   const { cfg, perfil } = data;
+  const title = cfg.seo_titulo || cfg.titulo_sitio || `${perfil.nombre} ${perfil.apellido} · Corredor Inmobiliario`;
+  const description = cfg.seo_descripcion || `Corredor inmobiliario matriculado en Rosario. Compra, venta y alquiler de propiedades.`;
+  const url = `https://foroinmobiliario.com.ar/web/${slug}`;
+  const image = cfg.cover_url || cfg.logo_url || null;
   return {
-    title: cfg.seo_titulo || cfg.titulo_sitio || `${perfil.nombre} ${perfil.apellido} · Corredor Inmobiliario`,
-    description: cfg.seo_descripcion || `Corredor inmobiliario matriculado en Rosario. Compra, venta y alquiler de propiedades.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "website",
+      ...(image ? { images: [{ url: image, width: 1200, height: 630 }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
   };
 }

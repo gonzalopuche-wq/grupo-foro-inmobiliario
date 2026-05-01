@@ -319,8 +319,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const data = await getData(slug, id);
   if (!data) return {};
   const { prop, cfg, perfil } = data;
+  const title = `${prop.titulo} · ${cfg.titulo_sitio || `${perfil.nombre} ${perfil.apellido}`}`;
+  const description = prop.descripcion?.slice(0, 160) ?? `${prop.tipo} en ${prop.operacion} en ${prop.ciudad}.`;
+  const url = `https://foroinmobiliario.com.ar/web/${slug}/propiedad/${id}`;
+  const image = prop.fotos?.[0] ?? null;
   return {
-    title: `${prop.titulo} · ${cfg.titulo_sitio || `${perfil.nombre} ${perfil.apellido}`}`,
-    description: prop.descripcion?.slice(0, 160) ?? `${prop.tipo} en ${prop.operacion} en ${prop.ciudad}.`,
+    title,
+    description,
+    openGraph: {
+      title, description, url, type: "website" as const,
+      ...(image ? { images: [{ url: image, width: 1200, height: 630 }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image" as const, title, description,
+      ...(image ? { images: [image] } : {}),
+    },
   };
 }
