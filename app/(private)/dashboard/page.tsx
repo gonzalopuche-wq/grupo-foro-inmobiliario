@@ -74,9 +74,9 @@ export default function DashboardPage() {
   const [ipcData, setIpcData] = useState<{ acum: Acum; periodo: string; loading: boolean }>({ acum: { mensual: null, trimestral: null, cuatrimestral: null, semestral: null }, periodo: "", loading: true });
   const [jus, setJus] = useState<{ valor: string; loading: boolean }>({ valor: "", loading: true });
   const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0, miembros: 0 });
+  const [miStats, setMiStats] = useState({ cartera: 0, crm: 0, leads: 0, loadingMi: true });
   const [matchesRecientes, setMatchesRecientes] = useState<{ id: string; created_at: string }[]>([]);
   const [proximosEventos, setProximosEventos] = useState<{ id: string; titulo: string; fecha: string; tipo: string; gratuito: boolean }[]>([]);
-  // Colaborador: solo grupos
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [loadingGrupos, setLoadingGrupos] = useState(false);
   const ciudadRef = useRef<HTMLInputElement>(null);
@@ -125,47 +125,54 @@ export default function DashboardPage() {
     setLoadingGrupos(false);
   };
 
+  // Reloj — useEffect propio para que el cleanup funcione correctamente
   useEffect(() => {
-    // Detectar tipo de usuario
+    const tick = () => setHora(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }));
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) { router.push("/login"); return; }
-      supabase.from("perfiles").select("tipo").eq("id", data.user.id).single().then(({ data: p }) => {
+      const uid = data.user.id;
+      supabase.from("perfiles").select("tipo").eq("id", uid).single().then(({ data: p }) => {
         const tipo = p?.tipo === "admin" ? "admin" : p?.tipo === "colaborador" ? "colaborador" : "corredor";
         setTipoUsuario(tipo);
-        if (tipo === "colaborador") {
-          cargarGruposColaborador();
-          return; // colaborador no necesita cargar el resto
-        }
-        // Corredor / Admin: cargar todo
-        cargarDashboardCompleto();
+        if (tipo === "colaborador") { cargarGruposColaborador(); return; }
+        cargarDashboardCompleto(uid);
       });
     });
   }, []);
 
-  const cargarDashboardCompleto = () => {
-    const tick = () => setHora(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }));
-    tick();
-    const clockTimer = setInterval(tick, 1000);
-    // Cleanup al desmontar
-    return () => clearInterval(clockTimer);
-
-    Promise.all([
+  const cargarDashboardCompleto = async (uid: string) => {
+    // Stats de plataforma
+    const [b, o, m, p] = await Promise.all([
       supabase.from("mir_busquedas").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_ofrecidos").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_matches").select("id", { count: "exact", head: true }),
       supabase.from("perfiles").select("id", { count: "exact", head: true }).eq("estado", "activo"),
-    ]).then(([b, o, m, p]) => setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0, miembros: p.count ?? 0 }));
+    ]);
+    setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0, miembros: p.count ?? 0 });
 
+    // Stats personales del corredor
+    const [cartera, crm, leads] = await Promise.all([
+      supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("activo", true),
+      supabase.from("crm_contactos").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("activo", true),
+      supabase.from("web_leads").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("leido", false),
+    ]);
+    setMiStats({ cartera: cartera.count ?? 0, crm: crm.count ?? 0, leads: leads.count ?? 0, loadingMi: false });
+
+    // Matches y eventos
     supabase.from("mir_matches").select("id, created_at").order("created_at", { ascending: false }).limit(5)
       .then(({ data }) => setMatchesRecientes(data ?? []));
-
     supabase.from("eventos").select("id, titulo, fecha, tipo, gratuito")
-      .eq("estado", "publicado")
-      .gte("fecha", new Date().toISOString().split("T")[0])
-      .order("fecha", { ascending: true })
-      .limit(3)
+      .eq("estado", "publicado").gte("fecha", new Date().toISOString().split("T")[0])
+      .order("fecha", { ascending: true }).limit(3)
       .then(({ data }) => setProximosEventos(data ?? []));
 
+    // Clima
     const ciudadGuardada = localStorage.getItem("gfi_ciudad_clima");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -182,6 +189,7 @@ export default function DashboardPage() {
       );
     } else { setClimaError(true); setClimaLoading(false); }
 
+    // Dólar
     supabase.from("divisas_proveedores").select("nombre, compra_usd, venta_usd").eq("activo", true)
       .then(({ data }) => {
         const provs = (data || []).filter((p: any) => p.compra_usd !== null && p.venta_usd !== null);
@@ -189,20 +197,21 @@ export default function DashboardPage() {
           const mejor = provs.reduce((max: any, p: any) => ((p.compra_usd + p.venta_usd) / 2) > ((max.compra_usd + max.venta_usd) / 2) ? p : max);
           setDolar({ compra: mejor.compra_usd, venta: mejor.venta_usd, promedio: Math.round(((mejor.compra_usd + mejor.venta_usd) / 2) * 100) / 100 });
         } else {
-          fetch("https://dolarapi.com/v1/dolares/blue").then(r => r.json()).then(d => { const c = parseFloat(d.compra); const v = parseFloat(d.venta); setDolar({ compra: c, venta: v, promedio: Math.round(((c + v) / 2) * 100) / 100 }); }).catch(() => setDolar(null));
+          fetch("https://dolarapi.com/v1/dolares/blue").then(r => r.json()).then(d => {
+            const c = parseFloat(d.compra); const v = parseFloat(d.venta);
+            setDolar({ compra: c, venta: v, promedio: Math.round(((c + v) / 2) * 100) / 100 });
+          }).catch(() => setDolar(null));
         }
         setDolarLoading(false);
       });
 
+    // Índices
     const hace7 = new Date(); hace7.setMonth(hace7.getMonth() - 7);
     const desde = hace7.toISOString().substring(0, 7);
-
     supabase.from("indicadores_historial").select("valor, periodo").eq("clave", "icl").gte("periodo", desde).order("periodo", { ascending: false })
       .then(({ data }) => { const hist = (data || []).map((h: any) => ({ periodo: h.periodo, valor: Number(h.valor) })); setIclData({ acum: calcICL(hist), periodo: hist[0]?.periodo ?? "", loading: false }); });
-
     supabase.from("indicadores_historial").select("valor, periodo").eq("clave", "ipc").gte("periodo", desde).order("periodo", { ascending: false })
       .then(({ data }) => { const hist = (data || []).map((h: any) => ({ periodo: h.periodo, valor: Number(h.valor) })); setIpcData({ acum: calcIPC(hist), periodo: hist[0]?.periodo ?? "", loading: false }); });
-
     supabase.from("indicadores").select("valor").eq("clave", "valor_jus").single()
       .then(({ data }) => setJus({ valor: data?.valor ? new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(data.valor) : "Sin datos", loading: false }));
   };
@@ -213,7 +222,7 @@ export default function DashboardPage() {
   const climaDesc = clima?.desc ? clima.desc.charAt(0).toUpperCase() + clima.desc.slice(1) : "";
   const colorAcum = (n: number | null) => n !== null ? (n > 0 ? "#f87171" : "#22c55e") : "rgba(255,255,255,0.3)";
 
-  const ACCESOS = [
+  const ACCESOS_MIR = [
     { icon: "🔍", label: "Publicar búsqueda", href: "/mir?nuevo=busqueda", primary: true },
     { icon: "🏠", label: "Publicar ofrecido", href: "/mir?nuevo=ofrecido", primary: true },
     { icon: "💱", label: "Cotizaciones", href: "/cotizaciones", primary: false },
@@ -222,6 +231,16 @@ export default function DashboardPage() {
     { icon: "📋", label: "Padrón", href: "/padron-gfi", primary: false },
     { icon: "📚", label: "Biblioteca", href: "/biblioteca", primary: false },
     { icon: "💰", label: "Suscripción", href: "/suscripcion", primary: false },
+  ];
+
+  const ACCESOS_MI = [
+    { icon: "🏘️", label: "Mi cartera", href: "/cartera", primary: true },
+    { icon: "👥", label: "CRM", href: "/crm", primary: true },
+    { icon: "🌐", label: "Mi web", href: "/mi-web", primary: false },
+    { icon: "📬", label: "Leads", href: "/mi-web/leads", primary: false, badge: miStats.leads > 0 ? miStats.leads : 0 },
+    { icon: "🎯", label: "Prospectos", href: "/crm/smart-prospecting", primary: false },
+    { icon: "📊", label: "Tasador IA", href: "/cartera/tasador-ia", primary: false },
+    { icon: "⚙️", label: "Parámetros", href: "/cartera/parametros", primary: false },
   ];
 
   // ── VISTA COLABORADOR ─────────────────────────────────────────────────────
@@ -341,14 +360,17 @@ export default function DashboardPage() {
         .db-empty { font-size: 13px; color: rgba(255,255,255,0.2); text-align: center; padding: 24px 0; font-style: italic; }
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 4px; animation: pulse 1.5s ease-in-out infinite; }
         @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @media (max-width: 1100px) {
+          .db-accesos-grid { grid-template-columns: repeat(4,1fr) !important; }
+        }
         @media (max-width: 900px) {
           .db-top-row { grid-template-columns: 1fr; }
-          .db-accesos-grid { grid-template-columns: repeat(4,1fr); }
+          .db-accesos-grid { grid-template-columns: repeat(4,1fr) !important; }
           .db-bottom-row { grid-template-columns: 1fr; }
           .db-hoy-grid { grid-template-columns: repeat(2,1fr); }
           .db-indicadores { grid-template-columns: repeat(2,1fr); }
         }
-        @media (max-width: 600px) { .db-accesos-grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 600px) { .db-accesos-grid { grid-template-columns: repeat(2,1fr) !important; } }
       `}</style>
 
       <div className="db-fecha">{hoy}</div>
@@ -358,7 +380,29 @@ export default function DashboardPage() {
         <NoticiasWidget />
       </div>
 
-      {/* 2. ZÓCALO HOY EN GFI */}
+      {/* 2. MI PANEL — stats personales del corredor */}
+      <div style={{marginBottom:16}}>
+        <div className="db-sec-titulo">Mi panel</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
+          {[
+            { n: miStats.loadingMi ? "…" : miStats.cartera.toString(), l: "Propiedades activas", ic: "🏘️", href: "/cartera", color: "#cc0000" },
+            { n: miStats.loadingMi ? "…" : miStats.crm.toString(), l: "Contactos CRM", ic: "👥", href: "/crm", color: "#3b82f6" },
+            { n: miStats.loadingMi ? "…" : miStats.leads.toString(), l: "Leads sin leer", ic: "📬", href: "/mi-web/leads", color: miStats.leads > 0 ? "#f59e0b" : "rgba(255,255,255,0.3)" },
+          ].map(({ n, l, ic, href, color }) => (
+            <a key={l} href={href} style={{background:"rgba(14,14,14,0.9)",border:`1px solid rgba(255,255,255,0.07)`,borderRadius:8,padding:"16px 20px",display:"flex",alignItems:"center",gap:14,textDecoration:"none",transition:"border-color 0.2s"}}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)")}>
+              <span style={{fontSize:26,flexShrink:0}}>{ic}</span>
+              <div>
+                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:28,fontWeight:800,color,lineHeight:1}}>{n}</div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:4,fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>{l}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* 3. ZÓCALO HOY EN GFI */}
       <div style={{
         display:"flex",alignItems:"stretch",
         background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",
@@ -445,9 +489,24 @@ export default function DashboardPage() {
 
       {/* 4. ACCESOS RÁPIDOS */}
       <div className="db-accesos">
-        <div className="db-sec-titulo">Accesos rápidos</div>
+        <div className="db-sec-titulo">Mis herramientas</div>
+        <div className="db-accesos-grid" style={{gridTemplateColumns:"repeat(7,1fr)"}}>
+          {ACCESOS_MI.map((a, i) => (
+            <a key={i} className={`db-acceso${a.primary ? " primary" : ""}`} href={a.href} style={{position:"relative"}}>
+              <span className="db-acceso-icon">{a.icon}</span>
+              <span className="db-acceso-label">{a.label}</span>
+              {(a.badge ?? 0) > 0 && (
+                <span style={{position:"absolute",top:8,right:8,background:"#f59e0b",color:"#000",fontSize:9,fontWeight:800,padding:"1px 5px",borderRadius:10,fontFamily:"'Montserrat',sans-serif"}}>
+                  {a.badge}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+
+        <div className="db-sec-titulo" style={{marginTop:20}}>Comunidad GFI</div>
         <div className="db-accesos-grid">
-          {ACCESOS.map((a, i) => (
+          {ACCESOS_MIR.map((a, i) => (
             <a key={i} className={`db-acceso${a.primary ? " primary" : ""}`} href={a.href}>
               <span className="db-acceso-icon">{a.icon}</span>
               <span className="db-acceso-label">{a.label}</span>

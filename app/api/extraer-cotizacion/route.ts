@@ -60,16 +60,14 @@ Usá la herramienta cotizacion_extraida con los valores encontrados. Si no podé
       });
     }
 
-    const messages = [{ role: "user" as const, content }];
+    // content is always an array of blocks here; filter out empty text blocks
+    const safeContent = content.filter(
+      b => b.type !== "text" || ((b as { type: "text"; text: string }).text || "").trim().length > 0
+    );
 
-    const safeMessages = messages
-      .map(m => ({
-        role: m.role,
-        content: Array.isArray(m.content)
-          ? m.content.filter(b => b.type !== "text" || (b.type === "text" && (b.text || "").trim().length > 0))
-          : m.content,
-      }))
-      .filter(m => (Array.isArray(m.content) ? m.content.length > 0 : (m.content || "").trim().length > 0));
+    const safeMessages = safeContent.length > 0
+      ? [{ role: "user" as const, content: safeContent }]
+      : [];
 
     if (safeMessages.length === 0) {
       return NextResponse.json({ error: "Sin contenido para procesar." }, { status: 400 });
