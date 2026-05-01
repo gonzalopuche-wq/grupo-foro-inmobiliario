@@ -810,6 +810,7 @@ export default function CarteraPage() {
                   </div>
                   <div className="cart-card-acciones">
                     <button className="cart-acc-btn cart-acc-editar" onClick={() => abrirEditar(p)}>Editar</button>
+                    <a href={`/cartera/ficha/${p.id}`} target="_blank" rel="noopener noreferrer" className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.45)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}}>📄 Ficha</a>
                     <select className="cart-estado-select" value={p.estado} onChange={e => cambiarEstado(p.id, e.target.value)}>
                       {ESTADOS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </select>
