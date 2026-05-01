@@ -431,10 +431,24 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 3. CLIMA */}
+      {/* 3. CLIMA + ACCESOS RÁPIDOS PERSONALES */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 220px",gap:16,marginBottom:20,alignItems:"start"}}>
-        <div style={{background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 20px",minHeight:80,display:"flex",alignItems:"center"}}>
-          <div style={{fontSize:11,color:"rgba(255,255,255,0.15)",fontStyle:"italic"}}>Próximamente: indicador de mercado en tiempo real</div>
+        <div style={{background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 20px"}}>
+          <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:14}}>Acciones rápidas</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+            {[
+              {label:"Nueva propiedad",href:"/cartera",color:"#cc0000"},
+              {label:"Nuevo contacto",href:"/crm",color:"#3b82f6"},
+              {label:"Nueva tarea",href:"/crm/tareas",color:"#f59e0b"},
+              {label:"Nuevo negocio",href:"/crm/negocios",color:"#22c55e"},
+              {label:"Publicar en MIR",href:"/mir?nuevo=ofrecido",color:"rgba(255,255,255,0.3)"},
+              {label:"Nueva búsqueda MIR",href:"/mir?nuevo=busqueda",color:"rgba(255,255,255,0.3)"},
+            ].map(a => (
+              <a key={a.href} href={a.href} style={{padding:"7px 14px",borderRadius:6,border:`1px solid ${a.color}33`,background:`${a.color}11`,color:a.color === "rgba(255,255,255,0.3)" ? "rgba(255,255,255,0.5)" : a.color,fontSize:11,fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",letterSpacing:"0.04em",transition:"all 0.15s"}}>
+                {a.label}
+              </a>
+            ))}
+          </div>
         </div>
 
         <div className="db-clima-card" onClick={abrirClima}>
