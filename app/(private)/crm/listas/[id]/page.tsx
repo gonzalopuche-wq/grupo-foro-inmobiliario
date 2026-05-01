@@ -36,6 +36,21 @@ interface Propiedad {
   created_at: string
 }
 
+interface CarteraItem {
+  id: string
+  titulo: string
+  tipo: string
+  operacion: string
+  precio: number | null
+  moneda: string
+  ciudad: string
+  zona: string | null
+  dormitorios: number | null
+  banos: number | null
+  superficie_cubierta: number | null
+  fotos: string[] | null
+}
+
 const fmtPrecio = (n?: number, m?: string) => {
   if (!n) return 'Sin precio'
   return `${m ?? 'USD'} ${n.toLocaleString('es-AR')}`
@@ -51,12 +66,16 @@ export default function ListaDetallePage() {
   const [cargando, setCargando] = useState(true)
   const [token, setToken] = useState('')
   const [copiado, setCopiado] = useState(false)
-  const [agregando, setAgregando] = useState(false)
   const [urlInput, setUrlInput] = useState('')
   const [importando, setImportando] = useState(false)
   const [importError, setImportError] = useState('')
   const [toast, setToast] = useState<string | null>(null)
   const [eliminandoId, setEliminandoId] = useState<string | null>(null)
+  const [modoAgregar, setModoAgregar] = useState<'url' | 'cartera' | null>(null)
+  const [carteraItems, setCarteraItems] = useState<CarteraItem[]>([])
+  const [carteraBusqueda, setCarteraBusqueda] = useState('')
+  const [cargandoCartera, setCargandoCartera] = useState(false)
+  const [agregandoCarteraId, setAgregandoCarteraId] = useState<string | null>(null)
 
   const mostrarToast = (msg: string) => {
     setToast(msg)
@@ -135,7 +154,7 @@ export default function ListaDetallePage() {
       const nueva = await addRes.json()
       setPropiedades(prev => [nueva, ...prev])
       setUrlInput('')
-      setAgregando(false)
+      setModoAgregar(null)
       mostrarToast('Propiedad agregada ✓')
     } catch {
       setImportError('Error al importar la URL.')
@@ -164,6 +183,61 @@ export default function ListaDetallePage() {
     const msg = `Hola ${nombre}, te comparto las propiedades que seleccioné para vos: ${url}`
     return `https://wa.me/?text=${encodeURIComponent(msg)}`
   }
+
+  const abrirCartera = async () => {
+    setModoAgregar('cartera')
+    if (carteraItems.length > 0) return
+    setCargandoCartera(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('cartera_propiedades')
+      .select('id,titulo,tipo,operacion,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,fotos')
+      .eq('perfil_id', user.id)
+      .eq('activo', true)
+      .order('created_at', { ascending: false })
+      .limit(100)
+    setCarteraItems((data as CarteraItem[]) ?? [])
+    setCargandoCartera(false)
+  }
+
+  const agregarDesdeCartera = async (prop: CarteraItem) => {
+    setAgregandoCarteraId(prop.id)
+    const body = {
+      url_original: `gfi://cartera/${prop.id}`,
+      titulo: prop.titulo,
+      tipo: prop.tipo,
+      operacion: prop.operacion,
+      barrio: prop.zona,
+      ciudad: prop.ciudad,
+      precio_actual: prop.precio,
+      moneda: prop.moneda,
+      superficie_total: prop.superficie_cubierta,
+      dormitorios: prop.dormitorios,
+      banos: prop.banos,
+      imagen_principal: prop.fotos?.[0] ?? null,
+      disponible: true,
+    }
+    const res = await fetch(`/api/listas/${id}/propiedades`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    })
+    if (res.status === 409) { mostrarToast('Ya está en la lista'); setAgregandoCarteraId(null); return }
+    if (!res.ok) { mostrarToast('Error al agregar'); setAgregandoCarteraId(null); return }
+    const nueva = await res.json()
+    setPropiedades(prev => [nueva, ...prev])
+    mostrarToast(`${prop.titulo} agregada ✓`)
+    setAgregandoCarteraId(null)
+  }
+
+  const carteraFiltrada = carteraItems.filter(p =>
+    !carteraBusqueda || p.titulo.toLowerCase().includes(carteraBusqueda.toLowerCase()) ||
+    (p.zona ?? '').toLowerCase().includes(carteraBusqueda.toLowerCase()) ||
+    p.ciudad.toLowerCase().includes(carteraBusqueda.toLowerCase())
+  )
+
+  const yaEnLista = new Set(propiedades.map(p => p.url_original))
 
   const s: Record<string, React.CSSProperties> = {
     page: { minHeight: '100vh', color: '#fff', padding: 24, fontFamily: 'Inter,sans-serif' },
@@ -239,11 +313,18 @@ export default function ListaDetallePage() {
       <div style={{ maxWidth: 900, borderTop: '1px solid rgba(255,255,255,0.06)', margin: '20px 0' }} />
 
       {/* Agregar propiedad */}
-      {!agregando ? (
-        <button style={s.btnAgregar} onClick={() => setAgregando(true)}>
-          + Agregar propiedad
-        </button>
-      ) : (
+      {modoAgregar === null && (
+        <div style={{ display: 'flex', gap: 10, maxWidth: 900, marginBottom: 16 }}>
+          <button style={s.btnAgregar} onClick={() => setModoAgregar('url')}>
+            + Desde portal (URL)
+          </button>
+          <button style={{ ...s.btnAgregar, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }} onClick={abrirCartera}>
+            🏠 Desde mi cartera
+          </button>
+        </div>
+      )}
+
+      {modoAgregar === 'url' && (
         <div style={s.importBox}>
           <div style={{ fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 10, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
             Pegar URL de portal inmobiliario
@@ -261,7 +342,7 @@ export default function ListaDetallePage() {
               {importando ? 'Importando…' : 'Agregar'}
             </button>
             <button
-              onClick={() => { setAgregando(false); setUrlInput(''); setImportError('') }}
+              onClick={() => { setModoAgregar(null); setUrlInput(''); setImportError('') }}
               style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 18, padding: '0 4px' }}
             >
               ✕
@@ -273,6 +354,62 @@ export default function ListaDetallePage() {
           <p style={{ margin: '8px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
             Portales soportados: ZonaProp, Argenprop, MercadoLibre, Red Propia y otros
           </p>
+        </div>
+      )}
+
+      {modoAgregar === 'cartera' && (
+        <div style={{ ...s.importBox, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Mis propiedades en cartera
+            </div>
+            <button onClick={() => setModoAgregar(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 18 }}>✕</button>
+          </div>
+          <input
+            style={{ ...s.urlInput, marginBottom: 12 }}
+            placeholder="Buscar por título, zona o ciudad…"
+            value={carteraBusqueda}
+            onChange={e => setCarteraBusqueda(e.target.value)}
+          />
+          {cargandoCartera ? (
+            <div style={{ textAlign: 'center', padding: 24, color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>Cargando cartera…</div>
+          ) : carteraFiltrada.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 24, color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>
+              {carteraItems.length === 0 ? 'No hay propiedades activas en tu cartera.' : 'Sin resultados para tu búsqueda.'}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 360, overflowY: 'auto' }}>
+              {carteraFiltrada.map(prop => {
+                const enLista = yaEnLista.has(`gfi://cartera/${prop.id}`)
+                return (
+                  <div key={prop.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: `1px solid ${enLista ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}` }}>
+                    {prop.fotos?.[0]
+                      ? <img src={prop.fotos[0]} alt="" style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} />
+                      : <div style={{ width: 60, height: 45, background: 'rgba(255,255,255,0.06)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🏠</div>
+                    }
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.titulo}</div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                        {[prop.zona, prop.ciudad].filter(Boolean).join(', ')}
+                        {prop.precio ? ` · ${fmtPrecio(prop.precio, prop.moneda)}` : ''}
+                      </div>
+                    </div>
+                    {enLista ? (
+                      <span style={{ fontSize: 11, color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓ En lista</span>
+                    ) : (
+                      <button
+                        onClick={() => agregarDesdeCartera(prop)}
+                        disabled={agregandoCarteraId === prop.id}
+                        style={{ background: '#cc0000', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0, fontFamily: 'Montserrat,sans-serif' }}
+                      >
+                        {agregandoCarteraId === prop.id ? '…' : 'Agregar'}
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -323,10 +460,12 @@ export default function ListaDetallePage() {
                 </div>
               </div>
               <div style={s.cardAcciones}>
-                <a href={prop.url_original} target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', padding: '4px 10px', textAlign: 'center' }}>
-                  Ver ↗
-                </a>
+                {prop.url_original.startsWith('http') && (
+                  <a href={prop.url_original} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', padding: '4px 10px', textAlign: 'center' }}>
+                    Ver ↗
+                  </a>
+                )}
                 <button
                   onClick={() => eliminarPropiedad(prop.id)}
                   disabled={eliminandoId === prop.id}
