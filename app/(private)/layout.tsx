@@ -37,6 +37,9 @@ const NAV_CORREDOR = [
   { href: "/legal", label: "Legal", icon: "⚖️" },
   { href: "/marketplace", label: "Marketplace", icon: "🏪" },
   { href: "/directorios", label: "Directorios", icon: "📒" },
+  { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
+  { href: "/comisiones", label: "Comisiones", icon: "💰" },
+  { href: "/agenda", label: "Agenda", icon: "📆" },
 ];
 
 // ── Nav colaborador (acceso restringido) ───────────────────────────────────
