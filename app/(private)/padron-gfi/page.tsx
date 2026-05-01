@@ -429,7 +429,13 @@ export default function PadronGFIPage() {
                           : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                       </td>
                       <td style={{fontSize:11}}>
-                        {r.telefono && <div style={{color:"rgba(255,255,255,0.5)"}}>📞 {r.telefono}</div>}
+                        {r.telefono && (
+                          <div>
+                            <a href={`https://wa.me/${(r.telefono as string).replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"rgba(37,211,102,0.8)",textDecoration:"none",fontSize:11}}>
+                              💬 {r.telefono}
+                            </a>
+                          </div>
+                        )}
                         {r.email && (
                           <div>
                             <a href={`mailto:${r.email}`} style={{color:"rgba(200,0,0,0.7)",textDecoration:"none"}} onClick={e => e.stopPropagation()}>
