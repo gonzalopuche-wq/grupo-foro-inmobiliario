@@ -73,6 +73,7 @@ export default function GrupoChatPage() {
   const endRef = useRef<HTMLDivElement>(null);
   const fileImgRef = useRef<HTMLInputElement>(null);
   const fileDocRef = useRef<HTMLInputElement>(null);
+  const fileAudioRef = useRef<HTMLInputElement>(null);
   const previewTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
 
   useEffect(() => {
@@ -189,6 +190,23 @@ export default function GrupoChatPage() {
 
   const detenerGrab = () => { mrRef.current?.stop(); setGrabando(false); if (timerRef.current) clearInterval(timerRef.current); };
   const cancelarAudio = () => { mrRef.current?.stop(); setGrabando(false); setAudioBlob(null); setAudioUrl(null); setAudioSeg(0); if (timerRef.current) clearInterval(timerRef.current); };
+
+  const subirAudioNativo = async (file: File) => {
+    if (!userId || !file) return;
+    if (file.size > 20 * 1024 * 1024) { showToast("El audio supera 20MB"); return; }
+    setSubiendoAudio(true);
+    const ext = (file.name.split(".").pop() || "m4a").toLowerCase();
+    const nombre = `audio_${Date.now()}.${ext}`;
+    const path = `grupos/${grupoId}/${nombre}`;
+    const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl: "3600", upsert: false });
+    if (error) { showToast("Error al subir audio"); setSubiendoAudio(false); return; }
+    const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
+    const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: file.size }] };
+    if (replyMsg?.id) ins.reply_id = replyMsg.id;
+    await supabase.from("mensajes_chat").insert(ins);
+    setReplyMsg(null); setSubiendoAudio(false);
+    if (fileAudioRef.current) fileAudioRef.current.value = "";
+  };
 
   const enviarAudio = async () => {
     if (!audioBlob || !userId) return; setSubiendoAudio(true);
@@ -426,29 +444,22 @@ export default function GrupoChatPage() {
           {audioUrl && !grabando && <div className="gc-aprev"><span style={{fontSize:16}}>🎙</span><audio src={audioUrl} controls style={{flex:1,height:32,minWidth:0}}/><span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif"}}>{fmtSeg(audioSeg)}</span><button onClick={enviarAudio} disabled={subiendoAudio} style={{padding:"5px 12px",background:"#cc0000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>{subiendoAudio?"Enviando...":"Enviar"}</button><button onClick={cancelarAudio} style={{padding:"5px 8px",background:"transparent",border:"1px solid rgba(200,0,0,0.2)",borderRadius:4,color:"rgba(200,0,0,0.5)",fontSize:14,cursor:"pointer",flexShrink:0}}>✕</button></div>}
           {grupo?.va_al_mir && !grabando && !audioUrl && <div style={{fontSize:10,color:"rgba(255,255,255,0.18)",fontFamily:"Inter,sans-serif"}}>Los mensajes de ofrecidos y búsquedas se cargan al MIR automáticamente</div>}
           {inputPreview && !grabando && !audioUrl && <div style={{position:"relative"}}><a href={inputPreview.url} target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:10,borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.1)",background:"rgba(0,0,0,0.35)",textDecoration:"none",minHeight:60}}>{inputPreview.data.image&&<div style={{width:60,minWidth:60,background:"#000"}}><img src={inputPreview.data.image} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>}<div style={{flex:1,padding:"8px 10px 8px 0",minWidth:0}}>{inputPreview.data.title&&<div style={{fontSize:12,color:"#fff",fontWeight:600}}>{inputPreview.data.title}</div>}</div></a><button onClick={e=>{e.stopPropagation();setInputPreview(null);}} style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.5)",border:"none",borderRadius:"50%",width:18,height:18,color:"#fff",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>×</button></div>}
-          {micEstado === "denegado" && !grabando && !audioUrl && (
-            <div onClick={() => setModalMic(true)} style={{display:"flex",alignItems:"center",gap:8,background:"rgba(204,0,0,0.12)",border:"1px solid rgba(204,0,0,0.25)",borderRadius:6,padding:"8px 12px",marginBottom:4,cursor:"pointer"}}>
-              <span style={{fontSize:15}}>🎙</span>
-              <span style={{fontSize:12,color:"rgba(255,120,120,0.95)",fontFamily:"Inter,sans-serif",flex:1,lineHeight:1.4}}>Micrófono bloqueado — tocá para ver cómo habilitarlo</span>
-              <span style={{fontSize:13,color:"#cc0000",fontWeight:700}}>→</span>
-            </div>
-          )}
           {!grabando && !audioUrl && (
             <div style={{display:"flex",gap:6,alignItems:"flex-end"}}>
               <input ref={fileImgRef} type="file" accept="image/*,video/*" multiple style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
               <button className="gc-adb" onClick={()=>fileImgRef.current?.click()} disabled={subiendoAdj} title="Fotos y videos">📷</button>
               <input ref={fileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
               <button className="gc-adb" onClick={()=>fileDocRef.current?.click()} disabled={subiendoAdj} title="Documentos">📎</button>
-              {micEstado !== "sin-soporte" && (
-                <button
-                  className="gc-adb"
-                  onClick={micEstado === "denegado" ? () => setModalMic(true) : iniciarGrab}
-                  title={micEstado === "denegado" ? "Micrófono bloqueado — tocá para ver cómo habilitarlo" : "Grabar audio"}
-                  style={{color: micEstado === "denegado" ? "#cc0000" : "rgba(200,0,0,0.7)", position:"relative"}}
-                >
-                  🎙{micEstado === "denegado" && <span style={{position:"absolute",top:-3,right:-3,fontSize:9,background:"#cc0000",color:"#fff",borderRadius:"50%",width:13,height:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,lineHeight:1}}>!</span>}
-                </button>
-              )}
+              <input ref={fileAudioRef} type="file" accept="audio/*" {...({capture:"user"} as any)} style={{display:"none"}} onChange={e=>{const f=e.target.files?.[0];if(f)subirAudioNativo(f);}}/>
+              <button
+                className="gc-adb"
+                onClick={()=>fileAudioRef.current?.click()}
+                disabled={subiendoAudio}
+                title="Grabar audio (usa la grabadora del teléfono)"
+                style={{color:"rgba(200,0,0,0.7)"}}
+              >
+                {subiendoAudio ? "⏳" : "🎙"}
+              </button>
               <textarea ref={inputRef} className="gc-ta" placeholder="Escribí un mensaje..." value={input} rows={1}
                 onChange={e=>{
                   setInput(e.target.value);
