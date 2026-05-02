@@ -10,7 +10,7 @@ const securityHeaders = [
   // Controla info del referrer
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   // Deshabilita features innecesarias
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self), interest-cohort=()" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(self), interest-cohort=()" },
   // XSS Protection (legacy browsers)
   { key: "X-XSS-Protection", value: "1; mode=block" },
   // DNS Prefetch Control
