@@ -159,16 +159,27 @@ export default function GrupoChatPage() {
                    MediaRecorder.isTypeSupported("audio/ogg") ? "audio/ogg" : "";
       const mr = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
       mrRef.current = mr; chunksRef.current = [];
-      mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      mr.ondataavailable = e => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
       mr.onstop = () => {
         const finalMime = mime || mr.mimeType || "audio/webm";
-        const blob = new Blob(chunksRef.current, { type: finalMime });
-        setAudioBlob(blob);
-        setAudioUrl(URL.createObjectURL(blob));
-        setGrabando(false);
-        stream.getTracks().forEach(t => t.stop());
+        showToast(`onstop: ${chunksRef.current.length} chunks, mime=${finalMime}`);
+        setTimeout(() => {
+          const blob = new Blob(chunksRef.current, { type: finalMime });
+          showToast(`blob: ${blob.size}B`);
+          if (blob.size > 0) {
+            setAudioBlob(blob);
+            setAudioUrl(URL.createObjectURL(blob));
+          } else {
+            showToast("Audio vacío, intentá más largo");
+          }
+          setGrabando(false);
+          stream.getTracks().forEach(t => t.stop());
+        }, 150);
       };
-      mr.start(200); setGrabando(true); setAudioSeg(0);
+      mr.start(100); setGrabando(true); setAudioSeg(0);
+      showToast("🎙 Grabando — tocá Detener cuando termines");
       timerRef.current = setInterval(() => setAudioSeg(s => s+1), 1000);
     } catch (err: any) {
       const name = err?.name ?? "Error";
