@@ -280,12 +280,14 @@ export default function ForoPage() {
       audioChunksRef.current = [];
       mr.ondataavailable = e => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
       mr.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: mimeType });
+        const finalMime = mimeType || mr.mimeType || "audio/webm";
+        const blob = new Blob(audioChunksRef.current, { type: finalMime });
         setAudioBlob(blob);
         setAudioUrl(URL.createObjectURL(blob));
+        setGrabando(false);
         stream.getTracks().forEach(t => t.stop());
       };
-      mr.start();
+      mr.start(200);
       setGrabando(true);
       setAudioSegundos(0);
       audioTimerRef.current = setInterval(() => setAudioSegundos(s => s + 1), 1000);
@@ -311,9 +313,8 @@ export default function ForoPage() {
   };
 
   const detenerGrabacion = () => {
-    mediaRecorderRef.current?.stop();
-    setGrabando(false);
     if (audioTimerRef.current) clearInterval(audioTimerRef.current);
+    mediaRecorderRef.current?.stop();
   };
 
   const cancelarAudio = () => {

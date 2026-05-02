@@ -160,8 +160,15 @@ export default function GrupoChatPage() {
       const mr = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
       mrRef.current = mr; chunksRef.current = [];
       mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mr.onstop = () => { const blob = new Blob(chunksRef.current, {type: mime || "audio/webm"}); setAudioBlob(blob); setAudioUrl(URL.createObjectURL(blob)); stream.getTracks().forEach(t => t.stop()); };
-      mr.start(); setGrabando(true); setAudioSeg(0);
+      mr.onstop = () => {
+        const finalMime = mime || mr.mimeType || "audio/webm";
+        const blob = new Blob(chunksRef.current, { type: finalMime });
+        setAudioBlob(blob);
+        setAudioUrl(URL.createObjectURL(blob));
+        setGrabando(false);
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mr.start(200); setGrabando(true); setAudioSeg(0);
       timerRef.current = setInterval(() => setAudioSeg(s => s+1), 1000);
     } catch (err: any) {
       const name = err?.name ?? "Error";
@@ -183,7 +190,7 @@ export default function GrupoChatPage() {
     }
   };
 
-  const detenerGrab = () => { mrRef.current?.stop(); setGrabando(false); if (timerRef.current) clearInterval(timerRef.current); };
+  const detenerGrab = () => { if (timerRef.current) clearInterval(timerRef.current); mrRef.current?.stop(); };
   const cancelarAudio = () => { mrRef.current?.stop(); setGrabando(false); setAudioBlob(null); setAudioUrl(null); setAudioSeg(0); if (timerRef.current) clearInterval(timerRef.current); };
 
   const enviarAudio = async () => {
