@@ -145,6 +145,10 @@ export default function GrupoChatPage() {
   };
 
   const iniciarGrab = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      showToast("Tu navegador no soporta grabación de audio. Usá Chrome o Firefox.");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mime = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/ogg";
@@ -154,7 +158,20 @@ export default function GrupoChatPage() {
       mr.onstop = () => { const blob = new Blob(chunksRef.current, {type:mime}); setAudioBlob(blob); setAudioUrl(URL.createObjectURL(blob)); stream.getTracks().forEach(t => t.stop()); };
       mr.start(); setGrabando(true); setAudioSeg(0);
       timerRef.current = setInterval(() => setAudioSeg(s => s+1), 1000);
-    } catch { showToast("No se pudo acceder al micrófono. Verificá los permisos del navegador."); }
+    } catch (err: any) {
+      const name = err?.name ?? "";
+      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+        showToast("🎙 Permiso denegado — habilitá el micrófono en Ajustes del navegador > Permisos del sitio.");
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        showToast("🎙 No se encontró micrófono en este dispositivo.");
+      } else if (name === "NotReadableError" || name === "TrackStartError") {
+        showToast("🎙 El micrófono está siendo usado por otra app. Cerrala e intentá de nuevo.");
+      } else if (name === "SecurityError") {
+        showToast("🎙 La grabación requiere conexión segura (HTTPS).");
+      } else {
+        showToast("🎙 No se pudo acceder al micrófono. Verificá los permisos del navegador.");
+      }
+    }
   };
 
   const detenerGrab = () => { mrRef.current?.stop(); setGrabando(false); if (timerRef.current) clearInterval(timerRef.current); };
