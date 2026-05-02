@@ -55,17 +55,6 @@ export default function GrupoChatPage() {
   const [micEstado, setMicEstado] = useState<'ok'|'denegado'|'sin-soporte'|'desconocido'>('desconocido');
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
   const mrRef = useRef<MediaRecorder|null>(null);
-
-  useEffect(() => {
-    if (typeof navigator === "undefined") return;
-    if (!navigator.mediaDevices?.getUserMedia) { setMicEstado("sin-soporte"); return; }
-    if (!navigator.permissions) return;
-    navigator.permissions.query({ name: "microphone" as PermissionName }).then(status => {
-      const map = (s: string) => s === "granted" ? "ok" : s === "denied" ? "denegado" : "desconocido";
-      setMicEstado(map(status.state));
-      status.onchange = () => setMicEstado(map(status.state));
-    }).catch(() => {});
-  }, []);
   const chunksRef = useRef<BlobPart[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval>|null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -73,7 +62,6 @@ export default function GrupoChatPage() {
   const endRef = useRef<HTMLDivElement>(null);
   const fileImgRef = useRef<HTMLInputElement>(null);
   const fileDocRef = useRef<HTMLInputElement>(null);
-  const fileAudioRef = useRef<HTMLInputElement>(null);
   const previewTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
 
   useEffect(() => {
@@ -190,23 +178,6 @@ export default function GrupoChatPage() {
 
   const detenerGrab = () => { mrRef.current?.stop(); setGrabando(false); if (timerRef.current) clearInterval(timerRef.current); };
   const cancelarAudio = () => { mrRef.current?.stop(); setGrabando(false); setAudioBlob(null); setAudioUrl(null); setAudioSeg(0); if (timerRef.current) clearInterval(timerRef.current); };
-
-  const subirAudioNativo = async (file: File) => {
-    if (!userId || !file) return;
-    if (file.size > 20 * 1024 * 1024) { showToast("El audio supera 20MB"); return; }
-    setSubiendoAudio(true);
-    const ext = (file.name.split(".").pop() || "m4a").toLowerCase();
-    const nombre = `audio_${Date.now()}.${ext}`;
-    const path = `grupos/${grupoId}/${nombre}`;
-    const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl: "3600", upsert: false });
-    if (error) { showToast("Error al subir audio"); setSubiendoAudio(false); return; }
-    const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
-    const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: file.size }] };
-    if (replyMsg?.id) ins.reply_id = replyMsg.id;
-    await supabase.from("mensajes_chat").insert(ins);
-    setReplyMsg(null); setSubiendoAudio(false);
-    if (fileAudioRef.current) fileAudioRef.current.value = "";
-  };
 
   const enviarAudio = async () => {
     if (!audioBlob || !userId) return; setSubiendoAudio(true);
@@ -450,16 +421,7 @@ export default function GrupoChatPage() {
               <button className="gc-adb" onClick={()=>fileImgRef.current?.click()} disabled={subiendoAdj} title="Fotos y videos">📷</button>
               <input ref={fileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
               <button className="gc-adb" onClick={()=>fileDocRef.current?.click()} disabled={subiendoAdj} title="Documentos">📎</button>
-              <input ref={fileAudioRef} type="file" accept="audio/*" {...({capture:"user"} as any)} style={{display:"none"}} onChange={e=>{const f=e.target.files?.[0];if(f)subirAudioNativo(f);}}/>
-              <button
-                className="gc-adb"
-                onClick={()=>fileAudioRef.current?.click()}
-                disabled={subiendoAudio}
-                title="Grabar audio (usa la grabadora del teléfono)"
-                style={{color:"rgba(200,0,0,0.7)"}}
-              >
-                {subiendoAudio ? "⏳" : "🎙"}
-              </button>
+              <button className="gc-adb" onClick={iniciarGrab} title="Grabar audio" style={{color:"rgba(200,0,0,0.7)"}}>🎙</button>
               <textarea ref={inputRef} className="gc-ta" placeholder="Escribí un mensaje..." value={input} rows={1}
                 onChange={e=>{
                   setInput(e.target.value);

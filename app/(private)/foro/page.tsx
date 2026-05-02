@@ -120,7 +120,6 @@ export default function ForoPage() {
   const chatEditRef = useRef<HTMLTextAreaElement>(null);
   const chatFileImgRef = useRef<HTMLInputElement>(null);
   const chatFileDocRef = useRef<HTMLInputElement>(null);
-  const chatFileAudioRef = useRef<HTMLInputElement>(null);
   // Audio grabación
   const [grabando, setGrabando] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -132,19 +131,7 @@ export default function ForoPage() {
   const audioTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [modalMic, setModalMic] = useState(false);
-  const [micEstado, setMicEstado] = useState<'ok'|'denegado'|'sin-soporte'|'desconocido'>('desconocido');
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
-
-  useEffect(() => {
-    if (typeof navigator === "undefined") return;
-    if (!navigator.mediaDevices?.getUserMedia) { setMicEstado("sin-soporte"); return; }
-    if (!navigator.permissions) return;
-    navigator.permissions.query({ name: "microphone" as PermissionName }).then(status => {
-      const map = (s: string) => s === "granted" ? "ok" : s === "denied" ? "denegado" : "desconocido";
-      setMicEstado(map(status.state));
-      status.onchange = () => setMicEstado(map(status.state));
-    }).catch(() => {});
-  }, []);
 
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [faqTopics, setFaqTopics] = useState<Topic[]>([]);
@@ -327,24 +314,6 @@ export default function ForoPage() {
     setAudioUrl(null);
     setAudioSegundos(0);
     if (audioTimerRef.current) clearInterval(audioTimerRef.current);
-  };
-
-  const subirAudioNativo = async (file: File) => {
-    if (!userId || !file) return;
-    if (file.size > 20 * 1024 * 1024) { showToast("El audio supera 20MB"); return; }
-    setSubiendoAudio(true);
-    const ext = (file.name.split(".").pop() || "m4a").toLowerCase();
-    const nombre = `audio_${Date.now()}.${ext}`;
-    const path = `foro_chat/${nombre}`;
-    const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl: "3600", upsert: false });
-    if (error) { showToast("Error al subir audio"); setSubiendoAudio(false); return; }
-    const { data: urlData } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
-    const adj = { url: urlData.publicUrl, nombre, tipo: "audio" as any, tamano: file.size };
-    const insertData: any = { user_id: userId, body: "🎙 Audio", adjuntos: [adj] };
-    if (chatReplyMsg?.id) insertData.reply_id = chatReplyMsg.id;
-    await supabase.from("forum_chat_messages").insert(insertData);
-    setChatReplyMsg(null); setSubiendoAudio(false);
-    if (chatFileAudioRef.current) chatFileAudioRef.current.value = "";
   };
 
   const enviarAudio = async () => {
@@ -1076,17 +1045,8 @@ export default function ForoPage() {
                     {/* Adjuntar documentos */}
                     <input ref={chatFileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
                     <button onClick={() => chatFileDocRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Documentos">📎</button>
-                    {/* Grabar audio — usa grabadora nativa del teléfono */}
-                    <input ref={chatFileAudioRef} type="file" accept="audio/*" {...({capture:"user"} as any)} style={{ display: "none" }} onChange={e=>{const f=e.target.files?.[0];if(f)subirAudioNativo(f);}}/>
-                    <button
-                      onClick={()=>chatFileAudioRef.current?.click()}
-                      disabled={subiendoAudio}
-                      className="f-chat-adj-btn"
-                      title="Grabar audio (usa la grabadora del teléfono)"
-                      style={{color:"rgba(200,0,0,0.7)"}}
-                    >
-                      {subiendoAudio ? "⏳" : "🎙"}
-                    </button>
+                    {/* Grabar audio in-app */}
+                    <button onClick={iniciarGrabacion} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Grabar audio" style={{color:"rgba(200,0,0,0.7)"}}>🎙</button>
                     <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
                       style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
                       onChange={e => {
