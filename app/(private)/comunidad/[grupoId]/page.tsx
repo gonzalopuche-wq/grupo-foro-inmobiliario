@@ -205,7 +205,7 @@ export default function GrupoChatPage() {
     const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
     const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
     if (replyMsg?.id) ins.reply_id = replyMsg.id;
-    const { error: insErr } = await supabase.from("mensajes_chat").insert(ins).select().single();
+    const { error: insErr } = await supabase.from("mensajes_chat").insert(ins);
     if (insErr) { showToast(`Error al enviar: ${insErr.message}`); setSubiendoAudio(false); return; }
     setAudioBlob(null); setAudioUrl(null); setAudioSeg(0); setReplyMsg(null); setSubiendoAudio(false);
     showToast("🎙 Audio enviado");
