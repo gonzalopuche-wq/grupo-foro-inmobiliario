@@ -188,17 +188,20 @@ export default function GrupoChatPage() {
 
   const enviarAudio = async () => {
     if (!audioBlob || !userId) return; setSubiendoAudio(true);
-    const ext = audioBlob.type.includes("webm") ? "webm" : "ogg";
+    const mime = audioBlob.type || "audio/webm";
+    const ext = mime.includes("mp4") ? "mp4" : mime.includes("ogg") ? "ogg" : "webm";
     const nombre = `audio_${Date.now()}.${ext}`;
     const path = `grupos/${grupoId}/${nombre}`;
-    const file = new File([audioBlob], nombre, { type: audioBlob.type });
-    const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl:"3600", upsert:false });
-    if (error) { showToast("Error al subir audio"); setSubiendoAudio(false); return; }
+    const file = new File([audioBlob], nombre, { type: mime });
+    const { error: upErr } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl:"3600", upsert:false });
+    if (upErr) { showToast(`Error al subir: ${upErr.message}`); setSubiendoAudio(false); return; }
     const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
     const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
     if (replyMsg?.id) ins.reply_id = replyMsg.id;
-    await supabase.from("mensajes_chat").insert(ins);
+    const { error: insErr } = await supabase.from("mensajes_chat").insert(ins).select().single();
+    if (insErr) { showToast(`Error al enviar: ${insErr.message}`); setSubiendoAudio(false); return; }
     setAudioBlob(null); setAudioUrl(null); setAudioSeg(0); setReplyMsg(null); setSubiendoAudio(false);
+    showToast("🎙 Audio enviado");
   };
 
   const enviar = async () => {
@@ -418,8 +421,30 @@ export default function GrupoChatPage() {
         <div className="gc-ia">
           {replyMsg && <div className="gc-rb"><span style={{fontSize:12,color:"rgba(200,0,0,0.6)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>↩</span><span className="gc-rb-t">{fullName(replyMsg.perfiles)}: {replyMsg.texto??"🎙 Audio"}</span><button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:16,padding:0}} onClick={()=>setReplyMsg(null)}>×</button></div>}
           {adjuntos.length>0 && <div className="gc-thumbs">{adjuntos.map((a,i)=><div key={i} className="gc-thumb">{a.tipo==="imagen"?<img src={a.url} alt={a.nombre}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{a.tipo==="video"?"🎬":"📎"}</div>}<button className="gc-thumb-x" onClick={()=>setAdjuntos(prev=>prev.filter((_,j)=>j!==i))}>×</button></div>)}</div>}
-          {grabando && <div className="gc-agrab"><div className="gc-adot"/><span style={{fontSize:12,color:"rgba(255,255,255,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Grabando {fmtSeg(audioSeg)}</span><button onClick={detenerGrab} style={{marginLeft:"auto",padding:"4px 12px",background:"#cc0000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>⏹ Detener</button><button onClick={cancelarAudio} style={{padding:"4px 10px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:4,color:"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>✕</button></div>}
-          {audioUrl && !grabando && <div className="gc-aprev"><span style={{fontSize:16}}>🎙</span><audio src={audioUrl} controls style={{flex:1,height:32,minWidth:0}}/><span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif"}}>{fmtSeg(audioSeg)}</span><button onClick={enviarAudio} disabled={subiendoAudio} style={{padding:"5px 12px",background:"#cc0000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>{subiendoAudio?"Enviando...":"Enviar"}</button><button onClick={cancelarAudio} style={{padding:"5px 8px",background:"transparent",border:"1px solid rgba(200,0,0,0.2)",borderRadius:4,color:"rgba(200,0,0,0.5)",fontSize:14,cursor:"pointer",flexShrink:0}}>✕</button></div>}
+          {grabando && (
+            <div style={{display:"flex",flexDirection:"column",gap:10,padding:"12px 14px",background:"rgba(200,0,0,0.08)",border:"1px solid rgba(200,0,0,0.25)",borderRadius:8}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <div className="gc-adot"/>
+                <span style={{fontSize:13,color:"rgba(255,255,255,0.8)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Grabando... {fmtSeg(audioSeg)}</span>
+              </div>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={detenerGrab} style={{flex:1,padding:"12px",background:"#cc0000",border:"none",borderRadius:8,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:800,cursor:"pointer"}}>⏹ Detener y revisar</button>
+                <button onClick={cancelarAudio} style={{padding:"12px 16px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:700,cursor:"pointer"}}>✕</button>
+              </div>
+            </div>
+          )}
+          {audioUrl && !grabando && (
+            <div style={{display:"flex",flexDirection:"column",gap:10,padding:"12px 14px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:18}}>🎙</span>
+                <audio src={audioUrl} controls style={{flex:1,height:36,minWidth:0}}/>
+              </div>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={enviarAudio} disabled={subiendoAudio} style={{flex:1,padding:"12px",background:"#cc0000",border:"none",borderRadius:8,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:800,cursor:"pointer"}}>{subiendoAudio?"Enviando...":"➤ Enviar audio"}</button>
+                <button onClick={cancelarAudio} style={{padding:"12px 16px",background:"transparent",border:"1px solid rgba(200,0,0,0.2)",borderRadius:8,color:"rgba(200,0,0,0.6)",fontSize:16,cursor:"pointer"}}>✕</button>
+              </div>
+            </div>
+          )}
           {grupo?.va_al_mir && !grabando && !audioUrl && <div style={{fontSize:10,color:"rgba(255,255,255,0.18)",fontFamily:"Inter,sans-serif"}}>Los mensajes de ofrecidos y búsquedas se cargan al MIR automáticamente</div>}
           {inputPreview && !grabando && !audioUrl && <div style={{position:"relative"}}><a href={inputPreview.url} target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:10,borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.1)",background:"rgba(0,0,0,0.35)",textDecoration:"none",minHeight:60}}>{inputPreview.data.image&&<div style={{width:60,minWidth:60,background:"#000"}}><img src={inputPreview.data.image} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>}<div style={{flex:1,padding:"8px 10px 8px 0",minWidth:0}}>{inputPreview.data.title&&<div style={{fontSize:12,color:"#fff",fontWeight:600}}>{inputPreview.data.title}</div>}</div></a><button onClick={e=>{e.stopPropagation();setInputPreview(null);}} style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,0.5)",border:"none",borderRadius:"50%",width:18,height:18,color:"#fff",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>×</button></div>}
           {!grabando && !audioUrl && (
