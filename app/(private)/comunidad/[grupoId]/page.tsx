@@ -212,12 +212,11 @@ export default function GrupoChatPage() {
     if (upErr) { showToast(`Error al subir: ${upErr.message}`); setSubiendoAudio(false); return; }
     const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
     // Intentar con perfil_id primero (columna original), si falla intentar con user_id
-    const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
+    const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: "", adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
     if (replyMsg?.id) ins.reply_id = replyMsg.id;
     let { error: insErr } = await supabase.from("mensajes_chat").insert(ins);
     if (insErr?.message?.includes("perfil_id")) {
-      // columna es user_id en este entorno
-      const ins2: any = { grupo_id: grupoId, user_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
+      const ins2: any = { grupo_id: grupoId, user_id: userId, texto: "", adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
       if (replyMsg?.id) ins2.reply_id = replyMsg.id;
       const { error: insErr2 } = await supabase.from("mensajes_chat").insert(ins2);
       insErr = insErr2 ?? null;
