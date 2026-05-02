@@ -453,24 +453,44 @@ export default function GrupoChatPage() {
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff" }}>🎙 Habilitar micrófono</div>
               <button onClick={() => setModalMic(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 20, lineHeight: 1.6 }}>
-              El navegador bloqueó el acceso al micrófono. Seguí estos pasos para habilitarlo:
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 16, lineHeight: 1.6 }}>
+              El navegador bloqueó el acceso al micrófono. Seguí una de estas opciones:
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+
+            {/* Opción A */}
+            <div style={{ background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#cc0000", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción A — Desde Chrome Android</div>
               {[
-                { n: "1", txt: "Tocá el ícono 🔒 o ⓘ a la izquierda de la barra de dirección" },
-                { n: "2", txt: "Seleccioná Permisos del sitio" },
-                { n: "3", txt: "Tocá Micrófono y cambialo a Permitir" },
-                { n: "4", txt: "Recargá la página y volvé a intentarlo" },
-              ].map(s => (
-                <div key={s.n} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                  <div style={{ width: 26, height: 26, borderRadius: "50%", background: "#cc0000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff", flexShrink: 0 }}>{s.n}</div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.5, paddingTop: 4 }}>{s.txt}</div>
+                "Tocá los 3 puntitos ⋮ arriba a la derecha de Chrome",
+                "Ir a Configuración → Configuración del sitio",
+                "Tocá Micrófono",
+                "Buscá este sitio y cambialo a Permitir",
+                "Volvé atrás y recargá la página",
+              ].map((txt, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#cc0000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff", flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
                 </div>
               ))}
             </div>
-            <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 18, lineHeight: 1.5 }}>
-              💡 En iPhone: Ajustes del sistema → Chrome → Micrófono → Activar
+
+            {/* Opción B */}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción B — Ajustes de Android</div>
+              {[
+                "Abrí Ajustes del teléfono",
+                "Aplicaciones → Chrome",
+                "Permisos → Micrófono → Permitir",
+              ].map((txt, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.5)", flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 18, lineHeight: 1.5 }}>
+              📱 iPhone: Ajustes → Chrome → Micrófono → Activar
             </div>
             <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
               Recargar página
