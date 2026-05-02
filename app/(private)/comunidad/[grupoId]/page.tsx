@@ -462,54 +462,28 @@ export default function GrupoChatPage() {
               <button onClick={() => setModalMic(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 12, lineHeight: 1.6 }}>
-              El navegador bloqueó el acceso al micrófono.
+              Chrome bloqueó el micrófono para este sitio. Seguí estos pasos exactos:
             </p>
-            <div style={{background:"rgba(255,200,0,0.08)",border:"1px solid rgba(255,200,0,0.3)",borderRadius:8,padding:"10px 12px",marginBottom:14}}>
-              <div style={{fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:800,color:"#ffc800",letterSpacing:"0.1em",marginBottom:4}}>⚠ IMPORTANTE — Dominio a habilitar:</div>
-              <div style={{fontSize:13,color:"#fff",fontFamily:"monospace",fontWeight:700,wordBreak:"break-all"}}>{typeof window !== "undefined" ? window.location.host : ""}</div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:6,lineHeight:1.4}}>Si ves <b>foroinmobiliario.com.ar</b> en Chrome y le pusiste Permitir, ese es el dominio equivocado. Tenés que habilitarlo en el de arriba.</div>
-            </div>
-            {typeof window !== "undefined" && window.self !== window.top && (
-              <div style={{background:"rgba(255,80,80,0.1)",border:"1px solid rgba(255,80,80,0.3)",borderRadius:8,padding:"10px 12px",marginBottom:14}}>
-                <div style={{fontSize:11,color:"#ff8080",fontFamily:"Inter,sans-serif",lineHeight:1.5}}>🪟 Estás viendo la app embebida en otro sitio (iframe). Probá abrirla en pestaña nueva — el mic puede no funcionar dentro del iframe.</div>
-              </div>
-            )}
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>Pasos:</p>
 
-            {/* Opción A */}
+            {/* Paso único claro */}
             <div style={{ background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#cc0000", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción A — Desde Chrome Android</div>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#cc0000", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Desde Chrome Android</div>
               {[
-                "Tocá los 3 puntitos ⋮ arriba a la derecha de Chrome",
-                "Ir a Configuración → Configuración del sitio",
-                "Tocá Micrófono",
-                "Buscá este sitio y cambialo a Permitir",
-                "Volvé atrás y recargá la página",
-              ].map((txt, i) => (
-                <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#cc0000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff", flexShrink: 0 }}>{i + 1}</div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
+                { n:1, t:"Tocá los 3 puntitos ⋮ arriba a la derecha" },
+                { n:2, t:"Configuración → Configuración del sitio → Micrófono" },
+                { n:3, t:"Mirá si foroinmobiliario.com.ar aparece en la lista de Bloqueados — si está ahí, tocalo y cambialo a Permitir" },
+                { n:4, t:"Si no aparece en bloqueados, tocá el toggle superior para que quede en Permitir (azul), luego entrá al sitio y en el popup de permiso elegí Permitir" },
+                { n:5, t:'Volvé a la app y tocá "Recargar página" abajo' },
+              ].map(({ n, t }) => (
+                <div key={n} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#cc0000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff", flexShrink: 0 }}>{n}</div>
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: 1.5, paddingTop: 2 }}>{t}</div>
                 </div>
               ))}
             </div>
 
-            {/* Opción B */}
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción B — Ajustes de Android</div>
-              {[
-                "Abrí Ajustes del teléfono",
-                "Aplicaciones → Chrome",
-                "Permisos → Micrófono → Permitir",
-              ].map((txt, i) => (
-                <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.5)", flexShrink: 0 }}>{i + 1}</div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 18, lineHeight: 1.5 }}>
-              📱 iPhone: Ajustes → Chrome → Micrófono → Activar
+            <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 18, lineHeight: 1.5 }}>
+              📱 <b>Nota:</b> que Android permita el mic para Chrome no alcanza — Chrome también necesita permiso por sitio. Son dos permisos separados.
             </div>
             <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
               Recargar página
