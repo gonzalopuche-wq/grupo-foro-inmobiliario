@@ -264,14 +264,18 @@ export default function ForoPage() {
   };
 
   const iniciarGrabacion = async () => {
+    const enIframe = typeof window !== "undefined" && window.self !== window.top;
     if (!navigator.mediaDevices?.getUserMedia) {
-      showToast("Tu navegador no soporta grabación de audio. Usá Chrome o Firefox.");
+      if (enIframe) showToast("⚠ App embebida — abrí en pestaña nueva para usar el micrófono.");
+      else showToast("Tu navegador no soporta grabación de audio.");
       return;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/ogg";
-      const mr = new MediaRecorder(stream, { mimeType });
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" :
+                       MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" :
+                       MediaRecorder.isTypeSupported("audio/ogg") ? "audio/ogg" : "";
+      const mr = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       mediaRecorderRef.current = mr;
       audioChunksRef.current = [];
       mr.ondataavailable = e => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
@@ -286,17 +290,22 @@ export default function ForoPage() {
       setAudioSegundos(0);
       audioTimerRef.current = setInterval(() => setAudioSegundos(s => s + 1), 1000);
     } catch (err: any) {
-      const name = err?.name ?? "";
-      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+      const name = err?.name ?? "Error";
+      const msg = err?.message ?? "";
+      const enIframe = typeof window !== "undefined" && window.self !== window.top;
+      console.error("[mic foro]", name, msg, err);
+      if (enIframe) {
+        showToast(`⚠ App embebida bloquea el mic. Abrí en pestaña nueva. (${name})`);
+      } else if (name === "NotAllowedError" || name === "PermissionDeniedError") {
         setModalMic(true);
       } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
-        showToast("🎙 No se encontró micrófono en este dispositivo.");
+        showToast("🎙 No se encontró micrófono.");
       } else if (name === "NotReadableError" || name === "TrackStartError") {
-        showToast("🎙 El micrófono está siendo usado por otra app. Cerrala e intentá de nuevo.");
+        showToast("🎙 El micrófono está ocupado por otra app.");
       } else if (name === "SecurityError") {
-        showToast("🎙 La grabación requiere conexión segura (HTTPS).");
+        showToast("🎙 Requiere HTTPS.");
       } else {
-        setModalMic(true);
+        showToast(`🎙 Error: ${name}${msg ? " — " + msg : ""}`);
       }
     }
   };

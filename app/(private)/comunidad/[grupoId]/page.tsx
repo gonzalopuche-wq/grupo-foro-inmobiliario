@@ -147,31 +147,39 @@ export default function GrupoChatPage() {
   };
 
   const iniciarGrab = async () => {
+    const enIframe = typeof window !== "undefined" && window.self !== window.top;
     if (!navigator.mediaDevices?.getUserMedia) {
-      showToast("Tu navegador no soporta grabación de audio. Usá Chrome o Firefox.");
+      if (enIframe) showToast("⚠ La app está embebida — pedí abrirla en pestaña nueva para usar el micrófono.");
+      else showToast("Tu navegador no soporta grabación de audio.");
       return;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mime = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/ogg";
-      const mr = new MediaRecorder(stream, { mimeType: mime });
+      const mime = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" :
+                   MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" :
+                   MediaRecorder.isTypeSupported("audio/ogg") ? "audio/ogg" : "";
+      const mr = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
       mrRef.current = mr; chunksRef.current = [];
       mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mr.onstop = () => { const blob = new Blob(chunksRef.current, {type:mime}); setAudioBlob(blob); setAudioUrl(URL.createObjectURL(blob)); stream.getTracks().forEach(t => t.stop()); };
+      mr.onstop = () => { const blob = new Blob(chunksRef.current, {type: mime || "audio/webm"}); setAudioBlob(blob); setAudioUrl(URL.createObjectURL(blob)); stream.getTracks().forEach(t => t.stop()); };
       mr.start(); setGrabando(true); setAudioSeg(0);
       timerRef.current = setInterval(() => setAudioSeg(s => s+1), 1000);
     } catch (err: any) {
-      const name = err?.name ?? "";
-      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+      const name = err?.name ?? "Error";
+      const msg = err?.message ?? "";
+      console.error("[mic]", name, msg, err);
+      if (enIframe) {
+        showToast(`⚠ App embebida bloquea el micrófono. Abrí en pestaña nueva. (${name})`);
+      } else if (name === "NotAllowedError" || name === "PermissionDeniedError") {
         setModalMic(true);
       } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
-        showToast("🎙 No se encontró micrófono en este dispositivo.");
+        showToast("🎙 No se encontró micrófono.");
       } else if (name === "NotReadableError" || name === "TrackStartError") {
-        showToast("🎙 El micrófono está siendo usado por otra app. Cerrala e intentá de nuevo.");
+        showToast("🎙 El micrófono está ocupado por otra app.");
       } else if (name === "SecurityError") {
-        showToast("🎙 La grabación requiere conexión segura (HTTPS).");
+        showToast("🎙 Requiere HTTPS.");
       } else {
-        setModalMic(true);
+        showToast(`🎙 Error: ${name}${msg ? " — " + msg : ""}`);
       }
     }
   };
