@@ -280,7 +280,7 @@ export default function ForoPage() {
       audioChunksRef.current = [];
       mr.ondataavailable = e => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
       mr.onstop = () => {
-        const finalMime = mimeType || mr.mimeType || "audio/webm";
+        const finalMime = mr.mimeType || mimeType || "audio/webm";
         const blob = new Blob(audioChunksRef.current, { type: finalMime });
         setAudioBlob(blob);
         setAudioUrl(URL.createObjectURL(blob));
@@ -329,11 +329,12 @@ export default function ForoPage() {
   const enviarAudio = async () => {
     if (!audioBlob || !userId) return;
     setSubiendoAudio(true);
-    const ext = audioBlob.type.includes("webm") ? "webm" : "ogg";
+    const mime = audioBlob.type || "audio/webm";
+    const ext = mime.includes("mp4") ? "mp4" : mime.includes("ogg") ? "ogg" : "webm";
     const nombre = `audio_${Date.now()}.${ext}`;
     const path = `foro_chat/${nombre}`;
-    const file = new File([audioBlob], nombre, { type: audioBlob.type });
-    const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl: "3600", upsert: false });
+    const file = new File([audioBlob], nombre, { type: mime });
+    const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { contentType: mime, cacheControl: "3600", upsert: false });
     if (error) { showToast("Error al subir audio"); setSubiendoAudio(false); return; }
     const { data: urlData } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
     const adj = { url: urlData.publicUrl, nombre, tipo: "audio" as any, tamano: audioBlob.size };
@@ -536,6 +537,14 @@ export default function ForoPage() {
         );
         if (adj.tipo === "video") return (
           <video key={i} src={adj.url} controls style={{ maxWidth: 260, borderRadius: 6, display: "block", border: "1px solid rgba(255,255,255,0.1)" }} onClick={e => e.stopPropagation()} />
+        );
+        if (adj.tipo === "audio") return (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "8px 10px" }} onClick={e => e.stopPropagation()}>
+            <span style={{ fontSize: 18 }}>🎙</span>
+            <audio controls style={{ flex: 1, height: 32, minWidth: 0 }}>
+              <source src={adj.url} type={adj.nombre?.endsWith(".mp4") ? "audio/mp4" : adj.nombre?.endsWith(".ogg") ? "audio/ogg" : "audio/webm"} />
+            </audio>
+          </div>
         );
         return (
           <a key={i} href={adj.url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}

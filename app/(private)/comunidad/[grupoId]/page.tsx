@@ -163,7 +163,7 @@ export default function GrupoChatPage() {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
       mr.onstop = () => {
-        const finalMime = mime || mr.mimeType || "audio/webm";
+        const finalMime = mr.mimeType || mime || "audio/webm";
         setTimeout(() => {
           const blob = new Blob(chunksRef.current, { type: finalMime });
           if (blob.size > 0) {
@@ -208,7 +208,7 @@ export default function GrupoChatPage() {
     const nombre = `audio_${Date.now()}.${ext}`;
     const path = `grupos/${grupoId}/${nombre}`;
     const file = new File([audioBlob], nombre, { type: mime });
-    const { error: upErr } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl:"3600", upsert:false });
+    const { error: upErr } = await supabase.storage.from("adjuntos_chat").upload(path, file, { contentType: mime, cacheControl:"3600", upsert:false });
     if (upErr) { showToast(`Error al subir: ${upErr.message}`); setSubiendoAudio(false); return; }
     const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
     // Intentar con perfil_id primero (columna original), si falla intentar con user_id
@@ -408,7 +408,7 @@ export default function GrupoChatPage() {
                             <>
                               {m.texto && <div className="gc-txt">{renderTxt(m.texto)}</div>}
                               {adjs.map((a,i) => {
-                                if (a.tipo==="audio") return <div key={i} className="gc-a-audio"><span style={{fontSize:18}}>🎙</span><audio src={a.url} controls style={{flex:1,height:32,minWidth:0}}/></div>;
+                                if (a.tipo==="audio") return <div key={i} className="gc-a-audio"><span style={{fontSize:18}}>🎙</span><audio controls style={{flex:1,height:32,minWidth:0}}><source src={a.url} type={a.nombre?.endsWith(".mp4")?"audio/mp4":a.nombre?.endsWith(".ogg")?"audio/ogg":"audio/webm"}/></audio></div>;
                                 if (a.tipo==="imagen") return <img key={i} src={a.url} alt={a.nombre} style={{maxWidth:"100%",maxHeight:200,borderRadius:8,display:"block",cursor:"pointer",marginTop:4}} onClick={e=>{e.stopPropagation();window.open(a.url,"_blank");}}/>;
                                 if (a.tipo==="video") return <video key={i} src={a.url} controls style={{maxWidth:"100%",maxHeight:200,borderRadius:8,marginTop:4,display:"block"}}/>;
                                 return <a key={i} href={a.url} target="_blank" rel="noopener noreferrer" className="gc-a-doc" onClick={e=>e.stopPropagation()}><span style={{fontSize:16}}>📎</span><div style={{flex:1,minWidth:0}}><div style={{fontSize:11,color:"#fff",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.nombre}</div>{a.tamano&&<div style={{fontSize:9,color:"rgba(255,255,255,0.3)"}}>{fmtTam(a.tamano)}</div>}</div></a>;
