@@ -131,7 +131,19 @@ export default function ForoPage() {
   const audioTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [modalMic, setModalMic] = useState(false);
+  const [micEstado, setMicEstado] = useState<'ok'|'denegado'|'sin-soporte'|'desconocido'>('desconocido');
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
+
+  useEffect(() => {
+    if (typeof navigator === "undefined") return;
+    if (!navigator.mediaDevices?.getUserMedia) { setMicEstado("sin-soporte"); return; }
+    if (!navigator.permissions) return;
+    navigator.permissions.query({ name: "microphone" as PermissionName }).then(status => {
+      const map = (s: string) => s === "granted" ? "ok" : s === "denied" ? "denegado" : "desconocido";
+      setMicEstado(map(status.state));
+      status.onchange = () => setMicEstado(map(status.state));
+    }).catch(() => {});
+  }, []);
 
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [faqTopics, setFaqTopics] = useState<Topic[]>([]);
@@ -1035,6 +1047,13 @@ export default function ForoPage() {
                     <button onClick={cancelarAudio} style={{padding:"5px 8px",background:"transparent",border:"1px solid rgba(200,0,0,0.2)",borderRadius:4,color:"rgba(200,0,0,0.5)",fontSize:14,cursor:"pointer",flexShrink:0}}>✕</button>
                   </div>
                 )}
+                {micEstado === "denegado" && !grabando && !audioUrl && (
+                  <div onClick={() => setModalMic(true)} style={{display:"flex",alignItems:"center",gap:8,background:"rgba(204,0,0,0.12)",border:"1px solid rgba(204,0,0,0.25)",borderRadius:6,padding:"8px 12px",marginBottom:4,cursor:"pointer"}}>
+                    <span style={{fontSize:15}}>🎙</span>
+                    <span style={{fontSize:12,color:"rgba(255,120,120,0.95)",fontFamily:"Inter,sans-serif",flex:1,lineHeight:1.4}}>Micrófono bloqueado — tocá para ver cómo habilitarlo</span>
+                    <span style={{fontSize:13,color:"#cc0000",fontWeight:700}}>→</span>
+                  </div>
+                )}
                 {!grabando && !audioUrl && (
                   <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                     {/* Botón proponer evento */}
@@ -1046,7 +1065,17 @@ export default function ForoPage() {
                     <input ref={chatFileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
                     <button onClick={() => chatFileDocRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Documentos">📎</button>
                     {/* Grabar audio */}
-                    <button onClick={iniciarGrabacion} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Grabar audio" style={{color:"rgba(200,0,0,0.7)"}}>🎙</button>
+                    {micEstado !== "sin-soporte" && (
+                      <button
+                        onClick={micEstado === "denegado" ? () => setModalMic(true) : iniciarGrabacion}
+                        disabled={subiendoChatAdj && micEstado !== "denegado"}
+                        className="f-chat-adj-btn"
+                        title={micEstado === "denegado" ? "Micrófono bloqueado — tocá para ver cómo habilitarlo" : "Grabar audio"}
+                        style={{color: micEstado === "denegado" ? "#cc0000" : "rgba(200,0,0,0.7)", position:"relative"}}
+                      >
+                        🎙{micEstado === "denegado" && <span style={{position:"absolute",top:-3,right:-3,fontSize:9,background:"#cc0000",color:"#fff",borderRadius:"50%",width:13,height:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,lineHeight:1}}>!</span>}
+                      </button>
+                    )}
                     <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
                       style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
                       onChange={e => {
