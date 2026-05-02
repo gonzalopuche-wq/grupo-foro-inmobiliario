@@ -1173,9 +1173,20 @@ export default function ForoPage() {
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff" }}>🎙 Habilitar micrófono</div>
               <button onClick={() => setModalMic(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 20, lineHeight: 1.6 }}>
-              El navegador bloqueó el acceso al micrófono. Seguí una de estas opciones:
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 12, lineHeight: 1.6 }}>
+              El navegador bloqueó el acceso al micrófono.
             </p>
+            <div style={{background:"rgba(255,200,0,0.08)",border:"1px solid rgba(255,200,0,0.3)",borderRadius:8,padding:"10px 12px",marginBottom:14}}>
+              <div style={{fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:800,color:"#ffc800",letterSpacing:"0.1em",marginBottom:4}}>⚠ IMPORTANTE — Dominio a habilitar:</div>
+              <div style={{fontSize:13,color:"#fff",fontFamily:"monospace",fontWeight:700,wordBreak:"break-all"}}>{typeof window !== "undefined" ? window.location.host : ""}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:6,lineHeight:1.4}}>Si ves <b>foroinmobiliario.com.ar</b> en Chrome y le pusiste Permitir, ese es el dominio equivocado. Tenés que habilitarlo en el de arriba.</div>
+            </div>
+            {typeof window !== "undefined" && window.self !== window.top && (
+              <div style={{background:"rgba(255,80,80,0.1)",border:"1px solid rgba(255,80,80,0.3)",borderRadius:8,padding:"10px 12px",marginBottom:14}}>
+                <div style={{fontSize:11,color:"#ff8080",fontFamily:"Inter,sans-serif",lineHeight:1.5}}>🪟 Estás viendo la app embebida en otro sitio (iframe). Probá abrirla en pestaña nueva — el mic puede no funcionar dentro del iframe.</div>
+              </div>
+            )}
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>Pasos:</p>
 
             <div style={{ background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#cc0000", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción A — Desde Chrome Android</div>
