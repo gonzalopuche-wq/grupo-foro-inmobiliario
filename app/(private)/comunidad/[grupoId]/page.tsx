@@ -164,22 +164,19 @@ export default function GrupoChatPage() {
       };
       mr.onstop = () => {
         const finalMime = mime || mr.mimeType || "audio/webm";
-        showToast(`onstop: ${chunksRef.current.length} chunks, mime=${finalMime}`);
         setTimeout(() => {
           const blob = new Blob(chunksRef.current, { type: finalMime });
-          showToast(`blob: ${blob.size}B`);
           if (blob.size > 0) {
             setAudioBlob(blob);
             setAudioUrl(URL.createObjectURL(blob));
           } else {
-            showToast("Audio vacío, intentá más largo");
+            showToast("Audio vacío — grabá por más tiempo");
           }
           setGrabando(false);
           stream.getTracks().forEach(t => t.stop());
         }, 150);
       };
       mr.start(100); setGrabando(true); setAudioSeg(0);
-      showToast("🎙 Grabando — tocá Detener cuando termines");
       timerRef.current = setInterval(() => setAudioSeg(s => s+1), 1000);
     } catch (err: any) {
       const name = err?.name ?? "Error";
