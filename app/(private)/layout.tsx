@@ -18,6 +18,7 @@ const NAV_CORREDOR = [
   { href: "/canal-educativo", label: "Canal Educativo", icon: "📡" },
   { href: "/crm", label: "CRM", icon: "👥" },
   { href: "/cartera", label: "Cartera", icon: "🏠" },
+  { href: "/visitas", label: "Visitas", icon: "🗓" },
   { href: "/emprendimientos", label: "Emprendimientos", icon: "🏗️" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
   { href: "/comparables", label: "Comparables", icon: "📈" },
