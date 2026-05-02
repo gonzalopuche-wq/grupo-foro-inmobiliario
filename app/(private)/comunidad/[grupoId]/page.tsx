@@ -51,6 +51,7 @@ export default function GrupoChatPage() {
   const [audioSeg, setAudioSeg] = useState(0);
   const [subiendoAudio, setSubiendoAudio] = useState(false);
   const [toast, setToast] = useState<string|null>(null);
+  const [modalMic, setModalMic] = useState(false);
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
   const mrRef = useRef<MediaRecorder|null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
@@ -161,7 +162,7 @@ export default function GrupoChatPage() {
     } catch (err: any) {
       const name = err?.name ?? "";
       if (name === "NotAllowedError" || name === "PermissionDeniedError") {
-        showToast("🎙 Permiso denegado — habilitá el micrófono en Ajustes del navegador > Permisos del sitio.");
+        setModalMic(true);
       } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
         showToast("🎙 No se encontró micrófono en este dispositivo.");
       } else if (name === "NotReadableError" || name === "TrackStartError") {
@@ -169,7 +170,7 @@ export default function GrupoChatPage() {
       } else if (name === "SecurityError") {
         showToast("🎙 La grabación requiere conexión segura (HTTPS).");
       } else {
-        showToast("🎙 No se pudo acceder al micrófono. Verificá los permisos del navegador.");
+        setModalMic(true);
       }
     }
   };
@@ -441,6 +442,40 @@ export default function GrupoChatPage() {
       {toast && (
         <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "90vw", textAlign: "center" }}>
           {toast}
+        </div>
+      )}
+
+      {/* Modal permisos micrófono */}
+      {modalMic && (
+        <div onClick={() => setModalMic(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 10000, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: "0 0 env(safe-area-inset-bottom,0)" }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#1a1a1a", borderRadius: "16px 16px 0 0", padding: "24px 20px 32px", width: "100%", maxWidth: 480, border: "1px solid rgba(255,255,255,0.1)", borderBottom: "none" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff" }}>🎙 Habilitar micrófono</div>
+              <button onClick={() => setModalMic(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
+            </div>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 20, lineHeight: 1.6 }}>
+              El navegador bloqueó el acceso al micrófono. Seguí estos pasos para habilitarlo:
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+              {[
+                { n: "1", txt: "Tocá el ícono 🔒 o ⓘ a la izquierda de la barra de dirección" },
+                { n: "2", txt: "Seleccioná Permisos del sitio" },
+                { n: "3", txt: "Tocá Micrófono y cambialo a Permitir" },
+                { n: "4", txt: "Recargá la página y volvé a intentarlo" },
+              ].map(s => (
+                <div key={s.n} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                  <div style={{ width: 26, height: 26, borderRadius: "50%", background: "#cc0000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff", flexShrink: 0 }}>{s.n}</div>
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.5, paddingTop: 4 }}>{s.txt}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 18, lineHeight: 1.5 }}>
+              💡 En iPhone: Ajustes del sistema → Chrome → Micrófono → Activar
+            </div>
+            <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
+              Recargar página
+            </button>
+          </div>
         </div>
       )}
     </>
