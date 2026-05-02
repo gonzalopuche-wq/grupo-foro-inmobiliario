@@ -211,12 +211,21 @@ export default function GrupoChatPage() {
     const { error: upErr } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl:"3600", upsert:false });
     if (upErr) { showToast(`Error al subir: ${upErr.message}`); setSubiendoAudio(false); return; }
     const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
-    const ins: any = { grupo_id: grupoId, user_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
+    // Intentar con perfil_id primero (columna original), si falla intentar con user_id
+    const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
     if (replyMsg?.id) ins.reply_id = replyMsg.id;
-    const { error: insErr } = await supabase.from("mensajes_chat").insert(ins);
+    let { error: insErr } = await supabase.from("mensajes_chat").insert(ins);
+    if (insErr?.message?.includes("perfil_id")) {
+      // columna es user_id en este entorno
+      const ins2: any = { grupo_id: grupoId, user_id: userId, texto: null, adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
+      if (replyMsg?.id) ins2.reply_id = replyMsg.id;
+      const { error: insErr2 } = await supabase.from("mensajes_chat").insert(ins2);
+      insErr = insErr2 ?? null;
+    }
     if (insErr) { showToast(`Error al enviar: ${insErr.message}`); setSubiendoAudio(false); return; }
     setAudioBlob(null); setAudioUrl(null); setAudioSeg(0); setReplyMsg(null); setSubiendoAudio(false);
-    showToast("🎙 Audio enviado");
+    // Forzar recarga para que aparezca el mensaje de audio en el chat
+    await cargarMensajes();
   };
 
   const enviar = async () => {
@@ -225,7 +234,7 @@ export default function GrupoChatPage() {
     const txt = input.trim(); const adjs = [...adjuntos]; const rid = replyMsg?.id ?? null;
     const temp: Mensaje = { id:`temp-${Date.now()}`, grupo_id: grupoId, perfil_id: userId, texto: txt||null, adjuntos: adjs, reply_id: rid, editado:false, eliminado:false, reacciones:{}, created_at: new Date().toISOString(), perfiles: userPerfil ?? undefined, _reply: replyMsg ?? undefined };
     setMensajes(prev => [...prev, temp]); setInput(""); setAdjuntos([]); setReplyMsg(null); setInputPreview(null);
-    const ins: any = { grupo_id: grupoId, user_id: userId, texto: txt||null, adjuntos: adjs.length > 0 ? adjs : null };
+    const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: txt||null, adjuntos: adjs.length > 0 ? adjs : null };
     if (rid) ins.reply_id = rid;
     const { data: msg } = await supabase.from("mensajes_chat").insert(ins).select("*, perfiles(id,nombre,apellido,matricula,foto_url)").single();
     if (msg) setMensajes(prev => prev.map(m => m.id === temp.id ? {...msg as Mensaje, _reply: temp._reply} : m));
