@@ -177,7 +177,7 @@ const tasacionTool: Anthropic.Tool = {
       valor_sugerido:     { type: "number",  description: "Valor sugerido de tasación en USD" },
       precio_m2:          { type: "number",  description: "Precio por m² en USD" },
       moneda:             { type: "string",  enum: ["USD"] },
-      alquiler_estimado:  { type: ["number","null"], description: "Alquiler estimado mensual en ARS para la operación de venta. Valores mínimos 2025: 1 amb ARS 400k, 2 amb ARS 550k, 3 amb ARS 750k. Null si la operación es Alquiler." },
+      alquiler_estimado:  { type: ["number","null"], description: "Alquiler estimado mensual en ARS para la operación de venta. Valores mínimos 2026: 1 amb ARS 600k, 2 amb ARS 850k, 3 amb ARS 1.200k. Null si la operación es Alquiler." },
       analisis:           { type: "string",  description: "2-3 párrafos de análisis del mercado y justificación del valor, referenciando los comparables reales" },
       factores_positivos: { type: "array",   items: { type: "string" } },
       factores_negativos: { type: "array",   items: { type: "string" } },
@@ -241,22 +241,32 @@ export async function POST(req: NextRequest) {
 
     const prompt = `Sos un tasador inmobiliario matriculado especialista en Rosario y Argentina. Fecha: ${hoy}.
 
-════════════ PRECIOS DE MERCADO — ${hoy} ════════════
+════════════ PRECIOS DE MERCADO VIGENTES — ${hoy} ════════════
 
-ALQUILERES ROSARIO (ARS/mes vigentes):
-- Monoambiente / 1 amb (30-45m2): ARS 380.000 - 600.000
-- 2 ambientes (45-65m2): ARS 550.000 - 870.000
-- 3 ambientes (65-90m2): ARS 750.000 - 1.200.000
-- 4+ amb / PH: ARS 1.100.000 - 1.800.000
-Centro/Alberdi/Echesortu/Pichincha: valores base
-Fisherton/Puerto Norte: +20-40%
-Perifericos: -15-25%
+ALQUILERES ROSARIO (ARS/mes — mercado actual ${hoy}):
+- Monoambiente / 1 amb (30-45m2): ARS 600.000 - 950.000
+- 2 ambientes (45-65m2): ARS 850.000 - 1.350.000
+- 3 ambientes (65-90m2): ARS 1.200.000 - 1.900.000
+- 4+ amb / PH: ARS 1.700.000 - 2.800.000
+- Casas: ARS 1.400.000 - 3.500.000 segun zona y m2
+Modificadores de zona:
+  Centro/Alberdi/Echesortu/Pichincha/Republica de la Sexta: valores base
+  Fisherton/Puerto Norte/Roca Santa Fe/barrios premium: +20-40%
+  Perifericos/emergentes: -15-25%
 
-VENTA ROSARIO (USD/m2):
-- Centro/Alberdi/Echesortu/Pichincha: USD 1.200-1.900/m2
-- Fisherton/Puerto Norte/Roca: USD 1.800-2.800/m2
-- Residencial consolidado: USD 1.000-1.500/m2
-- Perifericos: USD 700-1.100/m2
+VENTA ROSARIO (USD/m2 — mercado de usados ${hoy}):
+- Centro/Alberdi/Echesortu/Pichincha: USD 1.400-2.100/m2
+- Fisherton/Puerto Norte/Roca Santa Fe: USD 2.000-3.200/m2
+- Residencial consolidado (Abasto, Belgrano, Italia, Las Delicias): USD 1.100-1.700/m2
+- Perifericos y emergentes: USD 800-1.200/m2
+
+ALQUILERES CABA (ARS/mes referencia):
+- 2 amb (50-65m2): ARS 1.100.000 - 1.900.000
+- 3 amb (65-90m2): ARS 1.500.000 - 2.600.000
+
+ALQUILERES GBA (ARS/mes referencia):
+- Zona norte premium: ARS 1.000.000 - 1.600.000
+- Zona oeste/sur: ARS 700.000 - 1.150.000
 
 ════════════ PROPIEDAD A TASAR ════════════
 Tipo: ${datos.tipo}
@@ -279,8 +289,8 @@ ${comparablesTexto}
 ════════════ INSTRUCCIONES ════════════
 1. Analizá los comparables reales de los portales para calibrar el precio.
 2. Para los 3 comparables del resultado, elegí los 3 mas relevantes de la lista real. Si no hay suficientes de la misma moneda, estimá los faltantes con precios de mercado actuales.
-3. El alquiler_estimado DEBE estar dentro de los rangos 2025 indicados arriba, nunca por debajo de los minimos.
-4. El analisis debe referenciar los portales consultados (ZonaProp, Argenprop, Propia, MercadoLibre).`
+3. El alquiler_estimado DEBE estar dentro de los rangos de ${hoy} indicados arriba, nunca por debajo de los minimos. Para 2 ambientes en zona central: minimo ARS 850.000.
+4. El analisis debe referenciar los portales consultados (ZonaProp, Argenprop, Propia, MercadoLibre) y la fecha ${hoy}.`
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
