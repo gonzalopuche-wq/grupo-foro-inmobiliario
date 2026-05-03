@@ -3,6 +3,16 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
+interface ComparableReal {
+  portal: string
+  titulo: string
+  precio: number
+  moneda: string
+  m2: number | null
+  barrio: string
+  url: string
+}
+
 interface TasacionResult {
   valor_min: number
   valor_max: number
@@ -13,8 +23,10 @@ interface TasacionResult {
   analisis: string
   factores_positivos: string[]
   factores_negativos: string[]
-  comparables: { descripcion: string; precio: number; m2: number }[]
+  comparables_reales: ComparableReal[]
   recomendacion: string
+  _portales_consultados?: string[]
+  _total_comparables_encontrados?: number
 }
 
 interface TasacionHistorial {
@@ -361,17 +373,47 @@ ${resultado.recomendacion}`
                 </div>
               </div>
 
-              {/* Comparables */}
-              {resultado.comparables && resultado.comparables.length > 0 && (
+              {/* Comparables reales */}
+              {resultado.comparables_reales && resultado.comparables_reales.length > 0 && (
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: 14 }}>
-                  <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>Comparables de mercado</div>
-                  {resultado.comparables.map((c, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: i < resultado.comparables.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', alignItems: 'center', gap: 10 }}>
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', flex: 1 }}>{c.descripcion}</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>USD {c.precio.toLocaleString('es-AR')}</span>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', flexShrink: 0 }}>{c.m2} m²</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                      Comparables reales de portales
                     </div>
-                  ))}
+                    {resultado._portales_consultados && resultado._portales_consultados.length > 0 && (
+                      <div style={{ display: 'flex', gap: 4 }}>
+                        {resultado._portales_consultados.map(p => (
+                          <span key={p} style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: 'rgba(59,130,246,0.12)', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.2)' }}>{p}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {resultado.comparables_reales.map((c, i) => (
+                      <div key={i} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: '10px 12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <span style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', marginRight: 6 }}>{c.portal}</span>
+                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{c.titulo || c.barrio}</span>
+                          </div>
+                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', fontFamily: 'Montserrat,sans-serif' }}>
+                              {c.moneda} {c.precio.toLocaleString('es-AR')}
+                            </div>
+                            {c.m2 && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>{c.m2} m²{c.precio && c.m2 ? ` · ${c.moneda} ${Math.round(c.precio / c.m2).toLocaleString('es-AR')}/m²` : ''}</div>}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{c.barrio}</span>
+                          {c.url && (
+                            <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#3b82f6', textDecoration: 'none', fontFamily: 'Montserrat,sans-serif', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
+                              Ver en portal →
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 

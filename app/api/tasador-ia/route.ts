@@ -245,22 +245,14 @@ const tasacionTool: Anthropic.Tool = {
       analisis:           { type: "string",  description: "2-3 párrafos de análisis del mercado y justificación del valor, referenciando los comparables reales" },
       factores_positivos: { type: "array",   items: { type: "string" } },
       factores_negativos: { type: "array",   items: { type: "string" } },
-      comparables: {
+      indices_comparables: {
         type: "array",
-        description: "Exactamente 3 comparables. Usá los comparables reales proporcionados. Si son suficientes, tomá los 3 más relevantes. Si no alcanza, completá con estimados del mercado.",
-        items: {
-          type: "object",
-          properties: {
-            descripcion: { type: "string", description: "Descripción del comparable: portal, tipo, zona, m², características" },
-            precio:      { type: "number", description: "Precio en USD" },
-            m2:          { type: "number", description: "Superficie en m²" },
-          },
-          required: ["descripcion","precio","m2"],
-        },
+        description: "Índices (base 1) de los comparables más relevantes de la lista real proporcionada, ordenados por relevancia. Máximo 5. Si no hay comparables reales, dejar vacío.",
+        items: { type: "number" },
       },
       recomendacion: { type: "string", description: "Recomendación estratégica: precio de publicación, tiempo estimado de comercialización, tips de negociación" },
     },
-    required: ["valor_min","valor_max","valor_sugerido","precio_m2","moneda","analisis","factores_positivos","factores_negativos","comparables","recomendacion"],
+    required: ["valor_min","valor_max","valor_sugerido","precio_m2","moneda","analisis","factores_positivos","factores_negativos","indices_comparables","recomendacion"],
   },
 };
 
@@ -347,10 +339,11 @@ Observaciones: ${datos.observaciones || "Ninguna"}
 ${comparablesTexto}
 
 ════════════ INSTRUCCIONES ════════════
-1. Analizá los comparables reales de los portales para calibrar el precio.
-2. Para los 3 comparables del resultado, elegí los 3 mas relevantes de la lista real. Si no hay suficientes de la misma moneda, estimá los faltantes con precios de mercado actuales.
-3. El alquiler_estimado DEBE estar dentro de los rangos de mercado indicados arriba, nunca por debajo de los mínimos. Los datos provienen de portales reales (${preciosAuto ? "actualizados automáticamente" : "estimados 2026"}).
-4. El analisis debe referenciar los portales consultados (ZonaProp, Argenprop, Propia, MercadoLibre) y la fecha ${hoy}.`
+1. Analizá los comparables reales de los portales (listados arriba con índice 1, 2, 3...) para calibrar el precio.
+2. En "indices_comparables" devolvé los índices (1-based) de los 3 a 5 comparables más relevantes para esta propiedad, ordenados de mayor a menor relevancia. Si no hay comparables reales, devolvé array vacío.
+3. El valor_min y valor_max deben derivarse directamente del rango de precios de los comparables seleccionados, ajustado por diferencias de m², estado y zona.
+4. El alquiler_estimado DEBE estar dentro de los rangos de mercado indicados arriba, nunca por debajo de los mínimos. Datos: ${preciosAuto ? "actualizados automáticamente desde portales" : "estimados 2026"}.
+5. El analisis debe mencionar los portales consultados (ZonaProp, Argenprop, Propia, MercadoLibre) y la fecha ${hoy}, y explicar cómo los comparables justifican el rango de valor.`
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
@@ -365,8 +358,21 @@ ${comparablesTexto}
       return NextResponse.json({ error: "Respuesta invalida de IA." }, { status: 500 });
     }
 
+    const input = toolUse.input as Record<string, unknown>
+    const indices: number[] = Array.isArray(input.indices_comparables) ? (input.indices_comparables as number[]) : []
+    // Resolve selected indices to real scraped comparables (1-based)
+    const comparablesSeleccionados = indices
+      .map(idx => comparablesFiltrados[idx - 1])
+      .filter(Boolean)
+      .slice(0, 5)
+    // Fallback: if AI returned no indices but we have comparables, take first 3
+    const comparablesReales = comparablesSeleccionados.length > 0
+      ? comparablesSeleccionados
+      : comparablesFiltrados.slice(0, 3)
+
     const resultadoFinal = {
-      ...(toolUse.input as Record<string, unknown>),
+      ...input,
+      comparables_reales: comparablesReales,
       _portales_consultados: [
         resZona.status === "fulfilled" && resZona.value.length > 0 ? "ZonaProp" : null,
         resArgen.status === "fulfilled" && resArgen.value.length > 0 ? "Argenprop" : null,
