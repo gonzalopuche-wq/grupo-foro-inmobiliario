@@ -75,7 +75,7 @@ async function cargarTodo<T>(
   tabla: string,
   columnas: string,
   orden: string
-): Promise<T[]> {
+): Promise<{ data: T[]; error: string | null }> {
   const CHUNK = 1000;
   let todos: T[] = [];
   let desde = 0;
@@ -85,12 +85,13 @@ async function cargarTodo<T>(
       .select(columnas)
       .order(orden, { ascending: true })
       .range(desde, desde + CHUNK - 1);
-    if (error || !data || data.length === 0) break;
+    if (error) return { data: [], error: error.message };
+    if (!data || data.length === 0) break;
     todos = todos.concat(data as T[]);
     if (data.length < CHUNK) break;
     desde += CHUNK;
   }
-  return todos;
+  return { data: todos, error: null };
 }
 
 export default function PadronGFIPage() {
@@ -99,6 +100,7 @@ export default function PadronGFIPage() {
   const [cocirData, setCocirData] = useState<RegistroCOCIR[]>([]);
   const [gfiData, setGfiData] = useState<PerfilGFI[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorCarga, setErrorCarga] = useState<string | null>(null);
   const [busqueda, setBusqueda] = useState("");
   const [perfilRapidoId, setPerfilRapidoId] = useState<string | null>(null);
   const [pagina, setPagina] = useState(0);
@@ -109,7 +111,7 @@ export default function PadronGFIPage() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
-      const [cocir, gfi] = await Promise.all([
+      const [cocirRes, gfiRes] = await Promise.all([
         cargarTodo<RegistroCOCIR>(
           "cocir_padron",
           "id,matricula,apellido,nombre,inmobiliaria,direccion,localidad,telefono,email,estado,actualizado_at",
@@ -121,8 +123,10 @@ export default function PadronGFIPage() {
           "apellido"
         ),
       ]);
-      setCocirData(cocir);
-      setGfiData(gfi);
+      if (cocirRes.error) setErrorCarga(`Error cargando COCIR: ${cocirRes.error}`);
+      else if (gfiRes.error) setErrorCarga(`Error cargando perfiles GFI: ${gfiRes.error}`);
+      setCocirData(cocirRes.data);
+      setGfiData(gfiRes.data);
       setLoading(false);
     };
     init();
@@ -358,6 +362,18 @@ export default function PadronGFIPage() {
             {loading ? "Cargando..." : `${filtrados.length.toLocaleString("es-AR")} resultado${filtrados.length !== 1 ? "s" : ""}`}
           </span>
         </div>
+
+        {/* Error de carga */}
+        {errorCarga && (
+          <div style={{ padding: '14px 18px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, fontSize: 13, color: '#ef4444', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <span style={{ flexShrink: 0 }}>⚠️</span>
+            <div>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>Error cargando el padrón</div>
+              <div style={{ fontSize: 12, opacity: 0.8 }}>{errorCarga}</div>
+              <div style={{ fontSize: 11, marginTop: 6, opacity: 0.6 }}>Verificá que la tabla exista en Supabase y que las políticas RLS permitan lectura para usuarios autenticados.</div>
+            </div>
+          </div>
+        )}
 
         {/* Tabla */}
         {loading ? (
