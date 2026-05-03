@@ -28,7 +28,7 @@ interface ChatMsg {
   editado?: boolean; eliminado?: boolean;
   reacciones?: Record<string, string[]>;
   reply_id?: string | null;
-  adjuntos?: { url: string; nombre: string; tipo: "imagen" | "video" | "documento"; tamano?: number }[];
+  adjuntos?: { url: string; nombre: string; tipo: "imagen" | "video" | "documento" | "audio"; tamano?: number }[];
   perfiles?: Author;
   reply?: ChatMsg | null;
 }
@@ -112,7 +112,7 @@ export default function ForoPage() {
   const [chatLinkPreviews, setChatLinkPreviews] = useState<Record<string, any>>({});
   const [chatInputPreview, setChatInputPreview] = useState<{ url: string; data: any } | null>(null);
   // Adjuntos foro chat
-  const [chatAdjuntos, setChatAdjuntos] = useState<{url:string;nombre:string;tipo:"imagen"|"video"|"documento";tamano?:number}[]>([]);
+  const [chatAdjuntos, setChatAdjuntos] = useState<{url:string;nombre:string;tipo:"imagen"|"video"|"documento"|"audio";tamano?:number}[]>([]);
   const [subiendoChatAdj, setSubiendoChatAdj] = useState(false);
   const chatInputPreviewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -242,7 +242,7 @@ export default function ForoPage() {
     const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
     const esImagen = ["jpg","jpeg","png","gif","webp","heic"].includes(ext);
     const esVideo = ["mp4","mov","avi","webm","mkv"].includes(ext);
-    const tipo: "imagen"|"video"|"documento" = esImagen ? "imagen" : esVideo ? "video" : "documento";
+    const tipo: "imagen"|"video"|"documento"|"audio" = esImagen ? "imagen" : esVideo ? "video" : "documento";
     const path = `foro_chat/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
     const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { cacheControl: "3600", upsert: false });
     if (error) { console.error("Upload error:", error); return null; }
@@ -337,7 +337,7 @@ export default function ForoPage() {
     const { error } = await supabase.storage.from("adjuntos_chat").upload(path, file, { contentType: mime, cacheControl: "3600", upsert: false });
     if (error) { showToast("Error al subir audio"); setSubiendoAudio(false); return; }
     const { data: urlData } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
-    const adj = { url: urlData.publicUrl, nombre, tipo: "audio" as any, tamano: audioBlob.size };
+    const adj = { url: urlData.publicUrl, nombre, tipo: "audio" as const, tamano: audioBlob.size };
     const insertData: any = { user_id: userId, body: "🎙 Audio", adjuntos: [adj] };
     if (chatReplyMsg?.id) insertData.reply_id = chatReplyMsg.id;
     await supabase.from("forum_chat_messages").insert(insertData);
