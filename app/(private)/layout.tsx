@@ -34,12 +34,10 @@ const NAV_CORREDOR = [
   { href: "/contratos", label: "Contratos", icon: "📄" },
   { href: "/notificaciones", label: "Notificaciones", icon: "🔔" },
   { href: "/ideas", label: "Ideas", icon: "💡" },
-  { href: "/metas", label: "Metas", icon: "🎯" },
   { href: "/legal", label: "Legal", icon: "⚖️" },
   { href: "/marketplace", label: "Marketplace", icon: "🏪" },
   { href: "/directorios", label: "Directorios", icon: "📒" },
   { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
-  { href: "/comisiones", label: "Comisiones", icon: "💰" },
   { href: "/agenda", label: "Agenda", icon: "📆" },
 ];
 

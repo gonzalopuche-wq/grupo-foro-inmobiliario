@@ -390,10 +390,8 @@ export default function ReportesPage() {
         {/* Footer: link a módulos */}
         <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:8}}>
           {[
-            {href:'/comisiones',label:'Ver comisiones',icon:'💰'},
             {href:'/crm',label:'Ir al CRM',icon:'👥'},
             {href:'/cartera',label:'Ver cartera',icon:'🏠'},
-            {href:'/metas',label:'Mis metas',icon:'🎯'},
           ].map(l=>(
             <a key={l.href} href={l.href} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:8,color:'rgba(255,255,255,0.5)',fontSize:12,textDecoration:'none',fontFamily:'Montserrat,sans-serif',fontWeight:600,transition:'all 0.15s'}}>
               <span>{l.icon}</span>{l.label}
