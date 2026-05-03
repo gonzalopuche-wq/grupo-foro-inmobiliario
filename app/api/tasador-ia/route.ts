@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -164,6 +170,64 @@ function filtrarComparables(props: PropComp[], monedaEsperada: string, m2Ref?: n
     .slice(0, 8)
 }
 
+// ─── Build price table from auto-calculated DB data ───────────────────────────
+
+interface PreciosAuto {
+  alquiler_rosario?: Array<{ label: string; min: number; max: number; mediana: number; n: number; moneda: string }>
+  venta_rosario?: Array<{ label: string; min: number; max: number; mediana: number; n: number; moneda: string }>
+  actualizado?: string
+  total_listings_procesados?: number
+}
+
+function fmt(n: number) { return n.toLocaleString("es-AR") }
+
+function buildPreciosSection(precios: PreciosAuto | null, hoy: string): string {
+  if (precios?.alquiler_rosario?.length) {
+    const alq = precios.alquiler_rosario
+    const vent = precios.venta_rosario || []
+    const actualizado = precios.actualizado
+      ? new Date(precios.actualizado).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })
+      : hoy
+    const filas = alq.map(r =>
+      `- ${r.label}: ARS ${fmt(r.min)} - ${fmt(r.max)} (mediana ARS ${fmt(r.mediana)}, n=${r.n})`
+    ).join("\n")
+    const ventFila = vent.length
+      ? `\nVENTA ROSARIO (USD/m2 — datos reales portales, actualizado ${actualizado}):\n` +
+        vent.map(r => `- ${r.label}: USD ${fmt(r.min)} - ${fmt(r.max)} (mediana USD ${fmt(r.mediana)}, n=${r.n})`).join("\n")
+      : `\nVENTA ROSARIO (USD/m2 — estimados ${hoy}):
+- Centro/Alberdi/Echesortu/Pichincha: USD 1.400-2.100/m2
+- Fisherton/Puerto Norte/Roca Santa Fe: USD 2.000-3.200/m2
+- Residencial consolidado: USD 1.100-1.700/m2
+- Periféricos/emergentes: USD 800-1.200/m2`
+
+    return `ALQUILERES ROSARIO (ARS/mes — datos reales portales, actualizado ${actualizado}):
+${filas}
+Modificadores de zona:
+  Centro/Alberdi/Echesortu/Pichincha/República de la Sexta: valores base
+  Fisherton/Puerto Norte/Roca Santa Fe/barrios premium: +20-40%
+  Periféricos/emergentes: -15-25%
+${ventFila}`
+  }
+
+  // Fallback: hardcoded 2026 values
+  return `ALQUILERES ROSARIO (ARS/mes — mercado actual ${hoy}):
+- Monoambiente / 1 amb (30-45m2): ARS 600.000 - 950.000
+- 2 ambientes (45-65m2): ARS 850.000 - 1.350.000
+- 3 ambientes (65-90m2): ARS 1.200.000 - 1.900.000
+- 4+ amb / PH: ARS 1.700.000 - 2.800.000
+- Casas: ARS 1.400.000 - 3.500.000 según zona y m2
+Modificadores de zona:
+  Centro/Alberdi/Echesortu/Pichincha/República de la Sexta: valores base
+  Fisherton/Puerto Norte/Roca Santa Fe/barrios premium: +20-40%
+  Periféricos/emergentes: -15-25%
+
+VENTA ROSARIO (USD/m2 — mercado de usados ${hoy}):
+- Centro/Alberdi/Echesortu/Pichincha: USD 1.400-2.100/m2
+- Fisherton/Puerto Norte/Roca Santa Fe: USD 2.000-3.200/m2
+- Residencial consolidado (Abasto, Belgrano, Italia, Las Delicias): USD 1.100-1.700/m2
+- Periféricos y emergentes: USD 800-1.200/m2`
+}
+
 // ─── Tool schema ──────────────────────────────────────────────────────────────
 
 const tasacionTool: Anthropic.Tool = {
@@ -215,6 +279,16 @@ export async function POST(req: NextRequest) {
     const tipoBusqueda = (datos.tipo || "Departamento").toLowerCase()
     const m2Ref = datos.sup_cubierta ? parseFloat(datos.sup_cubierta) : undefined
 
+    // Leer precios auto-calculados del mercado (generados por el cron semanal)
+    const { data: preciosDB } = await supabaseAdmin
+      .from("indicadores")
+      .select("valor_texto")
+      .eq("clave", "tasador_precios_auto")
+      .single()
+    const preciosAuto: PreciosAuto | null = preciosDB?.valor_texto
+      ? JSON.parse(preciosDB.valor_texto)
+      : null
+
     // Buscar comparables reales en paralelo
     const [resZona, resArgen, resML, resPropia] = await Promise.allSettled([
       scrapeZonaProp(datos.barrio, tipoBusqueda, opBusqueda, m2Ref),
@@ -239,26 +313,12 @@ export async function POST(req: NextRequest) {
         ).join("\n")
       : "\n(No se obtuvieron comparables reales de portales. Usar estimados del mercado.)"
 
+    const preciosSection = buildPreciosSection(preciosAuto, hoy)
+
     const prompt = `Sos un tasador inmobiliario matriculado especialista en Rosario y Argentina. Fecha: ${hoy}.
 
 ════════════ PRECIOS DE MERCADO VIGENTES — ${hoy} ════════════
-
-ALQUILERES ROSARIO (ARS/mes — mercado actual ${hoy}):
-- Monoambiente / 1 amb (30-45m2): ARS 600.000 - 950.000
-- 2 ambientes (45-65m2): ARS 850.000 - 1.350.000
-- 3 ambientes (65-90m2): ARS 1.200.000 - 1.900.000
-- 4+ amb / PH: ARS 1.700.000 - 2.800.000
-- Casas: ARS 1.400.000 - 3.500.000 segun zona y m2
-Modificadores de zona:
-  Centro/Alberdi/Echesortu/Pichincha/Republica de la Sexta: valores base
-  Fisherton/Puerto Norte/Roca Santa Fe/barrios premium: +20-40%
-  Perifericos/emergentes: -15-25%
-
-VENTA ROSARIO (USD/m2 — mercado de usados ${hoy}):
-- Centro/Alberdi/Echesortu/Pichincha: USD 1.400-2.100/m2
-- Fisherton/Puerto Norte/Roca Santa Fe: USD 2.000-3.200/m2
-- Residencial consolidado (Abasto, Belgrano, Italia, Las Delicias): USD 1.100-1.700/m2
-- Perifericos y emergentes: USD 800-1.200/m2
+${preciosSection}
 
 ALQUILERES CABA (ARS/mes referencia):
 - 2 amb (50-65m2): ARS 1.100.000 - 1.900.000
@@ -289,7 +349,7 @@ ${comparablesTexto}
 ════════════ INSTRUCCIONES ════════════
 1. Analizá los comparables reales de los portales para calibrar el precio.
 2. Para los 3 comparables del resultado, elegí los 3 mas relevantes de la lista real. Si no hay suficientes de la misma moneda, estimá los faltantes con precios de mercado actuales.
-3. El alquiler_estimado DEBE estar dentro de los rangos de ${hoy} indicados arriba, nunca por debajo de los minimos. Para 2 ambientes en zona central: minimo ARS 850.000.
+3. El alquiler_estimado DEBE estar dentro de los rangos de mercado indicados arriba, nunca por debajo de los mínimos. Los datos provienen de portales reales (${preciosAuto ? "actualizados automáticamente" : "estimados 2026"}).
 4. El analisis debe referenciar los portales consultados (ZonaProp, Argenprop, Propia, MercadoLibre) y la fecha ${hoy}.`
 
     const response = await anthropic.messages.create({

@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/bloqueo-dia4",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/tasador-ia/actualizar-mercado",
+      "schedule": "0 4 * * 1"
     }
   ]
 }
