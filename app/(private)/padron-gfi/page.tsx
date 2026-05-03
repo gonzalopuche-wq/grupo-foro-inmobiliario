@@ -70,28 +70,20 @@ const estadoColor = (estado: string | null) => {
   return "#eab308";
 };
 
-// Carga todos los registros paginando de a 1000
-async function cargarTodo<T>(
-  tabla: string,
-  columnas: string,
-  orden: string
-): Promise<{ data: T[]; error: string | null }> {
-  const CHUNK = 1000;
-  let todos: T[] = [];
-  let desde = 0;
-  while (true) {
-    const { data, error } = await supabase
-      .from(tabla)
-      .select(columnas)
-      .order(orden, { ascending: true })
-      .range(desde, desde + CHUNK - 1);
-    if (error) return { data: [], error: error.message };
-    if (!data || data.length === 0) break;
-    todos = todos.concat(data as T[]);
-    if (data.length < CHUNK) break;
-    desde += CHUNK;
+// Carga todos los registros vía API server-side (bypasea RLS con service role)
+async function cargarPadron(token: string): Promise<{
+  cocir: RegistroCOCIR[]
+  gfi: PerfilGFI[]
+  errores: { cocir: string | null; gfi: string | null }
+}> {
+  const res = await fetch("/api/padron", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Error ${res.status}: ${err}`)
   }
-  return { data: todos, error: null };
+  return res.json()
 }
 
 export default function PadronGFIPage() {
@@ -108,25 +100,18 @@ export default function PadronGFIPage() {
 
   useEffect(() => {
     const init = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) { window.location.href = "/login"; return; }
-      setUserId(data.user.id);
-      const [cocirRes, gfiRes] = await Promise.all([
-        cargarTodo<RegistroCOCIR>(
-          "cocir_padron",
-          "id,matricula,apellido,nombre,inmobiliaria,direccion,localidad,telefono,email,estado,actualizado_at",
-          "apellido"
-        ),
-        cargarTodo<PerfilGFI>(
-          "perfiles",
-          "id,nombre,apellido,matricula,telefono,email,inmobiliaria,especialidades,foto_url,zona_trabajo,anos_experiencia,bio,socio_cir,tipo,estado,created_at",
-          "apellido"
-        ),
-      ]);
-      if (cocirRes.error) setErrorCarga(`Error cargando COCIR: ${cocirRes.error}`);
-      else if (gfiRes.error) setErrorCarga(`Error cargando perfiles GFI: ${gfiRes.error}`);
-      setCocirData(cocirRes.data);
-      setGfiData(gfiRes.data);
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { window.location.href = "/login"; return; }
+      setUserId(session.user.id);
+      try {
+        const resultado = await cargarPadron(session.access_token)
+        if (resultado.errores.cocir) setErrorCarga(`Error COCIR: ${resultado.errores.cocir}`)
+        else if (resultado.errores.gfi) setErrorCarga(`Error GFI: ${resultado.errores.gfi}`)
+        setCocirData(resultado.cocir)
+        setGfiData(resultado.gfi)
+      } catch (e: any) {
+        setErrorCarga(e.message || "Error desconocido al cargar el padrón")
+      }
       setLoading(false);
     };
     init();
