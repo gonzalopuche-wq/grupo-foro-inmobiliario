@@ -31,8 +31,8 @@ const securityHeaders = [
       "img-src 'self' data: blob: https: http:",
       // Conexiones fetch/XHR/WebSocket
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://dolarapi.com https://argentinadatos.com https://api.openweathermap.org https://api.mercadolibre.com https://api.bcra.gob.ar https://apis.datos.gob.ar https://api.anthropic.com https://vercel.live https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com",
-      // Frames: solo Vercel preview
-      "frame-src 'self' https://vercel.live",
+      // Frames: Vercel preview + Google Calendar embed
+      "frame-src 'self' https://vercel.live https://calendar.google.com",
       // Audio y video (blob: para preview local, supabase para reproducción post-envío)
       "media-src 'self' blob: https://*.supabase.co",
       // Manifest y workers

@@ -20,6 +20,13 @@ interface EventoItem {
   fuente: 'agenda' | 'crm_recordatorios' | 'crm_tareas'
 }
 
+interface GcalCal {
+  id: string
+  nombre: string
+  embedUrl: string
+  color: string
+}
+
 const TIPOS_COLOR: Record<TipoEvento, { color: string; bg: string; icon: string; label: string }> = {
   cita:         { color: '#cc0000', bg: 'rgba(204,0,0,0.1)',    icon: '📌', label: 'Cita' },
   recordatorio: { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', icon: '🔔', label: 'Recordatorio' },
@@ -27,6 +34,8 @@ const TIPOS_COLOR: Record<TipoEvento, { color: string; bg: string; icon: string;
   tarea:        { color: '#a855f7', bg: 'rgba(168,85,247,0.1)', icon: '✓',  label: 'Tarea' },
   visita:       { color: '#22c55e', bg: 'rgba(34,197,94,0.1)',  icon: '🏠', label: 'Visita' },
 }
+
+const CAL_COLORS = ['#4285F4','#0F9D58','#F4B400','#DB4437','#AB47BC','#00ACC1','#FF7043','#9E9E9E']
 
 const DIAS_SEMANA = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
@@ -36,6 +45,8 @@ const FORM_VACIO = {
   hora: '10:00', hora_fin: '11:00', tipo: 'cita' as TipoEvento,
   descripcion: '', lugar: '',
 }
+
+const GCAL_FORM_VACIO = { nombre: '', embedUrl: '', color: '#4285F4' }
 
 function diasDesde(fecha: string): number {
   const hoy = new Date(); hoy.setHours(0,0,0,0)
@@ -53,7 +64,6 @@ function labelFecha(fecha: string): string {
   return new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'})
 }
 
-// Genera URL para abrir Google Calendar con la cita pre-cargada
 function gcalUrl(ev: { titulo:string; fecha:string; hora:string|null; hora_fin:string|null; descripcion:string|null; lugar:string|null }) {
   const fmt = (d: string, h: string) => `${d.replace(/-/g,'')}T${h.replace(':','')}00`
   const start = ev.hora ? fmt(ev.fecha, ev.hora) : ev.fecha.replace(/-/g,'')
@@ -68,11 +78,59 @@ function gcalUrl(ev: { titulo:string; fecha:string; hora:string|null; hora_fin:s
   return `https://calendar.google.com/calendar/render?${p}`
 }
 
+// Normaliza URL de Google Calendar para embed: acepta cualquier formato que el usuario pegue
+function normalizeGcalEmbedUrl(raw: string): string {
+  const s = raw.trim()
+  // Si ya es una embed URL válida
+  if (s.startsWith('https://calendar.google.com/calendar/embed')) return s
+  // Si es una URL de render/r
+  if (s.includes('calendar.google.com')) {
+    return s.replace(/\/r(\/|$)/, '/embed').replace('/render', '/embed')
+  }
+  // Si pegan el src del iframe: <iframe src="...">
+  const srcMatch = s.match(/src="([^"]+calendar\.google\.com[^"]+)"/)
+  if (srcMatch) return srcMatch[1]
+  return s
+}
+
+function buildEmbedUrl(url: string): string {
+  const base = normalizeGcalEmbedUrl(url)
+  try {
+    const u = new URL(base)
+    // Forzar ctz argentino y modo mes
+    if (!u.searchParams.has('ctz')) u.searchParams.set('ctz', 'America/Argentina/Buenos_Aires')
+    u.searchParams.set('mode', 'MONTH')
+    u.searchParams.set('showTitle', '0')
+    u.searchParams.set('showNav', '1')
+    u.searchParams.set('showDate', '1')
+    u.searchParams.set('showPrint', '0')
+    u.searchParams.set('showTabs', '0')
+    u.searchParams.set('showCalendars', '0')
+    return u.toString()
+  } catch {
+    return base
+  }
+}
+
+const LSKEY = (uid: string) => `gcal_cals_${uid}`
+
+function loadCals(uid: string): GcalCal[] {
+  try {
+    const raw = localStorage.getItem(LSKEY(uid))
+    if (!raw) return []
+    return JSON.parse(raw) as GcalCal[]
+  } catch { return [] }
+}
+
+function saveCals(uid: string, cals: GcalCal[]) {
+  try { localStorage.setItem(LSKEY(uid), JSON.stringify(cals)) } catch {}
+}
+
 export default function AgendaPage() {
   const [uid, setUid] = useState('')
   const [items, setItems] = useState<EventoItem[]>([])
   const [cargando, setCargando] = useState(true)
-  const [vista, setVista] = useState<'lista'|'mes'>('lista')
+  const [vista, setVista] = useState<'lista'|'mes'|'gcal'>('lista')
   const [filtro, setFiltro] = useState('proximos')
   const [hoy] = useState(new Date())
   const [mesVista, setMesVista] = useState(new Date())
@@ -81,6 +139,14 @@ export default function AgendaPage() {
   const [guardando, setGuardando] = useState(false)
   const [toast, setToast] = useState<string|null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout>|null>(null)
+
+  // Google Calendar integration
+  const [gcalCals, setGcalCals] = useState<GcalCal[]>([])
+  const [gcalActivo, setGcalActivo] = useState(0)
+  const [gcalModal, setGcalModal] = useState(false)
+  const [gcalForm, setGcalForm] = useState(GCAL_FORM_VACIO)
+  const [gcalGuardando, setGcalGuardando] = useState(false)
+  const [gcalEditando, setGcalEditando] = useState<string|null>(null)
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -93,6 +159,8 @@ export default function AgendaPage() {
       if (!data.user) { window.location.href = '/login'; return }
       setUid(data.user.id)
       cargar(data.user.id)
+      const cals = loadCals(data.user.id)
+      setGcalCals(cals)
     })
     return () => { if (timerRef.current) clearTimeout(timerRef.current) }
   }, [])
@@ -134,6 +202,7 @@ export default function AgendaPage() {
   }
 
   const setF = (k: string, v: any) => setForm(p => ({ ...p, [k]: v }))
+  const setGF = (k: string, v: any) => setGcalForm(p => ({ ...p, [k]: v }))
 
   const guardar = async () => {
     if (!form.titulo.trim()) { showToast('Escribí un título'); return }
@@ -162,6 +231,45 @@ export default function AgendaPage() {
     await supabase.from('eventos_agenda').delete().eq('id', item.id.replace('ag-',''))
     setItems(prev => prev.filter(i => i.id !== item.id))
     showToast('Cita eliminada')
+  }
+
+  const vincularCalendario = () => {
+    if (!gcalForm.nombre.trim()) { showToast('Poné un nombre al calendario'); return }
+    if (!gcalForm.embedUrl.trim()) { showToast('Pegá la URL del calendario'); return }
+    setGcalGuardando(true)
+    const cal: GcalCal = {
+      id: gcalEditando ?? Date.now().toString(),
+      nombre: gcalForm.nombre.trim(),
+      embedUrl: gcalForm.embedUrl.trim(),
+      color: gcalForm.color,
+    }
+    const next = gcalEditando
+      ? gcalCals.map(c => c.id === gcalEditando ? cal : c)
+      : [...gcalCals, cal]
+    setGcalCals(next)
+    saveCals(uid, next)
+    if (!gcalEditando) setGcalActivo(next.length - 1)
+    setGcalGuardando(false)
+    setGcalModal(false)
+    setGcalForm(GCAL_FORM_VACIO)
+    setGcalEditando(null)
+    showToast(gcalEditando ? 'Calendario actualizado' : 'Calendario vinculado')
+    if (vista !== 'gcal') setVista('gcal')
+  }
+
+  const desvincularCalendario = (id: string) => {
+    if (!confirm('¿Desvincular este calendario?')) return
+    const next = gcalCals.filter(c => c.id !== id)
+    setGcalCals(next)
+    saveCals(uid, next)
+    setGcalActivo(Math.max(0, gcalActivo - 1))
+    showToast('Calendario desvinculado')
+  }
+
+  const editarCalendario = (cal: GcalCal) => {
+    setGcalForm({ nombre: cal.nombre, embedUrl: cal.embedUrl, color: cal.color })
+    setGcalEditando(cal.id)
+    setGcalModal(true)
   }
 
   const hoyStr = hoy.toISOString().split('T')[0]
@@ -194,11 +302,23 @@ export default function AgendaPage() {
     btn: (primary?:boolean) => ({ background:primary?'#cc0000':'rgba(255,255,255,0.07)', border:primary?'none':'1px solid rgba(255,255,255,0.1)', color:'#fff', padding:'9px 18px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer' }),
   }
 
+  const GoogleLogo = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+  )
+
   return (
-    <div style={{maxWidth:820,margin:'0 auto',padding:'24px 0 64px',fontFamily:'Inter,sans-serif',color:'#fff'}}>
+    <div style={{maxWidth:900,margin:'0 auto',padding:'24px 0 64px',fontFamily:'Inter,sans-serif',color:'#fff'}}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
         .ag-row:hover{background:rgba(255,255,255,0.05)!important;}
+        .cal-tab:hover{background:rgba(255,255,255,0.06)!important;}
         select option{background:#1a1a1a;}
+        .gcal-iframe{border:none;border-radius:0 0 10px 10px;width:100%;height:600px;display:block;}
+        @media(max-width:600px){.gcal-iframe{height:420px;}}
       `}</style>
 
       {toast && (
@@ -212,12 +332,18 @@ export default function AgendaPage() {
         <div>
           <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:6}}>Organización</div>
           <h1 style={{fontFamily:'Montserrat,sans-serif',fontSize:22,fontWeight:800,color:'#fff',margin:0}}>Agenda</h1>
-          <p style={{fontSize:12,color:'rgba(255,255,255,0.35)',margin:'4px 0 0'}}>Citas · Recordatorios CRM · Tareas</p>
+          <p style={{fontSize:12,color:'rgba(255,255,255,0.35)',margin:'4px 0 0'}}>Citas · Recordatorios CRM · Tareas · Google Calendar</p>
         </div>
         <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-          {(['lista','mes'] as const).map(v => (
-            <button key={v} onClick={()=>setVista(v)} style={{padding:'8px 14px',borderRadius:8,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:vista===v?'rgba(204,0,0,0.2)':'rgba(255,255,255,0.06)',color:vista===v?'#ff6666':'rgba(255,255,255,0.4)'}}>
-              {v==='lista'?'≡ Lista':'▦ Mes'}
+          {([
+            {k:'lista',l:'≡ Lista'},
+            {k:'mes',l:'▦ Mes'},
+            {k:'gcal',l:'Google Calendar'},
+          ] as const).map(v => (
+            <button key={v.k} onClick={()=>setVista(v.k)} style={{padding:'8px 14px',borderRadius:8,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:vista===v.k?'rgba(66,133,244,0.2)':'rgba(255,255,255,0.06)',color:vista===v.k?'#7aa4f7':'rgba(255,255,255,0.4)',display:'flex',alignItems:'center',gap:6}}>
+              {v.k==='gcal'&&<GoogleLogo/>}
+              {v.l}
+              {v.k==='gcal'&&gcalCals.length>0&&<span style={{background:'rgba(66,133,244,0.25)',color:'#7aa4f7',borderRadius:10,padding:'1px 6px',fontSize:10}}>{gcalCals.length}</span>}
             </button>
           ))}
           <button onClick={()=>setModal(true)} style={S.btn(true)}>+ Nueva cita</button>
@@ -231,15 +357,126 @@ export default function AgendaPage() {
           {label:'Próximos 7 días',value:proxCount,color:'#f59e0b',key:'proximos'},
           {label:'Vencidos',value:vencCount,color:'#ef4444',key:'vencidos'},
         ].map(s=>(
-          <div key={s.key} onClick={()=>setFiltro(s.key)} style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${s.value>0?`${s.color}30`:'rgba(255,255,255,0.07)'}`,borderRadius:10,padding:'12px 16px',cursor:'pointer'}}>
+          <div key={s.key} onClick={()=>{setFiltro(s.key);setVista('lista')}} style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${s.value>0?`${s.color}30`:'rgba(255,255,255,0.07)'}`,borderRadius:10,padding:'12px 16px',cursor:'pointer'}}>
             <div style={{fontFamily:'Montserrat,sans-serif',fontSize:22,fontWeight:800,color:s.value>0?s.color:'rgba(255,255,255,0.2)'}}>{s.value}</div>
             <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.08em',textTransform:'uppercase',marginTop:2}}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      {/* VISTA MENSUAL */}
-      {vista==='mes' ? (
+      {/* ── VISTA GOOGLE CALENDAR ── */}
+      {vista==='gcal' && (
+        <div>
+          {gcalCals.length === 0 ? (
+            /* Estado vacío: instrucciones para vincular */
+            <div style={{background:'rgba(66,133,244,0.05)',border:'1px solid rgba(66,133,244,0.2)',borderRadius:12,padding:'40px 32px',textAlign:'center'}}>
+              <div style={{fontSize:48,marginBottom:16}}>
+                <GoogleLogo/>
+              </div>
+              <div style={{fontFamily:'Montserrat,sans-serif',fontSize:18,fontWeight:800,color:'#fff',marginBottom:8}}>Vinculá tus calendarios de Google</div>
+              <p style={{fontSize:13,color:'rgba(255,255,255,0.45)',maxWidth:480,margin:'0 auto 24px',lineHeight:1.6}}>
+                Conectá uno o varios Google Calendars para verlos directamente acá. Podés vincular tu calendario personal, el de trabajo, el del equipo — lo que quieras.
+              </p>
+              <button
+                onClick={()=>{ setGcalEditando(null); setGcalForm(GCAL_FORM_VACIO); setGcalModal(true) }}
+                style={{padding:'12px 28px',background:'rgba(66,133,244,0.2)',border:'1px solid rgba(66,133,244,0.4)',color:'#7aa4f7',borderRadius:8,fontSize:13,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}
+              >
+                <GoogleLogo/> Vincular primer calendario
+              </button>
+
+              {/* Instrucciones */}
+              <div style={{marginTop:32,background:'rgba(255,255,255,0.03)',borderRadius:10,padding:'20px 24px',textAlign:'left',maxWidth:520,margin:'32px auto 0'}}>
+                <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:14}}>Cómo obtener el link</div>
+                {[
+                  { n:'1', t:'Abrí Google Calendar', d:'calendar.google.com' },
+                  { n:'2', t:'Entrá a Configuración ⚙️', d:'Ícono de engranaje → Configuración' },
+                  { n:'3', t:'Elegí tu calendario', d:'En la barra izquierda, hacé clic en el calendario que querés vincular' },
+                  { n:'4', t:'Sección "Integrar el calendario"', d:'Scrolleá hasta encontrar esa sección' },
+                  { n:'5', t:'Copiá la "Dirección pública en formato HTML"', d:'Es el link que empieza con https://calendar.google.com/calendar/embed?...' },
+                ].map(s=>(
+                  <div key={s.n} style={{display:'flex',gap:12,alignItems:'flex-start',marginBottom:12}}>
+                    <div style={{width:22,height:22,borderRadius:'50%',background:'rgba(66,133,244,0.2)',border:'1px solid rgba(66,133,244,0.3)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:'#7aa4f7',flexShrink:0,marginTop:1}}>{s.n}</div>
+                    <div>
+                      <div style={{fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.8)',marginBottom:2}}>{s.t}</div>
+                      <div style={{fontSize:11,color:'rgba(255,255,255,0.35)'}}>{s.d}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            /* Calendarios vinculados */
+            <div>
+              {/* Tabs de calendarios + botón agregar */}
+              <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:0,flexWrap:'wrap'}}>
+                {gcalCals.map((cal,i) => (
+                  <button
+                    key={cal.id}
+                    className="cal-tab"
+                    onClick={()=>setGcalActivo(i)}
+                    style={{
+                      padding:'8px 16px',borderRadius:'8px 8px 0 0',border:'none',cursor:'pointer',
+                      fontFamily:'Montserrat,sans-serif',fontSize:12,fontWeight:700,
+                      background:gcalActivo===i?'#111':'rgba(255,255,255,0.04)',
+                      color:gcalActivo===i?cal.color:'rgba(255,255,255,0.4)',
+                      borderTop:gcalActivo===i?`2px solid ${cal.color}`:'2px solid transparent',
+                      display:'flex',alignItems:'center',gap:7,
+                    }}
+                  >
+                    <span style={{width:8,height:8,borderRadius:'50%',background:cal.color,display:'inline-block',flexShrink:0}}/>
+                    {cal.nombre}
+                  </button>
+                ))}
+                <button
+                  onClick={()=>{ setGcalEditando(null); setGcalForm(GCAL_FORM_VACIO); setGcalModal(true) }}
+                  style={{padding:'8px 14px',borderRadius:'8px 8px 0 0',border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:'transparent',color:'rgba(66,133,244,0.6)',display:'flex',alignItems:'center',gap:5}}
+                >
+                  + Vincular
+                </button>
+              </div>
+
+              {/* Panel del calendario activo */}
+              {gcalCals[gcalActivo] && (
+                <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'0 8px 10px 10px',overflow:'hidden'}}>
+                  {/* Toolbar */}
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8}}>
+                      <span style={{width:10,height:10,borderRadius:'50%',background:gcalCals[gcalActivo].color,display:'inline-block'}}/>
+                      <span style={{fontFamily:'Montserrat,sans-serif',fontSize:13,fontWeight:700,color:'#fff'}}>{gcalCals[gcalActivo].nombre}</span>
+                      <span style={{fontSize:11,color:'rgba(255,255,255,0.25)'}}>— Google Calendar</span>
+                    </div>
+                    <div style={{display:'flex',gap:8}}>
+                      <button onClick={()=>editarCalendario(gcalCals[gcalActivo])} style={{padding:'5px 12px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,color:'rgba(255,255,255,0.5)',fontSize:11,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>Editar</button>
+                      <a href="https://calendar.google.com" target="_blank" rel="noopener noreferrer" style={{padding:'5px 12px',background:'rgba(66,133,244,0.08)',border:'1px solid rgba(66,133,244,0.2)',borderRadius:6,color:'#7aa4f7',fontSize:11,textDecoration:'none',fontFamily:'Montserrat,sans-serif',fontWeight:700,display:'flex',alignItems:'center',gap:5}}>
+                        <GoogleLogo/> Abrir GCal
+                      </a>
+                      <button onClick={()=>desvincularCalendario(gcalCals[gcalActivo].id)} style={{padding:'5px 12px',background:'none',border:'1px solid rgba(255,255,255,0.08)',borderRadius:6,color:'rgba(200,0,0,0.5)',fontSize:11,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>Desvincular</button>
+                    </div>
+                  </div>
+
+                  {/* Iframe del calendario */}
+                  <iframe
+                    key={gcalCals[gcalActivo].id}
+                    src={buildEmbedUrl(gcalCals[gcalActivo].embedUrl)}
+                    className="gcal-iframe"
+                    title={gcalCals[gcalActivo].nombre}
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                  />
+                </div>
+              )}
+
+              {/* Tip */}
+              <div style={{marginTop:12,display:'flex',alignItems:'center',gap:8,fontSize:11,color:'rgba(255,255,255,0.2)'}}>
+                <GoogleLogo/>
+                <span>Los calendarios se muestran en modo lectura desde Google Calendar. Para crear eventos en GCal, usá el botón <strong style={{color:'#7aa4f7'}}>GCal</strong> en cada cita de tu agenda.</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── VISTA MENSUAL (GFI) ── */}
+      {vista==='mes' && (
         <div>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
             <button onClick={()=>setMesVista(new Date(mesVista.getFullYear(),mesVista.getMonth()-1))} style={{padding:'6px 14px',background:'rgba(255,255,255,0.06)',border:'none',borderRadius:6,color:'#fff',cursor:'pointer',fontSize:16}}>‹</button>
@@ -268,9 +505,10 @@ export default function AgendaPage() {
             })}
           </div>
         </div>
+      )}
 
-      ) : (
-        /* VISTA LISTA */
+      {/* ── VISTA LISTA ── */}
+      {vista==='lista' && (
         <>
           <div style={{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap'}}>
             {[{k:'proximos',l:'Próximos 7 días'},{k:'hoy',l:'Hoy'},{k:'vencidos',l:'Vencidos'},{k:'todos',l:'Todos'}].map(f=>(
@@ -325,7 +563,7 @@ export default function AgendaPage() {
                           <a href={`https://wa.me/${item.contacto_telefono.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer" style={{padding:'6px 10px',background:'rgba(34,197,94,0.1)',border:'1px solid rgba(34,197,94,0.25)',borderRadius:7,color:'#22c55e',fontSize:12,textDecoration:'none'}}>💬</a>
                         )}
                         <a href={gcalUrl(item)} target="_blank" rel="noopener noreferrer" title="Agregar a Google Calendar" style={{padding:'6px 10px',background:'rgba(66,133,244,0.08)',border:'1px solid rgba(66,133,244,0.2)',borderRadius:7,fontSize:11,textDecoration:'none',display:'flex',alignItems:'center',gap:5,color:'#7aa4f7',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                          <GoogleLogo/>
                           GCal
                         </a>
                         {item.fuente==='agenda'&&(
@@ -341,7 +579,7 @@ export default function AgendaPage() {
         </>
       )}
 
-      {/* Modal nueva cita */}
+      {/* ── MODAL NUEVA CITA ── */}
       {modal&&(
         <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',zIndex:100,display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'24px 16px',overflowY:'auto'}} onClick={()=>setModal(false)}>
           <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.1)',borderRadius:14,padding:28,width:'100%',maxWidth:500}} onClick={e=>e.stopPropagation()}>
@@ -386,15 +624,91 @@ export default function AgendaPage() {
                 <label style={S.label}>Descripción / notas</label>
                 <textarea value={form.descripcion} onChange={e=>setF('descripcion',e.target.value)} rows={2} placeholder="Notas, link de videollamada, etc." style={{...S.input,resize:'vertical'}} />
               </div>
-              {/* Aviso GCal */}
               <div style={{background:'rgba(66,133,244,0.06)',border:'1px solid rgba(66,133,244,0.15)',borderRadius:8,padding:'10px 14px',display:'flex',alignItems:'center',gap:10}}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                <GoogleLogo/>
                 <span style={{fontSize:11,color:'rgba(255,255,255,0.45)'}}>Después de guardar, usá el botón <strong style={{color:'#7aa4f7'}}>GCal</strong> para agregar el evento a tu Google Calendar con un clic.</span>
               </div>
             </div>
             <div style={{display:'flex',gap:10,marginTop:20,justifyContent:'flex-end'}}>
               <button onClick={()=>setModal(false)} style={S.btn()}>Cancelar</button>
               <button onClick={guardar} disabled={guardando} style={S.btn(true)}>{guardando?'Guardando...':'Crear cita'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL VINCULAR GOOGLE CALENDAR ── */}
+      {gcalModal&&(
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.85)',zIndex:150,display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'24px 16px',overflowY:'auto'}} onClick={()=>{ setGcalModal(false); setGcalEditando(null); setGcalForm(GCAL_FORM_VACIO) }}>
+          <div style={{background:'#111',border:'1px solid rgba(66,133,244,0.25)',borderRadius:14,padding:28,width:'100%',maxWidth:560}} onClick={e=>e.stopPropagation()}>
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:20}}>
+              <GoogleLogo/>
+              <span style={{fontFamily:'Montserrat,sans-serif',fontSize:16,fontWeight:800,color:'#fff'}}>
+                {gcalEditando ? 'Editar calendario' : 'Vincular Google Calendar'}
+              </span>
+            </div>
+
+            <div style={{display:'grid',gap:14}}>
+              <div>
+                <label style={S.label}>Nombre del calendario</label>
+                <input value={gcalForm.nombre} onChange={e=>setGF('nombre',e.target.value)} placeholder="Ej: Personal, Trabajo, GFI, Familia…" style={S.input} autoFocus />
+              </div>
+
+              <div>
+                <label style={S.label}>Color</label>
+                <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                  {CAL_COLORS.map(c=>(
+                    <button key={c} onClick={()=>setGF('color',c)} style={{width:28,height:28,borderRadius:'50%',background:c,border:gcalForm.color===c?'3px solid #fff':'3px solid transparent',cursor:'pointer',outline:'none'}}/>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={S.label}>URL del calendario</label>
+                <textarea
+                  value={gcalForm.embedUrl}
+                  onChange={e=>setGF('embedUrl',e.target.value)}
+                  rows={3}
+                  placeholder="Pegá acá la URL de integración de tu Google Calendar&#10;Ej: https://calendar.google.com/calendar/embed?src=tucorreo%40gmail.com&ctz=America..."
+                  style={{...S.input,resize:'vertical',fontFamily:'monospace',fontSize:11}}
+                />
+              </div>
+
+              {/* Instrucciones compactas */}
+              <div style={{background:'rgba(255,255,255,0.03)',borderRadius:8,padding:'14px 16px'}}>
+                <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:10}}>Dónde encontrar la URL</div>
+                <ol style={{margin:0,padding:'0 0 0 16px',display:'grid',gap:6}}>
+                  {[
+                    'Google Calendar → ⚙️ Configuración',
+                    'Sidebar izquierdo → elegí el calendario',
+                    'Scrolleá a "Integrar el calendario"',
+                    'Copiá la "Dirección pública en formato HTML"',
+                  ].map((s,i)=>(
+                    <li key={i} style={{fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.5}}>{s}</li>
+                  ))}
+                </ol>
+                <div style={{marginTop:10,padding:'8px 10px',background:'rgba(66,133,244,0.06)',borderRadius:6,border:'1px solid rgba(66,133,244,0.15)'}}>
+                  <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'#7aa4f7',marginBottom:2}}>Formato esperado</div>
+                  <div style={{fontSize:10,color:'rgba(255,255,255,0.3)',fontFamily:'monospace',wordBreak:'break-all'}}>
+                    {'https://calendar.google.com/calendar/embed?src=correo%40gmail.com&ctz=America%2FArgentina%2FBuenos_Aires'}
+                  </div>
+                </div>
+                <div style={{marginTop:8,fontSize:11,color:'rgba(255,255,255,0.25)'}}>
+                  También podés pegar el código HTML del iframe completo — lo procesamos automáticamente.
+                </div>
+              </div>
+            </div>
+
+            <div style={{display:'flex',gap:10,marginTop:20,justifyContent:'flex-end'}}>
+              <button onClick={()=>{ setGcalModal(false); setGcalEditando(null); setGcalForm(GCAL_FORM_VACIO) }} style={S.btn()}>Cancelar</button>
+              <button
+                onClick={vincularCalendario}
+                disabled={gcalGuardando || !gcalForm.nombre.trim() || !gcalForm.embedUrl.trim()}
+                style={{...S.btn(true),background:'rgba(66,133,244,0.8)',display:'flex',alignItems:'center',gap:7,opacity:(!gcalForm.nombre.trim()||!gcalForm.embedUrl.trim())?0.5:1}}
+              >
+                <GoogleLogo/>
+                {gcalGuardando ? 'Vinculando...' : gcalEditando ? 'Guardar cambios' : 'Vincular calendario'}
+              </button>
             </div>
           </div>
         </div>
