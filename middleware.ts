@@ -1,0 +1,39 @@
+import { NextRequest, NextResponse } from "next/server"
+
+const ROOT_DOMAIN = "foroinmobiliario.com.ar"
+
+export function middleware(req: NextRequest) {
+  const host = req.headers.get("host") || ""
+  const url = req.nextUrl.clone()
+
+  // Extrae el subdominio: mat105.foroinmobiliario.com.ar → "mat105"
+  // Soporta también localhost:3000 (en dev, usar ?slug=mat105 para probar)
+  const isRootDomain = host === ROOT_DOMAIN || host === `www.${ROOT_DOMAIN}`
+  const isSubdomain =
+    !isRootDomain &&
+    (host.endsWith(`.${ROOT_DOMAIN}`) || host.endsWith(`.vercel.app`))
+
+  if (!isSubdomain) return NextResponse.next()
+
+  // Extrae el slug del subdominio
+  const subdomain = host.split(".")[0]
+
+  // Ignora subdominios internos de Vercel / sistema
+  if (["www", "api", "admin", "vercel"].includes(subdomain)) return NextResponse.next()
+
+  // Si ya está en /web/..., no reescribir (evita loop)
+  if (url.pathname.startsWith("/web/")) return NextResponse.next()
+
+  // Rewrite: mat105.foroinmobiliario.com.ar/propiedades → /web/mat105/propiedades
+  const newPath = `/web/${subdomain}${url.pathname}`
+  url.pathname = newPath
+
+  return NextResponse.rewrite(url)
+}
+
+export const config = {
+  matcher: [
+    // Aplica a todas las rutas excepto archivos estáticos y _next
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2)).*)",
+  ],
+}
