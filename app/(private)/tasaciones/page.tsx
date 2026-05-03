@@ -3,6 +3,16 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
+interface ComparableReal {
+  portal: string
+  titulo: string
+  precio: number
+  moneda: string
+  m2: number | null
+  barrio: string
+  url: string
+}
+
 interface TasacionResult {
   valor_min: number
   valor_max: number
@@ -13,10 +23,11 @@ interface TasacionResult {
   analisis: string
   factores_positivos: string[]
   factores_negativos: string[]
-  comparables: { descripcion: string; precio: number; m2: number }[]
+  comparables_reales: ComparableReal[]
   recomendacion: string
   _portales_consultados?: string[]
   _total_comparables_encontrados?: number
+  _comparables_tipo?: 'reales' | 'busqueda'
 }
 
 interface TasacionHistorial {
@@ -305,9 +316,7 @@ ${resultado.recomendacion}`
             </button>
             {tasando && (
               <div style={{ marginTop: 10, fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
-                Buscando comparables en ZonaProp · Argenprop · Propia · MercadoLibre · analizando con IA
-                <br/>
-                <span style={{ fontSize: 11, opacity: 0.6 }}>Puede demorar 20–35 segundos</span>
+                Consultando mercado rosarino · Puede demorar 15–30 segundos
               </div>
             )}
           </div>
@@ -365,33 +374,69 @@ ${resultado.recomendacion}`
                 </div>
               </div>
 
-              {/* Comparables */}
-              {resultado.comparables && resultado.comparables.length > 0 && (
+              {/* Comparables reales */}
+              {resultado.comparables_reales && resultado.comparables_reales.length > 0 && (
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: 14 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 6 }}>
-                    <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-                      Comparables de mercado
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <div>
+                      <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                        {resultado._comparables_tipo === 'busqueda' ? 'Portales para verificar' : `Comparables reales · ${resultado._total_comparables_encontrados ?? resultado.comparables_reales.length} encontrados`}
+                      </div>
+                      {resultado._comparables_tipo === 'busqueda' && (
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 2 }}>Los portales no respondieron en tiempo · abrí cada link para verificar</div>
+                      )}
                     </div>
-                    {resultado._portales_consultados && resultado._portales_consultados.length > 0 && (
-                      <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                    {resultado._portales_consultados && resultado._portales_consultados.length > 0 && resultado._comparables_tipo !== 'busqueda' && (
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                         {resultado._portales_consultados.map(p => (
-                          <span key={p} style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.25)', color: '#7aa4f7', padding: '2px 7px', borderRadius: 4 }}>{p}</span>
+                          <span key={p} style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: 'rgba(59,130,246,0.12)', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.2)' }}>{p}</span>
                         ))}
-                        {resultado._total_comparables_encontrados !== undefined && (
-                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'Montserrat,sans-serif' }}>
-                            {resultado._total_comparables_encontrados} encontrados
-                          </span>
-                        )}
                       </div>
                     )}
                   </div>
-                  {resultado.comparables.map((c, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: i < resultado.comparables.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', alignItems: 'center', gap: 10 }}>
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', flex: 1 }}>{c.descripcion}</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>USD {c.precio.toLocaleString('es-AR')}</span>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', flexShrink: 0 }}>{c.m2} m²</span>
-                    </div>
-                  ))}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {resultado.comparables_reales.map((c, i) => {
+                      const esBusqueda = c.precio === 0
+                      return (
+                        <div key={i} style={{ background: esBusqueda ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.03)', border: `1px solid ${esBusqueda ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, padding: '10px 12px' }}>
+                          {esBusqueda ? (
+                            /* Portal search stub */
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <span style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', marginRight: 8 }}>{c.portal}</span>
+                                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Ver publicaciones en {c.barrio}</span>
+                              </div>
+                              <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#3b82f6', textDecoration: 'none', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '4px 10px', borderRadius: 5, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', whiteSpace: 'nowrap' }}>
+                                Buscar en {c.portal} →
+                              </a>
+                            </div>
+                          ) : (
+                            /* Real listing */
+                            <>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <span style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', marginRight: 6 }}>{c.portal}</span>
+                                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', fontWeight: 500 }}>{c.titulo || c.barrio}</span>
+                                </div>
+                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                  <div style={{ fontSize: 15, fontWeight: 800, color: '#fff', fontFamily: 'Montserrat,sans-serif' }}>
+                                    {c.moneda} {c.precio.toLocaleString('es-AR')}
+                                  </div>
+                                  {c.m2 && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>{c.m2} m² · {c.moneda} {Math.round(c.precio / c.m2).toLocaleString('es-AR')}/m²</div>}
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>📍 {c.barrio}</span>
+                                <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#3b82f6', textDecoration: 'none', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '3px 10px', borderRadius: 5, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)' }}>
+                                  Ver publicación →
+                                </a>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               )}
 
