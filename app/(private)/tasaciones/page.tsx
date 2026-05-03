@@ -15,6 +15,8 @@ interface TasacionResult {
   factores_negativos: string[]
   comparables: { descripcion: string; precio: number; m2: number }[]
   recomendacion: string
+  _portales_consultados?: string[]
+  _total_comparables_encontrados?: number
 }
 
 interface TasacionHistorial {
@@ -303,7 +305,9 @@ ${resultado.recomendacion}`
             </button>
             {tasando && (
               <div style={{ marginTop: 10, fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
-                Consultando mercado rosarino · Puede demorar 15–30 segundos
+                Buscando comparables en ZonaProp · Argenprop · Propia · MercadoLibre · analizando con IA
+                <br/>
+                <span style={{ fontSize: 11, opacity: 0.6 }}>Puede demorar 20–35 segundos</span>
               </div>
             )}
           </div>
@@ -364,7 +368,23 @@ ${resultado.recomendacion}`
               {/* Comparables */}
               {resultado.comparables && resultado.comparables.length > 0 && (
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: 14 }}>
-                  <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>Comparables de mercado</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 6 }}>
+                    <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                      Comparables de mercado
+                    </div>
+                    {resultado._portales_consultados && resultado._portales_consultados.length > 0 && (
+                      <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                        {resultado._portales_consultados.map(p => (
+                          <span key={p} style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.25)', color: '#7aa4f7', padding: '2px 7px', borderRadius: 4 }}>{p}</span>
+                        ))}
+                        {resultado._total_comparables_encontrados !== undefined && (
+                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'Montserrat,sans-serif' }}>
+                            {resultado._total_comparables_encontrados} encontrados
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   {resultado.comparables.map((c, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: i < resultado.comparables.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', alignItems: 'center', gap: 10 }}>
                       <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', flex: 1 }}>{c.descripcion}</span>

@@ -3,6 +3,169 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+// ─── Comparable scraping ──────────────────────────────────────────────────────
+
+interface PropComp {
+  portal: string
+  titulo: string
+  precio: number
+  moneda: string
+  m2: number | null
+  barrio: string
+  url: string
+}
+
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+const HEADERS_FETCH = { "User-Agent": UA, "Accept-Language": "es-AR,es;q=0.9", "Accept": "application/json, text/html, */*" }
+
+async function scrapeZonaProp(barrio: string, tipo: string, op: string, m2?: number): Promise<PropComp[]> {
+  try {
+    const opSlug = op === "alquiler" ? "alquiler" : "venta"
+    const tipoSlug = tipo.toLowerCase()
+      .replace("departamento", "departamento")
+      .replace("casa", "casa")
+      .replace("ph", "ph")
+      .replace("local comercial", "local")
+      .replace("oficina", "oficina")
+      .replace("terreno", "terreno")
+    const zonaSlug = barrio.toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+    const url = `https://www.zonaprop.com.ar/${tipoSlug}-${opSlug}-${zonaSlug}.html?orden=relevancia-DESC`
+    const res = await fetch(url, { headers: { ...HEADERS_FETCH, Referer: "https://www.zonaprop.com.ar/" }, signal: AbortSignal.timeout(9000) })
+    if (!res.ok) return []
+    const html = await res.text()
+    const match = html.match(/window\.__PRELOADED_STATE__\s*=\s*({[\s\S]+?});\s*<\/script>/)
+    if (!match) return []
+    const state = JSON.parse(match[1])
+    const listings: any[] = state?.listPostings || state?.searchResult?.listings || []
+    return listings.slice(0, 15).map((item: any) => {
+      const p = item.postingInfo || item
+      const precio = p.price || p.operationPrice?.[0]
+      return {
+        portal: "ZonaProp",
+        titulo: p.title || p.address || "",
+        precio: precio?.amount || precio?.value || 0,
+        moneda: precio?.currency === "ARS" ? "ARS" : "USD",
+        m2: p.coveredSurface || p.totalSurface || p.surface || null,
+        barrio: p.location?.neighbourhood || barrio,
+        url: `https://www.zonaprop.com.ar${p.url || ""}`,
+      }
+    }).filter(p => p.precio > 0)
+  } catch { return [] }
+}
+
+async function scrapeArgenprop(barrio: string, tipo: string, op: string): Promise<PropComp[]> {
+  try {
+    const opSlug = op === "alquiler" ? "alquiler" : "venta"
+    const zonaSlug = barrio.toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+    const tipoSlug = tipo.toLowerCase().replace(" ", "-")
+    const url = `https://www.argenprop.com/${tipoSlug}/${opSlug}/rosario/${zonaSlug}`
+    const res = await fetch(url, { headers: { ...HEADERS_FETCH, Referer: "https://www.argenprop.com/" }, signal: AbortSignal.timeout(9000) })
+    if (!res.ok) return []
+    const html = await res.text()
+    // Extract from Next.js __NEXT_DATA__ or similar
+    const match = html.match(/__NEXT_DATA__\s*=\s*({[\s\S]+?})\s*;?\s*<\/script>/)
+      || html.match(/window\.__DATA__\s*=\s*({[\s\S]+?});\s*<\/script>/)
+    if (!match) return []
+    const data = JSON.parse(match[1])
+    const items: any[] = data?.props?.pageProps?.listings
+      || data?.props?.pageProps?.results
+      || data?.listings
+      || []
+    return items.slice(0, 15).map((item: any) => ({
+      portal: "Argenprop",
+      titulo: item.title || item.address || "",
+      precio: item.price?.amount || item.price || 0,
+      moneda: item.price?.currency === "ARS" ? "ARS" : "USD",
+      m2: item.coveredArea || item.totalArea || null,
+      barrio: item.location?.neighbourhood || barrio,
+      url: `https://www.argenprop.com${item.url || item.link || ""}`,
+    })).filter(p => p.precio > 0)
+  } catch { return [] }
+}
+
+async function scrapeMercadoLibre(barrio: string, tipo: string, op: string): Promise<PropComp[]> {
+  try {
+    const catMap: Record<string, string> = { venta: "MLA1459", alquiler: "MLA1480" }
+    const categoria = catMap[op] || "MLA1459"
+    const q = `${tipo} ${barrio} Rosario`
+    const apiUrl = `https://api.mercadolibre.com/sites/MLA/search?category=${categoria}&q=${encodeURIComponent(q)}&limit=15`
+    const res = await fetch(apiUrl, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(8000) })
+    if (!res.ok) return []
+    const data = await res.json()
+    return (data?.results || []).map((item: any) => {
+      const attrs: Record<string, string> = {}
+      ;(item.attributes || []).forEach((a: any) => { attrs[a.id] = a.value_name || "" })
+      const m2Total = parseFloat(attrs["TOTAL_AREA"] || "0") || null
+      const m2Cub = parseFloat(attrs["COVERED_AREA"] || "0") || null
+      return {
+        portal: "MercadoLibre",
+        titulo: item.title || "",
+        precio: item.price || 0,
+        moneda: item.currency_id === "ARS" ? "ARS" : "USD",
+        m2: m2Cub || m2Total,
+        barrio: attrs["NEIGHBORHOOD"] || barrio,
+        url: item.permalink || "",
+      }
+    }).filter((p: PropComp) => p.precio > 0)
+  } catch { return [] }
+}
+
+async function scrapePropia(barrio: string, tipo: string, op: string): Promise<PropComp[]> {
+  try {
+    const opSlug = op === "alquiler" ? "alquiler" : "venta"
+    const tipoSlug = tipo.toLowerCase()
+      .replace("departamento", "departamentos")
+      .replace("casa", "casas")
+      .replace("ph", "ph")
+    const zonaSlug = barrio.toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+    const url = `https://red.propia.com.ar/${tipoSlug}/${opSlug}/rosario/${zonaSlug}`
+    const res = await fetch(url, { headers: { ...HEADERS_FETCH, Referer: "https://red.propia.com.ar/" }, signal: AbortSignal.timeout(9000) })
+    if (!res.ok) return []
+    const html = await res.text()
+    const match = html.match(/__NEXT_DATA__\s*=\s*({[\s\S]+?})\s*;?\s*<\/script>/)
+    if (!match) return []
+    const data = JSON.parse(match[1])
+    const items: any[] = data?.props?.pageProps?.properties
+      || data?.props?.pageProps?.listings
+      || data?.props?.pageProps?.results
+      || []
+    return items.slice(0, 15).map((item: any) => ({
+      portal: "Propia",
+      titulo: item.title || item.address || "",
+      precio: item.price || item.precio || 0,
+      moneda: item.currency === "ARS" ? "ARS" : "USD",
+      m2: item.totalArea || item.coveredArea || item.m2 || null,
+      barrio: item.neighborhood || item.barrio || barrio,
+      url: item.url ? `https://red.propia.com.ar${item.url}` : "",
+    })).filter(p => p.precio > 0)
+  } catch { return [] }
+}
+
+function filtrarComparables(props: PropComp[], monedaEsperada: string, m2Ref?: number): PropComp[] {
+  return props
+    .filter(p => {
+      if (p.moneda !== monedaEsperada) return false
+      if (p.precio <= 0) return false
+      // Filtrar por m2 si disponible (±60% del de referencia)
+      if (m2Ref && p.m2) {
+        const ratio = p.m2 / m2Ref
+        if (ratio < 0.4 || ratio > 2.5) return false
+      }
+      return true
+    })
+    // Deduplicar por precio+m2
+    .filter((p, i, arr) => arr.findIndex(x => x.precio === p.precio && x.m2 === p.m2) === i)
+    .slice(0, 8)
+}
+
+// ─── Tool schema ──────────────────────────────────────────────────────────────
+
 const tasacionTool: Anthropic.Tool = {
   name: "tasacion_result",
   description: "Devuelve el resultado de la tasación inmobiliaria profesional",
@@ -14,28 +177,30 @@ const tasacionTool: Anthropic.Tool = {
       valor_sugerido:     { type: "number",  description: "Valor sugerido de tasación en USD" },
       precio_m2:          { type: "number",  description: "Precio por m² en USD" },
       moneda:             { type: "string",  enum: ["USD"] },
-      alquiler_estimado:  { type: ["number","null"], description: "Alquiler estimado mensual en ARS. Debe reflejar precios de mercado 2025. Nunca inferior a ARS 400.000 para monoambiente o ARS 550.000 para 2 ambientes en zona central. Null solo si la operación es Alquiler." },
-      analisis:           { type: "string",  description: "2-3 párrafos de análisis del mercado y justificación de los valores" },
+      alquiler_estimado:  { type: ["number","null"], description: "Alquiler estimado mensual en ARS para la operación de venta. Valores mínimos 2025: 1 amb ARS 400k, 2 amb ARS 550k, 3 amb ARS 750k. Null si la operación es Alquiler." },
+      analisis:           { type: "string",  description: "2-3 párrafos de análisis del mercado y justificación del valor, referenciando los comparables reales" },
       factores_positivos: { type: "array",   items: { type: "string" } },
       factores_negativos: { type: "array",   items: { type: "string" } },
       comparables: {
         type: "array",
-        description: "3-4 propiedades comparables del mismo barrio/zona. Precios en USD coherentes con el mercado 2025.",
+        description: "Exactamente 3 comparables. Usá los comparables reales proporcionados. Si son suficientes, tomá los 3 más relevantes. Si no alcanza, completá con estimados del mercado.",
         items: {
           type: "object",
           properties: {
-            descripcion: { type: "string", description: "Descripción específica: tipo, barrio, m², características (ej: 'Dpto 2d/1b, 58m², Barrio Centro, 5to piso, vista panorámica')" },
-            precio:      { type: "number", description: "Precio de venta en USD" },
+            descripcion: { type: "string", description: "Descripción del comparable: portal, tipo, zona, m², características" },
+            precio:      { type: "number", description: "Precio en USD" },
             m2:          { type: "number", description: "Superficie en m²" },
           },
           required: ["descripcion","precio","m2"],
         },
       },
-      recomendacion: { type: "string", description: "Recomendación estratégica concreta para el corredor (precio de publicación, tiempo estimado de venta, tips de negociación)" },
+      recomendacion: { type: "string", description: "Recomendación estratégica: precio de publicación, tiempo estimado de comercialización, tips de negociación" },
     },
     required: ["valor_min","valor_max","valor_sugerido","precio_m2","moneda","analisis","factores_positivos","factores_negativos","comparables","recomendacion"],
   },
 };
+
+// ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   const datos = await req.json();
@@ -45,57 +210,58 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const hoy = new Date().toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+    const hoy = new Date().toLocaleDateString("es-AR", { month: "long", year: "numeric" })
+    const opBusqueda = (datos.operacion || "Venta").toLowerCase()
+    const tipoBusqueda = (datos.tipo || "Departamento").toLowerCase()
+    const m2Ref = datos.sup_cubierta ? parseFloat(datos.sup_cubierta) : undefined
 
-    const prompt = `Sos un tasador inmobiliario matriculado, especialista en el mercado argentino con foco en Rosario y Gran Buenos Aires. Fecha de referencia: ${hoy}.
+    // Buscar comparables reales en paralelo
+    const [resZona, resArgen, resML, resPropia] = await Promise.allSettled([
+      scrapeZonaProp(datos.barrio, tipoBusqueda, opBusqueda, m2Ref),
+      scrapeArgenprop(datos.barrio, tipoBusqueda, opBusqueda),
+      scrapeMercadoLibre(datos.barrio, tipoBusqueda, opBusqueda),
+      scrapePropia(datos.barrio, tipoBusqueda, opBusqueda),
+    ])
 
-════════════════════════════════
-PRECIOS DE MERCADO VIGENTES — ${hoy}
-════════════════════════════════
+    const monedaComp = opBusqueda === "alquiler" ? "ARS" : "USD"
+    const todosComps = [
+      ...(resZona.status === "fulfilled" ? resZona.value : []),
+      ...(resArgen.status === "fulfilled" ? resArgen.value : []),
+      ...(resML.status === "fulfilled" ? resML.value : []),
+      ...(resPropia.status === "fulfilled" ? resPropia.value : []),
+    ]
+    const comparablesFiltrados = filtrarComparables(todosComps, monedaComp, m2Ref)
 
-ALQUILERES ROSARIO (ARS/mes):
-Monoambiente / 1 amb (30-45m2): ARS 380.000 - 600.000
-2 ambientes (45-65m2): ARS 550.000 - 870.000
-3 ambientes (65-90m2): ARS 750.000 - 1.200.000
-4+ ambientes / PH (90m2+): ARS 1.100.000 - 1.800.000
-Casas: ARS 800.000 - 2.500.000 segun zona y metros
+    const comparablesTexto = comparablesFiltrados.length > 0
+      ? `\nCOMPARABLES REALES ENCONTRADOS EN PORTALES (${comparablesFiltrados.length} propiedades):\n` +
+        comparablesFiltrados.map((c, i) =>
+          `${i+1}. [${c.portal}] ${c.titulo} | Barrio: ${c.barrio} | Precio: ${c.moneda} ${c.precio.toLocaleString("es-AR")}${c.m2 ? ` | ${c.m2} m²` : ""}`
+        ).join("\n")
+      : "\n(No se obtuvieron comparables reales de portales. Usar estimados del mercado.)"
 
-Modificadores por zona:
-- Centro, Alberdi, Echesortu, Pichincha, Republica de la Sexta: valores base
-- Fisherton, Puerto Norte, Roca Santa Fe, Avenida del Mar: +20-40%
-- Barrios perifericos o emergentes: -15-25%
+    const prompt = `Sos un tasador inmobiliario matriculado especialista en Rosario y Argentina. Fecha: ${hoy}.
 
-VALORES DE VENTA ROSARIO (USD/m2, mercado de usados):
-- Centro / Alberdi / Echesortu / Pichincha: USD 1.200 - 1.900/m2
-- Fisherton / Puerto Norte / Roca Santa Fe: USD 1.800 - 2.800/m2
-- Barrios residenciales consolidados (Abasto, Belgrano, Italia, Las Delicias): USD 1.000 - 1.500/m2
-- Barrios perifericos y emergentes: USD 700 - 1.100/m2
+════════════ PRECIOS DE MERCADO — ${hoy} ════════════
 
-ALQUILERES CABA (ARS/mes referencia):
-2 amb (50-65m2): ARS 850.000 - 1.400.000
-3 amb (65-90m2): ARS 1.150.000 - 1.900.000
+ALQUILERES ROSARIO (ARS/mes vigentes):
+- Monoambiente / 1 amb (30-45m2): ARS 380.000 - 600.000
+- 2 ambientes (45-65m2): ARS 550.000 - 870.000
+- 3 ambientes (65-90m2): ARS 750.000 - 1.200.000
+- 4+ amb / PH: ARS 1.100.000 - 1.800.000
+Centro/Alberdi/Echesortu/Pichincha: valores base
+Fisherton/Puerto Norte: +20-40%
+Perifericos: -15-25%
 
-ALQUILERES GBA (ARS/mes referencia):
-Zona norte premium (San Isidro, Vicente Lopez): ARS 750.000 - 1.200.000
-Zona oeste/sur: ARS 500.000 - 850.000
+VENTA ROSARIO (USD/m2):
+- Centro/Alberdi/Echesortu/Pichincha: USD 1.200-1.900/m2
+- Fisherton/Puerto Norte/Roca: USD 1.800-2.800/m2
+- Residencial consolidado: USD 1.000-1.500/m2
+- Perifericos: USD 700-1.100/m2
 
-REGLA CRITICA DE ALQUILER:
-El campo alquiler_estimado NUNCA puede ser inferior a los minimos indicados arriba.
-Si el barrio es centro o zona buena, usar el rango medio o superior.
-Para Rosario centro, 2 dormitorios: minimo ARS 600.000, valor tipico ARS 700.000-900.000.
-
-COMPARABLES:
-- Incluir 3-4 comparables reales y especificos del mismo barrio o zona equivalente
-- Precios en USD coherentes con los rangos actuales indicados
-- Descripcion debe incluir: tipo, barrio/zona, m2, caracteristicas diferenciales
-- El precio/m2 de cada comparable debe ser consistente con los rangos de esa zona
-
-════════════════════════════════
-PROPIEDAD A TASAR
-════════════════════════════════
+════════════ PROPIEDAD A TASAR ════════════
 Tipo: ${datos.tipo}
 Operacion: ${datos.operacion}
-Barrio/Zona: ${datos.barrio}
+Barrio: ${datos.barrio}
 Direccion: ${datos.direccion || "No especificada"}
 Superficie cubierta: ${datos.sup_cubierta} m2
 ${datos.sup_total ? `Superficie total: ${datos.sup_total} m2` : ""}
@@ -103,13 +269,18 @@ Ambientes: ${datos.ambientes}
 Dormitorios: ${datos.dormitorios || "No especificado"}
 Banos: ${datos.banos || "No especificado"}
 Antiguedad: ${datos.antiguedad ? `${datos.antiguedad} anios` : "No especificada"}
-Estado de conservacion: ${datos.estado}
+Estado: ${datos.estado}
 Piso: ${datos.piso || "No aplica"}
 Cochera: ${datos.cochera ? "Si" : "No"}
 Amenities: ${datos.amenities || "Ninguno"}
 Observaciones: ${datos.observaciones || "Ninguna"}
+${comparablesTexto}
 
-Genera la tasacion con valores actualizados a ${hoy}. El alquiler estimado debe reflejar los precios reales de mercado actuales, no valores historicos.`;
+════════════ INSTRUCCIONES ════════════
+1. Analizá los comparables reales de los portales para calibrar el precio.
+2. Para los 3 comparables del resultado, elegí los 3 mas relevantes de la lista real. Si no hay suficientes de la misma moneda, estimá los faltantes con precios de mercado actuales.
+3. El alquiler_estimado DEBE estar dentro de los rangos 2025 indicados arriba, nunca por debajo de los minimos.
+4. El analisis debe referenciar los portales consultados (ZonaProp, Argenprop, Propia, MercadoLibre).`
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
@@ -124,7 +295,17 @@ Genera la tasacion con valores actualizados a ${hoy}. El alquiler estimado debe 
       return NextResponse.json({ error: "Respuesta invalida de IA." }, { status: 500 });
     }
 
-    return NextResponse.json(toolUse.input);
+    const resultadoFinal = {
+      ...(toolUse.input as Record<string, unknown>),
+      _portales_consultados: [
+        resZona.status === "fulfilled" && resZona.value.length > 0 ? "ZonaProp" : null,
+        resArgen.status === "fulfilled" && resArgen.value.length > 0 ? "Argenprop" : null,
+        resML.status === "fulfilled" && resML.value.length > 0 ? "MercadoLibre" : null,
+        resPropia.status === "fulfilled" && resPropia.value.length > 0 ? "Propia" : null,
+      ].filter(Boolean),
+      _total_comparables_encontrados: comparablesFiltrados.length,
+    }
+    return NextResponse.json(resultadoFinal);
   } catch {
     return NextResponse.json({ error: "Error al procesar la tasacion." }, { status: 500 });
   }
