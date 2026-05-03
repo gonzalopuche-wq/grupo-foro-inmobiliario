@@ -36,36 +36,35 @@ export async function GET(req: NextRequest) {
       .from("suscripciones")
       .select(`
         id,
-        user_id,
+        perfil_id,
         plan,
         monto_usd,
         fecha_vencimiento,
-        perfiles (
+        perfiles!perfil_id (
           nombre,
           apellido,
           matricula
-        ),
-        auth_users:user_id (
-          email
         )
       `)
-      .eq("estado", "activo");
+      .eq("estado", "activa");
 
     if (!suscripciones || suscripciones.length === 0) {
       return NextResponse.json({ ok: true, enviados: 0 });
     }
 
-    // Buscar CBU configurado por el admin
-    const { data: config } = await supabaseAdmin
-      .from("config")
-      .select("valor")
-      .eq("clave", "cbu_pagos")
-      .single();
+    // Buscar CBU desde indicadores (misma fuente que la página de suscripción)
+    const { data: indicadores } = await supabaseAdmin
+      .from("indicadores")
+      .select("clave, valor")
+      .in("clave", ["cbu_cvu", "cbu_alias", "cbu_titular", "cbu_banco"]);
 
-    const cbu = config?.valor ?? "CBU no configurado — contactar al admin";
+    const ind = Object.fromEntries((indicadores ?? []).map((r: any) => [r.clave, r.valor]));
+    const cbu = ind.cbu_cvu ?? "CVU no configurado";
+    const cbuAlias = ind.cbu_alias ?? "";
+    const cbuTitular = ind.cbu_titular ?? "";
 
     // Monto según plan
-    const montoMatriculado = 10;
+    const montoMatriculado = 15;
     const montoColaborador = 5;
 
     let enviados = 0;
@@ -73,7 +72,10 @@ export async function GET(req: NextRequest) {
 
     for (const s of suscripciones) {
       const perfil = s.perfiles as any;
-      const email = (s.auth_users as any)?.email;
+
+      // Obtener email desde auth usando perfil_id (= auth.users.id)
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(s.perfil_id);
+      const email = authUser?.user?.email;
 
       if (!email) continue;
 
@@ -161,8 +163,10 @@ export async function GET(req: NextRequest) {
                       Datos de transferencia
                     </span>
                     <span style="display:block;font-size:13px;color:#fff;font-family:'Courier New',monospace;letter-spacing:0.05em;">
-                      CBU: ${cbu}
+                      CVU: ${cbu}
                     </span>
+                    ${cbuAlias ? `<span style="display:block;font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">Alias: ${cbuAlias}</span>` : ""}
+                    ${cbuTitular ? `<span style="display:block;font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;">Titular: ${cbuTitular}</span>` : ""}
                     <span style="display:block;font-size:11px;color:rgba(255,255,255,0.3);margin-top:6px;">
                       Concepto: GFI ${mesProximo} — Mat. ${perfil?.matricula ?? ""}
                     </span>

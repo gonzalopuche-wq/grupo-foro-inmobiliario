@@ -31,16 +31,16 @@ export async function GET(req: NextRequest) {
       .from("suscripciones")
       .select(`
         id,
-        user_id,
+        perfil_id,
         plan,
         fecha_vencimiento,
-        perfiles (
+        perfiles!perfil_id (
           nombre,
           apellido,
           matricula
         )
       `)
-      .eq("estado", "activo")
+      .eq("estado", "activa")
       .lte("fecha_vencimiento", fecha4dias);
 
     if (!vencidas || vencidas.length === 0) {
@@ -51,14 +51,14 @@ export async function GET(req: NextRequest) {
     const errores: string[] = [];
 
     for (const s of vencidas) {
-      // 1. Bloquear: cambiar estado a suspendido
+      // 1. Bloquear: cambiar estado a suspendida
       const { error: errorBloqueo } = await supabaseAdmin
         .from("suscripciones")
-        .update({ estado: "suspendido" })
+        .update({ estado: "suspendida" })
         .eq("id", s.id);
 
       if (errorBloqueo) {
-        errores.push(`Error bloqueando ${s.user_id}: ${errorBloqueo.message}`);
+        errores.push(`Error bloqueando ${s.perfil_id}: ${errorBloqueo.message}`);
         continue;
       }
 
@@ -66,26 +66,27 @@ export async function GET(req: NextRequest) {
       await supabaseAdmin
         .from("notificaciones")
         .insert({
-          user_id: s.user_id,
+          user_id: s.perfil_id,
           titulo: "Acceso suspendido",
           mensaje: "Tu suscripción venció y no se registró el pago. Realizá la transferencia para reactivar.",
           tipo: "suscripcion",
           url: "/suscripcion",
         });
 
-      // 3. Buscar email del usuario
-      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(s.user_id);
+      // 3. Buscar email del usuario (perfil_id = auth.users.id)
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(s.perfil_id);
       const email = authUser?.user?.email;
       const perfil = s.perfiles as any;
       const nombre = perfil ? `${perfil.nombre ?? ""} ${perfil.apellido ?? ""}`.trim() : "Corredor";
 
-      // 4. Buscar CBU configurado
-      const { data: config } = await supabaseAdmin
-        .from("config")
-        .select("valor")
-        .eq("clave", "cbu_pagos")
-        .single();
-      const cbu = config?.valor ?? "Contactar al administrador";
+      // 4. Buscar CBU desde indicadores (misma fuente que la página de suscripción)
+      const { data: indicadores } = await supabaseAdmin
+        .from("indicadores")
+        .select("clave, valor")
+        .in("clave", ["cbu_cvu", "cbu_alias", "cbu_titular"]);
+      const ind = Object.fromEntries((indicadores ?? []).map((r: any) => [r.clave, r.valor]));
+      const cbu = ind.cbu_cvu ?? "CVU no configurado — contactar al administrador";
+      const cbuAlias = ind.cbu_alias ?? "";
 
       // 5. Enviar email de suspensión
       if (email) {
@@ -148,11 +149,12 @@ export async function GET(req: NextRequest) {
                       Para reactivar tu acceso
                     </span>
                     <p style="color:rgba(255,255,255,0.6);font-size:12px;margin:0 0 8px;line-height:1.6;">
-                      1. Realizá la transferencia bancaria al siguiente CBU:
+                      1. Realizá la transferencia bancaria al siguiente CVU:
                     </p>
-                    <span style="display:block;font-size:13px;color:#fff;font-family:'Courier New',monospace;letter-spacing:0.05em;margin-bottom:12px;">
-                      CBU: ${cbu}
+                    <span style="display:block;font-size:13px;color:#fff;font-family:'Courier New',monospace;letter-spacing:0.05em;margin-bottom:4px;">
+                      CVU: ${cbu}
                     </span>
+                    ${cbuAlias ? `<span style="display:block;font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Alias: ${cbuAlias}</span>` : `<span style="display:block;margin-bottom:12px;"></span>`}
                     <p style="color:rgba(255,255,255,0.6);font-size:12px;margin:0 0 8px;line-height:1.6;">
                       2. Ingresá a GFI® y avisá que realizaste el pago desde la sección Suscripción.
                     </p>
@@ -168,7 +170,7 @@ export async function GET(req: NextRequest) {
                 <tr>
                   <td style="padding:16px 24px;">
                     <span style="font-size:12px;color:rgba(255,255,255,0.4);font-family:'Montserrat',Arial,sans-serif;">
-                      Monto: <strong style="color:#fff;">USD ${s.plan === "colaborador" ? "5" : "10"} / mes</strong>
+                      Monto: <strong style="color:#fff;">USD ${s.plan === "colaborador" ? "5" : "15"} / mes</strong>
                       &nbsp;·&nbsp; Mat. ${perfil?.matricula ?? ""}
                     </span>
                   </td>
