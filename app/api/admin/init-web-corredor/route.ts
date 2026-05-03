@@ -32,7 +32,16 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (existing) {
-    return NextResponse.json({ ok: true, accion: "ya_existe", config: existing, perfil })
+    if (!existing.activa) {
+      const { data: updated } = await supabaseAdmin
+        .from("web_corredor_config")
+        .update({ activa: true })
+        .eq("id", existing.id)
+        .select()
+        .single()
+      return NextResponse.json({ ok: true, accion: "activado", config: updated ?? existing, perfil })
+    }
+    return NextResponse.json({ ok: true, accion: "ya_existe_activa", config: existing, perfil })
   }
 
   // Crear config
