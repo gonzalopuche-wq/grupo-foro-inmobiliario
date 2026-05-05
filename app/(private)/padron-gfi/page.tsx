@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../lib/supabase";
@@ -61,6 +61,7 @@ interface RegistroUnificado {
 type Fuente = "cocir" | "gfi" | "ambos";
 
 const ESTADOS_ALERTA = ["suspendido", "suspension", "baja", "dado de baja", "inhabilitado", "inactivo"];
+const ESTADOS_HABILITADO = ["habilitado", "activo", "vigente"];
 
 const estadoColor = (estado: string | null) => {
   if (!estado) return "#22c55e";
@@ -128,7 +129,7 @@ export default function PadronGFIPage() {
     init();
   }, []);
 
-  // Construir lista unificada según fuente
+  // Construir lista unificada segÃºn fuente
   const registros: RegistroUnificado[] = useMemo(() => {
     if (fuente === "cocir") {
       return cocirData.map(c => ({
@@ -154,7 +155,7 @@ export default function PadronGFIPage() {
       }));
     }
 
-    // ambos: cruzar por matrícula
+    // ambos: cruzar por matrÃ­cula
     const resultado: RegistroUnificado[] = [];
     const gfiPorMatricula = new Map<string, PerfilGFI>();
     gfiData.forEach(g => { if (g.matricula) gfiPorMatricula.set(g.matricula.trim(), g); });
@@ -268,20 +269,20 @@ export default function PadronGFIPage() {
 
       <div className="pad-wrap">
         <div>
-          <div className="pad-titulo">Padrón <span>GFI®</span></div>
-          <div className="pad-sub">Consultá corredores del padrón COCIR, de GFI o de ambos</div>
+          <div className="pad-titulo">PadrÃ³n <span>GFIÂ®</span></div>
+          <div className="pad-sub">ConsultÃ¡ corredores del padrÃ³n COCIR, de GFI o de ambos</div>
         </div>
 
         {/* Selector */}
         <div className="pad-fuentes">
           <button className={`pad-fuente-btn${fuente === "cocir" ? " activo" : ""}`} onClick={() => cambiarFuente("cocir")}>
-            🏛 Padrón COCIR
+            ðŸ› PadrÃ³n COCIR
           </button>
           <button className={`pad-fuente-btn${fuente === "gfi" ? " activo" : ""}`} onClick={() => cambiarFuente("gfi")}>
-            ◈ Miembros GFI
+            â—ˆ Miembros GFI
           </button>
           <button className={`pad-fuente-btn${fuente === "ambos" ? " activo" : ""}`} onClick={() => cambiarFuente("ambos")}>
-            🔗 Vista unificada
+            ðŸ”— Vista unificada
           </button>
         </div>
 
@@ -331,24 +332,24 @@ export default function PadronGFIPage() {
           )}
           <div className="pad-stat">
             <div className="pad-stat-val" style={{color:"rgba(255,255,255,0.5)"}}>
-              {busqueda ? filtrados.length.toLocaleString("es-AR") : "—"}
+              {busqueda ? filtrados.length.toLocaleString("es-AR") : "â€”"}
             </div>
-            <div className="pad-stat-label">Resultados búsqueda</div>
+            <div className="pad-stat-label">Resultados bÃºsqueda</div>
           </div>
           <div style={{marginLeft:"auto",fontSize:11,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>
-            {fuente === "cocir" ? "Padrón oficial COCIR · Solo lectura" :
-             fuente === "gfi" ? "Miembros registrados en GFI®" :
-             "Cruce COCIR + GFI por matrícula"}
+            {fuente === "cocir" ? "PadrÃ³n oficial COCIR Â· Solo lectura" :
+             fuente === "gfi" ? "Miembros registrados en GFIÂ®" :
+             "Cruce COCIR + GFI por matrÃ­cula"}
           </div>
         </div>
 
         {/* Buscador */}
         <div className="pad-buscador">
           <div className="pad-search-wrap">
-            <span className="pad-search-ico">🔍</span>
+            <span className="pad-search-ico">ðŸ”</span>
             <input
               className="pad-input"
-              placeholder="Buscar por nombre, apellido, matrícula, inmobiliaria o email..."
+              placeholder="Buscar por nombre, apellido, matrÃ­cula, inmobiliaria o email..."
               value={busqueda}
               onChange={e => cambiarBusqueda(e.target.value)}
               disabled={loading}
@@ -381,9 +382,9 @@ export default function PadronGFIPage() {
               <thead>
                 <tr>
                   <th>Nombre</th>
-                  <th>Matrícula</th>
+                  <th>MatrÃ­cula</th>
                   <th>Inmobiliaria</th>
-                  <th>Dirección</th>
+                  <th>DirecciÃ³n</th>
                   <th>Email / Tel</th>
                   {fuente === "ambos" && <th>Fuente</th>}
                   <th>Estado</th>
@@ -411,33 +412,33 @@ export default function PadronGFIPage() {
                           )}
                           <div>
                             <div className="pad-nombre">{r.apellido}, {r.nombre}</div>
-                            {r.zona_trabajo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>📍 {r.zona_trabajo}</div>}
+                            {r.zona_trabajo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>ðŸ“ {r.zona_trabajo}</div>}
                           </div>
                         </div>
                       </td>
                       <td>
                         {r.matricula
                           ? <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:12}}>{r.matricula}</span>
-                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                          : <span style={{color:"rgba(255,255,255,0.2)"}}>â€”</span>}
                       </td>
                       <td style={{color:"rgba(255,255,255,0.6)"}}>
-                        {r.inmobiliaria || <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                        {r.inmobiliaria || <span style={{color:"rgba(255,255,255,0.2)"}}>â€”</span>}
                       </td>
                       <td style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>
                         {r.direccion
-                          ? <>{r.direccion}{r.localidad ? ` · ${r.localidad}` : ""}</>
-                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                          ? <>{r.direccion}{r.localidad ? ` Â· ${r.localidad}` : ""}</>
+                          : <span style={{color:"rgba(255,255,255,0.2)"}}>â€”</span>}
                       </td>
                       <td style={{fontSize:11}}>
-                        {r.telefono && <div style={{color:"rgba(255,255,255,0.5)"}}>📞 {r.telefono}</div>}
+                        {r.telefono && <div style={{color:"rgba(255,255,255,0.5)"}}>ðŸ“ž {r.telefono}</div>}
                         {r.email && (
                           <div>
                             <a href={`mailto:${r.email}`} style={{color:"rgba(200,0,0,0.7)",textDecoration:"none"}} onClick={e => e.stopPropagation()}>
-                              ✉ {r.email}
+                              âœ‰ {r.email}
                             </a>
                           </div>
                         )}
-                        {!r.telefono && !r.email && <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                        {!r.telefono && !r.email && <span style={{color:"rgba(255,255,255,0.2)"}}>â€”</span>}
                       </td>
                       {fuente === "ambos" && (
                         <td>
@@ -449,7 +450,7 @@ export default function PadronGFIPage() {
                       <td>
                         {r.enCOCIR ? (
                           <span className="pad-estado-pill" style={{background:`${color}18`,border:`1px solid ${color}40`,color}}>
-                            {esAlerta ? "⛔" : "✅"} {r.estadoCOCIR?.toUpperCase() || "HABILITADO"}
+                            {esAlerta ? "â›”" : "âœ…"} {r.estadoCOCIR?.toUpperCase() || "HABILITADO"}
                           </span>
                         ) : (
                           <span className="pad-badge" style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.35)"}}>
@@ -465,9 +466,9 @@ export default function PadronGFIPage() {
 
             {totalPaginas > 1 && (
               <div className="pad-paginacion">
-                <button className="pad-pag-btn" disabled={pagina === 0} onClick={() => setPagina(p => p - 1)}>← Anterior</button>
-                <span className="pad-pag-info">Página {pagina + 1} de {totalPaginas} · {filtrados.length.toLocaleString("es-AR")} registros</span>
-                <button className="pad-pag-btn" disabled={pagina >= totalPaginas - 1} onClick={() => setPagina(p => p + 1)}>Siguiente →</button>
+                <button className="pad-pag-btn" disabled={pagina === 0} onClick={() => setPagina(p => p - 1)}>â† Anterior</button>
+                <span className="pad-pag-info">PÃ¡gina {pagina + 1} de {totalPaginas} Â· {filtrados.length.toLocaleString("es-AR")} registros</span>
+                <button className="pad-pag-btn" disabled={pagina >= totalPaginas - 1} onClick={() => setPagina(p => p + 1)}>Siguiente â†’</button>
               </div>
             )}
           </div>
