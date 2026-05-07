@@ -22,7 +22,9 @@ export default function RegistroPage() {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [matricula, setMatricula] = useState("");
-  const [telefono, setTelefono] = useState("");
+  const [celularOficina, setCelularOficina] = useState("");
+  const [celularPersonal, setCelularPersonal] = useState("");
+  const [celularMostrar, setCelularMostrar] = useState<"oficina" | "personal">("personal");
   const [inmobiliaria, setInmobiliaria] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -134,7 +136,10 @@ export default function RegistroPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email, password, tipo,
-          nombre, apellido, telefono,
+          nombre, apellido,
+          celular_oficina: celularOficina || null,
+          celular_personal: celularPersonal || null,
+          celular_mostrar: celularMostrar,
           matricula: tipo === "corredor" ? matricula : null,
           dni: tipo === "colaborador" ? dni : null,
           inmobiliaria: tipo === "corredor" ? inmobiliaria : null,
@@ -505,18 +510,43 @@ export default function RegistroPage() {
                 </div>
 
                 {tipo === "corredor" && (
-                  <div className="reg-fila">
+                  <>
+                    <div className="reg-fila">
+                      <div className="reg-field">
+                        <label className="reg-label">Celular de oficina</label>
+                        <input className="reg-input" type="text" placeholder="3416806480"
+                          value={celularOficina} onChange={e => setCelularOficina(e.target.value)} disabled={loading} />
+                      </div>
+                      <div className="reg-field">
+                        <label className="reg-label">Celular personal</label>
+                        <input className="reg-input" type="text" placeholder="3416806480"
+                          value={celularPersonal} onChange={e => setCelularPersonal(e.target.value)} disabled={loading} />
+                      </div>
+                    </div>
                     <div className="reg-field">
-                      <label className="reg-label">Teléfono</label>
-                      <input className="reg-input" type="text" placeholder="3416806480"
-                        value={telefono} onChange={e => setTelefono(e.target.value)} disabled={loading} />
+                      <label className="reg-label">¿Cuál se muestra públicamente?</label>
+                      <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                        {(["oficina", "personal"] as const).map(op => (
+                          <button key={op} type="button" onClick={() => setCelularMostrar(op)} disabled={loading}
+                            style={{
+                              flex: 1, padding: "10px 12px", borderRadius: 3, cursor: "pointer",
+                              fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700,
+                              letterSpacing: "0.12em", textTransform: "uppercase",
+                              border: celularMostrar === op ? "1px solid #cc0000" : "1px solid rgba(255,255,255,0.12)",
+                              background: celularMostrar === op ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.03)",
+                              color: celularMostrar === op ? "#fff" : "rgba(255,255,255,0.4)",
+                            }}>
+                            {op === "oficina" ? "📋 Oficina" : "📱 Personal"}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div className="reg-field">
                       <label className="reg-label">Inmobiliaria</label>
                       <input className="reg-input" type="text" placeholder="Nombre de la inmobiliaria"
                         value={inmobiliaria} onChange={e => setInmobiliaria(e.target.value)} disabled={loading} />
                     </div>
-                  </div>
+                  </>
                 )}
 
                 {tipo === "colaborador" && (
