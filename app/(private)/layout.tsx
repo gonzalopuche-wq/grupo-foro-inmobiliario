@@ -14,7 +14,6 @@ const NAV_CORREDOR = [
   { href: "/noticias", label: "Noticias", icon: "📰" },
   { href: "/eventos", label: "Eventos", icon: "📅" },
   { href: "/crm", label: "CRM", icon: "👥" },
-  { href: "/cartera", label: "Cartera", icon: "🏠" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
   { href: "/comparables", label: "Comparables", icon: "📈" },
   { href: "/padron-gfi", label: "Padrón", icon: "📋" },
@@ -49,7 +48,7 @@ const NAV_ADMIN = [
 
 // Rutas bloqueadas para colaboradores — redirigen al dashboard
 const RUTAS_SOLO_CORREDOR = [
-  "/comunidad", "/foro", "/crm", "/cartera", "/comparables", "/mi-web",
+  "/comunidad", "/foro", "/crm", "/comparables", "/mi-web",
 ];
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {

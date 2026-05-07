@@ -8,6 +8,14 @@ const CRM_NAV = [
   { href: "/crm/negocios", label: "Negocios", icon: "🤝", exact: false },
   { href: "/crm/tareas", label: "Tareas", icon: "✅", exact: false },
   { href: "/crm/notas", label: "Notas", icon: "📝", exact: false },
+  { href: "/crm/smart-prospecting", label: "Prospectos", icon: "🎯", exact: false },
+  { href: "/crm/cartera", label: "Cartera", icon: "🏠", exact: false },
+  { href: "/crm/visitas", label: "Visitas", icon: "🗓", exact: false },
+  { href: "/crm/busqueda", label: "Búsqueda", icon: "🔍", exact: false },
+  { href: "/crm/listas", label: "Listas", icon: "🔖", exact: false },
+  { href: "/crm/difusion", label: "Difusión", icon: "📣", exact: false },
+  { href: "/crm/recordatorios", label: "Recordatorios", icon: "🔔", exact: false },
+  { href: "/crm/plantillas", label: "Plantillas", icon: "📋", exact: false },
 ];
 
 export default function CrmLayout({ children }: { children: React.ReactNode }) {
