@@ -34,6 +34,7 @@ const INDICADORES_CONFIG = [
   { clave: "precio_corredor_usd", label: "Precio Corredor (USD)", tipo: "number" as const },
   { clave: "precio_colaborador_usd", label: "Precio Colaborador (USD)", tipo: "number" as const },
   { clave: "costo_match_divisas", label: "Costo Match Divisas (ARS)", tipo: "number" as const },
+  { clave: "costo_match_mir", label: "Costo Match MIR (ARS)", tipo: "number" as const },
 ];
 
 const CBU_CONFIG = [
@@ -49,6 +50,72 @@ const ESTADO_LABEL: Record<string, string> = { pendiente: "Pendiente", aprobado:
 const MONEDAS_OPCIONES = ["USD", "EUR", "GBP", "BRL", "USDT", "USDC"];
 const FORM_PROV_VACIO = { nombre: "", contacto_whatsapp: "", contacto_email: "", monedas: [] as string[], servicios: "", compra_usd: "", venta_usd: "" };
 const ROL_LABELS: Record<string, string> = { colaborador: "Colaborador", asistente: "Asistente", socio: "Socio" };
+
+function CobrosMatchesAdmin() {
+  const [mirItems, setMirItems] = useState<any[]>([]);
+  const [divisasItems, setDivisasItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const cargar = async () => {
+      const [{ data: mir }, { data: div }] = await Promise.all([
+        supabase.from("mir_desbloqueos").select("*, perfiles:user_id(nombre, apellido, matricula, email)").order("created_at", { ascending: false }).limit(50),
+        supabase.from("divisas_accesos").select("*, accedido:accedido_por(nombre, apellido, matricula, email)").order("created_at", { ascending: false }).limit(50),
+      ]);
+      setMirItems(mir ?? []);
+      setDivisasItems(div ?? []);
+      setLoading(false);
+    };
+    cargar();
+  }, []);
+
+  const fmt = (n: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
+  const fmtDate = (s: string) => new Date(s).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+
+  const total = [...mirItems, ...divisasItems].reduce((acc, x) => acc + (x.monto ?? 0), 0);
+
+  return (
+    <div style={{ marginBottom: 32 }}>
+      <div className="adm-ind-titulo">Cobros <span>por matches</span></div>
+      <div className="adm-ind-subtitulo">Registros de accesos a contactos (MIR + Divisas). Todos pagan por transferencia.</div>
+      {loading ? <div style={{ color: "rgba(255,255,255,0.3)", padding: 16 }}>Cargando...</div> : (
+        <>
+          <div style={{ display: "flex", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
+            <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "12px 20px" }}>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>Total acumulado</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: "#22c55e" }}>{fmt(total)}</div>
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "12px 20px" }}>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>MIR</div>
+              <div style={{ fontSize: 18, fontWeight: 700 }}>{mirItems.length} accesos</div>
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "12px 20px" }}>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>Divisas</div>
+              <div style={{ fontSize: 18, fontWeight: 700 }}>{divisasItems.length} accesos</div>
+            </div>
+          </div>
+          {mirItems.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8, fontFamily: "Montserrat,sans-serif" }}>MIR — desbloqueos</div>
+              <div className="adm-tabla-wrap"><table className="adm-tabla"><thead><tr><th>Corredor</th><th>Mat.</th><th>Tipo</th><th>Monto</th><th>Fecha</th></tr></thead>
+                <tbody>{mirItems.map(x => (<tr key={x.id}><td>{x.perfiles?.apellido}, {x.perfiles?.nombre}</td><td>{x.perfiles?.matricula ?? "—"}</td><td style={{ textTransform: "capitalize" }}>{x.tipo}</td><td style={{ color: "#22c55e", fontWeight: 700 }}>{fmt(x.monto)}</td><td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{fmtDate(x.created_at)}</td></tr>))}</tbody>
+              </table></div>
+            </div>
+          )}
+          {divisasItems.length > 0 && (
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8, fontFamily: "Montserrat,sans-serif" }}>Divisas — accesos a contacto</div>
+              <div className="adm-tabla-wrap"><table className="adm-tabla"><thead><tr><th>Corredor</th><th>Mat.</th><th>Monto</th><th>Fecha</th></tr></thead>
+                <tbody>{divisasItems.map(x => (<tr key={x.id}><td>{x.accedido?.apellido}, {x.accedido?.nombre}</td><td>{x.accedido?.matricula ?? "—"}</td><td style={{ color: "#22c55e", fontWeight: 700 }}>{fmt(x.monto)}</td><td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{fmtDate(x.created_at)}</td></tr>))}</tbody>
+              </table></div>
+            </div>
+          )}
+          {mirItems.length === 0 && divisasItems.length === 0 && <div style={{ color: "rgba(255,255,255,0.3)", padding: 16 }}>Sin cobros registrados todavía.</div>}
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const [perfiles, setPerfiles] = useState<Perfil[]>([]);
@@ -897,6 +964,9 @@ export default function AdminPage() {
               </table>}
             </div>
           </div>
+
+          {/* ── COBROS MATCHES ── */}
+          <CobrosMatchesAdmin />
 
           {/* ── INDICADORES ── */}
           <div>
