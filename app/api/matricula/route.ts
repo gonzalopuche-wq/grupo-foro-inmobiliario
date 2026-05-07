@@ -19,22 +19,32 @@ export async function POST(req: NextRequest) {
   const num = parseInt(sinCero, 10);
   if (isNaN(num)) return NextResponse.json({ error: "La matrícula debe ser un número." }, { status: 400 });
 
-  // Fetch directo a Supabase REST API (evita cliente JS)
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  const headers = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
+  // Carga todo el padrón y filtra en JS (mismo patrón que padron/route.ts)
+  let todos: any[] = [];
+  let desde = 0;
+  while (true) {
+    const { data, error } = await sbAdmin
+      .from("cocir_padron")
+      .select("nombre, apellido, inmobiliaria, estado, matricula")
+      .range(desde, desde + 999);
+    if (error) return NextResponse.json({ error: `DB error: ${error.message}` }, { status: 500 });
+    if (!data || data.length === 0) break;
+    todos = todos.concat(data);
+    if (data.length < 1000) break;
+    desde += 1000;
+  }
 
-  const [r1, r2] = await Promise.all([
-    fetch(`${supabaseUrl}/rest/v1/cocir_padron?matricula=eq.${num}&select=nombre,apellido,inmobiliaria,estado,matricula&limit=1`, { headers }),
-    fetch(`${supabaseUrl}/rest/v1/cocir_padron?matricula=eq.${encodeURIComponent(raw)}&select=nombre,apellido,inmobiliaria,estado,matricula&limit=1`, { headers }),
-  ]);
-  const [rowsNum, rowsTxt] = await Promise.all([r1.json(), r2.json()]);
-  const data = rowsNum?.[0] ?? rowsTxt?.[0] ?? null;
+  const data = todos.find(r =>
+    String(r.matricula) === raw ||
+    String(r.matricula) === sinCero ||
+    Number(r.matricula) === num
+  ) ?? null;
 
   if (!data) {
-    const rSample = await fetch(`${supabaseUrl}/rest/v1/cocir_padron?select=matricula&limit=3`, { headers });
-    const sample = await rSample.json();
-    return NextResponse.json({ error: "Matrícula no encontrada.", _debug: { raw, num, rowsNum, rowsTxt, sample } }, { status: 404 });
+    return NextResponse.json({
+      error: "Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado.",
+      _debug: { raw, sinCero, num, total: todos.length, muestra: todos.slice(0, 3).map(r => r.matricula) }
+    }, { status: 404 });
   }
 
   const estado = (data.estado || "").toLowerCase();
