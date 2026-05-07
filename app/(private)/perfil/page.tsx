@@ -10,6 +10,9 @@ interface Perfil {
   dni: string | null;
   matricula: string | null;
   telefono: string | null;
+  celular_oficina: string | null;
+  celular_personal: string | null;
+  celular_mostrar: "oficina" | "personal" | null;
   email: string | null;
   inmobiliaria: string | null;
   especialidades: string[] | null;
@@ -118,7 +121,10 @@ export default function PerfilPage() {
       nombre: perfil.nombre,
       apellido: perfil.apellido,
       dni: perfil.dni,
-      telefono: perfil.telefono,
+      celular_oficina: perfil.celular_oficina,
+      celular_personal: perfil.celular_personal,
+      celular_mostrar: perfil.celular_mostrar ?? "personal",
+      telefono: perfil.celular_mostrar === "oficina" ? perfil.celular_oficina : (perfil.celular_personal ?? perfil.telefono),
       email: perfil.email,
       inmobiliaria: perfil.inmobiliaria,
       especialidades: perfil.especialidades,
@@ -391,8 +397,34 @@ export default function PerfilPage() {
                   <input className="pf-input" value={perfil.matricula ?? ""} disabled />
                 </div>
                 <div className="pf-field">
-                  <label className="pf-label">Teléfono / WhatsApp</label>
-                  <input className="pf-input" placeholder="3412345678" value={perfil.telefono ?? ""} onChange={e => set("telefono", e.target.value)} />
+                  <label className="pf-label">Celular de oficina</label>
+                  <input className="pf-input" placeholder="3412345678" value={perfil.celular_oficina ?? ""} onChange={e => set("celular_oficina", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">Celular personal</label>
+                  <input className="pf-input" placeholder="3412345678" value={perfil.celular_personal ?? ""} onChange={e => set("celular_personal", e.target.value)} />
+                </div>
+                <div className="pf-field span2">
+                  <label className="pf-label">¿Cuál se muestra públicamente?</label>
+                  <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                    {(["oficina", "personal"] as const).map(op => (
+                      <button
+                        key={op}
+                        type="button"
+                        onClick={() => set("celular_mostrar", op)}
+                        style={{
+                          padding: "8px 20px", borderRadius: 4, cursor: "pointer",
+                          fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700,
+                          letterSpacing: "0.12em", textTransform: "uppercase",
+                          border: (perfil.celular_mostrar ?? "personal") === op ? "1px solid #cc0000" : "1px solid rgba(255,255,255,0.12)",
+                          background: (perfil.celular_mostrar ?? "personal") === op ? "rgba(200,0,0,0.12)" : "transparent",
+                          color: (perfil.celular_mostrar ?? "personal") === op ? "#fff" : "rgba(255,255,255,0.4)",
+                        }}
+                      >
+                        {op === "oficina" ? "📋 Oficina" : "📱 Personal"}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div className="pf-field">
                   <label className="pf-label">Email</label>
