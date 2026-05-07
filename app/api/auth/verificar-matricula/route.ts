@@ -11,15 +11,19 @@ export async function POST(req: NextRequest) {
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
   const raw = matricula.trim();
   const sinCero = raw.replace(/^0+/, "") || raw;
-  const variantes = [raw, sinCero, sinCero.padStart(2, "0"), sinCero.padStart(3, "0"), sinCero.padStart(4, "0"), sinCero.padStart(5, "0")];
-  const candidatos = Array.from(new Set(variantes));
-  const { data: rows, error: dbError } = await sb.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").in("matricula", candidatos);
-  if (dbError) return NextResponse.json({ error: `Error de base de datos: ${dbError.message}` }, { status: 500 });
-  const data = rows?.[0] ?? null;
+  const num = parseInt(sinCero, 10);
+  if (isNaN(num)) return NextResponse.json({ error: "La matrícula debe ser un número." }, { status: 400 });
+  // Buscar por número (por si la columna es integer) y también por texto
+  const candidatosTexto = Array.from(new Set([raw, sinCero, sinCero.padStart(3, "0"), sinCero.padStart(4, "0"), sinCero.padStart(5, "0")]));
+  const [{ data: rowsNum }, { data: rowsTxt }] = await Promise.all([
+    sb.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").eq("matricula", num),
+    sb.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").in("matricula", candidatosTexto),
+  ]);
+  const data = (rowsNum?.[0] ?? rowsTxt?.[0]) ?? null;
   if (!data) return NextResponse.json({ error: "Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado." }, { status: 404 });
   const estado = (data.estado || "").toLowerCase();
   if (estado && estado !== "activo" && estado !== "habilitado") return NextResponse.json({ error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.` }, { status: 403 });
-  const { data: perfilExistente } = await sb.from("perfiles").select("id").in("matricula", candidatos).maybeSingle();
+  const { data: perfilExistente } = await sb.from("perfiles").select("id").eq("matricula", String(data.matricula)).maybeSingle();
   if (perfilExistente) return NextResponse.json({ error: "Esta matrícula ya tiene una cuenta registrada." }, { status: 409 });
   return NextResponse.json({ ok: true, nombre: data.nombre, apellido: data.apellido, inmobiliaria: data.inmobiliaria ?? "", matricula: data.matricula });
 }
