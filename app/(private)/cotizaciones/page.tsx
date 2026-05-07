@@ -37,7 +37,7 @@ interface Publicacion {
   activa: boolean;
   vence_at: string;
   created_at: string;
-  perfiles?: { nombre: string; apellido: string; matricula: string | null };
+  perfiles?: { nombre: string; apellido: string; matricula: string | null; telefono: string | null; email: string | null };
 }
 
 const MONEDAS = ["USD", "EUR", "GBP", "BRL", "USDT", "USDC"];
@@ -76,7 +76,9 @@ export default function CotizacionesPage() {
   const [mostrarForm, setMostrarForm] = useState(false);
   const [formPub, setFormPub] = useState(FORM_PUB_VACIO);
   const [guardando, setGuardando] = useState(false);
-  const [costoMatch, setCostoMatch] = useState(5000);
+  const [costoMatch, setCostoMatch] = useState(6000);
+  const [contactosVisibles, setContactosVisibles] = useState<Set<string>>(new Set());
+  const [contactando, setContactando] = useState<string | null>(null);
   const [filtroMoneda, setFiltroMoneda] = useState("todas");
   const [filtroTipo, setFiltroTipo] = useState("todos");
 
@@ -189,7 +191,7 @@ export default function CotizacionesPage() {
   const cargarPublicaciones = async () => {
     setLoadingMatch(true);
     const { data } = await supabase.from("divisas_publicaciones")
-      .select("*, perfiles(nombre, apellido, matricula)")
+      .select("*, perfiles(nombre, apellido, matricula, telefono, email)")
       .eq("activa", true)
       .gt("vence_at", new Date().toISOString())
       .order("created_at", { ascending: false });
@@ -216,6 +218,20 @@ export default function CotizacionesPage() {
   const eliminarPublicacion = async (id: string) => {
     await supabase.from("divisas_publicaciones").update({ activa: false }).eq("id", id);
     cargarPublicaciones();
+  };
+
+  const contactarPublicacion = async (pub: Publicacion) => {
+    if (contactosVisibles.has(pub.id)) return;
+    const costo = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(costoMatch);
+    if (!confirm(`Esta operación genera un cargo de ${costo} ARS que se abona por transferencia al administrador.\n\n¿Confirmar y ver los datos de contacto?`)) return;
+    setContactando(pub.id);
+    await supabase.from("divisas_accesos").insert({
+      publicacion_id: pub.id,
+      accedido_por: userId,
+      monto: costoMatch,
+    }).then(() => {});
+    setContactosVisibles(prev => new Set([...prev, pub.id]));
+    setContactando(null);
   };
 
   const pubsFiltradas = publicaciones.filter(p => {
@@ -539,10 +555,15 @@ export default function CotizacionesPage() {
                     </div>
                     {p.perfil_id === userId
                       ? <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
-                      : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
-                          <button className="match-btn-contactar">Contactar</button>
-                          <div className="match-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}</div>
-                        </div>}
+                      : contactosVisibles.has(p.id)
+                        ? <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                            {p.perfiles?.telefono && <a href={`https://wa.me/${p.perfiles.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{padding:"6px 12px",background:"#25d366",border:"none",borderRadius:4,color:"#fff",fontSize:11,fontWeight:700,textDecoration:"none"}}>📱 WhatsApp</a>}
+                            {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{p.perfiles.email}</a>}
+                          </div>
+                        : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                            <button className="match-btn-contactar" disabled={contactando === p.id} onClick={() => contactarPublicacion(p)}>{contactando === p.id ? "..." : "Contactar"}</button>
+                            <div className="match-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} ARS</div>
+                          </div>}
                   </div>
                 ))}
               </div>
@@ -562,10 +583,15 @@ export default function CotizacionesPage() {
                     </div>
                     {p.perfil_id === userId
                       ? <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
-                      : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
-                          <button className="match-btn-contactar">Contactar</button>
-                          <div className="match-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}</div>
-                        </div>}
+                      : contactosVisibles.has(p.id)
+                        ? <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                            {p.perfiles?.telefono && <a href={`https://wa.me/${p.perfiles.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{padding:"6px 12px",background:"#25d366",border:"none",borderRadius:4,color:"#fff",fontSize:11,fontWeight:700,textDecoration:"none"}}>📱 WhatsApp</a>}
+                            {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{p.perfiles.email}</a>}
+                          </div>
+                        : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                            <button className="match-btn-contactar" disabled={contactando === p.id} onClick={() => contactarPublicacion(p)}>{contactando === p.id ? "..." : "Contactar"}</button>
+                            <div className="match-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} ARS</div>
+                          </div>}
                   </div>
                 ))}
               </div>
