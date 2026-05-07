@@ -13,7 +13,8 @@ export async function POST(req: NextRequest) {
   const sinCero = raw.replace(/^0+/, "") || raw;
   const variantes = [raw, sinCero, sinCero.padStart(2, "0"), sinCero.padStart(3, "0"), sinCero.padStart(4, "0"), sinCero.padStart(5, "0")];
   const candidatos = Array.from(new Set(variantes));
-  const { data: rows } = await sb.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").in("matricula", candidatos);
+  const { data: rows, error: dbError } = await sb.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").in("matricula", candidatos);
+  if (dbError) return NextResponse.json({ error: `Error de base de datos: ${dbError.message}` }, { status: 500 });
   const data = rows?.[0] ?? null;
   if (!data) return NextResponse.json({ error: "Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado." }, { status: 404 });
   const estado = (data.estado || "").toLowerCase();
