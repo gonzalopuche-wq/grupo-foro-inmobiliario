@@ -11,7 +11,9 @@ export async function POST(req: NextRequest) {
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
   const raw = matricula.trim();
   const sinCero = raw.replace(/^0+/, "") || raw;
-  const candidatos = Array.from(new Set([raw, sinCero]));
+  // Genera variantes con y sin ceros adelante (hasta 5 dígitos) para cubrir distintos formatos del padrón
+  const variantes = [raw, sinCero, sinCero.padStart(2, "0"), sinCero.padStart(3, "0"), sinCero.padStart(4, "0"), sinCero.padStart(5, "0")];
+  const candidatos = Array.from(new Set(variantes));
   const { data: rows } = await sb.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").in("matricula", candidatos);
   const data = rows?.[0] ?? null;
   if (!data) return NextResponse.json({ error: "Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado." }, { status: 404 });
