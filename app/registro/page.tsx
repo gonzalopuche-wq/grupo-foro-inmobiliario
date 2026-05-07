@@ -69,7 +69,7 @@ export default function RegistroPage() {
     setMensajeMatricula("");
 
     try {
-      const res = await fetch("/api/auth/verificar-matricula", {
+      const res = await fetch("/api/matricula", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ matricula: mat }),
