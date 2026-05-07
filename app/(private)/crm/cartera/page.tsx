@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 interface Propiedad {
@@ -719,7 +719,7 @@ export default function CarteraPage() {
             <div className="cart-stat"><span className="cart-stat-val" style={{color:"#22c55e"}}>{propiedades.filter(p=>p.estado==="activa").length}</span><span className="cart-stat-label">Activas</span></div>
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <Link href="/cartera/parametros" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>⚙ Parámetros</Link>
+            <Link href="/crm/cartera/parametros" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>⚙ Parámetros</Link>
             <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setUrlImport(""); }}>↓ Importar</button>
             <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
           </div>

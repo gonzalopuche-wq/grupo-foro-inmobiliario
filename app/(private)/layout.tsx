@@ -17,8 +17,6 @@ const NAV_CORREDOR = [
   { href: "/eventos", label: "Eventos", icon: "📅" },
   { href: "/canal-educativo", label: "Canal Educativo", icon: "📡" },
   { href: "/crm", label: "CRM", icon: "👥" },
-  { href: "/cartera", label: "Cartera", icon: "🏠" },
-  { href: "/visitas", label: "Visitas", icon: "🗓" },
   { href: "/emprendimientos", label: "Emprendimientos", icon: "🏗️" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
   { href: "/comparables", label: "Comparables", icon: "📈" },
@@ -34,9 +32,7 @@ const NAV_CORREDOR = [
   { href: "/contratos", label: "Contratos", icon: "📄" },
   { href: "/notificaciones", label: "Notificaciones", icon: "🔔" },
   { href: "/ideas", label: "Ideas", icon: "💡" },
-  { href: "/legal", label: "Legal", icon: "⚖️" },
   { href: "/marketplace", label: "Marketplace", icon: "🏪" },
-  { href: "/directorios", label: "Directorios", icon: "📒" },
   { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
   { href: "/agenda", label: "Agenda", icon: "📆" },
 ];
@@ -66,7 +62,7 @@ const NAV_ADMIN = [
 
 // Rutas bloqueadas para colaboradores — redirigen al dashboard
 const RUTAS_SOLO_CORREDOR = [
-  "/comunidad", "/foro", "/crm", "/cartera", "/comparables", "/mi-web",
+  "/comunidad", "/foro", "/crm", "/comparables", "/mi-web",
 ];
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
