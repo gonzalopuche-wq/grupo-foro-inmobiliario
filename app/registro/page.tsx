@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { supabase } from "../lib/supabase";
 
 type Paso = "tipo" | "datos" | "enviado";
 type TipoUsuario = "corredor" | "colaborador";
@@ -67,48 +66,33 @@ export default function RegistroPage() {
     setEstadoMatricula("verificando");
     setMensajeMatricula("");
 
-    const { data, error: dbError } = await supabase
-      .from("cocir_padron")
-      .select("nombre, apellido, inmobiliaria, estado")
-      .eq("matricula", mat)
-      .single();
+    try {
+      const res = await fetch("/api/auth/verificar-matricula", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matricula: mat }),
+      });
+      const json = await res.json();
 
-    if (dbError || !data) {
+      if (!res.ok) {
+        setEstadoMatricula("error");
+        setMensajeMatricula(json.error ?? "Error al verificar la matrícula.");
+        setMatriculaVerificada(false);
+        return;
+      }
+
+      setEstadoMatricula("ok");
+      setMensajeMatricula(`✓ ${json.apellido}, ${json.nombre} — matrícula válida`);
+      setMatriculaVerificada(true);
+      setDatosCocir({ nombre: json.nombre, apellido: json.apellido, inmobiliaria: json.inmobiliaria ?? "" });
+      setNombre(json.nombre ?? "");
+      setApellido(json.apellido ?? "");
+      setInmobiliaria(json.inmobiliaria ?? "");
+    } catch {
       setEstadoMatricula("error");
-      setMensajeMatricula("Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado.");
+      setMensajeMatricula("Error de conexión. Intentá de nuevo.");
       setMatriculaVerificada(false);
-      return;
     }
-
-    if (data.estado && data.estado.toLowerCase() !== "activo" && data.estado.toLowerCase() !== "habilitado") {
-      setEstadoMatricula("error");
-      setMensajeMatricula(`Matrícula encontrada pero con estado: ${data.estado}. Solo se aceptan corredores habilitados.`);
-      setMatriculaVerificada(false);
-      return;
-    }
-
-    // Verificar que no esté ya registrado
-    const { data: perfilExistente } = await supabase
-      .from("perfiles")
-      .select("id")
-      .eq("matricula", mat)
-      .maybeSingle();
-
-    if (perfilExistente) {
-      setEstadoMatricula("error");
-      setMensajeMatricula("Esta matrícula ya tiene una cuenta registrada. Si es tuya, ingresá con tu email.");
-      setMatriculaVerificada(false);
-      return;
-    }
-
-    // Todo OK — pre-llenar datos
-    setEstadoMatricula("ok");
-    setMensajeMatricula(`✓ ${data.apellido}, ${data.nombre} — matrícula válida`);
-    setMatriculaVerificada(true);
-    setDatosCocir({ nombre: data.nombre, apellido: data.apellido, inmobiliaria: data.inmobiliaria ?? "" });
-    setNombre(data.nombre ?? "");
-    setApellido(data.apellido ?? "");
-    setInmobiliaria(data.inmobiliaria ?? "");
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -144,31 +128,30 @@ export default function RegistroPage() {
 
     setLoading(true);
 
-    const { data, error: authError } = await supabase.auth.signUp({ email, password });
+    try {
+      const res = await fetch("/api/auth/registro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email, password, tipo,
+          nombre, apellido, telefono,
+          matricula: tipo === "corredor" ? matricula : null,
+          dni: tipo === "colaborador" ? dni : null,
+          inmobiliaria: tipo === "corredor" ? inmobiliaria : null,
+          especialidades: tipo === "colaborador" ? especialidades : null,
+        }),
+      });
+      const json = await res.json();
 
-    if (authError || !data.user) {
-      setError(authError?.message ?? "Error al crear el usuario.");
       setLoading(false);
-      return;
-    }
 
-    const { error: perfilError } = await supabase.from("perfiles").insert({
-      id: data.user.id,
-      tipo,
-      estado: "pendiente",
-      nombre,
-      apellido,
-      matricula: tipo === "corredor" ? matricula : null,
-      dni: tipo === "colaborador" ? dni : null,
-      telefono,
-      inmobiliaria: tipo === "corredor" ? inmobiliaria : null,
-      especialidades: tipo === "colaborador" ? especialidades : null,
-    });
-
-    setLoading(false);
-
-    if (perfilError) {
-      setError("Error al guardar el perfil. Intentá de nuevo.");
+      if (!res.ok) {
+        setError(json.error ?? "Error al crear la cuenta. Intentá de nuevo.");
+        return;
+      }
+    } catch {
+      setLoading(false);
+      setError("Error de conexión. Intentá de nuevo.");
       return;
     }
 
