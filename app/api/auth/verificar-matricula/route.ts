@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     sb.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").in("matricula", candidatosTexto),
   ]);
   const data = (rowsNum?.[0] ?? rowsTxt?.[0]) ?? null;
-  if (!data) return NextResponse.json({ error: "Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado." }, { status: 404 });
+  if (!data) return NextResponse.json({ error: "Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado.", _debug: { num, candidatosTexto, rowsNum, rowsTxt } }, { status: 404 });
   const estado = (data.estado || "").toLowerCase();
   if (estado && estado !== "activo" && estado !== "habilitado") return NextResponse.json({ error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.` }, { status: 403 });
   const { data: perfilExistente } = await sb.from("perfiles").select("id").eq("matricula", String(data.matricula)).maybeSingle();
