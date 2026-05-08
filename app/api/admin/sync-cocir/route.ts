@@ -9,6 +9,12 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+function getCol(tds: cheerio.Cheerio<cheerio.Element>, idx: number, $: cheerio.CheerioAPI): string | null {
+  if (idx < 0 || idx >= tds.length) return null;
+  const val = $(tds[idx]).text().trim();
+  return val || null;
+}
+
 export async function GET() {
   try {
     const url = "https://cocir.org.ar/paginas/matriculados";
@@ -30,33 +36,68 @@ export async function GET() {
     const html = await res.text();
     const $ = cheerio.load(html);
 
-    // Debug: estructura encontrada
+    // Detect column positions from header row
+    const colMap: Record<string, number> = {};
+    $("table tr:first-child th, table thead tr th").each((i, el) => {
+      const text = $(el).text().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+      if (text.includes("matricula")) colMap.matricula = i;
+      else if (text.includes("apellido")) colMap.apellido = i;
+      else if (text.includes("nombre")) colMap.nombre = i;
+      else if (text.includes("estado")) colMap.estado = i;
+      else if (text.includes("inmobiliaria") || text.includes("razon social") || text.includes("razon")) colMap.inmobiliaria = i;
+      else if (text.includes("telefono") || text.includes("tel.") || text === "tel") colMap.telefono = i;
+      else if (text.includes("email") || text.includes("correo")) colMap.email = i;
+      else if (text.includes("direccion")) colMap.direccion = i;
+      else if (text.includes("localidad")) colMap.localidad = i;
+    });
+
+    // Fallback column positions based on known COCIR table structure
+    const col = {
+      matricula:   colMap.matricula   ?? 0,
+      apellido:    colMap.apellido    ?? 1,
+      nombre:      colMap.nombre      ?? 2,
+      estado:      colMap.estado      ?? 3,
+      inmobiliaria:colMap.inmobiliaria?? 4,
+      telefono:    colMap.telefono    ?? 5,
+      email:       colMap.email       ?? 6,
+      direccion:   colMap.direccion   ?? 7,
+      localidad:   colMap.localidad   ?? 8,
+    };
+
     const debug = {
       statusHttp: res.status,
       htmlLen: html.length,
       tables: $("table").length,
       trs: $("tr").length,
       tds: $("td").length,
+      colMap,
       snippet: html.slice(0, 800),
     };
 
+    const ahora = new Date().toISOString();
     const registros: any[] = [];
 
-    // Intento 1: tabla estándar
     $("table tr").each((_, el) => {
       const tds = $(el).find("td");
-      if (tds.length >= 3) {
-        registros.push({
-          matricula: $(tds[0]).text().trim(),
-          apellido: $(tds[1]).text().trim(),
-          nombre: $(tds[2]).text().trim(),
-          estado: tds[3] ? $(tds[3]).text().trim() : "activo",
-          inmobiliaria: tds[4] ? $(tds[4]).text().trim() : null,
-        });
-      }
+      if (tds.length < 3) return;
+      const matricula = getCol(tds, col.matricula, $);
+      const apellido  = getCol(tds, col.apellido,  $);
+      const nombre    = getCol(tds, col.nombre,    $);
+      if (!apellido && !nombre) return; // skip header-like rows with no name
+      registros.push({
+        matricula,
+        apellido:     apellido ?? "",
+        nombre:       nombre ?? "",
+        estado:       getCol(tds, col.estado,       $) ?? "activo",
+        inmobiliaria: getCol(tds, col.inmobiliaria, $),
+        telefono:     getCol(tds, col.telefono,     $),
+        email:        getCol(tds, col.email,        $),
+        direccion:    getCol(tds, col.direccion,    $),
+        localidad:    getCol(tds, col.localidad,    $),
+        actualizado_at: ahora,
+      });
     });
 
-    // Si no encontró nada, devuelve debug sin tocar la DB
     if (registros.length === 0) {
       return NextResponse.json({ ok: false, total: 0, debug }, { status: 200 });
     }
@@ -68,7 +109,8 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, total: registros.length });
+    const conTelefono = registros.filter(r => r.telefono).length;
+    return NextResponse.json({ ok: true, total: registros.length, conTelefono, colMap });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
