@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     : (celular_personal || celular_oficina || null);
 
   // Insertar en perfiles
-  const { error: perfilError } = await sb.from("perfiles").insert({
+  const perfilPayload: Record<string, any> = {
     id: userId,
     tipo,
     estado: "pendiente",
@@ -82,7 +82,16 @@ export async function POST(req: NextRequest) {
     telefono: telefonoPublico,
     inmobiliaria: tipo === "corredor" ? (inmobiliaria || null) : null,
     especialidades: tipo === "colaborador" ? especialidades : null,
-  });
+  };
+
+  let { error: perfilError } = await sb.from("perfiles").insert(perfilPayload);
+
+  // Si la columna padron_vacio no existe todavía (migración pendiente), reintentar sin ella
+  if (perfilError?.message?.includes("padron_vacio")) {
+    const { padron_vacio: _pv, ...payloadSinPadron } = perfilPayload;
+    const { error: e2 } = await sb.from("perfiles").insert(payloadSinPadron);
+    perfilError = e2;
+  }
 
   if (perfilError) {
     await sb.auth.admin.deleteUser(userId);

@@ -18,9 +18,9 @@ async function runSQL(sql: string): Promise<{ ok: boolean; error?: string }> {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   const ref = getProjectRef(url);
 
-  // Intento 1: Management API (requiere service_role como bearer)
+  // Intento 1: pg-meta API interna de Supabase (accesible con service_role)
   try {
-    const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+    const res = await fetch(`${url}/pg-meta/v0/query`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${key}`,
@@ -30,23 +30,44 @@ async function runSQL(sql: string): Promise<{ ok: boolean; error?: string }> {
     });
     if (res.ok) return { ok: true };
     const txt = await res.text();
-    // Si falla por auth (401/403), intentamos otro método
-    if (res.status !== 401 && res.status !== 403) {
-      return { ok: false, error: `mgmt_api: ${res.status} ${txt}` };
+    if (res.status !== 401 && res.status !== 403 && res.status !== 404) {
+      return { ok: false, error: `pg_meta: ${res.status} ${txt}` };
     }
   } catch (e: any) {
     // continuar al siguiente intento
   }
 
-  // Intento 2: RPC exec_sql (si existe en la base)
+  // Intento 2: Management API con PAT (si está disponible como env var)
+  const pat = process.env.SUPABASE_ACCESS_TOKEN;
+  if (pat) {
+    try {
+      const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${pat}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: sql }),
+      });
+      if (res.ok) return { ok: true };
+      const txt = await res.text();
+      if (res.status !== 401 && res.status !== 403) {
+        return { ok: false, error: `mgmt_api: ${res.status} ${txt}` };
+      }
+    } catch (e: any) {
+      // continuar
+    }
+  }
+
+  // Intento 3: RPC exec_sql
   const { error: rpcErr } = await sb.rpc("exec_sql", { query: sql });
   if (!rpcErr) return { ok: true };
 
-  // Intento 3: RPC run_sql (alias común)
+  // Intento 4: RPC run_sql
   const { error: rpcErr2 } = await sb.rpc("run_sql", { sql });
   if (!rpcErr2) return { ok: true };
 
-  return { ok: false, error: `exec_sql: ${rpcErr?.message} | run_sql: ${rpcErr2?.message}` };
+  return { ok: false, error: `pg_meta:404 | exec_sql: ${rpcErr?.message} | run_sql: ${rpcErr2?.message}` };
 }
 
 export async function GET() {
