@@ -158,8 +158,8 @@ export default function DashboardPage() {
 
     // Stats personales del corredor
     const [cartera, crm, leads] = await Promise.all([
-      supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("activo", true),
-      supabase.from("crm_contactos").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("activo", true),
+      supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("estado", "activa"),
+      supabase.from("crm_contactos").select("id", { count: "exact", head: true }).eq("perfil_id", uid).neq("estado", "archivado"),
       supabase.from("web_leads").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("leido", false),
     ]);
     setMiStats({ cartera: cartera.count ?? 0, crm: crm.count ?? 0, leads: leads.count ?? 0, loadingMi: false });
@@ -230,17 +230,17 @@ export default function DashboardPage() {
     { icon: "💬", label: "Foro", href: "/foro", primary: false },
     { icon: "📋", label: "Padrón", href: "/padron-gfi", primary: false },
     { icon: "📚", label: "Biblioteca", href: "/biblioteca", primary: false },
-    { icon: "💰", label: "Suscripción", href: "/suscripcion", primary: false },
+    { icon: "💰", label: "Suscripción", href: "/perfil", primary: false },
   ];
 
   const ACCESOS_MI = [
-    { icon: "🏘️", label: "Mi cartera", href: "/cartera", primary: true },
+    { icon: "🏘️", label: "Mi cartera", href: "/crm/cartera", primary: true },
     { icon: "👥", label: "CRM", href: "/crm", primary: true },
     { icon: "🌐", label: "Mi web", href: "/mi-web", primary: false },
     { icon: "📬", label: "Leads", href: "/mi-web/leads", primary: false, badge: miStats.leads > 0 ? miStats.leads : 0 },
     { icon: "🎯", label: "Prospectos", href: "/crm/smart-prospecting", primary: false },
     { icon: "📊", label: "Tasador IA", href: "/comparables/tasador", primary: false },
-    { icon: "⚙️", label: "Parámetros", href: "/cartera/parametros", primary: false },
+    { icon: "⚙️", label: "Parámetros", href: "/crm/cartera/parametros", primary: false },
   ];
 
   // ── VISTA COLABORADOR ─────────────────────────────────────────────────────
@@ -385,7 +385,7 @@ export default function DashboardPage() {
         <div className="db-sec-titulo">Mi panel</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
           {[
-            { n: miStats.loadingMi ? "…" : miStats.cartera.toString(), l: "Propiedades activas", ic: "🏘️", href: "/cartera", color: "#cc0000" },
+            { n: miStats.loadingMi ? "…" : miStats.cartera.toString(), l: "Propiedades activas", ic: "🏘️", href: "/crm/cartera", color: "#cc0000" },
             { n: miStats.loadingMi ? "…" : miStats.crm.toString(), l: "Contactos CRM", ic: "👥", href: "/crm", color: "#3b82f6" },
             { n: miStats.loadingMi ? "…" : miStats.leads.toString(), l: "Leads sin leer", ic: "📬", href: "/mi-web/leads", color: miStats.leads > 0 ? "#f59e0b" : "rgba(255,255,255,0.3)" },
           ].map(({ n, l, ic, href, color }) => (
@@ -437,7 +437,7 @@ export default function DashboardPage() {
           <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:14}}>Acciones rápidas</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
             {[
-              {label:"Nueva propiedad",href:"/cartera",color:"#cc0000"},
+              {label:"Nueva propiedad",href:"/crm/cartera",color:"#cc0000"},
               {label:"Nuevo contacto",href:"/crm",color:"#3b82f6"},
               {label:"Nueva tarea",href:"/crm/tareas",color:"#f59e0b"},
               {label:"Nuevo negocio",href:"/crm/negocios",color:"#22c55e"},
