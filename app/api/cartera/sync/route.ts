@@ -94,8 +94,15 @@ function mapearAKiteProp(p: any) {
   };
 }
 
-async function syncTokko(p: any, tokkoId: string | null) {
-  const apiKey = process.env.TOKKO_API_KEY;
+async function getPerUserKey(perfilId: string, portal: "tokko" | "kiteprop"): Promise<string | null> {
+  try {
+    const { data } = await supabase.from("portal_credenciales").select(`${portal}_key`).eq("perfil_id", perfilId).single();
+    return data?.[`${portal}_key`] ?? null;
+  } catch { return null; }
+}
+
+async function syncTokko(p: any, tokkoId: string | null, perfilId?: string) {
+  const apiKey = (perfilId ? await getPerUserKey(perfilId, "tokko") : null) ?? process.env.TOKKO_API_KEY;
   if (!apiKey) {
     return {
       ok: false,
@@ -118,8 +125,8 @@ async function syncTokko(p: any, tokkoId: string | null) {
   }
 }
 
-async function syncKiteProp(p: any, kiteId: string | null) {
-  const apiKey = process.env.KITEPROP_API_KEY;
+async function syncKiteProp(p: any, kiteId: string | null, perfilId?: string) {
+  const apiKey = (perfilId ? await getPerUserKey(perfilId, "kiteprop") : null) ?? process.env.KITEPROP_API_KEY;
   const apiUrl = process.env.KITEPROP_API_URL ?? "https://api.kiteprop.com/v1";
   if (!apiKey) {
     return {
@@ -155,13 +162,13 @@ export async function POST(req: NextRequest) {
     const { data: sync } = await supabase.from("cartera_sync_portales").select("*").eq("propiedad_id", propiedad_id).single();
     const resultados: Record<string, any> = {};
     if (portales.includes("tokko")) {
-      const r = await syncTokko(prop, sync?.tokko_id ?? null);
+      const r = await syncTokko(prop, sync?.tokko_id ?? null, prop.perfil_id);
       resultados.tokko = r;
       if (r.ok) await supabase.from("cartera_sync_portales").upsert({ propiedad_id, tokko_id: r.id, tokko_synced_at: new Date().toISOString(), tokko_error: null }, { onConflict: "propiedad_id" });
       else if (!r.pendiente) await supabase.from("cartera_sync_portales").upsert({ propiedad_id, tokko_error: r.error }, { onConflict: "propiedad_id" });
     }
     if (portales.includes("kiteprop")) {
-      const r = await syncKiteProp(prop, sync?.kiteprop_id ?? null);
+      const r = await syncKiteProp(prop, sync?.kiteprop_id ?? null, prop.perfil_id);
       resultados.kiteprop = r;
       if (r.ok) await supabase.from("cartera_sync_portales").upsert({ propiedad_id, kiteprop_id: r.id, kiteprop_synced_at: new Date().toISOString(), kiteprop_error: null }, { onConflict: "propiedad_id" });
       else if (!r.pendiente) await supabase.from("cartera_sync_portales").upsert({ propiedad_id, kiteprop_error: r.error }, { onConflict: "propiedad_id" });

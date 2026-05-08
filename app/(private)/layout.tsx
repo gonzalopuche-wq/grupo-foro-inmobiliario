@@ -11,6 +11,7 @@ const NAV_CORREDOR = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/actividades", label: "Actividades", icon: "⚡" },
   { href: "/mir", label: "MIR", icon: "🔄" },
+  { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
   { href: "/comunidad", label: "Comunidad", icon: "💬" },
   { href: "/foro", label: "Foro", icon: "🗣️" },
   { href: "/noticias", label: "Noticias", icon: "📰" },

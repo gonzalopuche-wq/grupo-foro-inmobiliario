@@ -79,6 +79,8 @@ interface Propiedad {
   estado: string;
   destacada_web: boolean;
   publicada_web: boolean;
+  compartir_en_red: boolean;
+  mir_ofrecido_id: string | null;
   // Ambientes
   amb_balcon: boolean; amb_terraza: boolean; amb_patio: boolean;
   amb_jardin: boolean; amb_parrilla: boolean; amb_living: boolean;
@@ -253,6 +255,7 @@ export default function CarteraPage() {
   // Sync
   const [syncData, setSyncData] = useState<Record<string, any>>({});
   const [sincronizando, setSincronizando] = useState<string | null>(null);
+  const [compartiendo, setCompartiendo] = useState<string | null>(null);
   const [generandoDesc, setGenerandoDesc] = useState(false);
   const [tonoDesc, setTonoDesc] = useState<'profesional' | 'premium' | 'amigable' | 'vendedor'>('profesional');
 
@@ -524,6 +527,23 @@ export default function CarteraPage() {
     if (userId) cargar(userId);
   };
 
+  const compartirEnRed = async (propiedadId: string) => {
+    setCompartiendo(propiedadId);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      const res = await fetch("/api/cartera/red-gfi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ propiedad_id: propiedadId }),
+      });
+      const data = await res.json();
+      if (data.ok && userId) await cargar(userId);
+      else if (!data.ok) alert("Error: " + data.error);
+    } catch (e: any) { alert("Error: " + e.message); }
+    setCompartiendo(null);
+  };
+
   const sincronizarPortal = async (propiedadId: string, portales: string[]) => {
     setSincronizando(propiedadId);
     try {
@@ -615,6 +635,9 @@ export default function CarteraPage() {
         .cart-acc-kite { background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.2); color: rgba(59,130,246,0.65); }
         .cart-acc-ambos { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2); color: rgba(16,185,129,0.65); }
         .cart-acc-eliminar { background: transparent; border: 1px solid rgba(200,0,0,0.15); color: rgba(200,0,0,0.4); }
+        .cart-acc-red { background: rgba(204,0,0,0.08); border: 1px solid rgba(204,0,0,0.25); color: rgba(204,0,0,0.8); }
+        .cart-acc-red.on { background: rgba(204,0,0,0.18); border-color: rgba(204,0,0,0.5); color: #cc0000; }
+        .cart-mir-badge-red { display:inline-flex; align-items:center; gap:3px; font-size:8px; padding:2px 6px; border-radius:3px; font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:0.05em; background:rgba(204,0,0,0.12); border:1px solid rgba(204,0,0,0.25); color:rgba(204,0,0,0.8); }
         .cart-estado-select { width: 100%; padding: 4px 6px; background: rgba(12,12,12,0.95); border: 1px solid rgba(255,255,255,0.08); border-radius: 3px; color: rgba(255,255,255,0.5); font-size: 9px; font-family: 'Montserrat',sans-serif; outline: none; cursor: pointer; }
         .cart-empty { padding: 60px 20px; text-align: center; color: rgba(255,255,255,0.18); font-family: 'Inter',sans-serif; font-size: 13px; line-height: 1.8; }
         .cart-empty-ico { font-size: 36px; margin-bottom: 12px; }
@@ -719,6 +742,7 @@ export default function CarteraPage() {
             <div className="cart-stat"><span className="cart-stat-val" style={{color:"#22c55e"}}>{propiedades.filter(p=>p.estado==="activa").length}</span><span className="cart-stat-label">Activas</span></div>
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <Link href="/crm/portales" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>🔗 Portales</Link>
             <Link href="/crm/cartera/parametros" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>⚙ Parámetros</Link>
             <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setUrlImport(""); }}>↓ Importar</button>
             <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
@@ -803,6 +827,7 @@ export default function CarteraPage() {
                         {p.codigo && <span style={{fontSize:9,color:"rgba(255,255,255,0.2)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>{p.codigo}</span>}
                         <span className="cart-card-fecha">{formatFecha(p.updated_at)}</span>
                         {p.estado === "activa" && <span className="cart-mir-badge">🔄 En MIR</span>}
+                        {p.compartir_en_red && <span className="cart-mir-badge-red">🌐 Red GFI</span>}
                       </div>
                       <div style={{display:"flex",gap:4}}>
                         {sync?.tokko_id && <span className="sync-badge sync-badge-tokko">Tokko ✓</span>}
@@ -816,6 +841,14 @@ export default function CarteraPage() {
                     <select className="cart-estado-select" value={p.estado} onChange={e => cambiarEstado(p.id, e.target.value)}>
                       {ESTADOS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </select>
+                    <button
+                      className={`cart-acc-btn cart-acc-red${p.compartir_en_red ? " on" : ""}`}
+                      onClick={() => compartirEnRed(p.id)}
+                      disabled={compartiendo === p.id}
+                      title={p.compartir_en_red ? "Quitar de la Red GFI" : "Compartir en la Red GFI"}
+                    >
+                      {compartiendo === p.id ? "..." : p.compartir_en_red ? "🌐 En Red" : "🌐 Red GFI"}
+                    </button>
                     <button className="cart-acc-btn cart-acc-tokko" onClick={() => sincronizarPortal(p.id, ["tokko"])} disabled={enSync}>
                       {enSync ? <><span className="cart-sync-spinner"/>...</> : sync?.tokko_id ? "↑ Tokko" : "+ Tokko"}
                     </button>
