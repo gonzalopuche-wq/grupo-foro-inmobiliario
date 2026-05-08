@@ -56,19 +56,36 @@ export async function GET() {
       }
     });
 
-    // Si no encontró nada, devuelve debug sin tocar la DB
+    // Si no encontró nada (COCIR bloqueó o cambió estructura), NO tocar la DB
     if (registros.length === 0) {
       return NextResponse.json({ ok: false, total: 0, debug }, { status: 200 });
     }
 
-    await sb.from("cocir_padron").delete().neq("matricula", "");
-    const { error } = await sb.from("cocir_padron").insert(registros);
+    // Upsert: agregar nuevos + actualizar existentes, nunca borrar
+    const ahora = new Date().toISOString();
+    const { data: existentes } = await sb.from("cocir_padron").select("id, matricula");
+    const mapa = new Map<string, string>();
+    (existentes ?? []).forEach((r: any) => { if (r.matricula) mapa.set(String(r.matricula).trim(), r.id); });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    const nuevos: any[] = [];
+    const actualizaciones: any[] = [];
+    for (const reg of registros) {
+      const mat = String(reg.matricula ?? "").trim();
+      const conFecha = { ...reg, actualizado_at: ahora };
+      if (mat && mapa.has(mat)) actualizaciones.push({ ...conFecha, id: mapa.get(mat) });
+      else nuevos.push(conFecha);
     }
 
-    return NextResponse.json({ ok: true, total: registros.length });
+    if (nuevos.length > 0) {
+      const { error } = await sb.from("cocir_padron").insert(nuevos);
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    for (const reg of actualizaciones) {
+      const { id, ...campos } = reg;
+      await sb.from("cocir_padron").update(campos).eq("id", id);
+    }
+
+    return NextResponse.json({ ok: true, insertados: nuevos.length, actualizados: actualizaciones.length, total: registros.length });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
