@@ -39,17 +39,11 @@ const NAV_CORREDOR = [
 ];
 
 // ── Nav colaborador (funcional a comercialización) ─────────────────────────
-// Puede: CRM completo (cartera del corredor + portales), Red GFI, MIR, Comunidad (filtrada por sector)
-// No puede: Calculadoras, Padrón, Biblioteca, Cotizaciones, Enlaces, Proveedores, Mi Web, Foro, Comparables COCIR
 const NAV_COLABORADOR = [
-  { href: "/dashboard", label: "Inicio", icon: "🏠" },
-  { href: "/actividades", label: "Actividades", icon: "⚡" },
   { href: "/mir", label: "MIR", icon: "🔄" },
   { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
   { href: "/crm", label: "CRM", icon: "👥" },
   { href: "/comunidad", label: "Comunidad", icon: "💬" },
-  { href: "/noticias", label: "Noticias", icon: "📰" },
-  { href: "/eventos", label: "Eventos", icon: "📅" },
   { href: "/perfil", label: "Mi Perfil", icon: "👤" },
 ];
 
@@ -59,6 +53,7 @@ const NAV_ADMIN = [
 
 // Rutas bloqueadas para colaboradores — redirigen al dashboard
 const RUTAS_SOLO_CORREDOR = [
+  "/dashboard", "/actividades", "/noticias", "/eventos",
   "/foro",
   "/comparables",  // datos COCIR = solo matriculados
   "/mi-web",
@@ -91,7 +86,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         // Redirigir colaborador si intenta acceder a ruta bloqueada
         if (tipo === "colaborador") {
           const bloqueada = RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
-          if (bloqueada) { router.replace("/dashboard"); return; }
+          if (bloqueada) { router.replace("/mir"); return; }
         }
       }
       setLoading(false);
