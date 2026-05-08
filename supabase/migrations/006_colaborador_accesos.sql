@@ -46,7 +46,7 @@ DO $$ BEGIN
         EXISTS (
           SELECT 1 FROM colaboradores c
           WHERE c.user_id = auth.uid()
-            AND c.corredor_id = cartera_propiedades.perfil_id
+            AND c.corredor_id = perfil_id
             AND c.estado = 'activo'
         )
       );
@@ -65,7 +65,7 @@ DO $$ BEGIN
         EXISTS (
           SELECT 1 FROM colaboradores c
           WHERE c.user_id = auth.uid()
-            AND c.corredor_id = cartera_propiedades.perfil_id
+            AND c.corredor_id = perfil_id
             AND c.estado = 'activo'
         )
       )
@@ -73,7 +73,7 @@ DO $$ BEGIN
         EXISTS (
           SELECT 1 FROM colaboradores c
           WHERE c.user_id = auth.uid()
-            AND c.corredor_id = cartera_propiedades.perfil_id
+            AND c.corredor_id = perfil_id
             AND c.estado = 'activo'
         )
       );

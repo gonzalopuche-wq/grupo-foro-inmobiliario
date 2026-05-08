@@ -217,7 +217,7 @@ export default function MirPage() {
       setUserId(data.user.id);
 
       // Detectar si es colaborador y cargar CI colegas
-      const { data: perfil } = await supabase.from("perfiles").select("tipo, corredor_ref_id").eq("id", data.user.id).single();
+      const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
       if (perfil?.tipo === "colaborador") {
         setEsColaborador(true);
         // Cargar el CI titular y sus colegas matriculados
@@ -408,7 +408,7 @@ export default function MirPage() {
       mensaje: msgInteres || null, leido: false,
     }, { onConflict: "publicacion_id,remitente_id,tipo" });
     await supabase.from("notificaciones").insert({
-      perfil_id: destinatarioId,
+      user_id: destinatarioId,
       tipo: "mir_interes",
       titulo: tipo === "me_interesa" ? "Te consultaron por tu ofrecido" : "Alguien tiene algo para tu búsqueda",
       mensaje: msgInteres || (tipo === "me_interesa" ? "Un colega está interesado en tu ofrecido." : "Un colega tiene algo que coincide con tu búsqueda."),
