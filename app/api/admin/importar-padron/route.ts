@@ -9,7 +9,6 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Detecta qué columna del Excel corresponde a cada campo
 function detectarColumna(headers: string[], palabrasClave: string[]): number {
   return headers.findIndex(h => {
     const h2 = h.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
@@ -34,10 +33,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "El archivo está vacío o tiene solo encabezados." }, { status: 400 });
     }
 
-    // Primera fila = encabezados
     const headers: string[] = filas[0].map((h: any) => String(h ?? ""));
 
-    // Detección automática de columnas por palabras clave
     const colMatricula  = detectarColumna(headers, ["matricula", "mat", "legajo", "nro"]);
     const colApellido   = detectarColumna(headers, ["apellido"]);
     const colNombre     = detectarColumna(headers, ["nombre"]);
@@ -50,59 +47,90 @@ export async function POST(req: NextRequest) {
 
     if (colMatricula === -1 || colApellido === -1 || colNombre === -1) {
       return NextResponse.json({
-        error: `No se detectaron columnas obligatorias. Encabezados encontrados: ${headers.join(", ")}`,
+        error: `No se detectaron columnas obligatorias. Encabezados: ${headers.join(", ")}`,
       }, { status: 400 });
     }
 
-    // Parsear filas de datos
     const registros: any[] = [];
+    const ahora = new Date().toISOString();
+
     for (let i = 1; i < filas.length; i++) {
       const fila = filas[i];
       const mat = String(fila[colMatricula] ?? "").trim();
       const ape = String(fila[colApellido] ?? "").trim();
       const nom = String(fila[colNombre]   ?? "").trim();
-      if (!mat && !ape && !nom) continue; // fila vacía
+      if (!mat && !ape && !nom) continue;
 
       registros.push({
-        matricula:   mat || null,
-        apellido:    ape,
-        nombre:      nom,
-        estado:      colEstado    >= 0 ? String(fila[colEstado]    ?? "").trim() || "Habilitado" : "Habilitado",
-        inmobiliaria:colInmob     >= 0 ? String(fila[colInmob]     ?? "").trim() || null : null,
-        direccion:   colDireccion >= 0 ? String(fila[colDireccion] ?? "").trim() || null : null,
-        localidad:   colLocalidad >= 0 ? String(fila[colLocalidad] ?? "").trim() || null : null,
-        telefono:    colTelefono  >= 0 ? String(fila[colTelefono]  ?? "").trim() || null : null,
-        email:       colEmail     >= 0 ? String(fila[colEmail]     ?? "").trim() || null : null,
+        matricula:    mat || null,
+        apellido:     ape,
+        nombre:       nom,
+        estado:       colEstado    >= 0 ? String(fila[colEstado]    ?? "").trim() || "Habilitado" : "Habilitado",
+        inmobiliaria: colInmob     >= 0 ? String(fila[colInmob]     ?? "").trim() || null : null,
+        direccion:    colDireccion >= 0 ? String(fila[colDireccion] ?? "").trim() || null : null,
+        localidad:    colLocalidad >= 0 ? String(fila[colLocalidad] ?? "").trim() || null : null,
+        telefono:     colTelefono  >= 0 ? String(fila[colTelefono]  ?? "").trim() || null : null,
+        email:        colEmail     >= 0 ? String(fila[colEmail]     ?? "").trim() || null : null,
+        actualizado_at: ahora,
       });
     }
 
     if (registros.length === 0) {
-      return NextResponse.json({ error: "No se encontraron registros válidos en el archivo." }, { status: 400 });
+      return NextResponse.json({ error: "No se encontraron registros válidos." }, { status: 400 });
     }
 
-    // Borrar padrón anterior e insertar nuevo en lotes de 500
-    await sb.from("cocir_padron").delete().neq("matricula", "___never___");
+    // Traer matrículas existentes para hacer upsert a nivel aplicación
+    const { data: existentes } = await sb
+      .from("cocir_padron")
+      .select("id, matricula");
+
+    const mapaExistentes = new Map<string, string>();
+    (existentes ?? []).forEach((r: any) => {
+      if (r.matricula) mapaExistentes.set(String(r.matricula).trim(), r.id);
+    });
+
+    const nuevos: any[] = [];
+    const actualizaciones: any[] = [];
+
+    for (const reg of registros) {
+      const mat = String(reg.matricula ?? "").trim();
+      if (mat && mapaExistentes.has(mat)) {
+        actualizaciones.push({ ...reg, id: mapaExistentes.get(mat) });
+      } else {
+        nuevos.push(reg);
+      }
+    }
 
     const LOTE = 500;
     let insertados = 0;
-    for (let i = 0; i < registros.length; i += LOTE) {
-      const lote = registros.slice(i, i + LOTE);
+    let actualizados = 0;
+
+    // Insertar nuevos
+    for (let i = 0; i < nuevos.length; i += LOTE) {
+      const lote = nuevos.slice(i, i + LOTE);
       const { error } = await sb.from("cocir_padron").insert(lote);
-      if (error) {
-        return NextResponse.json({ error: `Error al insertar lote ${i / LOTE + 1}: ${error.message}` }, { status: 500 });
-      }
+      if (error) return NextResponse.json({ error: `Error insertando: ${error.message}` }, { status: 500 });
       insertados += lote.length;
+    }
+
+    // Actualizar existentes (estado, nombre, inmobiliaria, etc.)
+    for (const reg of actualizaciones) {
+      const { id, ...campos } = reg;
+      await sb.from("cocir_padron").update(campos).eq("id", id);
+      actualizados++;
     }
 
     return NextResponse.json({
       ok: true,
-      total: insertados,
+      insertados,
+      actualizados,
+      total: insertados + actualizados,
       columnas_detectadas: {
-        matricula: headers[colMatricula],
-        apellido:  headers[colApellido],
-        nombre:    headers[colNombre],
-        estado:    colEstado    >= 0 ? headers[colEstado]    : "(no encontrada, usa 'Habilitado')",
-        inmobiliaria: colInmob  >= 0 ? headers[colInmob]    : null,
+        matricula:    headers[colMatricula],
+        apellido:     headers[colApellido],
+        nombre:       headers[colNombre],
+        estado:       colEstado    >= 0 ? headers[colEstado]    : "(default: Habilitado)",
+        inmobiliaria: colInmob     >= 0 ? headers[colInmob]    : null,
       },
     });
   } catch (e: any) {

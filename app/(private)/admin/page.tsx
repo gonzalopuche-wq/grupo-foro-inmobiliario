@@ -382,7 +382,7 @@ export default function AdminPage() {
       const res = await fetch("/api/admin/importar-padron", { method: "POST", body: fd });
       const json = await res.json();
       setImportPadronRes(json);
-      if (json.ok) mostrarToast(`✓ ${json.total} registros importados desde ${archivo.name}`);
+      if (json.ok) mostrarToast(`✓ ${json.insertados ?? 0} nuevos · ${json.actualizados ?? 0} actualizados`);
       else mostrarToast(json.error ?? "Error al importar", "err");
     } catch {
       setImportPadronRes({ ok: false, error: "Error de conexión" });
@@ -1071,7 +1071,7 @@ export default function AdminPage() {
               }}>
                 {importPadronRes.ok ? (
                   <>
-                    ✓ <strong>{importPadronRes.total} registros</strong> importados correctamente.
+                    ✓ <strong>{(importPadronRes as any).insertados ?? 0} nuevos</strong> agregados · <strong>{(importPadronRes as any).actualizados ?? 0} actualizados</strong> ({importPadronRes.total} total).
                     {importPadronRes.columnas_detectadas && (
                       <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
                         Columnas detectadas: matrícula={importPadronRes.columnas_detectadas.matricula} · apellido={importPadronRes.columnas_detectadas.apellido} · nombre={importPadronRes.columnas_detectadas.nombre}
