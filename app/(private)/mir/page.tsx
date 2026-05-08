@@ -293,8 +293,8 @@ export default function MirPage() {
   const cargarDatos = async () => {
     setLoading(true);
     const [{ data: of }, { data: bu }, { data: ma }] = await Promise.all([
-      supabase.from("mir_ofrecidos").select("*, perfiles(nombre,apellido,matricula,telefono,email), ci_responsable:perfiles!ci_responsable_id(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
-      supabase.from("mir_busquedas").select("*, perfiles(nombre,apellido,matricula,telefono,email), ci_responsable:perfiles!ci_responsable_id(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
+      supabase.from("mir_ofrecidos").select("*, perfiles:perfiles!perfil_id(nombre,apellido,matricula,telefono,email), ci_responsable:perfiles!ci_responsable_id(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
+      supabase.from("mir_busquedas").select("*, perfiles:perfiles!perfil_id(nombre,apellido,matricula,telefono,email), ci_responsable:perfiles!ci_responsable_id(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
       supabase.from("mir_matches").select("*").order("created_at", { ascending: false }).limit(100),
     ]);
     setOfrecidos((of as unknown as Ofrecido[]) ?? []);
