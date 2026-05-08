@@ -713,7 +713,10 @@ export default function CarteraPage() {
 
         {/* Header */}
         <div className="cart-header">
-          <div className="cart-titulo">Cartera <span>de Propiedades</span></div>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <Link href="/crm" style={{fontSize:11,color:"rgba(255,255,255,0.3)",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase"}}>← CRM</Link>
+            <div className="cart-titulo">Cartera <span>de Propiedades</span></div>
+          </div>
           <div className="cart-stats">
             <div className="cart-stat"><span className="cart-stat-val">{propiedades.length}</span><span className="cart-stat-label">Total</span></div>
             <div className="cart-stat"><span className="cart-stat-val" style={{color:"#22c55e"}}>{propiedades.filter(p=>p.estado==="activa").length}</span><span className="cart-stat-label">Activas</span></div>
