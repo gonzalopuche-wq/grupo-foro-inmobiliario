@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   const num = parseInt(sinCero, 10);
   if (isNaN(num)) return NextResponse.json({ error: "La matrícula debe ser un número." }, { status: 400 });
 
-  // Carga todo el padrón y filtra en JS (mismo patrón que padron/route.ts)
+  // Cargar padrón completo
   let todos: any[] = [];
   let desde = 0;
   while (true) {
@@ -32,6 +32,28 @@ export async function POST(req: NextRequest) {
     todos = todos.concat(data);
     if (data.length < 1000) break;
     desde += 1000;
+  }
+
+  // Padrón vacío → permitir registro con revisión manual del admin
+  if (todos.length === 0) {
+    // Verificar que no exista ya una cuenta con esa matrícula
+    const { data: perfilExistente } = await sbAdmin
+      .from("perfiles")
+      .select("id")
+      .eq("matricula", raw)
+      .maybeSingle();
+    if (perfilExistente) {
+      return NextResponse.json({ error: "Esta matrícula ya tiene una cuenta registrada." }, { status: 409 });
+    }
+    return NextResponse.json({
+      ok: true,
+      padron_vacio: true,
+      matricula: raw,
+      nombre: "",
+      apellido: "",
+      inmobiliaria: "",
+      advertencia: "El padrón COCIR no está sincronizado. Ingresá tu nombre y apellido manualmente. El administrador verificará tu matrícula antes de aprobar el acceso.",
+    });
   }
 
   const data = todos.find(r =>
@@ -48,24 +70,17 @@ export async function POST(req: NextRequest) {
   }
 
   const estado = String(data.estado || "")
-  .trim()
-  .toLowerCase()
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "");
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
 
-const estadosValidos = [
-  "activo",
-  "habilitado",
-  "vigente"
-];
-
-const esValido = estadosValidos.some(e => estado.includes(e));
-
-if (!esValido) {
-  return NextResponse.json({
-    error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.`,
-  }, { status: 403 });
-}
+  const estadosValidos = ["activo", "habilitado", "vigente"];
+  if (!estadosValidos.some(e => estado.includes(e))) {
+    return NextResponse.json({
+      error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.`,
+    }, { status: 403 });
+  }
 
   const { data: perfilExistente } = await sbAdmin.from("perfiles").select("id").eq("matricula", String(data.matricula)).maybeSingle();
   if (perfilExistente) return NextResponse.json({ error: "Esta matrícula ya tiene una cuenta registrada." }, { status: 409 });

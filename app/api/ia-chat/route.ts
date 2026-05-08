@@ -1,31 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-export async function POST(req: NextRequest) {
-  const { mensaje, historial } = await req.json();
-
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ respuesta: "No hay clave de IA configurada." });
-  }
-
-  const messages: Anthropic.MessageParam[] = [
-    ...(historial ?? []).slice(-10).map((m: { rol: string; texto: string }) => ({
-      role: (m.rol === "user" ? "user" : "assistant") as "user" | "assistant",
-      content: m.texto,
-    })),
-    { role: "user" as const, content: mensaje },
-  ];
-
-  const safeMessages = messages.filter(m => typeof m.content === "string" && m.content.trim().length > 0);
-  if (safeMessages.length === 0) return NextResponse.json({ respuesta: "Mensaje vacío." });
-
-  try {
-    const response = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 500,
-      system: `Sos el asistente IA de GFI® (Grupo Foro Inmobiliario), una plataforma profesional para corredores inmobiliarios matriculados en la 2da Circunscripción de COCIR (Rosario, Argentina).
+const SYSTEM_PROMPT = `Sos el asistente IA de GFI® (Grupo Foro Inmobiliario), una plataforma profesional para corredores inmobiliarios matriculados en la 2da Circunscripción de COCIR (Rosario, Argentina).
 
 Tu rol: asistente operativo del corredor. Ayudás con:
 - Dudas sobre la plataforma GFI (módulos, funcionalidades, cómo usar)
@@ -40,14 +18,60 @@ Reglas:
 - Respuestas cortas y directas (máximo 150 palabras salvo que pidan algo largo)
 - No inventes datos de propiedades ni precios reales
 - Si no sabés algo, decilo claramente
-- Podés hacer preguntas para clarificar si la consulta es ambigua`,
-      messages: safeMessages,
-    });
+- Podés hacer preguntas para clarificar si la consulta es ambigua`;
 
-    const text = response.content[0].type === "text" ? response.content[0].text.trim() : "No pude generar una respuesta.";
-    return NextResponse.json({ respuesta: text });
-  } catch (err) {
-    console.error("ia-chat error:", err);
-    return NextResponse.json({ respuesta: "Error al procesar tu consulta. Intentá de nuevo." });
+export async function POST(req: NextRequest) {
+  const { mensaje, historial } = await req.json();
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json({ respuesta: "No hay clave de IA configurada." });
   }
+
+  const messages: Anthropic.MessageParam[] = [
+    ...(historial ?? []).slice(-10).map((m: { rol: string; texto: string }) => ({
+      role: (m.rol === "user" ? "user" : "assistant") as "user" | "assistant",
+      content: m.texto,
+    })),
+    { role: "user" as const, content: mensaje },
+  ];
+
+  const safeMessages = messages.filter(m => typeof m.content === "string" && m.content.trim().length > 0);
+  if (safeMessages.length === 0) {
+    return Response.json({ respuesta: "Mensaje vacío." });
+  }
+
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const aiStream = anthropic.messages.stream({
+          model: "claude-haiku-4-5",
+          max_tokens: 500,
+          system: SYSTEM_PROMPT,
+          messages: safeMessages,
+        });
+
+        for await (const event of aiStream) {
+          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`));
+          }
+        }
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+      } catch (err) {
+        console.error("ia-chat stream error:", err);
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: "Error al procesar tu consulta." })}\n\n`));
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "X-Accel-Buffering": "no",
+    },
+  });
 }

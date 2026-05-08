@@ -49,8 +49,54 @@ export default function IAChatFlotante() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mensaje: texto, historial }),
       })
-      const { respuesta } = await res.json()
-      setMensajes(prev => [...prev, { rol: 'ia', texto: respuesta, ts: Date.now() }])
+
+      if (!res.body) throw new Error('No stream')
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let textoAcumulado = ''
+      let primerChunk = true
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          const data = line.slice(6).trim()
+          if (data === '[DONE]') break
+
+          try {
+            const parsed = JSON.parse(data)
+            if (parsed.error) {
+              setMensajes(prev => [...prev, { rol: 'ia', texto: parsed.error, ts: Date.now() }])
+              setCargando(false)
+              break
+            }
+            if (parsed.text) {
+              textoAcumulado += parsed.text
+              if (primerChunk) {
+                primerChunk = false
+                setCargando(false)
+                setMensajes(prev => [...prev, { rol: 'ia', texto: textoAcumulado, ts: Date.now() }])
+              } else {
+                setMensajes(prev => {
+                  const msgs = [...prev]
+                  msgs[msgs.length - 1] = { ...msgs[msgs.length - 1], texto: textoAcumulado }
+                  return msgs
+                })
+              }
+            }
+          } catch { /* ignorar errores de parse */ }
+        }
+      }
+
+      if (primerChunk) {
+        setMensajes(prev => [...prev, { rol: 'ia', texto: 'No pude generar una respuesta. Intentá de nuevo.', ts: Date.now() }])
+      }
     } catch {
       setMensajes(prev => [...prev, { rol: 'ia', texto: 'Error al conectar con la IA. Intentá de nuevo.', ts: Date.now() }])
     } finally {

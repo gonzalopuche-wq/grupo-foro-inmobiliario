@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 
 type Paso = "tipo" | "datos" | "enviado";
 type TipoUsuario = "corredor" | "colaborador";
-type EstadoMatricula = "idle" | "verificando" | "ok" | "error";
+type EstadoMatricula = "idle" | "verificando" | "ok" | "error" | "bypass";
 
 const ESPECIALIDADES = [
   { id: "alquileres", label: "Alquileres", icon: "🔑" },
@@ -30,11 +30,13 @@ export default function RegistroPage() {
   const [password, setPassword] = useState("");
   const [dni, setDni] = useState("");
   const [especialidades, setEspecialidades] = useState<string[]>([]);
+  const [corredorMatricula, setCorredorMatricula] = useState("");
 
-  // Validación COCIR
+  // Verificación COCIR
   const [estadoMatricula, setEstadoMatricula] = useState<EstadoMatricula>("idle");
   const [mensajeMatricula, setMensajeMatricula] = useState("");
   const [matriculaVerificada, setMatriculaVerificada] = useState(false);
+  const [padronVacio, setPadronVacio] = useState(false);
   const [datoscocir, setDatosCocir] = useState<{ nombre: string; apellido: string; inmobiliaria: string } | null>(null);
 
   const toggleEspecialidad = (id: string) => {
@@ -43,14 +45,14 @@ export default function RegistroPage() {
     );
   };
 
-  // Resetear verificación si el usuario edita la matrícula
   const handleMatriculaChange = (val: string) => {
     setMatricula(val);
-    if (matriculaVerificada) {
+    if (matriculaVerificada || estadoMatricula !== "idle") {
       setMatriculaVerificada(false);
       setEstadoMatricula("idle");
       setMensajeMatricula("");
       setDatosCocir(null);
+      setPadronVacio(false);
       setNombre("");
       setApellido("");
       setInmobiliaria("");
@@ -83,9 +85,19 @@ export default function RegistroPage() {
         return;
       }
 
+      if (json.padron_vacio) {
+        setEstadoMatricula("bypass");
+        setMensajeMatricula(json.advertencia);
+        setMatriculaVerificada(true);
+        setPadronVacio(true);
+        setDatosCocir({ nombre: "", apellido: "", inmobiliaria: "" });
+        return;
+      }
+
       setEstadoMatricula("ok");
       setMensajeMatricula(`✓ ${json.apellido}, ${json.nombre} — matrícula válida`);
       setMatriculaVerificada(true);
+      setPadronVacio(false);
       setDatosCocir({ nombre: json.nombre, apellido: json.apellido, inmobiliaria: json.inmobiliaria ?? "" });
       setNombre(json.nombre ?? "");
       setApellido(json.apellido ?? "");
@@ -115,13 +127,19 @@ export default function RegistroPage() {
         return;
       }
     }
-    if (tipo === "colaborador" && !dni) {
-      setError("El DNI es obligatorio para colaboradores.");
-      return;
-    }
-    if (tipo === "colaborador" && especialidades.length === 0) {
-      setError("Seleccioná al menos una especialidad.");
-      return;
+    if (tipo === "colaborador") {
+      if (!dni) {
+        setError("El DNI es obligatorio para colaboradores.");
+        return;
+      }
+      if (especialidades.length === 0) {
+        setError("Seleccioná al menos una especialidad.");
+        return;
+      }
+      if (!corredorMatricula.trim()) {
+        setError("Ingresá la matrícula del corredor titular.");
+        return;
+      }
     }
     if (password.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres.");
@@ -141,9 +159,11 @@ export default function RegistroPage() {
           celular_personal: celularPersonal || null,
           celular_mostrar: celularMostrar,
           matricula: tipo === "corredor" ? matricula : null,
+          padron_vacio: padronVacio,
           dni: tipo === "colaborador" ? dni : null,
           inmobiliaria: tipo === "corredor" ? inmobiliaria : null,
           especialidades: tipo === "colaborador" ? especialidades : null,
+          corredor_matricula: tipo === "colaborador" ? corredorMatricula.trim() : null,
         }),
       });
       const json = await res.json();
@@ -265,18 +285,18 @@ export default function RegistroPage() {
           background: rgba(0,200,100,0.04);
         }
         .reg-input.err { border-color: rgba(200,0,0,0.5); }
+        .reg-input.warn {
+          border-color: rgba(234,179,8,0.5);
+          background: rgba(234,179,8,0.04);
+        }
         .reg-input:-webkit-autofill,
         .reg-input:-webkit-autofill:focus {
           -webkit-box-shadow: 0 0 0 1000px #141414 inset;
           -webkit-text-fill-color: #ffffff;
         }
-        .reg-input:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
+        .reg-input:disabled { opacity: 0.6; cursor: not-allowed; }
         .reg-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        /* MATRÍCULA CON BOTÓN VERIFICAR */
         .mat-row { display: flex; gap: 8px; align-items: flex-end; }
         .mat-row .reg-input { flex: 1; }
         .mat-verificar {
@@ -291,72 +311,39 @@ export default function RegistroPage() {
           cursor: pointer; white-space: nowrap;
           transition: all 0.2s; flex-shrink: 0;
         }
-        .mat-verificar:hover:not(:disabled) {
-          background: rgba(200,0,0,0.3);
-          border-color: rgba(200,0,0,0.6);
-        }
+        .mat-verificar:hover:not(:disabled) { background: rgba(200,0,0,0.3); border-color: rgba(200,0,0,0.6); }
         .mat-verificar:disabled { opacity: 0.5; cursor: not-allowed; }
-        .mat-verificar.ok {
-          background: rgba(0,200,100,0.12);
-          border-color: rgba(0,200,100,0.4);
-          color: #4ade80;
-        }
+        .mat-verificar.ok { background: rgba(0,200,100,0.12); border-color: rgba(0,200,100,0.4); color: #4ade80; }
+        .mat-verificar.bypass { background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.4); color: #eab308; }
         .mat-msg {
-          margin-top: 7px;
-          font-size: 11px;
-          line-height: 1.5;
-          padding: 8px 12px;
-          border-radius: 3px;
+          margin-top: 7px; font-size: 11px; line-height: 1.5;
+          padding: 8px 12px; border-radius: 3px;
         }
-        .mat-msg.ok {
-          color: #4ade80;
-          background: rgba(0,200,100,0.07);
-          border: 1px solid rgba(0,200,100,0.2);
-        }
-        .mat-msg.err {
-          color: #ff6b6b;
-          background: rgba(200,0,0,0.07);
-          border: 1px solid rgba(200,0,0,0.2);
-        }
-        .mat-msg.loading {
-          color: rgba(255,255,255,0.4);
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.08);
-        }
+        .mat-msg.ok { color: #4ade80; background: rgba(0,200,100,0.07); border: 1px solid rgba(0,200,100,0.2); }
+        .mat-msg.bypass { color: #eab308; background: rgba(234,179,8,0.07); border: 1px solid rgba(234,179,8,0.2); }
+        .mat-msg.err { color: #ff6b6b; background: rgba(200,0,0,0.07); border: 1px solid rgba(200,0,0,0.2); }
+        .mat-msg.loading { color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
 
-        /* DATOS PRELLENADOS */
         .reg-prellenado {
           background: rgba(0,200,100,0.04);
           border: 1px solid rgba(0,200,100,0.15);
-          border-radius: 3px;
-          padding: 12px 14px;
-          margin-bottom: 14px;
-          font-size: 11px;
-          color: rgba(255,255,255,0.4);
+          border-radius: 3px; padding: 12px 14px; margin-bottom: 14px;
+          font-size: 11px; color: rgba(255,255,255,0.4);
         }
         .reg-prellenado strong { color: rgba(255,255,255,0.65); }
 
-        /* ESPECIALIDADES */
-        .reg-especialidades-grid {
-          display: grid; grid-template-columns: 1fr 1fr;
-          gap: 10px; margin-bottom: 14px;
-        }
+        .reg-especialidades-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
         .reg-esp-btn {
-          padding: 12px 10px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 4px; cursor: pointer;
-          transition: all 0.2s;
-          display: flex; align-items: center; gap: 10px;
+          padding: 12px 10px; background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer;
+          transition: all 0.2s; display: flex; align-items: center; gap: 10px;
         }
         .reg-esp-btn:hover { border-color: rgba(200,0,0,0.35); background: rgba(200,0,0,0.05); }
         .reg-esp-btn.activo { border-color: #cc0000; background: rgba(200,0,0,0.12); }
         .reg-esp-icon { font-size: 18px; }
         .reg-esp-label {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 11px; font-weight: 700;
-          letter-spacing: 0.06em; text-transform: uppercase;
-          color: rgba(255,255,255,0.6);
+          font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
+          letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.6);
         }
         .reg-esp-btn.activo .reg-esp-label { color: #fff; }
         .reg-esp-check {
@@ -365,9 +352,7 @@ export default function RegistroPage() {
           display: flex; align-items: center; justify-content: center;
           font-size: 10px; flex-shrink: 0;
         }
-        .reg-esp-btn.activo .reg-esp-check {
-          background: #cc0000; border-color: #cc0000; color: #fff;
-        }
+        .reg-esp-btn.activo .reg-esp-check { background: #cc0000; border-color: #cc0000; color: #fff; }
 
         .reg-error {
           font-size: 12px; color: #ff4444;
@@ -453,19 +438,19 @@ export default function RegistroPage() {
 
               {tipo === "colaborador" && (
                 <div className="reg-nota">
-                  <strong>Importante:</strong> El corredor titular debe haberte agregado previamente a su lista de colaboradores autorizados con tu DNI.
+                  <strong>Colaboradores:</strong> Necesitás la matrícula del corredor para quien trabajás. Tu acceso será aprobado por el administrador.
                 </div>
               )}
 
               <form onSubmit={handleSubmit} noValidate>
 
-                {/* MATRÍCULA CON VERIFICACIÓN COCIR */}
+                {/* MATRÍCULA CORREDOR CON VERIFICACIÓN COCIR */}
                 {tipo === "corredor" && (
                   <div className="reg-field">
                     <label className="reg-label">Matrícula COCIR <span>*</span></label>
                     <div className="mat-row">
                       <input
-                        className={`reg-input${estadoMatricula === "ok" ? " ok" : estadoMatricula === "error" ? " err" : ""}`}
+                        className={`reg-input${estadoMatricula === "ok" ? " ok" : estadoMatricula === "bypass" ? " warn" : estadoMatricula === "error" ? " err" : ""}`}
                         type="text"
                         placeholder="Ej: 2540"
                         value={matricula}
@@ -474,7 +459,7 @@ export default function RegistroPage() {
                       />
                       <button
                         type="button"
-                        className={`mat-verificar${estadoMatricula === "ok" ? " ok" : ""}`}
+                        className={`mat-verificar${estadoMatricula === "ok" ? " ok" : estadoMatricula === "bypass" ? " bypass" : ""}`}
                         onClick={verificarMatricula}
                         disabled={loading || estadoMatricula === "verificando" || matriculaVerificada}
                       >
@@ -482,15 +467,30 @@ export default function RegistroPage() {
                       </button>
                     </div>
                     {mensajeMatricula && (
-                      <div className={`mat-msg ${estadoMatricula === "ok" ? "ok" : estadoMatricula === "verificando" ? "loading" : "err"}`}>
+                      <div className={`mat-msg ${estadoMatricula === "ok" ? "ok" : estadoMatricula === "bypass" ? "bypass" : estadoMatricula === "verificando" ? "loading" : "err"}`}>
                         {estadoMatricula === "verificando" ? "Verificando en el padrón COCIR..." : mensajeMatricula}
                       </div>
                     )}
                   </div>
                 )}
 
+                {/* MATRÍCULA DEL CORREDOR PARA COLABORADORES */}
+                {tipo === "colaborador" && (
+                  <div className="reg-field">
+                    <label className="reg-label">Matrícula del corredor titular <span>*</span></label>
+                    <input
+                      className="reg-input"
+                      type="text"
+                      placeholder="Ej: 2540"
+                      value={corredorMatricula}
+                      onChange={e => setCorredorMatricula(e.target.value)}
+                      disabled={loading}
+                    />
+                  </div>
+                )}
+
                 {/* DATOS PRELLENADOS DESDE COCIR */}
-                {tipo === "corredor" && matriculaVerificada && datoscocir && (
+                {tipo === "corredor" && matriculaVerificada && !padronVacio && datoscocir && (
                   <div className="reg-prellenado">
                     Datos cargados desde el padrón COCIR. Podés editarlos si es necesario.
                   </div>
