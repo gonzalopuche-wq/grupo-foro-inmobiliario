@@ -166,6 +166,9 @@ export default function AdminPage() {
   const [redesConfig, setRedesConfig] = useState<Record<string,string>>({});
   const [guardandoRedes, setGuardandoRedes] = useState(false);
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
+  // Sync COCIR
+  const [syncingCocir, setSyncingCocir] = useState(false);
+  const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total?: number; error?: string } | null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -344,6 +347,22 @@ export default function AdminPage() {
   const mostrarToast = (msg: string, tipo: "ok"|"err" = "ok") => {
     setToast({ msg, tipo });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const sincronizarCocir = async () => {
+    setSyncingCocir(true);
+    setSyncCocirRes(null);
+    try {
+      const res = await fetch("/api/admin/sync-cocir");
+      const json = await res.json();
+      setSyncCocirRes(json);
+      if (json.ok) mostrarToast(`Padrón sincronizado: ${json.total} registros`);
+      else mostrarToast(json.error ?? "Error al sincronizar", "err");
+    } catch {
+      setSyncCocirRes({ ok: false, error: "Error de conexión" });
+      mostrarToast("Error de conexión", "err");
+    }
+    setSyncingCocir(false);
   };
 
   const cargarPagos = async () => {
@@ -984,6 +1003,37 @@ export default function AdminPage() {
                   {guardadoOk === ind.clave && <div className="adm-ind-ok">✓ Guardado</div>}
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* ── SINCRONIZAR PADRÓN COCIR ── */}
+          <div>
+            <div className="adm-ind-titulo">Padrón <span>COCIR</span></div>
+            <div className="adm-ind-subtitulo">Actualizá el padrón de matriculados directamente desde cocir.org.ar. El cron lo ejecuta el día 1 de cada mes a las 4 AM.</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+              <button
+                className="adm-ind-btn"
+                onClick={sincronizarCocir}
+                disabled={syncingCocir}
+                style={{ display: "flex", alignItems: "center", gap: 8 }}
+              >
+                {syncingCocir
+                  ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Sincronizando...</>
+                  : "↺ Sincronizar desde COCIR"}
+              </button>
+              {syncCocirRes && (
+                <span style={{
+                  fontSize: 12,
+                  fontFamily: "Inter,sans-serif",
+                  color: syncCocirRes.ok ? "#22c55e" : "#ff6666",
+                  padding: "6px 14px",
+                  background: syncCocirRes.ok ? "rgba(34,197,94,0.08)" : "rgba(200,0,0,0.08)",
+                  border: `1px solid ${syncCocirRes.ok ? "rgba(34,197,94,0.25)" : "rgba(200,0,0,0.25)"}`,
+                  borderRadius: 4,
+                }}>
+                  {syncCocirRes.ok ? `✓ ${syncCocirRes.total} registros sincronizados` : `✗ ${syncCocirRes.error}`}
+                </span>
+              )}
             </div>
           </div>
 

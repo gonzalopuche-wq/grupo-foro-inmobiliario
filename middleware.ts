@@ -24,6 +24,9 @@ export function middleware(req: NextRequest) {
   // Si ya está en /web/..., no reescribir (evita loop)
   if (url.pathname.startsWith("/web/")) return NextResponse.next()
 
+  // No reescribir rutas de API (accesibles desde cualquier subdominio/preview)
+  if (url.pathname.startsWith("/api/")) return NextResponse.next()
+
   // Rewrite: mat105.foroinmobiliario.com.ar/propiedades → /web/mat105/propiedades
   const newPath = `/web/${subdomain}${url.pathname}`
   url.pathname = newPath
