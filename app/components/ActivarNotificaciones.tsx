@@ -17,7 +17,10 @@ export default function ActivarNotificaciones({ userId }: { userId: string }) {
   const [estado, setEstado] = useState<"desconocido" | "activo" | "denegado" | "cargando">("desconocido");
 
   useEffect(() => {
-    if (!("Notification" in window)) { setEstado("denegado"); return; }
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+      setEstado("denegado");
+      return;
+    }
     if (Notification.permission === "granted") setEstado("activo");
     else if (Notification.permission === "denied") setEstado("denegado");
     else setEstado("desconocido");
@@ -28,17 +31,21 @@ export default function ActivarNotificaciones({ userId }: { userId: string }) {
     try {
       const permiso = await Notification.requestPermission();
       if (permiso !== "granted") { setEstado("denegado"); return; }
+
       const registro = await navigator.serviceWorker.register("/sw.js");
       await navigator.serviceWorker.ready;
+
       const suscripcion = await registro.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
       });
-      await fetch("/api/notificaciones/suscribir", {
+
+      await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, subscription: suscripcion.toJSON() }),
+        body: JSON.stringify({ perfil_id: userId, subscription: suscripcion.toJSON() }),
       });
+
       setEstado("activo");
     } catch (err) {
       console.error("Error activando notificaciones:", err);
@@ -52,10 +59,10 @@ export default function ActivarNotificaciones({ userId }: { userId: string }) {
       if (registro) {
         const sub = await registro.pushManager.getSubscription();
         if (sub) {
-          await fetch("/api/notificaciones/suscribir", {
+          await fetch("/api/push/subscribe", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_id: userId, endpoint: sub.endpoint }),
+            body: JSON.stringify({ perfil_id: userId, endpoint: sub.endpoint }),
           });
           await sub.unsubscribe();
         }

@@ -27,7 +27,7 @@ interface EventoPropuesto {
   organizador?: { nombre: string; apellido: string; matricula: string | null; };
 }
 
-interface Colaborador { id: string; corredor_id: string; nombre: string; apellido: string; email: string; telefono: string | null; dni: string | null; rol: string; estado: string; notas: string | null; created_at: string; corredor?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
+interface Colaborador { id: string; corredor_id: string; user_id: string | null; nombre: string; apellido: string; email: string; telefono: string | null; dni: string | null; rol: string; estado: string; notas: string | null; created_at: string; corredor?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 
 const INDICADORES_CONFIG = [
   { clave: "valor_jus", label: "Valor JUS", tipo: "number" as const },
@@ -259,6 +259,10 @@ export default function AdminPage() {
   const aprobarColaborador = async (c: Colaborador) => {
     setProcesandoColab(c.id);
     await supabase.from("colaboradores").update({ estado: "activo", activado_at: new Date().toISOString() }).eq("id", c.id);
+    // Activar perfil del colaborador si tiene user_id
+    if (c.user_id) {
+      await supabase.from("perfiles").update({ estado: "aprobado" }).eq("id", c.user_id);
+    }
     // Notificar al corredor titular
     await supabase.from("notificaciones").insert({
       perfil_id: c.corredor_id,
@@ -275,7 +279,7 @@ export default function AdminPage() {
         body: JSON.stringify({
           to: c.email,
           subject: "✅ Tu acceso a GFI® fue aprobado",
-          html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:rgba(255,255,255,0.5);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`,
+          html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:rgba(255,255,255,0.5);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`,
         }),
       });
     } catch {}
