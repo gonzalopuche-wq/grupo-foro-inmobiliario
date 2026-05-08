@@ -36,6 +36,9 @@ interface Perfil {
   notif_canal_push: boolean;
   notif_canal_email: boolean;
   notif_canal_whatsapp: boolean;
+  celular_oficina: string | null;
+  celular_personal: string | null;
+  celular_mostrar: "oficina" | "personal" | null;
 }
 
 const ESPECIALIDADES_OPCIONES = [
@@ -142,6 +145,9 @@ export default function PerfilPage() {
       notif_canal_push: perfil.notif_canal_push,
       notif_canal_email: perfil.notif_canal_email,
       notif_canal_whatsapp: perfil.notif_canal_whatsapp,
+      celular_oficina: perfil.celular_oficina,
+      celular_personal: perfil.celular_personal,
+      celular_mostrar: perfil.celular_mostrar,
     }).eq("id", userId);
     setGuardando(false);
     if (error) { mostrarToast("Error al guardar", "err"); return; }
@@ -416,6 +422,40 @@ export default function PerfilPage() {
                 <div className="pf-field">
                   <label className="pf-label">Foto de perfil (URL)</label>
                   <input className="pf-input" placeholder="https://..." value={perfil.foto_url ?? ""} onChange={e => set("foto_url", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">Celular oficina</label>
+                  <input className="pf-input" placeholder="3412345678" value={perfil.celular_oficina ?? ""} onChange={e => set("celular_oficina", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">Celular personal</label>
+                  <input className="pf-input" placeholder="3412345678" value={perfil.celular_personal ?? ""} onChange={e => set("celular_personal", e.target.value)} />
+                </div>
+                <div className="pf-field span2">
+                  <label className="pf-label">Celular público (el que ven otros usuarios)</label>
+                  <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                    {(["personal", "oficina"] as const).map(op => (
+                      <button
+                        key={op}
+                        type="button"
+                        onClick={() => set("celular_mostrar", op)}
+                        style={{
+                          padding: "7px 18px",
+                          borderRadius: 20,
+                          border: `1px solid ${perfil.celular_mostrar === op ? "#cc0000" : "rgba(255,255,255,0.12)"}`,
+                          background: perfil.celular_mostrar === op ? "rgba(200,0,0,0.1)" : "transparent",
+                          color: perfil.celular_mostrar === op ? "#fff" : "rgba(255,255,255,0.4)",
+                          fontFamily: "'Montserrat',sans-serif",
+                          fontSize: 11,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {op === "personal" ? "📱 Personal" : "🏢 Oficina"}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Socio CIR */}
