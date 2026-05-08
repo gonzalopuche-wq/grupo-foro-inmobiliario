@@ -69,7 +69,7 @@ export default function TasadorIAPage() {
     const { data } = await supabase
       .from("tasaciones_historial")
       .select("id, datos_propiedad, resultado, created_at")
-      .eq("perfil_id", user.id)
+      .eq("usuario_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20);
     setHistorial(data ?? []);
@@ -87,10 +87,9 @@ export default function TasadorIAPage() {
       const { data: authData } = await supabase.auth.getUser();
       const userId = authData?.user?.id;
       await supabase.from("tasaciones_historial").insert({
-        perfil_id: userId,
+        usuario_id: userId,
         datos_propiedad: form,
         resultado,
-        created_at: new Date().toISOString(),
       });
       mostrarToast("Guardado ✓");
     } catch {
@@ -151,6 +150,17 @@ export default function TasadorIAPage() {
           .tasador-form { flex: none; width: 100%; box-sizing: border-box; }
           .factores-grid { grid-template-columns: 1fr; }
         }
+        @media print {
+          @page { margin: 1.5cm; }
+          body { background: #fff !important; }
+          .sidebar, .topbar, .sidebar-overlay { display: none !important; }
+          .main-content { margin-left: 0 !important; }
+          .page-content { padding: 0 !important; }
+          .no-print { display: none !important; }
+          * { color: #111 !important; background: transparent !important; border-color: #e0e0e0 !important; box-shadow: none !important; }
+          a { color: #1a56db !important; }
+          .resultado-card { border: 1px solid #e0e0e0 !important; margin-bottom: 10px !important; }
+        }
       `}</style>
 
       {/* Page Header */}
@@ -170,7 +180,7 @@ export default function TasadorIAPage() {
 
       <div className="tasador-wrap">
         {/* LEFT COLUMN — Form */}
-        <div className="tasador-form">
+        <div className="tasador-form no-print">
           <div className="section-header">✦ Datos de la Propiedad</div>
 
           <div className="form-grid">
@@ -373,33 +383,63 @@ export default function TasadorIAPage() {
               </div>
 
               {/* Comparables */}
-              {resultado.comparables && resultado.comparables.length > 0 && (
+              {resultado.comparables_reales && resultado.comparables_reales.length > 0 && (
                 <div className="resultado-card">
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12 }}>
-                    Comparables de mercado
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)" }}>
+                      {resultado._comparables_tipo === "busqueda"
+                        ? "Portales para verificar"
+                        : `Comparables reales · ${resultado._total_comparables_encontrados ?? resultado.comparables_reales.length} encontrados`}
+                    </div>
+                    {resultado._portales_consultados?.length > 0 && resultado._comparables_tipo !== "busqueda" && (
+                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                        {resultado._portales_consultados.map((p: string) => (
+                          <span key={p} style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "rgba(59,130,246,0.12)", color: "#3b82f6", border: "1px solid rgba(59,130,246,0.2)" }}>{p}</span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <table className="comparables-table">
-                    <thead>
-                      <tr>
-                        <th>Descripción</th>
-                        <th>USD</th>
-                        <th>USD/m²</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {resultado.comparables.slice(0, 3).map((c: any, i: number) => (
-                        <tr key={i}>
-                          <td>{c.descripcion}</td>
-                          <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#22c55e", whiteSpace: "nowrap" }}>
-                            {c.precio?.toLocaleString("es-AR")}
-                          </td>
-                          <td style={{ whiteSpace: "nowrap" }}>
-                            {c.m2?.toLocaleString("es-AR")}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {resultado.comparables_reales.map((c: any, i: number) => {
+                      const esBusqueda = c.precio === 0;
+                      return (
+                        <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, padding: "10px 12px" }}>
+                          {esBusqueda ? (
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                              <div>
+                                <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "1px 6px", borderRadius: 4, background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.08)", marginRight: 8 }}>{c.portal}</span>
+                                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>Ver publicaciones en {c.barrio}</span>
+                              </div>
+                              <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "#3b82f6", textDecoration: "none", fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "4px 10px", borderRadius: 5, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.25)", whiteSpace: "nowrap" }}>
+                                Buscar en {c.portal} →
+                              </a>
+                            </div>
+                          ) : (
+                            <>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "1px 6px", borderRadius: 4, background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.08)", marginRight: 6 }}>{c.portal}</span>
+                                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>{c.titulo || c.barrio}</span>
+                                </div>
+                                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                                  <div style={{ fontSize: 15, fontWeight: 800, color: "#22c55e", fontFamily: "Montserrat,sans-serif" }}>
+                                    {c.moneda} {c.precio.toLocaleString("es-AR")}
+                                  </div>
+                                  {c.m2 && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>{c.m2} m² · {c.moneda} {Math.round(c.precio / c.m2).toLocaleString("es-AR")}/m²</div>}
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>📍 {c.barrio}</span>
+                                <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "#3b82f6", textDecoration: "none", fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "3px 10px", borderRadius: 5, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.25)" }}>
+                                  Ver publicación →
+                                </a>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
@@ -418,12 +458,15 @@ export default function TasadorIAPage() {
               )}
 
               {/* Actions */}
-              <div className="actions-row">
+              <div className="actions-row no-print">
                 <button className="btn-secondary" onClick={() => setResultado(null)}>
                   Nueva tasación
                 </button>
                 <button className="btn-save-hist" onClick={guardarHistorial}>
                   Guardar en historial
+                </button>
+                <button className="btn-secondary" onClick={() => window.print()}>
+                  🖨 Imprimir / PDF
                 </button>
               </div>
             </>
@@ -434,7 +477,7 @@ export default function TasadorIAPage() {
       {toast && <div className="toast-fixed">{toast}</div>}
 
       {/* Historial de tasaciones */}
-      <div style={{ maxWidth: 900, margin: "28px 0 0" }}>
+      <div className="no-print" style={{ maxWidth: 900, margin: "28px 0 0" }}>
         <button
           onClick={toggleHistorial}
           style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", cursor: "pointer", padding: "0 0 14px" }}
@@ -467,7 +510,7 @@ export default function TasadorIAPage() {
                           {dp.ciudad ? `, ${dp.ciudad}` : ""}
                         </div>
                         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
-                          {[dp.superficie_cubierta && `${dp.superficie_cubierta}m²`, dp.dormitorios && `${dp.dormitorios} dorm.`, dp.estado].filter(Boolean).join(" · ")}
+                          {[dp.sup_cubierta && `${dp.sup_cubierta}m²`, dp.dormitorios && `${dp.dormitorios} dorm.`, dp.estado].filter(Boolean).join(" · ")}
                         </div>
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>

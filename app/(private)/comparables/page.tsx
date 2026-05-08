@@ -291,6 +291,19 @@ export default function ComparablesPage() {
         .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        @media print {
+          @page { margin: 1.2cm; size: landscape; }
+          body { background: #fff !important; }
+          .sidebar, .topbar, .sidebar-overlay { display: none !important; }
+          .main-content { margin-left: 0 !important; }
+          .page-content { padding: 0 !important; }
+          .no-print { display: none !important; }
+          * { color: #111 !important; background: transparent !important; border-color: #e0e0e0 !important; box-shadow: none !important; }
+          a { color: #1a56db !important; }
+          .cmp-tabla { min-width: unset !important; font-size: 10px !important; }
+          .cmp-tabla th, .cmp-tabla td { padding: 5px 7px !important; }
+          .cmp-tabla-wrap { overflow: visible !important; }
+        }
       `}</style>
 
       <div className="cmp-wrap">
@@ -311,20 +324,23 @@ export default function ComparablesPage() {
                 <div className="cmp-stat-label">Míos</div>
               </div>
             </div>
-            <Link href="/comparables/barrios" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
+            <Link href="/comparables/barrios" className="no-print" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
               📍 Consulta Barrios
             </Link>
-            <Link href="/comparables/tasador" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 4, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
+            <Link href="/comparables/tasador" className="no-print" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 4, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
               🤖 Tasador IA
             </Link>
-            <button className="cmp-btn-nuevo" onClick={() => { setForm({...FORM_VACIO,cotizacion_dolar:dolarBlue?.toString()??""}); setEditandoId(null); setMostrarForm(true); }}>
+            <button className="no-print" onClick={() => window.print()} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap" }}>
+              🖨 Exportar PDF
+            </button>
+            <button className="cmp-btn-nuevo no-print" onClick={() => { setForm({...FORM_VACIO,cotizacion_dolar:dolarBlue?.toString()??""}); setEditandoId(null); setMostrarForm(true); }}>
               + Cargar comparable
             </button>
           </div>
         </div>
 
         {/* Filtros */}
-        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+        <div className="no-print" style={{display:"flex",flexDirection:"column",gap:8}}>
           <div className="cmp-filtros">
             <input className="cmp-search" placeholder="Buscar calle, barrio, ciudad, tipo..." value={busqueda} onChange={e=>setBusqueda(e.target.value)} />
             <select className="cmp-select" value={filtroTipo} onChange={e=>setFiltroTipo(e.target.value)}>
@@ -398,7 +414,7 @@ export default function ComparablesPage() {
                   <th>Precio venta</th>
                   <th>Cotiz. USD</th>
                   <th>Pago</th>
-                  <th>Acciones</th>
+                  <th className="no-print">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -430,7 +446,7 @@ export default function ComparablesPage() {
                         {c.cotizacion_dolar ? `$${formatNum(c.cotizacion_dolar)}` : "—"}
                       </td>
                       <td style={{fontSize:11,color:"rgba(255,255,255,0.5)",maxWidth:120}}>{c.propuesta_pago ?? "—"}</td>
-                      <td>
+                      <td className="no-print">
                         {esPropio && (
                           <div className="cmp-acciones">
                             <button className="cmp-btn-sm cmp-btn-editar" onClick={()=>abrirEditar(c)}>✏ Editar</button>
@@ -449,7 +465,7 @@ export default function ComparablesPage() {
 
       {/* MODAL */}
       {mostrarForm && (
-        <div className="modal-bg" onClick={e=>{if(e.target===e.currentTarget){setMostrarForm(false);setEditandoId(null);}}}>
+        <div className="modal-bg no-print" onClick={e=>{if(e.target===e.currentTarget){setMostrarForm(false);setEditandoId(null);}}}>
           <div className="modal">
             <div className="modal-titulo">{editandoId?"Editar":"Cargar"} <span>comparable</span></div>
 
