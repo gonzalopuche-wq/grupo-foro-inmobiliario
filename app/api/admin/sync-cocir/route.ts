@@ -9,6 +9,22 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
+
+function detectarCampo(texto: string): string | null {
+  const t = texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+  if (t.includes("mat") || t.includes("legajo") || t.includes("nro")) return "matricula";
+  if (t.includes("apellido")) return "apellido";
+  if (t.includes("nombre")) return "nombre";
+  if (t.includes("estado") || t.includes("situacion") || t.includes("hab")) return "estado";
+  if (t.includes("inmob") || t.includes("empresa") || t.includes("razon")) return "inmobiliaria";
+  if (t.includes("direcc") || t.includes("domicilio") || t.includes("calle")) return "direccion";
+  if (t.includes("localidad") || t.includes("ciudad") || t.includes("partido")) return "localidad";
+  if (t.includes("tel") || t.includes("celular") || t.includes("whatsapp")) return "telefono";
+  if (t.includes("email") || t.includes("mail") || t.includes("correo")) return "email";
+  return null;
+}
+
 export async function GET() {
   try {
     const url = "https://cocir.org.ar/paginas/matriculados";
@@ -24,69 +40,100 @@ export async function GET() {
     });
 
     if (!res.ok) {
-      return NextResponse.json({ error: `HTTP ${res.status} al fetchar COCIR` }, { status: 500 });
+      return NextResponse.json({ ok: false, error: `HTTP ${res.status}`, total: 0 });
     }
 
     const html = await res.text();
     const $ = cheerio.load(html);
 
-    // Debug: estructura encontrada
-    const debug = {
-      statusHttp: res.status,
-      htmlLen: html.length,
-      tables: $("table").length,
-      trs: $("tr").length,
-      tds: $("td").length,
-      snippet: html.slice(0, 800),
-    };
+    // Detect column order from thead headers
+    const camposPorCol: string[] = [];
+    $("table thead tr th, table thead tr td").each((i, el) => {
+      camposPorCol[i] = detectarCampo($(el).text()) ?? `_col${i}`;
+    });
+
+    // Fallback: standard COCIR positional order if no thead
+    const fallbackOrden: string[] = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
+    const usarFallback = camposPorCol.length === 0;
 
     const registros: any[] = [];
 
-    // Intento 1: tabla estándar
     $("table tr").each((_, el) => {
       const tds = $(el).find("td");
-      if (tds.length >= 3) {
-        registros.push({
-          matricula: $(tds[0]).text().trim(),
-          apellido: $(tds[1]).text().trim(),
-          nombre: $(tds[2]).text().trim(),
-          estado: tds[3] ? $(tds[3]).text().trim() : "activo",
-          inmobiliaria: tds[4] ? $(tds[4]).text().trim() : null,
-        });
-      }
+      if (tds.length < 2) return;
+
+      const rec: Record<string, string | null> = {};
+      tds.each((i, td) => {
+        const val = $(td).text().trim() || null;
+        const campo = usarFallback ? (fallbackOrden[i] ?? null) : (camposPorCol[i] ?? null);
+        if (campo && !campo.startsWith("_")) rec[campo] = val;
+      });
+
+      if (!rec.matricula && !rec.apellido && !rec.nombre) return;
+      registros.push(rec);
     });
 
-    // Si no encontró nada (COCIR bloqueó o cambió estructura), NO tocar la DB
     if (registros.length === 0) {
-      return NextResponse.json({ ok: false, total: 0, debug }, { status: 200 });
+      return NextResponse.json({
+        ok: false, total: 0,
+        debug: { status: res.status, htmlLen: html.length, tables: $("table").length },
+      });
     }
 
-    // Upsert: agregar nuevos + actualizar existentes, nunca borrar
     const ahora = new Date().toISOString();
-    const { data: existentes } = await sb.from("cocir_padron").select("id, matricula");
-    const mapa = new Map<string, string>();
-    (existentes ?? []).forEach((r: any) => { if (r.matricula) mapa.set(String(r.matricula).trim(), r.id); });
+    const { data: existentes } = await sb
+      .from("cocir_padron")
+      .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email");
+
+    const mapa = new Map<string, any>();
+    (existentes ?? []).forEach((r: any) => {
+      if (r.matricula) mapa.set(String(r.matricula).trim(), r);
+    });
 
     const nuevos: any[] = [];
     const actualizaciones: any[] = [];
+
     for (const reg of registros) {
       const mat = String(reg.matricula ?? "").trim();
-      const conFecha = { ...reg, actualizado_at: ahora };
-      if (mat && mapa.has(mat)) actualizaciones.push({ ...conFecha, id: mapa.get(mat) });
-      else nuevos.push(conFecha);
+      const existente = mat ? mapa.get(mat) : undefined;
+
+      if (existente) {
+        const update: any = { actualizado_at: ahora };
+        let hayCambios = false;
+        for (const campo of CAMPOS_CONOCIDOS) {
+          if (campo === "estado" && reg[campo]) {
+            // Always refresh estado
+            update[campo] = reg[campo];
+            hayCambios = true;
+          } else if (reg[campo] != null && reg[campo] !== "" && !existente[campo]) {
+            // Fill in empty fields
+            update[campo] = reg[campo];
+            hayCambios = true;
+          }
+        }
+        if (hayCambios) actualizaciones.push({ ...update, id: existente.id });
+      } else {
+        nuevos.push({ ...reg, actualizado_at: ahora });
+      }
     }
 
-    if (nuevos.length > 0) {
-      const { error } = await sb.from("cocir_padron").insert(nuevos);
-      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    const LOTE = 500;
+    for (let i = 0; i < nuevos.length; i += LOTE) {
+      const { error } = await sb.from("cocir_padron").insert(nuevos.slice(i, i + LOTE));
+      if (error) return NextResponse.json({ ok: false, error: error.message });
     }
     for (const reg of actualizaciones) {
       const { id, ...campos } = reg;
       await sb.from("cocir_padron").update(campos).eq("id", id);
     }
 
-    return NextResponse.json({ ok: true, insertados: nuevos.length, actualizados: actualizaciones.length, total: registros.length });
+    return NextResponse.json({
+      ok: true,
+      insertados: nuevos.length,
+      actualizados: actualizaciones.length,
+      total: registros.length,
+    });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ ok: false, error: e.message });
   }
 }
