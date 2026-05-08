@@ -34,8 +34,21 @@ export default function ComunidadPage() {
       // 1. Cargar grupos
       let query = supabase.from("grupos_chat").select("*").eq("activo", true).order("orden");
       if (tipo === "colaborador") query = query.eq("solo_matriculado", false);
-      const { data: gruposData } = await query;
-      if (!gruposData) { setLoading(false); return; }
+      const { data: gruposRaw } = await query;
+      if (!gruposRaw) { setLoading(false); return; }
+
+      // Filtrar por sector si el usuario es colaborador
+      let gruposData = gruposRaw;
+      if (tipo === "colaborador") {
+        const { data: colab } = await supabase
+          .from("colaboradores").select("sector").eq("user_id", session.user.id).single();
+        const sector = colab?.sector ?? "todos";
+        if (sector !== "todos") {
+          gruposData = gruposRaw.filter((g: any) =>
+            !g.sectores?.length || g.sectores.includes(sector)
+          );
+        }
+      }
 
       // 2. Un solo query para el último mensaje de cada grupo usando window function
       // Traer el último mensaje de cada grupo en una sola query

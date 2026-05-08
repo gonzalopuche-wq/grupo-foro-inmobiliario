@@ -38,24 +38,18 @@ const NAV_CORREDOR = [
   { href: "/agenda", label: "Agenda", icon: "📆" },
 ];
 
-// ── Nav colaborador (acceso restringido) ───────────────────────────────────
-// Puede: Red GFI (solo lectura), CRM (solo sus propios contactos)
-// No puede: Comunidad, Foro, Cartera, Portales, Comparables COCIR, Mi Web
+// ── Nav colaborador (funcional a comercialización) ─────────────────────────
+// Puede: CRM completo (cartera del corredor + portales), Red GFI, MIR, Comunidad (filtrada por sector)
+// No puede: Calculadoras, Padrón, Biblioteca, Cotizaciones, Enlaces, Proveedores, Mi Web, Foro, Comparables COCIR
 const NAV_COLABORADOR = [
   { href: "/dashboard", label: "Inicio", icon: "🏠" },
   { href: "/actividades", label: "Actividades", icon: "⚡" },
   { href: "/mir", label: "MIR", icon: "🔄" },
   { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
   { href: "/crm", label: "CRM", icon: "👥" },
+  { href: "/comunidad", label: "Comunidad", icon: "💬" },
   { href: "/noticias", label: "Noticias", icon: "📰" },
   { href: "/eventos", label: "Eventos", icon: "📅" },
-  { href: "/canal-educativo", label: "Canal Educativo", icon: "📡" },
-  { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
-  { href: "/padron-gfi", label: "Padrón", icon: "📋" },
-  { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
-  { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
-  { href: "/enlaces", label: "Enlaces", icon: "🔗" },
-  { href: "/proveedores", label: "Proveedores", icon: "🏢" },
   { href: "/perfil", label: "Mi Perfil", icon: "👤" },
 ];
 
@@ -65,9 +59,8 @@ const NAV_ADMIN = [
 
 // Rutas bloqueadas para colaboradores — redirigen al dashboard
 const RUTAS_SOLO_CORREDOR = [
-  "/comunidad", "/foro",
-  "/crm/cartera", "/crm/portales",  // CRM OK pero no cartera ni portales
-  "/comparables",                    // datos COCIR = solo matriculados
+  "/foro",
+  "/comparables",  // datos COCIR = solo matriculados
   "/mi-web",
 ];
 

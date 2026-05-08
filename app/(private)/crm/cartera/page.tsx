@@ -263,13 +263,23 @@ export default function CarteraPage() {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
-      setUserId(data.user.id);
-      await cargar(data.user.id);
-      // Cargar contactos CRM para vincular propietario
+
+      // Si es colaborador, usar el perfil_id del corredor para toda la cartera
+      let efectivoId = data.user.id;
+      const { data: perfil } = await supabase
+        .from("perfiles").select("tipo").eq("id", data.user.id).single();
+      if (perfil?.tipo === "colaborador") {
+        const { data: colab } = await supabase
+          .from("colaboradores").select("corredor_id").eq("user_id", data.user.id).single();
+        if (colab?.corredor_id) efectivoId = colab.corredor_id;
+      }
+
+      setUserId(efectivoId);
+      await cargar(efectivoId);
       const { data: ctcs } = await supabase
         .from("crm_contactos")
         .select("id,nombre,apellido")
-        .eq("perfil_id", data.user.id)
+        .eq("perfil_id", efectivoId)
         .order("nombre", { ascending: true });
       setContactosCRM(ctcs ?? []);
     };
