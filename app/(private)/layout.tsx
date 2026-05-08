@@ -39,12 +39,14 @@ const NAV_CORREDOR = [
 ];
 
 // ── Nav colaborador (acceso restringido) ───────────────────────────────────
-// No puede acceder a: Comunidad, Foro, CRM, Cartera, Comparables, Mi Web
-// Dashboard redirige a vista de solo grupos de comunidad
+// Puede: Red GFI (solo lectura), CRM (solo sus propios contactos)
+// No puede: Comunidad, Foro, Cartera, Portales, Comparables COCIR, Mi Web
 const NAV_COLABORADOR = [
   { href: "/dashboard", label: "Inicio", icon: "🏠" },
   { href: "/actividades", label: "Actividades", icon: "⚡" },
   { href: "/mir", label: "MIR", icon: "🔄" },
+  { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
+  { href: "/crm", label: "CRM", icon: "👥" },
   { href: "/noticias", label: "Noticias", icon: "📰" },
   { href: "/eventos", label: "Eventos", icon: "📅" },
   { href: "/canal-educativo", label: "Canal Educativo", icon: "📡" },
@@ -63,7 +65,10 @@ const NAV_ADMIN = [
 
 // Rutas bloqueadas para colaboradores — redirigen al dashboard
 const RUTAS_SOLO_CORREDOR = [
-  "/comunidad", "/foro", "/crm", "/comparables", "/mi-web",
+  "/comunidad", "/foro",
+  "/crm/cartera", "/crm/portales",  // CRM OK pero no cartera ni portales
+  "/comparables",                    // datos COCIR = solo matriculados
+  "/mi-web",
 ];
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {

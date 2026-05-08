@@ -292,12 +292,16 @@ export default function CrmPage() {
   const [guardandoNota, setGuardandoNota] = useState(false);
   const [busquedaNota, setBusquedaNota] = useState("");
 
+  const [esColaborador, setEsColaborador] = useState(false);
+
   // ── Init ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
+      const { data: p } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
+      if (p?.tipo === "colaborador") setEsColaborador(true);
       cargarContactos(data.user.id);
       cargarNegocios(data.user.id);
       cargarTareas(data.user.id);
@@ -1037,8 +1041,8 @@ export default function CrmPage() {
             </button>
           ))}
           <div className="crm-tabs-spacer" />
-          <Link href="/crm/portales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔗 Portales</Link>
-          <Link href="/crm/cartera" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Cartera</Link>
+          {!esColaborador && <Link href="/crm/portales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔗 Portales</Link>}
+          {!esColaborador && <Link href="/crm/cartera" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Cartera</Link>}
           <Link href="/agenda" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📆 Agenda</Link>
         </div>
 
