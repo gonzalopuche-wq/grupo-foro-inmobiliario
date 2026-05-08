@@ -43,13 +43,17 @@ END $$;
 -- RLS básico para colaboradores
 ALTER TABLE colaboradores ENABLE ROW LEVEL SECURITY;
 
--- Admins ven todo (service role bypasses RLS)
--- Corredores ven sus propios colaboradores
-CREATE POLICY IF NOT EXISTS "corredor_ve_sus_colaboradores"
-  ON colaboradores FOR SELECT
-  USING (corredor_id = auth.uid());
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'colaboradores' AND policyname = 'corredor_ve_sus_colaboradores'
+  ) THEN
+    EXECUTE 'CREATE POLICY "corredor_ve_sus_colaboradores" ON colaboradores FOR SELECT USING (corredor_id = auth.uid())';
+  END IF;
 
--- Corredores pueden insertar sus colaboradores
-CREATE POLICY IF NOT EXISTS "corredor_inserta_colaboradores"
-  ON colaboradores FOR INSERT
-  WITH CHECK (corredor_id = auth.uid());
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'colaboradores' AND policyname = 'corredor_inserta_colaboradores'
+  ) THEN
+    EXECUTE 'CREATE POLICY "corredor_inserta_colaboradores" ON colaboradores FOR INSERT WITH CHECK (corredor_id = auth.uid())';
+  END IF;
+END $$;
