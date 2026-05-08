@@ -33,7 +33,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "El archivo está vacío o tiene solo encabezados." }, { status: 400 });
     }
 
-    const headers: string[] = filas[0].map((h: any) => String(h ?? ""));
+    // Buscar la fila de encabezados reales (puede haber títulos antes)
+    // Una fila de headers válida tiene al menos 2 celdas no vacías con palabras clave conocidas
+    const PALABRAS_HEADER = ["matricula", "mat", "apellido", "nombre", "estado", "legajo", "nro", "hab", "inmob"];
+    let filaHeaders = 0;
+    for (let i = 0; i < Math.min(10, filas.length); i++) {
+      const celdas = filas[i].map((h: any) => String(h ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim());
+      const coincidencias = celdas.filter(c => PALABRAS_HEADER.some(p => c.includes(p))).length;
+      if (coincidencias >= 2) { filaHeaders = i; break; }
+    }
+
+    const headers: string[] = filas[filaHeaders].map((h: any) => String(h ?? ""));
 
     const colMatricula  = detectarColumna(headers, ["matricula", "mat", "legajo", "nro"]);
     const colApellido   = detectarColumna(headers, ["apellido"]);
@@ -46,15 +56,16 @@ export async function POST(req: NextRequest) {
     const colEmail      = detectarColumna(headers, ["email", "mail", "correo"]);
 
     if (colMatricula === -1 || colApellido === -1 || colNombre === -1) {
+      const primerasFilas = filas.slice(0, 5).map(f => f.map((c: any) => String(c ?? "")).join(" | ")).join("\n");
       return NextResponse.json({
-        error: `No se detectaron columnas obligatorias. Encabezados: ${headers.join(", ")}`,
+        error: `No se detectaron columnas obligatorias (matrícula, apellido, nombre). Encabezados encontrados en fila ${filaHeaders + 1}: ${headers.join(", ")}. Primeras filas:\n${primerasFilas}`,
       }, { status: 400 });
     }
 
     const registros: any[] = [];
     const ahora = new Date().toISOString();
 
-    for (let i = 1; i < filas.length; i++) {
+    for (let i = filaHeaders + 1; i < filas.length; i++) {
       const fila = filas[i];
       const mat = String(fila[colMatricula] ?? "").trim();
       const ape = String(fila[colApellido] ?? "").trim();
