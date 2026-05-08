@@ -79,6 +79,7 @@ export default function DashboardPage() {
   const [proximosEventos, setProximosEventos] = useState<{ id: string; titulo: string; fecha: string; tipo: string; gratuito: boolean }[]>([]);
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [loadingGrupos, setLoadingGrupos] = useState(false);
+  const [colabStats, setColabStats] = useState({ cartera: 0, contactos: 0, mirBusq: 0, redGfi: 0, loading: true });
   const ciudadRef = useRef<HTMLInputElement>(null);
 
   const fetchClimaPorCoords = async (lat: number, lon: number, gpsActivo: boolean) => {
@@ -107,22 +108,17 @@ export default function DashboardPage() {
     setClimaLoading(false);
   };
 
-  const cargarGruposColaborador = async () => {
-    setLoadingGrupos(true);
-    const { data: gruposData } = await supabase
-      .from("grupos_chat").select("*").eq("activo", true).eq("solo_matriculado", false).order("orden");
-    if (!gruposData) { setLoadingGrupos(false); return; }
-    const grupoIds = gruposData.map((g: any) => g.id);
-    const { data: ultimos } = await supabase
-      .from("mensajes_chat").select("grupo_id, texto, created_at, perfiles(nombre, apellido)")
-      .in("grupo_id", grupoIds).order("created_at", { ascending: false }).limit(grupoIds.length * 3);
-    const ultimosPorGrupo: Record<string, any> = {};
-    (ultimos ?? []).forEach((m: any) => { if (!ultimosPorGrupo[m.grupo_id]) ultimosPorGrupo[m.grupo_id] = m; });
-    setGrupos(gruposData.map((g: any) => {
-      const u = ultimosPorGrupo[g.id];
-      return { ...g, ultimo_mensaje: u?.texto ?? null, ultimo_autor: u?.perfiles ? `${u.perfiles.nombre ?? ""} ${u.perfiles.apellido ?? ""}`.trim() : null, ultimo_at: u?.created_at ?? null };
-    }));
-    setLoadingGrupos(false);
+  const cargarDashboardColaborador = async (uid: string) => {
+    const { data: colab } = await supabase
+      .from("colaboradores").select("corredor_id").eq("user_id", uid).single();
+    const corredor_id = colab?.corredor_id ?? uid;
+    const [cartera, contactos, mirB, redG] = await Promise.all([
+      supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }).eq("perfil_id", corredor_id).eq("estado", "activa"),
+      supabase.from("crm_contactos").select("id", { count: "exact", head: true }).eq("perfil_id", uid).neq("estado", "archivado"),
+      supabase.from("mir_busquedas").select("id", { count: "exact", head: true }).eq("activo", true),
+      supabase.from("mir_ofrecidos").select("id", { count: "exact", head: true }).eq("activo", true),
+    ]);
+    setColabStats({ cartera: cartera.count ?? 0, contactos: contactos.count ?? 0, mirBusq: mirB.count ?? 0, redGfi: redG.count ?? 0, loading: false });
   };
 
   // Reloj — useEffect propio para que el cleanup funcione correctamente
@@ -140,7 +136,7 @@ export default function DashboardPage() {
       supabase.from("perfiles").select("tipo").eq("id", uid).single().then(({ data: p }) => {
         const tipo = p?.tipo === "admin" ? "admin" : p?.tipo === "colaborador" ? "colaborador" : "corredor";
         setTipoUsuario(tipo);
-        if (tipo === "colaborador") { cargarGruposColaborador(); return; }
+        if (tipo === "colaborador") { cargarDashboardColaborador(uid); return; }
         cargarDashboardCompleto(uid);
       });
     });
@@ -245,57 +241,64 @@ export default function DashboardPage() {
 
   // ── VISTA COLABORADOR ─────────────────────────────────────────────────────
   if (tipoUsuario === "colaborador") {
+    const ACCESOS_COLAB = [
+      { icon: "🔄", label: "MIR", href: "/mir", desc: "Búsquedas y ofrecidos" },
+      { icon: "🏘️", label: "Cartera", href: "/crm/cartera", desc: "Propiedades del corredor" },
+      { icon: "👥", label: "CRM", href: "/crm", desc: "Mis contactos" },
+      { icon: "🌐", label: "Red GFI", href: "/red-gfi", desc: "Red de corredores" },
+      { icon: "💬", label: "Comunidad", href: "/comunidad", desc: "Grupos de mi sector" },
+    ];
     return (
       <>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
-          .colab-titulo { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+          .colab-header { margin-bottom: 24px; }
+          .colab-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 3px; }
           .colab-titulo span { color: #cc0000; }
-          .colab-sub { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 20px; font-family: 'Inter',sans-serif; }
-          .colab-grupos { display: flex; flex-direction: column; gap: 6px; }
-          .colab-grupo { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: border-color 0.15s; text-decoration: none; }
-          .colab-grupo:hover { border-color: rgba(200,0,0,0.3); background: rgba(200,0,0,0.03); }
-          .colab-grupo-ico { width: 44px; height: 44px; border-radius: 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-          .colab-grupo-info { flex: 1; min-width: 0; }
-          .colab-grupo-nombre { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 3px; }
-          .colab-grupo-ultimo { font-size: 11px; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-          .colab-grupo-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-          .colab-grupo-hora { font-size: 9px; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; }
-          .colab-grupo-autor { font-size: 9px; color: rgba(255,255,255,0.25); font-family: 'Inter',sans-serif; }
-          .colab-seccion { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin: 20px 0 10px; }
-          .colab-empty { padding: 32px; text-align: center; color: rgba(255,255,255,0.18); font-size: 12px; font-family: 'Inter',sans-serif; }
+          .colab-sub { font-size: 12px; color: rgba(255,255,255,0.28); font-family: 'Inter',sans-serif; text-transform: capitalize; }
+          .colab-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
+          .colab-stat { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px 18px; }
+          .colab-stat-val { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #cc0000; line-height: 1; }
+          .colab-stat-label { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 5px; font-family: 'Montserrat',sans-serif; text-transform: uppercase; letter-spacing: 0.1em; }
+          .colab-seccion { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 12px; }
+          .colab-accesos { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
+          .colab-acceso { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 18px 14px; text-align: center; text-decoration: none; transition: border-color 0.15s, background 0.15s; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+          .colab-acceso:hover { border-color: rgba(200,0,0,0.35); background: rgba(200,0,0,0.04); }
+          .colab-acceso-ico { font-size: 24px; }
+          .colab-acceso-label { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; color: #fff; }
+          .colab-acceso-desc { font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
+          @media (max-width: 700px) { .colab-stats { grid-template-columns: repeat(2,1fr); } .colab-accesos { grid-template-columns: repeat(2,1fr); } }
         `}</style>
 
-        <div className="colab-titulo">Bienvenido a <span>GFI®</span></div>
-        <div className="colab-sub">{hoy}</div>
+        <div className="colab-header">
+          <div className="colab-titulo">Bienvenido a <span>GFI®</span></div>
+          <div className="colab-sub">{hoy}</div>
+        </div>
 
-        <div className="colab-seccion">Grupos de comunidad</div>
+        <div className="colab-stats">
+          {[
+            { val: colabStats.loading ? "…" : colabStats.cartera, label: "Propiedades activas" },
+            { val: colabStats.loading ? "…" : colabStats.contactos, label: "Mis contactos CRM" },
+            { val: colabStats.loading ? "…" : colabStats.mirBusq, label: "Búsquedas MIR" },
+            { val: colabStats.loading ? "…" : colabStats.redGfi, label: "En Red GFI" },
+          ].map(s => (
+            <div key={s.label} className="colab-stat">
+              <div className="colab-stat-val">{s.val}</div>
+              <div className="colab-stat-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
 
-        {loadingGrupos ? (
-          <div className="colab-empty">Cargando grupos...</div>
-        ) : grupos.length === 0 ? (
-          <div className="colab-empty">No hay grupos disponibles.</div>
-        ) : (
-          <div className="colab-grupos">
-            {grupos.map(g => (
-              <a key={g.id} href={`/comunidad/${g.id}`} className="colab-grupo">
-                <div className="colab-grupo-ico">{g.icono || "💬"}</div>
-                <div className="colab-grupo-info">
-                  <div className="colab-grupo-nombre">{g.nombre}</div>
-                  <div className="colab-grupo-ultimo">
-                    {g.ultimo_mensaje
-                      ? (g.ultimo_autor ? `${g.ultimo_autor}: ` : "") + g.ultimo_mensaje
-                      : "Sin mensajes aún"}
-                  </div>
-                </div>
-                <div className="colab-grupo-meta">
-                  {g.ultimo_at && <span className="colab-grupo-hora">{fmtUltimoAt(g.ultimo_at)}</span>}
-                  {g.va_al_mir && <span style={{fontSize:8,padding:"1px 5px",borderRadius:8,background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.2)",color:"rgba(200,0,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>MIR</span>}
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
+        <div className="colab-seccion">Accesos rápidos</div>
+        <div className="colab-accesos">
+          {ACCESOS_COLAB.map(a => (
+            <a key={a.href} href={a.href} className="colab-acceso">
+              <span className="colab-acceso-ico">{a.icon}</span>
+              <span className="colab-acceso-label">{a.label}</span>
+              <span className="colab-acceso-desc">{a.desc}</span>
+            </a>
+          ))}
+        </div>
       </>
     );
   }
