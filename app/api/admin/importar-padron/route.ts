@@ -33,14 +33,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "El archivo está vacío o tiene solo encabezados." }, { status: 400 });
     }
 
-    // Buscar la fila de encabezados reales (puede haber títulos antes)
-    // Una fila de headers válida tiene al menos 2 celdas no vacías con palabras clave conocidas
-    const PALABRAS_HEADER = ["matricula", "mat", "apellido", "nombre", "estado", "legajo", "nro", "hab", "inmob"];
+    // Buscar la fila de encabezados reales (puede haber títulos/subtítulos antes)
+    const PALABRAS_HEADER = [
+      "matricula", "mat", "apellido", "nombre", "estado", "legajo", "nro", "hab",
+      "inmob", "orden", "ord", "corredor", "profesional", "domicilio", "localidad",
+      "telefon", "email", "mail", "dni", "baja", "activ", "suspen", "inhabili",
+    ];
     let filaHeaders = 0;
-    for (let i = 0; i < Math.min(10, filas.length); i++) {
+    let mejorPuntaje = 0;
+    for (let i = 0; i < Math.min(15, filas.length); i++) {
       const celdas = filas[i].map((h: any) => String(h ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim());
+      const celdasNoVacias = celdas.filter(c => c.length > 0).length;
       const coincidencias = celdas.filter(c => PALABRAS_HEADER.some(p => c.includes(p))).length;
-      if (coincidencias >= 2) { filaHeaders = i; break; }
+      // Preferir la fila con más coincidencias Y más celdas no vacías
+      const puntaje = coincidencias * 10 + celdasNoVacias;
+      if (puntaje > mejorPuntaje && celdasNoVacias >= 2) {
+        mejorPuntaje = puntaje;
+        filaHeaders = i;
+      }
     }
 
     const headers: string[] = filas[filaHeaders].map((h: any) => String(h ?? ""));
