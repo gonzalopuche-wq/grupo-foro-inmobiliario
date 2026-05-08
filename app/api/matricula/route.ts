@@ -47,10 +47,25 @@ export async function POST(req: NextRequest) {
     }, { status: 404 });
   }
 
-  const estado = (data.estado || "").toLowerCase();
-  if (estado && estado !== "activo" && estado !== "habilitado") {
-    return NextResponse.json({ error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.` }, { status: 403 });
-  }
+  const estado = String(data.estado || "")
+  .trim()
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "");
+
+const estadosValidos = [
+  "activo",
+  "habilitado",
+  "vigente"
+];
+
+const esValido = estadosValidos.some(e => estado.includes(e));
+
+if (!esValido) {
+  return NextResponse.json({
+    error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.`,
+  }, { status: 403 });
+}
 
   const { data: perfilExistente } = await sbAdmin.from("perfiles").select("id").eq("matricula", String(data.matricula)).maybeSingle();
   if (perfilExistente) return NextResponse.json({ error: "Esta matrícula ya tiene una cuenta registrada." }, { status: 409 });
