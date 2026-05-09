@@ -1,9 +1,6 @@
-// Sincronización con MercadoLibre Inmuebles
-// Requiere: ML_ACCESS_TOKEN y ML_REFRESH_TOKEN en Vercel (OAuth MercadoLibre)
-// Para obtener tokens: https://developers.mercadolibre.com.ar/es_ar/autenticacion-y-autorizacion
-
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getMLToken } from "../../../lib/ml-token";
 
 export const dynamic = "force-dynamic";
 
@@ -72,11 +69,11 @@ export async function POST(req: NextRequest) {
     const { propiedad_id, perfil_id } = await req.json();
     if (!propiedad_id || !perfil_id) return NextResponse.json({ error: "propiedad_id y perfil_id requeridos" }, { status: 400 });
 
-    const accessToken = process.env.ML_ACCESS_TOKEN;
+    const accessToken = await getMLToken(perfil_id);
     if (!accessToken) {
       return NextResponse.json({
         ok: false, pendiente: true,
-        error: "ML_ACCESS_TOKEN no configurado. Para publicar en MercadoLibre necesitás crear una app en developers.mercadolibre.com.ar y agregar el token en las variables de Vercel.",
+        error: "MercadoLibre no conectado. Andá a CRM → Portales y conectá tu cuenta de ML.",
       });
     }
 
