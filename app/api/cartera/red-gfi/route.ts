@@ -27,11 +27,15 @@ export async function POST(req: NextRequest) {
     const { propiedad_id } = await req.json();
     if (!propiedad_id) return NextResponse.json({ error: "propiedad_id requerido" }, { status: 400 });
 
+    // Allow corredores or collaborators (who manage the corredor's cartera)
+    const { data: miPerfil } = await sbAdmin.from("perfiles").select("tipo,corredor_ref_id").eq("id", user.id).maybeSingle();
+    const corredorId = miPerfil?.tipo === "colaborador" ? miPerfil.corredor_ref_id : user.id;
+
     const { data: prop, error: propErr } = await sbAdmin
       .from("cartera_propiedades")
       .select("*")
       .eq("id", propiedad_id)
-      .eq("perfil_id", user.id)
+      .eq("perfil_id", corredorId ?? user.id)
       .single();
     if (propErr || !prop) return NextResponse.json({ error: "Propiedad no encontrada" }, { status: 404 });
 

@@ -19,6 +19,12 @@ CREATE TABLE IF NOT EXISTS portal_credenciales (
 
 ALTER TABLE portal_credenciales ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "corredor_sus_credenciales"
-  ON portal_credenciales FOR ALL
-  USING (auth.uid() = perfil_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'portal_credenciales' AND policyname = 'corredor_sus_credenciales'
+  ) THEN
+    CREATE POLICY "corredor_sus_credenciales"
+      ON portal_credenciales FOR ALL
+      USING (auth.uid() = perfil_id);
+  END IF;
+END $$;

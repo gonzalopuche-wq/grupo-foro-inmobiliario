@@ -297,8 +297,16 @@ export default function MirPage() {
       supabase.from("mir_busquedas").select("*").eq("activo", true).order("created_at", { ascending: false }),
       supabase.from("mir_matches").select("*").order("created_at", { ascending: false }).limit(100),
     ]);
-    setOfrecidos((of as unknown as Ofrecido[]) ?? []);
-    setBusquedas((bu as unknown as Busqueda[]) ?? []);
+    // Fetch profile details for all unique perfil_ids (no FK join needed)
+    const ids = [...new Set([...(of ?? []).map((r: any) => r.perfil_id), ...(bu ?? []).map((r: any) => r.perfil_id)])].filter(Boolean);
+    const perfilesMap: Record<string, any> = {};
+    if (ids.length > 0) {
+      const { data: profs } = await supabase.from("perfiles").select("id,nombre,apellido,matricula,telefono,email").in("id", ids);
+      (profs ?? []).forEach((p: any) => { perfilesMap[p.id] = p; });
+    }
+    const stitchPerfiles = (rows: any[]) => rows.map(r => ({ ...r, perfiles: perfilesMap[r.perfil_id] ?? null }));
+    setOfrecidos(stitchPerfiles(of ?? []) as unknown as Ofrecido[]);
+    setBusquedas(stitchPerfiles(bu ?? []) as unknown as Busqueda[]);
     setMatches((ma as unknown as Match[]) ?? []);
     setLoading(false);
   };
