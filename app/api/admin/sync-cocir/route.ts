@@ -9,7 +9,8 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-function getCol(tds: cheerio.Cheerio<cheerio.Element>, idx: number, $: cheerio.CheerioAPI): string | null {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getCol(tds: any, idx: number, $: cheerio.CheerioAPI): string | null {
   if (idx < 0 || idx >= tds.length) return null;
   const val = $(tds[idx]).text().trim();
   return val || null;
