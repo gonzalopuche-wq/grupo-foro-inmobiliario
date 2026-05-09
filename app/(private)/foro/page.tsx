@@ -295,7 +295,6 @@ export default function ForoPage() {
       const name = err?.name ?? "Error";
       const msg = err?.message ?? "";
       const enIframe = typeof window !== "undefined" && window.self !== window.top;
-      console.error("[mic foro]", name, msg, err);
       if (enIframe) {
         showToast(`⚠ App embebida bloquea el mic. Abrí en pestaña nueva. (${name})`);
       } else if (name === "NotAllowedError" || name === "PermissionDeniedError") {

@@ -11,6 +11,7 @@ const NAV_CORREDOR = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/actividades", label: "Actividades", icon: "⚡" },
   { href: "/mir", label: "MIR", icon: "🔄" },
+  { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
   { href: "/comunidad", label: "Comunidad", icon: "💬" },
   { href: "/foro", label: "Foro", icon: "🗣️" },
   { href: "/noticias", label: "Noticias", icon: "📰" },
@@ -37,22 +38,13 @@ const NAV_CORREDOR = [
   { href: "/agenda", label: "Agenda", icon: "📆" },
 ];
 
-// ── Nav colaborador (acceso restringido) ───────────────────────────────────
-// No puede acceder a: Comunidad, Foro, CRM, Cartera, Comparables, Mi Web
-// Dashboard redirige a vista de solo grupos de comunidad
+// ── Nav colaborador (funcional a comercialización) ─────────────────────────
 const NAV_COLABORADOR = [
   { href: "/dashboard", label: "Inicio", icon: "🏠" },
-  { href: "/actividades", label: "Actividades", icon: "⚡" },
   { href: "/mir", label: "MIR", icon: "🔄" },
-  { href: "/noticias", label: "Noticias", icon: "📰" },
-  { href: "/eventos", label: "Eventos", icon: "📅" },
-  { href: "/canal-educativo", label: "Canal Educativo", icon: "📡" },
-  { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
-  { href: "/padron-gfi", label: "Padrón", icon: "📋" },
-  { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
-  { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
-  { href: "/enlaces", label: "Enlaces", icon: "🔗" },
-  { href: "/proveedores", label: "Proveedores", icon: "🏢" },
+  { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
+  { href: "/crm", label: "CRM", icon: "👥" },
+  { href: "/comunidad", label: "Comunidad", icon: "💬" },
   { href: "/perfil", label: "Mi Perfil", icon: "👤" },
 ];
 
@@ -62,7 +54,10 @@ const NAV_ADMIN = [
 
 // Rutas bloqueadas para colaboradores — redirigen al dashboard
 const RUTAS_SOLO_CORREDOR = [
-  "/comunidad", "/foro", "/crm", "/comparables", "/mi-web",
+  "/actividades", "/noticias", "/eventos",
+  "/foro",
+  "/comparables",  // datos COCIR = solo matriculados
+  "/mi-web",
 ];
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {

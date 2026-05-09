@@ -217,7 +217,7 @@ export default function MirPage() {
       setUserId(data.user.id);
 
       // Detectar si es colaborador y cargar CI colegas
-      const { data: perfil } = await supabase.from("perfiles").select("tipo, corredor_ref_id").eq("id", data.user.id).single();
+      const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
       if (perfil?.tipo === "colaborador") {
         setEsColaborador(true);
         // Cargar el CI titular y sus colegas matriculados
@@ -293,12 +293,20 @@ export default function MirPage() {
   const cargarDatos = async () => {
     setLoading(true);
     const [{ data: of }, { data: bu }, { data: ma }] = await Promise.all([
-      supabase.from("mir_ofrecidos").select("*, perfiles(nombre,apellido,matricula,telefono,email), ci_responsable:perfiles!ci_responsable_id(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
-      supabase.from("mir_busquedas").select("*, perfiles(nombre,apellido,matricula,telefono,email), ci_responsable:perfiles!ci_responsable_id(nombre,apellido,matricula)").eq("activo", true).order("created_at", { ascending: false }),
+      supabase.from("mir_ofrecidos").select("*").eq("activo", true).order("created_at", { ascending: false }),
+      supabase.from("mir_busquedas").select("*").eq("activo", true).order("created_at", { ascending: false }),
       supabase.from("mir_matches").select("*").order("created_at", { ascending: false }).limit(100),
     ]);
-    setOfrecidos((of as unknown as Ofrecido[]) ?? []);
-    setBusquedas((bu as unknown as Busqueda[]) ?? []);
+    // Fetch profile details for all unique perfil_ids (no FK join needed)
+    const ids = [...new Set([...(of ?? []).map((r: any) => r.perfil_id), ...(bu ?? []).map((r: any) => r.perfil_id)])].filter(Boolean);
+    const perfilesMap: Record<string, any> = {};
+    if (ids.length > 0) {
+      const { data: profs } = await supabase.from("perfiles").select("id,nombre,apellido,matricula,telefono,email").in("id", ids);
+      (profs ?? []).forEach((p: any) => { perfilesMap[p.id] = p; });
+    }
+    const stitchPerfiles = (rows: any[]) => rows.map(r => ({ ...r, perfiles: perfilesMap[r.perfil_id] ?? null }));
+    setOfrecidos(stitchPerfiles(of ?? []) as unknown as Ofrecido[]);
+    setBusquedas(stitchPerfiles(bu ?? []) as unknown as Busqueda[]);
     setMatches((ma as unknown as Match[]) ?? []);
     setLoading(false);
   };
@@ -408,7 +416,7 @@ export default function MirPage() {
       mensaje: msgInteres || null, leido: false,
     }, { onConflict: "publicacion_id,remitente_id,tipo" });
     await supabase.from("notificaciones").insert({
-      perfil_id: destinatarioId,
+      user_id: destinatarioId,
       tipo: "mir_interes",
       titulo: tipo === "me_interesa" ? "Te consultaron por tu ofrecido" : "Alguien tiene algo para tu búsqueda",
       mensaje: msgInteres || (tipo === "me_interesa" ? "Un colega está interesado en tu ofrecido." : "Un colega tiene algo que coincide con tu búsqueda."),
