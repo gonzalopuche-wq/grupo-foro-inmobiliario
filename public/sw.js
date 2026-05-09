@@ -1,51 +1,64 @@
-// Service Worker para Push Notifications GFI®
-self.addEventListener('push', function(event) {
-  if (!event.data) return;
+// GFI® Service Worker — PWA + Push Notifications
+const CACHE = "gfi-v1";
+const OFFLINE_URLS = ["/", "/dashboard", "/crm/cartera", "/crm", "/mir", "/logo_gfi.png", "/manifest.json"];
 
-  const data = event.data.json();
-  const options = {
-    body: data.body || '',
-    icon: '/Logo.jpg',
-    badge: '/Logo.jpg',
-    vibrate: [100, 50, 100],
-    data: {
-      url: data.url || '/eventos',
-      dateOfArrival: Date.now(),
-    },
-    actions: [
-      { action: 'ver', title: 'Ver evento' },
-      { action: 'cerrar', title: 'Cerrar' },
-    ],
-  };
+self.addEventListener("install", e => {
+  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(OFFLINE_URLS).catch(() => {})));
+});
 
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'GFI® Grupo Foro Inmobiliario', options)
+self.addEventListener("activate", e => {
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => clients.claim())
   );
 });
 
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close();
-  if (event.action === 'cerrar') return;
+self.addEventListener("fetch", e => {
+  // Only cache GET requests for same-origin non-API pages
+  if (e.request.method !== "GET") return;
+  const url = new URL(e.request.url);
+  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/_next/")) return;
 
-  const url = event.notification.data?.url || '/eventos';
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-      for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          client.focus();
-          client.navigate(url);
-          return;
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        if (res.ok && res.type === "basic") {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
         }
-      }
-      if (clients.openWindow) return clients.openWindow(url);
+        return res;
+      })
+      .catch(() => caches.match(e.request).then(r => r || caches.match("/")))
+  );
+});
+
+// Push notifications
+self.addEventListener("push", e => {
+  if (!e.data) return;
+  const data = e.data.json();
+  e.waitUntil(
+    self.registration.showNotification(data.title || "GFI® Grupo Foro Inmobiliario", {
+      body: data.body || "",
+      icon: "/logo_gfi.png",
+      badge: "/logo_gfi.png",
+      vibrate: [100, 50, 100],
+      data: { url: data.url || "/dashboard" },
+      actions: [{ action: "ver", title: "Ver" }, { action: "cerrar", title: "Cerrar" }],
     })
   );
 });
 
-self.addEventListener('install', function(event) {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', function(event) {
-  event.waitUntil(clients.claim());
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  if (e.action === "cerrar") return;
+  const url = e.notification.data?.url || "/dashboard";
+  e.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+      for (const c of list) {
+        if (c.url.includes(self.location.origin) && "focus" in c) { c.focus(); c.navigate(url); return; }
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    })
+  );
 });

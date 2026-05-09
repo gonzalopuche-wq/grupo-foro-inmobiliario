@@ -456,17 +456,34 @@ export default function CrmPage() {
     try { await supabase.from("crm_plantillas").delete().eq("id", id); cargarPlantillas(); } catch { /* */ }
   };
 
-  // ── Propiedades sugeridas ─────────────────────────────────────────────────
+  // ── Propiedades sugeridas (IA Matching) ──────────────────────────────────
   const cargarPropiedadesSugeridas = async (contacto: Contacto) => {
     if (!userId) return;
     setLoadingPropiedades(true);
     try {
-      let query = supabase.from("cartera").select("id, titulo, precio, moneda, tipo_operacion, direccion, barrio").eq("perfil_id", userId);
-      if (contacto.interes === "Comprar") query = query.eq("tipo_operacion", "venta");
-      else if (contacto.interes === "Alquilar") query = query.eq("tipo_operacion", "alquiler");
+      // Primero intentar IA matching
+      const res = await fetch("/api/ia-matching", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ perfil_id: userId, contacto_id: contacto.id }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.ok && json.matches?.length > 0) {
+          setPropiedadesSugeridas(json.matches.map((m: any) => ({
+            id: m.id, titulo: m.titulo,
+            compatibilidad: m.compatibilidad, razon: m.razon,
+          })));
+          setLoadingPropiedades(false);
+          return;
+        }
+      }
+      // Fallback: query simple por operación y presupuesto
+      let query = supabase.from("cartera_propiedades").select("id, titulo, precio, moneda, operacion, zona, ciudad").eq("perfil_id", userId).eq("estado", "activa");
+      if (contacto.interes === "Comprar") query = query.eq("operacion", "Venta");
+      else if (contacto.interes === "Alquilar") query = query.eq("operacion", "Alquiler");
       const { data } = await query.limit(20);
       let resultado = (data as any[]) ?? [];
-      // filtrar por presupuesto si existe
       if (contacto.presupuesto_min || contacto.presupuesto_max) {
         resultado = resultado.filter((p: any) => {
           if (contacto.presupuesto_min && p.precio && p.precio < contacto.presupuesto_min) return false;
@@ -1349,8 +1366,14 @@ export default function CrmPage() {
                                 <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>{propiedadesSugeridas.length} propiedad{propiedadesSugeridas.length !== 1 ? "es" : ""} sugerida{propiedadesSugeridas.length !== 1 ? "s" : ""}</div>
                                 {propiedadesSugeridas.map((prop: any) => (
                                   <div key={prop.id} className="prop-card">
-                                    <div className="prop-card-dir">{prop.titulo ?? prop.direccion ?? "Sin título"}</div>
+                                    <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:6}}>
+                                      <div className="prop-card-dir" style={{flex:1}}>{prop.titulo ?? prop.direccion ?? "Sin título"}</div>
+                                      {prop.compatibilidad != null && (
+                                        <div style={{flexShrink:0,fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,color: prop.compatibilidad >= 80 ? "#22c55e" : prop.compatibilidad >= 55 ? "#f59e0b" : "rgba(255,255,255,0.35)",background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"2px 7px",border:`1px solid ${prop.compatibilidad >= 80 ? "rgba(34,197,94,0.3)" : prop.compatibilidad >= 55 ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.1)"}`}}>{prop.compatibilidad}%</div>
+                                      )}
+                                    </div>
                                     {prop.direccion && prop.titulo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Inter,sans-serif"}}>📍 {prop.direccion}{prop.barrio ? `, ${prop.barrio}` : ""}</div>}
+                                    {prop.razon && <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"Inter,sans-serif",marginTop:2,lineHeight:1.4,fontStyle:"italic"}}>✦ {prop.razon}</div>}
                                     <div className="prop-card-meta">
                                       {prop.precio && <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#fff"}}>{prop.moneda ?? "USD"} {prop.precio.toLocaleString("es-AR")}</span>}
                                       {prop.tipo_operacion && <span style={{padding:"1px 6px",borderRadius:8,border:"1px solid rgba(255,255,255,0.1)",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.4)"}}>{prop.tipo_operacion}</span>}
