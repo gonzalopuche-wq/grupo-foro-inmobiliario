@@ -103,6 +103,13 @@ export async function GET() {
       return NextResponse.json({ ok: false, total: 0, debug }, { status: 200 });
     }
 
+    // Safety guard: require a meaningful number of records before wiping the table.
+    // If COCIR returns an unusually small payload (bot block, error page, etc.)
+    // we skip the replace to avoid leaving cocir_padron empty.
+    if (registros.length < 100) {
+      return NextResponse.json({ ok: false, total: registros.length, error: "Demasiado pocos registros para reemplazar el padrón — posible bloqueo o cambio de formato", debug }, { status: 200 });
+    }
+
     await sb.from("cocir_padron").delete().neq("matricula", "");
     const { error } = await sb.from("cocir_padron").insert(registros);
 

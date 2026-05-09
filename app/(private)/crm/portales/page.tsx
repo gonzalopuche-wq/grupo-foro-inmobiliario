@@ -23,7 +23,7 @@ export default function PortalesPage() {
         .from("portal_credenciales")
         .select("tokko_key, kiteprop_key")
         .eq("perfil_id", data.user.id)
-        .single();
+        .maybeSingle();
       if (creds) {
         setTokkoKey(creds.tokko_key ?? "");
         setKitepropKey(creds.kiteprop_key ?? "");
