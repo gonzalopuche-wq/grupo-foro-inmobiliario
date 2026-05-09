@@ -97,7 +97,7 @@ function mapearAKiteProp(p: any) {
 async function getPerUserKey(perfilId: string, portal: "tokko" | "kiteprop"): Promise<string | null> {
   try {
     const { data } = await supabase.from("portal_credenciales").select(`${portal}_key`).eq("perfil_id", perfilId).single();
-    return data?.[`${portal}_key`] ?? null;
+    return (data as any)?.[`${portal}_key`] ?? null;
   } catch { return null; }
 }
 
