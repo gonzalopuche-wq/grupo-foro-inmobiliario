@@ -237,11 +237,14 @@ export default function CarteraPage() {
   const [form, setForm] = useState<any>(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
 
-  // Importar desde URL de portal
+  // Importar desde URL de portal / Tokko / CSV
   const [mostrarImportar, setMostrarImportar] = useState(false);
+  const [tabImport, setTabImport] = useState<"url" | "tokko" | "csv">("url");
   const [urlImport, setUrlImport] = useState("");
   const [importando, setImportando] = useState(false);
   const [importError, setImportError] = useState("");
+  const [importResult, setImportResult] = useState<{ importadas: number; saltadas?: number; errores?: string[] } | null>(null);
+  const [csvTexto, setCsvTexto] = useState("");
 
   // Contactos CRM (para vincular propietario)
   const [contactosCRM, setContactosCRM] = useState<{id:string;nombre:string|null;apellido:string|null}[]>([]);
@@ -376,6 +379,50 @@ export default function CarteraPage() {
       setImportError(e.message || "Error desconocido");
     }
     setImportando(false);
+  };
+
+  // ── Importar desde Tokko (bulk) ───────────────────────────────────────────
+  const importarDesdeTokko = async () => {
+    if (!userId) return;
+    setImportando(true);
+    setImportError("");
+    setImportResult(null);
+    try {
+      const res = await fetch(`/api/cartera/import-tokko?perfil_id=${userId}`);
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || "Error al importar desde Tokko");
+      setImportResult({ importadas: json.importadas, saltadas: json.saltadas, errores: json.errores });
+      if (json.importadas > 0) await cargar(userId);
+    } catch (e: any) {
+      setImportError(e.message || "Error desconocido");
+    }
+    setImportando(false);
+  };
+
+  // ── Importar desde CSV ────────────────────────────────────────────────────
+  const importarDesdeCSV = async () => {
+    if (!userId || !csvTexto.trim()) return;
+    setImportando(true);
+    setImportError("");
+    setImportResult(null);
+    try {
+      const res = await fetch("/api/cartera/import-csv", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ csv: csvTexto, perfil_id: userId }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || "Error al importar CSV");
+      setImportResult({ importadas: json.importadas, errores: json.errores });
+      if (json.importadas > 0) await cargar(userId);
+    } catch (e: any) {
+      setImportError(e.message || "Error desconocido");
+    }
+    setImportando(false);
+  };
+
+  const descargarPlantillaCSV = () => {
+    window.open("/api/cartera/import-csv", "_blank");
   };
 
   // ── Abrir wizard ──────────────────────────────────────────────────────────
@@ -752,9 +799,11 @@ export default function CarteraPage() {
             <div className="cart-stat"><span className="cart-stat-val" style={{color:"#22c55e"}}>{propiedades.filter(p=>p.estado==="activa").length}</span><span className="cart-stat-label">Activas</span></div>
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <Link href="/crm/visitas" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>📋 Visitas</Link>
+            <Link href="/crm/estadisticas" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>📊 Stats</Link>
             <Link href="/crm/portales" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>🔗 Portales</Link>
             <Link href="/crm/cartera/parametros" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>⚙ Parámetros</Link>
-            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setUrlImport(""); }}>↓ Importar</button>
+            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setTabImport("url"); }}>↓ Importar</button>
             <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
           </div>
         </div>
@@ -1390,44 +1439,108 @@ export default function CarteraPage() {
       )}
 
       {/* ═══════════════════════════════════════
-          MODAL IMPORTAR DESDE URL DE PORTAL
+          MODAL IMPORTAR (URL · Tokko Bulk · CSV)
       ═══════════════════════════════════════ */}
       {mostrarImportar && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 32, width: "100%", maxWidth: 520 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 6 }}>↓ Importar desde portal</div>
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 20, lineHeight: 1.5 }}>
-              Pegá la URL de una propiedad de ZonaProp, Argenprop, MercadoLibre, Red Propia u otros portales. Los datos disponibles se pre-cargarán en el formulario para que los completes o corrijas.
-            </p>
-            <div style={{ display: "flex", gap: 8, marginBottom: importError ? 8 : 20 }}>
-              <input
-                value={urlImport}
-                onChange={e => setUrlImport(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && importarDesdeUrl()}
-                placeholder="https://www.zonaprop.com.ar/..."
-                style={{ flex: 1, padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none" }}
-              />
-              <button
-                onClick={importarDesdeUrl}
-                disabled={importando || !urlImport.trim()}
-                style={{ padding: "10px 18px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 6, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
-              >
-                {importando ? "Importando…" : "Importar"}
-              </button>
+          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 580 }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 17, fontWeight: 800, color: "#fff", marginBottom: 18 }}>↓ Importar propiedades</div>
+
+            {/* Tabs */}
+            <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: 22 }}>
+              {(["url", "tokko", "csv"] as const).map(t => (
+                <button key={t} onClick={() => { setTabImport(t); setImportError(""); setImportResult(null); }}
+                  style={{ padding: "8px 16px", background: "none", border: "none", borderBottom: `2px solid ${tabImport === t ? "#cc0000" : "transparent"}`, color: tabImport === t ? "#fff" : "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
+                  {t === "url" ? "URL de portal" : t === "tokko" ? "Tokko Broker" : "CSV / Excel"}
+                </button>
+              ))}
             </div>
+
+            {/* Tab: URL individual */}
+            {tabImport === "url" && (
+              <>
+                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.6 }}>
+                  Pegá la URL de una propiedad de ZonaProp, Argenprop, MercadoLibre u otros portales. Los datos se pre-cargarán en el formulario.
+                </p>
+                <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                  <input value={urlImport} onChange={e => setUrlImport(e.target.value)} onKeyDown={e => e.key === "Enter" && importarDesdeUrl()}
+                    placeholder="https://www.zonaprop.com.ar/..."
+                    style={{ flex: 1, padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none" }} />
+                  <button onClick={importarDesdeUrl} disabled={importando || !urlImport.trim()}
+                    style={{ padding: "10px 18px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 6, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", opacity: importando || !urlImport.trim() ? 0.5 : 1 }}>
+                    {importando ? "Importando…" : "Importar"}
+                  </button>
+                </div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>ZonaProp · Argenprop · MercadoLibre · Red Propia · Ficha.info · Properati</div>
+              </>
+            )}
+
+            {/* Tab: Tokko bulk */}
+            {tabImport === "tokko" && (
+              <>
+                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.6 }}>
+                  Importa <strong style={{color:"rgba(255,255,255,0.7)"}}>todas tus propiedades</strong> desde Tokko Broker de una sola vez. Requiere tu API key configurada en <a href="/crm/portales" style={{color:"#cc0000"}}>Portales</a>. Las ya importadas se saltean automáticamente.
+                </p>
+                {importResult ? (
+                  <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: 16, marginBottom: 16 }}>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#22c55e", marginBottom: 6 }}>
+                      ✓ {importResult.importadas} propiedad{importResult.importadas !== 1 ? "es" : ""} importada{importResult.importadas !== 1 ? "s" : ""}
+                    </div>
+                    {importResult.saltadas !== undefined && importResult.saltadas > 0 && (
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{importResult.saltadas} ya existían y se saltaron</div>
+                    )}
+                    {importResult.errores && importResult.errores.length > 0 && (
+                      <div style={{ marginTop: 8, fontSize: 11, color: "#f87171" }}>{importResult.errores.slice(0, 5).join(" · ")}</div>
+                    )}
+                  </div>
+                ) : (
+                  <button onClick={importarDesdeTokko} disabled={importando}
+                    style={{ width: "100%", padding: "12px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", marginBottom: 12, opacity: importando ? 0.6 : 1 }}>
+                    {importando ? "Importando desde Tokko…" : "↓ Importar todo desde Tokko"}
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Tab: CSV */}
+            {tabImport === "csv" && (
+              <>
+                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 12, lineHeight: 1.6 }}>
+                  Pegá o subí un CSV con tus propiedades. Funciona con exportaciones de cualquier CRM.{" "}
+                  <button onClick={descargarPlantillaCSV} style={{ background: "none", border: "none", color: "#cc0000", cursor: "pointer", fontSize: 12, padding: 0, textDecoration: "underline" }}>
+                    Descargar plantilla
+                  </button>
+                </p>
+                <textarea value={csvTexto} onChange={e => setCsvTexto(e.target.value)}
+                  placeholder={"titulo,tipo,operacion,precio,moneda,ciudad...\nDepartamento Pichincha,Departamento,Venta,120000,USD,Rosario..."}
+                  style={{ width: "100%", height: 120, padding: "10px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "monospace", marginBottom: 12 }} />
+                {importResult ? (
+                  <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: 14, marginBottom: 12 }}>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#22c55e" }}>
+                      ✓ {importResult.importadas} propiedad{importResult.importadas !== 1 ? "es" : ""} importada{importResult.importadas !== 1 ? "s" : ""}
+                    </div>
+                    {importResult.errores && importResult.errores.length > 0 && (
+                      <div style={{ marginTop: 6, fontSize: 11, color: "#f87171" }}>{importResult.errores.slice(0, 5).join(" · ")}</div>
+                    )}
+                  </div>
+                ) : (
+                  <button onClick={importarDesdeCSV} disabled={importando || !csvTexto.trim()}
+                    style={{ width: "100%", padding: "11px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: importando || !csvTexto.trim() ? 0.5 : 1 }}>
+                    {importando ? "Importando…" : "Importar desde CSV"}
+                  </button>
+                )}
+              </>
+            )}
+
             {importError && (
-              <div style={{ fontSize: 12, color: "#f87171", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: 6, padding: "8px 12px", marginBottom: 14 }}>
+              <div style={{ fontSize: 12, color: "#f87171", background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: 6, padding: "8px 12px", marginTop: 10 }}>
                 ⚠️ {importError}
               </div>
             )}
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginBottom: 20 }}>
-              Portales soportados: ZonaProp · Argenprop · MercadoLibre · Red Propia · Ficha.info · Properati
-            </div>
-            <button
-              onClick={() => { setMostrarImportar(false); setImportError(""); }}
-              style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 12, cursor: "pointer", fontFamily: "Inter,sans-serif" }}
-            >
-              Cancelar
+
+            <button onClick={() => { setMostrarImportar(false); setImportError(""); setImportResult(null); }}
+              style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 12, cursor: "pointer", fontFamily: "Inter,sans-serif", marginTop: 18 }}>
+              Cerrar
             </button>
           </div>
         </div>
