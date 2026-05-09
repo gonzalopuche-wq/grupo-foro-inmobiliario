@@ -156,6 +156,18 @@ ${resultado.recomendacion}`
 
   return (
     <div style={{ maxWidth: 820, margin: '0 auto', padding: '24px 0 64px' }}>
+      <style>{`
+        @media print {
+          @page { margin: 1.5cm; }
+          body { background: #fff !important; }
+          .sidebar, .topbar, .sidebar-overlay { display: none !important; }
+          .main-content { margin-left: 0 !important; }
+          .page-content { padding: 0 !important; }
+          .no-print { display: none !important; }
+          * { color: #111 !important; background: transparent !important; border-color: #e0e0e0 !important; box-shadow: none !important; }
+          a { color: #1a56db !important; }
+        }
+      `}</style>
 
       {toast && (
         <div style={{ position: 'fixed', bottom: 24, right: 24, background: '#111', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
@@ -172,7 +184,7 @@ ${resultado.recomendacion}`
             Tasaciones instantáneas con inteligencia artificial · {historial.length} en historial
           </p>
         </div>
-        <button onClick={() => setMostrandoHistorial(h => !h)} style={{ padding: '9px 18px', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+        <button className="no-print" onClick={() => setMostrandoHistorial(h => !h)} style={{ padding: '9px 18px', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
           {mostrandoHistorial ? '← Volver' : '📋 Historial'}
         </button>
       </div>
@@ -216,7 +228,7 @@ ${resultado.recomendacion}`
         <div style={{ display: 'grid', gridTemplateColumns: resultado ? '1fr 1fr' : '1fr', gap: 20 }}>
 
           {/* Formulario */}
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 20 }}>
+          <div className="no-print" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 20 }}>
             <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Datos de la propiedad</div>
 
             {/* Tipo y operación */}
@@ -447,12 +459,12 @@ ${resultado.recomendacion}`
               </div>
 
               {/* Acciones */}
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div className="no-print" style={{ display: 'flex', gap: 8 }}>
                 <button onClick={copiarResultado} style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
                   📋 Copiar tasación
                 </button>
                 <button onClick={() => window.print()} style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
-                  🖨 Imprimir
+                  🖨 Imprimir / PDF
                 </button>
               </div>
 

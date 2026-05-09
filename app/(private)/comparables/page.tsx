@@ -291,6 +291,7 @@ export default function ComparablesPage() {
         .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        @media print { body * { display: none !important; } }
       `}</style>
 
       <div className="cmp-wrap">

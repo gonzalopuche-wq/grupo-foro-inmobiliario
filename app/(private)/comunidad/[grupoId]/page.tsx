@@ -181,7 +181,6 @@ export default function GrupoChatPage() {
     } catch (err: any) {
       const name = err?.name ?? "Error";
       const msg = err?.message ?? "";
-      console.error("[mic]", name, msg, err);
       if (enIframe) {
         showToast(`⚠ App embebida bloquea el micrófono. Abrí en pestaña nueva. (${name})`);
       } else if (name === "NotAllowedError" || name === "PermissionDeniedError") {
@@ -211,16 +210,9 @@ export default function GrupoChatPage() {
     const { error: upErr } = await supabase.storage.from("adjuntos_chat").upload(path, file, { contentType: mime, cacheControl:"3600", upsert:false });
     if (upErr) { showToast(`Error al subir: ${upErr.message}`); setSubiendoAudio(false); return; }
     const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
-    // Intentar con perfil_id primero (columna original), si falla intentar con user_id
     const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: "", adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
     if (replyMsg?.id) ins.reply_id = replyMsg.id;
-    let { error: insErr } = await supabase.from("mensajes_chat").insert(ins);
-    if (insErr?.message?.includes("perfil_id")) {
-      const ins2: any = { grupo_id: grupoId, user_id: userId, texto: "", adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
-      if (replyMsg?.id) ins2.reply_id = replyMsg.id;
-      const { error: insErr2 } = await supabase.from("mensajes_chat").insert(ins2);
-      insErr = insErr2 ?? null;
-    }
+    const { error: insErr } = await supabase.from("mensajes_chat").insert(ins);
     if (insErr) { showToast(`Error al enviar: ${insErr.message}`); setSubiendoAudio(false); return; }
     setAudioBlob(null); setAudioUrl(null); setAudioSeg(0); setReplyMsg(null); setSubiendoAudio(false);
     // Forzar recarga para que aparezca el mensaje de audio en el chat
