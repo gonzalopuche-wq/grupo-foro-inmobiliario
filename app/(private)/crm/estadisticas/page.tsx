@@ -12,6 +12,8 @@ interface Stats {
   valorTotal: Record<string, number>;
   syncStatus: { tokko: number; kiteprop: number; sinSync: number };
   recientes: { id: string; titulo: string; estado: string; created_at: string }[];
+  leads: { total: number; porEstado: Record<string, number>; porOrigen: Record<string, number> };
+  visitas: { total: number; porEstado: Record<string, number> };
 }
 
 const ESTADO_COLOR: Record<string, string> = {
@@ -65,9 +67,11 @@ export default function EstadisticasPage() {
   }, []);
 
   const cargarStats = async (uid: string) => {
-    const [{ data: props }, { data: syncs }] = await Promise.all([
+    const [{ data: props }, { data: syncs }, { data: leadsRaw }, { data: visitasRaw }] = await Promise.all([
       supabase.from("cartera_propiedades").select("id, titulo, estado, operacion, tipo, precio, moneda, created_at").eq("perfil_id", uid),
       supabase.from("cartera_sync_portales").select("propiedad_id, tokko_id, kiteprop_id"),
+      supabase.from("crm_leads").select("estado, origen").eq("perfil_id", uid),
+      supabase.from("cartera_visitas").select("estado").eq("perfil_id", uid),
     ]);
 
     const all = props ?? [];
@@ -92,6 +96,14 @@ export default function EstadisticasPage() {
       .slice(0, 5)
       .map(p => ({ id: p.id, titulo: p.titulo, estado: p.estado, created_at: p.created_at }));
 
+    const leads = leadsRaw ?? [];
+    const visitas = visitasRaw ?? [];
+    const countKey = (arr: any[], key: string) => {
+      const m: Record<string, number> = {};
+      arr.forEach(r => { const v = r[key] ?? "sin_dato"; m[v] = (m[v] ?? 0) + 1; });
+      return m;
+    };
+
     setStats({
       total: all.length,
       porEstado: count(all, "estado"),
@@ -104,6 +116,8 @@ export default function EstadisticasPage() {
         sinSync: all.filter(p => !syncedIds.has(p.id)).length,
       },
       recientes,
+      leads: { total: leads.length, porEstado: countKey(leads, "estado"), porOrigen: countKey(leads, "origen") },
+      visitas: { total: visitas.length, porEstado: countKey(visitas, "estado") },
     });
   };
 
@@ -219,6 +233,42 @@ export default function EstadisticasPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Leads inbox */}
+              {stats.leads.total > 0 && (
+                <div className="est-section">
+                  <div className="est-section-title">Inbox de leads ({stats.leads.total})</div>
+                  <div className="est-panel-2col">
+                    <div className="est-panel">
+                      <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>Por estado</div>
+                      {[["nuevo","#f59e0b"],["contactado","#60a5fa"],["en_seguimiento","#a855f7"],["visita_coordinada","#22c55e"],["cerrado","#6b7280"],["descartado","#6b7280"]].map(([est, color]) => stats.leads.porEstado[est] ? (
+                        <StatBar key={est} label={est.replace(/_/g," ")} count={stats.leads.porEstado[est]} total={stats.leads.total} color={color} />
+                      ) : null)}
+                    </div>
+                    <div className="est-panel">
+                      <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>Por origen</div>
+                      {Object.entries(stats.leads.porOrigen).sort(([,a],[,b]) => b-a).map(([origen, n]) => (
+                        <StatBar key={origen} label={origen} count={n} total={stats.leads.total} color="rgba(204,0,0,0.8)" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Visitas */}
+              {stats.visitas.total > 0 && (
+                <div className="est-section">
+                  <div className="est-section-title">Órdenes de visita ({stats.visitas.total})</div>
+                  <div className="est-panel" style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+                    {Object.entries(stats.visitas.porEstado).map(([est, n]) => (
+                      <div key={est}>
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{est.replace(/_/g," ")}</div>
+                        <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: est === "realizada" ? "#22c55e" : est === "cancelada" ? "#6b7280" : "#fff" }}>{n}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Recientes */}
               {stats.recientes.length > 0 && (

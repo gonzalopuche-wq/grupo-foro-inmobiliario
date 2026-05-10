@@ -261,6 +261,9 @@ export default function CarteraPage() {
   const [compartiendo, setCompartiendo] = useState<string | null>(null);
   const [generandoDesc, setGenerandoDesc] = useState(false);
   const [tonoDesc, setTonoDesc] = useState<'profesional' | 'premium' | 'amigable' | 'vendedor'>('profesional');
+  const [perfilData, setPerfilData] = useState<{nombre:string;apellido:string;telefono:string|null}|null>(null);
+  const [generandoPost, setGenerandoPost] = useState<string|null>(null);
+  const [postModal, setPostModal] = useState<{titulo:string;caption:string;hashtags:string}|null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -278,6 +281,8 @@ export default function CarteraPage() {
       }
 
       setUserId(efectivoId);
+      const { data: pd } = await supabase.from("perfiles").select("nombre,apellido,telefono").eq("id", efectivoId).single();
+      if (pd) setPerfilData(pd as any);
       await cargar(efectivoId);
       const { data: ctcs } = await supabase
         .from("crm_contactos")
@@ -601,6 +606,37 @@ export default function CarteraPage() {
     setCompartiendo(null);
   };
 
+  const compartirWhatsApp = (p: any) => {
+    const precio = p.precio ? `${p.moneda ?? "USD"} ${p.precio.toLocaleString("es-AR")}` : "A consultar";
+    const loc = [p.ciudad, p.zona, p.barrio].filter(Boolean).join(", ");
+    const feats: string[] = [];
+    if (p.dormitorios) feats.push(`${p.dormitorios} dorm.`);
+    if (p.banos) feats.push(`${p.banos} baños`);
+    if (p.superficie_cubierta) feats.push(`${p.superficie_cubierta}m² cub.`);
+    const agente = perfilData ? `${perfilData.nombre} ${perfilData.apellido}` : "";
+    const tel = perfilData?.telefono ? `\n📞 ${perfilData.telefono}` : "";
+    const msg = [
+      `🏠 *${p.titulo || p.direccion || "Propiedad"}*`,
+      loc ? `📍 ${loc}` : null,
+      `💰 ${precio}`,
+      feats.length ? feats.join(" · ") : null,
+      `🏷 ${p.operacion ?? ""} · ${p.tipo ?? ""}`,
+      tel,
+      agente ? `\n👉 Consultá con ${agente}` : null,
+    ].filter(Boolean).join("\n");
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  const generarPostRRSS = async (p: any) => {
+    setGenerandoPost(p.id);
+    try {
+      const res = await fetch("/api/ia-post-rrss", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({propiedad_id: p.id}) });
+      const json = await res.json();
+      if (json.caption) setPostModal({titulo: p.titulo || "Propiedad", caption: json.caption, hashtags: json.hashtags ?? ""});
+    } catch {}
+    setGenerandoPost(null);
+  };
+
   const sincronizarPortal = async (propiedadId: string, portales: string[]) => {
     setSincronizando(propiedadId);
     try {
@@ -899,6 +935,8 @@ export default function CarteraPage() {
                   <div className="cart-card-acciones">
                     <button className="cart-acc-btn cart-acc-editar" onClick={() => abrirEditar(p)}>Editar</button>
                     <a href={`/cartera/ficha/${p.id}`} target="_blank" rel="noopener noreferrer" className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.45)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}}>📄 Ficha</a>
+                    <button className="cart-acc-btn" onClick={() => compartirWhatsApp(p)} title="Compartir por WhatsApp" style={{background:"rgba(34,197,94,0.07)",border:"1px solid rgba(34,197,94,0.15)",color:"#22c55e"}}>📲 WA</button>
+                    <button className="cart-acc-btn" onClick={() => generarPostRRSS(p)} disabled={generandoPost === p.id} title="Generar post para Instagram/Facebook con IA" style={{background:"rgba(168,85,247,0.07)",border:"1px solid rgba(168,85,247,0.15)",color:"#a855f7"}}>{generandoPost === p.id ? "..." : "🎯 Post"}</button>
                     <select className="cart-estado-select" value={p.estado} onChange={e => cambiarEstado(p.id, e.target.value)}>
                       {ESTADOS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </select>
@@ -1544,6 +1582,27 @@ export default function CarteraPage() {
               style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 12, cursor: "pointer", fontFamily: "Inter,sans-serif", marginTop: 18 }}>
               Cerrar
             </button>
+          </div>
+        </div>
+      )}
+      {postModal && (
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={() => setPostModal(null)}>
+          <div style={{background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:24,maxWidth:480,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setPostModal(null)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:20,cursor:"pointer"}}>×</button>
+            <div style={{fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#a855f7",marginBottom:6}}>🎯 Post generado con IA</div>
+            <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:14,fontFamily:"Inter,sans-serif"}}>{postModal.titulo}</div>
+            <textarea readOnly value={postModal.caption + (postModal.hashtags ? `\n\n${postModal.hashtags}` : "")} rows={10}
+              style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:6,color:"#fff",fontFamily:"Inter,sans-serif",fontSize:12,padding:"10px 12px",resize:"none",boxSizing:"border-box",lineHeight:1.6}} />
+            <div style={{display:"flex",gap:8,marginTop:12}}>
+              <button onClick={() => { navigator.clipboard.writeText(postModal.caption + (postModal.hashtags ? `\n\n${postModal.hashtags}` : "")); }}
+                style={{flex:1,padding:"9px 0",background:"rgba(168,85,247,0.12)",border:"1px solid rgba(168,85,247,0.25)",borderRadius:6,color:"#a855f7",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                📋 Copiar
+              </button>
+              <button onClick={() => setPostModal(null)}
+                style={{padding:"9px 16px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:6,color:"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                Cerrar
+              </button>
+            </div>
           </div>
         </div>
       )}
