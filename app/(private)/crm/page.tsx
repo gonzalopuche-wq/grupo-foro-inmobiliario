@@ -1054,6 +1054,7 @@ export default function CrmPage() {
             </button>
           ))}
           <div className="crm-tabs-spacer" />
+          <Link href="/crm/portales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔗 Portales</Link>
           <Link href="/crm/cartera" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Cartera</Link>
           <Link href="/agenda" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📆 Agenda</Link>
         </div>

@@ -203,7 +203,7 @@ export default function AdminPage() {
     setProcesandoEvProp(ev.id);
     await supabase.from("eventos").update({ estado: "publicado" }).eq("id", ev.id);
     await supabase.from("notificaciones").insert({
-      perfil_id: ev.organizador_id,
+      user_id: ev.organizador_id,
       tipo: "evento_aprobado",
       titulo: "Evento aprobado ✓",
       mensaje: `Tu evento "${ev.titulo}" fue aprobado y publicado.`,
@@ -218,7 +218,7 @@ export default function AdminPage() {
     setProcesandoEvProp(ev.id);
     await supabase.from("eventos").update({ estado: "cancelado" }).eq("id", ev.id);
     await supabase.from("notificaciones").insert({
-      perfil_id: ev.organizador_id,
+      user_id: ev.organizador_id,
       tipo: "evento_rechazado",
       titulo: "Propuesta no aprobada",
       mensaje: `Tu propuesta de evento "${ev.titulo}" no fue aprobada. Podés contactar al admin.`,
@@ -267,7 +267,7 @@ export default function AdminPage() {
     }
     // Notificar al corredor titular
     await supabase.from("notificaciones").insert({
-      perfil_id: c.corredor_id,
+      user_id: c.corredor_id,
       tipo: "colaborador_aprobado",
       titulo: "Colaborador aprobado ✓",
       mensaje: `${c.apellido}, ${c.nombre} fue aprobado como colaborador de tu cuenta.`,
@@ -294,7 +294,7 @@ export default function AdminPage() {
     setProcesandoColab(c.id);
     await supabase.from("colaboradores").update({ estado: "suspendido" }).eq("id", c.id);
     await supabase.from("notificaciones").insert({
-      perfil_id: c.corredor_id,
+      user_id: c.corredor_id,
       tipo: "colaborador_rechazado",
       titulo: "Colaborador no aprobado",
       mensaje: `${c.apellido}, ${c.nombre} no fue aprobado como colaborador. Contactá al admin.`,
@@ -391,6 +391,7 @@ export default function AdminPage() {
     setImportandoPadron(false);
     e.target.value = "";
   };
+
 
   const cargarPagos = async () => {
     setLoadingPagos(true);
