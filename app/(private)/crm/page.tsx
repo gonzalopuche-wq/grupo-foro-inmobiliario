@@ -1060,6 +1060,8 @@ export default function CrmPage() {
           <Link href="/crm/honorarios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Honorarios</Link>
           <Link href="/crm/metas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Metas</Link>
           <Link href="/crm/post-cierre" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Post-cierre</Link>
+          <Link href="/crm/escrituras" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚖️ Escrituras</Link>
+          <Link href="/crm/alianzas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Alianzas</Link>
           <Link href="/agenda" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📆 Agenda</Link>
         </div>
 
