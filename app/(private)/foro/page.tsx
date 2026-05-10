@@ -800,7 +800,20 @@ export default function ForoPage() {
                   <span className="f-meta">💬 {topic.replies_count}</span>
                 </div>
                 <div className="f-card-body">{topic.body}</div>
-                {(topic.forum_topic_tags ?? []).length > 0 && <div className="f-tags-row" style={{marginTop:14}}>{(topic.forum_topic_tags ?? []).map((tt: any) => <span key={tt.forum_tags?.id} className="f-tag">{tt.forum_tags?.name}</span>)}</div>}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
+                  <div>{(topic.forum_topic_tags ?? []).length > 0 && <div className="f-tags-row">{(topic.forum_topic_tags ?? []).map((tt: any) => <span key={tt.forum_tags?.id} className="f-tag">{tt.forum_tags?.name}</span>)}</div>}</div>
+                  {topic.author_id !== userId && (
+                    <button onClick={() => {
+                      const motivo = prompt("Motivo de la denuncia:\n1. spam\n2. ofensivo\n3. incorrecto\n4. acoso\n5. otro\n\nEscribí el número:");
+                      const motivos = ["spam","ofensivo","incorrecto","acoso","otro"];
+                      const mot = motivos[(parseInt(motivo ?? "5") || 5) - 1] ?? "otro";
+                      fetch("/api/denuncias", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ denunciante_id: userId, tipo_contenido:"forum_topic", contenido_id: topic.id, motivo: mot }) });
+                      alert("Denuncia enviada. El equipo de moderación la revisará.");
+                    }} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.25)",cursor:"pointer",fontSize:11,padding:"2px 6px"}} title="Denunciar post">
+                      ⚑ Denunciar
+                    </button>
+                  )}
+                </div>
               </div>
               {replies.length > 0 && (
                 <div>

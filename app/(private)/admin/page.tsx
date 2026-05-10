@@ -175,6 +175,7 @@ export default function AdminPage() {
   const [bonifConfig, setBonifConfig] = useState<{id:string;accion:string;descuento_usd:number;descripcion:string|null}[]>([]);
   const [editandoBonif, setEditandoBonif] = useState<Record<string,string>>({});
   const [guardandoBonif, setGuardandoBonif] = useState<string|null>(null);
+  const [denuncias, setDenuncias] = useState<{id:string;tipo_contenido:string;contenido_id:string;motivo:string;descripcion:string|null;estado:string;created_at:string}[]>([]);
 
   useEffect(() => {
     const verificar = async () => {
@@ -186,6 +187,8 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
+      const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
+      setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
       setRedesConfig(adminSocial?.configuracion?.redes_sociales ?? {});
     };
@@ -1086,6 +1089,35 @@ export default function AdminPage() {
                     <div className="adm-ind-form">
                       <input className="adm-ind-input" value={editandoBonif[b.accion] ?? ""} onChange={e => setEditandoBonif(prev => ({ ...prev, [b.accion]: e.target.value }))} placeholder="Ej: 1.50" />
                       <button className="adm-ind-btn" onClick={() => guardarBonif(b.id, b.accion)} disabled={guardandoBonif === b.accion}>{guardandoBonif === b.accion ? "..." : "Guardar"}</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── DENUNCIAS ── */}
+          {denuncias.length > 0 && (
+            <div>
+              <div className="adm-ind-titulo">Denuncias <span>Pendientes</span></div>
+              <div className="adm-ind-subtitulo">Revisá y moderá el contenido denunciado por los corredores.</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {denuncias.map(d => (
+                  <div key={d.id} style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", gap: 14 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, color: "#f8fafc", fontSize: 13 }}>⚑ {d.tipo_contenido} · Motivo: {d.motivo}</div>
+                      {d.descripcion && <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 2 }}>{d.descripcion}</div>}
+                      <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 4 }}>ID: {d.contenido_id.slice(0, 12)}... · {new Date(d.created_at).toLocaleDateString("es-AR")}</div>
+                    </div>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button onClick={async () => { await supabase.from("denuncias").update({ estado: "resuelto" }).eq("id", d.id); setDenuncias(prev => prev.filter(x => x.id !== d.id)); }}
+                        style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
+                        Resuelto
+                      </button>
+                      <button onClick={async () => { await supabase.from("denuncias").update({ estado: "rechazado" }).eq("id", d.id); setDenuncias(prev => prev.filter(x => x.id !== d.id)); }}
+                        style={{ background: "transparent", color: "rgba(255,255,255,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 12 }}>
+                        Rechazar
+                      </button>
                     </div>
                   </div>
                 ))}
