@@ -250,7 +250,7 @@ export default function InboxPage() {
                       <span className="in-badge-estado" style={{ background: `${estadoColor}22`, color: estadoColor, border: `1px solid ${estadoColor}44` }}>
                         {l.estado.replace("_", " ")}
                       </span>
-                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: prioColor, display: "inline-block", title: `Prioridad ${l.prioridad}` }} />
+                      <span title={`Prioridad ${l.prioridad}`} style={{ width: 8, height: 8, borderRadius: "50%", background: prioColor, display: "inline-block" }} />
                     </div>
                     {l.cartera_propiedades && <div className="in-prop">🏠 {l.cartera_propiedades.titulo}</div>}
                     {l.mensaje && <div className="in-msg">"{l.mensaje.slice(0, 120)}{l.mensaje.length > 120 ? "…" : ""}"</div>}
