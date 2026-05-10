@@ -103,6 +103,11 @@ export default async function FichaPage({ params }: Props) {
         .ficha-corredor-link:hover { background: rgba(255,255,255,0.12); }
         .ficha-gfi { text-align: center; margin-top: 20px; font-size: 10px; color: #bbb; font-family: 'Montserrat',sans-serif; letter-spacing: 0.12em; }
 
+        /* Google Maps embed */
+        .ficha-mapa { margin-top: 24px; border-radius: 10px; overflow: hidden; border: 1px solid #eee; }
+        .ficha-mapa iframe { display: block; width: 100%; height: 240px; border: 0; }
+        .ficha-mapa-label { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #999; padding: 10px 0 6px; }
+
         @media (max-width: 640px) {
           .ficha-body { padding: 20px 16px; }
           .ficha-fotos { height: 240px; }
@@ -239,6 +244,25 @@ export default async function FichaPage({ params }: Props) {
               <p className="ficha-desc" style={{ color: "#888", fontStyle: "italic" }}>{prop.observaciones}</p>
             </>
           )}
+
+          {/* Google Maps */}
+          {(prop.direccion || prop.ciudad) && (() => {
+            const q = encodeURIComponent([prop.direccion, prop.zona, prop.ciudad, "Argentina"].filter(Boolean).join(", "));
+            return (
+              <>
+                <hr className="ficha-divider" />
+                <div className="ficha-mapa-label">Ubicación en mapa</div>
+                <div className="ficha-mapa">
+                  <iframe
+                    src={`https://maps.google.com/maps?q=${q}&output=embed&z=15`}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Ubicación de la propiedad"
+                  />
+                </div>
+              </>
+            );
+          })()}
 
           {/* Corredor */}
           <div className="ficha-corredor">

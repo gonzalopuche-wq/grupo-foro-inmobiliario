@@ -41,6 +41,8 @@ interface Perfil {
   celular_oficina: string | null;
   celular_personal: string | null;
   celular_mostrar: "oficina" | "personal" | null;
+  modo_silencioso: boolean;
+  silencioso_hasta: string | null;
 }
 
 const ESPECIALIDADES_OPCIONES = [
@@ -151,6 +153,8 @@ export default function PerfilPage() {
       celular_oficina: perfil.celular_oficina,
       celular_personal: perfil.celular_personal,
       celular_mostrar: perfil.celular_mostrar,
+      modo_silencioso: perfil.modo_silencioso,
+      silencioso_hasta: perfil.silencioso_hasta ?? null,
     }).eq("id", userId);
     setGuardando(false);
     if (error) { mostrarToast("Error al guardar", "err"); return; }
@@ -594,6 +598,26 @@ export default function PerfilPage() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Modo silencioso */}
+              <div style={{ background: perfil.modo_silencioso ? "rgba(239,68,68,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${perfil.modo_silencioso ? "#ef444433" : "#ffffff11"}`, borderRadius: 10, padding: "14px 16px", marginBottom: 20 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: perfil.modo_silencioso ? 12 : 0 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: perfil.modo_silencioso ? "#ef4444" : "#f8fafc", fontSize: 14 }}>🔕 Modo silencioso</div>
+                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 2 }}>Pausá todas las notificaciones temporalmente</div>
+                  </div>
+                  <button className={`toggle-btn ${perfil.modo_silencioso ? "on" : "off"}`} onClick={() => set("modo_silencioso", !perfil.modo_silencioso)}>
+                    <div className="toggle-knob" />
+                  </button>
+                </div>
+                {perfil.modo_silencioso && (
+                  <div>
+                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 6 }}>Silencioso hasta:</div>
+                    <input type="datetime-local" value={perfil.silencioso_hasta?.slice(0, 16) ?? ""} onChange={e => set("silencioso_hasta", e.target.value || null)}
+                      style={{ background: "#1e293b", color: "#f8fafc", border: "1px solid #334155", borderRadius: 8, padding: "7px 12px", fontSize: 13, width: "100%", boxSizing: "border-box" }} />
+                  </div>
+                )}
               </div>
 
               {/* Tipos de notificación */}
