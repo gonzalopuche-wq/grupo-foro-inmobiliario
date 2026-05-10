@@ -96,7 +96,7 @@ export default function PerfilPage() {
         const [{ count: docs }, { count: comparables }, tasRes] = await Promise.all([
           supabase.from("biblioteca").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).eq("estado", "aprobado"),
           supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id),
-          supabase.from("tasaciones").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).then(r => r).catch(() => ({ count: 0 })),
+          Promise.resolve(supabase.from("tasaciones").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id)).catch(() => ({ count: 0 })),
         ]);
         setRepStats({ docs: docs ?? 0, comparables: comparables ?? 0, meses, tasaciones: (tasRes as any).count ?? 0 });
       }
