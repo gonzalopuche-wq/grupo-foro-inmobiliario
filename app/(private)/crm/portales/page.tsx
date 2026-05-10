@@ -3,14 +3,33 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
+import { useSearchParams } from "next/navigation";
 
 export default function PortalesPage() {
+  const searchParams = useSearchParams();
   const [userId, setUserId] = useState<string | null>(null);
   const [tokkoKey, setTokkoKey] = useState("");
   const [kitepropKey, setKitepropKey] = useState("");
+  const [mlAppId, setMlAppId] = useState("");
+  const [mlAppSecret, setMlAppSecret] = useState("");
+  const [mlConectado, setMlConectado] = useState(false);
+  const [mlExpiresAt, setMlExpiresAt] = useState<string | null>(null);
+  const [googleConectado, setGoogleConectado] = useState(false);
+  const [googleExpiresAt, setGoogleExpiresAt] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [msg, setMsg] = useState("");
   const [globalStatus, setGlobalStatus] = useState<any>(null);
+
+  useEffect(() => {
+    const mlOk = searchParams.get("ml_ok");
+    const mlErr = searchParams.get("ml_error");
+    const gOk = searchParams.get("google_ok");
+    const gErr = searchParams.get("google_error");
+    if (mlOk) setMsg("MercadoLibre conectado correctamente.");
+    if (mlErr) setMsg(`Error al conectar ML: ${mlErr.replace(/_/g, " ")}`);
+    if (gOk) setMsg("Google Calendar conectado correctamente. ¡Listo para sincronizar visitas!");
+    if (gErr) setMsg(`Error al conectar Google: ${gErr.replace(/_/g, " ")}`);
+  }, [searchParams]);
 
   useEffect(() => {
     const init = async () => {
@@ -18,18 +37,22 @@ export default function PortalesPage() {
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
 
-      // Load saved keys
       const { data: creds } = await supabase
         .from("portal_credenciales")
-        .select("tokko_key, kiteprop_key")
+        .select("tokko_key,kiteprop_key,ml_app_id,ml_app_secret,ml_access_token,ml_token_expires_at")
         .eq("perfil_id", data.user.id)
         .maybeSingle();
       if (creds) {
         setTokkoKey(creds.tokko_key ?? "");
         setKitepropKey(creds.kiteprop_key ?? "");
+        setMlAppId(creds.ml_app_id ?? "");
+        setMlAppSecret(creds.ml_app_secret ?? "");
+        setMlConectado(!!creds.ml_access_token);
+        setMlExpiresAt(creds.ml_token_expires_at ?? null);
+        setGoogleConectado(!!(creds as any).google_access_token);
+        setGoogleExpiresAt((creds as any).google_token_expires_at ?? null);
       }
 
-      // Check global status
       const res = await fetch("/api/cartera/sync");
       if (res.ok) setGlobalStatus(await res.json());
     };
@@ -46,10 +69,21 @@ export default function PortalesPage() {
         perfil_id: userId,
         tokko_key: tokkoKey || null,
         kiteprop_key: kitepropKey || null,
+        ml_app_id: mlAppId || null,
+        ml_app_secret: mlAppSecret || null,
         updated_at: new Date().toISOString(),
       }, { onConflict: "perfil_id" });
     setGuardando(false);
     setMsg(error ? `Error: ${error.message}` : "Credenciales guardadas correctamente");
+  };
+
+  const conectarML = async () => {
+    if (!userId || !mlAppId || !mlAppSecret) {
+      setMsg("Guardá el App ID y App Secret antes de conectar.");
+      return;
+    }
+    await guardar();
+    window.location.href = `/api/ml-auth?perfil_id=${userId}`;
   };
 
   return (
@@ -77,6 +111,10 @@ export default function PortalesPage() {
         .port-msg-ok { background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); color:#22c55e; }
         .port-msg-err { background:rgba(200,0,0,0.1); border:1px solid rgba(200,0,0,0.2); color:#f87171; }
         .port-info-box { background:rgba(96,165,250,0.05); border:1px solid rgba(96,165,250,0.15); border-radius:8px; padding:12px 14px; font-size:12px; color:rgba(255,255,255,0.5); font-family:'Inter',sans-serif; line-height:1.6; margin-bottom:16px; }
+        .port-connect-btn { padding:9px 18px; background:rgba(255,230,0,0.12); border:1px solid rgba(255,230,0,0.25); border-radius:6px; color:#fde047; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:800; letter-spacing:0.04em; cursor:pointer; transition:opacity 0.15s; }
+        .port-connect-btn:hover { opacity:0.8; }
+        .port-connect-btn:disabled { opacity:0.4; cursor:not-allowed; }
+        .port-connected-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.25); border-radius:6px; font-size:11px; font-family:'Montserrat',sans-serif; font-weight:700; color:#22c55e; }
       `}</style>
 
       <div className="port-wrap">
@@ -145,6 +183,74 @@ export default function PortalesPage() {
               Encontrala en tu panel de KiteProp → Configuración → Integraciones
             </div>
           </div>
+        </div>
+
+        {/* MercadoLibre OAuth */}
+        <div className="port-card">
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+            <div className="port-card-title">🛒 MercadoLibre Inmuebles</div>
+            {mlConectado
+              ? <span className="port-connected-badge">✓ Conectado</span>
+              : <span className="port-status port-status-pending">Sin conectar</span>
+            }
+          </div>
+          <div className="port-card-sub">
+            Publicá propiedades en ML Inmuebles. Primero creá una app en developers.mercadolibre.com.ar,
+            luego ingresá tu App ID y Secret, y hacé clic en "Conectar con MercadoLibre".
+          </div>
+          {mlConectado && mlExpiresAt && (
+            <div style={{ marginBottom:10, fontSize:11, color:"rgba(255,255,255,0.3)", fontFamily:"Inter,sans-serif" }}>
+              Token vigente hasta: {new Date(mlExpiresAt).toLocaleString("es-AR")} · Se renueva automáticamente
+            </div>
+          )}
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:12 }}>
+            <div>
+              <div className="port-label">App ID</div>
+              <input className="port-input" type="text" placeholder="1234567" value={mlAppId} onChange={e => setMlAppId(e.target.value)} />
+              <div className="port-hint">Desde tu app en ML Developers</div>
+            </div>
+            <div>
+              <div className="port-label">App Secret</div>
+              <input className="port-input" type="password" placeholder="tu-client-secret" value={mlAppSecret} onChange={e => setMlAppSecret(e.target.value)} />
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+            <button className="port-connect-btn" onClick={conectarML} disabled={!mlAppId || !mlAppSecret}>
+              {mlConectado ? "Reconectar MercadoLibre" : "Conectar con MercadoLibre →"}
+            </button>
+            {mlConectado && (
+              <span style={{ fontSize:11, color:"rgba(255,255,255,0.25)", fontFamily:"Inter,sans-serif" }}>
+                El token se renueva automáticamente al publicar
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Google Calendar */}
+        <div className="port-card">
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+            <div className="port-card-title">📅 Google Calendar</div>
+            {googleConectado
+              ? <span className="port-connected-badge">✓ Conectado</span>
+              : <span className="port-status port-status-pending">Sin conectar</span>
+            }
+          </div>
+          <div className="port-card-sub">
+            Sincronizá tus visitas con Google Calendar automáticamente. Necesitás habilitar la API de Google Calendar en
+            console.cloud.google.com y agregar GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET en las variables de Vercel.
+          </div>
+          {googleConectado && googleExpiresAt && (
+            <div style={{ marginBottom:10, fontSize:11, color:"rgba(255,255,255,0.3)", fontFamily:"Inter,sans-serif" }}>
+              Token vigente hasta: {new Date(googleExpiresAt).toLocaleString("es-AR")} · Se renueva automáticamente
+            </div>
+          )}
+          <button
+            className="port-connect-btn"
+            onClick={() => { if (userId) window.location.href = `/api/google-auth?perfil_id=${userId}`; }}
+            disabled={!userId}
+          >
+            {googleConectado ? "Reconectar Google Calendar" : "Conectar con Google Calendar →"}
+          </button>
         </div>
 
         <button className="port-save-btn" onClick={guardar} disabled={guardando}>

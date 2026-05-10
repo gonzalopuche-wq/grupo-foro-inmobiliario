@@ -166,9 +166,11 @@ export default function AdminPage() {
   const [redesConfig, setRedesConfig] = useState<Record<string,string>>({});
   const [guardandoRedes, setGuardandoRedes] = useState(false);
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
-  // Sync COCIR
+  // Sync / Import COCIR
   const [syncingCocir, setSyncingCocir] = useState(false);
   const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total?: number; error?: string } | null>(null);
+  const [importandoPadron, setImportandoPadron] = useState(false);
+  const [importPadronRes, setImportPadronRes] = useState<{ ok: boolean; total?: number; error?: string; columnas_detectadas?: any } | null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -368,6 +370,28 @@ export default function AdminPage() {
     }
     setSyncingCocir(false);
   };
+
+  const importarPadronArchivo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const archivo = e.target.files?.[0];
+    if (!archivo) return;
+    setImportandoPadron(true);
+    setImportPadronRes(null);
+    try {
+      const fd = new FormData();
+      fd.append("archivo", archivo);
+      const res = await fetch("/api/admin/importar-padron", { method: "POST", body: fd });
+      const json = await res.json();
+      setImportPadronRes(json);
+      if (json.ok) mostrarToast(`✓ ${json.insertados ?? 0} nuevos · ${json.actualizados ?? 0} actualizados`);
+      else mostrarToast(json.error ?? "Error al importar", "err");
+    } catch {
+      setImportPadronRes({ ok: false, error: "Error de conexión" });
+      mostrarToast("Error de conexión", "err");
+    }
+    setImportandoPadron(false);
+    e.target.value = "";
+  };
+
 
   const cargarPagos = async () => {
     setLoadingPagos(true);
@@ -1010,32 +1034,75 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* ── SINCRONIZAR PADRÓN COCIR ── */}
+          {/* ── PADRÓN COCIR ── */}
           <div>
             <div className="adm-ind-titulo">Padrón <span>COCIR</span></div>
-            <div className="adm-ind-subtitulo">Actualizá el padrón de matriculados directamente desde cocir.org.ar. El cron lo ejecuta el día 1 de cada mes a las 4 AM.</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+            <div className="adm-ind-subtitulo" style={{ marginBottom: 16 }}>
+              Importá el Excel/CSV del padrón COCIR para tenerlo disponible en el sistema. Cuando ingresen nuevos matriculados, importá el archivo actualizado y el sistema lo reemplaza automáticamente.
+            </div>
+
+            {/* Import desde archivo */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{
+                display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer",
+                padding: "10px 20px", borderRadius: 4, fontFamily: "Montserrat,sans-serif",
+                fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
+                background: importandoPadron ? "rgba(255,255,255,0.04)" : "rgba(200,0,0,0.12)",
+                border: "1px solid rgba(200,0,0,0.4)", color: importandoPadron ? "rgba(255,255,255,0.4)" : "#fff",
+                pointerEvents: importandoPadron ? "none" : "auto",
+              }}>
+                {importandoPadron
+                  ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Importando...</>
+                  : "📂 Importar Excel / CSV del padrón"}
+                <input type="file" accept=".xlsx,.xls,.csv,.ods" onChange={importarPadronArchivo} style={{ display: "none" }} />
+              </label>
+              <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
+                Formatos soportados: .xlsx · .xls · .csv — Columnas detectadas automáticamente por nombre (matrícula, apellido, nombre, estado, inmobiliaria, etc.)
+              </div>
+            </div>
+
+            {/* Resultado import */}
+            {importPadronRes && (
+              <div style={{
+                padding: "12px 16px", borderRadius: 4, marginBottom: 12,
+                background: importPadronRes.ok ? "rgba(34,197,94,0.06)" : "rgba(200,0,0,0.06)",
+                border: `1px solid ${importPadronRes.ok ? "rgba(34,197,94,0.2)" : "rgba(200,0,0,0.2)"}`,
+                fontSize: 12, fontFamily: "Inter,sans-serif",
+                color: importPadronRes.ok ? "#22c55e" : "#ff6666",
+              }}>
+                {importPadronRes.ok ? (
+                  <>
+                    ✓ <strong>{(importPadronRes as any).insertados ?? 0} nuevos</strong> agregados · <strong>{(importPadronRes as any).actualizados ?? 0} actualizados</strong> ({importPadronRes.total} total).
+                    {importPadronRes.columnas_detectadas && (
+                      <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+                        Columnas detectadas: matrícula={importPadronRes.columnas_detectadas.matricula} · apellido={importPadronRes.columnas_detectadas.apellido} · nombre={importPadronRes.columnas_detectadas.nombre}
+                        {importPadronRes.columnas_detectadas.estado && ` · estado=${importPadronRes.columnas_detectadas.estado}`}
+                      </div>
+                    )}
+                  </>
+                ) : `✗ ${importPadronRes.error}`}
+              </div>
+            )}
+
+            {/* Sync automático desde web (secundario) */}
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>Sync web (experimental):</span>
               <button
                 className="adm-ind-btn"
                 onClick={sincronizarCocir}
                 disabled={syncingCocir}
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
+                style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 10, padding: "6px 14px" }}
               >
                 {syncingCocir
-                  ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Sincronizando...</>
-                  : "↺ Sincronizar desde COCIR"}
+                  ? <><span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Sincronizando...</>
+                  : "↺ Sincronizar desde cocir.org.ar"}
               </button>
               {syncCocirRes && (
                 <span style={{
-                  fontSize: 12,
-                  fontFamily: "Inter,sans-serif",
+                  fontSize: 11, fontFamily: "Inter,sans-serif",
                   color: syncCocirRes.ok ? "#22c55e" : "#ff6666",
-                  padding: "6px 14px",
-                  background: syncCocirRes.ok ? "rgba(34,197,94,0.08)" : "rgba(200,0,0,0.08)",
-                  border: `1px solid ${syncCocirRes.ok ? "rgba(34,197,94,0.25)" : "rgba(200,0,0,0.25)"}`,
-                  borderRadius: 4,
                 }}>
-                  {syncCocirRes.ok ? `✓ ${syncCocirRes.total} registros sincronizados` : `✗ ${syncCocirRes.error}`}
+                  {syncCocirRes.ok ? `✓ ${syncCocirRes.total} registros` : `✗ ${syncCocirRes.error}`}
                 </span>
               )}
             </div>

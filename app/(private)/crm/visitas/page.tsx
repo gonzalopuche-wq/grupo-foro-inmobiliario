@@ -1,358 +1,383 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
-
-type Estado = "pendiente" | "confirmada" | "realizada" | "cancelada";
-type Vista = "lista" | "calendario";
 
 interface Visita {
   id: string;
+  numero_orden: string | null;
   perfil_id: string;
   propiedad_id: string | null;
-  contacto_id: string | null;
-  fecha: string;
-  hora: string;
-  duracion_min: number;
-  estado: Estado;
-  notas: string | null;
-  direccion: string | null;
+  cliente_nombre: string;
+  cliente_dni: string | null;
+  cliente_telefono: string | null;
+  cliente_email: string | null;
+  fecha_visita: string | null;
+  estado: string;
+  observaciones: string | null;
   created_at: string;
-  propiedad?: { titulo: string; direccion: string | null; tipo: string } | null;
-  contacto?: { nombre: string; apellido: string | null; telefono: string | null } | null;
+  feedback_puntaje: number | null;
+  feedback_interes: string | null;
+  feedback_comentario: string | null;
+  feedback_at: string | null;
+  cartera_propiedades?: { titulo: string; direccion: string | null; tipo: string } | null;
 }
 
-interface Propiedad { id: string; titulo: string; direccion: string | null; tipo: string; }
-interface Contacto { id: string; nombre: string; apellido: string | null; telefono: string | null; }
-
-const ESTADOS: Record<Estado, { label: string; color: string; bg: string }> = {
-  pendiente:  { label: "Pendiente",  color: "#f59e0b", bg: "rgba(245,158,11,0.12)" },
-  confirmada: { label: "Confirmada", color: "#3b82f6", bg: "rgba(59,130,246,0.12)" },
-  realizada:  { label: "Realizada",  color: "#22c55e", bg: "rgba(34,197,94,0.12)" },
-  cancelada:  { label: "Cancelada",  color: "#6b7280", bg: "rgba(107,114,128,0.12)" },
+const FORM_VACIO = {
+  propiedad_id: "",
+  cliente_nombre: "",
+  cliente_dni: "",
+  cliente_telefono: "",
+  cliente_email: "",
+  fecha_visita: "",
+  observaciones: "",
 };
 
-const DIAS = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-
-const fmtFecha = (f: string) => {
-  const d = new Date(f + "T12:00:00");
-  const hoy = new Date(); const man = new Date(); man.setDate(man.getDate()+1);
-  if (d.toDateString() === hoy.toDateString()) return "Hoy";
-  if (d.toDateString() === man.toDateString()) return "Mañana";
-  return `${DIAS[d.getDay()]} ${d.getDate()} ${MESES[d.getMonth()].slice(0,3)}`;
+const ESTADO_COLOR: Record<string, string> = {
+  pendiente: "#eab308",
+  realizada: "#22c55e",
+  cancelada: "#ef4444",
 };
 
-const isoHoy = () => new Date().toISOString().slice(0,10);
+function formatFecha(iso: string | null) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
 
 export default function VisitasPage() {
-  const [userId, setUserId] = useState<string|null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [visitas, setVisitas] = useState<Visita[]>([]);
-  const [propiedades, setPropiedades] = useState<Propiedad[]>([]);
-  const [contactos, setContactos] = useState<Contacto[]>([]);
+  const [propiedades, setPropiedades] = useState<{ id: string; titulo: string; direccion: string | null }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState(false);
+  const [mostrarForm, setMostrarForm] = useState(false);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
+  const [form, setForm] = useState<typeof FORM_VACIO>(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
-  const [filtroEstado, setFiltroEstado] = useState<Estado|"todas">("todas");
-  const [vista, setVista] = useState<Vista>("lista");
-  const [mesActual, setMesActual] = useState(() => { const h = new Date(); return { y: h.getFullYear(), m: h.getMonth() }; });
-  const [form, setForm] = useState({
-    propiedad_id: "", contacto_id: "", fecha: isoHoy(), hora: "10:00",
-    duracion_min: 30, estado: "pendiente" as Estado, notas: "", direccion: "",
-  });
+  const [filtroEstado, setFiltroEstado] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [enviandoCalendar, setEnviandoCalendar] = useState<string|null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    const init = async () => {
+      const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
-      cargar(data.user.id);
-    });
+      await Promise.all([cargarVisitas(data.user.id), cargarPropiedades(data.user.id)]);
+      setLoading(false);
+    };
+    init();
   }, []);
 
-  const cargar = async (uid: string) => {
-    setLoading(true);
-    const [{ data: v }, { data: p }, { data: c }] = await Promise.all([
-      supabase.from("crm_visitas")
-        .select("*, propiedad:cartera_propiedades(titulo,direccion,tipo), contacto:crm_contactos(nombre,apellido,telefono)")
-        .eq("perfil_id", uid).order("fecha").order("hora"),
-      supabase.from("cartera_propiedades").select("id,titulo,direccion,tipo").eq("perfil_id", uid).eq("estado","activa"),
-      supabase.from("crm_contactos").select("id,nombre,apellido,telefono").eq("perfil_id", uid).order("apellido"),
-    ]);
-    setVisitas((v ?? []) as Visita[]);
-    setPropiedades((p ?? []) as Propiedad[]);
-    setContactos((c ?? []) as Contacto[]);
-    setLoading(false);
+  const cargarVisitas = async (uid: string) => {
+    const { data } = await supabase
+      .from("cartera_visitas")
+      .select("*, cartera_propiedades(titulo, direccion, tipo)")
+      .eq("perfil_id", uid)
+      .order("created_at", { ascending: false });
+    setVisitas((data as unknown as Visita[]) ?? []);
+  };
+
+  const cargarPropiedades = async (uid: string) => {
+    const { data } = await supabase
+      .from("cartera_propiedades")
+      .select("id, titulo, direccion")
+      .eq("perfil_id", uid)
+      .eq("estado", "activa")
+      .order("titulo");
+    setPropiedades(data ?? []);
+  };
+
+  const abrirNueva = () => {
+    setEditandoId(null);
+    setForm(FORM_VACIO);
+    setMostrarForm(true);
+  };
+
+  const abrirEditar = (v: Visita) => {
+    setEditandoId(v.id);
+    setForm({
+      propiedad_id: v.propiedad_id ?? "",
+      cliente_nombre: v.cliente_nombre,
+      cliente_dni: v.cliente_dni ?? "",
+      cliente_telefono: v.cliente_telefono ?? "",
+      cliente_email: v.cliente_email ?? "",
+      fecha_visita: v.fecha_visita ? v.fecha_visita.slice(0, 16) : "",
+      observaciones: v.observaciones ?? "",
+    });
+    setMostrarForm(true);
   };
 
   const guardar = async () => {
-    if (!userId || !form.fecha || !form.hora) return;
+    if (!userId || !form.cliente_nombre.trim()) return;
     setGuardando(true);
-    const ins: any = {
+    const payload = {
       perfil_id: userId,
       propiedad_id: form.propiedad_id || null,
-      contacto_id: form.contacto_id || null,
-      fecha: form.fecha, hora: form.hora,
-      duracion_min: form.duracion_min,
-      estado: form.estado,
-      notas: form.notas || null,
-      direccion: form.direccion || null,
+      cliente_nombre: form.cliente_nombre.trim(),
+      cliente_dni: form.cliente_dni.trim() || null,
+      cliente_telefono: form.cliente_telefono.trim() || null,
+      cliente_email: form.cliente_email.trim() || null,
+      fecha_visita: form.fecha_visita ? new Date(form.fecha_visita).toISOString() : null,
+      observaciones: form.observaciones.trim() || null,
+      updated_at: new Date().toISOString(),
     };
-    await supabase.from("crm_visitas").insert(ins);
-    setModal(false);
-    setForm({ propiedad_id: "", contacto_id: "", fecha: isoHoy(), hora: "10:00", duracion_min: 30, estado: "pendiente", notas: "", direccion: "" });
-    await cargar(userId);
+    if (editandoId) {
+      await supabase.from("cartera_visitas").update(payload).eq("id", editandoId);
+    } else {
+      await supabase.from("cartera_visitas").insert({ ...payload, created_by: userId });
+    }
+    await cargarVisitas(userId);
+    setMostrarForm(false);
     setGuardando(false);
   };
 
-  const cambiarEstado = async (id: string, estado: Estado) => {
-    await supabase.from("crm_visitas").update({ estado }).eq("id", id);
-    setVisitas(prev => prev.map(v => v.id === id ? { ...v, estado } : v));
+  const cambiarEstado = async (id: string, estado: string) => {
+    if (!userId) return;
+    await supabase.from("cartera_visitas").update({ estado, updated_at: new Date().toISOString() }).eq("id", id);
+    setVisitas(v => v.map(x => x.id === id ? { ...x, estado } : x));
   };
 
   const eliminar = async (id: string) => {
-    if (!confirm("¿Eliminar esta visita?")) return;
-    await supabase.from("crm_visitas").delete().eq("id", id);
-    setVisitas(prev => prev.filter(v => v.id !== id));
+    if (!confirm("¿Eliminar esta orden de visita?")) return;
+    await supabase.from("cartera_visitas").delete().eq("id", id);
+    setVisitas(v => v.filter(x => x.id !== id));
   };
 
-  const sf = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
+  const compartirFeedback = (v: Visita) => {
+    const baseUrl = window.location.origin;
+    const link = `${baseUrl}/feedback/visita/${v.id}`;
+    const prop = v.cartera_propiedades;
+    const texto = encodeURIComponent(
+      `Hola ${v.cliente_nombre}, gracias por visitar ${prop?.titulo ?? "la propiedad"}.\n\n` +
+      `Te agradecería que nos dejes un breve feedback sobre la visita:\n${link}\n\n¡Muchas gracias! 🙏`
+    );
+    const tel = v.cliente_telefono?.replace(/\D/g, "") ?? "";
+    if (tel) {
+      window.open(`https://wa.me/${tel.startsWith("54") ? tel : "54" + tel}?text=${texto}`, "_blank");
+    } else {
+      navigator.clipboard.writeText(link);
+      alert("Link de feedback copiado al portapapeles");
+    }
+  };
 
-  const filtradas = visitas.filter(v => filtroEstado === "todas" || v.estado === filtroEstado);
+  const enviarACalendar = async (v: Visita) => {
+    if (!userId) return;
+    setEnviandoCalendar(v.id);
+    const res = await fetch("/api/cartera/sync-calendar", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({visita_id: v.id, perfil_id: userId}),
+    });
+    const data = await res.json();
+    if (data.pendiente) {
+      alert("Google Calendar no conectado. Andá a CRM → Portales para conectar tu cuenta.");
+    } else if (data.link) {
+      window.open(data.link, "_blank");
+    } else if (data.error) {
+      alert(`Error: ${data.error}`);
+    }
+    setEnviandoCalendar(null);
+  };
 
-  // Estadísticas
-  const hoy = isoHoy();
-  const proximas = visitas.filter(v => v.fecha >= hoy && v.estado !== "cancelada").length;
-  const realizadas = visitas.filter(v => v.estado === "realizada").length;
-  const pendientes = visitas.filter(v => v.estado === "pendiente").length;
+  const enviarWhatsApp = (v: Visita) => {
+    if (!v.cliente_telefono) return;
+    const prop = v.cartera_propiedades;
+    const texto = encodeURIComponent(
+      `Orden de Visita N° ${v.numero_orden ?? "—"}\n` +
+      `Propiedad: ${prop?.titulo ?? "—"} (${prop?.direccion ?? ""})\n` +
+      `Fecha: ${formatFecha(v.fecha_visita)}\n` +
+      `Cliente: ${v.cliente_nombre}${v.cliente_dni ? ` · DNI ${v.cliente_dni}` : ""}\n\n` +
+      `Por favor confirmá la visita respondiendo este mensaje.`
+    );
+    const tel = v.cliente_telefono.replace(/\D/g, "");
+    window.open(`https://wa.me/${tel.startsWith("54") ? tel : "54" + tel}?text=${texto}`, "_blank");
+  };
 
-  // Calendario
-  const primerDia = new Date(mesActual.y, mesActual.m, 1);
-  const diasEnMes = new Date(mesActual.y, mesActual.m + 1, 0).getDate();
-  const offsetInicio = primerDia.getDay();
-  const visitasPorDia: Record<string, Visita[]> = {};
-  visitas.forEach(v => {
-    if (!visitasPorDia[v.fecha]) visitasPorDia[v.fecha] = [];
-    visitasPorDia[v.fecha].push(v);
+  const visitasFiltradas = visitas.filter(v => {
+    if (filtroEstado && v.estado !== filtroEstado) return false;
+    if (busqueda) {
+      const q = busqueda.toLowerCase();
+      return (
+        v.cliente_nombre.toLowerCase().includes(q) ||
+        (v.cartera_propiedades?.titulo ?? "").toLowerCase().includes(q) ||
+        (v.numero_orden ?? "").toLowerCase().includes(q)
+      );
+    }
+    return true;
   });
 
+  const pendientes = visitas.filter(v => v.estado === "pendiente").length;
+
   return (
-    <div style={{ maxWidth: 860, margin: "0 auto", padding: "24px 0 64px" }}>
+    <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
-        .vis-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px 18px;transition:border-color 0.15s;}
-        .vis-card:hover{border-color:rgba(255,255,255,0.12);}
-        .vis-chip{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-family:Montserrat,sans-serif;font-weight:700;}
-        .vis-btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;transition:all 0.15s;}
-        input,select,textarea{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;width:100%;box-sizing:border-box;}
-        input:focus,select:focus,textarea:focus{border-color:rgba(204,0,0,0.4);}
-        select option{background:#1a1a1a;}
-        label{font-size:11px;color:rgba(255,255,255,0.4);font-family:Montserrat,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;}
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0a0a0a; color: #fff; }
+        .vis-wrap { min-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; }
+        .vis-topbar { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); background: #0a0a0a; flex-shrink: 0; }
+        .vis-back { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); text-decoration: none; text-transform: uppercase; }
+        .vis-back:hover { color: #fff; }
+        .vis-titulo { font-family: Montserrat,sans-serif; font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 0.05em; }
+        .vis-badge { background: #cc0000; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; font-family: Montserrat,sans-serif; }
+        .vis-spacer { flex: 1; }
+        .vis-btn { padding: 8px 16px; border-radius: 6px; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: none; }
+        .vis-btn-primary { background: #cc0000; color: #fff; }
+        .vis-btn-primary:hover { background: #aa0000; }
+        .vis-toolbar { display: flex; gap: 8px; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
+        .vis-search { flex: 1; min-width: 200px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
+        .vis-select { padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 12px; outline: none; cursor: pointer; }
+        .vis-list { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+        .vis-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px; display: flex; gap: 16px; align-items: flex-start; }
+        .vis-card:hover { border-color: rgba(255,255,255,0.15); }
+        .vis-card-num { font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.3); min-width: 80px; }
+        .vis-card-body { flex: 1; }
+        .vis-card-cliente { font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+        .vis-card-prop { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+        .vis-card-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11px; color: rgba(255,255,255,0.4); }
+        .vis-estado-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: Montserrat,sans-serif; text-transform: uppercase; }
+        .vis-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .vis-action-btn { padding: 5px 10px; border-radius: 4px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); }
+        .vis-action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .vis-empty { text-align: center; color: rgba(255,255,255,0.3); font-size: 14px; padding: 60px 20px; }
+        .vis-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .vis-modal { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 28px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
+        .vis-modal-title { font-family: Montserrat,sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
+        .vis-field { margin-bottom: 14px; }
+        .vis-label { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 5px; display: block; }
+        .vis-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; font-family: Inter,sans-serif; }
+        .vis-input:focus { border-color: rgba(204,0,0,0.5); }
+        .vis-row { display: flex; gap: 10px; }
+        .vis-row .vis-field { flex: 1; }
+        .vis-modal-actions { display: flex; gap: 10px; margin-top: 20px; }
       `}</style>
 
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 6 }}>CRM</div>
-          <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", margin: 0 }}>Visitas a Propiedades</h1>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>Agendá y gestioná todos los showings</p>
+      <div className="vis-wrap">
+        <div className="vis-topbar">
+          <Link href="/crm/cartera" className="vis-back">← Cartera</Link>
+          <div className="vis-titulo">Órdenes de Visita</div>
+          {pendientes > 0 && <span className="vis-badge">{pendientes} pendiente{pendientes !== 1 ? "s" : ""}</span>}
+          <div className="vis-spacer" />
+          <button className="vis-btn vis-btn-primary" onClick={abrirNueva}>+ Nueva orden</button>
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: 3 }}>
-            {(["lista","calendario"] as Vista[]).map(v => (
-              <button key={v} onClick={() => setVista(v)} className="vis-btn" style={{ background: vista === v ? "rgba(204,0,0,0.15)" : "transparent", color: vista === v ? "#ff6666" : "rgba(255,255,255,0.4)", padding: "6px 12px" }}>
-                {v === "lista" ? "≡ Lista" : "▦ Mes"}
-              </button>
-            ))}
-          </div>
-          <button onClick={() => setModal(true)} className="vis-btn" style={{ background: "#cc0000", color: "#fff", padding: "9px 18px", fontSize: 12 }}>
-            + Nueva visita
-          </button>
-        </div>
-      </div>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 20 }}>
-        {[
-          { label: "Próximas", valor: proximas, color: "#3b82f6" },
-          { label: "Pendientes de confirm.", valor: pendientes, color: "#f59e0b" },
-          { label: "Realizadas", valor: realizadas, color: "#22c55e" },
-        ].map(s => (
-          <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 28, fontWeight: 800, color: s.color }}>{s.valor}</div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{s.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Filtros */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
-        {(["todas","pendiente","confirmada","realizada","cancelada"] as const).map(e => (
-          <button key={e} onClick={() => setFiltroEstado(e)} className="vis-btn"
-            style={{ background: filtroEstado === e ? (e === "todas" ? "rgba(255,255,255,0.1)" : ESTADOS[e]?.bg) : "rgba(255,255,255,0.03)", color: filtroEstado === e ? (e === "todas" ? "#fff" : ESTADOS[e]?.color) : "rgba(255,255,255,0.35)", border: `1px solid ${filtroEstado === e ? (e === "todas" ? "rgba(255,255,255,0.15)" : ESTADOS[e]?.color+"44") : "rgba(255,255,255,0.07)"}` }}>
-            {e === "todas" ? "Todas" : ESTADOS[e].label}
-          </button>
-        ))}
-      </div>
-
-      {loading ? (
-        <div style={{ textAlign: "center", padding: "48px 0", color: "rgba(255,255,255,0.25)" }}>Cargando...</div>
-      ) : vista === "calendario" ? (
-        // ── VISTA CALENDARIO ──────────────────────────────────────
-        <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-            <button onClick={() => setMesActual(p => { const d = new Date(p.y, p.m-1); return { y: d.getFullYear(), m: d.getMonth() }; })} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 18, padding: "0 6px" }}>‹</button>
-            <span style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff", fontSize: 14, flex: 1, textAlign: "center" }}>{MESES[mesActual.m]} {mesActual.y}</span>
-            <button onClick={() => setMesActual(p => { const d = new Date(p.y, p.m+1); return { y: d.getFullYear(), m: d.getMonth() }; })} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 18, padding: "0 6px" }}>›</button>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2, marginBottom: 4 }}>
-            {["D","L","M","X","J","V","S"].map(d => <div key={d} style={{ textAlign: "center", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "4px 0" }}>{d}</div>)}
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
-            {Array.from({ length: offsetInicio }).map((_, i) => <div key={`e${i}`} />)}
-            {Array.from({ length: diasEnMes }).map((_, i) => {
-              const dia = i + 1;
-              const fStr = `${mesActual.y}-${String(mesActual.m+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
-              const vDia = visitasPorDia[fStr] ?? [];
-              const esHoy = fStr === hoy;
-              return (
-                <div key={dia} style={{ minHeight: 52, background: esHoy ? "rgba(204,0,0,0.1)" : "rgba(255,255,255,0.02)", border: `1px solid ${esHoy ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.05)"}`, borderRadius: 6, padding: "4px 6px" }}>
-                  <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: esHoy ? "#cc0000" : "rgba(255,255,255,0.4)", marginBottom: 2 }}>{dia}</div>
-                  {vDia.slice(0,2).map(v => (
-                    <div key={v.id} style={{ fontSize: 9, background: ESTADOS[v.estado].bg, color: ESTADOS[v.estado].color, borderRadius: 3, padding: "1px 4px", marginBottom: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {v.hora.slice(0,5)} {v.propiedad?.titulo ?? v.direccion ?? "Visita"}
-                    </div>
-                  ))}
-                  {vDia.length > 2 && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>+{vDia.length-2}</div>}
-                </div>
-              );
-            })}
-          </div>
+        <div className="vis-toolbar">
+          <input className="vis-search" placeholder="Buscar por cliente, propiedad u orden..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
+          <select className="vis-select" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="realizada">Realizada</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
         </div>
-      ) : filtradas.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "56px 0", color: "rgba(255,255,255,0.2)", fontFamily: "Montserrat,sans-serif", fontSize: 13 }}>
-          {filtroEstado === "todas" ? "Sin visitas agendadas. Creá la primera." : `Sin visitas en estado "${ESTADOS[filtroEstado].label}".`}
-        </div>
-      ) : (
-        // ── VISTA LISTA ──────────────────────────────────────────
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {filtradas.map(v => {
-            const est = ESTADOS[v.estado];
-            const pasada = v.fecha < hoy;
+
+        <div className="vis-list">
+          {loading ? <div className="vis-empty">Cargando...</div>
+          : visitasFiltradas.length === 0 ? (
+            <div className="vis-empty">
+              {visitas.length === 0 ? "No hay órdenes de visita todavía. Creá la primera." : "No hay resultados."}
+            </div>
+          ) : visitasFiltradas.map(v => {
+            const prop = v.cartera_propiedades;
+            const color = ESTADO_COLOR[v.estado] ?? "#666";
             return (
               <div key={v.id} className="vis-card">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-                      <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: pasada && v.estado === "pendiente" ? "#f59e0b" : "#fff" }}>
-                        {fmtFecha(v.fecha)} · {v.hora.slice(0,5)}
-                      </span>
-                      <span className="vis-chip" style={{ background: est.bg, color: est.color }}>{est.label}</span>
-                      {pasada && v.estado === "pendiente" && <span style={{ fontSize: 10, color: "#f59e0b", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>⚠ Vencida</span>}
-                    </div>
-                    {v.propiedad && (
-                      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", marginBottom: 3 }}>🏠 {v.propiedad.titulo}</div>
-                    )}
-                    {(v.direccion || v.propiedad?.direccion) && (
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 3 }}>📍 {v.direccion || v.propiedad?.direccion}</div>
-                    )}
-                    {v.contacto && (
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", display: "flex", alignItems: "center", gap: 8 }}>
-                        <span>👤 {v.contacto.nombre} {v.contacto.apellido ?? ""}</span>
-                        {v.contacto.telefono && (
-                          <a href={`https://wa.me/${v.contacto.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer"
-                            style={{ fontSize: 11, color: "#22c55e", textDecoration: "none", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
-                            WhatsApp →
-                          </a>
-                        )}
-                      </div>
-                    )}
-                    {v.notas && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 6, fontStyle: "italic" }}>{v.notas}</div>}
+                <div className="vis-card-num">
+                  <div>{v.numero_orden ?? "—"}</div>
+                  <div style={{ marginTop: 6 }}>
+                    <span className="vis-estado-badge" style={{ background: `${color}22`, color, border: `1px solid ${color}44` }}>
+                      {v.estado}
+                    </span>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
-                    <div style={{ display: "flex", gap: 4 }}>
-                      {v.estado === "pendiente" && (
-                        <button onClick={() => cambiarEstado(v.id, "confirmada")} className="vis-btn" style={{ background: "rgba(59,130,246,0.15)", color: "#3b82f6", fontSize: 10 }}>✓ Confirmar</button>
-                      )}
-                      {v.estado === "confirmada" && (
-                        <button onClick={() => cambiarEstado(v.id, "realizada")} className="vis-btn" style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e", fontSize: 10 }}>✓ Realizada</button>
-                      )}
-                      {v.estado !== "cancelada" && v.estado !== "realizada" && (
-                        <button onClick={() => cambiarEstado(v.id, "cancelada")} className="vis-btn" style={{ background: "rgba(107,114,128,0.08)", color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Cancelar</button>
-                      )}
-                      <button onClick={() => eliminar(v.id)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", cursor: "pointer", fontSize: 14, padding: "0 4px" }}>✕</button>
+                </div>
+                <div className="vis-card-body">
+                  <div className="vis-card-cliente">{v.cliente_nombre}</div>
+                  <div className="vis-card-prop">
+                    {prop ? `🏠 ${prop.titulo}${prop.direccion ? ` · ${prop.direccion}` : ""}` : "Sin propiedad asignada"}
+                  </div>
+                  <div className="vis-card-meta">
+                    {v.fecha_visita && <span>📅 {formatFecha(v.fecha_visita)}</span>}
+                    {v.cliente_telefono && <span>📱 {v.cliente_telefono}</span>}
+                    {v.cliente_dni && <span>DNI {v.cliente_dni}</span>}
+                  </div>
+                  {v.observaciones && <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>{v.observaciones}</div>}
+                  {v.feedback_at && (
+                    <div style={{ marginTop: 8, padding: "6px 10px", background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.18)", borderRadius: 6, fontSize: 11 }}>
+                      <span style={{ color: "#22c55e", fontWeight: 700 }}>Feedback recibido</span>
+                      {v.feedback_puntaje != null && <span style={{ marginLeft: 8 }}>{"⭐".repeat(v.feedback_puntaje)}</span>}
+                      {v.feedback_interes && <span style={{ marginLeft: 8, color: "rgba(255,255,255,0.4)" }}>{v.feedback_interes === "si" ? "✅ Interesado" : v.feedback_interes === "tal_vez" ? "🤔 Tal vez" : "❌ No interesado"}</span>}
+                      {v.feedback_comentario && <div style={{ color: "rgba(255,255,255,0.35)", marginTop: 4, fontStyle: "italic" }}>"{v.feedback_comentario}"</div>}
                     </div>
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>{v.duracion_min} min</div>
+                  )}
+                  <div className="vis-actions" style={{ marginTop: 10 }}>
+                    <button className="vis-action-btn" onClick={() => abrirEditar(v)}>✏️ Editar</button>
+                    {v.estado === "pendiente" && <>
+                      <button className="vis-action-btn" style={{ color: "#22c55e", borderColor: "rgba(34,197,94,0.3)" }} onClick={() => cambiarEstado(v.id, "realizada")}>✓ Realizada</button>
+                      <button className="vis-action-btn" style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)" }} onClick={() => cambiarEstado(v.id, "cancelada")}>✗ Cancelar</button>
+                    </>}
+                    {v.cliente_telefono && <button className="vis-action-btn" style={{ color: "#25d366", borderColor: "rgba(37,211,102,0.3)" }} onClick={() => enviarWhatsApp(v)}>📲 WhatsApp</button>}
+                    <button className="vis-action-btn" style={{ color: "#60a5fa", borderColor: "rgba(96,165,250,0.25)" }} onClick={() => compartirFeedback(v)} title="Enviar link de feedback al cliente">⭐ Feedback</button>
+                    <button className="vis-action-btn" style={{ color: "#34d399", borderColor: "rgba(52,211,153,0.25)" }} onClick={() => enviarACalendar(v)} disabled={enviandoCalendar === v.id} title="Añadir a Google Calendar">{enviandoCalendar === v.id ? "..." : "📅 Cal"}</button>
+                    <button className="vis-action-btn" style={{ color: "rgba(255,255,255,0.25)" }} onClick={() => eliminar(v.id)}>🗑</button>
                   </div>
                 </div>
               </div>
             );
           })}
         </div>
-      )}
+      </div>
 
-      {/* Modal nueva visita */}
-      {modal && (
-        <div onClick={() => setModal(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: 28, width: "100%", maxWidth: 500, maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 20 }}>Nueva visita</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div>
-                  <label>Fecha</label>
-                  <input type="date" value={form.fecha} onChange={e => sf("fecha", e.target.value)} />
-                </div>
-                <div>
-                  <label>Hora</label>
-                  <input type="time" value={form.hora} onChange={e => sf("hora", e.target.value)} />
-                </div>
+      {mostrarForm && (
+        <div className="vis-overlay">
+          <div className="vis-modal">
+            <div className="vis-modal-title">{editandoId ? "Editar orden de visita" : "Nueva orden de visita"}</div>
+            <div className="vis-field">
+              <label className="vis-label">Propiedad</label>
+              <select className="vis-input" value={form.propiedad_id} onChange={e => setForm(f => ({ ...f, propiedad_id: e.target.value }))}>
+                <option value="">Sin propiedad asignada</option>
+                {propiedades.map(p => <option key={p.id} value={p.id}>{p.titulo}{p.direccion ? ` · ${p.direccion}` : ""}</option>)}
+              </select>
+            </div>
+            <div className="vis-row">
+              <div className="vis-field">
+                <label className="vis-label">Nombre del cliente *</label>
+                <input className="vis-input" value={form.cliente_nombre} onChange={e => setForm(f => ({ ...f, cliente_nombre: e.target.value }))} placeholder="Juan Pérez" />
               </div>
-              <div>
-                <label>Propiedad</label>
-                <select value={form.propiedad_id} onChange={e => sf("propiedad_id", e.target.value)}>
-                  <option value="">— Sin propiedad vinculada —</option>
-                  {propiedades.map(p => <option key={p.id} value={p.id}>{p.titulo}</option>)}
-                </select>
-              </div>
-              <div>
-                <label>Dirección (si no hay propiedad vinculada)</label>
-                <input value={form.direccion} onChange={e => sf("direccion", e.target.value)} placeholder="Ej: Córdoba 1540 piso 3" />
-              </div>
-              <div>
-                <label>Contacto (cliente / potencial comprador)</label>
-                <select value={form.contacto_id} onChange={e => sf("contacto_id", e.target.value)}>
-                  <option value="">— Sin contacto vinculado —</option>
-                  {contactos.map(c => <option key={c.id} value={c.id}>{c.apellido ? `${c.apellido}, ${c.nombre}` : c.nombre}</option>)}
-                </select>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div>
-                  <label>Duración (minutos)</label>
-                  <select value={form.duracion_min} onChange={e => sf("duracion_min", Number(e.target.value))}>
-                    {[15,30,45,60,90,120].map(m => <option key={m} value={m}>{m} min</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label>Estado inicial</label>
-                  <select value={form.estado} onChange={e => sf("estado", e.target.value as Estado)}>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="confirmada">Confirmada</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label>Notas internas</label>
-                <textarea value={form.notas} onChange={e => sf("notas", e.target.value)} rows={3} placeholder="Ej: Cliente viene con su pareja. Interesado en terraza." style={{ resize: "vertical" }} />
+              <div className="vis-field">
+                <label className="vis-label">DNI</label>
+                <input className="vis-input" value={form.cliente_dni} onChange={e => setForm(f => ({ ...f, cliente_dni: e.target.value }))} placeholder="30.123.456" />
               </div>
             </div>
-            <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-              <button onClick={() => setModal(false)} style={{ flex: 1, padding: 12, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
-              <button onClick={guardar} disabled={guardando || !form.fecha || !form.hora} style={{ flex: 2, padding: 12, background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}>
-                {guardando ? "Guardando..." : "Agendar visita"}
+            <div className="vis-row">
+              <div className="vis-field">
+                <label className="vis-label">Teléfono</label>
+                <input className="vis-input" value={form.cliente_telefono} onChange={e => setForm(f => ({ ...f, cliente_telefono: e.target.value }))} placeholder="+54 341 ..." />
+              </div>
+              <div className="vis-field">
+                <label className="vis-label">Email</label>
+                <input className="vis-input" type="email" value={form.cliente_email} onChange={e => setForm(f => ({ ...f, cliente_email: e.target.value }))} />
+              </div>
+            </div>
+            <div className="vis-field">
+              <label className="vis-label">Fecha y hora de visita</label>
+              <input className="vis-input" type="datetime-local" value={form.fecha_visita} onChange={e => setForm(f => ({ ...f, fecha_visita: e.target.value }))} />
+            </div>
+            <div className="vis-field">
+              <label className="vis-label">Observaciones</label>
+              <textarea className="vis-input" rows={3} value={form.observaciones} onChange={e => setForm(f => ({ ...f, observaciones: e.target.value }))} placeholder="Notas sobre la visita..." style={{ resize: "vertical" }} />
+            </div>
+            <div className="vis-modal-actions">
+              <button className="vis-btn vis-btn-primary" onClick={guardar} disabled={guardando || !form.cliente_nombre.trim()}>
+                {guardando ? "Guardando..." : editandoId ? "Guardar cambios" : "Crear orden"}
+              </button>
+              <button className="vis-btn" style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)" }} onClick={() => setMostrarForm(false)}>
+                Cancelar
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

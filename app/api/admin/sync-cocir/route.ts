@@ -9,11 +9,20 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getCol(tds: any, idx: number, $: cheerio.CheerioAPI): string | null {
-  if (idx < 0 || idx >= tds.length) return null;
-  const val = $(tds[idx]).text().trim();
-  return val || null;
+const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
+
+function detectarCampo(texto: string): string | null {
+  const t = texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+  if (t.includes("mat") || t.includes("legajo") || t.includes("nro")) return "matricula";
+  if (t.includes("apellido")) return "apellido";
+  if (t.includes("nombre")) return "nombre";
+  if (t.includes("estado") || t.includes("situacion") || t.includes("hab")) return "estado";
+  if (t.includes("inmob") || t.includes("empresa") || t.includes("razon")) return "inmobiliaria";
+  if (t.includes("direcc") || t.includes("domicilio") || t.includes("calle")) return "direccion";
+  if (t.includes("localidad") || t.includes("ciudad") || t.includes("partido")) return "localidad";
+  if (t.includes("tel") || t.includes("celular") || t.includes("whatsapp")) return "telefono";
+  if (t.includes("email") || t.includes("mail") || t.includes("correo")) return "email";
+  return null;
 }
 
 export async function GET() {
@@ -31,95 +40,100 @@ export async function GET() {
     });
 
     if (!res.ok) {
-      return NextResponse.json({ error: `HTTP ${res.status} al fetchar COCIR` }, { status: 500 });
+      return NextResponse.json({ ok: false, error: `HTTP ${res.status}`, total: 0 });
     }
 
     const html = await res.text();
     const $ = cheerio.load(html);
 
-    // Detect column positions from header row
-    const colMap: Record<string, number> = {};
-    $("table tr:first-child th, table thead tr th").each((i, el) => {
-      const text = $(el).text().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
-      if (text.includes("matricula")) colMap.matricula = i;
-      else if (text.includes("apellido")) colMap.apellido = i;
-      else if (text.includes("nombre")) colMap.nombre = i;
-      else if (text.includes("estado")) colMap.estado = i;
-      else if (text.includes("inmobiliaria") || text.includes("razon social") || text.includes("razon")) colMap.inmobiliaria = i;
-      else if (text.includes("telefono") || text.includes("tel.") || text === "tel") colMap.telefono = i;
-      else if (text.includes("email") || text.includes("correo")) colMap.email = i;
-      else if (text.includes("direccion")) colMap.direccion = i;
-      else if (text.includes("localidad")) colMap.localidad = i;
+    // Detect column order from thead headers
+    const camposPorCol: string[] = [];
+    $("table thead tr th, table thead tr td").each((i, el) => {
+      camposPorCol[i] = detectarCampo($(el).text()) ?? `_col${i}`;
     });
 
-    // Fallback column positions based on known COCIR table structure
-    const col = {
-      matricula:   colMap.matricula   ?? 0,
-      apellido:    colMap.apellido    ?? 1,
-      nombre:      colMap.nombre      ?? 2,
-      estado:      colMap.estado      ?? 3,
-      inmobiliaria:colMap.inmobiliaria?? 4,
-      telefono:    colMap.telefono    ?? 5,
-      email:       colMap.email       ?? 6,
-      direccion:   colMap.direccion   ?? 7,
-      localidad:   colMap.localidad   ?? 8,
-    };
+    // Fallback: standard COCIR positional order if no thead
+    const fallbackOrden: string[] = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
+    const usarFallback = camposPorCol.length === 0;
 
-    const debug = {
-      statusHttp: res.status,
-      htmlLen: html.length,
-      tables: $("table").length,
-      trs: $("tr").length,
-      tds: $("td").length,
-      colMap,
-      snippet: html.slice(0, 800),
-    };
-
-    const ahora = new Date().toISOString();
     const registros: any[] = [];
 
     $("table tr").each((_, el) => {
       const tds = $(el).find("td");
-      if (tds.length < 3) return;
-      const matricula = getCol(tds, col.matricula, $);
-      const apellido  = getCol(tds, col.apellido,  $);
-      const nombre    = getCol(tds, col.nombre,    $);
-      if (!apellido && !nombre) return; // skip header-like rows with no name
-      registros.push({
-        matricula,
-        apellido:     apellido ?? "",
-        nombre:       nombre ?? "",
-        estado:       getCol(tds, col.estado,       $) ?? "activo",
-        inmobiliaria: getCol(tds, col.inmobiliaria, $),
-        telefono:     getCol(tds, col.telefono,     $),
-        email:        getCol(tds, col.email,        $),
-        direccion:    getCol(tds, col.direccion,    $),
-        localidad:    getCol(tds, col.localidad,    $),
-        actualizado_at: ahora,
+      if (tds.length < 2) return;
+
+      const rec: Record<string, string | null> = {};
+      tds.each((i, td) => {
+        const val = $(td).text().trim() || null;
+        const campo = usarFallback ? (fallbackOrden[i] ?? null) : (camposPorCol[i] ?? null);
+        if (campo && !campo.startsWith("_")) rec[campo] = val;
       });
+
+      if (!rec.matricula && !rec.apellido && !rec.nombre) return;
+      registros.push(rec);
     });
 
     if (registros.length === 0) {
-      return NextResponse.json({ ok: false, total: 0, debug }, { status: 200 });
+      return NextResponse.json({
+        ok: false, total: 0,
+        debug: { status: res.status, htmlLen: html.length, tables: $("table").length },
+      });
     }
 
-    // Safety guard: require a meaningful number of records before wiping the table.
-    // If COCIR returns an unusually small payload (bot block, error page, etc.)
-    // we skip the replace to avoid leaving cocir_padron empty.
-    if (registros.length < 100) {
-      return NextResponse.json({ ok: false, total: registros.length, error: "Demasiado pocos registros para reemplazar el padrón — posible bloqueo o cambio de formato", debug }, { status: 200 });
+    const ahora = new Date().toISOString();
+    const { data: existentes } = await sb
+      .from("cocir_padron")
+      .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email");
+
+    const mapa = new Map<string, any>();
+    (existentes ?? []).forEach((r: any) => {
+      if (r.matricula) mapa.set(String(r.matricula).trim(), r);
+    });
+
+    const nuevos: any[] = [];
+    const actualizaciones: any[] = [];
+
+    for (const reg of registros) {
+      const mat = String(reg.matricula ?? "").trim();
+      const existente = mat ? mapa.get(mat) : undefined;
+
+      if (existente) {
+        const update: any = { actualizado_at: ahora };
+        let hayCambios = false;
+        for (const campo of CAMPOS_CONOCIDOS) {
+          if (campo === "estado" && reg[campo]) {
+            // Always refresh estado
+            update[campo] = reg[campo];
+            hayCambios = true;
+          } else if (reg[campo] != null && reg[campo] !== "" && !existente[campo]) {
+            // Fill in empty fields
+            update[campo] = reg[campo];
+            hayCambios = true;
+          }
+        }
+        if (hayCambios) actualizaciones.push({ ...update, id: existente.id });
+      } else {
+        nuevos.push({ ...reg, actualizado_at: ahora });
+      }
     }
 
-    await sb.from("cocir_padron").delete().neq("matricula", "");
-    const { error } = await sb.from("cocir_padron").insert(registros);
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    const LOTE = 500;
+    for (let i = 0; i < nuevos.length; i += LOTE) {
+      const { error } = await sb.from("cocir_padron").insert(nuevos.slice(i, i + LOTE));
+      if (error) return NextResponse.json({ ok: false, error: error.message });
+    }
+    for (const reg of actualizaciones) {
+      const { id, ...campos } = reg;
+      await sb.from("cocir_padron").update(campos).eq("id", id);
     }
 
-    const conTelefono = registros.filter(r => r.telefono).length;
-    return NextResponse.json({ ok: true, total: registros.length, conTelefono, colMap });
+    return NextResponse.json({
+      ok: true,
+      insertados: nuevos.length,
+      actualizados: actualizaciones.length,
+      total: registros.length,
+    });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ ok: false, error: e.message });
   }
 }
