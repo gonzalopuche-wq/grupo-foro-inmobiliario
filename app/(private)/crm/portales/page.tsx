@@ -14,6 +14,8 @@ export default function PortalesPage() {
   const [mlAppSecret, setMlAppSecret] = useState("");
   const [mlConectado, setMlConectado] = useState(false);
   const [mlExpiresAt, setMlExpiresAt] = useState<string | null>(null);
+  const [googleConectado, setGoogleConectado] = useState(false);
+  const [googleExpiresAt, setGoogleExpiresAt] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [msg, setMsg] = useState("");
   const [globalStatus, setGlobalStatus] = useState<any>(null);
@@ -21,8 +23,12 @@ export default function PortalesPage() {
   useEffect(() => {
     const mlOk = searchParams.get("ml_ok");
     const mlErr = searchParams.get("ml_error");
+    const gOk = searchParams.get("google_ok");
+    const gErr = searchParams.get("google_error");
     if (mlOk) setMsg("MercadoLibre conectado correctamente.");
     if (mlErr) setMsg(`Error al conectar ML: ${mlErr.replace(/_/g, " ")}`);
+    if (gOk) setMsg("Google Calendar conectado correctamente. ¡Listo para sincronizar visitas!");
+    if (gErr) setMsg(`Error al conectar Google: ${gErr.replace(/_/g, " ")}`);
   }, [searchParams]);
 
   useEffect(() => {
@@ -43,6 +49,8 @@ export default function PortalesPage() {
         setMlAppSecret(creds.ml_app_secret ?? "");
         setMlConectado(!!creds.ml_access_token);
         setMlExpiresAt(creds.ml_token_expires_at ?? null);
+        setGoogleConectado(!!(creds as any).google_access_token);
+        setGoogleExpiresAt((creds as any).google_token_expires_at ?? null);
       }
 
       const res = await fetch("/api/cartera/sync");
@@ -216,6 +224,33 @@ export default function PortalesPage() {
               </span>
             )}
           </div>
+        </div>
+
+        {/* Google Calendar */}
+        <div className="port-card">
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+            <div className="port-card-title">📅 Google Calendar</div>
+            {googleConectado
+              ? <span className="port-connected-badge">✓ Conectado</span>
+              : <span className="port-status port-status-pending">Sin conectar</span>
+            }
+          </div>
+          <div className="port-card-sub">
+            Sincronizá tus visitas con Google Calendar automáticamente. Necesitás habilitar la API de Google Calendar en
+            console.cloud.google.com y agregar GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET en las variables de Vercel.
+          </div>
+          {googleConectado && googleExpiresAt && (
+            <div style={{ marginBottom:10, fontSize:11, color:"rgba(255,255,255,0.3)", fontFamily:"Inter,sans-serif" }}>
+              Token vigente hasta: {new Date(googleExpiresAt).toLocaleString("es-AR")} · Se renueva automáticamente
+            </div>
+          )}
+          <button
+            className="port-connect-btn"
+            onClick={() => { if (userId) window.location.href = `/api/google-auth?perfil_id=${userId}`; }}
+            disabled={!userId}
+          >
+            {googleConectado ? "Reconectar Google Calendar" : "Conectar con Google Calendar →"}
+          </button>
         </div>
 
         <button className="port-save-btn" onClick={guardar} disabled={guardando}>

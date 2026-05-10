@@ -17,6 +17,10 @@ interface Visita {
   estado: string;
   observaciones: string | null;
   created_at: string;
+  feedback_puntaje: number | null;
+  feedback_interes: string | null;
+  feedback_comentario: string | null;
+  feedback_at: string | null;
   cartera_propiedades?: { titulo: string; direccion: string | null; tipo: string } | null;
 }
 
@@ -52,6 +56,7 @@ export default function VisitasPage() {
   const [guardando, setGuardando] = useState(false);
   const [filtroEstado, setFiltroEstado] = useState("");
   const [busqueda, setBusqueda] = useState("");
+  const [enviandoCalendar, setEnviandoCalendar] = useState<string|null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -120,7 +125,7 @@ export default function VisitasPage() {
     if (editandoId) {
       await supabase.from("cartera_visitas").update(payload).eq("id", editandoId);
     } else {
-      await supabase.from("cartera_visitas").insert(payload);
+      await supabase.from("cartera_visitas").insert({ ...payload, created_by: userId });
     }
     await cargarVisitas(userId);
     setMostrarForm(false);
@@ -137,6 +142,42 @@ export default function VisitasPage() {
     if (!confirm("¿Eliminar esta orden de visita?")) return;
     await supabase.from("cartera_visitas").delete().eq("id", id);
     setVisitas(v => v.filter(x => x.id !== id));
+  };
+
+  const compartirFeedback = (v: Visita) => {
+    const baseUrl = window.location.origin;
+    const link = `${baseUrl}/feedback/visita/${v.id}`;
+    const prop = v.cartera_propiedades;
+    const texto = encodeURIComponent(
+      `Hola ${v.cliente_nombre}, gracias por visitar ${prop?.titulo ?? "la propiedad"}.\n\n` +
+      `Te agradecería que nos dejes un breve feedback sobre la visita:\n${link}\n\n¡Muchas gracias! 🙏`
+    );
+    const tel = v.cliente_telefono?.replace(/\D/g, "") ?? "";
+    if (tel) {
+      window.open(`https://wa.me/${tel.startsWith("54") ? tel : "54" + tel}?text=${texto}`, "_blank");
+    } else {
+      navigator.clipboard.writeText(link);
+      alert("Link de feedback copiado al portapapeles");
+    }
+  };
+
+  const enviarACalendar = async (v: Visita) => {
+    if (!userId) return;
+    setEnviandoCalendar(v.id);
+    const res = await fetch("/api/cartera/sync-calendar", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({visita_id: v.id, perfil_id: userId}),
+    });
+    const data = await res.json();
+    if (data.pendiente) {
+      alert("Google Calendar no conectado. Andá a CRM → Portales para conectar tu cuenta.");
+    } else if (data.link) {
+      window.open(data.link, "_blank");
+    } else if (data.error) {
+      alert(`Error: ${data.error}`);
+    }
+    setEnviandoCalendar(null);
   };
 
   const enviarWhatsApp = (v: Visita) => {
@@ -261,6 +302,14 @@ export default function VisitasPage() {
                     {v.cliente_dni && <span>DNI {v.cliente_dni}</span>}
                   </div>
                   {v.observaciones && <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>{v.observaciones}</div>}
+                  {v.feedback_at && (
+                    <div style={{ marginTop: 8, padding: "6px 10px", background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.18)", borderRadius: 6, fontSize: 11 }}>
+                      <span style={{ color: "#22c55e", fontWeight: 700 }}>Feedback recibido</span>
+                      {v.feedback_puntaje != null && <span style={{ marginLeft: 8 }}>{"⭐".repeat(v.feedback_puntaje)}</span>}
+                      {v.feedback_interes && <span style={{ marginLeft: 8, color: "rgba(255,255,255,0.4)" }}>{v.feedback_interes === "si" ? "✅ Interesado" : v.feedback_interes === "tal_vez" ? "🤔 Tal vez" : "❌ No interesado"}</span>}
+                      {v.feedback_comentario && <div style={{ color: "rgba(255,255,255,0.35)", marginTop: 4, fontStyle: "italic" }}>"{v.feedback_comentario}"</div>}
+                    </div>
+                  )}
                   <div className="vis-actions" style={{ marginTop: 10 }}>
                     <button className="vis-action-btn" onClick={() => abrirEditar(v)}>✏️ Editar</button>
                     {v.estado === "pendiente" && <>
@@ -268,6 +317,8 @@ export default function VisitasPage() {
                       <button className="vis-action-btn" style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)" }} onClick={() => cambiarEstado(v.id, "cancelada")}>✗ Cancelar</button>
                     </>}
                     {v.cliente_telefono && <button className="vis-action-btn" style={{ color: "#25d366", borderColor: "rgba(37,211,102,0.3)" }} onClick={() => enviarWhatsApp(v)}>📲 WhatsApp</button>}
+                    <button className="vis-action-btn" style={{ color: "#60a5fa", borderColor: "rgba(96,165,250,0.25)" }} onClick={() => compartirFeedback(v)} title="Enviar link de feedback al cliente">⭐ Feedback</button>
+                    <button className="vis-action-btn" style={{ color: "#34d399", borderColor: "rgba(52,211,153,0.25)" }} onClick={() => enviarACalendar(v)} disabled={enviandoCalendar === v.id} title="Añadir a Google Calendar">{enviandoCalendar === v.id ? "..." : "📅 Cal"}</button>
                     <button className="vis-action-btn" style={{ color: "rgba(255,255,255,0.25)" }} onClick={() => eliminar(v.id)}>🗑</button>
                   </div>
                 </div>
