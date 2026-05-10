@@ -54,6 +54,7 @@ export default function EstadisticasPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [agentStats, setAgentStats] = useState<{nombre:string;leads:number;visitas:number}[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -67,11 +68,14 @@ export default function EstadisticasPage() {
   }, []);
 
   const cargarStats = async (uid: string) => {
-    const [{ data: props }, { data: syncs }, { data: leadsRaw }, { data: visitasRaw }] = await Promise.all([
+    const [{ data: props }, { data: syncs }, { data: leadsRaw }, { data: visitasRaw }, { data: leadsBy }, { data: visitasBy }, { data: colabs }] = await Promise.all([
       supabase.from("cartera_propiedades").select("id, titulo, estado, operacion, tipo, precio, moneda, created_at").eq("perfil_id", uid),
       supabase.from("cartera_sync_portales").select("propiedad_id, tokko_id, kiteprop_id"),
       supabase.from("crm_leads").select("estado, origen").eq("perfil_id", uid),
       supabase.from("cartera_visitas").select("estado").eq("perfil_id", uid),
+      supabase.from("crm_leads").select("created_by").eq("perfil_id", uid).not("created_by", "is", null),
+      supabase.from("cartera_visitas").select("created_by").eq("perfil_id", uid).not("created_by", "is", null),
+      supabase.from("perfiles").select("id,nombre,apellido").eq("corredor_ref_id", uid),
     ]);
 
     const all = props ?? [];
@@ -98,6 +102,15 @@ export default function EstadisticasPage() {
 
     const leads = leadsRaw ?? [];
     const visitas = visitasRaw ?? [];
+
+    // Per-agent stats (only meaningful when colaboradores exist with created_by data)
+    if ((colabs ?? []).length > 0 && ((leadsBy ?? []).length > 0 || (visitasBy ?? []).length > 0)) {
+      const agMap: Record<string, {nombre:string;leads:number;visitas:number}> = {};
+      (colabs ?? []).forEach((c: any) => { agMap[c.id] = {nombre:`${c.nombre} ${c.apellido}`,leads:0,visitas:0}; });
+      (leadsBy ?? []).forEach((l: any) => { if (agMap[l.created_by]) agMap[l.created_by].leads++; });
+      (visitasBy ?? []).forEach((v: any) => { if (agMap[v.created_by]) agMap[v.created_by].visitas++; });
+      setAgentStats(Object.values(agMap).filter(a => a.leads > 0 || a.visitas > 0));
+    }
     const countKey = (arr: any[], key: string) => {
       const m: Record<string, number> = {};
       arr.forEach(r => { const v = r[key] ?? "sin_dato"; m[v] = (m[v] ?? 0) + 1; });
@@ -266,6 +279,25 @@ export default function EstadisticasPage() {
                         <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: est === "realizada" ? "#22c55e" : est === "cancelada" ? "#6b7280" : "#fff" }}>{n}</div>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Por agente */}
+              {agentStats.length > 0 && (
+                <div className="est-section">
+                  <div className="est-section-title">Actividad por agente</div>
+                  <div className="est-panel">
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr auto auto", gap:"8px 16px", alignItems:"center" }}>
+                      <div style={{ fontSize:10, fontFamily:"Montserrat,sans-serif", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"rgba(255,255,255,0.25)" }}>Agente</div>
+                      <div style={{ fontSize:10, fontFamily:"Montserrat,sans-serif", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"rgba(255,255,255,0.25)", textAlign:"right" }}>Leads</div>
+                      <div style={{ fontSize:10, fontFamily:"Montserrat,sans-serif", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"rgba(255,255,255,0.25)", textAlign:"right" }}>Visitas</div>
+                      {agentStats.map(a => (<>
+                        <div key={a.nombre} style={{ fontSize:13, color:"rgba(255,255,255,0.8)", paddingTop:6, borderTop:"1px solid rgba(255,255,255,0.05)" }}>{a.nombre}</div>
+                        <div style={{ fontSize:18, fontWeight:800, fontFamily:"Montserrat,sans-serif", color: a.leads > 0 ? "#60a5fa" : "rgba(255,255,255,0.2)", textAlign:"right", borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:6 }}>{a.leads}</div>
+                        <div style={{ fontSize:18, fontWeight:800, fontFamily:"Montserrat,sans-serif", color: a.visitas > 0 ? "#22c55e" : "rgba(255,255,255,0.2)", textAlign:"right", borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:6 }}>{a.visitas}</div>
+                      </>))}
+                    </div>
                   </div>
                 </div>
               )}

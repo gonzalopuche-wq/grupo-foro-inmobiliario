@@ -110,7 +110,7 @@ export default function InboxPage() {
     if (editandoId) {
       await supabase.from("crm_leads").update(payload).eq("id", editandoId);
     } else {
-      await supabase.from("crm_leads").insert(payload);
+      await supabase.from("crm_leads").insert({ ...payload, created_by: userId });
     }
     await cargarLeads(userId);
     setMostrarForm(false);
