@@ -55,6 +55,10 @@ export default function SuscripcionPage() {
   const [error, setError] = useState("");
   const [copiado, setCopiado] = useState<string | null>(null);
 
+  // MI ABONO INTELIGENTE
+  const [bonifConfig, setBonifConfig] = useState<{accion:string;descuento_usd:number;descripcion:string|null;activo:boolean}[]>([]);
+  const [bonifStats, setBonifStats] = useState({ docs: 0, comparables: 0, foroMes: 0, referidos: 0, anosMatricula: 0 });
+
   const suscripcionActual = suscripciones[0] ?? null;
   const historial = suscripciones.slice(1);
 
@@ -71,6 +75,30 @@ export default function SuscripcionPage() {
 
       if (p) setPerfil(p);
       if (s) setSuscripciones(s as Suscripcion[]);
+
+      // MI ABONO INTELIGENTE: cargar config y estadísticas del usuario
+      const uid = session.user.id;
+      const mesActual = new Date().toISOString().slice(0, 7); // "2026-05"
+      try {
+        const [{ data: bonifCfg }, { count: docsCount }, { count: compCount }, foroRes, refRes] = await Promise.all([
+          supabase.from("bonificaciones_config").select("accion,descuento_usd,descripcion,activo").eq("activo", true).order("accion"),
+          supabase.from("biblioteca").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("estado", "aprobado"),
+          supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", uid),
+          supabase.from("foro_posts").select("id", { count: "exact", head: true }).eq("perfil_id", uid).gte("created_at", `${mesActual}-01`),
+          supabase.from("referidos").select("id", { count: "exact", head: true }).eq("referidor_id", uid).eq("estado", "activo"),
+        ]);
+        if (bonifCfg) setBonifConfig(bonifCfg as any[]);
+        const anosMatricula = p?.created_at
+          ? Math.floor((Date.now() - new Date(p.created_at).getTime()) / (1000 * 60 * 60 * 24 * 365))
+          : 0;
+        setBonifStats({
+          docs: docsCount ?? 0,
+          comparables: compCount ?? 0,
+          foroMes: foroRes.count ?? 0,
+          referidos: refRes.count ?? 0,
+          anosMatricula,
+        });
+      } catch { /* silenciar si tablas no existen aún */ }
 
       if (ind) {
         const get = (k: string) => ind.find((i: any) => i.clave === k)?.valor;
@@ -103,6 +131,22 @@ export default function SuscripcionPage() {
   }, []);
 
   const montoArs = dolarBlue ? Math.round(precioUsd * dolarBlue) : null;
+
+  // MI ABONO INTELIGENTE: calcular descuento total
+  const calcBonificaciones = () => {
+    const get = (accion: string) => bonifConfig.find(b => b.accion === accion)?.descuento_usd ?? 0;
+    const items: { label: string; desc: string; valor: number; conseguido: number; maximo: number }[] = [
+      { label: "📚 Biblioteca", desc: "Documentos aprobados", valor: get("biblioteca"), conseguido: bonifStats.docs, maximo: 3 },
+      { label: "💬 Foro", desc: "Posts este mes", valor: get("foro"), conseguido: bonifStats.foroMes, maximo: 2 },
+      { label: "📊 Comparables", desc: "Observatorio cargado", valor: get("comparable"), conseguido: bonifStats.comparables, maximo: 2 },
+      { label: "🤝 Referidos", desc: "Miembros referidos activos", valor: get("referido"), conseguido: bonifStats.referidos, maximo: 99 },
+      { label: "🎓 Seniority", desc: "Años en GFI®", valor: get("seniority"), conseguido: bonifStats.anosMatricula, maximo: 3 },
+    ];
+    const totalDescuento = items.reduce((acc, item) => acc + item.valor * Math.min(item.conseguido, item.maximo), 0);
+    const precioFinal = Math.max(0, precioUsd - totalDescuento);
+    return { items, totalDescuento, precioFinal };
+  };
+  const bonif = calcBonificaciones();
 
   const copiar = (valor: string, key: string) => {
     navigator.clipboard.writeText(valor);
@@ -316,6 +360,54 @@ export default function SuscripcionPage() {
               </div>
             )}
           </div>
+
+          {/* MI ABONO INTELIGENTE */}
+          {bonifConfig.length > 0 && (
+            <div className="sus-card" style={{ borderColor: "rgba(34,197,94,0.2)" }}>
+              <div className="sus-card-titulo" style={{ color: "#22c55e" }}>💡 Mi Abono Inteligente</div>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.6 }}>
+                Participando en la red GFI® podés reducir tu cuota mensual. Cada acción bonificable descuenta directamente de tu abono.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                {bonif.items.map(item => {
+                  const earned = Math.min(item.conseguido, item.maximo);
+                  const descuento = item.valor * earned;
+                  const activo = earned > 0 && item.valor > 0;
+                  return (
+                    <div key={item.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: activo ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)", border: `1px solid ${activo ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.06)"}`, borderRadius: 6 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, color: activo ? "#fff" : "rgba(255,255,255,0.4)", fontWeight: 500 }}>{item.label}</div>
+                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{item.desc} · {earned}/{item.maximo === 99 ? "∞" : item.maximo}</div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        {item.valor > 0 ? (
+                          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 13, color: activo ? "#22c55e" : "rgba(255,255,255,0.2)" }}>
+                            {descuento > 0 ? `-USD ${descuento.toFixed(2)}` : `USD ${item.valor}/u`}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>Sin config.</div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 8 }}>
+                <div>
+                  <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#22c55e", marginBottom: 4 }}>Tu precio este mes</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>Precio base USD {precioUsd} — descuento USD {bonif.totalDescuento.toFixed(2)}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 28, color: "#22c55e", lineHeight: 1 }}>USD {bonif.precioFinal.toFixed(2)}</div>
+                  {dolarBlue && bonif.precioFinal > 0 && (
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>
+                      ≈ ${Math.round(bonif.precioFinal * dolarBlue).toLocaleString("es-AR")} ARS
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* CBU */}
           <div className="sus-card">

@@ -97,6 +97,14 @@ interface Propiedad {
   com_salon_fiestas: boolean; com_juegos_infantiles: boolean;
   com_estac_visitantes: boolean; com_cancha_paddle: boolean;
   com_cancha_futbol: boolean; com_quincho: boolean; com_grupo_electrogeno: boolean;
+  // Documentación / CI
+  contacto_propietario_id: string | null;
+  ci_url: string | null;
+  ci_fecha_obtencion: string | null;
+  ci_fecha_vencimiento: string | null;
+  ci_numero: string | null;
+  ci_observaciones: string | null;
+  url_portal_origen: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -264,6 +272,11 @@ export default function CarteraPage() {
   const [perfilData, setPerfilData] = useState<{nombre:string;apellido:string;telefono:string|null}|null>(null);
   const [generandoPost, setGenerandoPost] = useState<string|null>(null);
   const [postModal, setPostModal] = useState<{titulo:string;caption:string;hashtags:string}|null>(null);
+
+  // Smart Prospecting automático
+  const [smartMatches, setSmartMatches] = useState<{id:string;nombre:string;compatibilidad:number;razon:string;telefono?:string}[]>([]);
+  const [smartPropTitulo, setSmartPropTitulo] = useState("");
+  const [mostrarSmartMatch, setMostrarSmartMatch] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -576,6 +589,29 @@ export default function CarteraPage() {
 
     setGuardando(false); setMostrarWizard(false); setFotosNuevas([]);
     if (userId) cargar(userId);
+
+    // Smart Prospecting: si es propiedad nueva, buscar contactos que coincidan
+    if (!editandoId && propId && userId) {
+      try {
+        const res = await fetch("/api/ia-matching", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ perfil_id: userId, propiedad_id: propId }),
+        });
+        const data = await res.json();
+        if (data.ok && data.matches?.length > 0) {
+          // Enriquecer con teléfono
+          const ids = data.matches.map((m: any) => m.id);
+          const { data: ctcs } = await supabase
+            .from("crm_contactos").select("id,telefono").in("id", ids);
+          const telMap: Record<string,string> = {};
+          (ctcs ?? []).forEach((c: any) => { if (c.telefono) telMap[c.id] = c.telefono; });
+          setSmartMatches(data.matches.map((m: any) => ({ ...m, telefono: telMap[m.id] })));
+          setSmartPropTitulo(datos.titulo);
+          setMostrarSmartMatch(true);
+        }
+      } catch { /* no bloquear si falla */ }
+    }
   };
 
   const cambiarEstado = async (id: string, estado: string) => {
@@ -664,6 +700,16 @@ export default function CarteraPage() {
   const pct = Math.round((paso / 7) * 100);
   const setF = (k: string, v: any) => setForm((p: any) => ({ ...p, [k]: v }));
   const toggleF = (k: string) => setForm((p: any) => ({ ...p, [k]: !p[k] }));
+
+  // Autorizaciones de Venta: propiedades con CI vencida o próxima a vencer
+  const alertasAutorizacion = propiedades
+    .filter(p => p.ci_fecha_vencimiento)
+    .map(p => {
+      const dias = Math.ceil((new Date(p.ci_fecha_vencimiento!).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      return { ...p, diasCI: dias };
+    })
+    .filter(p => p.diasCI <= 30)
+    .sort((a, b) => a.diasCI - b.diasCI);
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -869,6 +915,30 @@ export default function CarteraPage() {
           )}
           <span className="cart-count">{filtradas.length} propiedades</span>
         </div>
+
+        {/* Alertas de Autorizaciones de Venta */}
+        {!loading && alertasAutorizacion.length > 0 && (
+          <div style={{ margin: "10px 0 0", padding: "14px 18px", background: "rgba(234,179,8,0.05)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 6 }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#eab308", marginBottom: 10 }}>
+              ⚠️ Autorizaciones de Venta próximas a vencer
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {alertasAutorizacion.map(p => (
+                <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {p.titulo || p.direccion || "Propiedad sin título"}
+                  </span>
+                  <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: p.diasCI <= 0 ? "#ff4444" : p.diasCI <= 7 ? "#ff8800" : "#eab308", whiteSpace: "nowrap" }}>
+                    {p.diasCI <= 0 ? `VENCIDA hace ${Math.abs(p.diasCI)} días` : `Vence en ${p.diasCI} días`}
+                  </span>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
+                    {p.ci_fecha_vencimiento ? new Date(p.ci_fecha_vencimiento).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Lista */}
         {loading ? (
@@ -1585,6 +1655,43 @@ export default function CarteraPage() {
           </div>
         </div>
       )}
+      {/* ── SMART PROSPECTING MODAL ── */}
+      {mostrarSmartMatch && smartMatches.length > 0 && (
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={() => setMostrarSmartMatch(false)}>
+          <div style={{background:"#111",border:"1px solid rgba(200,0,0,0.3)",borderRadius:12,padding:28,maxWidth:520,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setMostrarSmartMatch(false)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:20,cursor:"pointer"}}>×</button>
+            <div style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:15,color:"#fff",marginBottom:4}}>🎯 Smart Prospecting</div>
+            <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:20}}>
+              Se guardó <strong style={{color:"rgba(255,255,255,0.7)"}}>{smartPropTitulo}</strong>. IA encontró {smartMatches.length} cliente{smartMatches.length > 1 ? "s" : ""} que podrían estar interesados:
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {smartMatches.map(m => (
+                <div key={m.id} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:8,padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                      <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:13,color:"#fff"}}>{m.nombre}</span>
+                      <span style={{background:"rgba(200,0,0,0.12)",border:"1px solid rgba(200,0,0,0.25)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:"#cc0000",fontFamily:"Montserrat,sans-serif"}}>{m.compatibilidad}%</span>
+                    </div>
+                    <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",lineHeight:1.4}}>{m.razon}</div>
+                  </div>
+                  {m.telefono && (
+                    <a href={`https://wa.me/${m.telefono.replace(/\D/g,"")}?text=${encodeURIComponent(`Hola ${m.nombre.split(" ")[0]}, tengo una propiedad que puede interesarte: ${smartPropTitulo}`)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      style={{flexShrink:0,padding:"8px 14px",background:"rgba(37,211,102,0.12)",border:"1px solid rgba(37,211,102,0.3)",borderRadius:6,color:"#25d366",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,textDecoration:"none",whiteSpace:"nowrap"}}>
+                      📲 WhatsApp
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setMostrarSmartMatch(false)}
+              style={{marginTop:16,width:"100%",padding:"10px 0",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:6,color:"rgba(255,255,255,0.5)",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
       {postModal && (
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={() => setPostModal(null)}>
           <div style={{background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:24,maxWidth:480,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>

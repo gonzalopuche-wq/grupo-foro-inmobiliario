@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import AdminBeneficios from "../../components/AdminBeneficios";
 
-interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; }
+interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; insignia_mentor?: boolean; insignia_tasador?: boolean; }
 interface Indicador { clave: string; valor: number | string; label: string; tipo: "number" | "text"; }
 interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number; monto_ars: number | null; monto_declarado_ars: number | null; dolar_ref: number | null; estado: string; fecha_pago_declarado: string | null; fecha_confirmacion: string | null; fecha_vencimiento: string | null; periodo: string | null; comprobante: string | null; cbu_origen: string | null; nota_admin: string | null; creado_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
@@ -171,6 +171,10 @@ export default function AdminPage() {
   const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total?: number; error?: string } | null>(null);
   const [importandoPadron, setImportandoPadron] = useState(false);
   const [importPadronRes, setImportPadronRes] = useState<{ ok: boolean; total?: number; error?: string; columnas_detectadas?: any } | null>(null);
+  // MI ABONO INTELIGENTE config
+  const [bonifConfig, setBonifConfig] = useState<{id:string;accion:string;descuento_usd:number;descripcion:string|null}[]>([]);
+  const [editandoBonif, setEditandoBonif] = useState<Record<string,string>>({});
+  const [guardandoBonif, setGuardandoBonif] = useState<string|null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -181,7 +185,7 @@ export default function AdminPage() {
       setEsAdmin(true);
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
-      cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab();
+      cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
       setRedesConfig(adminSocial?.configuracion?.redes_sociales ?? {});
     };
@@ -498,6 +502,26 @@ export default function AdminPage() {
     setProcesando(id);
     await supabase.from("perfiles").update({ estado: nuevoEstado }).eq("id", id);
     await cargarPerfiles(); setProcesando(null);
+  };
+
+  const toggleInsignia = async (id: string, campo: "insignia_mentor" | "insignia_tasador", valorActual: boolean) => {
+    await supabase.from("perfiles").update({ [campo]: !valorActual }).eq("id", id);
+    await cargarPerfiles();
+  };
+
+  const cargarBonifConfig = async () => {
+    const { data } = await supabase.from("bonificaciones_config").select("id,accion,descuento_usd,descripcion").order("accion");
+    if (data) setBonifConfig(data as any[]);
+  };
+
+  const guardarBonif = async (id: string, accion: string) => {
+    const val = editandoBonif[accion];
+    if (!val) return;
+    setGuardandoBonif(accion);
+    await supabase.from("bonificaciones_config").update({ descuento_usd: parseFloat(val.replace(",", ".")) }).eq("id", id);
+    await cargarBonifConfig();
+    setGuardandoBonif(null);
+    mostrarToast("Bonificación actualizada", "ok");
   };
 
   const guardarProveedor = async () => {
@@ -1004,7 +1028,21 @@ export default function AdminPage() {
                       <td>{p.telefono && <div>{p.telefono}</div>}{p.email && <div className="adm-sub">{p.email}</div>}</td>
                       <td style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{formatFecha(p.created_at)}</td>
                       <td><span className={`badge ${ESTADO_BADGE[p.estado] ?? "badge-pendiente"}`}>{ESTADO_LABEL[p.estado] ?? p.estado}</span></td>
-                      <td>{procesando === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>✓ Aprobar</button><button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>✗ Rechazar</button></div>) : p.estado === "aprobado" ? (<button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>Revocar</button>) : (<button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>Reactivar</button>)}</td>
+                      <td>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          {procesando === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>✓ Aprobar</button><button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>✗ Rechazar</button></div>) : p.estado === "aprobado" ? (<button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>Revocar</button>) : (<button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>Reactivar</button>)}
+                          <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+                            <button onClick={() => toggleInsignia(p.id, "insignia_mentor", !!p.insignia_mentor)}
+                              style={{ padding: "3px 8px", fontSize: 10, border: `1px solid ${p.insignia_mentor ? "rgba(168,85,247,0.5)" : "rgba(255,255,255,0.12)"}`, background: p.insignia_mentor ? "rgba(168,85,247,0.12)" : "transparent", borderRadius: 3, color: p.insignia_mentor ? "#a855f7" : "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              🎓 {p.insignia_mentor ? "Mentor ✓" : "Mentor"}
+                            </button>
+                            <button onClick={() => toggleInsignia(p.id, "insignia_tasador", !!p.insignia_tasador)}
+                              style={{ padding: "3px 8px", fontSize: 10, border: `1px solid ${p.insignia_tasador ? "rgba(234,179,8,0.5)" : "rgba(255,255,255,0.12)"}`, background: p.insignia_tasador ? "rgba(234,179,8,0.1)" : "transparent", borderRadius: 3, color: p.insignia_tasador ? "#eab308" : "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              ⚖️ {p.insignia_tasador ? "Tasador ✓" : "Tasador"}
+                            </button>
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1033,6 +1071,27 @@ export default function AdminPage() {
               ))}
             </div>
           </div>
+
+          {/* ── MI ABONO INTELIGENTE CONFIG ── */}
+          {bonifConfig.length > 0 && (
+            <div>
+              <div className="adm-ind-titulo">Mi Abono <span>Inteligente</span></div>
+              <div className="adm-ind-subtitulo">Configurá los descuentos (en USD) por cada acción bonificable. Se descuentan de la cuota mensual del corredor.</div>
+              <div className="adm-ind-grid">
+                {bonifConfig.map(b => (
+                  <div key={b.id} className="adm-ind-card">
+                    <div className="adm-ind-label" style={{ textTransform: "capitalize" }}>{b.accion}</div>
+                    {b.descripcion && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 8, lineHeight: 1.4 }}>{b.descripcion}</div>}
+                    <div className="adm-ind-actual">USD {b.descuento_usd}/acción</div>
+                    <div className="adm-ind-form">
+                      <input className="adm-ind-input" value={editandoBonif[b.accion] ?? ""} onChange={e => setEditandoBonif(prev => ({ ...prev, [b.accion]: e.target.value }))} placeholder="Ej: 1.50" />
+                      <button className="adm-ind-btn" onClick={() => guardarBonif(b.id, b.accion)} disabled={guardandoBonif === b.accion}>{guardandoBonif === b.accion ? "..." : "Guardar"}</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* ── PADRÓN COCIR ── */}
           <div>

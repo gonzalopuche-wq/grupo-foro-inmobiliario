@@ -28,6 +28,8 @@ interface Perfil {
   tipo: string;
   estado: string;
   created_at: string;
+  insignia_mentor: boolean;
+  insignia_tasador: boolean;
   notif_eventos: boolean;
   notif_matches: boolean;
   notif_cotizaciones: boolean;
@@ -80,7 +82,7 @@ export default function PerfilPage() {
   const [pushCargando, setPushCargando] = useState(false);
   const [cambioPassword, setCambioPassword] = useState({ actual: "", nueva: "", confirmar: "" });
   const [cambiandoPassword, setCambiandoPassword] = useState(false);
-  const [repStats, setRepStats] = useState({ docs: 0, comparables: 0, meses: 0 });
+  const [repStats, setRepStats] = useState({ docs: 0, comparables: 0, meses: 0, tasaciones: 0 });
 
   useEffect(() => {
     const init = async () => {
@@ -91,11 +93,12 @@ export default function PerfilPage() {
       if (p) {
         setPerfil(p as Perfil);
         const meses = Math.floor((Date.now() - new Date(p.created_at).getTime()) / (1000 * 60 * 60 * 24 * 30));
-        const [{ count: docs }, { count: comparables }] = await Promise.all([
+        const [{ count: docs }, { count: comparables }, tasRes] = await Promise.all([
           supabase.from("biblioteca").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).eq("estado", "aprobado"),
           supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id),
+          supabase.from("tasaciones").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).then(r => r).catch(() => ({ count: 0 })),
         ]);
-        setRepStats({ docs: docs ?? 0, comparables: comparables ?? 0, meses });
+        setRepStats({ docs: docs ?? 0, comparables: comparables ?? 0, meses, tasaciones: (tasRes as any).count ?? 0 });
       }
       setLoading(false);
 
@@ -722,7 +725,7 @@ export default function PerfilPage() {
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 20 }}>
                 {[
-                  { val: (repStats.docs * 10 + repStats.comparables * 5).toString(), label: "Puntos acumulados" },
+                  { val: (repStats.docs * 10 + repStats.comparables * 5 + repStats.tasaciones * 8).toString(), label: "Puntos acumulados" },
                   { val: repStats.docs.toString(), label: "Documentos aportados" },
                   { val: repStats.comparables.toString(), label: "Comparables cargados" },
                 ].map((s, i) => (
@@ -738,11 +741,12 @@ export default function PerfilPage() {
               </div>
               <div className="rep-badges">
                 {[
-                  { ico: "📍", label: "Referente de Zona", desc: "Especialidades de zona registradas", earned: (perfil.especialidades?.length ?? 0) > 0 },
+                  { ico: "📍", label: "Referente de Zona", desc: "Zona de trabajo + especialidades registradas", earned: (perfil.especialidades?.length ?? 0) > 0 && !!perfil.zona_trabajo },
                   { ico: "📊", label: "Aportante del Observatorio", desc: "20+ comparables cargados", earned: repStats.comparables >= 20 },
                   { ico: "📚", label: "Aportante Biblioteca", desc: "5+ documentos aprobados", earned: repStats.docs >= 5 },
+                  { ico: "⚖️", label: "Tasador Experto", desc: "10+ tasaciones realizadas o designado por admin", earned: repStats.tasaciones >= 10 || perfil.insignia_tasador },
                   { ico: "🏆", label: "Corredor Senior", desc: "+5 años en GFI®", earned: repStats.meses >= 60 },
-                  { ico: "🎓", label: "Mentor GFI®", desc: "Designado por el admin", earned: false },
+                  { ico: "🎓", label: "Mentor GFI®", desc: "Designado por el admin", earned: perfil.insignia_mentor },
                 ].map((b, i) => (
                   <div key={i} className="rep-badge" style={{ opacity: b.earned ? 1 : 0.35, border: b.earned ? "1px solid rgba(200,0,0,0.4)" : undefined, background: b.earned ? "rgba(200,0,0,0.1)" : undefined }}>
                     <span>{b.ico}</span>
