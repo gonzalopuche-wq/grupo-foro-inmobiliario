@@ -20,6 +20,16 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // Skip suspensions during admin-configured free period
+    const { data: freeConfig } = await supabaseAdmin
+      .from("indicadores")
+      .select("valor_texto")
+      .eq("clave", "free_until")
+      .maybeSingle();
+    if ((freeConfig as any)?.valor_texto && new Date() < new Date((freeConfig as any).valor_texto)) {
+      return NextResponse.json({ ok: true, bloqueados: 0, motivo: "periodo_gratuito" });
+    }
+
     const hoy = new Date();
     // Fecha de hace 4 días (vencieron hace 4 días y no pagaron)
     const hace4dias = new Date(hoy);

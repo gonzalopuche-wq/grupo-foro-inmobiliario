@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { rateLimit, getIp } from "../../lib/ratelimit";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const supabase = createClient(
@@ -8,7 +9,15 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const esc = (s: string | null | undefined) =>
+  (s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
 export async function POST(req: NextRequest) {
+  // 5 contact forms per IP per hour
+  if (!rateLimit(`web-contacto:${getIp(req)}`, 5, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Demasiadas solicitudes. Intentá más tarde." }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const { slug, tipo, nombre, email, telefono, mensaje, direccion } = body;
@@ -49,12 +58,12 @@ export async function POST(req: NextRequest) {
         </div>
         <div style="padding:24px;border:1px solid #e5e7eb;border-top:none;">
           <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:8px 0;font-size:12px;color:#666;width:120px;">Nombre</td><td style="padding:8px 0;font-size:14px;font-weight:600;">${nombre}</td></tr>
-            ${email ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Email</td><td style="padding:8px 0;font-size:14px;"><a href="mailto:${email}" style="color:#cc0000;">${email}</a></td></tr>` : ""}
-            ${telefono ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Teléfono</td><td style="padding:8px 0;font-size:14px;"><a href="tel:${telefono}" style="color:#cc0000;">${telefono}</a></td></tr>` : ""}
-            ${direccion ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Dirección</td><td style="padding:8px 0;font-size:14px;">${direccion}</td></tr>` : ""}
+            <tr><td style="padding:8px 0;font-size:12px;color:#666;width:120px;">Nombre</td><td style="padding:8px 0;font-size:14px;font-weight:600;">${esc(nombre)}</td></tr>
+            ${email ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Email</td><td style="padding:8px 0;font-size:14px;"><a href="mailto:${esc(email)}" style="color:#cc0000;">${esc(email)}</a></td></tr>` : ""}
+            ${telefono ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Teléfono</td><td style="padding:8px 0;font-size:14px;"><a href="tel:${esc(telefono)}" style="color:#cc0000;">${esc(telefono)}</a></td></tr>` : ""}
+            ${direccion ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Dirección</td><td style="padding:8px 0;font-size:14px;">${esc(direccion)}</td></tr>` : ""}
           </table>
-          ${mensaje ? `<div style="margin-top:16px;padding:16px;background:#f9f9f9;border-radius:6px;border-left:3px solid #cc0000;"><div style="font-size:12px;color:#666;margin-bottom:6px;">MENSAJE</div><div style="font-size:14px;white-space:pre-wrap;">${mensaje}</div></div>` : ""}
+          ${mensaje ? `<div style="margin-top:16px;padding:16px;background:#f9f9f9;border-radius:6px;border-left:3px solid #cc0000;"><div style="font-size:12px;color:#666;margin-bottom:6px;">MENSAJE</div><div style="font-size:14px;white-space:pre-wrap;">${esc(mensaje)}</div></div>` : ""}
           <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e5e7eb;font-size:11px;color:#999;">
             Recibido desde tu web GFI® · ${new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
           </div>
@@ -122,7 +131,7 @@ export async function POST(req: NextRequest) {
       if (subs && subs.length > 0) {
         await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar"}/api/push/send`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-internal-secret": process.env.CRON_SECRET ?? "" },
           body: JSON.stringify({
             perfil_id: cfg.perfil_id,
             titulo: `🌐 Nuevo lead desde tu web`,

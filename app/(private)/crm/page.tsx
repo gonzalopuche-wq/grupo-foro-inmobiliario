@@ -1061,6 +1061,8 @@ export default function CrmPage() {
           <Link href="/crm/post-cierre" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Post-cierre</Link>
           <Link href="/crm/escrituras" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚖️ Escrituras</Link>
           <Link href="/crm/alianzas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Alianzas</Link>
+          <Link href="/crm/firma" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✍️ Firma</Link>
+          <Link href="/crm/emails" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✉️ Emails</Link>
           <Link href="/agenda" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📆 Agenda</Link>
         </div>
 
@@ -1255,7 +1257,7 @@ export default function CrmPage() {
                     </div>
                     <div className="crm-detalle-datos">
                       {contactoSeleccionado.telefono && <div className="crm-dato"><span className="crm-dato-label">📞 Teléfono</span><a href={`https://wa.me/54${contactoSeleccionado.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",fontSize:12,textDecoration:"none"}}>{contactoSeleccionado.telefono}</a></div>}
-                      {contactoSeleccionado.email && <div className="crm-dato"><span className="crm-dato-label">✉️ Email</span><a href={`mailto:${contactoSeleccionado.email}`} style={{color:"rgba(200,0,0,0.65)",fontSize:12,textDecoration:"none"}}>{contactoSeleccionado.email}</a></div>}
+                      {contactoSeleccionado.email && <div className="crm-dato"><span className="crm-dato-label">✉️ Email</span><div style={{display:"flex",gap:6,alignItems:"center"}}><a href={`mailto:${contactoSeleccionado.email}`} style={{color:"rgba(200,0,0,0.65)",fontSize:12,textDecoration:"none"}}>{contactoSeleccionado.email}</a><a href={`/crm/emails?para=${encodeURIComponent(contactoSeleccionado.email)}&contacto=${contactoSeleccionado.id}`} style={{fontSize:9,padding:"2px 7px",background:"rgba(99,102,241,0.12)",color:"rgba(99,102,241,0.8)",border:"1px solid rgba(99,102,241,0.25)",borderRadius:4,textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em"}}>ENVIAR</a></div></div>}
                       {contactoSeleccionado.inmobiliaria && <div className="crm-dato"><span className="crm-dato-label">🏢 Inmobiliaria</span><span className="crm-dato-val">{contactoSeleccionado.inmobiliaria}</span></div>}
                       {contactoSeleccionado.zona_interes && <div className="crm-dato"><span className="crm-dato-label">📍 Zona</span><span className="crm-dato-val">{contactoSeleccionado.zona_interes}</span></div>}
                       {(contactoSeleccionado.presupuesto_min || contactoSeleccionado.presupuesto_max) && <div className="crm-dato"><span className="crm-dato-label">💰 Presupuesto</span><span className="crm-dato-val">{contactoSeleccionado.moneda} {contactoSeleccionado.presupuesto_min?.toLocaleString("es-AR")}{contactoSeleccionado.presupuesto_max ? ` – ${contactoSeleccionado.presupuesto_max.toLocaleString("es-AR")}` : ""}</span></div>}

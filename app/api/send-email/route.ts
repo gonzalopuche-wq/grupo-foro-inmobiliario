@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { rateLimit, getIp } from "../../lib/ratelimit";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
+  // 10 emails per user per hour
+  if (!rateLimit(`email:${getIp(req)}`, 10, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Demasiadas solicitudes. Intentá más tarde." }, { status: 429 });
+  }
+
   try {
     const { to, subject, html } = await req.json();
     if (!to || !subject || !html) {
