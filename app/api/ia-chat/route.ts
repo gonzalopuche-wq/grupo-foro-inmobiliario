@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit, getIp } from "../../lib/ratelimit";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -60,6 +61,11 @@ async function getForumContext(query: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
+  // 30 messages per IP per hour
+  if (!rateLimit(`ia-chat:${getIp(req)}`, 30, 60 * 60 * 1000)) {
+    return Response.json({ respuesta: "Límite de mensajes alcanzado. Intentá en 1 hora." }, { status: 429 });
+  }
+
   const { mensaje, historial } = await req.json();
 
   if (!process.env.ANTHROPIC_API_KEY) {

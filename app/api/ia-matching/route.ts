@@ -3,13 +3,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
+import { rateLimit, getIp } from "../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
+
+// Strip characters that could manipulate LLM instructions
+const sanitize = (s: string | null | undefined, max = 300) =>
+  (s ?? "").replace(/[<>`\[\]{}\\]/g, "").slice(0, max).trim();
 
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
+  // 20 matching requests per IP per hour
+  if (!rateLimit(`ia-matching:${getIp(req)}`, 20, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Límite de solicitudes alcanzado. Intentá en 1 hora." }, { status: 429 });
+  }
+
   try {
     const { perfil_id, contacto_id, propiedad_id } = await req.json();
     if (!perfil_id) return NextResponse.json({ error: "perfil_id requerido" }, { status: 400 });
@@ -28,15 +38,15 @@ export async function POST(req: NextRequest) {
       if (!contacto) return NextResponse.json({ error: "Contacto no encontrado" }, { status: 404 });
 
       contexto = `CONTACTO:
-Nombre: ${contacto.nombre} ${contacto.apellido ?? ""}
-Interés: ${contacto.interes ?? "no especificado"}
-Zona de interés: ${contacto.zona_interes ?? "cualquier zona"}
-Presupuesto: ${contacto.presupuesto_min ? `${contacto.moneda ?? "USD"} ${contacto.presupuesto_min}` : "sin mínimo"} - ${contacto.presupuesto_max ? `${contacto.moneda ?? "USD"} ${contacto.presupuesto_max}` : "sin máximo"}
-Notas: ${contacto.notas ?? "ninguna"}
+Nombre: ${sanitize(contacto.nombre)} ${sanitize(contacto.apellido)}
+Interés: ${sanitize(contacto.interes) || "no especificado"}
+Zona de interés: ${sanitize(contacto.zona_interes) || "cualquier zona"}
+Presupuesto: ${contacto.presupuesto_min ? `${sanitize(contacto.moneda) || "USD"} ${Number(contacto.presupuesto_min)}` : "sin mínimo"} - ${contacto.presupuesto_max ? `${sanitize(contacto.moneda) || "USD"} ${Number(contacto.presupuesto_max)}` : "sin máximo"}
+Notas: ${sanitize(contacto.notas) || "ninguna"}
 
 PROPIEDADES DISPONIBLES (${props?.length ?? 0}):
 ${(props ?? []).map((p: any, i: number) =>
-  `[${i + 1}] ID:${p.id} | ${p.titulo} | ${p.tipo} | ${p.operacion} | ${p.ciudad}${p.zona ? ` - ${p.zona}` : ""} | ${p.precio ? `${p.moneda} ${p.precio.toLocaleString()}` : "sin precio"} | ${p.dormitorios ?? "?"}dorm ${p.banos ?? "?"}b | ${p.superficie_cubierta ?? "?"}m²`
+  `[${i + 1}] ID:${p.id} | ${sanitize(p.titulo)} | ${sanitize(p.tipo)} | ${sanitize(p.operacion)} | ${sanitize(p.ciudad)}${p.zona ? ` - ${sanitize(p.zona)}` : ""} | ${p.precio ? `${sanitize(p.moneda)} ${Number(p.precio).toLocaleString()}` : "sin precio"} | ${p.dormitorios ?? "?"}dorm ${p.banos ?? "?"}b | ${p.superficie_cubierta ?? "?"}m²`
 ).join("\n")}`;
 
       prompt = `${contexto}
@@ -69,7 +79,7 @@ Características: ${[prop.apto_credito && "apto crédito", prop.con_cochera && "
 
 CONTACTOS (${contactos?.length ?? 0}):
 ${(contactos ?? []).map((c: any, i: number) =>
-  `[${i + 1}] ID:${c.id} | ${c.nombre} ${c.apellido ?? ""} | ${c.interes ?? "interés no especificado"} | Zona: ${c.zona_interes ?? "cualquier"} | Presupuesto: ${c.presupuesto_min ?? "?"}-${c.presupuesto_max ?? "?"} ${c.moneda ?? "USD"}`
+  `[${i + 1}] ID:${c.id} | ${sanitize(c.nombre)} ${sanitize(c.apellido)} | ${sanitize(c.interes) || "interés no especificado"} | Zona: ${sanitize(c.zona_interes) || "cualquier"} | Presupuesto: ${c.presupuesto_min ?? "?"}-${c.presupuesto_max ?? "?"} ${sanitize(c.moneda) || "USD"}`
 ).join("\n")}`;
 
       prompt = `${contexto}
