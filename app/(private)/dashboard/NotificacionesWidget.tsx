@@ -64,10 +64,15 @@ export default function NotificacionesWidget() {
       });
 
       // Guardar en Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { setGuardando(false); return; }
       await fetch("/api/push/subscribe", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription: sub.toJSON(), perfil_id: userId, eventos: true }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ subscription: sub.toJSON(), eventos: true }),
       });
 
       setEstado("activo");
@@ -81,14 +86,20 @@ export default function NotificacionesWidget() {
     if (!userId) return;
     setGuardando(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
       if (sub) {
-        await fetch("/api/push/subscribe", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ perfil_id: userId, endpoint: sub.endpoint }),
-        });
+        if (session) {
+          await fetch("/api/push/subscribe", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ endpoint: sub.endpoint }),
+          });
+        }
         await sub.unsubscribe();
       }
       setEstado("inactivo");
