@@ -27,16 +27,28 @@ async function getAdminUser(req: NextRequest) {
   return user;
 }
 
+type Sub = { id: string; endpoint: string; p256dh: string; auth: string; perfiles?: { notif_config?: Record<string, Record<string, boolean>> } };
+
+function pushHabilitado(sub: Sub, tipo_modulo?: string): boolean {
+  if (!tipo_modulo) return true;
+  const cfg = sub.perfiles?.notif_config;
+  if (!cfg) return true;
+  return cfg[tipo_modulo]?.push !== false;
+}
+
 export async function POST(req: NextRequest) {
   const admin = await getAdminUser(req);
   if (!admin) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const { titulo, cuerpo, url, filtro } = await req.json();
+  const { titulo, cuerpo, url, filtro, tipo_modulo } = await req.json();
   if (!titulo || !cuerpo) {
     return NextResponse.json({ error: "Faltan título y cuerpo" }, { status: 400 });
   }
 
-  let query = supabaseAdmin.from("push_subscriptions").select("*");
+  let query = supabaseAdmin
+    .from("push_subscriptions")
+    .select("id, endpoint, p256dh, auth, perfiles!perfil_id(notif_config)");
+
   if (filtro === "7d") {
     const desde = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     query = query.gte("created_at", desde);
@@ -45,16 +57,18 @@ export async function POST(req: NextRequest) {
     query = query.gte("created_at", desde);
   }
 
-  const { data: subs, error } = await query;
+  const { data: rawSubs, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  const subs = ((rawSubs ?? []) as unknown as Sub[]).filter(s => pushHabilitado(s, tipo_modulo));
 
   const payload = JSON.stringify({ title: titulo, body: cuerpo, url: url || "/dashboard" });
   let enviados = 0;
   const fallidos: string[] = [];
 
-  if (subs && subs.length > 0) {
+  if (subs.length > 0) {
     await Promise.allSettled(
-      subs.map(async (sub: { id: string; endpoint: string; p256dh: string; auth: string }) => {
+      subs.map(async (sub) => {
         try {
           await webpush.sendNotification(
             { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
