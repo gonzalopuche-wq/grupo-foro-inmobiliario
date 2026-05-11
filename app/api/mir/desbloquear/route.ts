@@ -31,22 +31,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, ya_desbloqueado: true });
     }
 
-    // Obtener costo del match
-    const { data: config } = await supabaseAdmin
-      .from("indicadores")
-      .select("valor")
-      .eq("clave", "costo_match_mir")
-      .single();
+    // Check free period and get match cost
+    const [{ data: config }, { data: freeConfig }] = await Promise.all([
+      supabaseAdmin.from("indicadores").select("valor").eq("clave", "costo_match_mir").single(),
+      supabaseAdmin.from("indicadores").select("valor_texto").eq("clave", "free_until").maybeSingle(),
+    ]);
 
     const costo = config?.valor ?? 5000;
+    const freeUntil = (freeConfig as any)?.valor_texto ? new Date((freeConfig as any).valor_texto) : null;
+    const enPeriodoGratis = freeUntil && new Date() < freeUntil;
 
-    // Registrar el pago del desbloqueo
-    await supabaseAdmin.from("mir_desbloqueos").insert({
-      match_id,
-      user_id,
-      monto: costo,
-      tipo: es_duenio_ofrecido ? "ofrecido" : "busqueda",
-    });
+    if (!enPeriodoGratis) {
+      await supabaseAdmin.from("mir_desbloqueos").insert({
+        match_id,
+        user_id,
+        monto: costo,
+        tipo: es_duenio_ofrecido ? "ofrecido" : "busqueda",
+      });
+    }
 
     // Actualizar el match
     await supabaseAdmin

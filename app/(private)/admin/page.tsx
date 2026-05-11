@@ -176,6 +176,15 @@ export default function AdminPage() {
   const [editandoBonif, setEditandoBonif] = useState<Record<string,string>>({});
   const [guardandoBonif, setGuardandoBonif] = useState<string|null>(null);
   const [denuncias, setDenuncias] = useState<{id:string;tipo_contenido:string;contenido_id:string;motivo:string;descripcion:string|null;estado:string;created_at:string}[]>([]);
+  // Push broadcast
+  const [pushForm, setPushForm] = useState({ titulo: "", cuerpo: "", url: "", filtro: "todos" });
+  const [enviandoPush, setEnviandoPush] = useState(false);
+  const [pushRes, setPushRes] = useState<{ ok: boolean; enviados?: number; error?: string } | null>(null);
+  const [broadcasts, setBroadcasts] = useState<{id:string;titulo:string;cuerpo:string;url:string|null;filtro:string;enviados:number;created_at:string}[]>([]);
+  // Free period
+  const [freeUntil, setFreeUntil] = useState("");
+  const [guardandoFree, setGuardandoFree] = useState(false);
+  const [freeOk, setFreeOk] = useState(false);
 
   useEffect(() => {
     const verificar = async () => {
@@ -187,6 +196,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
+      cargarBroadcasts(); cargarFreeUntil();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -360,6 +370,50 @@ export default function AdminPage() {
   const mostrarToast = (msg: string, tipo: "ok"|"err" = "ok") => {
     setToast({ msg, tipo });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const cargarBroadcasts = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const res = await fetch("/api/admin/push-broadcast", { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const json = await res.json();
+    if (json.ok) setBroadcasts(json.broadcasts ?? []);
+  };
+
+  const enviarPushBroadcast = async () => {
+    if (!pushForm.titulo || !pushForm.cuerpo) return mostrarToast("Completá título y mensaje", "err");
+    setEnviandoPush(true); setPushRes(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { setEnviandoPush(false); return; }
+    try {
+      const res = await fetch("/api/admin/push-broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify(pushForm),
+      });
+      const json = await res.json();
+      setPushRes(json);
+      if (json.ok) {
+        mostrarToast(`✓ Push enviado a ${json.enviados} dispositivos`);
+        setPushForm(p => ({ ...p, titulo: "", cuerpo: "", url: "" }));
+        cargarBroadcasts();
+      } else mostrarToast(json.error ?? "Error al enviar", "err");
+    } catch {
+      mostrarToast("Error de conexión", "err");
+    }
+    setEnviandoPush(false);
+  };
+
+  const cargarFreeUntil = async () => {
+    const { data } = await supabase.from("indicadores").select("valor_texto").eq("clave", "free_until").maybeSingle();
+    setFreeUntil((data as any)?.valor_texto ?? "");
+  };
+
+  const guardarFreeUntil = async () => {
+    setGuardandoFree(true);
+    await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: freeUntil || "", valor: 0 }, { onConflict: "clave" });
+    setGuardandoFree(false); setFreeOk(true); setTimeout(() => setFreeOk(false), 2000);
+    mostrarToast(freeUntil ? `Período gratis hasta ${freeUntil}` : "Período gratuito desactivado");
   };
 
   const sincronizarCocir = async () => {
@@ -1075,6 +1129,47 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {/* ── PERÍODO GRATUITO ── */}
+          <div>
+            <div className="adm-ind-titulo">Período <span>Gratuito</span></div>
+            <div className="adm-ind-subtitulo">
+              Programá días sin cobro por decisión del administrador. Mientras la fecha sea futura, los desbloqueos de matches MIR no generan cargo y el cron de suspensión está pausado.
+            </div>
+            <div className="adm-ind-grid" style={{ maxWidth: 400 }}>
+              <div className="adm-ind-card">
+                <div className="adm-ind-label">Sin cobro hasta (inclusive)</div>
+                <div className="adm-ind-actual" style={{ fontSize: 15 }}>
+                  {freeUntil
+                    ? (new Date() < new Date(freeUntil)
+                        ? <span style={{ color: "#22c55e" }}>🟢 Activo hasta {new Date(freeUntil).toLocaleDateString("es-AR")}</span>
+                        : <span style={{ color: "rgba(255,255,255,0.3)" }}>Vencido ({new Date(freeUntil).toLocaleDateString("es-AR")})</span>)
+                    : <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin período gratuito</span>}
+                </div>
+                <div className="adm-ind-form">
+                  <input
+                    type="date"
+                    className="adm-ind-input"
+                    value={freeUntil}
+                    onChange={e => setFreeUntil(e.target.value)}
+                    style={{ colorScheme: "dark" }}
+                  />
+                  <button className="adm-ind-btn" onClick={guardarFreeUntil} disabled={guardandoFree}>
+                    {guardandoFree ? "..." : "Guardar"}
+                  </button>
+                </div>
+                {freeOk && <div className="adm-ind-ok">✓ Guardado</div>}
+                {freeUntil && (
+                  <button
+                    onClick={() => { setFreeUntil(""); guardarFreeUntil(); }}
+                    style={{ marginTop: 8, background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                  >
+                    Desactivar período gratuito
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* ── MI ABONO INTELIGENTE CONFIG ── */}
           {bonifConfig.length > 0 && (
             <div>
@@ -1244,6 +1339,120 @@ export default function AdminPage() {
                 </table>
               </div>
             )}
+          </div>
+
+          {/* ── NOTIFICACIONES PUSH ── */}
+          <div>
+            <div className="adm-header">
+              <h1>🔔 Notificaciones <span>Push</span></h1>
+              <p>Enviá notificaciones a todos los corredores que activaron push en su navegador o celular. Útil para anuncios importantes, mantenimiento, eventos, etc.</p>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
+              {/* Formulario */}
+              <div style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "20px 24px" }}>
+                <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 16 }}>
+                  Nueva notificación
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Título *</div>
+                    <input
+                      className="adm-ind-input"
+                      style={{ width: "100%" }}
+                      placeholder="Ej: Actualización de la plataforma"
+                      value={pushForm.titulo}
+                      onChange={e => setPushForm(p => ({ ...p, titulo: e.target.value }))}
+                      maxLength={80}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Mensaje *</div>
+                    <textarea
+                      className="adm-ind-input"
+                      style={{ width: "100%", minHeight: 72, resize: "vertical", fontFamily: "Inter,sans-serif", fontSize: 13 }}
+                      placeholder="Ej: Ya está disponible la nueva función de firma digital."
+                      value={pushForm.cuerpo}
+                      onChange={e => setPushForm(p => ({ ...p, cuerpo: e.target.value }))}
+                      maxLength={200}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>URL de destino (opcional)</div>
+                    <input
+                      className="adm-ind-input"
+                      style={{ width: "100%" }}
+                      placeholder="/dashboard"
+                      value={pushForm.url}
+                      onChange={e => setPushForm(p => ({ ...p, url: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Destinatarios</div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {[
+                        { k: "todos", label: "Todos" },
+                        { k: "30d", label: "Activos 30 días" },
+                        { k: "7d", label: "Activos 7 días" },
+                      ].map(f => (
+                        <button
+                          key={f.k}
+                          onClick={() => setPushForm(p => ({ ...p, filtro: f.k }))}
+                          style={{
+                            padding: "5px 14px",
+                            background: pushForm.filtro === f.k ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.04)",
+                            border: `1px solid ${pushForm.filtro === f.k ? "rgba(200,0,0,0.5)" : "rgba(255,255,255,0.1)"}`,
+                            borderRadius: 4, color: pushForm.filtro === f.k ? "#fff" : "rgba(255,255,255,0.4)",
+                            fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer",
+                            letterSpacing: "0.1em", textTransform: "uppercase",
+                          }}
+                        >
+                          {f.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    className="adm-ind-btn"
+                    style={{ alignSelf: "flex-start", padding: "10px 24px", fontSize: 12 }}
+                    onClick={enviarPushBroadcast}
+                    disabled={enviandoPush || !pushForm.titulo || !pushForm.cuerpo}
+                  >
+                    {enviandoPush
+                      ? <><span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite", marginRight: 8 }} />Enviando...</>
+                      : "📣 Enviar notificación"}
+                  </button>
+                  {pushRes && (
+                    <div style={{ fontSize: 12, color: pushRes.ok ? "#22c55e" : "#ff6666", fontFamily: "Inter,sans-serif" }}>
+                      {pushRes.ok ? `✓ Enviado a ${pushRes.enviados} dispositivo${pushRes.enviados !== 1 ? "s" : ""}` : `✗ ${pushRes.error}`}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Historial */}
+              <div>
+                <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>
+                  Últimos envíos
+                </div>
+                {broadcasts.length === 0 ? (
+                  <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, fontStyle: "italic" }}>Sin envíos aún.</div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {broadcasts.slice(0, 8).map(b => (
+                      <div key={b.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, padding: "10px 14px" }}>
+                        <div style={{ fontWeight: 600, fontSize: 13, color: "#fff", marginBottom: 2 }}>{b.titulo}</div>
+                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>{b.cuerpo}</div>
+                        <div style={{ display: "flex", gap: 12, fontSize: 11, color: "rgba(255,255,255,0.25)", flexWrap: "wrap" }}>
+                          <span>✉ {b.enviados} dispositivos</span>
+                          <span style={{ textTransform: "capitalize" }}>{b.filtro}</span>
+                          <span>{new Date(b.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* ── REDES SOCIALES ── */}
