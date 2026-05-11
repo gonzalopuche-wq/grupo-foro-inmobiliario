@@ -1644,20 +1644,18 @@ export default function CarteraPage() {
                     Descargar plantilla CSV
                   </button>
                 </p>
-                {/* File upload */}
-                <input
-                  id="cartera-file-input"
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  style={{ display: "none" }}
-                  onChange={e => { const f = e.target.files?.[0]; if (f) cargarArchivo(f); e.target.value = ""; }}
-                />
+                {/* File upload — label wrapping input is the most reliable trigger */}
                 <label
-                  htmlFor="cartera-file-input"
                   onDragOver={e => e.preventDefault()}
                   onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) cargarArchivo(f); }}
                   style={{ display: "block", border: "2px dashed rgba(255,255,255,0.15)", borderRadius: 8, padding: "20px 16px", textAlign: "center", cursor: "pointer", marginBottom: 12, background: xlsxNombre ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)", transition: "all 0.15s" }}
                 >
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    style={{ display: "none" }}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) cargarArchivo(f); e.target.value = ""; }}
+                  />
                   {xlsxNombre ? (
                     <div>
                       <div style={{ fontSize: 20, marginBottom: 4 }}>📄</div>
