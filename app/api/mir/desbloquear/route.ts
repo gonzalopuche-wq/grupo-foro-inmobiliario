@@ -31,17 +31,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, ya_desbloqueado: true });
     }
 
-    // Check free period and get match cost
-    const [{ data: config }, { data: freeConfig }] = await Promise.all([
+    // Check if MIR is free and get match cost
+    const [{ data: config }, { data: mirGratuitoConf }] = await Promise.all([
       supabaseAdmin.from("indicadores").select("valor").eq("clave", "costo_match_mir").single(),
-      supabaseAdmin.from("indicadores").select("valor_texto").eq("clave", "free_until").maybeSingle(),
+      supabaseAdmin.from("indicadores").select("valor_texto").eq("clave", "mir_gratuito").maybeSingle(),
     ]);
 
     const costo = config?.valor ?? 5000;
-    const freeUntil = freeConfig?.valor_texto ? new Date(freeConfig.valor_texto) : null;
-    const enPeriodoGratis = freeUntil && new Date() < freeUntil;
+    const esGratuito = mirGratuitoConf?.valor_texto === "true";
 
-    if (!enPeriodoGratis) {
+    if (!esGratuito) {
       await supabaseAdmin.from("mir_desbloqueos").insert({
         match_id,
         user_id,
