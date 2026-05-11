@@ -37,7 +37,8 @@ export async function GET(req: NextRequest) {
         perfiles!perfil_id (
           nombre,
           apellido,
-          matricula
+          matricula,
+          bonificacion_pct
         )
       `)
       .eq("estado", "activa")
@@ -47,10 +48,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ok: true, bloqueados: 0 });
     }
 
+    // Excluir usuarios con 100% de bonificación (suscripción siempre activa)
+    const aBloquear = vencidas.filter(s => ((s.perfiles as any)?.bonificacion_pct ?? 0) < 100);
+
+    if (aBloquear.length === 0) {
+      return NextResponse.json({ ok: true, bloqueados: 0 });
+    }
+
     let bloqueados = 0;
     const errores: string[] = [];
 
-    for (const s of vencidas) {
+    for (const s of aBloquear) {
       // 1. Bloquear: cambiar estado a suspendida
       const { error: errorBloqueo } = await supabaseAdmin
         .from("suscripciones")

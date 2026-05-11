@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import AdminBeneficios from "../../components/AdminBeneficios";
 
-interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; insignia_mentor?: boolean; insignia_tasador?: boolean; }
+interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; insignia_mentor?: boolean; insignia_tasador?: boolean; categoria?: string; bonificacion_pct?: number; }
 interface Indicador { clave: string; valor: number | string; label: string; tipo: "number" | "text"; }
 interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number; monto_ars: number | null; monto_declarado_ars: number | null; dolar_ref: number | null; estado: string; fecha_pago_declarado: string | null; fecha_confirmacion: string | null; fecha_vencimiento: string | null; periodo: string | null; comprobante: string | null; cbu_origen: string | null; nota_admin: string | null; creado_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
@@ -46,6 +46,14 @@ const CBU_CONFIG = [
 ];
 
 const ESTADO_BADGE: Record<string, string> = { pendiente: "badge-pendiente", aprobado: "badge-aprobado", rechazado: "badge-rechazado" };
+const CATEGORIAS = [
+  { value: "standard", label: "Standard", color: "rgba(148,163,184,0.8)" },
+  { value: "vip", label: "VIP", color: "#eab308" },
+  { value: "ci_cocir", label: "CI COCIR", color: "#3b82f6" },
+  { value: "colaborador_ci", label: "Colaborador CI", color: "#06b6d4" },
+  { value: "admin_ayudante", label: "Admin Ayudante", color: "#f97316" },
+  { value: "master", label: "Máster", color: "#cc0000" },
+];
 const ESTADO_LABEL: Record<string, string> = { pendiente: "Pendiente", aprobado: "Aprobado", rechazado: "Rechazado" };
 const MONEDAS_OPCIONES = ["USD", "EUR", "GBP", "BRL", "USDT", "USDC"];
 const FORM_PROV_VACIO = { nombre: "", contacto_whatsapp: "", contacto_email: "", monedas: [] as string[], servicios: "", compra_usd: "", venta_usd: "" };
@@ -322,6 +330,18 @@ export default function AdminPage() {
     });
     setProcesandoColab(null);
     cargarColaboradores(filtroColab);
+  };
+
+  const setCategoriaUser = async (id: string, categoria: string) => {
+    await supabase.from("perfiles").update({ categoria }).eq("id", id);
+    setPerfiles(prev => prev.map(p => p.id === id ? { ...p, categoria } : p));
+  };
+
+  const setBonificacionUser = async (id: string, bonificacion_pct: number) => {
+    if (bonificacion_pct < 0 || bonificacion_pct > 100) return;
+    await supabase.from("perfiles").update({ bonificacion_pct }).eq("id", id);
+    setPerfiles(prev => prev.map(p => p.id === id ? { ...p, bonificacion_pct } : p));
+    if (bonificacion_pct === 100) mostrarToast(`100% bonificado — suscripción siempre activa`);
   };
 
   const cargarPerfiles = async () => {
@@ -1134,12 +1154,33 @@ export default function AdminPage() {
               {loading ? <div className="adm-loading">Cargando...</div>
                : perfilesFiltrados.length === 0 ? <div className="adm-empty">No hay solicitudes en esta categoría.</div>
                : <table className="adm-tabla">
-                <thead><tr><th>Nombre</th><th>Tipo</th><th>Matrícula / DNI</th><th>Contacto</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <thead><tr><th>Nombre</th><th>Tipo</th><th>Categoría / Bonif.</th><th>Matrícula / DNI</th><th>Contacto</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
-                  {perfilesFiltrados.map(p => (
+                  {perfilesFiltrados.map(p => {
+                    const cat = CATEGORIAS.find(c => c.value === (p.categoria ?? "standard")) ?? CATEGORIAS[0];
+                    const bonif = p.bonificacion_pct ?? 0;
+                    return (
                     <tr key={p.id}>
                       <td><div className="adm-nombre">{p.apellido}, {p.nombre}</div>{p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}{p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}</td>
                       <td><span className={`badge badge-${p.tipo}`}>{p.tipo === "corredor" ? "Corredor" : p.tipo === "colaborador" ? "Colaborador" : "Admin"}</span></td>
+                      <td>
+                        <select
+                          value={p.categoria ?? "standard"}
+                          onChange={e => setCategoriaUser(p.id, e.target.value)}
+                          style={{ background: "#0f172a", color: cat.color, border: `1px solid ${cat.color}44`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", marginBottom: 4, width: "100%" }}
+                        >
+                          {CATEGORIAS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                        </select>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          <input
+                            type="number" min={0} max={100}
+                            defaultValue={bonif}
+                            onBlur={e => setBonificacionUser(p.id, Number(e.target.value))}
+                            style={{ width: 50, background: "#0f172a", color: bonif === 100 ? "#22c55e" : "rgba(255,255,255,0.6)", border: `1px solid ${bonif === 100 ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.12)"}`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", textAlign: "center" }}
+                          />
+                          <span style={{ fontSize: 10, color: bonif === 100 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>% bonif{bonif === 100 ? " ✓ gratis" : ""}</span>
+                        </div>
+                      </td>
                       <td>{p.matricula && <div>Mat. {p.matricula}</div>}{p.dni && <div>DNI {p.dni}</div>}</td>
                       <td>{p.telefono && <div>{p.telefono}</div>}{p.email && <div className="adm-sub">{p.email}</div>}</td>
                       <td style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{formatFecha(p.created_at)}</td>
@@ -1160,7 +1201,7 @@ export default function AdminPage() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>}
             </div>
