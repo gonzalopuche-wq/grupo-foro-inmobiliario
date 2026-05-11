@@ -186,6 +186,8 @@ export default function AdminPage() {
   const [guardandoFree, setGuardandoFree] = useState(false);
   const [freeOk, setFreeOk] = useState(false);
   const [notificandoPromo, setNotificandoPromo] = useState(false);
+  const [mirGratuito, setMirGratuito] = useState(false);
+  const [guardandoMirGratuito, setGuardandoMirGratuito] = useState(false);
 
   useEffect(() => {
     const verificar = async () => {
@@ -197,7 +199,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -410,6 +412,20 @@ export default function AdminPage() {
     setFreeUntil(data?.valor_texto ?? "");
   };
 
+  const cargarMirGratuito = async () => {
+    const { data } = await supabase.from("indicadores").select("valor_texto").eq("clave", "mir_gratuito").maybeSingle();
+    setMirGratuito(data?.valor_texto === "true");
+  };
+
+  const toggleMirGratuito = async () => {
+    setGuardandoMirGratuito(true);
+    const nuevo = !mirGratuito;
+    await supabase.from("indicadores").upsert({ clave: "mir_gratuito", valor_texto: nuevo ? "true" : "false", valor: 0 }, { onConflict: "clave" });
+    setMirGratuito(nuevo);
+    setGuardandoMirGratuito(false);
+    mostrarToast(nuevo ? "Matches MIR gratuitos activados" : "Matches MIR con costo normal");
+  };
+
   const guardarFreeUntil = async () => {
     setGuardandoFree(true);
     await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: freeUntil || "", valor: 0 }, { onConflict: "clave" });
@@ -578,15 +594,28 @@ export default function AdminPage() {
     setProcesando(id);
     await supabase.from("perfiles").update({ estado: nuevoEstado }).eq("id", id);
     if (nuevoEstado === "aprobado") {
+      // Primer mes siempre gratis para nuevos ingresos
+      const treintaDias = new Date();
+      treintaDias.setDate(treintaDias.getDate() + 30);
       const { data: freeConf } = await supabase.from("indicadores").select("valor_texto").eq("clave", "free_until").maybeSingle();
-      if (freeConf?.valor_texto && new Date() < new Date(freeConf.valor_texto)) {
-        const { data: subExistente } = await supabase.from("suscripciones").select("id").eq("perfil_id", id).maybeSingle();
-        if (subExistente) {
-          await supabase.from("suscripciones").update({ estado: "activa", fecha_vencimiento: freeConf.valor_texto, nota_admin: "Período gratuito" }).eq("id", subExistente.id);
-        } else {
-          await supabase.from("suscripciones").insert({ perfil_id: id, plan: "matriculado", estado: "activa", monto_usd: 0, fecha_vencimiento: freeConf.valor_texto, nota_admin: "Período gratuito" });
-        }
+      const fechaVenc = freeConf?.valor_texto && new Date(freeConf.valor_texto) > treintaDias
+        ? freeConf.valor_texto
+        : treintaDias.toISOString().slice(0, 10);
+      const { data: subExistente } = await supabase.from("suscripciones").select("id").eq("perfil_id", id).maybeSingle();
+      if (subExistente) {
+        await supabase.from("suscripciones").update({ estado: "activa", fecha_vencimiento: fechaVenc, nota_admin: "Primer mes gratis" }).eq("id", subExistente.id);
+      } else {
+        await supabase.from("suscripciones").insert({ perfil_id: id, plan: "matriculado", estado: "activa", monto_usd: 0, fecha_vencimiento: fechaVenc, nota_admin: "Primer mes gratis" });
       }
+      // Notificación de bienvenida con fecha de inicio de cobro
+      const fechaStr = new Date(fechaVenc).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
+      await supabase.from("notificaciones").insert({
+        user_id: id,
+        titulo: "¡Bienvenido a GFI®! 🎉",
+        mensaje: `Tu primer mes es gratuito hasta el ${fechaStr}. A partir de esa fecha el costo mensual será de USD 15.`,
+        tipo: "suscripcion",
+        url: "/suscripcion",
+      });
     }
     await cargarPerfiles(); setProcesando(null);
   };
@@ -1159,56 +1188,49 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* ── PERÍODO GRATUITO ── */}
+          {/* ── PRIMER MES GRATIS / INICIO DE COBRO ── */}
           <div>
-            <div className="adm-ind-titulo">Período <span>Gratuito</span></div>
+            <div className="adm-ind-titulo">Nuevos <span>Ingresos</span></div>
             <div className="adm-ind-subtitulo">
-              Oferta para nuevos posibles suscriptores. Con promo activa, los corredores que sean aprobados durante este período reciben suscripción gratuita hasta la fecha indicada. Los suscriptores existentes no se ven afectados.
+              El primer mes es siempre gratuito para todo nuevo corredor aprobado. Al aprobar, reciben suscripción activa por 30 días y una notificación con la fecha en que empieza el cobro. Podés extender este período indicando una fecha más lejana.
             </div>
-            <div className="adm-ind-grid" style={{ maxWidth: 480 }}>
+            <div className="adm-ind-grid" style={{ maxWidth: 600 }}>
               <div className="adm-ind-card">
-                <div className="adm-ind-label">Gratis hasta (inclusive)</div>
-                <div className="adm-ind-actual" style={{ fontSize: 15, marginBottom: 12 }}>
-                  {freeUntil
-                    ? (new Date() < new Date(freeUntil)
-                        ? <span style={{ color: "#22c55e" }}>🟢 Activo hasta {new Date(freeUntil).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
-                        : <span style={{ color: "rgba(255,255,255,0.3)" }}>Vencido ({new Date(freeUntil).toLocaleDateString("es-AR")})</span>)
-                    : <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin período gratuito activo</span>}
+                <div className="adm-ind-label">Extender período gratuito hasta</div>
+                <div className="adm-ind-actual" style={{ fontSize: 13, marginBottom: 10 }}>
+                  {freeUntil && new Date() < new Date(freeUntil)
+                    ? <span style={{ color: "#22c55e" }}>🟢 Extendido hasta {new Date(freeUntil).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
+                    : <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin extensión — nuevos ingresos tienen 30 días gratis por defecto</span>}
                 </div>
                 <div className="adm-ind-form">
-                  <input
-                    type="date"
-                    className="adm-ind-input"
-                    value={freeUntil}
-                    onChange={e => setFreeUntil(e.target.value)}
-                    style={{ colorScheme: "dark" }}
-                  />
-                  <button className="adm-ind-btn" onClick={guardarFreeUntil} disabled={guardandoFree}>
-                    {guardandoFree ? "..." : "Activar"}
-                  </button>
+                  <input type="date" className="adm-ind-input" value={freeUntil} onChange={e => setFreeUntil(e.target.value)} style={{ colorScheme: "dark" }} />
+                  <button className="adm-ind-btn" onClick={guardarFreeUntil} disabled={guardandoFree}>{guardandoFree ? "..." : "Guardar"}</button>
                 </div>
                 {freeOk && <div className="adm-ind-ok">✓ Guardado</div>}
                 {freeUntil && new Date() < new Date(freeUntil) && (
-                  <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
-                    <button
-                      onClick={notificarPromo}
-                      disabled={notificandoPromo}
-                      style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.4)", color: "#a5b4fc", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
-                    >
+                  <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
+                    <button onClick={notificarPromo} disabled={notificandoPromo}
+                      style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.4)", color: "#a5b4fc", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                       {notificandoPromo ? "Enviando..." : "🔔 Notificar suscriptores"}
                     </button>
-                    <button
-                      onClick={async () => {
-                        setFreeUntil("");
-                        await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: "", valor: 0 }, { onConflict: "clave" });
-                        mostrarToast("Período gratuito desactivado");
-                      }}
-                      style={{ background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
-                    >
-                      Desactivar
+                    <button onClick={async () => { setFreeUntil(""); await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: "", valor: 0 }, { onConflict: "clave" }); mostrarToast("Extensión eliminada"); }}
+                      style={{ background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                      Quitar extensión
                     </button>
                   </div>
                 )}
+              </div>
+              <div className="adm-ind-card">
+                <div className="adm-ind-label">Matches MIR</div>
+                <div className="adm-ind-actual" style={{ fontSize: 13, marginBottom: 12 }}>
+                  {mirGratuito
+                    ? <span style={{ color: "#22c55e" }}>🟢 Gratuitos por el momento</span>
+                    : <span style={{ color: "rgba(255,255,255,0.3)" }}>Con costo según tarifa</span>}
+                </div>
+                <button onClick={toggleMirGratuito} disabled={guardandoMirGratuito}
+                  style={{ background: mirGratuito ? "rgba(239,68,68,0.1)" : "rgba(34,197,94,0.1)", border: `1px solid ${mirGratuito ? "rgba(239,68,68,0.3)" : "rgba(34,197,94,0.3)"}`, color: mirGratuito ? "#fca5a5" : "#86efac", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  {guardandoMirGratuito ? "..." : mirGratuito ? "Activar cobro" : "Activar gratuito"}
+                </button>
               </div>
             </div>
           </div>
