@@ -215,6 +215,19 @@ export async function GET(req: NextRequest) {
         errores.push(`${email}: ${error.message}`);
       } else {
         enviados++;
+        // Push de recordatorio si el usuario tiene suscripcion.push = true
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
+        fetch(`${siteUrl}/api/push/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-internal-secret": process.env.CRON_SECRET ?? "" },
+          body: JSON.stringify({
+            perfil_id: s.perfil_id,
+            titulo: "⏳ Recordatorio de suscripción GFI®",
+            body: `Tu suscripción vence el ${new Date(s.fecha_vencimiento).toLocaleDateString("es-AR")}. Realizá la transferencia para continuar.`,
+            url: "/suscripcion",
+            tipo_modulo: "suscripcion",
+          }),
+        }).catch(() => {});
       }
     }
 

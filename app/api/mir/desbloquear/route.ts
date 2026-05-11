@@ -80,16 +80,29 @@ export async function POST(req: NextRequest) {
       const perfilOf = perfiles?.find(p => p.id === ofPerfil);
       const perfilBu = perfiles?.find(p => p.id === buPerfil);
 
-      // Notificar a ambos
+      // Notificar a ambos (in-app + push)
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
       for (const [uid, otro] of [[ofPerfil, perfilBu], [buPerfil, perfilOf]]) {
         if (!uid || !otro) continue;
+        const msgContacto = `${otro.nombre} ${otro.apellido} · Mat. ${otro.matricula ?? "—"} · ${otro.telefono ?? otro.email ?? ""}`;
         await supabaseAdmin.from("notificaciones").insert({
           user_id: uid,
           titulo: "¡Contacto desbloqueado!",
-          mensaje: `${otro.nombre} ${otro.apellido} · Mat. ${otro.matricula ?? "—"} · ${otro.telefono ?? otro.email ?? ""}`,
+          mensaje: msgContacto,
           tipo: "match_mir",
           url: "/mir?vista=matches",
         });
+        fetch(`${siteUrl}/api/push/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-internal-secret": process.env.CRON_SECRET ?? "" },
+          body: JSON.stringify({
+            perfil_id: uid,
+            titulo: "🤝 ¡Contacto MIR desbloqueado!",
+            body: msgContacto,
+            url: "/mir?vista=matches",
+            tipo_modulo: "mir_match",
+          }),
+        }).catch(() => {});
       }
     }
 
