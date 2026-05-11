@@ -251,6 +251,10 @@ export default function CrmPage() {
   // Propiedades sugeridas
   const [propiedadesSugeridas, setPropiedadesSugeridas] = useState<any[]>([]);
   const [loadingPropiedades, setLoadingPropiedades] = useState(false);
+  // Quick reply
+  const [estadoAlResponder, setEstadoAlResponder] = useState("");
+  const [sugerirPropsEnRespuesta, setSugerirPropsEnRespuesta] = useState(false);
+  const [enviandoEmail, setEnviandoEmail] = useState(false);
   const [mostrarImport, setMostrarImport] = useState(false);
   const [importRows, setImportRows] = useState<Record<string, string>[]>([]);
   const [importando, setImportando] = useState(false);
@@ -386,6 +390,65 @@ export default function CrmPage() {
     await supabase.from("crm_contactos").update({ updated_at: new Date().toISOString() }).eq("id", contactoSeleccionado.id);
     setNuevaInteraccion({ tipo: "nota", descripcion: "" }); setGuardandoInteraccion(false);
     cargarDetalle(contactoSeleccionado); if (userId) cargarContactos(userId);
+  };
+
+  const logViendoTelefono = async () => {
+    if (!userId || !contactoSeleccionado) return;
+    await supabase.from("crm_interacciones").insert({ contacto_id: contactoSeleccionado.id, perfil_id: userId, tipo: "llamada", descripcion: "📞 Vio teléfono" });
+    await supabase.from("crm_contactos").update({ updated_at: new Date().toISOString() }).eq("id", contactoSeleccionado.id);
+    cargarDetalle(contactoSeleccionado);
+    if (userId) cargarContactos(userId);
+  };
+
+  const obtenerTextoConPropiedades = () => {
+    let texto = nuevaInteraccion.descripcion;
+    if (sugerirPropsEnRespuesta && propiedadesSugeridas.length > 0) {
+      const propTexto = propiedadesSugeridas.slice(0, 3).map((p: any) =>
+        `• ${p.titulo ?? p.direccion ?? "Propiedad"} — ${p.moneda ?? "USD"} ${p.precio?.toLocaleString("es-AR") ?? "A consultar"}`
+      ).join("\n");
+      texto += `\n\n🏠 Propiedades que podrían interesarte:\n${propTexto}`;
+    }
+    return texto;
+  };
+
+  const enviarEmailRespuesta = async () => {
+    if (!userId || !contactoSeleccionado?.email || !nuevaInteraccion.descripcion.trim()) return;
+    setEnviandoEmail(true);
+    try {
+      const texto = obtenerTextoConPropiedades();
+      const html = `<div style="font-family:Arial,sans-serif;white-space:pre-wrap;">${texto.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>`;
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: contactoSeleccionado.email, subject: `Seguimiento — ${contactoSeleccionado.nombre} ${contactoSeleccionado.apellido ?? ""}`.trim(), html }),
+      });
+      await supabase.from("crm_interacciones").insert({ contacto_id: contactoSeleccionado.id, perfil_id: userId, tipo: "email", descripcion: `✉️ Email enviado: ${texto.slice(0, 300)}` });
+      await supabase.from("crm_contactos").update({ updated_at: new Date().toISOString() }).eq("id", contactoSeleccionado.id);
+      if (estadoAlResponder) await actualizarEstadoLead(contactoSeleccionado, estadoAlResponder);
+      setNuevaInteraccion({ tipo: "nota", descripcion: "" });
+      setEstadoAlResponder("");
+      setSugerirPropsEnRespuesta(false);
+      cargarDetalle(contactoSeleccionado);
+      if (userId) cargarContactos(userId);
+    } catch (error) {
+      console.error("Error al enviar email de respuesta:", error);
+    }
+    setEnviandoEmail(false);
+  };
+
+  const abrirWhatsAppRespuesta = async () => {
+    if (!userId || !contactoSeleccionado?.telefono || !nuevaInteraccion.descripcion.trim()) return;
+    const texto = obtenerTextoConPropiedades();
+    const tel = (contactoSeleccionado.telefono as string).replace(/\D/g, "").replace(/^0+/, "549").replace(/^5499/, "549");
+    window.open(`https://wa.me/${tel}?text=${encodeURIComponent(texto)}`, "_blank");
+    await supabase.from("crm_interacciones").insert({ contacto_id: contactoSeleccionado.id, perfil_id: userId, tipo: "whatsapp", descripcion: `💬 WhatsApp: ${texto.slice(0, 300)}` });
+    await supabase.from("crm_contactos").update({ updated_at: new Date().toISOString() }).eq("id", contactoSeleccionado.id);
+    if (estadoAlResponder) await actualizarEstadoLead(contactoSeleccionado, estadoAlResponder);
+    setNuevaInteraccion({ tipo: "nota", descripcion: "" });
+    setEstadoAlResponder("");
+    setSugerirPropsEnRespuesta(false);
+    cargarDetalle(contactoSeleccionado);
+    if (userId) cargarContactos(userId);
   };
 
   const eliminarInteraccion = async (id: string) => {
@@ -1293,7 +1356,15 @@ export default function CrmPage() {
                         : tabDetalle === "historial" ? (
                           <>
                             <div className="crm-nueva-interaccion">
-                              <div className="crm-tipo-btns">{TIPOS_INTERACCION.map(t => <button key={t.value} className={`crm-tipo-btn${nuevaInteraccion.tipo === t.value ? " activo" : ""}`} onClick={() => setNuevaInteraccion(p => ({...p, tipo: t.value}))}>{t.label}</button>)}</div>
+                              <div className="crm-tipo-btns">
+                                {TIPOS_INTERACCION.map(t => <button key={t.value} className={`crm-tipo-btn${nuevaInteraccion.tipo === t.value ? " activo" : ""}`} onClick={() => setNuevaInteraccion(p => ({...p, tipo: t.value}))}>{t.label}</button>)}
+                                <button
+                                  className="crm-tipo-btn"
+                                  style={{borderColor:"rgba(34,197,94,0.35)",color:"rgba(34,197,94,0.7)",background:"rgba(34,197,94,0.06)"}}
+                                  onClick={logViendoTelefono}
+                                  title="Registrar que el contacto vio el teléfono"
+                                >👁️ Vio tel.</button>
+                              </div>
                               <div style={{position:"relative"}}>
                                 <textarea className="crm-textarea" placeholder="Escribí una nota, registrá una llamada..." value={nuevaInteraccion.descripcion} onChange={e => setNuevaInteraccion(p => ({...p, descripcion: e.target.value}))} rows={2} />
                                 {mostrarPlantillas && (
@@ -1313,6 +1384,40 @@ export default function CrmPage() {
                                   </div>
                                 )}
                               </div>
+                              {/* Quick reply options for email/whatsapp */}
+                              {(nuevaInteraccion.tipo === "email" || nuevaInteraccion.tipo === "whatsapp") && (
+                                <div style={{display:"flex",flexDirection:"column",gap:6,padding:"8px 10px",background:"rgba(255,255,255,0.03)",borderRadius:4,border:"1px solid rgba(255,255,255,0.07)"}}>
+                                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                                    <span style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",color:"rgba(255,255,255,0.3)",whiteSpace:"nowrap"}}>Al responder cambiar estado a</span>
+                                    <select
+                                      value={estadoAlResponder}
+                                      onChange={e => setEstadoAlResponder(e.target.value)}
+                                      style={{flex:1,minWidth:120,padding:"3px 6px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:3,color:"rgba(255,255,255,0.7)",fontFamily:"Inter,sans-serif",fontSize:11,cursor:"pointer"}}
+                                    >
+                                      <option value="">— Sin cambio —</option>
+                                      {ESTADOS_LEAD.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
+                                    </select>
+                                  </div>
+                                  <label style={{display:"flex",alignItems:"center",gap:7,cursor:"pointer",userSelect:"none"}}>
+                                    <input
+                                      type="checkbox"
+                                      checked={sugerirPropsEnRespuesta}
+                                      onChange={e => {
+                                        setSugerirPropsEnRespuesta(e.target.checked);
+                                        if (e.target.checked && propiedadesSugeridas.length === 0 && contactoSeleccionado) {
+                                          cargarPropiedadesSugeridas(contactoSeleccionado);
+                                        }
+                                      }}
+                                      style={{accentColor:"#cc0000",width:13,height:13}}
+                                    />
+                                    <span style={{fontSize:10,fontFamily:"Inter,sans-serif",color:"rgba(255,255,255,0.45)"}}>
+                                      🏠 Sugerir propiedades relacionadas
+                                      {sugerirPropsEnRespuesta && loadingPropiedades && " (cargando...)"}
+                                      {sugerirPropsEnRespuesta && !loadingPropiedades && propiedadesSugeridas.length > 0 && ` (${Math.min(propiedadesSugeridas.length, 3)} propiedad${Math.min(propiedadesSugeridas.length, 3) !== 1 ? "es" : ""})`}
+                                    </span>
+                                  </label>
+                                </div>
+                              )}
                               <button
                                 onClick={sugerirConIA}
                                 disabled={cargandoIA}
@@ -1321,7 +1426,29 @@ export default function CrmPage() {
                                 {cargandoIA ? "Generando..." : "✨ Sugerir con IA"}
                               </button>
                               <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                                <button className="crm-btn-guardar-int" onClick={guardarInteraccion} disabled={guardandoInteraccion || !nuevaInteraccion.descripcion.trim()}>{guardandoInteraccion ? <><span className="crm-spinner"/>Guardando</> : "Registrar"}</button>
+                                {nuevaInteraccion.tipo === "email" ? (
+                                  <button
+                                    className="crm-btn-guardar-int"
+                                    onClick={enviarEmailRespuesta}
+                                    disabled={enviandoEmail || !nuevaInteraccion.descripcion.trim() || !contactoSeleccionado?.email}
+                                    style={{background:contactoSeleccionado?.email ? undefined : "rgba(255,255,255,0.05)"}}
+                                    title={!contactoSeleccionado?.email ? "El contacto no tiene email cargado" : undefined}
+                                  >
+                                    {enviandoEmail ? <><span className="crm-spinner"/>Enviando</> : "✉️ Enviar email"}
+                                  </button>
+                                ) : nuevaInteraccion.tipo === "whatsapp" ? (
+                                  <button
+                                    className="crm-btn-guardar-int"
+                                    onClick={abrirWhatsAppRespuesta}
+                                    disabled={!nuevaInteraccion.descripcion.trim() || !contactoSeleccionado?.telefono}
+                                    style={{background:contactoSeleccionado?.telefono ? "rgba(37,211,102,0.15)" : "rgba(255,255,255,0.05)",borderColor:contactoSeleccionado?.telefono ? "rgba(37,211,102,0.3)" : undefined}}
+                                    title={!contactoSeleccionado?.telefono ? "El contacto no tiene teléfono cargado" : undefined}
+                                  >
+                                    💬 Abrir WhatsApp
+                                  </button>
+                                ) : (
+                                  <button className="crm-btn-guardar-int" onClick={guardarInteraccion} disabled={guardandoInteraccion || !nuevaInteraccion.descripcion.trim()}>{guardandoInteraccion ? <><span className="crm-spinner"/>Guardando</> : "Registrar"}</button>
+                                )}
                                 <button style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:3,color:"rgba(255,255,255,0.45)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.08em",cursor:"pointer"}} onClick={() => { setMostrarPlantillas(v => !v); if (!mostrarPlantillas) cargarPlantillas(); }}>📋 Plantillas</button>
                                 {nuevaInteraccion.descripcion.trim() && (
                                   <button style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:3,color:"rgba(255,255,255,0.45)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.08em",cursor:"pointer"}} onClick={() => setMostrarGuardarPlantilla(v => !v)}>💾 Guardar como plantilla</button>

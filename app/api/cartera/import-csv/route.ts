@@ -1,5 +1,5 @@
 // app/api/cartera/import-csv/route.ts
-// Importación masiva desde CSV con columnas estándar
+// Importación masiva desde CSV/Excel con columnas estándar + KiteProp + ZonaProp + otros
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
@@ -11,36 +11,114 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Accepted column aliases (case-insensitive, with/without accent)
-const ALIASES: Record<string, string> = {
-  titulo: "titulo", title: "titulo", nombre: "titulo",
-  tipo: "tipo", "tipo propiedad": "tipo", type: "tipo",
-  operacion: "operacion", operación: "operacion", operation: "operacion",
+// Column aliases — case-insensitive, accent-stripped. null = skip column.
+const ALIASES: Record<string, string | null> = {
+  // Standard GFI
+  titulo: "titulo", title: "titulo",
+  tipo: "tipo", type: "tipo",
+  operacion: "operacion", operation: "operacion",
   estado: "estado", status: "estado",
   precio: "precio", price: "precio",
   moneda: "moneda", currency: "moneda",
   ciudad: "ciudad", city: "ciudad",
   zona: "zona", barrio: "zona", neighborhood: "zona",
-  direccion: "direccion", dirección: "direccion", address: "direccion",
+  direccion: "direccion", address: "direccion",
   dormitorios: "dormitorios", habitaciones: "dormitorios", rooms: "dormitorios", bedrooms: "dormitorios",
-  banos: "banos", baños: "banos", bathrooms: "banos",
+  banos: "banos", bathrooms: "banos",
   ambientes: "ambientes",
   "sup cubierta": "superficie_cubierta", "superficie cubierta": "superficie_cubierta", covered_area: "superficie_cubierta",
   "sup total": "superficie_total", "superficie total": "superficie_total", total_area: "superficie_total",
-  antiguedad: "antiguedad", antigüedad: "antiguedad", age: "antiguedad",
-  descripcion: "descripcion", descripción: "descripcion", description: "descripcion",
+  antiguedad: "antiguedad", age: "antiguedad",
+  descripcion: "descripcion", description: "descripcion",
   "apto credito": "apto_credito", credito: "apto_credito", credit: "apto_credito",
-  cochera: "con_cochera", parking: "con_cochera",
+  cochera: "con_cochera", parking: "con_cochera", garaje: "con_cochera", garage: "con_cochera",
   expensas: "expensas", expenses: "expensas",
   video: "video_url", video_url: "video_url",
   fotos: "fotos", photos: "fotos",
-  codigo: "codigo", code: "codigo", "codigo interno": "codigo",
+  codigo: "codigo", code: "codigo", "codigo interno": "codigo", ref: "codigo", referencia: "codigo", cod: "codigo",
+
+  // KiteProp
+  "tipo de propiedad": "tipo",
+  "tipo inmueble": "tipo",
+  "tipo de inmueble": "tipo",
+  "tipo de operacion": "operacion",
+  "tipo operacion": "operacion",
+  nombre: "titulo",
+  "titulo propiedad": "titulo",
+  "nombre propiedad": "titulo",
+  localidad: "ciudad",
+  "calle y numero": "direccion",
+  "calle y nro": "direccion",
+  calle: "direccion",
+  "sup. cubierta": "superficie_cubierta",
+  "sup. total": "superficie_total",
+  "m2 cubiertos": "superficie_cubierta",
+  "m2 totales": "superficie_total",
+  "m2 cubierta": "superficie_cubierta",
+  "m2 total": "superficie_total",
+  "superficie cubierta m2": "superficie_cubierta",
+  "superficie total m2": "superficie_total",
+  "precio venta": "precio",
+  "precio alquiler": "precio",
+  valor: "precio",
+
+  // ZonaProp / Argenprop extras
+  "precio usd": "precio",
+  "precio ars": "precio",
+  antiguedad: "antiguedad",
+
+  // Columns to skip
+  id: null,
+  "id interno": null,
+  "fecha de alta": null,
+  "fecha alta": null,
+  "fecha de modificacion": null,
+  "fecha modificacion": null,
+  "fecha de baja": null,
+  "url portal": null,
+  url: null,
+  link: null,
+  publicado: null,
+  "publicada web": null,
+  provincia: null,
+  pais: null,
+  pisos: null,
+  planta: null,
+  unidad: null,
 };
 
 const TIPOS_VALIDOS = ["Departamento", "Casa", "PH", "Local", "Oficina", "Terreno", "Cochera", "Galpon", "Otro"];
 const OPS_VALIDAS = ["Venta", "Alquiler", "Alquiler temporal"];
 const ESTADOS_VALIDOS = ["activa", "reservada", "vendida", "pausada"];
 const MONEDAS_VALIDAS = ["USD", "ARS", "EUR"];
+
+const TIPOS_MAP: Record<string, string> = {
+  "local comercial": "Local",
+  "galpon": "Galpon",
+  "garage": "Cochera",
+  "garaje": "Cochera",
+  "estacionamiento": "Cochera",
+  "vivienda": "Casa",
+  "chalet": "Casa",
+  "country": "Casa",
+  "quinta": "Casa",
+  "ph": "PH",
+  "duplex": "PH",
+};
+
+const OPS_MAP: Record<string, string> = {
+  "venta": "Venta",
+  "sale": "Venta",
+  "compra": "Venta",
+  "alquiler": "Alquiler",
+  "alquilar": "Alquiler",
+  "rent": "Alquiler",
+  "locacion": "Alquiler",
+  "alquiler temporal": "Alquiler temporal",
+  "temporal": "Alquiler temporal",
+  "vacation rental": "Alquiler temporal",
+  "turistico": "Alquiler temporal",
+};
 
 function normalizarCampo(header: string): string {
   return header
@@ -50,20 +128,77 @@ function normalizarCampo(header: string): string {
     .trim();
 }
 
+// Parse Argentine number format: "1.200.000" or "1.200.000,50" or "120000"
+function parseNum(v: string): number | null {
+  if (!v) return null;
+  let s = v.replace(/[$€\s]/g, "").trim();
+  if (!s || s === "-") return null;
+  const dotCount = (s.match(/\./g) || []).length;
+  const hasComma = s.includes(",");
+  if (dotCount > 1) {
+    // "1.200.000" or "1.200.000,50" — dots are thousand separators
+    s = s.replace(/\./g, "").replace(",", ".");
+  } else if (dotCount === 1 && hasComma) {
+    // "1.200,50" — dot is thousand separator, comma is decimal
+    s = s.replace(".", "").replace(",", ".");
+  } else if (!dotCount && hasComma) {
+    // "1200,50" — comma is decimal
+    s = s.replace(",", ".");
+  } else if (dotCount === 1 && /\.\d{3}$/.test(s)) {
+    // "120.000" — dot is thousand separator
+    s = s.replace(".", "");
+  }
+  const n = parseFloat(s);
+  return isNaN(n) ? null : n;
+}
+
+function pickTipo(v: string): string {
+  if (!v) return "Departamento";
+  const lower = normalizarCampo(v);
+  const exact = TIPOS_VALIDOS.find(o => normalizarCampo(o) === lower);
+  if (exact) return exact;
+  if (TIPOS_MAP[lower]) return TIPOS_MAP[lower];
+  for (const [k, mapped] of Object.entries(TIPOS_MAP)) {
+    if (lower.includes(k)) return mapped;
+  }
+  for (const tipo of TIPOS_VALIDOS) {
+    if (lower.includes(normalizarCampo(tipo))) return tipo;
+  }
+  return "Departamento";
+}
+
+function pickOp(v: string): string {
+  if (!v) return "Venta";
+  const lower = normalizarCampo(v);
+  const exact = OPS_VALIDAS.find(o => normalizarCampo(o) === lower);
+  if (exact) return exact;
+  return OPS_MAP[lower] ?? "Venta";
+}
+
 function parsearCSV(text: string): { headers: string[]; rows: Record<string, string>[] } {
   const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
-  if (lines.length < 2) return { headers: [], rows: [] };
 
-  // Parse header — support comma or semicolon
-  const sep = lines[0].includes(";") ? ";" : ",";
-  const rawHeaders = lines[0].split(sep).map(h => h.replace(/^["']|["']$/g, "").trim());
-  const headers = rawHeaders.map(h => ALIASES[normalizarCampo(h)] ?? normalizarCampo(h));
+  // Skip leading blank lines
+  let headerIdx = 0;
+  while (headerIdx < lines.length && !lines[headerIdx].trim()) headerIdx++;
+  if (headerIdx >= lines.length || lines.length - headerIdx < 2) return { headers: [], rows: [] };
+
+  const headerLine = lines[headerIdx];
+  // Detect separator: prefer semicolon if more semicolons than commas
+  const sep = (headerLine.match(/;/g) || []).length > (headerLine.match(/,/g) || []).length ? ";" : ",";
+
+  const rawHeaders = headerLine.split(sep).map(h => h.replace(/^["'\s]+|["'\s]+$/g, "").trim());
+  const headers = rawHeaders.map(h => {
+    const norm = normalizarCampo(h);
+    const alias = ALIASES[norm];
+    if (alias === null) return "__skip__";
+    return alias ?? norm;
+  });
 
   const rows: Record<string, string>[] = [];
-  for (let i = 1; i < lines.length; i++) {
+  for (let i = headerIdx + 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-    // Simple CSV parse (handles quoted fields)
     const vals: string[] = [];
     let cur = "", inQ = false;
     for (const ch of line + sep) {
@@ -73,40 +208,39 @@ function parsearCSV(text: string): { headers: string[]; rows: Record<string, str
     }
     if (vals.length < 2) continue;
     const row: Record<string, string> = {};
-    headers.forEach((h, idx) => { row[h] = (vals[idx] ?? "").trim(); });
+    headers.forEach((h, idx) => {
+      if (h !== "__skip__") row[h] = (vals[idx] ?? "").trim();
+    });
     rows.push(row);
   }
-  return { headers, rows };
+  return { headers: headers.filter(h => h !== "__skip__"), rows };
 }
 
 function rowToCartera(row: Record<string, string>, perfilId: string): any {
-  const num = (v: string) => { const n = parseFloat(v); return isNaN(n) ? null : n; };
-  const bool = (v: string) => ["si", "sí", "yes", "true", "1", "x"].includes(v.toLowerCase());
-  const pick = (v: string, validos: string[], def: string) =>
-    validos.find(o => o.toLowerCase() === v.toLowerCase()) ?? def;
+  const bool = (v: string) => ["si", "yes", "true", "1", "x", "con"].includes((v ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""));
 
   return {
     perfil_id: perfilId,
     titulo: row.titulo || "Propiedad importada",
-    tipo: pick(row.tipo ?? "", TIPOS_VALIDOS, "Departamento"),
-    operacion: pick(row.operacion ?? "", OPS_VALIDAS, "Venta"),
-    estado: pick(row.estado ?? "", ESTADOS_VALIDOS, "activa"),
-    precio: num(row.precio ?? ""),
+    tipo: pickTipo(row.tipo ?? ""),
+    operacion: pickOp(row.operacion ?? ""),
+    estado: ESTADOS_VALIDOS.find(s => s === (row.estado ?? "").toLowerCase()) ?? "activa",
+    precio: parseNum(row.precio ?? ""),
     moneda: MONEDAS_VALIDAS.includes((row.moneda ?? "").toUpperCase())
       ? (row.moneda ?? "USD").toUpperCase() : "USD",
     ciudad: row.ciudad || "Rosario",
     zona: row.zona || null,
     direccion: row.direccion || null,
-    dormitorios: num(row.dormitorios ?? ""),
-    banos: num(row.banos ?? ""),
-    ambientes: num(row.ambientes ?? ""),
-    superficie_cubierta: num(row.superficie_cubierta ?? ""),
-    superficie_total: num(row.superficie_total ?? ""),
+    dormitorios: parseNum(row.dormitorios ?? ""),
+    banos: parseNum(row.banos ?? ""),
+    ambientes: parseNum(row.ambientes ?? ""),
+    superficie_cubierta: parseNum(row.superficie_cubierta ?? ""),
+    superficie_total: parseNum(row.superficie_total ?? ""),
     antiguedad: row.antiguedad || null,
     descripcion: row.descripcion || null,
     apto_credito: bool(row.apto_credito ?? ""),
     con_cochera: bool(row.con_cochera ?? ""),
-    expensas: num(row.expensas ?? ""),
+    expensas: parseNum(row.expensas ?? ""),
     video_url: row.video_url || null,
     codigo: row.codigo || null,
     fotos: row.fotos ? row.fotos.split("|").map(u => u.trim()).filter(Boolean) : [],
@@ -130,7 +264,7 @@ export async function POST(req: NextRequest) {
 
     const { rows } = parsearCSV(csv);
     if (rows.length === 0) {
-      return NextResponse.json({ error: "El archivo no tiene filas válidas" }, { status: 400 });
+      return NextResponse.json({ error: "El archivo no tiene filas válidas. Verificá que las columnas tengan nombres reconocibles." }, { status: 400 });
     }
 
     let importadas = 0;
@@ -138,7 +272,8 @@ export async function POST(req: NextRequest) {
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      if (!row.titulo && !row.tipo && !row.operacion) continue; // skip empty rows
+      const vals = Object.values(row).filter(v => v && v !== "0");
+      if (vals.length < 2) continue; // skip empty rows
       try {
         const data = rowToCartera(row, perfil_id);
         const { error } = await sb.from("cartera_propiedades").insert(data);
@@ -151,6 +286,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, total: rows.length, importadas, errores: errores.slice(0, 20) });
   } catch (e: any) {
+    console.error("Error en import-csv:", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

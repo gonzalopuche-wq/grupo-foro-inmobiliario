@@ -240,8 +240,8 @@ export default function FirmaDigitalPage() {
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
           {firmas.map(f => {
-            const con = f.contacto as any;
-            const neg = f.negocio as any;
+            const con = f.contacto;
+            const neg = f.negocio;
             return (
               <div key={f.id} style={{ background: "#1e293b", borderRadius: 12, border: "1px solid #334155", overflow: "hidden" }}>
                 <img

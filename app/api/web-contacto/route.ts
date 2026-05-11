@@ -123,17 +123,23 @@ export async function POST(req: NextRequest) {
 
     // Sinergia Web→CRM: enviar push notification al corredor
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar"}/api/push/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-internal-secret": process.env.CRON_SECRET ?? "" },
-        body: JSON.stringify({
-          perfil_id: cfg.perfil_id,
-          titulo: `🌐 Nuevo lead desde tu web`,
-          body: `${nombre}${telefono ? ` · ${telefono}` : ""}${email ? ` · ${email}` : ""} — ${tipo === "tasacion" ? "Solicitó tasación" : "Dejó un mensaje"}`,
-          url: "/mi-web/leads",
-          tipo_modulo: "web_lead",
-        }),
-      }).catch(() => {});
+      const { data: subs } = await supabase
+        .from("push_subscriptions")
+        .select("subscription")
+        .eq("perfil_id", cfg.perfil_id);
+
+      if (subs && subs.length > 0) {
+        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar"}/api/push/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-internal-secret": process.env.CRON_SECRET ?? "" },
+          body: JSON.stringify({
+            perfil_id: cfg.perfil_id,
+            titulo: `🌐 Nuevo lead desde tu web`,
+            cuerpo: `${nombre}${telefono ? ` · ${telefono}` : ""}${email ? ` · ${email}` : ""} — ${tipo === "tasacion" ? "Solicitó tasación" : "Dejó un mensaje"}`,
+            url: "/mi-web/leads",
+          }),
+        }).catch(() => {});
+      }
     } catch { /* no bloquear */ }
 
     return NextResponse.json({ ok: true });

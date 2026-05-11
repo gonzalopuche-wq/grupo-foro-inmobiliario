@@ -15,6 +15,16 @@ function verificarCron(req: NextRequest) {
   return authHeader === `Bearer ${process.env.CRON_SECRET}`;
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
+
+async function enviarPushSuscripcion(perfil_id: string, titulo: string, body: string) {
+  return fetch(`${siteUrl}/api/push/send`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-internal-secret": process.env.CRON_SECRET ?? "" },
+    body: JSON.stringify({ perfil_id, titulo, body, url: "/suscripcion", tipo_modulo: "suscripcion" }),
+  }).catch(() => {});
+}
+
 export async function GET(req: NextRequest) {
   if (!verificarCron(req)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -22,16 +32,33 @@ export async function GET(req: NextRequest) {
 
   try {
     const hoy = new Date();
-    const primeroDeMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
     const ultimoDeMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
-
-    // Es el último día del mes?
     const esUltimoDia = hoy.getDate() === ultimoDeMes.getDate();
-    if (!esUltimoDia) {
-      return NextResponse.json({ ok: true, mensaje: "No es el último día del mes, nada que hacer" });
+
+    // ── Push "vence en 7 días" — corre todos los días ─────────────────────
+    const en7dias = new Date(hoy);
+    en7dias.setDate(en7dias.getDate() + 7);
+    const fecha7dias = en7dias.toISOString().split("T")[0];
+
+    const { data: proximas7 } = await supabaseAdmin
+      .from("suscripciones")
+      .select("perfil_id, plan")
+      .eq("estado", "activa")
+      .eq("fecha_vencimiento", fecha7dias);
+
+    for (const s of proximas7 ?? []) {
+      await enviarPushSuscripcion(
+        s.perfil_id,
+        "⏰ Tu plan vence en 7 días",
+        "Hacé clic para renovar tu plan antes de que venza."
+      );
     }
 
-    // Buscar corredores con suscripción activa
+    if (!esUltimoDia) {
+      return NextResponse.json({ ok: true, mensaje: "No es el último día del mes", pushes_7dias: proximas7?.length ?? 0 });
+    }
+
+    // ── Email + push "vence hoy" — solo el último día del mes ─────────────
     const { data: suscripciones } = await supabaseAdmin
       .from("suscripciones")
       .select(`
@@ -215,19 +242,11 @@ export async function GET(req: NextRequest) {
         errores.push(`${email}: ${error.message}`);
       } else {
         enviados++;
-        // Push de recordatorio si el usuario tiene suscripcion.push = true
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
-        fetch(`${siteUrl}/api/push/send`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-internal-secret": process.env.CRON_SECRET ?? "" },
-          body: JSON.stringify({
-            perfil_id: s.perfil_id,
-            titulo: "⏳ Recordatorio de suscripción GFI®",
-            body: `Tu suscripción vence el ${new Date(s.fecha_vencimiento).toLocaleDateString("es-AR")}. Realizá la transferencia para continuar.`,
-            url: "/suscripcion",
-            tipo_modulo: "suscripcion",
-          }),
-        }).catch(() => {});
+        await enviarPushSuscripcion(
+          s.perfil_id,
+          "⚠️ Tu plan vence hoy",
+          "Realizá la transferencia antes de las 23:59 para continuar con acceso completo."
+        );
       }
     }
 
@@ -235,6 +254,7 @@ export async function GET(req: NextRequest) {
       ok: true,
       enviados,
       total: suscripciones.length,
+      pushes_7dias: proximas7?.length ?? 0,
       errores,
     });
 

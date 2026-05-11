@@ -226,8 +226,6 @@ export default function AdminPage() {
       mensaje: `Tu evento "${ev.titulo}" fue aprobado y publicado.`,
       leida: false,
     });
-    // Push a todos los usuarios con evento.push = true
-    pushModulo("evento", `📅 Nuevo evento GFI®`, ev.titulo, "/eventos");
     setProcesandoEvProp(null);
     cargarEventosPropuestos();
   };
@@ -374,17 +372,6 @@ export default function AdminPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // Helper: send push broadcast to all users who have a given module enabled
-  const pushModulo = async (tipo_modulo: string, titulo: string, cuerpo: string, url: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-    fetch("/api/admin/push-broadcast", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-      body: JSON.stringify({ titulo, cuerpo, url, tipo_modulo }),
-    }).catch(() => {});
-  };
-
   const cargarBroadcasts = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
@@ -419,7 +406,7 @@ export default function AdminPage() {
 
   const cargarFreeUntil = async () => {
     const { data } = await supabase.from("indicadores").select("valor_texto").eq("clave", "free_until").maybeSingle();
-    setFreeUntil((data as any)?.valor_texto ?? "");
+    setFreeUntil(data?.valor_texto ?? "");
   };
 
   const guardarFreeUntil = async () => {
@@ -519,8 +506,6 @@ export default function AdminPage() {
     if (destinatarios && destinatarios.length > 0) {
       await supabase.from("notificaciones").insert(destinatarios.map((p: any) => ({ user_id: p.id, titulo: "📰 Nueva noticia publicada", mensaje: n.titulo, tipo: "noticias", url: "/dashboard" })));
     }
-    // Push a todos con noticia.push = true
-    pushModulo("noticia", "📰 Nueva noticia GFI®", n.titulo, "/dashboard");
     await cargarNoticias(filtroNot); setProcesandoNot(null);
   };
 
@@ -1175,7 +1160,11 @@ export default function AdminPage() {
                 {freeOk && <div className="adm-ind-ok">✓ Guardado</div>}
                 {freeUntil && (
                   <button
-                    onClick={() => { setFreeUntil(""); guardarFreeUntil(); }}
+                    onClick={async () => {
+                      setFreeUntil("");
+                      await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: "", valor: 0 }, { onConflict: "clave" });
+                      mostrarToast("Período gratuito desactivado");
+                    }}
                     style={{ marginTop: 8, background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
                   >
                     Desactivar período gratuito
