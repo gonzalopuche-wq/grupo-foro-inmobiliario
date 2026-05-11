@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
@@ -254,7 +254,6 @@ export default function CarteraPage() {
   const [importResult, setImportResult] = useState<{ importadas: number; saltadas?: number; errores?: string[] } | null>(null);
   const [csvTexto, setCsvTexto] = useState("");
   const [xlsxNombre, setXlsxNombre] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Contactos CRM (para vincular propietario)
   const [contactosCRM, setContactosCRM] = useState<{id:string;nombre:string|null;apellido:string|null}[]>([]);
@@ -1647,17 +1646,17 @@ export default function CarteraPage() {
                 </p>
                 {/* File upload */}
                 <input
-                  ref={fileInputRef}
+                  id="cartera-file-input"
                   type="file"
                   accept=".xlsx,.xls,.csv"
                   style={{ display: "none" }}
                   onChange={e => { const f = e.target.files?.[0]; if (f) cargarArchivo(f); e.target.value = ""; }}
                 />
-                <div
-                  onClick={() => fileInputRef.current?.click()}
+                <label
+                  htmlFor="cartera-file-input"
                   onDragOver={e => e.preventDefault()}
                   onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) cargarArchivo(f); }}
-                  style={{ border: "2px dashed rgba(255,255,255,0.15)", borderRadius: 8, padding: "20px 16px", textAlign: "center", cursor: "pointer", marginBottom: 12, background: xlsxNombre ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)", transition: "all 0.15s" }}
+                  style={{ display: "block", border: "2px dashed rgba(255,255,255,0.15)", borderRadius: 8, padding: "20px 16px", textAlign: "center", cursor: "pointer", marginBottom: 12, background: xlsxNombre ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)", transition: "all 0.15s" }}
                 >
                   {xlsxNombre ? (
                     <div>
@@ -1667,12 +1666,13 @@ export default function CarteraPage() {
                     </div>
                   ) : (
                     <div>
-                      <div style={{ fontSize: 24, marginBottom: 6 }}>📂</div>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>Hacé clic o arrastrá el archivo aquí</div>
-                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>Soporta .xlsx (KiteProp, ZonaProp, Tokko), .xls, .csv</div>
+                      <div style={{ fontSize: 22, marginBottom: 8 }}>📂</div>
+                      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif", fontWeight: 600, marginBottom: 4 }}>Buscar archivo</div>
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>o arrastrá el archivo aquí</div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", marginTop: 6 }}>.xlsx · .xls · .csv · KiteProp · ZonaProp · Tokko</div>
                     </div>
                   )}
-                </div>
+                </label>
                 {/* Optional: paste CSV manually */}
                 <details style={{ marginBottom: 12 }}>
                   <summary style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
