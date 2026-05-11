@@ -430,7 +430,9 @@ export default function CrmPage() {
       setSugerirPropsEnRespuesta(false);
       cargarDetalle(contactoSeleccionado);
       if (userId) cargarContactos(userId);
-    } catch { /* no bloquear */ }
+    } catch (error) {
+      console.error("Error al enviar email de respuesta:", error);
+    }
     setEnviandoEmail(false);
   };
 

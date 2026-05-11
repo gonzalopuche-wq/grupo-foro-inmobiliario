@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     ]);
 
     const costo = config?.valor ?? 5000;
-    const freeUntil = (freeConfig as any)?.valor_texto ? new Date((freeConfig as any).valor_texto) : null;
+    const freeUntil = freeConfig?.valor_texto ? new Date(freeConfig.valor_texto) : null;
     const enPeriodoGratis = freeUntil && new Date() < freeUntil;
 
     if (!enPeriodoGratis) {

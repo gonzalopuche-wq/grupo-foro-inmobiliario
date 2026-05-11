@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, enviados, fallidos: fallidos.length });
   } catch (error) {
+    console.error("Error enviando push:", error);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

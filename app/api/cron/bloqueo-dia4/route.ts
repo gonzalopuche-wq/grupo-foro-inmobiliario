@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       .select("valor_texto")
       .eq("clave", "free_until")
       .maybeSingle();
-    if ((freeConfig as any)?.valor_texto && new Date() < new Date((freeConfig as any).valor_texto)) {
+    if (freeConfig?.valor_texto && new Date() < new Date(freeConfig.valor_texto)) {
       return NextResponse.json({ ok: true, bloqueados: 0, motivo: "periodo_gratuito" });
     }
 

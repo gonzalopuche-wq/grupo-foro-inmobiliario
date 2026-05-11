@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
@@ -253,6 +253,8 @@ export default function CarteraPage() {
   const [importError, setImportError] = useState("");
   const [importResult, setImportResult] = useState<{ importadas: number; saltadas?: number; errores?: string[] } | null>(null);
   const [csvTexto, setCsvTexto] = useState("");
+  const [xlsxNombre, setXlsxNombre] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Contactos CRM (para vincular propietario)
   const [contactosCRM, setContactosCRM] = useState<{id:string;nombre:string|null;apellido:string|null}[]>([]);
@@ -441,6 +443,28 @@ export default function CarteraPage() {
 
   const descargarPlantillaCSV = () => {
     window.open("/api/cartera/import-csv", "_blank");
+  };
+
+  const cargarArchivo = async (file: File) => {
+    setXlsxNombre(file.name);
+    setCsvTexto("");
+    setImportError("");
+    setImportResult(null);
+    try {
+      if (file.name.toLowerCase().endsWith(".csv")) {
+        const text = await file.text();
+        setCsvTexto(text);
+      } else {
+        const XLSX = await import("xlsx");
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: "array" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const csv = XLSX.utils.sheet_to_csv(ws, { FS: "," });
+        setCsvTexto(csv);
+      }
+    } catch (e: any) {
+      setImportError(`Error al leer el archivo: ${e.message}`);
+    }
   };
 
   // ── Abrir wizard ──────────────────────────────────────────────────────────
@@ -1612,18 +1636,52 @@ export default function CarteraPage() {
               </>
             )}
 
-            {/* Tab: CSV */}
+            {/* Tab: CSV / Excel */}
             {tabImport === "csv" && (
               <>
                 <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 12, lineHeight: 1.6 }}>
-                  Pegá o subí un CSV con tus propiedades. Funciona con exportaciones de cualquier CRM.{" "}
+                  Subí un archivo Excel (.xlsx) o CSV exportado desde cualquier CRM.{" "}
                   <button onClick={descargarPlantillaCSV} style={{ background: "none", border: "none", color: "#cc0000", cursor: "pointer", fontSize: 12, padding: 0, textDecoration: "underline" }}>
-                    Descargar plantilla
+                    Descargar plantilla CSV
                   </button>
                 </p>
-                <textarea value={csvTexto} onChange={e => setCsvTexto(e.target.value)}
-                  placeholder={"titulo,tipo,operacion,precio,moneda,ciudad...\nDepartamento Pichincha,Departamento,Venta,120000,USD,Rosario..."}
-                  style={{ width: "100%", height: 120, padding: "10px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "monospace", marginBottom: 12 }} />
+                {/* File upload */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  style={{ display: "none" }}
+                  onChange={e => { const f = e.target.files?.[0]; if (f) cargarArchivo(f); e.target.value = ""; }}
+                />
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) cargarArchivo(f); }}
+                  style={{ border: "2px dashed rgba(255,255,255,0.15)", borderRadius: 8, padding: "20px 16px", textAlign: "center", cursor: "pointer", marginBottom: 12, background: xlsxNombre ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)", transition: "all 0.15s" }}
+                >
+                  {xlsxNombre ? (
+                    <div>
+                      <div style={{ fontSize: 20, marginBottom: 4 }}>📄</div>
+                      <div style={{ fontSize: 12, color: "#4ade80", fontFamily: "Inter,sans-serif", fontWeight: 600 }}>{xlsxNombre}</div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 3 }}>{csvTexto ? `${csvTexto.split("\n").length - 1} filas detectadas` : "Procesando..."}</div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ fontSize: 24, marginBottom: 6 }}>📂</div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>Hacé clic o arrastrá el archivo aquí</div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>Soporta .xlsx (KiteProp, ZonaProp, Tokko), .xls, .csv</div>
+                    </div>
+                  )}
+                </div>
+                {/* Optional: paste CSV manually */}
+                <details style={{ marginBottom: 12 }}>
+                  <summary style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    O pegá el texto del CSV manualmente
+                  </summary>
+                  <textarea value={csvTexto} onChange={e => { setCsvTexto(e.target.value); setXlsxNombre(""); }}
+                    placeholder={"titulo,tipo,operacion,precio,moneda,ciudad...\nDepartamento Pichincha,Departamento,Venta,120000,USD,Rosario..."}
+                    style={{ width: "100%", height: 100, padding: "10px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 11, outline: "none", resize: "vertical", fontFamily: "monospace", marginTop: 8, boxSizing: "border-box" }} />
+                </details>
                 {importResult ? (
                   <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: 14, marginBottom: 12 }}>
                     <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#22c55e" }}>
@@ -1636,7 +1694,7 @@ export default function CarteraPage() {
                 ) : (
                   <button onClick={importarDesdeCSV} disabled={importando || !csvTexto.trim()}
                     style={{ width: "100%", padding: "11px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: importando || !csvTexto.trim() ? 0.5 : 1 }}>
-                    {importando ? "Importando…" : "Importar desde CSV"}
+                    {importando ? "Importando…" : xlsxNombre ? `Importar "${xlsxNombre}"` : "Importar desde CSV"}
                   </button>
                 )}
               </>

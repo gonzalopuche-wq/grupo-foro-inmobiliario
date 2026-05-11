@@ -406,7 +406,7 @@ export default function AdminPage() {
 
   const cargarFreeUntil = async () => {
     const { data } = await supabase.from("indicadores").select("valor_texto").eq("clave", "free_until").maybeSingle();
-    setFreeUntil((data as any)?.valor_texto ?? "");
+    setFreeUntil(data?.valor_texto ?? "");
   };
 
   const guardarFreeUntil = async () => {
@@ -1160,7 +1160,11 @@ export default function AdminPage() {
                 {freeOk && <div className="adm-ind-ok">✓ Guardado</div>}
                 {freeUntil && (
                   <button
-                    onClick={() => { setFreeUntil(""); guardarFreeUntil(); }}
+                    onClick={async () => {
+                      setFreeUntil("");
+                      await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: "", valor: 0 }, { onConflict: "clave" });
+                      mostrarToast("Período gratuito desactivado");
+                    }}
                     style={{ marginTop: 8, background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
                   >
                     Desactivar período gratuito
