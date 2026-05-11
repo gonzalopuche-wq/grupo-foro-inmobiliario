@@ -185,6 +185,7 @@ export default function AdminPage() {
   const [freeUntil, setFreeUntil] = useState("");
   const [guardandoFree, setGuardandoFree] = useState(false);
   const [freeOk, setFreeOk] = useState(false);
+  const [notificandoPromo, setNotificandoPromo] = useState(false);
 
   useEffect(() => {
     const verificar = async () => {
@@ -416,6 +417,24 @@ export default function AdminPage() {
     mostrarToast(freeUntil ? `Período gratis hasta ${freeUntil}` : "Período gratuito desactivado");
   };
 
+  const notificarPromo = async () => {
+    if (!freeUntil) return;
+    setNotificandoPromo(true);
+    const fechaFmt = new Date(freeUntil).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
+    await fetch("/api/admin/push-broadcast", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        titulo: "🎉 Período gratuito activado",
+        cuerpo: `Tu acceso a GFI® es gratuito hasta el ${fechaFmt}. ¡Aprovechá todas las funciones sin costo!`,
+        url: "/dashboard",
+        filtro: "todos",
+      }),
+    });
+    setNotificandoPromo(false);
+    mostrarToast("Push enviado a todos los suscriptores");
+  };
+
   const sincronizarCocir = async () => {
     setSyncingCocir(true);
     setSyncCocirRes(null);
@@ -558,6 +577,17 @@ export default function AdminPage() {
   const cambiarEstado = async (id: string, nuevoEstado: "aprobado" | "rechazado") => {
     setProcesando(id);
     await supabase.from("perfiles").update({ estado: nuevoEstado }).eq("id", id);
+    if (nuevoEstado === "aprobado") {
+      const { data: freeConf } = await supabase.from("indicadores").select("valor_texto").eq("clave", "free_until").maybeSingle();
+      if (freeConf?.valor_texto && new Date() < new Date(freeConf.valor_texto)) {
+        const { data: subExistente } = await supabase.from("suscripciones").select("id").eq("perfil_id", id).maybeSingle();
+        if (subExistente) {
+          await supabase.from("suscripciones").update({ estado: "activa", fecha_vencimiento: freeConf.valor_texto, nota_admin: "Período gratuito" }).eq("id", subExistente.id);
+        } else {
+          await supabase.from("suscripciones").insert({ perfil_id: id, plan: "matriculado", estado: "activa", monto_usd: 0, fecha_vencimiento: freeConf.valor_texto, nota_admin: "Período gratuito" });
+        }
+      }
+    }
     await cargarPerfiles(); setProcesando(null);
   };
 
@@ -1133,17 +1163,17 @@ export default function AdminPage() {
           <div>
             <div className="adm-ind-titulo">Período <span>Gratuito</span></div>
             <div className="adm-ind-subtitulo">
-              Programá días sin cobro por decisión del administrador. Mientras la fecha sea futura, los desbloqueos de matches MIR no generan cargo y el cron de suspensión está pausado.
+              Activá un período sin cobro para toda la plataforma. Con promo activa: (1) las suspensiones automáticas se pausan, (2) los matches MIR son sin cargo, y (3) los nuevos usuarios aprobados reciben suscripción gratis hasta la fecha indicada.
             </div>
-            <div className="adm-ind-grid" style={{ maxWidth: 400 }}>
+            <div className="adm-ind-grid" style={{ maxWidth: 480 }}>
               <div className="adm-ind-card">
-                <div className="adm-ind-label">Sin cobro hasta (inclusive)</div>
-                <div className="adm-ind-actual" style={{ fontSize: 15 }}>
+                <div className="adm-ind-label">Gratis hasta (inclusive)</div>
+                <div className="adm-ind-actual" style={{ fontSize: 15, marginBottom: 12 }}>
                   {freeUntil
                     ? (new Date() < new Date(freeUntil)
-                        ? <span style={{ color: "#22c55e" }}>🟢 Activo hasta {new Date(freeUntil).toLocaleDateString("es-AR")}</span>
+                        ? <span style={{ color: "#22c55e" }}>🟢 Activo hasta {new Date(freeUntil).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
                         : <span style={{ color: "rgba(255,255,255,0.3)" }}>Vencido ({new Date(freeUntil).toLocaleDateString("es-AR")})</span>)
-                    : <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin período gratuito</span>}
+                    : <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin período gratuito activo</span>}
                 </div>
                 <div className="adm-ind-form">
                   <input
@@ -1154,21 +1184,30 @@ export default function AdminPage() {
                     style={{ colorScheme: "dark" }}
                   />
                   <button className="adm-ind-btn" onClick={guardarFreeUntil} disabled={guardandoFree}>
-                    {guardandoFree ? "..." : "Guardar"}
+                    {guardandoFree ? "..." : "Activar"}
                   </button>
                 </div>
                 {freeOk && <div className="adm-ind-ok">✓ Guardado</div>}
-                {freeUntil && (
-                  <button
-                    onClick={async () => {
-                      setFreeUntil("");
-                      await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: "", valor: 0 }, { onConflict: "clave" });
-                      mostrarToast("Período gratuito desactivado");
-                    }}
-                    style={{ marginTop: 8, background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
-                  >
-                    Desactivar período gratuito
-                  </button>
+                {freeUntil && new Date() < new Date(freeUntil) && (
+                  <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
+                    <button
+                      onClick={notificarPromo}
+                      disabled={notificandoPromo}
+                      style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.4)", color: "#a5b4fc", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+                    >
+                      {notificandoPromo ? "Enviando..." : "🔔 Notificar suscriptores"}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setFreeUntil("");
+                        await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: "", valor: 0 }, { onConflict: "clave" });
+                        mostrarToast("Período gratuito desactivado");
+                      }}
+                      style={{ background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                    >
+                      Desactivar
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

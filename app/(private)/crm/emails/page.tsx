@@ -79,7 +79,7 @@ function EmailsContent() {
     ]);
     setContactos((con ?? []) as Contacto[]);
     setNegocios((neg ?? []) as Negocio[]);
-    setEmails((log ?? []) as EmailLog[]);
+    setEmails((log ?? []) as unknown as EmailLog[]);
   };
 
   useEffect(() => {
