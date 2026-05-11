@@ -119,38 +119,3 @@ export default function ActivarNotificaciones({ userId }: { userId: string }) {
     </button>
   );
 }
-
-
-  if (estado === "activo") return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: 12, color: "#4ade80", fontFamily: "Inter, sans-serif" }}>
-        ✓ Notificaciones activadas en este dispositivo
-      </span>
-      <button onClick={desactivar} style={{
-        background: "none", border: "1px solid rgba(255,255,255,0.1)",
-        color: "rgba(255,255,255,0.4)", fontSize: 10, cursor: "pointer",
-        padding: "4px 10px", borderRadius: 4, fontFamily: "Inter, sans-serif",
-      }}>
-        Desactivar
-      </button>
-    </div>
-  );
-
-  if (estado === "denegado") return (
-    <p style={{ fontSize: 11, color: "rgba(255,100,100,0.8)", fontFamily: "Inter, sans-serif" }}>
-      Notificaciones bloqueadas. Habilitá los permisos en la configuración del navegador.
-    </p>
-  );
-
-  return (
-    <button onClick={activar} disabled={estado === "cargando"} style={{
-      background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)",
-      color: "#fff", fontSize: 12, cursor: "pointer", padding: "8px 16px",
-      borderRadius: 6, fontFamily: "Inter, sans-serif", fontWeight: 500,
-      display: "flex", alignItems: "center", gap: 8,
-      opacity: estado === "cargando" ? 0.6 : 1,
-    }}>
-      🔔 {estado === "cargando" ? "Activando..." : "Activar notificaciones en este dispositivo"}
-    </button>
-  );
-}
