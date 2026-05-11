@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import ActivarNotificaciones from '../../components/ActivarNotificaciones'
 
 interface NotifConfig {
   canal: 'push' | 'email' | 'whatsapp'
@@ -46,20 +47,12 @@ export default function NotificacionesPage() {
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
-  const [pushActivo, setPushActivo] = useState(false)
-
   const mostrarToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500) }
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }: { data: { user: { id: string } | null } }) => {
       if (!data.user) { window.location.href = '/login'; return }
       setUserId(data.user.id)
-
-      // Check push permission
-      if ('Notification' in window) {
-        setPushActivo(Notification.permission === 'granted')
-      }
-
       // Load config from perfil or use defaults
       const { data: perfil } = await supabase
         .from('perfiles')
@@ -86,14 +79,6 @@ export default function NotificacionesPage() {
     })
   }
 
-  const solicitarPush = async () => {
-    if (!('Notification' in window)) return
-    const perm = await Notification.requestPermission()
-    setPushActivo(perm === 'granted')
-    if (perm === 'granted') mostrarToast('✅ Notificaciones push activadas')
-    else mostrarToast('⚠️ Permiso denegado por el navegador')
-  }
-
   const guardar = async () => {
     setGuardando(true)
     await supabase.from('perfiles').update({ notif_config: config }).eq('id', userId)
@@ -117,18 +102,11 @@ export default function NotificacionesPage() {
         <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>Configurá qué alertas recibís y por qué canal</p>
       </div>
 
-      {/* Push banner */}
-      {!pushActivo && (
-        <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 10, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#f59e0b', marginBottom: 2 }}>🔔 Notificaciones push desactivadas</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Activá las notificaciones del navegador para recibir alertas en tiempo real</div>
-          </div>
-          <button onClick={solicitarPush} style={{ padding: '8px 16px', background: '#f59e0b', color: '#000', borderRadius: 6, border: 'none', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-            Activar push
-          </button>
-        </div>
-      )}
+      {/* Push — activar en este dispositivo */}
+      <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '14px 18px', marginBottom: 20 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: 8 }}>🔔 Push en este dispositivo</div>
+        {userId && <ActivarNotificaciones userId={userId} />}
+      </div>
 
       {cargando ? (
         <div style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
