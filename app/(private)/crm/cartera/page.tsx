@@ -1644,17 +1644,17 @@ export default function CarteraPage() {
                     Descargar plantilla CSV
                   </button>
                 </p>
-                {/* File upload — label wrapping input is the most reliable trigger */}
-                <label
+                {/* File upload — input cubre el área con opacity:0 para funcionar en Android */}
+                <div
                   onDragOver={e => e.preventDefault()}
                   onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) cargarArchivo(f); }}
-                  style={{ display: "block", border: "2px dashed rgba(255,255,255,0.15)", borderRadius: 8, padding: "20px 16px", textAlign: "center", cursor: "pointer", marginBottom: 12, background: xlsxNombre ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)", transition: "all 0.15s" }}
+                  style={{ position: "relative", border: "2px dashed rgba(255,255,255,0.15)", borderRadius: 8, padding: "20px 16px", textAlign: "center", marginBottom: 12, background: xlsxNombre ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)", transition: "all 0.15s" }}
                 >
                   <input
                     type="file"
                     accept=".xlsx,.xls,.csv"
-                    style={{ display: "none" }}
                     onChange={e => { const f = e.target.files?.[0]; if (f) cargarArchivo(f); e.target.value = ""; }}
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", fontSize: 0 }}
                   />
                   {xlsxNombre ? (
                     <div>
@@ -1663,14 +1663,14 @@ export default function CarteraPage() {
                       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 3 }}>{csvTexto ? `${csvTexto.split("\n").length - 1} filas detectadas` : "Procesando..."}</div>
                     </div>
                   ) : (
-                    <div>
+                    <div style={{ pointerEvents: "none" }}>
                       <div style={{ fontSize: 22, marginBottom: 8 }}>📂</div>
                       <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif", fontWeight: 600, marginBottom: 4 }}>Buscar archivo</div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>o arrastrá el archivo aquí</div>
                       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", marginTop: 6 }}>.xlsx · .xls · .csv · KiteProp · ZonaProp · Tokko</div>
                     </div>
                   )}
-                </label>
+                </div>
                 {/* Optional: paste CSV manually */}
                 <details style={{ marginBottom: 12 }}>
                   <summary style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
