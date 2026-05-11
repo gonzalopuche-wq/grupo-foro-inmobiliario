@@ -61,9 +61,9 @@ export default function FirmaDigitalPage() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#f8fafc";
+    ctx.strokeStyle = "#0f172a";
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -104,7 +104,7 @@ export default function FirmaDigitalPage() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     setHasStroke(false);
   };
@@ -130,7 +130,7 @@ export default function FirmaDigitalPage() {
   };
 
   const eliminar = async (id: string) => {
-    if (!userId) return;
+    if (!userId || !confirm("¿Eliminar esta firma?")) return;
     await supabase.from("crm_firmas").delete().eq("id", id);
     setFirmas(prev => prev.filter(f => f.id !== id));
   };
@@ -167,7 +167,7 @@ export default function FirmaDigitalPage() {
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerLeave={onPointerUp}
-            style={{ width: "100%", height: 200, borderRadius: 10, border: "2px dashed #334155", cursor: "crosshair", touchAction: "none", display: "block" }}
+            style={{ width: "100%", height: 200, borderRadius: 10, border: "2px dashed #94a3b8", cursor: "crosshair", touchAction: "none", display: "block", background: "#fff" }}
           />
           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
             <button onClick={limpiar} style={{ flex: 1, background: "#0f172a", color: "#94a3b8", border: "1px solid #334155", borderRadius: 8, padding: "8px 0", cursor: "pointer", fontSize: 13 }}>

@@ -111,7 +111,8 @@ function EmailsContent() {
     if (!userId || !form.para.trim() || !form.asunto.trim() || !form.cuerpo.trim()) return;
     setEnviando(true);
 
-    const htmlCuerpo = form.cuerpo.replace(/\n/g, "<br/>");
+    const escapeHtml = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const htmlCuerpo = escapeHtml(form.cuerpo).replace(/\n/g, "<br/>");
     const html = `<div style="font-family:Inter,sans-serif;font-size:15px;color:#1e293b;max-width:600px;margin:0 auto;padding:32px 24px">
       ${htmlCuerpo}
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0"/>
@@ -130,7 +131,10 @@ function EmailsContent() {
       estado = "error";
     }
 
-    await supabase.from("crm_emails").insert({
+    const contactoRef = contactos.find(c => c.id === form.contacto_id);
+    const negocioRef = negocios.find(n => n.id === form.negocio_id);
+
+    const { data: nuevo } = await supabase.from("crm_emails").insert({
       perfil_id: userId,
       contacto_id: form.contacto_id || null,
       negocio_id: form.negocio_id || null,
@@ -138,16 +142,23 @@ function EmailsContent() {
       asunto: form.asunto.trim(),
       cuerpo: form.cuerpo.trim(),
       estado,
-    });
+    }).select("id,para,asunto,cuerpo,estado,created_at").single();
 
-    await cargar(userId);
+    if (nuevo) {
+      const registro: EmailLog = {
+        ...nuevo,
+        contacto: contactoRef ? { nombre: contactoRef.nombre, apellido: contactoRef.apellido } : null,
+        negocio: negocioRef ? { titulo: negocioRef.titulo } : null,
+      };
+      setEmails(prev => [registro, ...prev]);
+    }
     setModal(false);
     setEnviando(false);
     showToast(estado === "enviado" ? "Email enviado correctamente" : "Error al enviar — guardado en historial");
   };
 
   const eliminar = async (id: string) => {
-    if (!userId) return;
+    if (!userId || !confirm("¿Eliminar este registro de email?")) return;
     await supabase.from("crm_emails").delete().eq("id", id);
     setEmails(prev => prev.filter(e => e.id !== id));
   };
@@ -182,8 +193,8 @@ function EmailsContent() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {emails.map(e => {
-            const con = e.contacto as any;
-            const neg = e.negocio as any;
+            const con = e.contacto;
+            const neg = e.negocio;
             return (
               <div key={e.id} style={{ background: "#1e293b", borderRadius: 12, padding: "16px 20px", border: "1px solid #334155", display: "flex", gap: 14, alignItems: "flex-start" }}>
                 <div style={{ fontSize: 20, flexShrink: 0, marginTop: 2 }}>{e.estado === "error" ? "⚠️" : "✉️"}</div>

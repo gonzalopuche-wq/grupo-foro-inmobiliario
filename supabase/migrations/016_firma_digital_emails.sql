@@ -14,6 +14,10 @@ CREATE TABLE IF NOT EXISTS crm_firmas (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE INDEX IF NOT EXISTS idx_crm_firmas_perfil_id   ON crm_firmas(perfil_id);
+CREATE INDEX IF NOT EXISTS idx_crm_firmas_contacto_id ON crm_firmas(contacto_id);
+CREATE INDEX IF NOT EXISTS idx_crm_firmas_negocio_id  ON crm_firmas(negocio_id);
+
 ALTER TABLE crm_firmas ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "firmas_owner" ON crm_firmas;
 CREATE POLICY "firmas_owner" ON crm_firmas
@@ -31,6 +35,10 @@ CREATE TABLE IF NOT EXISTS crm_emails (
   estado        TEXT NOT NULL DEFAULT 'enviado',   -- enviado | error
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE INDEX IF NOT EXISTS idx_crm_emails_perfil_id   ON crm_emails(perfil_id);
+CREATE INDEX IF NOT EXISTS idx_crm_emails_contacto_id ON crm_emails(contacto_id);
+CREATE INDEX IF NOT EXISTS idx_crm_emails_negocio_id  ON crm_emails(negocio_id);
 
 ALTER TABLE crm_emails ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "emails_owner" ON crm_emails;
