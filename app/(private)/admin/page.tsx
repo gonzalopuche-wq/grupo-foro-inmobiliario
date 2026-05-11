@@ -1163,7 +1163,7 @@ export default function AdminPage() {
           <div>
             <div className="adm-ind-titulo">Período <span>Gratuito</span></div>
             <div className="adm-ind-subtitulo">
-              Activá un período sin cobro para toda la plataforma. Con promo activa: (1) las suspensiones automáticas se pausan, (2) los matches MIR son sin cargo, y (3) los nuevos usuarios aprobados reciben suscripción gratis hasta la fecha indicada.
+              Oferta para nuevos posibles suscriptores. Con promo activa, los corredores que sean aprobados durante este período reciben suscripción gratuita hasta la fecha indicada. Los suscriptores existentes no se ven afectados.
             </div>
             <div className="adm-ind-grid" style={{ maxWidth: 480 }}>
               <div className="adm-ind-card">
