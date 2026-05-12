@@ -1017,7 +1017,7 @@ export default function CarteraPage() {
             <Link href="/crm/estadisticas" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>📊 Stats</Link>
             <Link href="/crm/portales" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>🔗 Portales</Link>
             <Link href="/crm/cartera/parametros" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>⚙ Parámetros</Link>
-            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setTabImport("url"); }}>↓ Importar</button>
+            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setXlsxNombre(""); setTabImport("url"); }}>↓ Importar</button>
             <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => userId && window.open(`/api/cartera/export-csv?perfil_id=${userId}`, "_blank")}>↑ Exportar CSV</button>
             <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
             <button style={{ padding: "7px 14px", background: "rgba(255,165,0,0.08)", border: "1px solid rgba(255,165,0,0.2)", borderRadius: 4, color: "rgba(255,165,0,0.8)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => {
@@ -1779,7 +1779,7 @@ export default function CarteraPage() {
                   <div style={{ marginBottom: 12 }}>
                     <input
                       type="file"
-                      accept=".xlsx,.xls,.csv"
+                      accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                       onChange={e => { const f = e.target.files?.[0]; if (f) cargarArchivo(f); e.target.value = ""; }}
                       style={{ display: "block", width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, color: "rgba(255,255,255,0.7)", cursor: "pointer", fontFamily: "Inter,sans-serif", fontSize: 12, boxSizing: "border-box" }}
                     />
@@ -1819,7 +1819,7 @@ export default function CarteraPage() {
               </div>
             )}
 
-            <button onClick={() => { setMostrarImportar(false); setImportError(""); setImportResult(null); }}
+            <button onClick={() => { setMostrarImportar(false); setImportError(""); setImportResult(null); setXlsxNombre(""); setCsvTexto(""); }}
               style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 12, cursor: "pointer", fontFamily: "Inter,sans-serif", marginTop: 18 }}>
               Cerrar
             </button>
