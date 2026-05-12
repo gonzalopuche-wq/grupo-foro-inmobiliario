@@ -65,7 +65,6 @@ const ALIASES: Record<string, string | null> = {
   // ZonaProp / Argenprop extras
   "precio usd": "precio",
   "precio ars": "precio",
-  antiguedad: "antiguedad",
 
   // Columns to skip
   id: null,
