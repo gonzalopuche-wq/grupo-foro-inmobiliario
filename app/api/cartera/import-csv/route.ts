@@ -244,7 +244,6 @@ function rowToCartera(row: Record<string, string>, perfilId: string): any {
     codigo: row.codigo || null,
     fotos: row.fotos ? row.fotos.split("|").map(u => u.trim()).filter(Boolean) : [],
     publicada_web: false,
-    compartir_en_red: false,
     ocultar_precio: false,
     ocultar_ubicacion: false,
     ocultar_de_redes: false,

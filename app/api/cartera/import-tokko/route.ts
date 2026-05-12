@@ -70,7 +70,6 @@ function mapTokkoToCartera(t: any, perfilId: string) {
     fotos: photos,
     amenities: tags,
     publicada_web: false,
-    compartir_en_red: false,
     ocultar_precio: false,
     ocultar_ubicacion: false,
     ocultar_de_redes: false,
