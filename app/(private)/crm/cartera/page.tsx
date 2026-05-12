@@ -444,9 +444,10 @@ export default function CarteraPage() {
     setImportError("");
     setImportResult(null);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch("/api/cartera/import-csv", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
         body: JSON.stringify({ csv: csvTexto, perfil_id: userId }),
       });
       const json = await res.json();
@@ -614,25 +615,47 @@ export default function CarteraPage() {
     // Ambientes y comodidades
     [...AMBIENTES_LIST, ...COMODIDADES_LIST].forEach(({ key }) => { datos[key] = !!form[key]; });
 
+    // Incluir fotos existentes en el INSERT para que queden guardadas de entrada
+    datos.fotos = fotosExistentes;
+
     let propId = editandoId;
-    const { data: { session } } = await supabase.auth.getSession();
-    const resGuardar = await fetch("/api/cartera/guardar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
-      body: JSON.stringify({ datos, editandoId }),
-    });
-    const resJson = await resGuardar.json();
-    if (!resGuardar.ok || !resJson.ok) {
+    let session: any;
+
+    try {
+      const { data: { session: s } } = await supabase.auth.getSession();
+      session = s;
+
+      const resGuardar = await fetch("/api/cartera/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ datos, editandoId }),
+      });
+      const resJson = await resGuardar.json();
+      if (!resGuardar.ok || !resJson.ok) {
+        alert("Error al guardar: " + (resJson.error ?? "Error desconocido") + (resJson.code ? `\nCódigo: ${resJson.code}` : ""));
+        setGuardando(false);
+        return;
+      }
+      propId = resJson.propId ?? propId;
+    } catch (e: any) {
+      alert("Error de red al guardar: " + (e.message ?? "Error desconocido"));
       setGuardando(false);
-      alert("Error al guardar: " + (resJson.error ?? "Error desconocido") + (resJson.code ? `\nCódigo: ${resJson.code}` : ""));
       return;
     }
-    propId = resJson.propId ?? propId;
 
-    if (propId) {
-      const todasFotos = await subirFotos(propId);
-      if (todasFotos.length > 0) {
-        await supabase.from("cartera_propiedades").update({ fotos: todasFotos }).eq("id", propId);
+    // Subir fotos nuevas y actualizar vía API (service role)
+    if (propId && fotosNuevas.length > 0) {
+      try {
+        const todasFotos = await subirFotos(propId);
+        if (todasFotos.length > fotosExistentes.length) {
+          await fetch("/api/cartera/guardar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+            body: JSON.stringify({ datos: { fotos: todasFotos, updated_at: new Date().toISOString() }, editandoId: propId }),
+          });
+        }
+      } catch (e: any) {
+        console.error("Error subiendo fotos nuevas:", e);
       }
     }
 
@@ -649,7 +672,6 @@ export default function CarteraPage() {
         });
         const data = await res.json();
         if (data.ok && data.matches?.length > 0) {
-          // Enriquecer con teléfono
           const ids = data.matches.map((m: any) => m.id);
           const { data: ctcs } = await supabase
             .from("crm_contactos").select("id,telefono").in("id", ids);
@@ -664,13 +686,35 @@ export default function CarteraPage() {
   };
 
   const cambiarEstado = async (id: string, estado: string) => {
-    await supabase.from("cartera_propiedades").update({ estado, updated_at: new Date().toISOString() }).eq("id", id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ datos: { estado, updated_at: new Date().toISOString() }, editandoId: id }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) alert("Error al cambiar estado: " + (json.error ?? "Error desconocido"));
+    } catch (e: any) {
+      alert("Error de red: " + e.message);
+    }
     if (userId) cargar(userId);
   };
 
   const eliminar = async (id: string) => {
     if (!confirm("¿Eliminar esta propiedad? También se eliminará del MIR.")) return;
-    await supabase.from("cartera_propiedades").delete().eq("id", id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/eliminar", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ id }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) { alert("Error al eliminar: " + (json.error ?? "Error desconocido")); return; }
+    } catch (e: any) {
+      alert("Error de red: " + e.message); return;
+    }
     if (userId) cargar(userId);
   };
 
