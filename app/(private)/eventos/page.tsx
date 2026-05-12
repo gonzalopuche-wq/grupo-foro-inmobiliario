@@ -85,6 +85,7 @@ export default function EventosPage() {
   const [linkVideo, setLinkVideo] = useState("");
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
+  const [eventoVer, setEventoVer] = useState<Evento | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -675,12 +676,24 @@ export default function EventosPage() {
                         :pasado?<span style={{fontSize:10,color:"rgba(255,255,255,0.2)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>FINALIZADO</span>
                         :(
                           <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
-                            onClick={()=>!lleno||ev.inscripto?toggleInscripcion(ev.id,!!ev.inscripto,ev.capacidad,ev.total_inscriptos??0):undefined}
+                            onClick={()=>{
+                              if (lleno && !ev.inscripto) return;
+                              if (!ev.inscripto && ev.link_externo) window.open(ev.link_externo,"_blank","noopener,noreferrer");
+                              toggleInscripcion(ev.id,!!ev.inscripto,ev.capacidad,ev.total_inscriptos??0);
+                            }}
                             disabled={lleno&&!ev.inscripto}>
                             {ev.inscripto?"✓ Inscripto":lleno?"Completo":"Inscribirse"}
                           </button>
                         )}
-                        {ev.link_externo&&<a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Ver más &#x2192;</a>}
+                        {ev.inscripto&&ev.link_externo&&!pasado&&(
+                          <a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>🔗 Link inscripción</a>
+                        )}
+                        <button style={{padding:"5px 10px",background:"transparent",border:"1px solid rgba(255,255,255,0.1)",borderRadius:3,color:"rgba(255,255,255,0.4)",fontFamily:"'Montserrat',sans-serif",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",transition:"all 0.15s"}}
+                          onClick={()=>setEventoVer(ev)}
+                          onMouseEnter={e=>(e.currentTarget.style.color="#fff")}
+                          onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.4)")}>
+                          Ver evento
+                        </button>
                         {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#60a5fa",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Unirse</a>}
                         {esAdmin&&!pasado&&<button className="ev-btn-cancelar-ev" onClick={()=>cancelarEvento(ev.id)}>Cancelar</button>}
                       </div>
@@ -1002,6 +1015,154 @@ export default function EventosPage() {
           </div>
         </div>
       )}
+
+      {/* MODAL VER EVENTO */}
+      {eventoVer && (() => {
+        const ev = eventoVer;
+        const f = formatFecha(ev.fecha);
+        const pasado = !esProximo(ev.fecha);
+        const lleno = ev.capacidad !== null && (ev.total_inscriptos ?? 0) >= ev.capacidad;
+        const pct = capacidadPct(ev.total_inscriptos ?? 0, ev.capacidad);
+        const tipo = TIPOS[ev.tipo] ?? TIPOS.externo;
+        const fotos = ev.media && Array.isArray(ev.media) ? (ev.media as MediaItem[]).filter((m:MediaItem) => m.tipo==="foto") : [];
+        const videos = ev.media && Array.isArray(ev.media) ? (ev.media as MediaItem[]).filter((m:MediaItem) => m.tipo==="video") : [];
+        const portada = fotos[0] ?? null;
+        return (
+          <div className="ev-modal-bg" onClick={e=>{ if (e.target===e.currentTarget) setEventoVer(null); }}>
+            <div className="ev-modal" style={{maxWidth:680,padding:0,overflow:"hidden"}}>
+              {/* Imagen portada */}
+              {portada ? (
+                <div style={{position:"relative",width:"100%",maxHeight:340,background:"#000",overflow:"hidden",cursor:"zoom-in"}}
+                  onClick={()=>setLightbox(portada.url)}>
+                  <img src={portada.url} alt={ev.titulo}
+                    style={{width:"100%",maxHeight:340,objectFit:"contain",objectPosition:"center",display:"block"}}
+                    onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+                  <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,transparent 60%,rgba(0,0,0,0.7))"}} />
+                  {fotos.length > 1 && (
+                    <div style={{position:"absolute",bottom:10,right:12,display:"flex",gap:4}}>
+                      {fotos.slice(1,4).map((m:MediaItem,i:number)=>(
+                        <div key={i} style={{width:44,height:44,borderRadius:4,overflow:"hidden",border:"1.5px solid rgba(255,255,255,0.4)",cursor:"zoom-in",flexShrink:0}}
+                          onClick={e=>{e.stopPropagation();setLightbox(m.url);}}>
+                          <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
+                        </div>
+                      ))}
+                      {fotos.length > 4 && (
+                        <div style={{width:44,height:44,borderRadius:4,background:"rgba(0,0,0,0.7)",border:"1.5px solid rgba(255,255,255,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",fontWeight:800,fontFamily:"'Montserrat',sans-serif"}}>
+                          +{fotos.length-4}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : videos.length > 0 ? (
+                <div style={{position:"relative",width:"100%",height:220,background:"#000",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}
+                  onClick={()=>setLightbox(videos[0].url)}>
+                  {videos[0].thumb && <img src={videos[0].thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.4}} alt="" />}
+                  <span style={{fontSize:48,position:"relative",zIndex:1}}>▶️</span>
+                </div>
+              ) : null}
+
+              <div style={{padding:"24px 28px 28px"}}>
+                {/* Badges */}
+                <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
+                  <span className="ev-badge" style={{color:tipo.color,background:tipo.bg,borderColor:tipo.border}}>{tipo.label}</span>
+                  <span className="ev-badge" style={{color:ev.gratuito?"#22c55e":"#eab308",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",borderColor:ev.gratuito?"rgba(34,197,94,0.2)":"rgba(234,179,8,0.2)"}}>
+                    {ev.gratuito?"Gratuito":ev.precio_entrada?`$${ev.precio_entrada.toLocaleString("es-AR")}`:"Con costo"}
+                  </span>
+                  {ev.plataforma&&ev.plataforma!=="presencial"&&(
+                    <span className="ev-badge" style={{color:"#60a5fa",background:"rgba(96,165,250,0.08)",borderColor:"rgba(96,165,250,0.2)"}}>
+                      {PLATAFORMAS[ev.plataforma]??"🎥"} Online
+                    </span>
+                  )}
+                  {ev.destacado&&<span className="ev-badge" style={{color:"#f59e0b",background:"rgba(245,158,11,0.08)",borderColor:"rgba(245,158,11,0.2)"}}>⭐ Destacado</span>}
+                </div>
+
+                {/* Título */}
+                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:20,fontWeight:800,color:"#fff",lineHeight:1.3,marginBottom:14}}>{ev.titulo}</div>
+
+                {/* Meta */}
+                <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:16}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"rgba(255,255,255,0.6)"}}>
+                    <span>🗓️</span><span>{f.dia} a las {f.hora}hs</span>
+                  </div>
+                  {ev.lugar&&(
+                    <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"rgba(255,255,255,0.6)"}}>
+                      <span>📍</span><span>{ev.lugar}</span>
+                      {ev.lugar_url&&<a href={ev.lugar_url} target="_blank" rel="noopener noreferrer" style={{color:"#cc0000",fontSize:11,fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none"}}>Ver mapa →</a>}
+                    </div>
+                  )}
+                  {ev.link_reunion&&!pasado&&(
+                    <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"rgba(255,255,255,0.6)"}}>
+                      <span>🔗</span>
+                      <a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{color:"#60a5fa",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",fontSize:13}}>Unirse online →</a>
+                    </div>
+                  )}
+                </div>
+
+                {/* Descripción */}
+                {ev.descripcion && (
+                  <div style={{fontSize:14,color:"rgba(255,255,255,0.7)",lineHeight:1.7,whiteSpace:"pre-wrap",marginBottom:18,padding:"14px 16px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6}}>
+                    {ev.descripcion}
+                  </div>
+                )}
+
+                {/* Videos */}
+                {videos.length > 0 && (
+                  <div style={{marginBottom:16}}>
+                    <div style={{fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:8}}>Videos</div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {videos.map((v:MediaItem,i:number)=>(
+                        <button key={i} type="button"
+                          style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",background:"rgba(96,165,250,0.08)",border:"1px solid rgba(96,165,250,0.2)",borderRadius:4,color:"#60a5fa",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
+                          onClick={()=>setLightbox(v.url)}>
+                          ▶️ Ver video {videos.length>1?i+1:""}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Capacidad */}
+                {ev.capacidad!==null&&(
+                  <div style={{marginBottom:16}}>
+                    <div className="ev-cap-bar-wrap"><div className="ev-cap-bar" style={{width:`${pct}%`,background:pct>=90?"#f87171":pct>=70?"#eab308":"#22c55e"}} /></div>
+                    <div className="ev-cap-texto">{ev.total_inscriptos} / {ev.capacidad} inscriptos{lleno?" · COMPLETO":""}</div>
+                  </div>
+                )}
+
+                {/* Acciones */}
+                <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:18}}>
+                  {!pasado&&(
+                    procesando===ev.id ? <span className="ev-spinner" /> : (
+                      <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
+                        style={{fontSize:11,padding:"10px 20px"}}
+                        disabled={lleno&&!ev.inscripto}
+                        onClick={()=>{
+                          if (lleno && !ev.inscripto) return;
+                          if (!ev.inscripto && ev.link_externo) window.open(ev.link_externo,"_blank","noopener,noreferrer");
+                          toggleInscripcion(ev.id,!!ev.inscripto,ev.capacidad,ev.total_inscriptos??0);
+                        }}>
+                        {ev.inscripto?"✓ Inscripto":lleno?"Completo":"Inscribirse"}
+                      </button>
+                    )
+                  )}
+                  {ev.link_externo&&(
+                    <a href={ev.link_externo} target="_blank" rel="noopener noreferrer"
+                      style={{padding:"9px 16px",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#cc0000",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase"}}>
+                      🔗 Link inscripción
+                    </a>
+                  )}
+                  <button className="ev-btn-cancel" style={{marginLeft:"auto"}} onClick={()=>setEventoVer(null)}>Cerrar</button>
+                </div>
+              </div>
+
+              {/* Botón cerrar X */}
+              <button style={{position:"absolute",top:12,right:12,width:32,height:32,borderRadius:"50%",background:"rgba(0,0,0,0.7)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.7)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10}}
+                onClick={()=>setEventoVer(null)}>&times;</button>
+            </div>
+          </div>
+        );
+      })()}
 
       {toast && <div className={`toast ${toast.tipo}`}>{toast.msg}</div>}
     </>
