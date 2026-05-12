@@ -279,6 +279,7 @@ export default function CarteraPage() {
   const [smartMatches, setSmartMatches] = useState<{id:string;nombre:string;compatibilidad:number;razon:string;telefono?:string}[]>([]);
   const [smartPropTitulo, setSmartPropTitulo] = useState("");
   const [mostrarSmartMatch, setMostrarSmartMatch] = useState(false);
+  const [toastGuardado, setToastGuardado] = useState("");
 
   useEffect(() => {
     const init = async () => {
@@ -465,24 +466,33 @@ export default function CarteraPage() {
   };
 
   const cargarArchivo = async (file: File) => {
-    setXlsxNombre(file.name);
     setCsvTexto("");
     setImportError("");
     setImportResult(null);
+    setXlsxNombre(file.name);
     try {
       if (file.name.toLowerCase().endsWith(".csv")) {
         const text = await file.text();
+        if (!text.trim()) throw new Error("El archivo CSV está vacío");
         setCsvTexto(text);
       } else {
-        const XLSX = await import("xlsx");
+        let XLSX: any;
+        try {
+          XLSX = await import("xlsx");
+        } catch {
+          throw new Error("No se pudo cargar el lector de Excel. Exportá el archivo como .csv e intentá de nuevo.");
+        }
         const buf = await file.arrayBuffer();
         const wb = XLSX.read(buf, { type: "array" });
+        if (!wb.SheetNames.length) throw new Error("El archivo Excel no tiene hojas");
         const ws = wb.Sheets[wb.SheetNames[0]];
         const csv = XLSX.utils.sheet_to_csv(ws, { FS: "," });
+        if (!csv.trim()) throw new Error("La primera hoja del Excel está vacía");
         setCsvTexto(csv);
       }
     } catch (e: any) {
-      setImportError(`Error al leer el archivo: ${e.message}`);
+      setXlsxNombre(""); // resetear para mostrar el input de archivo de nuevo
+      setImportError(e.message || "Error al leer el archivo");
     }
   };
 
@@ -660,6 +670,8 @@ export default function CarteraPage() {
     }
 
     setGuardando(false); setMostrarWizard(false); setFotosNuevas([]);
+    setToastGuardado(editandoId ? "✓ Propiedad actualizada" : "✓ Propiedad guardada");
+    setTimeout(() => setToastGuardado(""), 4000);
     if (userId) cargar(userId);
 
     // Smart Prospecting: si es propiedad nueva, buscar contactos que coincidan
@@ -984,6 +996,12 @@ export default function CarteraPage() {
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
+      {toastGuardado && (
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#22c55e", color: "#fff", padding: "12px 24px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.4)" }}>
+          {toastGuardado}
+        </div>
+      )}
+
       <div className="cart-root">
 
         {/* Header */}
@@ -999,7 +1017,7 @@ export default function CarteraPage() {
             <Link href="/crm/estadisticas" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>📊 Stats</Link>
             <Link href="/crm/portales" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>🔗 Portales</Link>
             <Link href="/crm/cartera/parametros" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>⚙ Parámetros</Link>
-            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setTabImport("url"); }}>↓ Importar</button>
+            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setXlsxNombre(""); setTabImport("url"); }}>↓ Importar</button>
             <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => userId && window.open(`/api/cartera/export-csv?perfil_id=${userId}`, "_blank")}>↑ Exportar CSV</button>
             <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
             <button style={{ padding: "7px 14px", background: "rgba(255,165,0,0.08)", border: "1px solid rgba(255,165,0,0.2)", borderRadius: 4, color: "rgba(255,165,0,0.8)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => {
@@ -1761,7 +1779,7 @@ export default function CarteraPage() {
                   <div style={{ marginBottom: 12 }}>
                     <input
                       type="file"
-                      accept=".xlsx,.xls,.csv"
+                      accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                       onChange={e => { const f = e.target.files?.[0]; if (f) cargarArchivo(f); e.target.value = ""; }}
                       style={{ display: "block", width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, color: "rgba(255,255,255,0.7)", cursor: "pointer", fontFamily: "Inter,sans-serif", fontSize: 12, boxSizing: "border-box" }}
                     />
@@ -1801,7 +1819,7 @@ export default function CarteraPage() {
               </div>
             )}
 
-            <button onClick={() => { setMostrarImportar(false); setImportError(""); setImportResult(null); }}
+            <button onClick={() => { setMostrarImportar(false); setImportError(""); setImportResult(null); setXlsxNombre(""); setCsvTexto(""); }}
               style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 12, cursor: "pointer", fontFamily: "Inter,sans-serif", marginTop: 18 }}>
               Cerrar
             </button>
