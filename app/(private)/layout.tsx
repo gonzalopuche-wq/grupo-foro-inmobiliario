@@ -27,6 +27,7 @@ const NAV_CORREDOR = [
   { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
   { href: "/enlaces", label: "Enlaces", icon: "🔗" },
   { href: "/proveedores", label: "Proveedores", icon: "🏢" },
+  { href: "/beneficios", label: "Beneficios", icon: "🎁" },
   { href: "/perfil", label: "Mi Perfil", icon: "👤" },
   { href: "/mi-web", label: "Mi Web", icon: "🌐" },
   { href: "/reportes", label: "Reportes", icon: "📉" },

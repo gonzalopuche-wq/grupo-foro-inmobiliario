@@ -15,6 +15,10 @@
     {
       "path": "/api/admin/sync-cocir",
       "schedule": "0 4 * * 1"
+    },
+    {
+      "path": "/api/cron/republica-beneficios",
+      "schedule": "0 8 * * *"
     }
   ]
 }
