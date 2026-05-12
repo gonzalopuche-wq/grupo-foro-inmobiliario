@@ -311,7 +311,13 @@ export default function CarteraPage() {
 
   const cargar = async (uid: string) => {
     setLoading(true);
-    const { data } = await supabase.from("cartera_propiedades").select("*").eq("perfil_id", uid).order("updated_at", { ascending: false });
+    const { data, error } = await supabase.from("cartera_propiedades").select("*").eq("perfil_id", uid).order("updated_at", { ascending: false });
+    if (error) {
+      console.error("cartera cargar error:", error);
+      alert("Error al cargar la cartera: " + error.message + "\n\nCódigo: " + error.code);
+      setLoading(false);
+      return;
+    }
     const props = (data as Propiedad[]) ?? [];
     setPropiedades(props);
     if (props.length > 0) {
