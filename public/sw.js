@@ -1,9 +1,8 @@
 // GFI® Service Worker — PWA + Push Notifications
-const CACHE = "gfi-v1";
-const OFFLINE_URLS = ["/", "/dashboard", "/crm/cartera", "/crm", "/mir", "/logo_gfi.png", "/manifest.json"];
+const CACHE = "gfi-v2";
+const OFFLINE_URLS = ["/", "/dashboard", "/offline", "/crm/cartera", "/crm", "/mir", "/logo_gfi.png", "/manifest.json"];
 
 self.addEventListener("install", e => {
-  self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(OFFLINE_URLS).catch(() => {})));
 });
 
@@ -14,8 +13,11 @@ self.addEventListener("activate", e => {
   );
 });
 
+self.addEventListener("message", e => {
+  if (e.data?.type === "SKIP_WAITING") self.skipWaiting();
+});
+
 self.addEventListener("fetch", e => {
-  // Only cache GET requests for same-origin non-API pages
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
   if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/_next/")) return;
@@ -29,7 +31,7 @@ self.addEventListener("fetch", e => {
         }
         return res;
       })
-      .catch(() => caches.match(e.request).then(r => r || caches.match("/")))
+      .catch(() => caches.match(e.request).then(r => r || caches.match("/offline")))
   );
 });
 

@@ -49,6 +49,16 @@ export default function Campanita({ userId }: { userId: string }) {
 
   useEffect(() => { cargar(); }, [userId]);
 
+  // Badge en el ícono de la app
+  useEffect(() => {
+    if (!("setAppBadge" in navigator)) return;
+    if (noLeidas > 0) {
+      (navigator as any).setAppBadge(noLeidas).catch(() => {});
+    } else {
+      (navigator as any).clearAppBadge().catch(() => {});
+    }
+  }, [noLeidas]);
+
   // Tiempo real
   useEffect(() => {
     if (!userId) return;
