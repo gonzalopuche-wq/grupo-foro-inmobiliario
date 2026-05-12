@@ -66,14 +66,15 @@ export default function EscriturasPage() {
       .eq("archivado", false)
       .order("updated_at", { ascending: false });
 
-    const ids = (neg ?? []).map((n: Negocio) => n.id);
+    const negList = (neg ?? []) as unknown as Negocio[];
+    const ids = negList.map((n: Negocio) => n.id);
     let hitosData: Hito[] = [];
     if (ids.length > 0) {
       const { data: h } = await supabase.from("crm_escritura_hitos").select("*").in("negocio_id", ids).order("fecha");
       hitosData = (h ?? []) as Hito[];
     }
 
-    setNegocios((neg ?? []) as Negocio[]);
+    setNegocios(negList);
     setHitos(hitosData);
   };
 
