@@ -38,14 +38,19 @@ export default function ProveedoresPage() {
   const [formResena, setFormResena] = useState({ positiva: true, comentario: "" });
   const [enviandoResena, setEnviandoResena] = useState(false);
   const [toast, setToast] = useState<{ msg: string; tipo: "ok" | "err" } | null>(null);
+  const [misIntereses, setMisIntereses] = useState<string[]>([]);
+  const [procesandoInteres, setProcesandoInteres] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
-      setUserId(data.user.id);
-      const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
+      const uid = data.user.id;
+      setUserId(uid);
+      const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", uid).single();
       if (perfil?.tipo === "admin") setEsAdmin(true);
+      const { data: ints } = await supabase.from("sponsor_beneficio_interesados").select("proveedor_id").eq("perfil_id", uid);
+      setMisIntereses((ints ?? []).map((r: any) => r.proveedor_id));
     };
     init();
     cargarProveedores();
@@ -104,6 +109,22 @@ export default function ProveedoresPage() {
     else { mostrarToast("Reseña enviada"); }
     setEnviandoResena(false); setMostrarResena(null); setFormResena({ positiva: true, comentario: "" });
     cargarProveedores();
+  };
+
+  const toggleInteres = async (proveedorId: string) => {
+    if (!userId) return;
+    setProcesandoInteres(proveedorId);
+    const yaInteresado = misIntereses.includes(proveedorId);
+    if (yaInteresado) {
+      await supabase.from("sponsor_beneficio_interesados").delete().eq("proveedor_id", proveedorId).eq("perfil_id", userId);
+      setMisIntereses(mi => mi.filter(id => id !== proveedorId));
+      mostrarToast("Interés cancelado");
+    } else {
+      await supabase.from("sponsor_beneficio_interesados").insert({ proveedor_id: proveedorId, perfil_id: userId });
+      setMisIntereses(mi => [...mi, proveedorId]);
+      mostrarToast("¡Registrado! GFI te enviará los datos al sponsor.");
+    }
+    setProcesandoInteres(null);
   };
 
   const rubrosUnicos = ["todos", ...Array.from(new Set(proveedores.map(p => p.rubro))).sort()];
@@ -236,6 +257,10 @@ export default function ProveedoresPage() {
         .pv-sponsor-beneficio-body{display:flex;flex-direction:column;gap:2px}
         .pv-sponsor-beneficio-label{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#cc0000}
         .pv-sponsor-beneficio-texto{font-size:12px;color:rgba(255,255,255,0.75);line-height:1.5}
+        .pv-btn-interes{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:4px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border:1px solid rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#cc0000;white-space:nowrap}
+        .pv-btn-interes:hover:not(:disabled){background:rgba(200,0,0,0.2)}
+        .pv-btn-interes.registrado{border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.08);color:#22c55e}
+        .pv-btn-interes:disabled{opacity:0.5;cursor:not-allowed}
       `}</style>
 
       <div className="pv-wrap">
@@ -286,6 +311,20 @@ export default function ProveedoresPage() {
                             <div className="pv-sponsor-beneficio-body">
                               <span className="pv-sponsor-beneficio-label">Beneficio exclusivo para corredores GFI®</span>
                               <span className="pv-sponsor-beneficio-texto">{p.beneficio}</span>
+                              <div style={{marginTop:8}}>
+                                {(() => {
+                                  const ya = misIntereses.includes(p.id);
+                                  return (
+                                    <button
+                                      className={`pv-btn-interes${ya?" registrado":""}`}
+                                      disabled={procesandoInteres === p.id}
+                                      onClick={() => toggleInteres(p.id)}
+                                    >
+                                      {ya ? "✓ Me interesa — registrado" : "🎁 Me interesa este beneficio"}
+                                    </button>
+                                  );
+                                })()}
+                              </div>
                             </div>
                           </div>
                         )}

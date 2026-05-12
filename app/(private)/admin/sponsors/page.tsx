@@ -25,6 +25,10 @@ export default function AdminSponsorsPage() {
   const [guardando, setGuardando] = useState(false);
   const [toast, setToast] = useState<{ msg: string; tipo: "ok" | "err" } | null>(null);
   const [filtro, setFiltro] = useState<"todos" | "activa" | "vencida" | "suspendida">("todos");
+  const [interesadosCounts, setInteresadosCounts] = useState<Record<string, number>>({});
+  const [viendoLista, setViendoLista] = useState<string | null>(null);
+  const [listaInteresados, setListaInteresados] = useState<any[]>([]);
+  const [cargandoLista, setCargandoLista] = useState(false);
 
   const showToast = (msg: string, tipo: "ok" | "err" = "ok") => { setToast({ msg, tipo }); setTimeout(() => setToast(null), 3500); };
 
@@ -41,14 +45,32 @@ export default function AdminSponsorsPage() {
 
   const cargar = async () => {
     setLoading(true);
-    const { data } = await supabase.from("red_proveedores")
-      .select("*")
-      .eq("tipo", "sponsor")
-      .order("destacado", { ascending: false })
-      .order("created_at", { ascending: false });
-    setSponsors((data ?? []) as Sponsor[]);
+    const [sponsorsRes, interesadosRes] = await Promise.all([
+      supabase.from("red_proveedores").select("*").eq("tipo", "sponsor").order("destacado", { ascending: false }).order("created_at", { ascending: false }),
+      supabase.from("sponsor_beneficio_interesados").select("proveedor_id"),
+    ]);
+    setSponsors((sponsorsRes.data ?? []) as Sponsor[]);
+    const counts: Record<string, number> = {};
+    for (const row of (interesadosRes.data ?? [])) {
+      counts[row.proveedor_id] = (counts[row.proveedor_id] ?? 0) + 1;
+    }
+    setInteresadosCounts(counts);
     setLoading(false);
   };
+
+  const verListaInteresados = async (sponsorId: string) => {
+    setViendoLista(sponsorId);
+    setCargandoLista(true);
+    const { data } = await supabase
+      .from("sponsor_beneficio_interesados")
+      .select("created_at, perfiles!sponsor_beneficio_interesados_perfil_id_fkey(numero_gfi, nombre, apellido, matricula, email)")
+      .eq("proveedor_id", sponsorId)
+      .order("created_at");
+    setListaInteresados((data ?? []) as any[]);
+    setCargandoLista(false);
+  };
+
+  const gfiNum = (n: number | null) => n ? `GFI-${String(n).padStart(3, "0")}` : "GFI-—";
 
   const abrirNuevo = () => {
     setForm(FORM_VACIO);
@@ -169,6 +191,16 @@ export default function AdminSponsorsPage() {
         .sp-nota-admin{font-size:11px;color:rgba(245,158,11,0.6);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:6px 10px;margin-top:6px}
         .sp-beneficio{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,0.65);background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.2);border-radius:4px;padding:6px 10px;margin-top:6px;line-height:1.5}
         .sp-beneficio strong{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#cc0000;margin-right:4px;flex-shrink:0}
+        .sp-interesados-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;color:#22c55e;margin-top:6px;cursor:pointer;transition:background 0.2s}
+        .sp-interesados-chip:hover{background:rgba(34,197,94,0.18)}
+        .sp-interesados-chip.cero{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);cursor:default}
+        .sp-lista-tabla{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
+        .sp-lista-tabla th{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:6px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07)}
+        .sp-lista-tabla td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);color:rgba(255,255,255,0.75);vertical-align:middle}
+        .sp-lista-tabla tr:last-child td{border-bottom:none}
+        .sp-lista-tabla tr:hover td{background:rgba(255,255,255,0.02)}
+        .sp-gfi-num{font-family:'Montserrat',sans-serif;font-weight:800;color:#cc0000;font-size:11px}
+        .sp-lista-empty{padding:28px;text-align:center;color:rgba(255,255,255,0.2);font-style:italic;font-size:13px}
         .sp-acciones{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
         .sp-btn{padding:6px 12px;border-radius:3px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;white-space:nowrap;border:1px solid}
         .sp-btn-editar{background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.5)}
@@ -263,7 +295,17 @@ export default function AdminSponsorsPage() {
                       {s.sitio_web && <a href={s.sitio_web} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"#cc0000",textDecoration:"none"}}>🌐 {s.sitio_web.replace(/https?:\/\//,"")}</a>}
                     </div>
                     {s.descripcion && <div className="sp-desc">"{s.descripcion}"</div>}
-                    {s.beneficio && <div className="sp-beneficio"><strong>🎁 Beneficio GFI®</strong>{s.beneficio}</div>}
+                    {s.beneficio && (
+                      <div className="sp-beneficio"><strong>🎁 Beneficio GFI®</strong>{s.beneficio}</div>
+                    )}
+                    {s.beneficio && (
+                      <div
+                        className={`sp-interesados-chip${!interesadosCounts[s.id] ? " cero" : ""}`}
+                        onClick={() => interesadosCounts[s.id] ? verListaInteresados(s.id) : undefined}
+                      >
+                        👥 {interesadosCounts[s.id] ?? 0} interesado{(interesadosCounts[s.id] ?? 0) !== 1 ? "s" : ""}{interesadosCounts[s.id] ? " — ver lista" : ""}
+                      </div>
+                    )}
                     {s.nota_admin && <div className="sp-nota-admin">📝 {s.nota_admin}</div>}
                     {s.suscripcion_vencimiento && (
                       <div style={{marginTop:6}}>
@@ -314,6 +356,51 @@ export default function AdminSponsorsPage() {
             <div className="modal-actions">
               <button className="btn-cancel" onClick={()=>{setMostrarForm(false);setEditandoId(null);}}>Cancelar</button>
               <button className="btn-save" onClick={guardar} disabled={guardando||!form.nombre||!form.rubro}>{guardando?"Guardando...":editandoId?"Guardar cambios":"Crear sponsor"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viendoLista && (
+        <div className="modal-bg" onClick={e => { if (e.target === e.currentTarget) setViendoLista(null); }}>
+          <div className="modal" style={{maxWidth:620}}>
+            <div className="modal-titulo">
+              Interesados en beneficio — <span>{sponsors.find(s => s.id === viendoLista)?.nombre ?? ""}</span>
+            </div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:12,lineHeight:1.6}}>
+              Lista simplificada para enviar al sponsor. Solo incluye número GFI, nombre, matrícula COCIR y email.
+            </div>
+            {cargandoLista ? (
+              <div style={{padding:"28px",display:"flex",justifyContent:"center"}}><div className="sp-spin"/></div>
+            ) : listaInteresados.length === 0 ? (
+              <div className="sp-lista-empty">Todavía no hay corredores interesados en este beneficio.</div>
+            ) : (
+              <table className="sp-lista-tabla">
+                <thead>
+                  <tr>
+                    <th>Nro. GFI</th>
+                    <th>Corredor</th>
+                    <th>Mat. COCIR</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {listaInteresados.map((row, i) => {
+                    const p = row.perfiles as any;
+                    return (
+                      <tr key={i}>
+                        <td><span className="sp-gfi-num">{gfiNum(p?.numero_gfi ?? null)}</span></td>
+                        <td>{p?.apellido ? `${p.apellido}, ${p.nombre}` : "—"}</td>
+                        <td style={{color:"rgba(255,255,255,0.5)"}}>{p?.matricula ?? "—"}</td>
+                        <td style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>{p?.email ?? "—"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+            <div className="modal-actions">
+              <button className="btn-cancel" onClick={() => setViendoLista(null)}>Cerrar</button>
             </div>
           </div>
         </div>
