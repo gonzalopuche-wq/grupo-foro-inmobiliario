@@ -28,7 +28,10 @@ export async function POST(req: NextRequest) {
       .update(datos)
       .eq("id", editandoId)
       .eq("perfil_id", user.id);
-    if (error) return NextResponse.json({ error: error.message, code: error.code }, { status: 400 });
+    if (error) {
+      console.error("[cartera/guardar] update error:", error);
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 400 });
+    }
     propId = editandoId;
   } else {
     const { data: nueva, error } = await supabaseAdmin
@@ -36,7 +39,10 @@ export async function POST(req: NextRequest) {
       .insert(datos)
       .select("id")
       .single();
-    if (error) return NextResponse.json({ error: error.message, code: error.code }, { status: 400 });
+    if (error) {
+      console.error("[cartera/guardar] insert error:", error);
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 400 });
+    }
     propId = nueva?.id ?? null;
   }
 
