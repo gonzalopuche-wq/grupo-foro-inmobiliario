@@ -272,6 +272,7 @@ export default function CarteraPage() {
   const [tonoDesc, setTonoDesc] = useState<'profesional' | 'premium' | 'amigable' | 'vendedor'>('profesional');
   const [perfilData, setPerfilData] = useState<{nombre:string;apellido:string;telefono:string|null}|null>(null);
   const [generandoPost, setGenerandoPost] = useState<string|null>(null);
+  const [reparando, setReparando] = useState<string|null>(null);
   const [postModal, setPostModal] = useState<{titulo:string;caption:string;hashtags:string}|null>(null);
 
   // Smart Prospecting automático
@@ -703,6 +704,26 @@ export default function CarteraPage() {
     setGenerandoPost(null);
   };
 
+  const repararFotos = async (propiedadId: string) => {
+    setReparando(propiedadId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/reparar-fotos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ propiedad_id: propiedadId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        alert(data.reparadas > 0 ? `✅ ${data.reparadas} foto(s) reparadas y guardadas en el storage propio.` : "Las fotos ya estaban en el storage propio.");
+        if (userId) cargar(userId);
+      } else {
+        alert("Error: " + (data.error ?? "no se pudo reparar"));
+      }
+    } catch (e: any) { alert("Error: " + e.message); }
+    setReparando(null);
+  };
+
   const sincronizarPortal = async (propiedadId: string, portales: string[]) => {
     setSincronizando(propiedadId);
     try {
@@ -1057,6 +1078,13 @@ export default function CarteraPage() {
                     <button className="cart-acc-btn cart-acc-ambos" onClick={() => sincronizarPortal(p.id, ["tokko","kiteprop"])} disabled={enSync}>
                       {enSync ? "..." : "↑ Ambos"}
                     </button>
+                    {(p.fotos ?? []).some((f: string) => !f.includes("supabase.co")) && (
+                      <button className="cart-acc-btn" onClick={() => repararFotos(p.id)} disabled={reparando === p.id}
+                        title="Re-subir fotos importadas al storage propio (arregla fotos que no cargan)"
+                        style={{background:"rgba(245,158,11,0.08)",border:"1px solid rgba(245,158,11,0.2)",color:"#f59e0b"}}>
+                        {reparando === p.id ? "..." : "🔧 Fotos"}
+                      </button>
+                    )}
                     <button className="cart-acc-btn cart-acc-eliminar" onClick={() => eliminar(p.id)}>Eliminar</button>
                   </div>
                 </div>
