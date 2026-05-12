@@ -26,12 +26,6 @@ export async function GET(req: NextRequest) {
     .from("cartera_propiedades")
     .select("id", { count: "exact", head: true });
 
-  // Verificar si RLS está habilitado en cartera_propiedades
-  const { data: rls } = await supabaseAdmin
-    .rpc("pg_catalog.has_table_privilege", { table_name: "cartera_propiedades", privilege: "SELECT" })
-    .maybeSingle()
-    .catch(() => ({ data: null }));
-
   return NextResponse.json({
     auth_uid: user.id,
     filas_del_usuario: filas ?? [],
