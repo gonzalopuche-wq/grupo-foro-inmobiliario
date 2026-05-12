@@ -9,10 +9,11 @@ interface Sponsor {
   tipo: string; suscripcion_estado: string | null; suscripcion_vencimiento: string | null;
   monto_mensual_usd: number | null; logo_url: string | null; sitio_web: string | null;
   descripcion: string | null; destacado: boolean; activo: boolean; created_at: string;
+  beneficio: string | null;
 }
 
 const RUBROS = ["Electricista","Plomero","Gasista","Pintor","Carpintero","Albañil","Arquitecto","Ingeniero","Escribano","Abogado","Contador","Tasador","Fotógrafo","Marketing / Publicidad","Informática / Tecnología","Mudanza","Cerrajero","Seguros","Financiero / Inversiones","Otro"];
-const FORM_VACIO = { nombre:"", rubro:"", telefono:"", email:"", zona:"", notas:"", nota_admin:"", logo_url:"", sitio_web:"", descripcion:"", monto_mensual_usd:"", suscripcion_vencimiento:"", destacado: false };
+const FORM_VACIO = { nombre:"", rubro:"", telefono:"", email:"", zona:"", notas:"", nota_admin:"", logo_url:"", sitio_web:"", descripcion:"", beneficio:"", monto_mensual_usd:"", suscripcion_vencimiento:"", destacado: false };
 
 export default function AdminSponsorsPage() {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
@@ -59,7 +60,7 @@ export default function AdminSponsorsPage() {
     setForm({
       nombre: s.nombre, rubro: s.rubro, telefono: s.telefono ?? "", email: s.email ?? "",
       zona: s.zona ?? "", notas: s.notas ?? "", nota_admin: s.nota_admin ?? "",
-      logo_url: s.logo_url ?? "", sitio_web: s.sitio_web ?? "", descripcion: s.descripcion ?? "",
+      logo_url: s.logo_url ?? "", sitio_web: s.sitio_web ?? "", descripcion: s.descripcion ?? "", beneficio: s.beneficio ?? "",
       monto_mensual_usd: s.monto_mensual_usd?.toString() ?? "",
       suscripcion_vencimiento: s.suscripcion_vencimiento ?? "",
       destacado: s.destacado,
@@ -78,6 +79,7 @@ export default function AdminSponsorsPage() {
       nota_admin: form.nota_admin || null,
       logo_url: form.logo_url || null, sitio_web: form.sitio_web || null,
       descripcion: form.descripcion || null,
+      beneficio: form.beneficio || null,
       monto_mensual_usd: form.monto_mensual_usd ? parseInt(form.monto_mensual_usd) : null,
       suscripcion_vencimiento: form.suscripcion_vencimiento || null,
       destacado: form.destacado,
@@ -165,6 +167,8 @@ export default function AdminSponsorsPage() {
         .sp-meta-item{font-size:11px;color:rgba(255,255,255,0.4)}
         .sp-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6;margin-top:6px;font-style:italic}
         .sp-nota-admin{font-size:11px;color:rgba(245,158,11,0.6);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:6px 10px;margin-top:6px}
+        .sp-beneficio{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,0.65);background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.2);border-radius:4px;padding:6px 10px;margin-top:6px;line-height:1.5}
+        .sp-beneficio strong{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#cc0000;margin-right:4px;flex-shrink:0}
         .sp-acciones{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
         .sp-btn{padding:6px 12px;border-radius:3px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;white-space:nowrap;border:1px solid}
         .sp-btn-editar{background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.5)}
@@ -259,6 +263,7 @@ export default function AdminSponsorsPage() {
                       {s.sitio_web && <a href={s.sitio_web} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"#cc0000",textDecoration:"none"}}>🌐 {s.sitio_web.replace(/https?:\/\//,"")}</a>}
                     </div>
                     {s.descripcion && <div className="sp-desc">"{s.descripcion}"</div>}
+                    {s.beneficio && <div className="sp-beneficio"><strong>🎁 Beneficio GFI®</strong>{s.beneficio}</div>}
                     {s.nota_admin && <div className="sp-nota-admin">📝 {s.nota_admin}</div>}
                     {s.suscripcion_vencimiento && (
                       <div style={{marginTop:6}}>
@@ -290,6 +295,7 @@ export default function AdminSponsorsPage() {
               <div className="field full"><label>Nombre / Empresa *</label><input placeholder="Ej: Seguros del Sur" value={form.nombre} onChange={e=>setForm(f=>({...f,nombre:e.target.value}))}/></div>
               <div className="field full"><label>Rubro *</label><select value={form.rubro} onChange={e=>setForm(f=>({...f,rubro:e.target.value}))}><option value="">Seleccioná el rubro</option>{RUBROS.map(r=><option key={r} value={r}>{r}</option>)}</select></div>
               <div className="field full"><label>Descripción (visible en el directorio)</label><textarea placeholder="Breve presentación del sponsor..." value={form.descripcion} onChange={e=>setForm(f=>({...f,descripcion:e.target.value}))}/></div>
+              <div className="field full"><label>Beneficio exclusivo para corredores GFI® 🎁</label><textarea placeholder="Ej: 10% de descuento en seguros para corredores GFI® — presentá tu matrícula al contratar" value={form.beneficio} onChange={e=>setForm(f=>({...f,beneficio:e.target.value}))} style={{minHeight:64}}/></div>
               <div className="field"><label>Teléfono / WhatsApp</label><input placeholder="3412345678" value={form.telefono} onChange={e=>setForm(f=>({...f,telefono:e.target.value}))}/></div>
               <div className="field"><label>Email</label><input type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/></div>
               <div className="field full"><label>Sitio web</label><input placeholder="https://..." value={form.sitio_web} onChange={e=>setForm(f=>({...f,sitio_web:e.target.value}))}/></div>

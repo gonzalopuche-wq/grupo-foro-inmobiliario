@@ -9,7 +9,7 @@ interface Proveedor {
   referenciado_por: string;
   tipo: string; suscripcion_estado: string | null; suscripcion_vencimiento: string | null;
   monto_mensual_usd: number | null; logo_url: string | null; sitio_web: string | null;
-  descripcion: string | null; destacado: boolean;
+  descripcion: string | null; destacado: boolean; beneficio: string | null;
   perfiles?: { nombre: string; apellido: string; matricula: string | null };
   resenas?: Resena[]; total_resenas?: number; resenas_negativas?: number;
 }
@@ -231,6 +231,11 @@ export default function ProveedoresPage() {
         .pv-sponsor-venc{font-size:10px;color:rgba(255,255,255,0.25);font-family:'Inter',sans-serif}
         .pv-sponsor-venc.pronto{color:#f59e0b}
         .pv-destacado-star{color:#eab308;font-size:14px}
+        .pv-sponsor-beneficio{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.2);border-radius:5px;margin-top:8px;margin-bottom:4px}
+        .pv-sponsor-beneficio-icon{font-size:15px;flex-shrink:0;line-height:1.4}
+        .pv-sponsor-beneficio-body{display:flex;flex-direction:column;gap:2px}
+        .pv-sponsor-beneficio-label{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#cc0000}
+        .pv-sponsor-beneficio-texto{font-size:12px;color:rgba(255,255,255,0.75);line-height:1.5}
       `}</style>
 
       <div className="pv-wrap">
@@ -275,6 +280,15 @@ export default function ProveedoresPage() {
                           <span className="pv-rubro-badge">{p.rubro}</span>
                         </div>
                         {p.descripcion && <p className="pv-sponsor-desc">{p.descripcion}</p>}
+                        {p.beneficio && (
+                          <div className="pv-sponsor-beneficio">
+                            <span className="pv-sponsor-beneficio-icon">🎁</span>
+                            <div className="pv-sponsor-beneficio-body">
+                              <span className="pv-sponsor-beneficio-label">Beneficio exclusivo para corredores GFI®</span>
+                              <span className="pv-sponsor-beneficio-texto">{p.beneficio}</span>
+                            </div>
+                          </div>
+                        )}
                         <div className="pv-sponsor-actions">
                           {p.sitio_web && <a href={p.sitio_web} target="_blank" rel="noopener noreferrer" className="pv-sponsor-web">🌐 Visitar sitio</a>}
                           {p.telefono && <a className="pv-btn-wa" href={`https://wa.me/54${p.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer">📱 WhatsApp</a>}
