@@ -311,14 +311,19 @@ export default function CarteraPage() {
 
   const cargar = async (uid: string) => {
     setLoading(true);
-    const { data, error } = await supabase.from("cartera_propiedades").select("*").eq("perfil_id", uid).order("updated_at", { ascending: false });
-    if (error) {
-      console.error("cartera cargar error:", error);
-      alert("Error al cargar la cartera: " + error.message + "\n\nCódigo: " + error.code);
+    // Usar API con service role para bypasear cualquier problema de RLS
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch("/api/cartera/listar", {
+      headers: { "Authorization": `Bearer ${session?.access_token}` },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert("Error al cargar la cartera: " + (err.error ?? res.statusText));
       setLoading(false);
       return;
     }
-    const props = (data as Propiedad[]) ?? [];
+    const { props: propsData } = await res.json();
+    const props = (propsData as Propiedad[]) ?? [];
     setPropiedades(props);
     if (props.length > 0) {
       const { data: syncs } = await supabase.from("cartera_sync_portales").select("*").in("propiedad_id", props.map(p => p.id));
@@ -610,14 +615,19 @@ export default function CarteraPage() {
     [...AMBIENTES_LIST, ...COMODIDADES_LIST].forEach(({ key }) => { datos[key] = !!form[key]; });
 
     let propId = editandoId;
-    if (editandoId) {
-      const { error: errUpd } = await supabase.from("cartera_propiedades").update(datos).eq("id", editandoId);
-      if (errUpd) { setGuardando(false); alert("Error al guardar: " + errUpd.message); return; }
-    } else {
-      const { data: nueva, error: errIns } = await supabase.from("cartera_propiedades").insert(datos).select("id").single();
-      if (errIns) { setGuardando(false); alert("Error al guardar: " + errIns.message); return; }
-      propId = nueva?.id ?? null;
+    const { data: { session } } = await supabase.auth.getSession();
+    const resGuardar = await fetch("/api/cartera/guardar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ datos, editandoId }),
+    });
+    const resJson = await resGuardar.json();
+    if (!resGuardar.ok || !resJson.ok) {
+      setGuardando(false);
+      alert("Error al guardar: " + (resJson.error ?? "Error desconocido") + (resJson.code ? `\nCódigo: ${resJson.code}` : ""));
+      return;
     }
+    propId = resJson.propId ?? propId;
 
     if (propId) {
       const todasFotos = await subirFotos(propId);
