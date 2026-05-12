@@ -7,6 +7,9 @@ interface Proveedor {
   id: string; nombre: string; rubro: string; telefono: string | null; email: string | null;
   zona: string | null; notas: string | null; activo: boolean; created_at: string;
   referenciado_por: string;
+  tipo: string; suscripcion_estado: string | null; suscripcion_vencimiento: string | null;
+  monto_mensual_usd: number | null; logo_url: string | null; sitio_web: string | null;
+  descripcion: string | null; destacado: boolean;
   perfiles?: { nombre: string; apellido: string; matricula: string | null };
   resenas?: Resena[]; total_resenas?: number; resenas_negativas?: number;
 }
@@ -109,7 +112,11 @@ export default function ProveedoresPage() {
     if (busqueda.trim()) { const q = busqueda.toLowerCase(); return p.nombre.toLowerCase().includes(q) || p.rubro.toLowerCase().includes(q) || p.zona?.toLowerCase().includes(q) || p.notas?.toLowerCase().includes(q) || `${p.perfiles?.nombre} ${p.perfiles?.apellido}`.toLowerCase().includes(q); }
     return true;
   });
+  const sponsors = filtrados.filter(p => p.tipo === "sponsor" && p.suscripcion_estado === "activa");
+  const regulares = filtrados.filter(p => !(p.tipo === "sponsor" && p.suscripcion_estado === "activa"));
+
   const ff = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric" });
+  const diasHasta = (fecha: string) => Math.ceil((new Date(fecha).getTime() - Date.now()) / 86400000);
 
   return (
     <>
@@ -204,6 +211,26 @@ export default function ProveedoresPage() {
         .toast.err{background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.35);color:#ff6666}
         @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:600px){.pv-card-main{flex-direction:column}.pv-card-right{flex-direction:row;align-items:center;flex-wrap:wrap}.modal-grid{grid-template-columns:1fr}.modal-grid .full{grid-column:1}}
+        .pv-seccion-label{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+        .pv-seccion-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.07)}
+        .pv-sponsors-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+        .pv-sponsor-card{background:rgba(14,14,14,0.98);border:1px solid rgba(200,0,0,0.25);border-radius:8px;overflow:hidden;transition:border-color 0.2s;position:relative}
+        .pv-sponsor-card:hover{border-color:rgba(200,0,0,0.5)}
+        .pv-sponsor-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#cc0000 40%,transparent)}
+        .pv-sponsor-inner{padding:18px 20px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+        .pv-sponsor-logo{width:56px;height:56px;border-radius:8px;object-fit:cover;background:rgba(255,255,255,0.05);flex-shrink:0;border:1px solid rgba(255,255,255,0.08)}
+        .pv-sponsor-logo-placeholder{width:56px;height:56px;border-radius:8px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+        .pv-sponsor-body{flex:1;min-width:0}
+        .pv-sponsor-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+        .pv-sponsor-nombre{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff}
+        .pv-sponsor-badge{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.4);color:#cc0000}
+        .pv-sponsor-desc{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:10px}
+        .pv-sponsor-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+        .pv-sponsor-web{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.3);border-radius:4px;color:#cc0000;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-decoration:none;text-transform:uppercase;transition:all 0.2s;white-space:nowrap}
+        .pv-sponsor-web:hover{background:rgba(200,0,0,0.2)}
+        .pv-sponsor-venc{font-size:10px;color:rgba(255,255,255,0.25);font-family:'Inter',sans-serif}
+        .pv-sponsor-venc.pronto{color:#f59e0b}
+        .pv-destacado-star{color:#eab308;font-size:14px}
       `}</style>
 
       <div className="pv-wrap">
@@ -228,8 +255,42 @@ export default function ProveedoresPage() {
 
         {loading ? <div className="pv-spinner"><div className="pv-spin"/></div>
          : filtrados.length === 0 ? <div className="pv-empty">{proveedores.length === 0 ? "Todavía no hay proveedores. ¡Sé el primero en agregar uno!" : "No hay proveedores con ese filtro."}</div>
-         : <div className="pv-grid">
-          {filtrados.map(p => {
+         : <>
+          {sponsors.length > 0 && <>
+            <div className="pv-seccion-label">Sponsors GFI®</div>
+            <div className="pv-sponsors-grid">
+              {sponsors.map(p => {
+                const dias = p.suscripcion_vencimiento ? diasHasta(p.suscripcion_vencimiento) : null;
+                return (
+                  <div key={p.id} className="pv-sponsor-card">
+                    <div className="pv-sponsor-inner">
+                      {p.logo_url
+                        ? <img src={p.logo_url} alt={p.nombre} className="pv-sponsor-logo" />
+                        : <div className="pv-sponsor-logo-placeholder">🏢</div>}
+                      <div className="pv-sponsor-body">
+                        <div className="pv-sponsor-top">
+                          {p.destacado && <span className="pv-destacado-star">★</span>}
+                          <span className="pv-sponsor-nombre">{p.nombre}</span>
+                          <span className="pv-sponsor-badge">Sponsor GFI®</span>
+                          <span className="pv-rubro-badge">{p.rubro}</span>
+                        </div>
+                        {p.descripcion && <p className="pv-sponsor-desc">{p.descripcion}</p>}
+                        <div className="pv-sponsor-actions">
+                          {p.sitio_web && <a href={p.sitio_web} target="_blank" rel="noopener noreferrer" className="pv-sponsor-web">🌐 Visitar sitio</a>}
+                          {p.telefono && <a className="pv-btn-wa" href={`https://wa.me/54${p.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer">📱 WhatsApp</a>}
+                          {p.email && <span className="pv-meta-item" style={{fontSize:11}}>✉️ {p.email}</span>}
+                          {dias !== null && <span className={`pv-sponsor-venc${dias <= 15 ? " pronto" : ""}`}>Vigente hasta {ff(p.suscripcion_vencimiento!)}{dias <= 15 ? ` · ${dias}d` : ""}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>}
+          {regulares.length > 0 && sponsors.length > 0 && <div className="pv-seccion-label">Red de proveedores</div>}
+          <div className="pv-grid">
+          {regulares.map(p => {
             const abierto = expandido === p.id;
             const positivas = (p.resenas ?? []).filter(r => r.positiva).length;
             const negativas = p.resenas_negativas ?? 0;
@@ -293,7 +354,8 @@ export default function ProveedoresPage() {
               </div>
             );
           })}
-        </div>}
+          </div>
+        </>}
       </div>
 
       {mostrarForm && (
