@@ -334,19 +334,26 @@ export default function CarteraPage() {
     if (fotosNuevas.length === 0) return fotosExistentes;
     setSubiendoFotos(true);
     const urls = [...fotosExistentes];
+    let errores = 0;
     for (let i = 0; i < fotosNuevas.length; i++) {
       const file = fotosNuevas[i];
-      const ext = file.name.split(".").pop();
+      const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
       const path = `${userId}/${propId}/${Date.now()}_${i}.${ext}`;
       const { data, error } = await supabase.storage.from("fotos_cartera").upload(path, file, { cacheControl: "3600", upsert: false });
       if (!error && data) {
         const { data: urlData } = supabase.storage.from("fotos_cartera").getPublicUrl(data.path);
         urls.push(urlData.publicUrl);
+      } else {
+        errores++;
+        console.error("Error subiendo foto:", error?.message);
       }
       setProgresoFotos(Math.round(((i + 1) / fotosNuevas.length) * 100));
     }
     setSubiendoFotos(false);
     setProgresoFotos(0);
+    if (errores > 0) {
+      alert(`No se pudieron subir ${errores} foto(s). Verificá que el bucket "fotos_cartera" exista y tenga permisos en Supabase Storage.`);
+    }
     return urls;
   };
 
