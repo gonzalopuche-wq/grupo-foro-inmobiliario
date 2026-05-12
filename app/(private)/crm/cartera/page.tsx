@@ -605,9 +605,11 @@ export default function CarteraPage() {
 
     let propId = editandoId;
     if (editandoId) {
-      await supabase.from("cartera_propiedades").update(datos).eq("id", editandoId);
+      const { error: errUpd } = await supabase.from("cartera_propiedades").update(datos).eq("id", editandoId);
+      if (errUpd) { setGuardando(false); alert("Error al guardar: " + errUpd.message); return; }
     } else {
-      const { data: nueva } = await supabase.from("cartera_propiedades").insert(datos).select("id").single();
+      const { data: nueva, error: errIns } = await supabase.from("cartera_propiedades").insert(datos).select("id").single();
+      if (errIns) { setGuardando(false); alert("Error al guardar: " + errIns.message); return; }
       propId = nueva?.id ?? null;
     }
 
