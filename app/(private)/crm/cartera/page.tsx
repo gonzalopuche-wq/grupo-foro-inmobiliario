@@ -948,6 +948,12 @@ export default function CarteraPage() {
             <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setTabImport("url"); }}>↓ Importar</button>
             <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => userId && window.open(`/api/cartera/export-csv?perfil_id=${userId}`, "_blank")}>↑ Exportar CSV</button>
             <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
+            <button style={{ padding: "7px 14px", background: "rgba(255,165,0,0.08)", border: "1px solid rgba(255,165,0,0.2)", borderRadius: 4, color: "rgba(255,165,0,0.8)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => {
+              const { data: { session } } = await supabase.auth.getSession();
+              const res = await fetch("/api/cartera/diagnostico", { headers: { "Authorization": `Bearer ${session?.access_token}` } });
+              const d = await res.json();
+              alert(`🔍 DIAGNÓSTICO CARTERA\n\nTu ID: ${d.auth_uid}\nPropiedades tuyas en DB: ${d.cantidad_usuario}\nTotal en tabla: ${d.total_en_tabla}\nError: ${d.error_filas ?? "ninguno"}\n\nÚltimas guardadas:\n${(d.filas_del_usuario ?? []).map((f: any) => `• ${f.titulo}`).join("\n") || "(vacío)"}`);
+            }}>🔍 Diagnóstico</button>
           </div>
         </div>
 
