@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
-export const maxDuration = 20;
+export const maxDuration = 45;
 
 const HEADERS = {
   "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -249,6 +249,32 @@ async function scrapeGenerico(url: string, portal: string) {
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 
+// Descarga fotos externas y las sube a Supabase storage para evitar hotlink blocking
+async function proxearFotos(urls: string[], supabase: any, userId: string): Promise<string[]> {
+  const result: string[] = [];
+  for (let i = 0; i < Math.min(urls.length, 15); i++) {
+    const url = urls[i];
+    try {
+      const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(8000) });
+      if (!res.ok) { result.push(url); continue; }
+      const buffer = await res.arrayBuffer();
+      const ct = res.headers.get("content-type") || "image/jpeg";
+      const ext = ct.includes("png") ? "png" : ct.includes("webp") ? "webp" : "jpg";
+      const path = `imports/${userId}/${Date.now()}_${i}.${ext}`;
+      const { data, error } = await supabase.storage.from("fotos_cartera").upload(path, buffer, { contentType: ct, upsert: false });
+      if (!error && data) {
+        const { data: urlData } = supabase.storage.from("fotos_cartera").getPublicUrl(data.path);
+        result.push(urlData.publicUrl);
+      } else {
+        result.push(url); // fallback a URL externa si falla el upload
+      }
+    } catch {
+      result.push(url);
+    }
+  }
+  return result;
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Autenticación
@@ -276,6 +302,11 @@ export async function POST(req: NextRequest) {
       case "argenprop": data = await scrapeArgenprop(url); break;
       case "mercadolibre": data = await scrapeMercadoLibre(url); break;
       default: data = await scrapeGenerico(url, portal);
+    }
+
+    // Re-subir fotos al storage propio para evitar hotlink blocking de portales
+    if (data.fotos && data.fotos.length > 0) {
+      data.fotos = await proxearFotos(data.fotos, supabase, user.id);
     }
 
     return NextResponse.json({ ok: true, data });
