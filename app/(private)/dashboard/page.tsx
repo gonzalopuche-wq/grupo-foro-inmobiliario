@@ -73,7 +73,7 @@ export default function DashboardPage() {
   const [iclData, setIclData] = useState<{ acum: Acum; periodo: string; loading: boolean }>({ acum: { mensual: null, trimestral: null, cuatrimestral: null, semestral: null }, periodo: "", loading: true });
   const [ipcData, setIpcData] = useState<{ acum: Acum; periodo: string; loading: boolean }>({ acum: { mensual: null, trimestral: null, cuatrimestral: null, semestral: null }, periodo: "", loading: true });
   const [jus, setJus] = useState<{ valor: string; loading: boolean }>({ valor: "", loading: true });
-  const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0, miembros: 0 });
+  const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0, miembros: 0, enLinea: 0 });
   const [miStats, setMiStats] = useState({ cartera: 0, crm: 0, leads: 0, loadingMi: true });
   const [matchesRecientes, setMatchesRecientes] = useState<{ id: string; created_at: string }[]>([]);
   const [proximosEventos, setProximosEventos] = useState<{ id: string; titulo: string; fecha: string; tipo: string; gratuito: boolean }[]>([]);
@@ -143,14 +143,19 @@ export default function DashboardPage() {
   }, []);
 
   const cargarDashboardCompleto = async (uid: string) => {
+    // Marcar usuario como en línea
+    supabase.from("perfiles").update({ ultimo_acceso: new Date().toISOString() }).eq("id", uid).then(() => {});
+
     // Stats de plataforma
-    const [b, o, m, p] = await Promise.all([
+    const quinceMinsAtras = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+    const [b, o, m, p, en] = await Promise.all([
       supabase.from("mir_busquedas").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_ofrecidos").select("id", { count: "exact", head: true }).eq("activo", true),
       supabase.from("mir_matches").select("id", { count: "exact", head: true }),
       supabase.from("perfiles").select("id", { count: "exact", head: true }).eq("estado", "activo"),
+      supabase.from("perfiles").select("id", { count: "exact", head: true }).gte("ultimo_acceso", quinceMinsAtras),
     ]);
-    setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0, miembros: p.count ?? 0 });
+    setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0, miembros: p.count ?? 0, enLinea: en.count ?? 0 });
 
     // Stats personales del corredor
     const [cartera, crm, leads] = await Promise.all([
@@ -416,7 +421,6 @@ export default function DashboardPage() {
           [stats.busquedas.toString(),"Búsquedas activas","🔍"],
           [stats.ofrecidos.toString(),"Ofrecidos activos","🏠"],
           [stats.matches.toString(),"Matches totales","🔗"],
-          [stats.miembros.toString(),"Miembros activos","👥"]
         ].map(([n,l,ic],i) => (
           <div key={i} style={{flex:1,minWidth:120,padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderRight:"1px solid rgba(255,255,255,0.06)"}}>
             <span style={{fontSize:22,flexShrink:0}}>{ic}</span>
@@ -426,6 +430,18 @@ export default function DashboardPage() {
             </div>
           </div>
         ))}
+        {/* Miembros: activos + en línea */}
+        <div style={{flex:1,minWidth:120,padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderRight:"1px solid rgba(255,255,255,0.06)"}}>
+          <span style={{fontSize:22,flexShrink:0}}>👥</span>
+          <div>
+            <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:24,fontWeight:800,color:"#cc0000",lineHeight:1}}>{stats.miembros}</div>
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:3,fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>Miembros activos</div>
+            <div style={{display:"flex",alignItems:"center",gap:4,marginTop:4}}>
+              <span style={{width:6,height:6,borderRadius:"50%",background:"#22c55e",flexShrink:0,boxShadow:"0 0 4px #22c55e"}} />
+              <span style={{fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,color:"#22c55e"}}>{stats.enLinea} en línea</span>
+            </div>
+          </div>
+        </div>
         <div style={{padding:"14px 20px",display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
           <div>
             <div style={{fontSize:8,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:"rgba(255,255,255,0.2)",marginBottom:3}}>Hoy en GFI®</div>
