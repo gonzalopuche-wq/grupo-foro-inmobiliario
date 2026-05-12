@@ -279,6 +279,7 @@ export default function CarteraPage() {
   const [smartMatches, setSmartMatches] = useState<{id:string;nombre:string;compatibilidad:number;razon:string;telefono?:string}[]>([]);
   const [smartPropTitulo, setSmartPropTitulo] = useState("");
   const [mostrarSmartMatch, setMostrarSmartMatch] = useState(false);
+  const [toastGuardado, setToastGuardado] = useState("");
 
   useEffect(() => {
     const init = async () => {
@@ -465,24 +466,33 @@ export default function CarteraPage() {
   };
 
   const cargarArchivo = async (file: File) => {
-    setXlsxNombre(file.name);
     setCsvTexto("");
     setImportError("");
     setImportResult(null);
+    setXlsxNombre(file.name);
     try {
       if (file.name.toLowerCase().endsWith(".csv")) {
         const text = await file.text();
+        if (!text.trim()) throw new Error("El archivo CSV está vacío");
         setCsvTexto(text);
       } else {
-        const XLSX = await import("xlsx");
+        let XLSX: any;
+        try {
+          XLSX = await import("xlsx");
+        } catch {
+          throw new Error("No se pudo cargar el lector de Excel. Exportá el archivo como .csv e intentá de nuevo.");
+        }
         const buf = await file.arrayBuffer();
         const wb = XLSX.read(buf, { type: "array" });
+        if (!wb.SheetNames.length) throw new Error("El archivo Excel no tiene hojas");
         const ws = wb.Sheets[wb.SheetNames[0]];
         const csv = XLSX.utils.sheet_to_csv(ws, { FS: "," });
+        if (!csv.trim()) throw new Error("La primera hoja del Excel está vacía");
         setCsvTexto(csv);
       }
     } catch (e: any) {
-      setImportError(`Error al leer el archivo: ${e.message}`);
+      setXlsxNombre(""); // resetear para mostrar el input de archivo de nuevo
+      setImportError(e.message || "Error al leer el archivo");
     }
   };
 
@@ -660,6 +670,8 @@ export default function CarteraPage() {
     }
 
     setGuardando(false); setMostrarWizard(false); setFotosNuevas([]);
+    setToastGuardado(editandoId ? "✓ Propiedad actualizada" : "✓ Propiedad guardada");
+    setTimeout(() => setToastGuardado(""), 4000);
     if (userId) cargar(userId);
 
     // Smart Prospecting: si es propiedad nueva, buscar contactos que coincidan
@@ -983,6 +995,12 @@ export default function CarteraPage() {
         .cart-spinner { display: inline-block; width: 9px; height: 9px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
+
+      {toastGuardado && (
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#22c55e", color: "#fff", padding: "12px 24px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.4)" }}>
+          {toastGuardado}
+        </div>
+      )}
 
       <div className="cart-root">
 
