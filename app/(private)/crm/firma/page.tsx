@@ -42,7 +42,7 @@ export default function FirmaDigitalPage() {
     ]);
     setNegocios((neg ?? []) as Negocio[]);
     setContactos((con ?? []) as Contacto[]);
-    setFirmas((fir ?? []) as Firma[]);
+    setFirmas((fir ?? []) as unknown as Firma[]);
   };
 
   useEffect(() => {
