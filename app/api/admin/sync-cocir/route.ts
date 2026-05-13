@@ -101,7 +101,10 @@ async function fetchPagina(url: string): Promise<string | null> {
 }
 
 export async function GET(req: NextRequest) {
-  // Allow both admin manual trigger and cron (no extra auth needed — admin route is already restricted by being in /api/admin/)
+  const authHeader = req.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
   try {
     // --- Fetch page 1 ---
     const html1 = await fetchPagina(BASE_URL);
@@ -204,14 +207,7 @@ export async function GET(req: NextRequest) {
         for (const campo of CAMPOS_CONOCIDOS) {
           const newVal = reg[campo];
           if (!newVal) continue;
-          if (campo === "estado") {
-            // Always refresh estado
-            if (existente.estado !== newVal) {
-              update[campo] = newVal;
-              hayCambios = true;
-            }
-          } else if (!existente[campo]) {
-            // Fill in empty fields
+          if (existente[campo] !== newVal) {
             update[campo] = newVal;
             hayCambios = true;
           }
@@ -232,12 +228,9 @@ export async function GET(req: NextRequest) {
       if (error) return NextResponse.json({ ok: false, error: error.message });
     }
 
-    // Batch updates in parallel (5 at a time)
-    for (let i = 0; i < actualizaciones.length; i += 50) {
-      const lote = actualizaciones.slice(i, i + 50);
-      await Promise.all(lote.map(({ id, ...campos }) =>
-        sb.from("cocir_padron").update(campos).eq("id", id)
-      ));
+    for (let i = 0; i < actualizaciones.length; i += LOTE) {
+      const { error } = await sb.from("cocir_padron").upsert(actualizaciones.slice(i, i + LOTE));
+      if (error) return NextResponse.json({ ok: false, error: error.message });
     }
 
     return NextResponse.json({

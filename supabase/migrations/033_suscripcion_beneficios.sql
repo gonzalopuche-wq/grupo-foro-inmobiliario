@@ -17,4 +17,8 @@ create index if not exists idx_sb_perfil on suscripcion_beneficios(perfil_id);
 
 alter table suscripcion_beneficios enable row level security;
 
-create policy sb_all on suscripcion_beneficios for all to authenticated using (true) with check (true);
+create policy sb_admin on suscripcion_beneficios
+  for all using (exists (select 1 from perfiles where id = auth.uid() and tipo = 'admin'));
+
+create policy sb_corredor on suscripcion_beneficios
+  for select using (perfil_id = auth.uid());

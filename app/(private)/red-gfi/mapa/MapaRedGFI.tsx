@@ -48,7 +48,7 @@ async function geocodeInterseccion(calle1: string, calle2: string, ciudad: strin
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=ar`,
-      { headers: { 'Accept-Language': 'es' } }
+      { headers: { 'Accept-Language': 'es', 'User-Agent': 'GrupoForoInmobiliario/1.0' } }
     )
     const data = await res.json()
     if (data[0]) return [parseFloat(data[0].lat), parseFloat(data[0].lon)]
@@ -117,10 +117,25 @@ export default function MapaRedGFI() {
     setBoundsActivos(m.getBounds())
   }, [])
 
-  const buscarEnZona = () => {
+  const buscarEnZona = async () => {
     if (!mapInstance) return
-    setBoundsActivos(mapInstance.getBounds())
+    const bounds = mapInstance.getBounds()
+    setBoundsActivos(bounds)
     setHaMovido(false)
+    setCargando(true)
+    const { data } = await supabase
+      .from('mir_ofrecidos')
+      .select('id,operacion,tipo_propiedad,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,superficie_total,descripcion,fotos,latitud,longitud,honorario_compartir')
+      .eq('activo', true)
+      .not('latitud', 'is', null)
+      .gte('latitud', bounds.getSouth())
+      .lte('latitud', bounds.getNorth())
+      .gte('longitud', bounds.getWest())
+      .lte('longitud', bounds.getEast())
+      .order('created_at', { ascending: false })
+      .limit(500)
+    setProps((data as PropMapa[]) ?? [])
+    setCargando(false)
   }
 
   const buscarPorCuadrante = async () => {
