@@ -27,9 +27,11 @@ function extraerJus(html: string): number | null {
   // Buscar valores monetarios en los 2000 chars alrededor del texto "jus"
   const ventana = html.slice(Math.max(0, posJus - 800), posJus + 1200);
   const patrones = [
-    /\$\s*([\d]{1,3}(?:\.\d{3})*,\d{2})/g,  // $ 12.345,67
-    /\$\s*([\d]{1,3}(?:\.\d{3})+)/g,          // $ 12.345
-    /\$\s*(\d{4,6})/g,                         // $ 12345
+    /\$\s*([\d]{1,3}(?:\.\d{3})*,\d{2})/g,   // $ 12.345,67
+    /\$\s*([\d]{1,3}(?:\.\d{3})+)/g,           // $ 12.345
+    /\$\s*(\d{4,6})/g,                          // $ 12345
+    /([\d]{1,3}(?:\.\d{3})*,\d{2})/g,          // 12.345,67 (sin $)
+    /([\d]{2,3}\.\d{3})/g,                      // 12.345 (sin $)
   ];
 
   let mejor: number | null = null;
@@ -67,7 +69,7 @@ export async function GET(req: NextRequest) {
   if (!url) {
     return NextResponse.json({
       ok: false,
-      error: "URL del JUS no configurada. Ingresá la URL de COCIR en Configuración del Sitio → JUS.",
+      error: "URL del JUS no configurada. Ingresá la URL de Caja Forense en Configuración del Sitio → JUS.",
     });
   }
 
@@ -94,7 +96,7 @@ export async function GET(req: NextRequest) {
   }
 
   const { error } = await sb.from("indicadores").upsert(
-    { clave: "valor_jus", valor, descripcion: "Valor JUS COCIR 2da Circ.", actualizado_at: new Date().toISOString() },
+    { clave: "valor_jus", valor, descripcion: "Valor JUS Caja Forense", actualizado_at: new Date().toISOString() },
     { onConflict: "clave" }
   );
 
