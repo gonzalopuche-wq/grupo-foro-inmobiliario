@@ -77,6 +77,15 @@ export default function RedGFIPage() {
   const [filtroCiudad, setFiltroCiudad] = useState("");
   const [filtroDorm, setFiltroDorm] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [copiado, setCopiado] = useState<string | null>(null);
+
+  const copiarFicha = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/red-gfi/ficha/${id}`;
+    navigator.clipboard.writeText(url);
+    setCopiado(id);
+    setTimeout(() => setCopiado(null), 2000);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -186,7 +195,10 @@ export default function RedGFIPage() {
         .rgfi-contact-btn { padding:8px 16px; border-radius:6px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; text-decoration:none; letter-spacing:0.04em; display:inline-block; }
         .rgfi-contact-btn-wa { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#22c55e; }
         .rgfi-contact-btn-mail { background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.2); color:#60a5fa; }
+        .rgfi-contact-btn-ficha { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.7); }
         .rgfi-honor-badge { background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.2); border-radius:4px; padding:4px 10px; font-size:10px; font-family:'Montserrat',sans-serif; color:rgba(234,179,8,0.8); font-weight:700; }
+        .rgfi-ficha-btn { margin-top:10px; width:100%; padding:8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:6px; color:rgba(255,255,255,0.4); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.06em; cursor:pointer; transition:background 0.15s,color 0.15s; text-align:center; text-decoration:none; display:block; }
+        .rgfi-ficha-btn:hover { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7); }
         .rgfi-empty { text-align:center; padding:60px 20px; color:rgba(255,255,255,0.2); font-family:'Inter',sans-serif; }
         .rgfi-empty-ico { font-size:48px; margin-bottom:12px; }
         @media (max-width:700px) {
@@ -338,6 +350,15 @@ export default function RedGFIPage() {
                         </div>
                       </div>
                     )}
+                    <a
+                      href={`/red-gfi/ficha/${item.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rgfi-ficha-btn"
+                      onClick={e => e.stopPropagation()}
+                    >
+                      📄 Ver / Compartir ficha anónima
+                    </a>
                   </div>
                 </div>
               );
@@ -478,6 +499,31 @@ export default function RedGFIPage() {
                   </div>
                 </div>
               )}
+
+              {/* Ficha anónima */}
+              <div className="rgfi-detail-section">
+                <div className="rgfi-detail-section-title">Ficha para compartir</div>
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                  <a
+                    href={`/red-gfi/ficha/${selected.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rgfi-contact-btn rgfi-contact-btn-ficha"
+                  >
+                    📄 Ver ficha anónima
+                  </a>
+                  <button
+                    className="rgfi-contact-btn rgfi-contact-btn-ficha"
+                    style={{ cursor:"pointer" }}
+                    onClick={() => copiarFicha(selected.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                  >
+                    {copiado === selected.id ? "✓ Enlace copiado" : "🔗 Copiar enlace de ficha"}
+                  </button>
+                </div>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.2)", marginTop:8 }}>
+                  La ficha no revela datos de la inmobiliaria. Podés enviarla a cualquier colega de la red.
+                </div>
+              </div>
             </div>
           </div>
         </div>
