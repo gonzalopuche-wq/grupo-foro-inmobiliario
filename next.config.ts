@@ -30,7 +30,7 @@ const securityHeaders = [
       // Imágenes: propio + data URIs + servicios externos usados en GFI
       "img-src 'self' data: blob: https: http:",
       // Conexiones fetch/XHR/WebSocket
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://dolarapi.com https://argentinadatos.com https://api.openweathermap.org https://api.mercadolibre.com https://api.bcra.gob.ar https://apis.datos.gob.ar https://api.anthropic.com https://vercel.live https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://dolarapi.com https://argentinadatos.com https://api.openweathermap.org https://api.mercadolibre.com https://api.bcra.gob.ar https://apis.datos.gob.ar https://api.anthropic.com https://vercel.live https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://nominatim.openstreetmap.org",
       // Frames: Vercel preview + Google Calendar embed
       "frame-src 'self' https://vercel.live https://calendar.google.com",
       // Audio y video (blob: para preview local, supabase para reproducción post-envío)

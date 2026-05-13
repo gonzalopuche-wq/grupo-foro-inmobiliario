@@ -266,6 +266,12 @@ export default function RedGFIPage() {
               Limpiar
             </button>
           )}
+          <a
+            href="/red-gfi/mapa"
+            style={{ padding:"8px 14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.7)", fontFamily:"Montserrat,sans-serif", fontSize:11, fontWeight:700, textDecoration:"none", cursor:"pointer", whiteSpace:"nowrap" as const }}
+          >
+            🗺️ Buscar en mapa
+          </a>
         </div>
 
         {loading ? (
