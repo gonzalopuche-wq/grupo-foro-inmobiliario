@@ -51,6 +51,23 @@ interface CarteraItem {
   fotos: string[] | null
 }
 
+interface RedGFIItem {
+  id: string
+  operacion: string
+  tipo_propiedad: string
+  precio: number | null
+  moneda: string
+  ciudad: string
+  zona: string | null
+  dormitorios: number | null
+  banos: number | null
+  superficie_cubierta: number | null
+  superficie_total: number | null
+  descripcion: string | null
+  fotos: string[] | null
+  honorario_compartir: string | null
+}
+
 const fmtPrecio = (n?: number, m?: string) => {
   if (!n) return 'Sin precio'
   return `${m ?? 'USD'} ${n.toLocaleString('es-AR')}`
@@ -71,11 +88,15 @@ export default function ListaDetallePage() {
   const [importError, setImportError] = useState('')
   const [toast, setToast] = useState<string | null>(null)
   const [eliminandoId, setEliminandoId] = useState<string | null>(null)
-  const [modoAgregar, setModoAgregar] = useState<'url' | 'cartera' | null>(null)
+  const [modoAgregar, setModoAgregar] = useState<'url' | 'cartera' | 'redgfi' | null>(null)
   const [carteraItems, setCarteraItems] = useState<CarteraItem[]>([])
   const [carteraBusqueda, setCarteraBusqueda] = useState('')
   const [cargandoCartera, setCargandoCartera] = useState(false)
   const [agregandoCarteraId, setAgregandoCarteraId] = useState<string | null>(null)
+  const [redGFIItems, setRedGFIItems] = useState<RedGFIItem[]>([])
+  const [redGFIBusqueda, setRedGFIBusqueda] = useState('')
+  const [cargandoRedGFI, setCargandoRedGFI] = useState(false)
+  const [agregandoRedGFIId, setAgregandoRedGFIId] = useState<string | null>(null)
 
   const mostrarToast = (msg: string) => {
     setToast(msg)
@@ -237,6 +258,63 @@ export default function ListaDetallePage() {
     p.ciudad.toLowerCase().includes(carteraBusqueda.toLowerCase())
   )
 
+  const abrirRedGFI = async () => {
+    setModoAgregar('redgfi')
+    if (redGFIItems.length > 0) return
+    setCargandoRedGFI(true)
+    const { data } = await supabase
+      .from('mir_ofrecidos')
+      .select('id,operacion,tipo_propiedad,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,superficie_total,descripcion,fotos,honorario_compartir')
+      .eq('activo', true)
+      .order('created_at', { ascending: false })
+      .limit(200)
+    setRedGFIItems((data as RedGFIItem[]) ?? [])
+    setCargandoRedGFI(false)
+  }
+
+  const agregarDesdeRedGFI = async (prop: RedGFIItem) => {
+    setAgregandoRedGFIId(prop.id)
+    const OP_LABEL: Record<string, string> = {
+      venta: 'Venta', alquiler: 'Alquiler', temporario: 'Alquiler temporal',
+      permuta: 'Permuta', comercial: 'Comercial', campo: 'Campo', fondo_comercio: 'Fondo de Comercio',
+    }
+    const body = {
+      url_original: `gfi://red-gfi/${prop.id}`,
+      titulo: `${prop.tipo_propiedad} · ${prop.ciudad}${prop.zona ? ' · ' + prop.zona : ''}`,
+      descripcion: prop.descripcion,
+      tipo: prop.tipo_propiedad,
+      operacion: OP_LABEL[prop.operacion] ?? prop.operacion,
+      barrio: prop.zona,
+      ciudad: prop.ciudad,
+      precio_actual: prop.precio,
+      moneda: prop.moneda ?? 'USD',
+      superficie_total: prop.superficie_total ?? prop.superficie_cubierta,
+      dormitorios: prop.dormitorios,
+      banos: prop.banos,
+      imagen_principal: prop.fotos?.[0] ?? null,
+      imagenes: prop.fotos ?? [],
+      disponible: true,
+    }
+    const res = await fetch(`/api/listas/${id}/propiedades`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    })
+    if (res.status === 409) { mostrarToast('Ya está en la lista'); setAgregandoRedGFIId(null); return }
+    if (!res.ok) { mostrarToast('Error al agregar'); setAgregandoRedGFIId(null); return }
+    const nueva = await res.json()
+    setPropiedades(prev => [nueva, ...prev])
+    mostrarToast(`${prop.tipo_propiedad} · ${prop.ciudad} agregada ✓`)
+    setAgregandoRedGFIId(null)
+  }
+
+  const redGFIFiltrado = redGFIItems.filter(p =>
+    !redGFIBusqueda ||
+    p.tipo_propiedad?.toLowerCase().includes(redGFIBusqueda.toLowerCase()) ||
+    p.ciudad?.toLowerCase().includes(redGFIBusqueda.toLowerCase()) ||
+    (p.zona ?? '').toLowerCase().includes(redGFIBusqueda.toLowerCase())
+  )
+
   const yaEnLista = new Set(propiedades.map(p => p.url_original))
 
   const s: Record<string, React.CSSProperties> = {
@@ -321,6 +399,9 @@ export default function ListaDetallePage() {
           <button style={{ ...s.btnAgregar, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }} onClick={abrirCartera}>
             🏠 Desde mi cartera
           </button>
+          <button style={{ ...s.btnAgregar, background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', color: '#f87171' }} onClick={abrirRedGFI}>
+            🔴 Desde Red GFI
+          </button>
         </div>
       )}
 
@@ -403,6 +484,66 @@ export default function ListaDetallePage() {
                         style={{ background: '#cc0000', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0, fontFamily: 'Montserrat,sans-serif' }}
                       >
                         {agregandoCarteraId === prop.id ? '…' : 'Agregar'}
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {modoAgregar === 'redgfi' && (
+        <div style={{ ...s.importBox, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(220,38,38,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              🔴 Red GFI — propiedades de colegas
+            </div>
+            <button onClick={() => setModoAgregar(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 18 }}>✕</button>
+          </div>
+          <input
+            style={{ ...s.urlInput, marginBottom: 12 }}
+            placeholder="Buscar por tipo, zona o ciudad…"
+            value={redGFIBusqueda}
+            onChange={e => setRedGFIBusqueda(e.target.value)}
+          />
+          {cargandoRedGFI ? (
+            <div style={{ textAlign: 'center', padding: 24, color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>Cargando Red GFI…</div>
+          ) : redGFIFiltrado.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 24, color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>
+              {redGFIItems.length === 0 ? 'No hay propiedades disponibles en la Red GFI.' : 'Sin resultados para tu búsqueda.'}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 400, overflowY: 'auto' }}>
+              {redGFIFiltrado.map(prop => {
+                const enLista = yaEnLista.has(`gfi://red-gfi/${prop.id}`)
+                return (
+                  <div key={prop.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: `1px solid ${enLista ? 'rgba(34,197,94,0.2)' : 'rgba(220,38,38,0.1)'}` }}>
+                    {prop.fotos?.[0]
+                      ? <img src={prop.fotos[0]} alt="" style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} />
+                      : <div style={{ width: 60, height: 45, background: 'rgba(220,38,38,0.06)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🔴</div>
+                    }
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {prop.tipo_propiedad} · {prop.ciudad}{prop.zona ? ` · ${prop.zona}` : ''}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                        {prop.operacion}
+                        {prop.precio ? ` · ${fmtPrecio(prop.precio, prop.moneda)}` : ''}
+                        {prop.dormitorios ? ` · ${prop.dormitorios} dorm.` : ''}
+                        {prop.honorario_compartir ? ` · Hon: ${prop.honorario_compartir}` : ''}
+                      </div>
+                    </div>
+                    {enLista ? (
+                      <span style={{ fontSize: 11, color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓ En lista</span>
+                    ) : (
+                      <button
+                        onClick={() => agregarDesdeRedGFI(prop)}
+                        disabled={agregandoRedGFIId === prop.id}
+                        style={{ background: '#cc0000', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0, fontFamily: 'Montserrat,sans-serif' }}
+                      >
+                        {agregandoRedGFIId === prop.id ? '…' : 'Agregar'}
                       </button>
                     )}
                   </div>
