@@ -59,19 +59,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: conf } = await sb
-    .from("configuracion_sitio")
-    .select("valor")
-    .eq("clave", "jus_url_cocir")
-    .maybeSingle();
+  const URL_FALLBACK = "https://www.cajaforense.com/index.php?action=portal/show&ssnId_session=355&id_section=148&mnuId_parent=2";
 
-  const url = conf?.valor?.trim();
-  if (!url) {
-    return NextResponse.json({
-      ok: false,
-      error: "URL del JUS no configurada. Ingresá la URL de Caja Forense en Configuración del Sitio → JUS.",
-    });
-  }
+  let url = URL_FALLBACK;
+  try {
+    const { data: conf } = await sb
+      .from("configuracion_sitio")
+      .select("valor")
+      .eq("clave", "jus_url_cocir")
+      .maybeSingle();
+    if (conf?.valor?.trim()) url = conf.valor.trim();
+  } catch { /* tabla aún no existe, usar fallback */ }
 
   let html: string;
   try {
