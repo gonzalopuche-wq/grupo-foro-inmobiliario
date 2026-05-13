@@ -11,9 +11,11 @@ create table if not exists configuracion_sitio (
 
 alter table configuracion_sitio enable row level security;
 
+drop policy if exists cs_admin on configuracion_sitio;
 create policy cs_admin on configuracion_sitio
   for all using (exists (select 1 from perfiles where id = auth.uid() and tipo = 'admin'));
 
+drop policy if exists cs_read on configuracion_sitio;
 create policy cs_read on configuracion_sitio
   for select using (true);
 
