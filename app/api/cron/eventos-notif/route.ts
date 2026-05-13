@@ -23,22 +23,31 @@ export async function GET(req: NextRequest) {
 
   const ahora = new Date();
 
-  // Eventos publicados, con notif activa, que aún no ocurrieron
+  // Eventos publicados, con notif activa, que aún no ocurrieron (o recurrentes con sesiones futuras)
   const { data: eventos, error: evErr } = await sb
     .from("eventos")
-    .select("id, titulo, fecha, tipo, notif_frecuencia, notif_audiencia, notif_ultimo_envio, notif_total_enviadas")
+    .select("id, titulo, fecha, fecha_fin, tipo, notif_frecuencia, notif_audiencia, notif_ultimo_envio, notif_total_enviadas, es_recurrente, fechas_recurrentes, recurrencia_desc")
     .eq("estado", "publicado")
-    .eq("notif_activa", true)
-    .gt("fecha", ahora.toISOString());
+    .eq("notif_activa", true);
 
   if (evErr) return NextResponse.json({ ok: false, error: evErr.message });
   if (!eventos || eventos.length === 0) {
     return NextResponse.json({ ok: true, procesados: 0, message: "Sin eventos para notificar" });
   }
 
+  // Filtrar: solo eventos con fechas futuras
+  const eventosFuturos = eventos.filter(ev => {
+    if (ev.es_recurrente && ev.fechas_recurrentes && ev.fechas_recurrentes.length > 0) {
+      // Recurrente: al menos una sesión futura
+      return ev.fechas_recurrentes.some((f: string) => new Date(f + "T23:59:00") > ahora);
+    }
+    const fechaCierre = ev.fecha_fin ? new Date(ev.fecha_fin) : new Date(ev.fecha);
+    return fechaCierre > ahora;
+  });
+
   const resultados: { id: string; titulo: string; enviados: number; omitido?: string }[] = [];
 
-  for (const ev of eventos) {
+  for (const ev of eventosFuturos) {
     const frecuencia = Math.max(1, Math.min(7, ev.notif_frecuencia ?? 2));
     // Intervalo mínimo entre envíos en horas
     const intervaloHoras = (7 / frecuencia) * 24;
@@ -98,13 +107,24 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    const diasRestantes = Math.ceil(
-      (new Date(ev.fecha).getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    const cuandoMsg =
-      diasRestantes <= 1 ? "¡Es mañana!" :
-      diasRestantes <= 7 ? `En ${diasRestantes} días` :
-      `El ${new Date(ev.fecha).toLocaleDateString("es-AR", { day: "numeric", month: "long" })}`;
+    let cuandoMsg: string;
+    if (ev.es_recurrente && ev.fechas_recurrentes && ev.fechas_recurrentes.length > 0) {
+      const proximaFecha = ev.fechas_recurrentes
+        .filter((f: string) => new Date(f + "T23:59:00") > ahora)
+        .sort()[0];
+      const diasProxima = Math.ceil((new Date(proximaFecha + "T12:00:00").getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24));
+      cuandoMsg = diasProxima <= 1 ? "¡Próxima sesión mañana!" :
+        diasProxima <= 7 ? `Próxima sesión en ${diasProxima} días` :
+        `Próxima sesión el ${new Date(proximaFecha + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "long" })}`;
+    } else {
+      const diasRestantes = Math.ceil(
+        (new Date(ev.fecha + "T12:00:00").getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      cuandoMsg =
+        diasRestantes <= 1 ? "¡Es mañana!" :
+        diasRestantes <= 7 ? `En ${diasRestantes} días` :
+        `El ${new Date(ev.fecha + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "long" })}`;
+    }
 
     const payload = JSON.stringify({
       titulo: `📅 ${ev.titulo}`,

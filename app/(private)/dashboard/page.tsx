@@ -228,6 +228,7 @@ export default function DashboardPage() {
     { icon: "🏠", label: "Publicar ofrecido", href: "/mir?nuevo=ofrecido", primary: true },
     { icon: "💱", label: "Cotizaciones", href: "/cotizaciones", primary: false },
     { icon: "📅", label: "Eventos", href: "/eventos", primary: false },
+    { icon: "🤝", label: "Networking", href: "/networking", primary: false },
     { icon: "💬", label: "Foro", href: "/foro", primary: false },
     { icon: "📋", label: "Padrón", href: "/padron-gfi", primary: false },
     { icon: "📚", label: "Biblioteca", href: "/biblioteca", primary: false },

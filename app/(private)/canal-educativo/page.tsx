@@ -275,8 +275,8 @@ export default function CanalEducativoPage() {
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
             <div>
-              <div className="ce-titulo">📡 Canal Educativo GFI®</div>
-              <div className="ce-sub">Sesiones semanales en vivo · Mentores GFI® · Archivo permanente</div>
+              <div className="ce-titulo">📡 Canal del Foro GFI®</div>
+              <div className="ce-sub">Transmisiones en vivo · Zoom · Meet · YouTube · Archivo permanente</div>
             </div>
             {esAdmin && (
               <button className="ce-btn ce-btn-primary" onClick={() => { setForm(FORM_VACIO); setEditandoId(null); setMostrarForm(true); }}>
@@ -330,26 +330,46 @@ export default function CanalEducativoPage() {
                     </div>
 
                     {/* Plataforma y link */}
-                    {sesionActiva.link_live && (
-                      <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                        {sesionActiva.estado === "en_vivo" && (
-                          <a href={sesionActiva.link_live} target="_blank" rel="noreferrer">
-                            <button className="ce-btn ce-btn-live">
-                              {PLATAFORMA_META[sesionActiva.plataforma]?.icon} Ver en {PLATAFORMA_META[sesionActiva.plataforma]?.label}
-                            </button>
-                          </a>
-                        )}
-                        {sesionActiva.estado === "proxima" && (
+                    {sesionActiva.link_live ? (
+                      <div style={{ marginTop: 16 }}>
+                        {sesionActiva.estado === "en_vivo" && sesionActiva.plataforma === "youtube" && extractYouTubeId(sesionActiva.link_live) ? (
+                          /* Embed YouTube Live directo en la página */
+                          <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 10, overflow: "hidden", background: "#000", marginBottom: 10 }}>
+                            <iframe
+                              src={`https://www.youtube.com/embed/${extractYouTubeId(sesionActiva.link_live)}?autoplay=1&rel=0`}
+                              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              title={sesionActiva.titulo}
+                            />
+                          </div>
+                        ) : sesionActiva.estado === "en_vivo" && (sesionActiva.plataforma === "zoom" || sesionActiva.plataforma === "meet") ? (
+                          /* Zoom/Meet: no se puede embedir, botón grande */
+                          <div style={{ background: "rgba(255,30,30,0.08)", border: "1px solid rgba(255,30,30,0.25)", borderRadius: 10, padding: "20px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Transmisión en vivo</div>
+                              <div style={{ fontSize: 14, color: "#fff" }}>
+                                {PLATAFORMA_META[sesionActiva.plataforma]?.label} · Hacé clic para unirte
+                              </div>
+                              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, wordBreak: "break-all" }}>{sesionActiva.link_live}</div>
+                            </div>
+                            <a href={sesionActiva.link_live} target="_blank" rel="noreferrer">
+                              <button className="ce-btn ce-btn-live" style={{ fontSize: 16, padding: "14px 28px" }}>
+                                {PLATAFORMA_META[sesionActiva.plataforma]?.icon} Unirse ahora
+                              </button>
+                            </a>
+                          </div>
+                        ) : (
+                          /* Próxima o plataforma desconocida: link sencillo */
                           <a href={sesionActiva.link_live} target="_blank" rel="noreferrer">
                             <button className="ce-btn ce-btn-plat">
-                              {PLATAFORMA_META[sesionActiva.plataforma]?.icon} Ver en {PLATAFORMA_META[sesionActiva.plataforma]?.label}
+                              {PLATAFORMA_META[sesionActiva.plataforma]?.icon} {sesionActiva.estado === "en_vivo" ? "Ver en vivo" : "Ver en"} {PLATAFORMA_META[sesionActiva.plataforma]?.label}
                             </button>
                           </a>
                         )}
                       </div>
-                    )}
-                    {!sesionActiva.link_live && (
-                      <div style={{ marginTop: 12, fontSize: 13, color: "rgba(255,255,255,0.3)" }}>El link al live se publicará antes de la sesión.</div>
+                    ) : (
+                      <div style={{ marginTop: 12, fontSize: 13, color: "rgba(255,255,255,0.3)" }}>El link se publicará antes de la sesión.</div>
                     )}
                   </div>
                 ) : (
