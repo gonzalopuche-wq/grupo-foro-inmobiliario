@@ -84,7 +84,7 @@ export default function PerfilPage() {
   const [pushCargando, setPushCargando] = useState(false);
   const [cambioPassword, setCambioPassword] = useState({ actual: "", nueva: "", confirmar: "" });
   const [cambiandoPassword, setCambiandoPassword] = useState(false);
-  const [repStats, setRepStats] = useState({ docs: 0, comparables: 0, meses: 0, tasaciones: 0 });
+  const [repStats, setRepStats] = useState({ docs: 0, comparables: 0, meses: 0, tasaciones: 0, propiedades: 0, negocios: 0, networking: 0, foro: 0, referidos: 0 });
 
   useEffect(() => {
     const init = async () => {
@@ -95,12 +95,18 @@ export default function PerfilPage() {
       if (p) {
         setPerfil(p as Perfil);
         const meses = Math.floor((Date.now() - new Date(p.created_at).getTime()) / (1000 * 60 * 60 * 24 * 30));
-        const [{ count: docs }, { count: comparables }, tasRes] = await Promise.all([
-          supabase.from("biblioteca").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).eq("estado", "aprobado"),
-          supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id),
-          Promise.resolve(supabase.from("tasaciones").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id)).catch(() => ({ count: 0 })),
+        const sc = async (q: Promise<{ count: number | null }>) => { try { const r = await q; return r.count ?? 0; } catch { return 0; } };
+        const [docs, comparables, tasaciones, propiedades, negocios, networking, foro, referidos] = await Promise.all([
+          sc(supabase.from("biblioteca").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).eq("estado", "aprobado") as any),
+          sc(supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
+          sc(supabase.from("tasaciones").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
+          sc(supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
+          sc(supabase.from("crm_negocios").select("id", { count: "exact", head: true }).eq("user_id", data.user.id).eq("estado", "cerrado") as any),
+          sc(supabase.from("networking_posts").select("id", { count: "exact", head: true }).eq("user_id", data.user.id) as any),
+          sc(supabase.from("foro_posts").select("id", { count: "exact", head: true }).eq("user_id", data.user.id) as any),
+          sc(supabase.from("referidos").select("id", { count: "exact", head: true }).eq("referidor_id", data.user.id) as any),
         ]);
-        setRepStats({ docs: docs ?? 0, comparables: comparables ?? 0, meses, tasaciones: (tasRes as any).count ?? 0 });
+        setRepStats({ docs, comparables, meses, tasaciones, propiedades, negocios, networking, foro, referidos });
       }
       setLoading(false);
 
@@ -312,11 +318,31 @@ export default function PerfilPage() {
         .push-btn.desactivar:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
         .push-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .seg-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 16px 0; }
-        .rep-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
-        .rep-badge { padding: 8px 16px; border-radius: 20px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); font-family: 'Montserrat',sans-serif; display: flex; align-items: center; gap: 6px; }
+        .rep-badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 10px; margin-top: 8px; }
+        .rep-badge { padding: 12px 14px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.35); font-family: 'Montserrat',sans-serif; display: flex; align-items: flex-start; gap: 10px; transition: all 0.2s; }
+        .rep-badge.earned { background: rgba(200,0,0,0.08); border-color: rgba(200,0,0,0.3); color: #fff; }
+        .rep-badge.gold { background: rgba(234,179,8,0.08); border-color: rgba(234,179,8,0.3); }
+        .rep-badge.silver { background: rgba(148,163,184,0.08); border-color: rgba(148,163,184,0.25); }
+        .rep-badge.bronze { background: rgba(180,120,60,0.08); border-color: rgba(180,120,60,0.25); }
+        .rep-badge-ico { font-size: 22px; line-height: 1; flex-shrink: 0; filter: grayscale(1); opacity: 0.4; }
+        .rep-badge.earned .rep-badge-ico { filter: none; opacity: 1; }
+        .rep-badge-body { flex: 1; min-width: 0; }
+        .rep-badge-name { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 3px; color: inherit; }
+        .rep-badge-desc { font-size: 10px; font-weight: 400; color: rgba(255,255,255,0.3); line-height: 1.4; }
+        .rep-badge.earned .rep-badge-desc { color: rgba(200,0,0,0.8); }
+        .rep-badge-prog { margin-top: 5px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+        .rep-badge-prog-fill { height: 100%; background: #cc0000; border-radius: 2px; transition: width 0.5s; }
+        .rep-badge.gold .rep-badge-prog-fill { background: #eab308; }
+        .rep-badge.silver .rep-badge-prog-fill { background: #94a3b8; }
+        .rep-badge.bronze .rep-badge-prog-fill { background: #b47c3c; }
         .rep-stat { display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 18px; }
         .rep-stat-val { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #cc0000; }
         .rep-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); }
+        .rep-tier-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin: 16px 0 8px; padding: 4px 10px; border-radius: 4px; display: inline-block; }
+        .rep-tier-label.bronce { background: rgba(180,120,60,0.12); color: rgba(180,120,60,0.8); }
+        .rep-tier-label.plata { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.8); }
+        .rep-tier-label.oro { background: rgba(234,179,8,0.12); color: rgba(234,179,8,0.8); }
+        .rep-tier-label.especial { background: rgba(200,0,0,0.12); color: rgba(200,0,0,0.8); }
         .sus-plan { background: rgba(200,0,0,0.06); border: 1px solid rgba(200,0,0,0.2); border-radius: 6px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .sus-plan-nombre { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
         .sus-plan-precio { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #cc0000; }
@@ -744,14 +770,18 @@ export default function PerfilPage() {
           {/* REPUTACIÓN */}
           {seccion === "reputacion" && (
             <div className="pf-section">
-              <div className="pf-section-title">⭐ <span>Reputación</span></div>
-              <div className="pf-section-sub">Tu puntaje y reconocimientos en la red GFI®</div>
+              <div className="pf-section-title">⭐ <span>Reputación e Insignias</span></div>
+              <div className="pf-section-sub">Tu puntaje y reconocimientos en la red GFI®. El lema: <strong style={{color:"rgba(200,0,0,0.7)"}}>El que aporta, gana.</strong></div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 20 }}>
+              {/* Stats grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 20 }}>
                 {[
-                  { val: (repStats.docs * 10 + repStats.comparables * 5 + repStats.tasaciones * 8).toString(), label: "Puntos acumulados" },
-                  { val: repStats.docs.toString(), label: "Documentos aportados" },
-                  { val: repStats.comparables.toString(), label: "Comparables cargados" },
+                  { val: (repStats.docs * 10 + repStats.comparables * 5 + repStats.tasaciones * 8 + repStats.propiedades * 3 + repStats.negocios * 15 + repStats.networking * 4 + repStats.foro * 2 + repStats.referidos * 20).toString(), label: "Puntos totales" },
+                  { val: repStats.propiedades.toString(), label: "Propiedades en cartera" },
+                  { val: repStats.negocios.toString(), label: "Negocios cerrados" },
+                  { val: repStats.comparables.toString(), label: "Comparables" },
+                  { val: repStats.docs.toString(), label: "Docs aprobados" },
+                  { val: repStats.referidos.toString(), label: "Referidos" },
                 ].map((s, i) => (
                   <div key={i} className="rep-stat">
                     <div className="rep-stat-val">{s.val}</div>
@@ -760,29 +790,153 @@ export default function PerfilPage() {
                 ))}
               </div>
 
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>
-                Insignias
-              </div>
+              {/* Tier: Bronce */}
+              <div className="rep-tier-label bronce">🥉 Bronce — Primeros pasos</div>
               <div className="rep-badges">
                 {[
-                  { ico: "📍", label: "Referente de Zona", desc: "Zona de trabajo + especialidades registradas", earned: (perfil.especialidades?.length ?? 0) > 0 && !!perfil.zona_trabajo },
-                  { ico: "📊", label: "Aportante del Observatorio", desc: "20+ comparables cargados", earned: repStats.comparables >= 20 },
-                  { ico: "📚", label: "Aportante Biblioteca", desc: "5+ documentos aprobados", earned: repStats.docs >= 5 },
-                  { ico: "⚖️", label: "Tasador Experto", desc: "10+ tasaciones realizadas o designado por admin", earned: repStats.tasaciones >= 10 || perfil.insignia_tasador },
-                  { ico: "🏆", label: "Corredor Senior", desc: "+5 años en GFI®", earned: repStats.meses >= 60 },
-                  { ico: "🎓", label: "Mentor GFI®", desc: "Designado por el admin", earned: perfil.insignia_mentor },
+                  {
+                    ico: "✅", label: "Perfil Completo", tier: "bronze",
+                    desc: "Foto, bio, zona y especialidades",
+                    goal: 4,
+                    current: [!!perfil.foto_url, !!perfil.bio, !!perfil.zona_trabajo, (perfil.especialidades?.length ?? 0) > 0].filter(Boolean).length,
+                    earned: !!perfil.foto_url && !!perfil.bio && !!perfil.zona_trabajo && (perfil.especialidades?.length ?? 0) > 0,
+                  },
+                  {
+                    ico: "🏠", label: "Primera Propiedad", tier: "bronze",
+                    desc: "1+ propiedad en cartera",
+                    goal: 1, current: Math.min(repStats.propiedades, 1),
+                    earned: repStats.propiedades >= 1,
+                  },
+                  {
+                    ico: "📍", label: "Referente de Zona", tier: "bronze",
+                    desc: "Zona + especialidades registradas",
+                    goal: 2, current: [(perfil.especialidades?.length ?? 0) > 0, !!perfil.zona_trabajo].filter(Boolean).length,
+                    earned: (perfil.especialidades?.length ?? 0) > 0 && !!perfil.zona_trabajo,
+                  },
+                  {
+                    ico: "💬", label: "Voz del Foro", tier: "bronze",
+                    desc: "5+ publicaciones en el foro",
+                    goal: 5, current: Math.min(repStats.foro, 5),
+                    earned: repStats.foro >= 5,
+                  },
                 ].map((b, i) => (
-                  <div key={i} className="rep-badge" style={{ opacity: b.earned ? 1 : 0.35, border: b.earned ? "1px solid rgba(200,0,0,0.4)" : undefined, background: b.earned ? "rgba(200,0,0,0.1)" : undefined }}>
-                    <span>{b.ico}</span>
-                    <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: b.earned ? "#fff" : undefined }}>{b.label}</div>
-                      <div style={{ fontSize: 10, fontWeight: 400, color: b.earned ? "rgba(200,0,0,0.8)" : "rgba(255,255,255,0.4)" }}>{b.earned ? "✓ Obtenida" : b.desc}</div>
+                  <div key={i} className={`rep-badge bronze${b.earned ? " earned" : ""}`}>
+                    <span className="rep-badge-ico">{b.ico}</span>
+                    <div className="rep-badge-body">
+                      <div className="rep-badge-name">{b.label}</div>
+                      <div className="rep-badge-desc">{b.earned ? "✓ Obtenida" : `${b.current}/${b.goal} — ${b.desc}`}</div>
+                      {!b.earned && <div className="rep-badge-prog"><div className="rep-badge-prog-fill" style={{width:`${Math.min(100,Math.round(b.current/b.goal*100))}%`}} /></div>}
                     </div>
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 12, fontSize: 11, color: "rgba(255,255,255,0.25)", fontStyle: "italic" }}>
-                Las insignias se otorgan automáticamente o por designación del admin. El lema es: <strong style={{ color: "rgba(200,0,0,0.6)" }}>El que aporta, gana.</strong>
+
+              {/* Tier: Plata */}
+              <div className="rep-tier-label plata">🥈 Plata — Corredor activo</div>
+              <div className="rep-badges">
+                {[
+                  {
+                    ico: "🏘️", label: "Portafolio Activo", tier: "silver",
+                    desc: "5+ propiedades en cartera",
+                    goal: 5, current: Math.min(repStats.propiedades, 5),
+                    earned: repStats.propiedades >= 5,
+                  },
+                  {
+                    ico: "🤝", label: "Primer Cierre", tier: "silver",
+                    desc: "1+ negocio cerrado registrado",
+                    goal: 1, current: Math.min(repStats.negocios, 1),
+                    earned: repStats.negocios >= 1,
+                  },
+                  {
+                    ico: "🌐", label: "Networker", tier: "silver",
+                    desc: "3+ publicaciones en Networking",
+                    goal: 3, current: Math.min(repStats.networking, 3),
+                    earned: repStats.networking >= 3,
+                  },
+                  {
+                    ico: "📊", label: "Aportante Observatorio", tier: "silver",
+                    desc: "10+ comparables cargados",
+                    goal: 10, current: Math.min(repStats.comparables, 10),
+                    earned: repStats.comparables >= 10,
+                  },
+                  {
+                    ico: "📚", label: "Aportante Biblioteca", tier: "silver",
+                    desc: "5+ documentos aprobados",
+                    goal: 5, current: Math.min(repStats.docs, 5),
+                    earned: repStats.docs >= 5,
+                  },
+                  {
+                    ico: "🔗", label: "Embajador", tier: "silver",
+                    desc: "1+ referido exitoso",
+                    goal: 1, current: Math.min(repStats.referidos, 1),
+                    earned: repStats.referidos >= 1,
+                  },
+                ].map((b, i) => (
+                  <div key={i} className={`rep-badge silver${b.earned ? " earned" : ""}`}>
+                    <span className="rep-badge-ico">{b.ico}</span>
+                    <div className="rep-badge-body">
+                      <div className="rep-badge-name">{b.label}</div>
+                      <div className="rep-badge-desc">{b.earned ? "✓ Obtenida" : `${b.current}/${b.goal} — ${b.desc}`}</div>
+                      {!b.earned && <div className="rep-badge-prog"><div className="rep-badge-prog-fill" style={{width:`${Math.min(100,Math.round(b.current/b.goal*100))}%`}} /></div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tier: Oro */}
+              <div className="rep-tier-label oro">🥇 Oro — Élite GFI®</div>
+              <div className="rep-badges">
+                {[
+                  {
+                    ico: "💰", label: "Operador Top", tier: "gold",
+                    desc: "5+ negocios cerrados",
+                    goal: 5, current: Math.min(repStats.negocios, 5),
+                    earned: repStats.negocios >= 5,
+                  },
+                  {
+                    ico: "⭐", label: "Observatorio Elite", tier: "gold",
+                    desc: "20+ comparables cargados",
+                    goal: 20, current: Math.min(repStats.comparables, 20),
+                    earned: repStats.comparables >= 20,
+                  },
+                  {
+                    ico: "🏆", label: "Corredor Senior", tier: "gold",
+                    desc: "+5 años en GFI®",
+                    goal: 60, current: Math.min(repStats.meses, 60),
+                    earned: repStats.meses >= 60,
+                  },
+                  {
+                    ico: "⚖️", label: "Tasador Experto", tier: "gold",
+                    desc: "10+ tasaciones o designado por admin",
+                    goal: 10, current: Math.min(repStats.tasaciones, 10),
+                    earned: repStats.tasaciones >= 10 || perfil.insignia_tasador,
+                  },
+                ].map((b, i) => (
+                  <div key={i} className={`rep-badge gold${b.earned ? " earned" : ""}`}>
+                    <span className="rep-badge-ico">{b.ico}</span>
+                    <div className="rep-badge-body">
+                      <div className="rep-badge-name">{b.label}</div>
+                      <div className="rep-badge-desc">{b.earned ? "✓ Obtenida" : `${b.current}/${b.goal} — ${b.desc}`}</div>
+                      {!b.earned && <div className="rep-badge-prog"><div className="rep-badge-prog-fill" style={{width:`${Math.min(100,Math.round(b.current/b.goal*100))}%`}} /></div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Especiales */}
+              <div className="rep-tier-label especial">🎖️ Especiales — Designadas por admin</div>
+              <div className="rep-badges">
+                {[
+                  { ico: "🎓", label: "Mentor GFI®", desc: "Reconocimiento por trayectoria y aportes a la comunidad", earned: perfil.insignia_mentor },
+                ].map((b, i) => (
+                  <div key={i} className={`rep-badge${b.earned ? " earned" : ""}`}>
+                    <span className="rep-badge-ico">{b.ico}</span>
+                    <div className="rep-badge-body">
+                      <div className="rep-badge-name">{b.label}</div>
+                      <div className="rep-badge-desc">{b.earned ? "✓ Obtenida" : b.desc}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
