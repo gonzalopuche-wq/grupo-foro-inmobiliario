@@ -40,7 +40,7 @@ const INDICADORES_CONFIG = [
 const CONFIGURACION_SITIO_DEF = [
   { clave: "anuncio_banner",                  label: "Texto del banner global",          categoria: "anuncios",   tipo: "textarea", descripcion: "Visible para todos al entrar. Vacío = sin banner.", placeholder: "Ej: Reunión GFI el viernes 14/06 a las 10hs en sede COCIR" },
   { clave: "anuncio_color",                   label: "Color del banner",                  categoria: "anuncios",   tipo: "color",    descripcion: "Color de fondo del banner.", placeholder: "#cc0000" },
-  { clave: "jus_url_cocir",                   label: "URL del JUS en COCIR",              categoria: "jus",        tipo: "url",      descripcion: "Dirección de la página de COCIR con el valor del JUS. Requerida para sincronización automática.", placeholder: "https://..." },
+  { clave: "jus_url_cocir",                   label: "URL del JUS",                       categoria: "jus",        tipo: "url",      descripcion: "Dirección de la página donde figura el valor del JUS. Se usa para la sincronización automática.", placeholder: "https://..." },
   { clave: "honorarios_venta_propietario_pct",label: "Honorarios venta — propietario (%)",categoria: "honorarios", tipo: "number",   descripcion: "Porcentaje sugerido al propietario.", placeholder: "3" },
   { clave: "honorarios_venta_comprador_pct",  label: "Honorarios venta — comprador (%)",  categoria: "honorarios", tipo: "number",   descripcion: "Porcentaje sugerido al comprador.", placeholder: "3" },
   { clave: "honorarios_alquiler_meses",       label: "Honorarios alquiler (meses)",       categoria: "honorarios", tipo: "number",   descripcion: "Meses sugeridos de honorario.", placeholder: "1" },
@@ -1302,7 +1302,7 @@ export default function AdminPage() {
                       disabled={sincronizandoJus}
                       style={{ marginTop: 6, padding: "5px 10px", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: sincronizandoJus ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.6)", cursor: sincronizandoJus ? "not-allowed" : "pointer", width: "100%" }}
                     >
-                      {sincronizandoJus ? "Sincronizando..." : "↻ Sincronizar desde COCIR"}
+                      {sincronizandoJus ? "Sincronizando..." : "↻ Sincronizar JUS"}
                     </button>
                   )}
                   {guardadoOk === ind.clave && <div className="adm-ind-ok">✓ Guardado</div>}
@@ -1763,7 +1763,7 @@ export default function AdminPage() {
           {/* ── CONFIGURACIÓN DEL SITIO ── */}
           <div>
             <div className="adm-ind-titulo">Configuración <span>del sitio</span></div>
-            <div className="adm-ind-subtitulo">Controlá textos, banners, honorarios sugeridos y el sincronizador automático de JUS desde COCIR.</div>
+            <div className="adm-ind-subtitulo">Controlá textos, banners, honorarios sugeridos y la URL de sincronización automática del JUS.</div>
             {CATEGORIAS_CONF.map(cat => {
               const items = CONFIGURACION_SITIO_DEF.filter(c => c.categoria === cat.key);
               return (
@@ -1821,15 +1821,6 @@ export default function AdminPage() {
                             {guardandoConf === item.clave ? "..." : "Guardar"}
                           </button>
                         </div>
-                        {item.clave === "jus_url_cocir" && (
-                          <button
-                            onClick={sincronizarJus}
-                            disabled={sincronizandoJus}
-                            style={{ marginTop: 8, padding: "7px 12px", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 3, color: sincronizandoJus ? "rgba(255,255,255,0.3)" : "#cc0000", cursor: sincronizandoJus ? "not-allowed" : "pointer", width: "100%" }}
-                          >
-                            {sincronizandoJus ? "Sincronizando..." : "↻ Sincronizar JUS ahora"}
-                          </button>
-                        )}
                       </div>
                     ))}
                   </div>
