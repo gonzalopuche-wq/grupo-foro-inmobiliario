@@ -282,6 +282,9 @@ export default function PadronGFIPage() {
           <button className={`pad-fuente-btn${fuente === "ambos" ? " activo" : ""}`} onClick={() => cambiarFuente("ambos")}>
             🔗 Vista unificada
           </button>
+          <a href="/padron-gfi/mapa" className="pad-fuente-btn" style={{ textDecoration: 'none' }}>
+            📍 Mapa de zonas
+          </a>
         </div>
 
         {/* Stats */}

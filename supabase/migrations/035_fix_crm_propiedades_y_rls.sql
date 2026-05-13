@@ -1,7 +1,3 @@
--- Renombrar columnas de imágenes para alinear con el código del frontend
-alter table crm_propiedades_guardadas rename column fotos to imagenes;
-alter table crm_propiedades_guardadas rename column foto_url to imagen_principal;
-
 -- Agregar FK constraints para que PostgREST resuelva las relaciones embebidas
 alter table crm_listas_busqueda
   add constraint fk_clb_corredor foreign key (corredor_id) references perfiles(id) on delete cascade;
