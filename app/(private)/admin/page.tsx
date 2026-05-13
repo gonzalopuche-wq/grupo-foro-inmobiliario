@@ -29,6 +29,7 @@ interface EventoPropuesto {
 
 interface Colaborador { id: string; corredor_id: string; user_id: string | null; nombre: string; apellido: string; email: string; telefono: string | null; dni: string | null; rol: string; estado: string; notas: string | null; created_at: string; corredor?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface FinanzaEntry { id: string; tipo: "ingreso" | "gasto"; categoria: string; concepto: string; monto: number; moneda: string; fecha: string; referencia: string | null; created_at: string; }
+interface SoporteTicket { id: string; user_id: string; asunto: string; descripcion: string; estado: "abierto" | "en_proceso" | "resuelto" | "cerrado"; prioridad: "baja" | "normal" | "alta" | "urgente"; respuesta: string | null; respuesta_ia: string | null; created_at: string; updated_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 
 const CATS_INGRESO = ["suscripcion", "match", "pauta", "servicio", "otro"];
 const CATS_GASTO   = ["hosting", "dominio", "herramienta", "marketing", "impuesto", "otro"];
@@ -239,6 +240,14 @@ export default function AdminPage() {
   const [formFinanza, setFormFinanza] = useState(FORM_FIN_VACIO);
   const [guardandoFinanza, setGuardandoFinanza] = useState(false);
   const [mostrarFormFinanza, setMostrarFormFinanza] = useState(false);
+  // Soporte
+  const [soporteTickets, setSoporteTickets] = useState<SoporteTicket[]>([]);
+  const [loadingSoporte, setLoadingSoporte] = useState(true);
+  const [filtroSoporte, setFiltroSoporte] = useState<"todos"|"abierto"|"en_proceso"|"resuelto">("abierto");
+  const [ticketVer, setTicketVer] = useState<SoporteTicket | null>(null);
+  const [respuestaForm, setRespuestaForm] = useState("");
+  const [guardandoRespuesta, setGuardandoRespuesta] = useState(false);
+  const [resolviendoIA, setResolviendoIA] = useState(false);
 
   useEffect(() => {
     const verificar = async () => {
@@ -250,7 +259,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -723,7 +732,7 @@ export default function AdminPage() {
         await supabase.from("suscripciones").insert({ perfil_id: id, plan: "matriculado", estado: "activa", monto_usd: 0, fecha_vencimiento: fechaVenc, nota_admin: "Primer mes gratis" });
       }
       // Notificación de bienvenida con fecha de inicio de cobro
-      const fechaStr = new Date(fechaVenc).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
+      const fechaStr = new Date(fechaVenc + "T12:00:00").toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
       await supabase.from("notificaciones").insert({
         user_id: id,
         titulo: "¡Bienvenido a GFI®! 🎉",
@@ -731,6 +740,38 @@ export default function AdminPage() {
         tipo: "suscripcion",
         url: "/suscripcion",
       });
+      // Email de bienvenida al corredor aprobado
+      const perfilAprobado = perfiles.find(p => p.id === id);
+      if (perfilAprobado?.email) {
+        fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: perfilAprobado.email,
+            subject: "✅ ¡Tu cuenta en GFI® fue aprobada!",
+            html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);">
+<h2 style="color:#22c55e;margin-bottom:16px;">🎉 ¡Bienvenido a GFI®!</h2>
+<p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${perfilAprobado.nombre}</strong>, tu cuenta en <strong>GFI® Grupo Foro Inmobiliario</strong> fue aprobada y ya podés acceder a la plataforma.</p>
+<div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.6);">
+<strong style="color:#eab308;">Período gratuito:</strong> Tu primer mes es gratuito hasta el ${fechaStr}.<br/>
+A partir de esa fecha el costo mensual será de USD 15.
+</div>
+<a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ingresar a GFI®</a>
+</div>`,
+          }),
+        }).catch(() => {});
+      }
+      // Push de bienvenida
+      fetch("/api/push/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-internal-secret": process.env.NEXT_PUBLIC_CRON_SECRET ?? "" },
+        body: JSON.stringify({
+          titulo: "🎉 ¡Tu cuenta fue aprobada!",
+          body: `Bienvenido a GFI®. Período gratuito hasta el ${fechaStr}.`,
+          url: "/dashboard",
+          perfil_id: id,
+        }),
+      }).catch(() => {});
     }
     await cargarPerfiles(); setProcesando(null);
   };
@@ -804,6 +845,82 @@ export default function AdminPage() {
     await supabase.from("admin_finanzas").delete().eq("id", id);
     cargarFinanzas();
     mostrarToast("Eliminado", "ok");
+  };
+
+  const cargarSoporte = async () => {
+    setLoadingSoporte(true);
+    const { data } = await supabase
+      .from("soporte_tickets")
+      .select("*, perfiles(nombre, apellido, matricula, email)")
+      .order("created_at", { ascending: false });
+    setSoporteTickets((data ?? []) as SoporteTicket[]);
+    setLoadingSoporte(false);
+  };
+
+  const responderTicket = async () => {
+    if (!ticketVer || !respuestaForm.trim()) return;
+    setGuardandoRespuesta(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    await supabase.from("soporte_tickets").update({
+      respuesta: respuestaForm.trim(),
+      estado: "resuelto",
+      admin_id: adminId,
+      updated_at: new Date().toISOString(),
+    }).eq("id", ticketVer.id);
+    // Notificación push al usuario
+    if (session?.access_token) {
+      fetch("/api/push/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-internal-secret": "" },
+        body: JSON.stringify({ titulo: "✅ Tu ticket de soporte fue respondido", body: ticketVer.asunto, url: "/soporte", perfil_id: ticketVer.user_id }),
+      }).catch(() => {});
+    }
+    // Email al usuario
+    if (ticketVer.perfiles?.email) {
+      fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: ticketVer.perfiles.email,
+          subject: "✅ Respuesta a tu ticket de soporte — GFI®",
+          html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);">
+<h2 style="color:#22c55e;margin-bottom:16px;">✅ Tu ticket fue respondido</h2>
+<p style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:8px;"><strong>Asunto:</strong> ${ticketVer.asunto}</p>
+<div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;white-space:pre-wrap;">${respuestaForm.trim()}</div>
+<a href="https://www.foroinmobiliario.com.ar/soporte" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ver mi ticket</a>
+</div>`,
+        }),
+      }).catch(() => {});
+    }
+    // Notificación in-app
+    await supabase.from("notificaciones").insert({
+      user_id: ticketVer.user_id,
+      titulo: "✅ Ticket respondido",
+      mensaje: `Tu consulta "${ticketVer.asunto}" fue respondida.`,
+      tipo: "soporte",
+      url: "/soporte",
+    });
+    setGuardandoRespuesta(false);
+    setTicketVer(null);
+    setRespuestaForm("");
+    cargarSoporte();
+    mostrarToast("Respuesta enviada ✓", "ok");
+  };
+
+  const resolverConIA = async () => {
+    if (!ticketVer) return;
+    setResolviendoIA(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/soporte/resolver", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ ticket_id: ticketVer.id }),
+      });
+      const json = await res.json();
+      if (json.respuesta) setRespuestaForm(json.respuesta);
+    } catch {}
+    setResolviendoIA(false);
   };
 
   const formatARS = (n: number | null) => n !== null ? new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(n) : "—";
@@ -2131,8 +2248,90 @@ export default function AdminPage() {
             );
           })()}
 
+          {/* ── SOPORTE ── */}
+          <div style={{ marginTop: 40 }}>
+            <div className="adm-header">
+              <h1>Soporte <span>técnico</span></h1>
+              <p>Tickets enviados por corredores. Respondé o usá la IA para generar una respuesta.</p>
+            </div>
+            <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+              {(["abierto","en_proceso","resuelto","todos"] as const).map(f => (
+                <button key={f} onClick={() => setFiltroSoporte(f)} style={{ padding: "6px 14px", borderRadius: 6, border: "none", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroSoporte === f ? "#cc0000" : "rgba(255,255,255,0.07)", color: filtroSoporte === f ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                  {f === "abierto" ? `⏳ Abiertos (${soporteTickets.filter(t => t.estado === "abierto").length})` : f === "en_proceso" ? `🔵 En proceso` : f === "resuelto" ? `✓ Resueltos` : "Todos"}
+                </button>
+              ))}
+            </div>
+            {loadingSoporte ? <div className="adm-loading">Cargando...</div> : (() => {
+              const filtrados = filtroSoporte === "todos" ? soporteTickets : soporteTickets.filter(t => t.estado === filtroSoporte);
+              if (filtrados.length === 0) return <div className="adm-empty">No hay tickets en esta categoría ✓</div>;
+              const PRIORIDAD_COLOR: Record<string,string> = { baja:"rgba(255,255,255,0.15)", normal:"rgba(59,130,246,0.2)", alta:"rgba(234,179,8,0.2)", urgente:"rgba(239,68,68,0.25)" };
+              const PRIORIDAD_TEXT: Record<string,string> = { baja:"rgba(255,255,255,0.4)", normal:"#3b82f6", alta:"#eab308", urgente:"#ef4444" };
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {filtrados.map(t => (
+                    <div key={t.id} onClick={() => { setTicketVer(t); setRespuestaForm(t.respuesta_ia ?? t.respuesta ?? ""); }} style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px", cursor: "pointer", transition: "border-color 0.15s" }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 3 }}>{t.asunto}</div>
+                          <div className="adm-sub">{t.perfiles ? `${t.perfiles.nombre} ${t.perfiles.apellido}` : "—"} · Mat. {t.perfiles?.matricula ?? "—"}</div>
+                          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 500 }}>{t.descripcion}</div>
+                        </div>
+                        <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
+                          <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: PRIORIDAD_COLOR[t.prioridad], color: PRIORIDAD_TEXT[t.prioridad] }}>{t.prioridad}</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: t.estado === "resuelto" ? "rgba(34,197,94,0.12)" : t.estado === "en_proceso" ? "rgba(59,130,246,0.12)" : "rgba(234,179,8,0.12)", color: t.estado === "resuelto" ? "#22c55e" : t.estado === "en_proceso" ? "#3b82f6" : "#eab308" }}>{t.estado.replace("_"," ")}</span>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.2)" }}>{new Date(t.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+
         </main>
       </div>
+
+      {/* Modal ticket soporte */}
+      {ticketVer && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+          onClick={e => { if (e.target === e.currentTarget) { setTicketVer(null); setRespuestaForm(""); } }}>
+          <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 24, width: "100%", maxWidth: 640, maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+              <div>
+                <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 4 }}>Ticket de {ticketVer.perfiles ? `${ticketVer.perfiles.nombre} ${ticketVer.perfiles.apellido}` : "—"}</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{ticketVer.asunto}</div>
+              </div>
+              <button onClick={() => { setTicketVer(null); setRespuestaForm(""); }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer" }}>✕</button>
+            </div>
+
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "12px 16px", marginBottom: 16 }}>
+              <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Descripción del usuario</div>
+              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{ticketVer.descripcion}</div>
+            </div>
+
+            <div style={{ marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Respuesta</div>
+              <button onClick={resolverConIA} disabled={resolviendoIA} style={{ padding: "6px 14px", background: resolviendoIA ? "rgba(255,255,255,0.06)" : "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", borderRadius: 6, color: "#a78bfa", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>
+                {resolviendoIA ? "✨ Generando..." : "✨ Resolver con IA"}
+              </button>
+            </div>
+            <textarea
+              value={respuestaForm}
+              onChange={e => setRespuestaForm(e.target.value)}
+              placeholder="Escribí la respuesta o usá '✨ Resolver con IA' para generar una sugerencia..."
+              style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", padding: "12px 14px", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none", resize: "vertical", minHeight: 160, boxSizing: "border-box" }}
+            />
+
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
+              <button onClick={() => { setTicketVer(null); setRespuestaForm(""); }} style={{ padding: "10px 18px", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
+              <button onClick={responderTicket} disabled={guardandoRespuesta || !respuestaForm.trim()} style={{ padding: "10px 22px", background: "#22c55e", color: "#fff", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: guardandoRespuesta || !respuestaForm.trim() ? 0.5 : 1 }}>
+                {guardandoRespuesta ? "Enviando..." : "✓ Enviar respuesta"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast && <div className={`adm-toast ${toast.tipo}`}>{toast.msg}</div>}
 
