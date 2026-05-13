@@ -236,4 +236,4 @@
 
 ---
 
-*Última actualización: v18 — MOD 39B (post redes IA), MOD 83 (insignias expandidas), MOD 106 (autorizaciones de venta)*
+*Última actualización: v19 — MOD 39B (post redes IA), MOD 83 (insignias expandidas), MOD 106 (autorizaciones de venta), Perfil ampliado (TikTok, YouTube, Telegram, WhatsApp Biz, portal propio, franquicia, empleados, horario, idiomas, certificaciones, asociaciones)*

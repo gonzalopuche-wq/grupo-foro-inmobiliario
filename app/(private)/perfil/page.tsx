@@ -23,6 +23,18 @@ interface Perfil {
   instagram: string | null;
   linkedin: string | null;
   facebook: string | null;
+  tiktok: string | null;
+  youtube: string | null;
+  whatsapp_negocio: string | null;
+  telegram: string | null;
+  portal_propio: string | null;
+  asociaciones: string | null;
+  certificaciones: string | null;
+  idiomas: string[] | null;
+  descripcion_inmobiliaria: string | null;
+  horario_atencion: string | null;
+  cant_empleados: number | null;
+  franquicia: string | null;
   bio: string | null;
   socio_cir: boolean;
   tipo: string;
@@ -53,6 +65,10 @@ const ESPECIALIDADES_OPCIONES = [
 
 const CONDICIONES_IVA = [
   "Responsable inscripto", "Monotributista", "Exento", "No responsable",
+];
+
+const IDIOMAS_OPCIONES = [
+  "Español", "Inglés", "Portugués", "Italiano", "Francés", "Alemán", "Chino", "Árabe",
 ];
 
 const SECCIONES = [
@@ -146,6 +162,18 @@ export default function PerfilPage() {
       instagram: perfil.instagram,
       linkedin: perfil.linkedin,
       facebook: perfil.facebook,
+      tiktok: perfil.tiktok,
+      youtube: perfil.youtube,
+      whatsapp_negocio: perfil.whatsapp_negocio,
+      telegram: perfil.telegram,
+      portal_propio: perfil.portal_propio,
+      asociaciones: perfil.asociaciones,
+      certificaciones: perfil.certificaciones,
+      idiomas: perfil.idiomas,
+      descripcion_inmobiliaria: perfil.descripcion_inmobiliaria,
+      horario_atencion: perfil.horario_atencion,
+      cant_empleados: perfil.cant_empleados,
+      franquicia: perfil.franquicia,
       bio: perfil.bio,
       socio_cir: perfil.socio_cir,
       notif_eventos: perfil.notif_eventos,
@@ -174,6 +202,15 @@ export default function PerfilPage() {
       ? actual.filter(e => e !== esp)
       : [...actual, esp];
     setPerfil({ ...perfil, especialidades: nueva });
+  };
+
+  const toggleIdioma = (idioma: string) => {
+    if (!perfil) return;
+    const actual = perfil.idiomas ?? [];
+    const nueva = actual.includes(idioma)
+      ? actual.filter(e => e !== idioma)
+      : [...actual, idioma];
+    setPerfil({ ...perfil, idiomas: nueva });
   };
 
   const activarPush = async () => {
@@ -517,11 +554,20 @@ export default function PerfilPage() {
           {seccion === "profesional" && (
             <div className="pf-section">
               <div className="pf-section-title">🏢 Datos <span>profesionales</span></div>
-              <div className="pf-section-sub">Tu presencia profesional en la red GFI®</div>
+              <div className="pf-section-sub">Tu presencia profesional en la red GFI® — más datos = más visibilidad</div>
+
+              {/* Inmobiliaria */}
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12, marginTop: 4, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                Datos de la inmobiliaria
+              </div>
               <div className="pf-grid">
                 <div className="pf-field">
                   <label className="pf-label">Inmobiliaria / Empresa</label>
                   <input className="pf-input" placeholder="Nombre de tu inmobiliaria" value={perfil.inmobiliaria ?? ""} onChange={e => set("inmobiliaria", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">Franquicia</label>
+                  <input className="pf-input" placeholder="Ej: RE/MAX, Century 21, independiente..." value={perfil.franquicia ?? ""} onChange={e => set("franquicia", e.target.value)} />
                 </div>
                 <div className="pf-field">
                   <label className="pf-label">Zona de trabajo</label>
@@ -529,23 +575,19 @@ export default function PerfilPage() {
                 </div>
                 <div className="pf-field">
                   <label className="pf-label">Años de experiencia</label>
-                  <input className="pf-input" type="number" placeholder="Ej: 10" value={perfil.anos_experiencia ?? ""} onChange={e => set("anos_experiencia", parseInt(e.target.value) || null)} />
+                  <input className="pf-input" type="number" min="0" max="60" placeholder="Ej: 10" value={perfil.anos_experiencia ?? ""} onChange={e => set("anos_experiencia", parseInt(e.target.value) || null)} />
                 </div>
                 <div className="pf-field">
-                  <label className="pf-label">Web propia</label>
-                  <input className="pf-input" placeholder="https://tuweb.com.ar" value={perfil.web_propia ?? ""} onChange={e => set("web_propia", e.target.value)} />
+                  <label className="pf-label">Cantidad de empleados</label>
+                  <input className="pf-input" type="number" min="1" placeholder="Ej: 5" value={perfil.cant_empleados ?? ""} onChange={e => set("cant_empleados", parseInt(e.target.value) || null)} />
                 </div>
                 <div className="pf-field">
-                  <label className="pf-label">Instagram</label>
-                  <input className="pf-input" placeholder="@tuusuario" value={perfil.instagram ?? ""} onChange={e => set("instagram", e.target.value)} />
+                  <label className="pf-label">Horario de atención</label>
+                  <input className="pf-input" placeholder="Ej: Lun-Vie 9-18 / Sáb 9-13" value={perfil.horario_atencion ?? ""} onChange={e => set("horario_atencion", e.target.value)} />
                 </div>
-                <div className="pf-field">
-                  <label className="pf-label">LinkedIn</label>
-                  <input className="pf-input" placeholder="linkedin.com/in/..." value={perfil.linkedin ?? ""} onChange={e => set("linkedin", e.target.value)} />
-                </div>
-                <div className="pf-field">
-                  <label className="pf-label">Facebook</label>
-                  <input className="pf-input" placeholder="facebook.com/..." value={perfil.facebook ?? ""} onChange={e => set("facebook", e.target.value)} />
+                <div className="pf-field span2">
+                  <label className="pf-label">Descripción de la inmobiliaria</label>
+                  <textarea className="pf-textarea" placeholder="Describí tu inmobiliaria: servicios, valores, diferencial frente a otras..." value={perfil.descripcion_inmobiliaria ?? ""} onChange={e => set("descripcion_inmobiliaria", e.target.value)} />
                 </div>
                 <div className="pf-field span2">
                   <label className="pf-label">Bio profesional</label>
@@ -566,6 +608,79 @@ export default function PerfilPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Presencia digital */}
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12, marginTop: 24, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                Presencia digital y redes sociales
+              </div>
+              <div className="pf-grid">
+                <div className="pf-field">
+                  <label className="pf-label">🌐 Web propia</label>
+                  <input className="pf-input" placeholder="https://tuweb.com.ar" value={perfil.web_propia ?? ""} onChange={e => set("web_propia", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">🏠 Portal inmobiliario propio</label>
+                  <input className="pf-input" placeholder="https://tuportal.com.ar" value={perfil.portal_propio ?? ""} onChange={e => set("portal_propio", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">📸 Instagram</label>
+                  <input className="pf-input" placeholder="@tuusuario" value={perfil.instagram ?? ""} onChange={e => set("instagram", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">💼 LinkedIn</label>
+                  <input className="pf-input" placeholder="linkedin.com/in/..." value={perfil.linkedin ?? ""} onChange={e => set("linkedin", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">👥 Facebook</label>
+                  <input className="pf-input" placeholder="facebook.com/tupagina" value={perfil.facebook ?? ""} onChange={e => set("facebook", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">🎵 TikTok</label>
+                  <input className="pf-input" placeholder="@tuusuario" value={perfil.tiktok ?? ""} onChange={e => set("tiktok", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">▶️ YouTube</label>
+                  <input className="pf-input" placeholder="youtube.com/@tucanal" value={perfil.youtube ?? ""} onChange={e => set("youtube", e.target.value)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">💬 Telegram</label>
+                  <input className="pf-input" placeholder="@tuusuario" value={perfil.telegram ?? ""} onChange={e => set("telegram", e.target.value)} />
+                </div>
+                <div className="pf-field span2">
+                  <label className="pf-label">📲 WhatsApp de negocio</label>
+                  <input className="pf-input" placeholder="Ej: 5493412345678 (con código de país)" value={perfil.whatsapp_negocio ?? ""} onChange={e => set("whatsapp_negocio", e.target.value)} />
+                </div>
+              </div>
+
+              {/* Formación y asociaciones */}
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12, marginTop: 24, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                Formación y trayectoria
+              </div>
+              <div className="pf-grid">
+                <div className="pf-field span2">
+                  <label className="pf-label">Asociaciones / Colegios profesionales</label>
+                  <input className="pf-input" placeholder="Ej: COCIR, CIR, CUCICBA, Cámara de..." value={perfil.asociaciones ?? ""} onChange={e => set("asociaciones", e.target.value)} />
+                </div>
+                <div className="pf-field span2">
+                  <label className="pf-label">Certificaciones y capacitaciones</label>
+                  <textarea className="pf-textarea" style={{ minHeight: 70 }} placeholder="Ej: Tasador UTDT, Certificado IUCEA, Posgrado en negocios inmobiliarios..." value={perfil.certificaciones ?? ""} onChange={e => set("certificaciones", e.target.value)} />
+                </div>
+                <div className="pf-field span2">
+                  <label className="pf-label">Idiomas</label>
+                  <div className="esp-grid">
+                    {IDIOMAS_OPCIONES.map(idioma => (
+                      <button
+                        key={idioma}
+                        className={`esp-tag${(perfil.idiomas ?? []).includes(idioma) ? " activo" : ""}`}
+                        onClick={() => toggleIdioma(idioma)}
+                      >
+                        {idioma}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               <div className="pf-save-bar">
                 <button className="btn-save" onClick={guardar} disabled={guardando}>
                   {guardando ? "Guardando..." : "Guardar cambios"}
@@ -796,10 +911,10 @@ export default function PerfilPage() {
                 {[
                   {
                     ico: "✅", label: "Perfil Completo", tier: "bronze",
-                    desc: "Foto, bio, zona y especialidades",
-                    goal: 4,
-                    current: [!!perfil.foto_url, !!perfil.bio, !!perfil.zona_trabajo, (perfil.especialidades?.length ?? 0) > 0].filter(Boolean).length,
-                    earned: !!perfil.foto_url && !!perfil.bio && !!perfil.zona_trabajo && (perfil.especialidades?.length ?? 0) > 0,
+                    desc: "Foto, bio, zona, especialidades e inmobiliaria",
+                    goal: 5,
+                    current: [!!perfil.foto_url, !!perfil.bio, !!perfil.zona_trabajo, (perfil.especialidades?.length ?? 0) > 0, !!perfil.inmobiliaria].filter(Boolean).length,
+                    earned: !!perfil.foto_url && !!perfil.bio && !!perfil.zona_trabajo && (perfil.especialidades?.length ?? 0) > 0 && !!perfil.inmobiliaria,
                   },
                   {
                     ico: "🏠", label: "Primera Propiedad", tier: "bronze",
