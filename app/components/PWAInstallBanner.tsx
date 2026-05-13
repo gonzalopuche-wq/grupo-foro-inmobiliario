@@ -7,14 +7,31 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+function isIOS() {
+  if (typeof navigator === "undefined") return false;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function isInStandaloneMode() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true;
+}
+
 export default function PWAInstallBanner() {
   const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  const [modoIOS, setModoIOS] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (localStorage.getItem("pwa-install-dismissed")) return;
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if (isInStandaloneMode()) return;
+
+    if (isIOS()) {
+      setModoIOS(true);
+      setVisible(true);
+      return;
+    }
 
     const handler = (e: Event) => {
       e.preventDefault();
@@ -66,25 +83,32 @@ export default function PWAInstallBanner() {
         }}>
           Instalá GFI® como app
         </p>
-        <p style={{
-          margin: "3px 0 0", fontSize: 11,
-          color: "rgba(255,255,255,0.4)", fontFamily: "Inter, sans-serif",
-        }}>
-          Acceso rápido desde el escritorio o barra de tareas
-        </p>
+        {modoIOS ? (
+          <p style={{ margin: "3px 0 0", fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter, sans-serif", lineHeight: 1.5 }}>
+            Tocá <strong style={{ color: "rgba(255,255,255,0.6)" }}>Compartir</strong> {" "}
+            <span style={{ fontSize: 13 }}>⎋</span>
+            {" "}y luego <strong style={{ color: "rgba(255,255,255,0.6)" }}>"Agregar a pantalla de inicio"</strong>
+          </p>
+        ) : (
+          <p style={{ margin: "3px 0 0", fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter, sans-serif" }}>
+            Acceso rápido desde el escritorio o barra de tareas
+          </p>
+        )}
       </div>
-      <button
-        onClick={instalar}
-        style={{
-          background: "#cc0000", color: "#fff", border: "none",
-          borderRadius: 6, padding: "8px 14px",
-          fontSize: 12, fontWeight: 700,
-          fontFamily: "Montserrat, sans-serif", cursor: "pointer",
-          flexShrink: 0, letterSpacing: "0.05em", whiteSpace: "nowrap",
-        }}
-      >
-        Instalar
-      </button>
+      {!modoIOS && (
+        <button
+          onClick={instalar}
+          style={{
+            background: "#cc0000", color: "#fff", border: "none",
+            borderRadius: 6, padding: "8px 14px",
+            fontSize: 12, fontWeight: 700,
+            fontFamily: "Montserrat, sans-serif", cursor: "pointer",
+            flexShrink: 0, letterSpacing: "0.05em", whiteSpace: "nowrap",
+          }}
+        >
+          Instalar
+        </button>
+      )}
       <button
         onClick={cerrar}
         style={{
