@@ -180,6 +180,11 @@ export default function AdminPage() {
   const [eventosPropuestos, setEventosPropuestos] = useState<EventoPropuesto[]>([]);
   const [loadingEvProp, setLoadingEvProp] = useState(true);
   const [procesandoEvProp, setProcesandoEvProp] = useState<string | null>(null);
+  const [configEvId, setConfigEvId] = useState<string | null>(null);
+  const [configEvNotif, setConfigEvNotif] = useState<{
+    activa: boolean; frecuencia: number; audiencia: string;
+    esPauta: boolean; pautaOrg: string; pautaMonto: string;
+  }>({ activa: true, frecuencia: 2, audiencia: "todos", esPauta: false, pautaOrg: "", pautaMonto: "" });
   // Colaboradores
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
   const [loadingColab, setLoadingColab] = useState(true);
@@ -251,9 +256,17 @@ export default function AdminPage() {
     setLoadingEvProp(false);
   };
 
-  const aprobarEventoPropuesto = async (ev: EventoPropuesto) => {
+  const aprobarEventoPropuesto = async (ev: EventoPropuesto, cfg: typeof configEvNotif) => {
     setProcesandoEvProp(ev.id);
-    await supabase.from("eventos").update({ estado: "publicado" }).eq("id", ev.id);
+    await supabase.from("eventos").update({
+      estado: "publicado",
+      notif_activa: cfg.activa,
+      notif_frecuencia: cfg.frecuencia,
+      notif_audiencia: cfg.audiencia,
+      es_pauta: cfg.esPauta,
+      pauta_organizador: cfg.esPauta ? cfg.pautaOrg || null : null,
+      pauta_monto: cfg.esPauta && cfg.pautaMonto ? parseFloat(cfg.pautaMonto) : null,
+    }).eq("id", ev.id);
     await supabase.from("notificaciones").insert({
       user_id: ev.organizador_id,
       tipo: "evento_aprobado",
@@ -262,7 +275,9 @@ export default function AdminPage() {
       leida: false,
     });
     setProcesandoEvProp(null);
+    setConfigEvId(null);
     cargarEventosPropuestos();
+    mostrarToast("Evento publicado ✓");
   };
 
   const rechazarEventoPropuesto = async (ev: EventoPropuesto) => {
@@ -961,10 +976,76 @@ export default function AdminPage() {
                     </div>
                     <div style={{display:"flex",flexDirection:"column",gap:8,flexShrink:0}}>
                       {procesandoEvProp === ev.id ? <span className="adm-spinner" /> : (<>
-                        <button className="adm-btn-aprobar" onClick={() => aprobarEventoPropuesto(ev)}>✓ Publicar</button>
+                        <button className="adm-btn-aprobar" onClick={() => {
+                          if (configEvId === ev.id) return;
+                          setConfigEvNotif({ activa: true, frecuencia: 2, audiencia: "todos", esPauta: false, pautaOrg: "", pautaMonto: "" });
+                          setConfigEvId(ev.id);
+                        }}>✓ Publicar</button>
                         <button className="adm-btn-rechazar" onClick={() => rechazarEventoPropuesto(ev)}>✗ Rechazar</button>
                       </>)}
                     </div>
+                  {/* Panel config notificaciones */}
+                  {configEvId === ev.id && (
+                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", marginTop: 14, paddingTop: 14 }}>
+                      <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12 }}>
+                        Configuración de notificaciones push
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
+                        {/* Activar notifs */}
+                        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                          <input type="checkbox" checked={configEvNotif.activa} onChange={e => setConfigEvNotif(p => ({ ...p, activa: e.target.checked }))} />
+                          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Activar notificaciones</span>
+                        </label>
+                        {configEvNotif.activa && (<>
+                          {/* Frecuencia */}
+                          <div>
+                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Frecuencia</div>
+                            <div style={{ display: "flex", gap: 4 }}>
+                              {[1, 2, 3].map(f => (
+                                <button key={f} onClick={() => setConfigEvNotif(p => ({ ...p, frecuencia: f }))}
+                                  style={{ padding: "4px 10px", borderRadius: 3, border: "1px solid", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer",
+                                    background: configEvNotif.frecuencia === f ? "#cc0000" : "transparent",
+                                    borderColor: configEvNotif.frecuencia === f ? "#cc0000" : "rgba(255,255,255,0.15)",
+                                    color: configEvNotif.frecuencia === f ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                                  {f}× / sem
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          {/* Audiencia */}
+                          <div>
+                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Audiencia</div>
+                            <select value={configEvNotif.audiencia} onChange={e => setConfigEvNotif(p => ({ ...p, audiencia: e.target.value }))}
+                              style={{ padding: "5px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
+                              <option value="todos">Todos los miembros</option>
+                              <option value="corredores">Solo corredores</option>
+                              <option value="vip">Solo VIP</option>
+                            </select>
+                          </div>
+                        </>)}
+                        {/* Pauta */}
+                        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                          <input type="checkbox" checked={configEvNotif.esPauta} onChange={e => setConfigEvNotif(p => ({ ...p, esPauta: e.target.checked }))} />
+                          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Pauta paga</span>
+                        </label>
+                        {configEvNotif.esPauta && (<>
+                          <input placeholder="Organizador externo" value={configEvNotif.pautaOrg} onChange={e => setConfigEvNotif(p => ({ ...p, pautaOrg: e.target.value }))}
+                            style={{ padding: "5px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }} />
+                          <input placeholder="Monto cobrado ($)" type="number" value={configEvNotif.pautaMonto} onChange={e => setConfigEvNotif(p => ({ ...p, pautaMonto: e.target.value }))}
+                            style={{ width: 140, padding: "5px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }} />
+                        </>)}
+                      </div>
+                      <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+                        <button className="adm-btn-aprobar" onClick={() => aprobarEventoPropuesto(ev, configEvNotif)} disabled={procesandoEvProp === ev.id}>
+                          {procesandoEvProp === ev.id ? "Publicando..." : "✓ Confirmar y publicar"}
+                        </button>
+                        <button onClick={() => setConfigEvId(null)}
+                          style={{ padding: "6px 14px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}>
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   </div>
                 ))}
               </div>
