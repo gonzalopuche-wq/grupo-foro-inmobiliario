@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../lib/supabase";
 import IAChatFlotante from "./components/IAChatFlotante";
+import AnuncioBanner from "../components/AnuncioBanner";
 
 // ── Nav corredor matriculado (acceso completo) ─────────────────────────────
 const NAV_CORREDOR = [
@@ -242,6 +243,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
             <div className="topbar-logo">GFI<span>®</span></div>
             <button className="topbar-menu-btn" onClick={() => setMenuAbierto(true)}>☰</button>
           </div>
+          <AnuncioBanner />
           <div className="page-content">
             {children}
           </div>
