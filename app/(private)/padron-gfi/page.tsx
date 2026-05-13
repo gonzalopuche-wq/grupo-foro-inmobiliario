@@ -200,6 +200,16 @@ export default function PadronGFIPage() {
   const cambiarFuente = (f: Fuente) => { setFuente(f); setBusqueda(""); setPagina(0); };
   const cambiarBusqueda = (v: string) => { setBusqueda(v); setPagina(0); };
 
+  const ultimaSync = useMemo(() => {
+    if (!cocirData.length) return null;
+    const max = cocirData.reduce((acc, c) => {
+      const t = c.actualizado_at ? new Date(c.actualizado_at).getTime() : 0;
+      return t > acc ? t : acc;
+    }, 0);
+    if (!max) return null;
+    return new Date(max).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }, [cocirData]);
+
   return (
     <>
       <style>{`
@@ -324,10 +334,17 @@ export default function PadronGFIPage() {
             </div>
             <div className="pad-stat-label">Resultados búsqueda</div>
           </div>
-          <div style={{marginLeft:"auto",fontSize:11,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>
-            {fuente === "cocir" ? "Padrón oficial COCIR · Solo lectura" :
-             fuente === "gfi" ? "Miembros registrados en GFI®" :
-             "Cruce COCIR + GFI por matrícula"}
+          <div style={{marginLeft:"auto",textAlign:"right"}}>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>
+              {fuente === "cocir" ? "Padrón oficial COCIR · Solo lectura" :
+               fuente === "gfi" ? "Miembros registrados en GFI®" :
+               "Cruce COCIR + GFI por matrícula"}
+            </div>
+            {fuente === "cocir" && ultimaSync && (
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.15)",marginTop:2}}>
+                Última sync: {ultimaSync}
+              </div>
+            )}
           </div>
         </div>
 
@@ -366,7 +383,7 @@ export default function PadronGFIPage() {
             <div className="pad-loading">
               <div className="pad-spin" />
               <div className="pad-loading-txt">
-                Cargando {fuente === "cocir" ? "3.189 registros" : "registros"}...
+                Cargando padrón…
               </div>
             </div>
           </div>
