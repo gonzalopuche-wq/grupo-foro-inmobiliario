@@ -5,7 +5,7 @@ import { supabase } from "../../lib/supabase";
 import AdminBeneficios from "../../components/AdminBeneficios";
 
 interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; insignia_mentor?: boolean; insignia_tasador?: boolean; categoria?: string; bonificacion_pct?: number; }
-interface Indicador { clave: string; valor: number | string; label: string; tipo: "number" | "text"; }
+interface Indicador { clave: string; valor: number | string; label: string; tipo: "number" | "text"; actualizado_at?: string | null; }
 interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number; monto_ars: number | null; monto_declarado_ars: number | null; dolar_ref: number | null; estado: string; fecha_pago_declarado: string | null; fecha_confirmacion: string | null; fecha_vencimiento: string | null; periodo: string | null; comprobante: string | null; cbu_origen: string | null; nota_admin: string | null; creado_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
 interface Documento { id: string; nombre: string; descripcion: string; nivel: string; categoria: string; archivo_url: string; estado: string; created_at: string; user_id: string; perfiles: { nombre: string; apellido: string; matricula: string; }; }
@@ -35,6 +35,24 @@ const INDICADORES_CONFIG = [
   { clave: "precio_colaborador_usd", label: "Precio Colaborador (USD)", tipo: "number" as const },
   { clave: "costo_match_divisas", label: "Costo Match Divisas (ARS)", tipo: "number" as const },
   { clave: "costo_match_mir", label: "Costo Match MIR (ARS)", tipo: "number" as const },
+];
+
+const CONFIGURACION_SITIO_DEF = [
+  { clave: "anuncio_banner",                  label: "Texto del banner global",          categoria: "anuncios",   tipo: "textarea", descripcion: "Visible para todos al entrar. Vacío = sin banner.", placeholder: "Ej: Reunión GFI el viernes 14/06 a las 10hs en sede COCIR" },
+  { clave: "anuncio_color",                   label: "Color del banner",                  categoria: "anuncios",   tipo: "color",    descripcion: "Color de fondo del banner.", placeholder: "#cc0000" },
+  { clave: "jus_url_cocir",                   label: "URL del JUS en COCIR",              categoria: "jus",        tipo: "url",      descripcion: "Dirección de la página de COCIR con el valor del JUS. Requerida para sincronización automática.", placeholder: "https://..." },
+  { clave: "honorarios_venta_propietario_pct",label: "Honorarios venta — propietario (%)",categoria: "honorarios", tipo: "number",   descripcion: "Porcentaje sugerido al propietario.", placeholder: "3" },
+  { clave: "honorarios_venta_comprador_pct",  label: "Honorarios venta — comprador (%)",  categoria: "honorarios", tipo: "number",   descripcion: "Porcentaje sugerido al comprador.", placeholder: "3" },
+  { clave: "honorarios_alquiler_meses",       label: "Honorarios alquiler (meses)",       categoria: "honorarios", tipo: "number",   descripcion: "Meses sugeridos de honorario.", placeholder: "1" },
+  { clave: "soporte_whatsapp",                label: "WhatsApp de soporte",               categoria: "contacto",   tipo: "text",     descripcion: "Sin + (ej: 5493413001234).", placeholder: "5493413001234" },
+  { clave: "soporte_email",                   label: "Email de soporte",                  categoria: "contacto",   tipo: "email",    descripcion: "Email de contacto para soporte.", placeholder: "soporte@grupoforo..." },
+];
+
+const CATEGORIAS_CONF = [
+  { key: "anuncios",   label: "Anuncios globales" },
+  { key: "jus",        label: "Valor JUS" },
+  { key: "honorarios", label: "Honorarios sugeridos" },
+  { key: "contacto",   label: "Contacto y soporte" },
 ];
 
 const CBU_CONFIG = [
@@ -196,6 +214,12 @@ export default function AdminPage() {
   const [notificandoPromo, setNotificandoPromo] = useState(false);
   const [mirGratuito, setMirGratuito] = useState(false);
   const [guardandoMirGratuito, setGuardandoMirGratuito] = useState(false);
+  // Configuración del sitio
+  const [configuracion, setConfiguracion] = useState<Record<string, string>>({});
+  const [editandoConf, setEditandoConf] = useState<Record<string, string>>({});
+  const [guardandoConf, setGuardandoConf] = useState<string | null>(null);
+  const [sincronizandoJus, setSincronizandoJus] = useState(false);
+  const [jusActualizadoAt, setJusActualizadoAt] = useState<string | null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -207,7 +231,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -353,16 +377,58 @@ export default function AdminPage() {
 
   const cargarIndicadores = async () => {
     const claves = INDICADORES_CONFIG.map(i => i.clave);
-    const { data } = await supabase.from("indicadores").select("clave, valor").in("clave", claves);
+    const { data } = await supabase.from("indicadores").select("clave, valor, actualizado_at").in("clave", claves);
     if (!data) return;
     const result: Indicador[] = INDICADORES_CONFIG.map(cfg => {
       const row = data.find(r => r.clave === cfg.clave);
-      return { clave: cfg.clave, label: cfg.label, valor: row?.valor ?? 0, tipo: cfg.tipo };
+      return { clave: cfg.clave, label: cfg.label, valor: row?.valor ?? 0, tipo: cfg.tipo, actualizado_at: row?.actualizado_at ?? null };
     });
     setIndicadores(result);
     const editInit: Record<string, string> = {};
     result.forEach(i => { editInit[i.clave] = i.clave.includes("_usd") ? i.valor.toString() : Number(i.valor).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); });
     setEditando(editInit);
+    const jus = data.find(r => r.clave === "valor_jus");
+    if (jus?.actualizado_at) setJusActualizadoAt(jus.actualizado_at);
+  };
+
+  const cargarConfiguracion = async () => {
+    const { data } = await supabase.from("configuracion_sitio").select("clave, valor");
+    if (!data) return;
+    const map: Record<string, string> = {};
+    data.forEach(r => { map[r.clave] = r.valor ?? ""; });
+    setConfiguracion(map);
+    setEditandoConf({ ...map });
+  };
+
+  const guardarConfiguracion = async (clave: string) => {
+    setGuardandoConf(clave);
+    await supabase.from("configuracion_sitio").upsert(
+      { clave, valor: editandoConf[clave] ?? "", actualizado_at: new Date().toISOString() },
+      { onConflict: "clave" }
+    );
+    setConfiguracion(prev => ({ ...prev, [clave]: editandoConf[clave] ?? "" }));
+    setGuardandoConf(null);
+    mostrarToast("Guardado", "ok");
+  };
+
+  const sincronizarJus = async () => {
+    setSincronizandoJus(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    try {
+      const res = await fetch("/api/admin/sync-jus", {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+      const json = await res.json();
+      if (json.ok) {
+        mostrarToast(`JUS sincronizado: $ ${Number(json.valor).toLocaleString("es-AR", { minimumFractionDigits: 2 })}`, "ok");
+        cargarIndicadores();
+      } else {
+        mostrarToast(json.error ?? "Error al sincronizar JUS", "err");
+      }
+    } catch {
+      mostrarToast("Error de conexión al sincronizar JUS", "err");
+    }
+    setSincronizandoJus(false);
   };
 
   const cargarCbu = async () => {
@@ -1218,11 +1284,27 @@ export default function AdminPage() {
               {indicadores.map(ind => (
                 <div key={ind.clave} className="adm-ind-card">
                   <div className="adm-ind-label">{ind.label}</div>
-                  <div className="adm-ind-actual">{ind.clave.includes("_usd") ? `USD ${ind.valor}` : new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(ind.valor))}</div>
+                  <div className="adm-ind-actual">
+                    {ind.clave.includes("_usd") ? `USD ${ind.valor}` : new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(ind.valor))}
+                  </div>
+                  {ind.clave === "valor_jus" && jusActualizadoAt && (
+                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginBottom: 4 }}>
+                      Actualizado: {new Date(jusActualizadoAt).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                    </div>
+                  )}
                   <div className="adm-ind-form">
                     <input className="adm-ind-input" value={editando[ind.clave] ?? ""} onChange={e => setEditando(prev => ({...prev,[ind.clave]:e.target.value}))} onKeyDown={e => { if (e.key === "Enter") guardarIndicador(ind.clave); }} placeholder={ind.clave.includes("_usd") ? "Ej: 15" : "Ej: 5000"} />
                     <button className="adm-ind-btn" onClick={() => guardarIndicador(ind.clave)} disabled={guardando === ind.clave}>{guardando === ind.clave ? "..." : "Guardar"}</button>
                   </div>
+                  {ind.clave === "valor_jus" && (
+                    <button
+                      onClick={sincronizarJus}
+                      disabled={sincronizandoJus}
+                      style={{ marginTop: 6, padding: "5px 10px", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: sincronizandoJus ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.6)", cursor: sincronizandoJus ? "not-allowed" : "pointer", width: "100%" }}
+                    >
+                      {sincronizandoJus ? "Sincronizando..." : "↻ Sincronizar desde COCIR"}
+                    </button>
+                  )}
                   {guardadoOk === ind.clave && <div className="adm-ind-ok">✓ Guardado</div>}
                 </div>
               ))}
@@ -1676,6 +1758,84 @@ export default function AdminPage() {
                 {guardandoRedes ? "Guardando..." : "Guardar configuración de redes"}
               </button>
             </div>
+          </div>
+
+          {/* ── CONFIGURACIÓN DEL SITIO ── */}
+          <div>
+            <div className="adm-ind-titulo">Configuración <span>del sitio</span></div>
+            <div className="adm-ind-subtitulo">Controlá textos, banners, honorarios sugeridos y el sincronizador automático de JUS desde COCIR.</div>
+            {CATEGORIAS_CONF.map(cat => {
+              const items = CONFIGURACION_SITIO_DEF.filter(c => c.categoria === cat.key);
+              return (
+                <div key={cat.key} style={{ marginBottom: 28 }}>
+                  <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    {cat.label}
+                  </div>
+                  <div className="adm-ind-grid">
+                    {items.map(item => (
+                      <div key={item.clave} className="adm-ind-card">
+                        <div className="adm-ind-label">{item.label}</div>
+                        {item.descripcion && (
+                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginBottom: 6 }}>{item.descripcion}</div>
+                        )}
+                        {configuracion[item.clave] && item.tipo !== "textarea" && item.tipo !== "color" && (
+                          <div className="adm-ind-actual" style={{ fontSize: 12, wordBreak: "break-all" }}>
+                            {item.tipo === "color"
+                              ? <span style={{ display: "inline-block", width: 14, height: 14, borderRadius: 2, background: configuracion[item.clave], border: "1px solid rgba(255,255,255,0.2)", verticalAlign: "middle", marginRight: 6 }} />
+                              : null
+                            }
+                            {configuracion[item.clave]}
+                          </div>
+                        )}
+                        {item.tipo === "color" && configuracion[item.clave] && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                            <div style={{ width: 28, height: 28, borderRadius: 4, background: configuracion[item.clave] || "#cc0000", border: "1px solid rgba(255,255,255,0.15)" }} />
+                            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{configuracion[item.clave]}</span>
+                          </div>
+                        )}
+                        <div className="adm-ind-form" style={{ alignItems: item.tipo === "textarea" ? "flex-start" : "center" }}>
+                          {item.tipo === "textarea" ? (
+                            <textarea
+                              className="adm-ind-input"
+                              value={editandoConf[item.clave] ?? ""}
+                              onChange={e => setEditandoConf(prev => ({ ...prev, [item.clave]: e.target.value }))}
+                              placeholder={item.placeholder}
+                              rows={3}
+                              style={{ resize: "vertical", fontFamily: "Inter,sans-serif", fontSize: 12, padding: "6px 8px" }}
+                            />
+                          ) : (
+                            <input
+                              className="adm-ind-input"
+                              type={item.tipo === "color" ? "color" : item.tipo === "number" ? "text" : item.tipo === "url" ? "url" : item.tipo === "email" ? "email" : "text"}
+                              value={editandoConf[item.clave] ?? ""}
+                              onChange={e => setEditandoConf(prev => ({ ...prev, [item.clave]: e.target.value }))}
+                              onKeyDown={e => { if (e.key === "Enter" && item.tipo !== "url") guardarConfiguracion(item.clave); }}
+                              placeholder={item.placeholder}
+                            />
+                          )}
+                          <button
+                            className="adm-ind-btn"
+                            onClick={() => guardarConfiguracion(item.clave)}
+                            disabled={guardandoConf === item.clave}
+                          >
+                            {guardandoConf === item.clave ? "..." : "Guardar"}
+                          </button>
+                        </div>
+                        {item.clave === "jus_url_cocir" && (
+                          <button
+                            onClick={sincronizarJus}
+                            disabled={sincronizandoJus}
+                            style={{ marginTop: 8, padding: "7px 12px", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 3, color: sincronizandoJus ? "rgba(255,255,255,0.3)" : "#cc0000", cursor: sincronizandoJus ? "not-allowed" : "pointer", width: "100%" }}
+                          >
+                            {sincronizandoJus ? "Sincronizando..." : "↻ Sincronizar JUS ahora"}
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
         </main>
