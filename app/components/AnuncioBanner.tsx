@@ -8,11 +8,12 @@ export default function AnuncioBanner() {
   const [color, setColor] = useState("#cc0000");
 
   useEffect(() => {
-    supabase
-      .from("configuracion_sitio")
-      .select("clave, valor")
-      .in("clave", ["anuncio_banner", "anuncio_color"])
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("configuracion_sitio")
+          .select("clave, valor")
+          .in("clave", ["anuncio_banner", "anuncio_color"]);
         if (!data) return;
         const map: Record<string, string> = {};
         data.forEach(r => { map[r.clave] = r.valor ?? ""; });
@@ -22,8 +23,8 @@ export default function AnuncioBanner() {
         if (localStorage.getItem(key)) return;
         setTexto(msg);
         if (map.anuncio_color) setColor(map.anuncio_color);
-      })
-      .catch(() => {});
+      } catch { /* tabla aún no existe */ }
+    })();
   }, []);
 
   const cerrar = () => {
