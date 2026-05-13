@@ -99,12 +99,12 @@ export async function GET(req: NextRequest) {
     }
 
     const diasRestantes = Math.ceil(
-      (new Date(ev.fecha).getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24)
+      (new Date(ev.fecha + "T12:00:00").getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24)
     );
     const cuandoMsg =
       diasRestantes <= 1 ? "¡Es mañana!" :
       diasRestantes <= 7 ? `En ${diasRestantes} días` :
-      `El ${new Date(ev.fecha).toLocaleDateString("es-AR", { day: "numeric", month: "long" })}`;
+      `El ${new Date(ev.fecha + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "long" })}`;
 
     const payload = JSON.stringify({
       titulo: `📅 ${ev.titulo}`,

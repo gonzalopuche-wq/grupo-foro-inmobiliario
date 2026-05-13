@@ -780,13 +780,14 @@ export default function AdminPage() {
   };
 
   const guardarFinanza = async () => {
-    if (!formFinanza.concepto || !formFinanza.monto || !formFinanza.categoria) return;
+    const montoNum = parseFloat(formFinanza.monto.replace(/\./g, "").replace(",", "."));
+    if (!formFinanza.concepto || isNaN(montoNum) || montoNum <= 0 || !formFinanza.categoria) return;
     setGuardandoFinanza(true);
     await supabase.from("admin_finanzas").insert({
       tipo: formFinanza.tipo,
       categoria: formFinanza.categoria,
       concepto: formFinanza.concepto,
-      monto: parseFloat(formFinanza.monto.replace(",", ".")),
+      monto: montoNum,
       moneda: formFinanza.moneda,
       fecha: formFinanza.fecha,
       referencia: formFinanza.referencia || null,
@@ -1995,6 +1996,7 @@ export default function AdminPage() {
             const totalIngresos = finanzasPeriodo.filter(f => f.tipo === "ingreso").reduce((s, f) => s + (f.moneda === "ARS" ? f.monto : 0), 0);
             const totalGastos   = finanzasPeriodo.filter(f => f.tipo === "gasto").reduce((s, f) => s + (f.moneda === "ARS" ? f.monto : 0), 0);
             const balance       = totalIngresos - totalGastos;
+            const tieneOtrasMonedas = finanzasPeriodo.some(f => f.moneda !== "ARS");
             const fmtMonto = (f: FinanzaEntry) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 }).format(f.monto) + " " + f.moneda;
             const fmtFecha = (s: string) => new Date(s + "T12:00:00").toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit" });
             const cats = formFinanza.tipo === "ingreso" ? CATS_INGRESO : CATS_GASTO;
@@ -2018,6 +2020,11 @@ export default function AdminPage() {
                     <div className={`fin-card-value balance`} style={{ color: balance >= 0 ? "#22c55e" : "#ef4444" }}>{new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(balance)}</div>
                   </div>
                 </div>
+                {tieneOtrasMonedas && (
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 12, fontStyle: "italic" }}>
+                    * El balance solo incluye registros en ARS. Hay registros en otras monedas (USD/EUR/USDT) que no están convertidos.
+                  </div>
+                )}
 
                 {/* Controles */}
                 <div className="fin-filtros">
