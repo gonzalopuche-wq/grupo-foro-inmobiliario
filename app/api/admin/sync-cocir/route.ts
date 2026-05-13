@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import * as cheerio from "cheerio";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 const sb = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,6 +11,18 @@ const sb = createClient(
 );
 
 const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
+const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
+const BASE_URL = "https://cocir.org.ar/paginas/matriculados";
+const MAX_PAGINAS = 200;
+const BATCH_PARALELO = 5;
+
+const HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+  "Accept-Language": "es-AR,es;q=0.9,en;q=0.8",
+  "Referer": "https://cocir.org.ar/",
+  "Cache-Control": "no-cache",
+};
 
 function detectarCampo(texto: string): string | null {
   const t = texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
@@ -25,65 +38,152 @@ function detectarCampo(texto: string): string | null {
   return null;
 }
 
-export async function GET() {
+function parsearTabla(html: string, camposPorCol: string[]): any[] {
+  const $ = cheerio.load(html);
+  const usarFallback = camposPorCol.length === 0;
+  const registros: any[] = [];
+
+  $("table tr").each((_, el) => {
+    const tds = $(el).find("td");
+    if (tds.length < 2) return;
+    const rec: Record<string, string | null> = {};
+    tds.each((i, td) => {
+      const val = $(td).text().trim() || null;
+      const campo = usarFallback ? (FALLBACK_ORDEN[i] ?? null) : (camposPorCol[i] ?? null);
+      if (campo && !campo.startsWith("_")) rec[campo] = val;
+    });
+    if (!rec.matricula && !rec.apellido && !rec.nombre) return;
+    registros.push(rec);
+  });
+
+  return registros;
+}
+
+function detectarUltimaPagina($: cheerio.CheerioAPI): number {
+  let maxPag = 1;
+
+  // Look for page number links
+  $("a[href]").each((_, el) => {
+    const href = $( el).attr("href") ?? "";
+    // Match ?page=N, ?pagina=N, &page=N, /matriculados/N, /matriculados?page=N
+    const m = href.match(/[?&/](?:page|pagina|p)=?(\d+)/i) ?? href.match(/matriculados[/?](\d+)/i);
+    if (m) {
+      const n = parseInt(m[1]);
+      if (n > maxPag) maxPag = n;
+    }
+    // Also check text content for page numbers
+    const txt = $( el).text().trim();
+    if (/^\d+$/.test(txt)) {
+      const n = parseInt(txt);
+      if (n > maxPag && n < MAX_PAGINAS) maxPag = n;
+    }
+  });
+
+  // Check for aria-label="Next" or "Siguiente" text
+  const hayMasPag = $("a:contains('Siguiente'), a:contains('siguiente'), a[rel='next'], .pagination .next:not(.disabled)").length > 0;
+  if (hayMasPag && maxPag === 1) maxPag = 2; // At least 2 pages
+
+  return maxPag;
+}
+
+function urlPagina(n: number, patron: string): string {
+  return patron.replace("{n}", String(n));
+}
+
+async function fetchPagina(url: string): Promise<string | null> {
   try {
-    const url = "https://cocir.org.ar/paginas/matriculados";
+    const res = await fetch(url, { headers: HEADERS });
+    if (!res.ok) return null;
+    return res.text();
+  } catch {
+    return null;
+  }
+}
 
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "es-AR,es;q=0.9,en;q=0.8",
-        "Referer": "https://cocir.org.ar/",
-        "Cache-Control": "no-cache",
-      },
-    });
+export async function GET(req: NextRequest) {
+  // Allow both admin manual trigger and cron (no extra auth needed — admin route is already restricted by being in /api/admin/)
+  try {
+    // --- Fetch page 1 ---
+    const html1 = await fetchPagina(BASE_URL);
+    if (!html1) return NextResponse.json({ ok: false, error: "No se pudo acceder a cocir.org.ar" });
 
-    if (!res.ok) {
-      return NextResponse.json({ ok: false, error: `HTTP ${res.status}`, total: 0 });
-    }
+    const $1 = cheerio.load(html1);
 
-    const html = await res.text();
-    const $ = cheerio.load(html);
-
-    // Detect column order from thead headers
+    // Detect columns from thead
     const camposPorCol: string[] = [];
-    $("table thead tr th, table thead tr td").each((i, el) => {
-      camposPorCol[i] = detectarCampo($(el).text()) ?? `_col${i}`;
+    $1("table thead tr th, table thead tr td").each((i, el) => {
+      camposPorCol[i] = detectarCampo($1(el).text()) ?? `_col${i}`;
     });
 
-    // Fallback: standard COCIR positional order if no thead
-    const fallbackOrden: string[] = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
-    const usarFallback = camposPorCol.length === 0;
+    const registrosPag1 = parsearTabla(html1, camposPorCol);
 
-    const registros: any[] = [];
-
-    $("table tr").each((_, el) => {
-      const tds = $(el).find("td");
-      if (tds.length < 2) return;
-
-      const rec: Record<string, string | null> = {};
-      tds.each((i, td) => {
-        const val = $(td).text().trim() || null;
-        const campo = usarFallback ? (fallbackOrden[i] ?? null) : (camposPorCol[i] ?? null);
-        if (campo && !campo.startsWith("_")) rec[campo] = val;
-      });
-
-      if (!rec.matricula && !rec.apellido && !rec.nombre) return;
-      registros.push(rec);
-    });
-
-    if (registros.length === 0) {
+    if (registrosPag1.length === 0) {
       return NextResponse.json({
-        ok: false, total: 0,
-        debug: { status: res.status, htmlLen: html.length, tables: $("table").length },
+        ok: false,
+        error: "No se encontraron registros en la primera página",
+        debug: {
+          htmlLen: html1.length,
+          tables: $1("table").length,
+          thead: $1("table thead").length,
+        },
       });
     }
 
+    // --- Detect pagination ---
+    const ultimaPagina = detectarUltimaPagina($1);
+
+    // Detect URL pattern for pagination
+    let patronPaginacion = `${BASE_URL}?page={n}`;
+    const linkPaginaEjemplo = $1("a[href]").filter((_, el) => {
+      const href = $1(el).attr("href") ?? "";
+      return /[?&](?:page|pagina)=\d+/i.test(href) || /matriculados[/?]\d+/.test(href);
+    }).first().attr("href") ?? "";
+
+    if (linkPaginaEjemplo) {
+      // Infer pattern from example link
+      const m = linkPaginaEjemplo.match(/([?&])(?:page|pagina|p)=\d+/i);
+      if (m) {
+        const sep = m[1];
+        const key = m[0].replace(m[1], "").replace(/=\d+$/, "");
+        patronPaginacion = `${BASE_URL}${sep}${key}={n}`;
+      } else if (/matriculados\/\d+/.test(linkPaginaEjemplo)) {
+        patronPaginacion = `${BASE_URL}/{n}`;
+      }
+    }
+
+    // --- Fetch remaining pages in parallel batches ---
+    const todosRegistros = [...registrosPag1];
+    const matriculasVistas = new Set<string>(registrosPag1.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
+
+    if (ultimaPagina > 1) {
+      const paginas = Array.from({ length: ultimaPagina - 1 }, (_, i) => i + 2);
+      for (let i = 0; i < paginas.length; i += BATCH_PARALELO) {
+        const lote = paginas.slice(i, i + BATCH_PARALELO);
+        const resultados = await Promise.all(
+          lote.map(n => fetchPagina(urlPagina(n, patronPaginacion)))
+        );
+        let alguno = false;
+        for (const html of resultados) {
+          if (!html) continue;
+          const regs = parsearTabla(html, camposPorCol);
+          for (const r of regs) {
+            const mat = String(r.matricula ?? "").trim();
+            if (mat && matriculasVistas.has(mat)) continue; // skip duplicate
+            if (mat) matriculasVistas.add(mat);
+            todosRegistros.push(r);
+            alguno = true;
+          }
+        }
+        // Stop early if no new records in this batch (last page reached)
+        if (!alguno) break;
+      }
+    }
+
+    // --- UPSERT to DB ---
     const ahora = new Date().toISOString();
     const { data: existentes } = await sb
       .from("cocir_padron")
-      .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email");
+      .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email, apellido, nombre");
 
     const mapa = new Map<string, any>();
     (existentes ?? []).forEach((r: any) => {
@@ -92,8 +192,9 @@ export async function GET() {
 
     const nuevos: any[] = [];
     const actualizaciones: any[] = [];
+    let sinCambios = 0;
 
-    for (const reg of registros) {
+    for (const reg of todosRegistros) {
       const mat = String(reg.matricula ?? "").trim();
       const existente = mat ? mapa.get(mat) : undefined;
 
@@ -101,17 +202,25 @@ export async function GET() {
         const update: any = { actualizado_at: ahora };
         let hayCambios = false;
         for (const campo of CAMPOS_CONOCIDOS) {
-          if (campo === "estado" && reg[campo]) {
+          const newVal = reg[campo];
+          if (!newVal) continue;
+          if (campo === "estado") {
             // Always refresh estado
-            update[campo] = reg[campo];
-            hayCambios = true;
-          } else if (reg[campo] != null && reg[campo] !== "" && !existente[campo]) {
+            if (existente.estado !== newVal) {
+              update[campo] = newVal;
+              hayCambios = true;
+            }
+          } else if (!existente[campo]) {
             // Fill in empty fields
-            update[campo] = reg[campo];
+            update[campo] = newVal;
             hayCambios = true;
           }
         }
-        if (hayCambios) actualizaciones.push({ ...update, id: existente.id });
+        if (hayCambios) {
+          actualizaciones.push({ ...update, id: existente.id });
+        } else {
+          sinCambios++;
+        }
       } else {
         nuevos.push({ ...reg, actualizado_at: ahora });
       }
@@ -122,16 +231,23 @@ export async function GET() {
       const { error } = await sb.from("cocir_padron").insert(nuevos.slice(i, i + LOTE));
       if (error) return NextResponse.json({ ok: false, error: error.message });
     }
-    for (const reg of actualizaciones) {
-      const { id, ...campos } = reg;
-      await sb.from("cocir_padron").update(campos).eq("id", id);
+
+    // Batch updates in parallel (5 at a time)
+    for (let i = 0; i < actualizaciones.length; i += 50) {
+      const lote = actualizaciones.slice(i, i + 50);
+      await Promise.all(lote.map(({ id, ...campos }) =>
+        sb.from("cocir_padron").update(campos).eq("id", id)
+      ));
     }
 
     return NextResponse.json({
       ok: true,
       insertados: nuevos.length,
       actualizados: actualizaciones.length,
-      total: registros.length,
+      sin_cambios: sinCambios,
+      total_scrapeados: todosRegistros.length,
+      paginas_procesadas: ultimaPagina,
+      sincronizado_at: ahora,
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message });
