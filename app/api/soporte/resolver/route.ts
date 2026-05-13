@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
   if (!ticket) return NextResponse.json({ error: "Ticket no encontrado" }, { status: 404 });
 
-  const usuario = ticket.perfiles as { nombre: string; apellido: string; matricula: string | null } | null;
+  const usuario = ticket.perfiles as unknown as { nombre: string; apellido: string; matricula: string | null } | null;
 
   const response = await anthropic.messages.create({
     model: "claude-haiku-4-5",
