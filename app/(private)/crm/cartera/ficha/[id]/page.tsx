@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import { PrintButton } from "./PrintButton";
+import { PostRedesButton } from "./PostRedesButton";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -127,6 +128,7 @@ export default async function FichaPage({ params }: Props) {
         <a href="/cartera" className="toolbar-back">← Volver a mi cartera</a>
         <div className="toolbar-title">Ficha de propiedad</div>
         <div className="toolbar-actions">
+          <PostRedesButton propiedadId={prop.id} />
           <PrintButton />
         </div>
       </div>
