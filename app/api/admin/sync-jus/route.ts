@@ -21,32 +21,42 @@ async function authorizado(req: NextRequest): Promise<boolean> {
 
 function extraerJus(html: string): number | null {
   const texto = html.toLowerCase();
-  const posJus = texto.indexOf("jus");
-  if (posJus === -1) return null;
 
-  // Buscar valores monetarios en los 2000 chars alrededor del texto "jus"
-  const ventana = html.slice(Math.max(0, posJus - 800), posJus + 1200);
+  // Buscar todas las ocurrencias de "jus"
+  const posiciones: number[] = [];
+  let p = 0;
+  while ((p = texto.indexOf("jus", p)) !== -1) { posiciones.push(p); p += 3; }
+  if (posiciones.length === 0) return null;
+
   const patrones = [
     /\$\s*([\d]{1,3}(?:\.\d{3})*,\d{2})/g,   // $ 12.345,67
     /\$\s*([\d]{1,3}(?:\.\d{3})+)/g,           // $ 12.345
-    /\$\s*(\d{4,6})/g,                          // $ 12345
+    /\$\s*(\d{3,7})/g,                          // $ 12345
     /([\d]{1,3}(?:\.\d{3})*,\d{2})/g,          // 12.345,67 (sin $)
-    /([\d]{2,3}\.\d{3})/g,                      // 12.345 (sin $)
+    /([\d]{1,3}\.\d{3})/g,                      // 1.234 o 12.345 (sin $)
+    /(\d{4,7})/g,                               // número plano 4-7 dígitos
   ];
 
   let mejor: number | null = null;
   let menorDistancia = Infinity;
 
-  for (const pat of patrones) {
-    let m;
-    while ((m = pat.exec(ventana)) !== null) {
-      const raw = m[1].replace(/\./g, "").replace(",", ".");
-      const val = parseFloat(raw);
-      if (!isNaN(val) && val >= 500 && val <= 1_000_000) {
-        const dist = Math.abs(m.index - 800);
-        if (dist < menorDistancia) {
-          menorDistancia = dist;
-          mejor = val;
+  for (const posJus of posiciones) {
+    const inicio = Math.max(0, posJus - 1000);
+    const ventana = html.slice(inicio, posJus + 2000);
+    const offset = posJus - inicio;
+
+    for (const pat of patrones) {
+      pat.lastIndex = 0;
+      let m;
+      while ((m = pat.exec(ventana)) !== null) {
+        const raw = m[1].replace(/\./g, "").replace(",", ".");
+        const val = parseFloat(raw);
+        if (!isNaN(val) && val >= 500 && val <= 1_000_000) {
+          const dist = Math.abs(m.index - offset);
+          if (dist < menorDistancia) {
+            menorDistancia = dist;
+            mejor = val;
+          }
         }
       }
     }
