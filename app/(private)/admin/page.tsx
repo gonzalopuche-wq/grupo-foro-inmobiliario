@@ -817,11 +817,11 @@ export default function AdminPage() {
         .adm-ind-titulo span { color: #cc0000; }
         .adm-ind-subtitulo { font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
         .adm-ind-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-        .adm-ind-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 20px 24px; }
+        .adm-ind-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 20px 24px; display: flex; flex-direction: column; }
         .adm-ind-label { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 12px; }
         .adm-ind-actual { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 14px; }
-        .adm-ind-form { display: flex; gap: 8px; align-items: center; }
-        .adm-ind-input { flex: 1; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: #fff; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
+        .adm-ind-form { display: flex; gap: 8px; align-items: center; margin-top: auto; flex-wrap: wrap; }
+        .adm-ind-input { flex: 1; min-width: 0; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: #fff; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
         .adm-ind-input:focus { border-color: rgba(200,0,0,0.5); }
         .adm-ind-btn { padding: 9px 16px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .adm-ind-btn:hover { background: #e60000; }

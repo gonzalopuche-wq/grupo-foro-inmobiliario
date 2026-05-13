@@ -22,41 +22,76 @@ async function authorizado(req: NextRequest): Promise<boolean> {
 function extraerJus(html: string): number | null {
   const texto = html.toLowerCase();
 
-  // Buscar todas las ocurrencias de "jus"
-  const posiciones: number[] = [];
-  let p = 0;
-  while ((p = texto.indexOf("jus", p)) !== -1) { posiciones.push(p); p += 3; }
+  // Buscar "jus" como palabra (delimitada por espacios, guiones, símbolos)
+  const posJusWord: number[] = [];
+  const reWord = /[\s\-_>]jus[\s\-_<,:.()/]/g;
+  let mw;
+  while ((mw = reWord.exec(texto)) !== null) {
+    posJusWord.push(mw.index + 1);
+  }
+  // Fallback: cualquier "jus" si no encontramos como palabra
+  const posiciones = posJusWord.length > 0 ? posJusWord : (() => {
+    const pos: number[] = [];
+    let p = 0;
+    while ((p = texto.indexOf("jus", p)) !== -1) { pos.push(p); p += 3; }
+    return pos;
+  })();
   if (posiciones.length === 0) return null;
 
-  const patrones = [
+  // Paso 1: solo valores con signo $ (formato monetario — excluye números de leyes, años, etc.)
+  const patronesDinero = [
     /\$\s*([\d]{1,3}(?:\.\d{3})*,\d{2})/g,   // $ 12.345,67
     /\$\s*([\d]{1,3}(?:\.\d{3})+)/g,           // $ 12.345
-    /\$\s*(\d{3,7})/g,                          // $ 12345
-    /([\d]{1,3}(?:\.\d{3})*,\d{2})/g,          // 12.345,67 (sin $)
-    /([\d]{1,3}\.\d{3})/g,                      // 1.234 o 12.345 (sin $)
-    /(\d{4,7})/g,                               // número plano 4-7 dígitos
+    /\$\s*(\d{4,7})/g,                          // $ 12345 (mín 4 dígitos para evitar artículos)
   ];
 
   let mejor: number | null = null;
   let menorDistancia = Infinity;
 
   for (const posJus of posiciones) {
-    const inicio = Math.max(0, posJus - 1000);
-    const ventana = html.slice(inicio, posJus + 2000);
+    const inicio = Math.max(0, posJus - 800);
+    const ventana = html.slice(inicio, posJus + 1500);
     const offset = posJus - inicio;
 
-    for (const pat of patrones) {
+    for (const pat of patronesDinero) {
       pat.lastIndex = 0;
       let m;
       while ((m = pat.exec(ventana)) !== null) {
         const raw = m[1].replace(/\./g, "").replace(",", ".");
         const val = parseFloat(raw);
-        if (!isNaN(val) && val >= 500 && val <= 1_000_000) {
+        if (!isNaN(val) && val >= 1_000 && val <= 500_000) {
           const dist = Math.abs(m.index - offset);
           if (dist < menorDistancia) {
             menorDistancia = dist;
             mejor = val;
           }
+        }
+      }
+    }
+  }
+
+  if (mejor !== null) return mejor;
+
+  // Paso 2 (fallback): formatos numéricos con coma decimal AR pero sin $
+  const patronesFallback = [
+    /([\d]{1,3}(?:\.\d{3})*,\d{2})/g,
+    /([\d]{1,3}\.\d{3})/g,
+  ];
+
+  menorDistancia = Infinity;
+  for (const posJus of posiciones) {
+    const inicio = Math.max(0, posJus - 500);
+    const ventana = html.slice(inicio, posJus + 1000);
+    const offset = posJus - inicio;
+    for (const pat of patronesFallback) {
+      pat.lastIndex = 0;
+      let m;
+      while ((m = pat.exec(ventana)) !== null) {
+        const raw = m[1].replace(/\./g, "").replace(",", ".");
+        const val = parseFloat(raw);
+        if (!isNaN(val) && val >= 1_000 && val <= 500_000) {
+          const dist = Math.abs(m.index - offset);
+          if (dist < menorDistancia) { menorDistancia = dist; mejor = val; }
         }
       }
     }
