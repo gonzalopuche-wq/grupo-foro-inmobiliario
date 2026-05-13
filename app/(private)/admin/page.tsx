@@ -860,22 +860,12 @@ A partir de esa fecha el costo mensual será de USD 15.
   const responderTicket = async () => {
     if (!ticketVer || !respuestaForm.trim()) return;
     setGuardandoRespuesta(true);
-    const { data: { session } } = await supabase.auth.getSession();
     await supabase.from("soporte_tickets").update({
       respuesta: respuestaForm.trim(),
       estado: "resuelto",
       admin_id: adminId,
       updated_at: new Date().toISOString(),
     }).eq("id", ticketVer.id);
-    // Notificación push al usuario
-    if (session?.access_token) {
-      fetch("/api/push/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-internal-secret": "" },
-        body: JSON.stringify({ titulo: "✅ Tu ticket de soporte fue respondido", body: ticketVer.asunto, url: "/soporte", perfil_id: ticketVer.user_id }),
-      }).catch(() => {});
-    }
-    // Email al usuario
     if (ticketVer.perfiles?.email) {
       fetch("/api/send-email", {
         method: "POST",
@@ -892,7 +882,6 @@ A partir de esa fecha el costo mensual será de USD 15.
         }),
       }).catch(() => {});
     }
-    // Notificación in-app
     await supabase.from("notificaciones").insert({
       user_id: ticketVer.user_id,
       titulo: "✅ Ticket respondido",
