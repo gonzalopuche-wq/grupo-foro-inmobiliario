@@ -28,6 +28,12 @@ interface EventoPropuesto {
 }
 
 interface Colaborador { id: string; corredor_id: string; user_id: string | null; nombre: string; apellido: string; email: string; telefono: string | null; dni: string | null; rol: string; estado: string; notas: string | null; created_at: string; corredor?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
+interface FinanzaEntry { id: string; tipo: "ingreso" | "gasto"; categoria: string; concepto: string; monto: number; moneda: string; fecha: string; referencia: string | null; created_at: string; }
+
+const CATS_INGRESO = ["suscripcion", "match", "pauta", "servicio", "otro"];
+const CATS_GASTO   = ["hosting", "dominio", "herramienta", "marketing", "impuesto", "otro"];
+const MONEDAS_FIN  = ["ARS", "USD", "EUR", "USDT"];
+const FORM_FIN_VACIO = { tipo: "ingreso" as "ingreso"|"gasto", categoria: "", concepto: "", monto: "", moneda: "ARS", fecha: new Date().toISOString().slice(0, 10), referencia: "" };
 
 const INDICADORES_CONFIG = [
   { clave: "valor_jus", label: "Valor JUS", tipo: "number" as const },
@@ -225,6 +231,14 @@ export default function AdminPage() {
   const [guardandoConf, setGuardandoConf] = useState<string | null>(null);
   const [sincronizandoJus, setSincronizandoJus] = useState(false);
   const [jusActualizadoAt, setJusActualizadoAt] = useState<string | null>(null);
+  // Finanzas admin
+  const [finanzas, setFinanzas] = useState<FinanzaEntry[]>([]);
+  const [loadingFinanzas, setLoadingFinanzas] = useState(true);
+  const [filtroFinanzas, setFiltroFinanzas] = useState<"todos"|"ingreso"|"gasto">("todos");
+  const [periodoFinanzas, setPeriodoFinanzas] = useState<string>(() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}`; });
+  const [formFinanza, setFormFinanza] = useState(FORM_FIN_VACIO);
+  const [guardandoFinanza, setGuardandoFinanza] = useState(false);
+  const [mostrarFormFinanza, setMostrarFormFinanza] = useState(false);
 
   useEffect(() => {
     const verificar = async () => {
@@ -236,7 +250,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -758,6 +772,39 @@ export default function AdminPage() {
   const eliminarProveedor = async (id: string) => { if (!confirm("¿Eliminar este proveedor?")) return; await supabase.from("divisas_proveedores").delete().eq("id", id); cargarProveedores(); };
   const toggleMoneda = (m: string) => { setFormProv(prev => ({ ...prev, monedas: prev.monedas.includes(m) ? prev.monedas.filter(x => x !== m) : [...prev.monedas, m] })); };
 
+  const cargarFinanzas = async () => {
+    setLoadingFinanzas(true);
+    const { data } = await supabase.from("admin_finanzas").select("*").order("fecha", { ascending: false }).limit(1000);
+    setFinanzas((data ?? []) as FinanzaEntry[]);
+    setLoadingFinanzas(false);
+  };
+
+  const guardarFinanza = async () => {
+    if (!formFinanza.concepto || !formFinanza.monto || !formFinanza.categoria) return;
+    setGuardandoFinanza(true);
+    await supabase.from("admin_finanzas").insert({
+      tipo: formFinanza.tipo,
+      categoria: formFinanza.categoria,
+      concepto: formFinanza.concepto,
+      monto: parseFloat(formFinanza.monto.replace(",", ".")),
+      moneda: formFinanza.moneda,
+      fecha: formFinanza.fecha,
+      referencia: formFinanza.referencia || null,
+    });
+    setGuardandoFinanza(false);
+    setMostrarFormFinanza(false);
+    setFormFinanza(FORM_FIN_VACIO);
+    cargarFinanzas();
+    mostrarToast("Registro guardado", "ok");
+  };
+
+  const eliminarFinanza = async (id: string) => {
+    if (!confirm("¿Eliminar este registro?")) return;
+    await supabase.from("admin_finanzas").delete().eq("id", id);
+    cargarFinanzas();
+    mostrarToast("Eliminado", "ok");
+  };
+
   const formatARS = (n: number | null) => n !== null ? new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(n) : "—";
   const formatHora = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) + " · " + new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" }) : null;
   const pagosFiltrados = filtroPagos === "todos" ? pagos : pagos.filter(p => p.estado === filtroPagos);
@@ -920,6 +967,35 @@ export default function AdminPage() {
         .adm-toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
         .adm-toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .fin-resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .fin-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 18px; }
+        .fin-card-label { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 6px; }
+        .fin-card-value { font-size: 22px; font-weight: 800; }
+        .fin-card-value.ingreso { color: #22c55e; }
+        .fin-card-value.gasto { color: #ef4444; }
+        .fin-card-value.balance { color: #fff; }
+        .fin-filtros { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+        .fin-periodo { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; padding: 7px 10px; font-size: 12px; font-family: 'Inter',sans-serif; }
+        .fin-btn-nuevo { padding: 8px 18px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
+        .fin-btn-nuevo:hover { background: #e60000; }
+        .fin-form { background: rgba(14,14,14,0.95); border: 1px solid rgba(200,0,0,0.2); border-radius: 6px; padding: 20px 22px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .fin-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .fin-form-label { font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; }
+        .fin-input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; padding: 8px 11px; font-size: 13px; font-family: 'Inter',sans-serif; }
+        .fin-input:focus { outline: none; border-color: rgba(200,0,0,0.4); }
+        .fin-select { width: 100%; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; padding: 8px 11px; font-size: 13px; font-family: 'Inter',sans-serif; }
+        .fin-tipo-btns { display: flex; gap: 8px; }
+        .fin-tipo-btn { flex: 1; padding: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
+        .fin-tipo-btn.ingreso.activo { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.08); }
+        .fin-tipo-btn.gasto.activo { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.08); }
+        .fin-form-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .fin-btn-cancel { padding: 8px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .fin-btn-save { padding: 8px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .fin-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+        .fin-badge-ingreso { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; }
+        .fin-badge-gasto { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; }
+        .fin-btn-del { padding: 4px 10px; background: transparent; border: 1px solid rgba(255,68,68,0.25); border-radius: 3px; color: rgba(255,68,68,0.6); font-size: 11px; cursor: pointer; }
+        .fin-btn-del:hover { border-color: rgba(255,68,68,0.6); color: #ff4444; }
         @media (max-width: 768px) {
           .adm-ind-grid { grid-template-columns: 1fr; }
           .cbu-grid { grid-template-columns: 1fr; }
@@ -928,6 +1004,8 @@ export default function AdminPage() {
           .adm-tabla th, .adm-tabla td { white-space: nowrap; }
           .modal-inner { width: 95vw; max-height: 90vh; }
           .adm-redes-grid { grid-template-columns: 1fr; }
+          .fin-resumen { grid-template-columns: 1fr; }
+          .fin-form-row { grid-template-columns: 1fr; }
         }
       `}</style>
 
@@ -1909,6 +1987,142 @@ export default function AdminPage() {
               );
             })}
           </div>
+
+          {/* ── FINANZAS ── */}
+          {(() => {
+            const finanzasPeriodo = finanzas.filter(f => f.fecha.startsWith(periodoFinanzas));
+            const finanzasFiltradas = filtroFinanzas === "todos" ? finanzasPeriodo : finanzasPeriodo.filter(f => f.tipo === filtroFinanzas);
+            const totalIngresos = finanzasPeriodo.filter(f => f.tipo === "ingreso").reduce((s, f) => s + (f.moneda === "ARS" ? f.monto : 0), 0);
+            const totalGastos   = finanzasPeriodo.filter(f => f.tipo === "gasto").reduce((s, f) => s + (f.moneda === "ARS" ? f.monto : 0), 0);
+            const balance       = totalIngresos - totalGastos;
+            const fmtMonto = (f: FinanzaEntry) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 }).format(f.monto) + " " + f.moneda;
+            const fmtFecha = (s: string) => new Date(s + "T12:00:00").toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit" });
+            const cats = formFinanza.tipo === "ingreso" ? CATS_INGRESO : CATS_GASTO;
+            return (
+              <div>
+                <div className="adm-ind-titulo">Finanzas <span>admin</span></div>
+                <div className="adm-ind-subtitulo">Registro interno de ingresos y gastos. Exclusivo para administrador.</div>
+
+                {/* Resumen del mes */}
+                <div className="fin-resumen">
+                  <div className="fin-card">
+                    <div className="fin-card-label">Ingresos ARS</div>
+                    <div className={`fin-card-value ingreso`}>{new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(totalIngresos)}</div>
+                  </div>
+                  <div className="fin-card">
+                    <div className="fin-card-label">Gastos ARS</div>
+                    <div className={`fin-card-value gasto`}>{new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(totalGastos)}</div>
+                  </div>
+                  <div className="fin-card">
+                    <div className="fin-card-label">Balance ARS</div>
+                    <div className={`fin-card-value balance`} style={{ color: balance >= 0 ? "#22c55e" : "#ef4444" }}>{new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(balance)}</div>
+                  </div>
+                </div>
+
+                {/* Controles */}
+                <div className="fin-filtros">
+                  <input type="month" className="fin-periodo" value={periodoFinanzas} onChange={e => setPeriodoFinanzas(e.target.value)} />
+                  {(["todos","ingreso","gasto"] as const).map(f => (
+                    <button key={f} className={`adm-filtro-btn${filtroFinanzas === f ? " activo" : ""}`} onClick={() => setFiltroFinanzas(f)}>
+                      {f === "todos" ? "Todos" : f === "ingreso" ? "Ingresos" : "Gastos"}
+                      <span className="adm-filtro-count">{f === "todos" ? finanzasPeriodo.length : finanzasPeriodo.filter(x => x.tipo === f).length}</span>
+                    </button>
+                  ))}
+                  <button className="fin-btn-nuevo" onClick={() => setMostrarFormFinanza(v => !v)}>
+                    {mostrarFormFinanza ? "✕ Cerrar" : "+ Nuevo registro"}
+                  </button>
+                </div>
+
+                {/* Formulario */}
+                {mostrarFormFinanza && (
+                  <div className="fin-form">
+                    <div>
+                      <div className="fin-form-label">Tipo</div>
+                      <div className="fin-tipo-btns">
+                        <button className={`fin-tipo-btn ingreso${formFinanza.tipo === "ingreso" ? " activo" : ""}`} onClick={() => setFormFinanza(p => ({...p, tipo: "ingreso", categoria: ""}))}>↑ Ingreso</button>
+                        <button className={`fin-tipo-btn gasto${formFinanza.tipo === "gasto" ? " activo" : ""}`} onClick={() => setFormFinanza(p => ({...p, tipo: "gasto", categoria: ""}))}>↓ Gasto</button>
+                      </div>
+                    </div>
+                    <div className="fin-form-row">
+                      <div>
+                        <div className="fin-form-label">Categoría *</div>
+                        <select className="fin-select" value={formFinanza.categoria} onChange={e => setFormFinanza(p => ({...p, categoria: e.target.value}))}>
+                          <option value="">Seleccioná...</option>
+                          {cats.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <div className="fin-form-label">Fecha *</div>
+                        <input type="date" className="fin-input" value={formFinanza.fecha} onChange={e => setFormFinanza(p => ({...p, fecha: e.target.value}))} />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="fin-form-label">Concepto *</div>
+                      <input className="fin-input" placeholder="Ej: Suscripción mensual corredor — García" value={formFinanza.concepto} onChange={e => setFormFinanza(p => ({...p, concepto: e.target.value}))} />
+                    </div>
+                    <div className="fin-form-row">
+                      <div>
+                        <div className="fin-form-label">Monto *</div>
+                        <input className="fin-input" placeholder="0" value={formFinanza.monto} onChange={e => setFormFinanza(p => ({...p, monto: e.target.value}))} />
+                      </div>
+                      <div>
+                        <div className="fin-form-label">Moneda</div>
+                        <select className="fin-select" value={formFinanza.moneda} onChange={e => setFormFinanza(p => ({...p, moneda: e.target.value}))}>
+                          {MONEDAS_FIN.map(m => <option key={m} value={m}>{m}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="fin-form-label">Referencia <small style={{opacity:0.5,fontWeight:400,textTransform:"none",letterSpacing:0}}>opcional</small></div>
+                      <input className="fin-input" placeholder="Ej: transferencia, factura nro, matrícula corredor..." value={formFinanza.referencia} onChange={e => setFormFinanza(p => ({...p, referencia: e.target.value}))} />
+                    </div>
+                    <div className="fin-form-actions">
+                      <button className="fin-btn-cancel" onClick={() => { setMostrarFormFinanza(false); setFormFinanza(FORM_FIN_VACIO); }}>Cancelar</button>
+                      <button className="fin-btn-save" onClick={guardarFinanza} disabled={guardandoFinanza || !formFinanza.concepto || !formFinanza.monto || !formFinanza.categoria}>
+                        {guardandoFinanza ? "Guardando..." : "Guardar registro"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tabla */}
+                {loadingFinanzas ? (
+                  <div style={{ color: "rgba(255,255,255,0.3)", padding: 16 }}>Cargando...</div>
+                ) : finanzasFiltradas.length === 0 ? (
+                  <div style={{ color: "rgba(255,255,255,0.3)", padding: 16, textAlign: "center" }}>Sin registros para este período y filtro.</div>
+                ) : (
+                  <div className="adm-tabla-wrap">
+                    <table className="adm-tabla">
+                      <thead>
+                        <tr>
+                          <th>Fecha</th>
+                          <th>Tipo</th>
+                          <th>Categoría</th>
+                          <th>Concepto</th>
+                          <th>Referencia</th>
+                          <th>Monto</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {finanzasFiltradas.map(f => (
+                          <tr key={f.id}>
+                            <td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, whiteSpace: "nowrap" }}>{fmtFecha(f.fecha)}</td>
+                            <td><span className={f.tipo === "ingreso" ? "fin-badge-ingreso" : "fin-badge-gasto"}>{f.tipo === "ingreso" ? "↑ Ingreso" : "↓ Gasto"}</span></td>
+                            <td style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "capitalize" }}>{f.categoria}</td>
+                            <td style={{ maxWidth: 220 }}>{f.concepto}</td>
+                            <td style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{f.referencia ?? "—"}</td>
+                            <td style={{ fontWeight: 700, color: f.tipo === "ingreso" ? "#22c55e" : "#ef4444", whiteSpace: "nowrap" }}>{fmtMonto(f)}</td>
+                            <td><button className="fin-btn-del" onClick={() => eliminarFinanza(f.id)}>✕</button></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
         </main>
       </div>
