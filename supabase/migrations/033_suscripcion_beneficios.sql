@@ -1,35 +1,24 @@
--- Tabla de beneficios/descuentos internos por corredor
--- Gestionada desde el panel admin (AdminBeneficios.tsx)
-CREATE TABLE IF NOT EXISTS suscripcion_beneficios (
-  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  perfil_id       uuid NOT NULL REFERENCES perfiles(id) ON DELETE CASCADE,
-  admin_id        uuid NOT NULL REFERENCES perfiles(id),
-  tipo            text NOT NULL,
-  descuento_pct   numeric(5,2) NOT NULL DEFAULT 0,
-  monto_fijo_usd  numeric(10,2) NOT NULL DEFAULT 0,
-  es_cortesia     boolean NOT NULL DEFAULT false,
-  fecha_desde     date NOT NULL DEFAULT CURRENT_DATE,
-  fecha_hasta     date,
-  activo          boolean NOT NULL DEFAULT true,
-  motivo          text,
-  created_at      timestamptz NOT NULL DEFAULT now()
+create table if not exists suscripcion_beneficios (
+  id uuid primary key default gen_random_uuid(),
+  perfil_id uuid not null,
+  admin_id uuid not null,
+  tipo text not null,
+  descuento_pct numeric not null default 0,
+  monto_fijo_usd numeric not null default 0,
+  es_cortesia boolean not null default false,
+  fecha_desde date not null default current_date,
+  fecha_hasta date,
+  activo boolean not null default true,
+  motivo text,
+  created_at timestamptz not null default now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_sb_perfil ON suscripcion_beneficios(perfil_id);
-CREATE INDEX IF NOT EXISTS idx_sb_activo  ON suscripcion_beneficios(activo, fecha_hasta);
+create index if not exists idx_sb_perfil on suscripcion_beneficios(perfil_id);
 
-ALTER TABLE suscripcion_beneficios ENABLE ROW LEVEL SECURITY;
+alter table suscripcion_beneficios enable row level security;
 
--- Admin puede leer y escribir todo
-DROP POLICY IF EXISTS "admin_gestiona_beneficios" ON suscripcion_beneficios;
-CREATE POLICY "admin_gestiona_beneficios" ON suscripcion_beneficios
-  FOR ALL
-  USING (
-    EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
-  );
+create policy sb_admin on suscripcion_beneficios
+  for all using (exists (select 1 from perfiles where id = auth.uid() and tipo = 'admin'));
 
--- Cada corredor puede leer sus propios beneficios
-DROP POLICY IF EXISTS "corredor_lee_sus_beneficios" ON suscripcion_beneficios;
-CREATE POLICY "corredor_lee_sus_beneficios" ON suscripcion_beneficios
-  FOR SELECT
-  USING (perfil_id = auth.uid());
+create policy sb_corredor on suscripcion_beneficios
+  for select using (perfil_id = auth.uid());

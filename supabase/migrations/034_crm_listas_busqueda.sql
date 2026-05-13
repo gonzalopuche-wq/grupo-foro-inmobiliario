@@ -1,106 +1,72 @@
--- Listas de búsqueda del CRM: corredor comparte lista de propiedades con cliente
-CREATE TABLE IF NOT EXISTS crm_listas_busqueda (
-  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  corredor_id       uuid NOT NULL,
-  contacto_id       uuid,
-  nombre            text NOT NULL,
-  descripcion       text,
-  slug              text UNIQUE,
-  criterios         jsonb NOT NULL DEFAULT '{}',
-  email_cliente     text,
-  notificar_cliente boolean NOT NULL DEFAULT true,
-  publica           boolean NOT NULL DEFAULT true,
-  created_at        timestamptz NOT NULL DEFAULT now(),
-  updated_at        timestamptz NOT NULL DEFAULT now()
+create table if not exists crm_listas_busqueda (
+  id uuid primary key default gen_random_uuid(),
+  corredor_id uuid not null references perfiles(id) on delete cascade,
+  contacto_id uuid references crm_contactos(id) on delete set null,
+  nombre text not null,
+  descripcion text,
+  slug text unique default substring(replace(gen_random_uuid()::text, '-', ''), 1, 12),
+  criterios jsonb not null default '{}'::jsonb,
+  email_cliente text,
+  notificar_cliente boolean not null default true,
+  publica boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_clb_corredor ON crm_listas_busqueda(corredor_id);
-CREATE INDEX IF NOT EXISTS idx_clb_slug     ON crm_listas_busqueda(slug) WHERE slug IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_clb_contacto ON crm_listas_busqueda(contacto_id) WHERE contacto_id IS NOT NULL;
+create index if not exists idx_clb_corredor on crm_listas_busqueda(corredor_id);
+create index if not exists idx_clb_slug on crm_listas_busqueda(slug) where slug is not null;
 
--- Auto-slug desde id cuando no se provee
-CREATE OR REPLACE FUNCTION gen_lista_slug()
-RETURNS TRIGGER LANGUAGE plpgsql AS $$
-BEGIN
-  IF NEW.slug IS NULL THEN
-    NEW.slug := LEFT(REPLACE(NEW.id::text, '-', ''), 12);
-  END IF;
-  RETURN NEW;
-END;
-$$;
+alter table crm_listas_busqueda enable row level security;
 
-DROP TRIGGER IF EXISTS trg_lista_slug ON crm_listas_busqueda;
-CREATE TRIGGER trg_lista_slug
-  BEFORE INSERT ON crm_listas_busqueda
-  FOR EACH ROW EXECUTE FUNCTION gen_lista_slug();
+create policy clb_all on crm_listas_busqueda for all to authenticated using (corredor_id = auth.uid()) with check (corredor_id = auth.uid());
+create policy clb_pub on crm_listas_busqueda for select using (publica = true);
 
--- Propiedades guardadas en una lista
-CREATE TABLE IF NOT EXISTS crm_propiedades_guardadas (
-  id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  lista_id            uuid NOT NULL REFERENCES crm_listas_busqueda(id) ON DELETE CASCADE,
-  corredor_id         uuid NOT NULL,
-  url_original        text NOT NULL,
-  titulo              text,
-  tipo                text,
-  operacion           text,
-  precio_actual       numeric,
-  moneda              text DEFAULT 'USD',
-  ciudad              text,
-  zona                text,
-  dormitorios         int,
-  banos               int,
+create table if not exists crm_propiedades_guardadas (
+  id uuid primary key default gen_random_uuid(),
+  lista_id uuid not null references crm_listas_busqueda(id) on delete cascade,
+  corredor_id uuid not null,
+  url_original text not null,
+  titulo text,
+  tipo text,
+  operacion text,
+  precio_actual numeric,
+  moneda text default 'USD',
+  ciudad text,
+  zona text,
+  dormitorios int,
+  banos int,
   superficie_cubierta numeric,
-  superficie_total    numeric,
-  fotos               text[] DEFAULT '{}',
-  foto_url            text,
-  destacada           boolean NOT NULL DEFAULT false,
-  orden               int NOT NULL DEFAULT 0,
-  created_at          timestamptz NOT NULL DEFAULT now(),
-  updated_at          timestamptz NOT NULL DEFAULT now(),
-  UNIQUE(lista_id, url_original)
+  superficie_total numeric,
+  imagenes text[] default array[]::text[],
+  imagen_principal text,
+  destacada boolean not null default false,
+  orden int not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(lista_id, url_original)
 );
 
-CREATE INDEX IF NOT EXISTS idx_cpg_lista    ON crm_propiedades_guardadas(lista_id);
-CREATE INDEX IF NOT EXISTS idx_cpg_corredor ON crm_propiedades_guardadas(corredor_id);
+create index if not exists idx_cpg_lista on crm_propiedades_guardadas(lista_id);
+create index if not exists idx_cpg_corredor on crm_propiedades_guardadas(corredor_id);
 
--- Alertas de cambios en propiedades guardadas (baja de precio, nuevo, etc.)
-CREATE TABLE IF NOT EXISTS crm_busqueda_alertas (
-  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  propiedad_id   uuid REFERENCES crm_propiedades_guardadas(id) ON DELETE CASCADE,
-  lista_id       uuid REFERENCES crm_listas_busqueda(id) ON DELETE CASCADE,
-  corredor_id    uuid NOT NULL,
-  tipo           text NOT NULL,
+alter table crm_propiedades_guardadas enable row level security;
+
+create policy cpg_all on crm_propiedades_guardadas for all to authenticated using (corredor_id = auth.uid()) with check (corredor_id = auth.uid());
+create policy cpg_pub on crm_propiedades_guardadas for select using (exists (select 1 from crm_listas_busqueda l where l.id = lista_id and l.publica = true));
+
+create table if not exists crm_busqueda_alertas (
+  id uuid primary key default gen_random_uuid(),
+  propiedad_id uuid references crm_propiedades_guardadas(id) on delete cascade,
+  lista_id uuid references crm_listas_busqueda(id) on delete cascade,
+  corredor_id uuid not null,
+  tipo text not null,
   valor_anterior text,
-  valor_nuevo    text,
-  created_at     timestamptz NOT NULL DEFAULT now()
+  valor_nuevo text,
+  created_at timestamptz not null default now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_cba_lista ON crm_busqueda_alertas(lista_id, created_at DESC);
+create index if not exists idx_cba_lista on crm_busqueda_alertas(lista_id, created_at desc);
 
--- RLS: corredor accede a sus propias listas y propiedades
-ALTER TABLE crm_listas_busqueda      ENABLE ROW LEVEL SECURITY;
-ALTER TABLE crm_propiedades_guardadas ENABLE ROW LEVEL SECURITY;
-ALTER TABLE crm_busqueda_alertas     ENABLE ROW LEVEL SECURITY;
+alter table crm_busqueda_alertas enable row level security;
 
-CREATE POLICY clb_corredor ON crm_listas_busqueda
-  FOR ALL TO authenticated
-  USING (corredor_id = auth.uid())
-  WITH CHECK (corredor_id = auth.uid());
-
-CREATE POLICY clb_publica ON crm_listas_busqueda
-  FOR SELECT USING (publica = true);
-
-CREATE POLICY cpg_corredor ON crm_propiedades_guardadas
-  FOR ALL TO authenticated
-  USING (corredor_id = auth.uid())
-  WITH CHECK (corredor_id = auth.uid());
-
-CREATE POLICY cpg_publica ON crm_propiedades_guardadas
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM crm_listas_busqueda l WHERE l.id = lista_id AND l.publica = true)
-  );
-
-CREATE POLICY cba_corredor ON crm_busqueda_alertas
-  FOR ALL TO authenticated
-  USING (corredor_id = auth.uid())
-  WITH CHECK (corredor_id = auth.uid());
+create policy cba_all on crm_busqueda_alertas for all to authenticated using (corredor_id = auth.uid()) with check (corredor_id = auth.uid());
