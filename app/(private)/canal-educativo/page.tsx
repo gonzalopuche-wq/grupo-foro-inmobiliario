@@ -143,6 +143,18 @@ export default function CanalEducativoPage() {
     if (sesionActiva) await cargarConsultas(sesionActiva.id);
   };
 
+  const notificarEnVivo = async (titulo: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) return;
+      await fetch("/api/canal/notificar-en-vivo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ titulo }),
+      });
+    } catch {}
+  };
+
   const guardarSesion = async () => {
     if (!form.titulo || !form.mentor_nombre || !form.fecha || !form.hora) return;
     setGuardando(true);
@@ -158,10 +170,15 @@ export default function CanalEducativoPage() {
       estado: form.estado,
     };
     if (editandoId) {
+      const sesionAnterior = sesiones.find(s => s.id === editandoId);
       const { error } = await supabase.from("canal_sesiones").update(payload).eq("id", editandoId);
+      if (!error && payload.estado === "en_vivo" && sesionAnterior?.estado !== "en_vivo") {
+        notificarEnVivo(payload.titulo);
+      }
       showToast(error ? "Error al actualizar" : "Sesión actualizada", error ? "err" : "ok");
     } else {
       const { error } = await supabase.from("canal_sesiones").insert(payload);
+      if (!error && payload.estado === "en_vivo") notificarEnVivo(payload.titulo);
       showToast(error ? "Error al crear" : "Sesión creada", error ? "err" : "ok");
     }
     setGuardando(false);
