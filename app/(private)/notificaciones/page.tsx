@@ -24,12 +24,14 @@ const MODULOS_CONFIG = [
   { key: 'crm_tarea', label: 'Tareas vencidas', bloque: 'CRM' },
   { key: 'web_lead', label: 'Nuevo lead desde tu web', bloque: 'Mi Web' },
   { key: 'foro_respuesta', label: 'Respuesta en el foro', bloque: 'Foro' },
+  { key: 'networking_nuevo', label: 'Nueva publicación en Networking', bloque: 'Networking' },
   { key: 'evento', label: 'Nuevo evento GFI', bloque: 'Comunidad' },
   { key: 'noticia', label: 'Noticias del sector', bloque: 'Comunidad' },
+  { key: 'canal_en_vivo', label: 'Transmisión en vivo — Canal del Foro', bloque: 'Comunidad' },
   { key: 'suscripcion', label: 'Aviso de vencimiento', bloque: 'Sistema' },
 ]
 
-const BLOQUES = ['MIR', 'CRM', 'Mi Web', 'Foro', 'Comunidad', 'Sistema']
+const BLOQUES = ['MIR', 'CRM', 'Mi Web', 'Foro', 'Networking', 'Comunidad', 'Sistema']
 
 type ConfigMap = Record<string, Record<string, boolean>>
 
