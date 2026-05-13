@@ -1,1 +1,37 @@
-LS0gVGFibGEgcGFyYSBjb25maWd1cmFjacOzbiBnbG9iYWwgZGVsIHNpdGlvIGVkaXRhYmxlIHBvciBlbCBhZG1pbgpjcmVhdGUgdGFibGUgaWYgbm90IGV4aXN0cyBjb25maWd1cmFjaW9uX3NpdGlvICgKICBjbGF2ZSAgICAgICAgICAgdGV4dCBwcmltYXJ5IGtleSwKICB2YWxvciAgICAgICAgICAgdGV4dCwKICB0aXBvICAgICAgICAgICAgdGV4dCBub3QgbnVsbCBkZWZhdWx0ICd0ZXh0JywgLS0gdGV4dCB8IG51bWJlciB8IHRleHRhcmVhIHwgY29sb3IgfCB1cmwgfCBlbWFpbCB8IGJvb2xlYW4KICBsYWJlbCAgICAgICAgICAgdGV4dCBub3QgbnVsbCwKICBjYXRlZ29yaWEgICAgICAgdGV4dCBub3QgbnVsbCBkZWZhdWx0ICdnZW5lcmFsJywKICBkZXNjcmlwY2lvbiAgICAgdGV4dCwKICBhY3R1YWxpemFkb19hdCAgdGltZXN0YW1wdHogZGVmYXVsdCBub3coKQopOwoKYWx0ZXIgdGFibGUgY29uZmlndXJhY2lvbl9zaXRpbyBlbmFibGUgcm93IGxldmVsIHNlY3VyaXR5OwoKY3JlYXRlIHBvbGljeSBjc19hZG1pbiBvbiBjb25maWd1cmFjaW9uX3NpdGlvCiAgZm9yIGFsbCB1c2luZyAoZXhpc3RzIChzZWxlY3QgMSBmcm9tIHBlcmZpbGVzIHdoZXJlIGlkID0gYXV0aC51aWQoKSBhbmQgdGlwbyA9ICdhZG1pbicpKTsKCmNyZWF0ZSBwb2xpY3kgY3NfcmVhZCBvbiBjb25maWd1cmFjaW9uX3NpdGlvCiAgZm9yIHNlbGVjdCB1c2luZyAodHJ1ZSk7CgppbnNlcnQgaW50byBjb25maWd1cmFjaW9uX3NpdGlvIChjbGF2ZSwgdmFsb3IsIHRpcG8sIGxhYmVsLCBjYXRlZ29yaWEsIGRlc2NyaXBjaW9uKSB2YWx1ZXMKICAoJ2FudW5jaW9fYmFubmVyJywgJycsICd0ZXh0YXJlYScsICdUZXh0byBkZWwgYmFubmVyIGdsb2JhbCcsICdhbnVuY2lvcycsCiAgICAnTWVuc2FqZSB2aXNpYmxlIHBhcmEgdG9kb3MgbG9zIHVzdWFyaW9zIGVuIHVuIGJhbm5lciBhbCBlbnRyYXIuIFZhY8OtbyA9IHNpbiBiYW5uZXIuJyksCiAgKCdhbnVuY2lvX2NvbG9yJywgJyNjYzAwMDAnLCAnY29sb3InLCAnQ29sb3IgZGVsIGJhbm5lcicsICdhbnVuY2lvcycsCiAgICAnQ29sb3IgZGUgZm9uZG8gZGVsIGJhbm5lciBkZSBhbnVuY2lvLicpLAogICgnanVzX3VybF9jb2NpcicsICcnLCAndXJsJywgJ1VSTCBkZWwgSlVTIGVuIENPQ0lSJywgJ2p1cycsCiAgICAnRGlyZWNjacOzbiBkZSBsYSBww6FnaW5hIGRlIENPQ0lSIGRvbmRlIGZpZ3VyYSBlbCB2YWxvciBkZWwgSlVTLiBSZXF1ZXJpZGEgcGFyYSBzaW5jcm9uaXphY2nDs24gYXV0b23DoXRpY2EuJyksCiAgKCdob25vcmFyaW9zX3ZlbnRhX3Byb3BpZXRhcmlvX3BjdCcsICczJywgJ251bWJlcicsICdIb25vcmFyaW9zIHZlbnRhIOKAlCBwcm9waWV0YXJpbyAoJSknLCAnaG9ub3JhcmlvcycsCiAgICAnUG9yY2VudGFqZSBzdWdlcmlkbyBkZSBob25vcmFyaW9zIGFsIHByb3BpZXRhcmlvIGVuIG9wZXJhY2lvbmVzIGRlIHZlbnRhLicpLAogICgnaG9ub3Jhcmlvc192ZW50YV9jb21wcmFkb3JfcGN0JywgJzMnLCAnbnVtYmVyJywgJ0hvbm9yYXJpb3MgdmVudGEg4oCUIGNvbXByYWRvciAoJSknLCAnaG9ub3JhcmlvcycsCiAgICAnUG9yY2VudGFqZSBzdWdlcmlkbyBkZSBob25vcmFyaW9zIGFsIGNvbXByYWRvciBlbiBvcGVyYWNpb25lcyBkZSB2ZW50YS4nKSwKICAoJ2hvbm9yYXJpb3NfYWxxdWlsZXJfbWVzZXMnLCAnMScsICdudW1iZXInLCAnSG9ub3JhcmlvcyBhbHF1aWxlciAobWVzZXMpJywgJ2hvbm9yYXJpb3MnLAogICAgJ0NhbnRpZGFkIGRlIG1lc2VzIHN1Z2VyaWRhIHBhcmEgaG9ub3JhcmlvcyBkZSBhbHF1aWxlci4nKSwKICAoJ3NvcG9ydGVfd2hhdHNhcHAnLCAnJywgJ3RleHQnLCAnV2hhdHNBcHAgZGUgc29wb3J0ZScsICdjb250YWN0bycsCiAgICAnTsO6bWVybyBzaW4gKyBwYXJhIHNvcG9ydGUgKGVqOiA1NDkzNDEzMDAxMjM0KS4nKSwKICAoJ3NvcG9ydGVfZW1haWwnLCAnJywgJ2VtYWlsJywgJ0VtYWlsIGRlIHNvcG9ydGUnLCAnY29udGFjdG8nLAogICAgJ0VtYWlsIGRlIGNvbnRhY3RvIHBhcmEgc29wb3J0ZSB0w6ljbmljby4nKQpvbiBjb25mbGljdCAoY2xhdmUpIGRvIG5vdGhpbmc7Cg==
+-- Tabla para configuración global del sitio editable por el admin
+create table if not exists configuracion_sitio (
+  clave           text primary key,
+  valor           text,
+  tipo            text not null default 'text', -- text | number | textarea | color | url | email | boolean
+  label           text not null,
+  categoria       text not null default 'general',
+  descripcion     text,
+  actualizado_at  timestamptz default now()
+);
+
+alter table configuracion_sitio enable row level security;
+
+create policy cs_admin on configuracion_sitio
+  for all using (exists (select 1 from perfiles where id = auth.uid() and tipo = 'admin'));
+
+create policy cs_read on configuracion_sitio
+  for select using (true);
+
+insert into configuracion_sitio (clave, valor, tipo, label, categoria, descripcion) values
+  ('anuncio_banner', '', 'textarea', 'Texto del banner global', 'anuncios',
+    'Mensaje visible para todos los usuarios en un banner al entrar. Vacío = sin banner.'),
+  ('anuncio_color', '#cc0000', 'color', 'Color del banner', 'anuncios',
+    'Color de fondo del banner de anuncio.'),
+  ('jus_url_cocir', '', 'url', 'URL del JUS en COCIR', 'jus',
+    'Dirección de la página de COCIR donde figura el valor del JUS. Requerida para sincronización automática.'),
+  ('honorarios_venta_propietario_pct', '3', 'number', 'Honorarios venta — propietario (%)', 'honorarios',
+    'Porcentaje sugerido de honorarios al propietario en operaciones de venta.'),
+  ('honorarios_venta_comprador_pct', '3', 'number', 'Honorarios venta — comprador (%)', 'honorarios',
+    'Porcentaje sugerido de honorarios al comprador en operaciones de venta.'),
+  ('honorarios_alquiler_meses', '1', 'number', 'Honorarios alquiler (meses)', 'honorarios',
+    'Cantidad de meses sugerida para honorarios de alquiler.'),
+  ('soporte_whatsapp', '', 'text', 'WhatsApp de soporte', 'contacto',
+    'Número sin + para soporte (ej: 5493413001234).'),
+  ('soporte_email', '', 'email', 'Email de soporte', 'contacto',
+    'Email de contacto para soporte técnico.')
+on conflict (clave) do nothing;
