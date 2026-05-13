@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  const URL_FALLBACK = "https://www.cajaforense.com/index.php?action=portal/show&ssnId_session=355&id_section=148&mnuId_parent=2";
+  const URL_FALLBACK = "https://www.justiciasantafe.gov.ar/index.php/unidad_jus/unidad-jus-ley-12851/";
 
   let url = URL_FALLBACK;
   try {
@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
   }
 
   const { error } = await sb.from("indicadores").upsert(
-    { clave: "valor_jus", valor, descripcion: "Valor JUS Caja Forense", actualizado_at: new Date().toISOString() },
+    { clave: "valor_jus", valor, descripcion: "Valor JUS", actualizado_at: new Date().toISOString() },
     { onConflict: "clave" }
   );
 
