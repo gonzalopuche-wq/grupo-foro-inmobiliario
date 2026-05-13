@@ -25,6 +25,9 @@ interface Evento {
   media?: MediaItem[] | null;
   inscripto?: boolean;
   total_inscriptos?: number;
+  es_recurrente?: boolean;
+  fechas_recurrentes?: string[] | null;
+  recurrencia_desc?: string | null;
 }
 
 const TIPOS: Record<string, { label: string; color: string; bg: string; border: string }> = {
@@ -51,10 +54,11 @@ interface MediaItem {
 }
 
 const FORM_VACIO = {
-  titulo: "", descripcion: "", fecha: "", hora: "09:00", fecha_fin: "", hora_fin: "",
+  titulo: "", descripcion: "", fecha: "", hora: "09:00", fecha_fin: "", hora_fin: "23:59",
   lugar: "", lugar_url: "", link_externo: "", imagen_url: "",
   tipo: "gfi", gratuito: true, precio_entrada: "",
   capacidad: "", plataforma: "presencial", link_reunion: "", destacado: false,
+  recurrencia_desc: "",
 };
 
 export default function EventosPage() {
@@ -86,6 +90,10 @@ export default function EventosPage() {
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
   const [eventoVer, setEventoVer] = useState<Evento | null>(null);
+  // Multi-day / recurring
+  const [modoFecha, setModoFecha] = useState<"unico"|"multidia"|"recurrente">("unico");
+  const [fechasRec, setFechasRec] = useState<string[]>([]);
+  const [nuevaFechaRec, setNuevaFechaRec] = useState("");
 
   useEffect(() => {
     const init = async () => {
@@ -270,9 +278,12 @@ export default function EventosPage() {
 
   const guardarEvento = async () => {
     if (!userId || !form.titulo || !form.fecha) { mostrarToast("Título y fecha son obligatorios", "err"); return; }
+    if (modoFecha === "recurrente" && fechasRec.length === 0) { mostrarToast("Agregá al menos una fecha de sesión", "err"); return; }
     setGuardando(true);
     const fechaISO = new Date(`${form.fecha}T${form.hora}:00`).toISOString();
-    const fechaFinISO = form.fecha_fin ? new Date(`${form.fecha_fin}T${form.hora_fin || "23:59"}:00`).toISOString() : null;
+    const fechaFinISO = modoFecha === "multidia" && form.fecha_fin
+      ? new Date(`${form.fecha_fin}T${form.hora_fin || "23:59"}:00`).toISOString()
+      : null;
     const { error } = await supabase.from("eventos").insert({
       titulo: form.titulo, descripcion: form.descripcion || null,
       fecha: fechaISO, fecha_fin: fechaFinISO,
@@ -286,6 +297,9 @@ export default function EventosPage() {
       estado: esAdmin ? "publicado" : "pendiente",
       destacado: esAdmin ? form.destacado : false,
       media: media.length > 0 ? media : null,
+      es_recurrente: modoFecha === "recurrente",
+      fechas_recurrentes: modoFecha === "recurrente" && fechasRec.length > 0 ? fechasRec : null,
+      recurrencia_desc: modoFecha !== "unico" && form.recurrencia_desc ? form.recurrencia_desc : null,
     });
     setGuardando(false);
     if (error) { mostrarToast("Error al guardar", "err"); return; }
@@ -325,6 +339,9 @@ export default function EventosPage() {
     setForm(FORM_VACIO);
     setMedia([]);
     setLinkVideo("");
+    setModoFecha("unico");
+    setFechasRec([]);
+    setNuevaFechaRec("");
     await cargarEventos(userId);
   };
 
@@ -634,9 +651,25 @@ export default function EventosPage() {
 
                       {/* FECHA */}
                       <div className="ev-fecha-col">
-                        <div className="ev-fecha-num">{f.num}</div>
-                        <div className="ev-fecha-mes">{f.mes}</div>
-                        <div className="ev-fecha-anio">{anio}</div>
+                        {ev.es_recurrente && ev.fechas_recurrentes && ev.fechas_recurrentes.length > 0 ? (
+                          <>
+                            <div style={{ fontSize: 22, fontWeight: 800, color: "#cc0000", lineHeight: 1, fontFamily: "'Montserrat',sans-serif" }}>{ev.fechas_recurrentes.length}</div>
+                            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", textAlign: "center" }}>SESIONES</div>
+                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)" }}>{new Date(ev.fecha + "T12:00:00").toLocaleDateString("es-AR", { month: "short", year: "2-digit" }).toUpperCase()}</div>
+                          </>
+                        ) : ev.fecha_fin ? (
+                          <>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: "#cc0000", lineHeight: 1, fontFamily: "'Montserrat',sans-serif" }}>{f.num}→{new Date(ev.fecha_fin).getDate()}</div>
+                            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", textAlign: "center" }}>{f.mes}</div>
+                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)" }}>{anio}</div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="ev-fecha-num">{f.num}</div>
+                            <div className="ev-fecha-mes">{f.mes}</div>
+                            <div className="ev-fecha-anio">{anio}</div>
+                          </>
+                        )}
                       </div>
 
                       {/* INFO */}
@@ -655,7 +688,16 @@ export default function EventosPage() {
                           )}
                         </div>
                         <div className="ev-meta">
-                          <span className="ev-meta-item">🕐 {f.dia} · {f.hora}hs</span>
+                          {ev.es_recurrente && ev.fechas_recurrentes && ev.fechas_recurrentes.length > 0 ? (
+                            <span className="ev-meta-item">
+                              📅 {ev.fechas_recurrentes.map(d => new Date(d + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short" })).join(" · ")}
+                            </span>
+                          ) : ev.fecha_fin ? (
+                            <span className="ev-meta-item">📅 {f.dia} al {new Date(ev.fecha_fin).toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })} · {f.hora}hs</span>
+                          ) : (
+                            <span className="ev-meta-item">🕐 {f.dia} · {f.hora}hs</span>
+                          )}
+                          {ev.recurrencia_desc && <span className="ev-meta-item" style={{ color: "rgba(200,0,0,0.7)" }}>↻ {ev.recurrencia_desc}</span>}
                           {ev.lugar&&<span className="ev-meta-item">📍 {ev.lugar}</span>}
                         </div>
                         {ev.descripcion&&<div className="ev-desc">{ev.descripcion}</div>}
@@ -792,6 +834,73 @@ export default function EventosPage() {
                 <input className="ev-input" type="time" value={form.hora} onChange={e => setF("hora", e.target.value)} />
               </div>
             </div>
+            {/* ── DURACIÓN ── */}
+            <div className="ev-field">
+              <label className="ev-label">Duración del evento</label>
+              <div style={{ display: "flex", gap: 8 }}>
+                {[
+                  { key: "unico",      label: "Un día" },
+                  { key: "multidia",   label: "Varios días" },
+                  { key: "recurrente", label: "Sesiones / clases" },
+                ].map(op => (
+                  <button key={op.key} type="button"
+                    style={{ flex: 1, padding: "8px 6px", background: modoFecha === op.key ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.03)", border: `1px solid ${modoFecha === op.key ? "rgba(200,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, borderRadius: 4, color: modoFecha === op.key ? "#fff" : "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
+                    onClick={() => setModoFecha(op.key as "unico"|"multidia"|"recurrente")}>
+                    {op.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {modoFecha === "multidia" && (
+              <>
+                <div className="ev-field">
+                  <label className="ev-label">Descripción del período <small style={{ opacity: 0.5, fontWeight: 400, textTransform: "none" }}>opcional — ej: "3 jornadas intensivas"</small></label>
+                  <input className="ev-input" value={form.recurrencia_desc} onChange={e => setF("recurrencia_desc", e.target.value)} placeholder="3 jornadas, Congreso de 2 días, etc." />
+                </div>
+                <div className="ev-row2">
+                  <div className="ev-field">
+                    <label className="ev-label">Fecha de fin *</label>
+                    <input className="ev-input" type="date" value={form.fecha_fin} onChange={e => setF("fecha_fin", e.target.value)} min={form.fecha} />
+                  </div>
+                  <div className="ev-field">
+                    <label className="ev-label">Hora de cierre</label>
+                    <input className="ev-input" type="time" value={form.hora_fin} onChange={e => setF("hora_fin", e.target.value)} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {modoFecha === "recurrente" && (
+              <>
+                <div className="ev-field">
+                  <label className="ev-label">Descripción del ciclo <small style={{ opacity: 0.5, fontWeight: 400, textTransform: "none" }}>ej: "últimos 4 miércoles del mes"</small></label>
+                  <input className="ev-input" value={form.recurrencia_desc} onChange={e => setF("recurrencia_desc", e.target.value)} placeholder="Ej: 4 miércoles, ciclo de 3 encuentros mensuales..." />
+                </div>
+                <div className="ev-field">
+                  <label className="ev-label">Fechas de cada sesión</label>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                    <input className="ev-input" type="date" value={nuevaFechaRec} onChange={e => setNuevaFechaRec(e.target.value)} style={{ flex: 1 }} />
+                    <button type="button" onClick={() => { if (nuevaFechaRec && !fechasRec.includes(nuevaFechaRec)) { setFechasRec(p => [...p, nuevaFechaRec].sort()); setNuevaFechaRec(""); } }}
+                      style={{ padding: "8px 14px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
+                      + Agregar
+                    </button>
+                  </div>
+                  {fechasRec.length > 0 && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {fechasRec.map(f => (
+                        <div key={f} style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.25)", borderRadius: 4, padding: "4px 10px", fontSize: 12, color: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", gap: 6 }}>
+                          {new Date(f + "T12:00:00").toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" })}
+                          <button type="button" onClick={() => setFechasRec(p => p.filter(x => x !== f))} style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 13, lineHeight: 1, padding: 0 }}>×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {fechasRec.length === 0 && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>Agregá al menos una fecha de sesión</div>}
+                </div>
+              </>
+            )}
+
             <div className="ev-field">
               <label className="ev-label">Plataforma</label>
               <select className="ev-select" value={form.plataforma} onChange={e => setF("plataforma", e.target.value)}>
