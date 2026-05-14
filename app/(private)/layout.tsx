@@ -44,6 +44,9 @@ const NAV_CORREDOR = [
   { href: "/marketplace", label: "Marketplace", icon: "🏪" },
   { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
   { href: "/agenda", label: "Agenda", icon: "📆" },
+  { href: "/estadisticas-mercado", label: "Estadísticas", icon: "📊" },
+  { href: "/cursos", label: "Cursos", icon: "🎓" },
+  { href: "/valoraciones", label: "Valoraciones", icon: "⭐" },
 ];
 
 // ── Nav colaborador (funcional a comercialización) ─────────────────────────
@@ -58,6 +61,7 @@ const NAV_COLABORADOR = [
 
 const NAV_ADMIN = [
   { href: "/admin", label: "Admin", icon: "⚙️" },
+  { href: "/moderacion", label: "Moderación", icon: "🛡️" },
 ];
 
 // Rutas bloqueadas para colaboradores — redirigen al dashboard

@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 import PerfilRapidoModal from "./PerfilRapidoModal";
 import NoticiasForoSection from "./NoticiasForoSection";
+import DenunciaModal from "../components/DenunciaModal";
 
 interface Category { id: string; name: string; slug: string; description: string; }
 interface Tag { id: string; name: string; slug: string; }
@@ -82,6 +83,7 @@ export default function ForoPage() {
   const [statusFilter, setStatusFilter] = useState("todas");
   const [search, setSearch] = useState("");
   const [perfilRapidoId, setPerfilRapidoId] = useState<string | null>(null);
+  const [denunciaTarget, setDenunciaTarget] = useState<{ id: string; tipo: "forum_topic" | "forum_reply" } | null>(null);
 
   const [nTitle, setNTitle] = useState("");
   const [nBody, setNBody] = useState("");
@@ -808,13 +810,8 @@ export default function ForoPage() {
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
                   <div>{(topic.forum_topic_tags ?? []).length > 0 && <div className="f-tags-row">{(topic.forum_topic_tags ?? []).map((tt: any) => <span key={tt.forum_tags?.id} className="f-tag">{tt.forum_tags?.name}</span>)}</div>}</div>
                   {topic.author_id !== userId && (
-                    <button onClick={() => {
-                      const motivo = prompt("Motivo de la denuncia:\n1. spam\n2. ofensivo\n3. incorrecto\n4. acoso\n5. otro\n\nEscribí el número:");
-                      const motivos = ["spam","ofensivo","incorrecto","acoso","otro"];
-                      const mot = motivos[(parseInt(motivo ?? "5") || 5) - 1] ?? "otro";
-                      fetch("/api/denuncias", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ denunciante_id: userId, tipo_contenido:"forum_topic", contenido_id: topic.id, motivo: mot }) });
-                      alert("Denuncia enviada. El equipo de moderación la revisará.");
-                    }} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.25)",cursor:"pointer",fontSize:11,padding:"2px 6px"}} title="Denunciar post">
+                    <button onClick={() => setDenunciaTarget({ id: topic.id, tipo: "forum_topic" })}
+                      style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.25)",cursor:"pointer",fontSize:11,padding:"2px 6px"}} title="Denunciar post">
                       ⚑ Denunciar
                     </button>
                   )}
@@ -1253,6 +1250,14 @@ export default function ForoPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {denunciaTarget && (
+        <DenunciaModal
+          tipoContenido={denunciaTarget.tipo}
+          contenidoId={denunciaTarget.id}
+          onClose={() => setDenunciaTarget(null)}
+        />
       )}
     </>
   );
