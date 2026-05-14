@@ -105,7 +105,7 @@
 
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
-| **66** | **Venta de Entradas** | ✅ | **`/eventos` — modal compra entrada para eventos de pago, estados pendiente/confirmado/cancelado, admin confirma pago — `v23`** |
+| 66 | Venta de Entradas | ❌ | Diferido |
 | **67** | **Sistema de Sponsors** | ✅ | **Portal `/sponsors/portal/` — dashboard, campañas, beneficios, saldo. Suscripción mensual + cobro por referidos (adhesiones de corredores). Admin gestiona plan, saldo y mensualidad. `v20`** |
 | 68 | Publicidad en Plataforma | ✅ | Admin — banners |
 
@@ -159,7 +159,7 @@
 | 90 | App Móvil Nativa | ❌ | Fase siguiente |
 | 91 | Recorridas Virtuales 360 | ❌ | Embed externo |
 | 92 | Firma Digital | ✅ | `/crm/firma` |
-| **93** | **Gestión de Honorarios** | ✅ | **`/crm/honorarios` — proyección/realización de honorarios, registro de cobros, tabla por etapa — `v23`** |
+| 93 | Gestión de Honorarios | ❌ | Diferido |
 | 94 | Portal Vendedor | ❌ | Diferido |
 | 95 | Portal Comprador | ❌ | Diferido |
 | **96** | **Cursos y Capacitación Online** | ✅ | **`/cursos` — listado con filtros, inscripción, progreso, admin crea/destaca cursos — `v23`** |
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **66** | **47%** |
+| ✅ Implementado | **64** | **46%** |
 | 🟡 Parcial | 12 | 9% |
-| ❌ Pendiente/Diferido | 61 | 44% |
+| ❌ Pendiente/Diferido | 63 | 45% |
 | **Total** | **139** | |
 
 ---

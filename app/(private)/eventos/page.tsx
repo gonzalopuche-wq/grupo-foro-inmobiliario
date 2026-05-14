@@ -16,7 +16,6 @@ interface Evento {
   tipo: string;
   gratuito: boolean;
   precio_entrada: number | null;
-  moneda: string | null;
   capacidad: number | null;
   plataforma: string | null;
   link_reunion: string | null;
@@ -95,10 +94,6 @@ export default function EventosPage() {
   const [modoFecha, setModoFecha] = useState<"unico"|"multidia"|"recurrente">("unico");
   const [fechasRec, setFechasRec] = useState<string[]>([]);
   const [nuevaFechaRec, setNuevaFechaRec] = useState("");
-  const [compraModal, setCompraModal] = useState<Evento | null>(null);
-  const [comprando, setComprando] = useState(false);
-  const [metodoPago, setMetodoPago] = useState("transferencia");
-  const [misCompras, setMisCompras] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const init = async () => {
@@ -125,10 +120,6 @@ export default function EventosPage() {
     const conteo: Record<string, number> = {};
     counts?.forEach(c => { conteo[c.evento_id] = (conteo[c.evento_id] ?? 0) + 1; });
     setEventos(evs.map(ev => ({ ...ev, inscripto: insSet.has(ev.id), total_inscriptos: conteo[ev.id] ?? 0 })));
-    const { data: comprasData } = await supabase.from("evento_compras").select("evento_id, estado").eq("perfil_id", uid);
-    const comprasMap: Record<string, string> = {};
-    comprasData?.forEach(c => { comprasMap[c.evento_id] = c.estado; });
-    setMisCompras(comprasMap);
     setLoading(false);
   };
 
@@ -152,26 +143,6 @@ export default function EventosPage() {
     setProcesando(null);
   };
 
-  const handleComprarEntrada = async () => {
-    if (!compraModal || comprando) return;
-    setComprando(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch("/api/eventos/comprar", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${session?.access_token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ evento_id: compraModal.id, cantidad: 1, metodo_pago: metodoPago }),
-      });
-      const d = await res.json();
-      if (d.error) { mostrarToast(d.error, "err"); return; }
-      const nuevoEstado = d.compra.estado as string;
-      setMisCompras(prev => ({ ...prev, [compraModal.id]: nuevoEstado }));
-      mostrarToast(nuevoEstado === "confirmado" ? "¡Inscripto!" : "Solicitud enviada — aguardá confirmación de pago", "ok");
-      setCompraModal(null);
-    } finally {
-      setComprando(false);
-    }
-  };
 
   const handlePasteImagen = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
@@ -746,18 +717,15 @@ export default function EventosPage() {
                       <div className="ev-acciones">
                         {procesando===ev.id?<span className="ev-spinner" />
                         :pasado?<span style={{fontSize:10,color:"rgba(255,255,255,0.2)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>FINALIZADO</span>
-                        :misCompras[ev.id]==="pendiente"?<span style={{fontSize:10,color:"#eab308",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>⏳ PAGO PENDIENTE</span>
-                        :misCompras[ev.id]==="confirmado"?<span style={{fontSize:10,color:"#22c55e",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>✓ ENTRADA CONFIRMADA</span>
                         :(
                           <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
                             onClick={()=>{
                               if (lleno && !ev.inscripto) return;
-                              if (!ev.gratuito && !ev.inscripto && !misCompras[ev.id]) { setCompraModal(ev); return; }
                               if (!ev.inscripto && ev.link_externo) window.open(ev.link_externo,"_blank","noopener,noreferrer");
                               toggleInscripcion(ev.id,!!ev.inscripto,ev.capacidad,ev.total_inscriptos??0);
                             }}
                             disabled={lleno&&!ev.inscripto}>
-                            {ev.inscripto?"✓ Inscripto":lleno?"Completo":ev.gratuito?"Inscribirse":"Comprar entrada"}
+                            {ev.inscripto?"✓ Inscripto":lleno?"Completo":"Inscribirse"}
                           </button>
                         )}
                         {ev.inscripto&&ev.link_externo&&!pasado&&(
@@ -1275,19 +1243,16 @@ export default function EventosPage() {
                 {/* Acciones */}
                 <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:18}}>
                   {!pasado&&(
-                    procesando===ev.id ? <span className="ev-spinner" /> :
-                    misCompras[ev.id]==="pendiente" ? <span style={{fontSize:11,color:"#eab308",fontWeight:700}}>⏳ Pago pendiente de confirmación</span> :
-                    misCompras[ev.id]==="confirmado" ? <span style={{fontSize:11,color:"#22c55e",fontWeight:700}}>✓ Entrada confirmada</span> : (
+                    procesando===ev.id ? <span className="ev-spinner" /> : (
                       <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
                         style={{fontSize:11,padding:"10px 20px"}}
                         disabled={lleno&&!ev.inscripto}
                         onClick={()=>{
                           if (lleno && !ev.inscripto) return;
-                          if (!ev.gratuito && !ev.inscripto && !misCompras[ev.id]) { setCompraModal(ev); return; }
                           if (!ev.inscripto && ev.link_externo) window.open(ev.link_externo,"_blank","noopener,noreferrer");
                           toggleInscripcion(ev.id,!!ev.inscripto,ev.capacidad,ev.total_inscriptos??0);
                         }}>
-                        {ev.inscripto?"✓ Inscripto":lleno?"Completo":ev.gratuito?"Inscribirse":"Comprar entrada"}
+                        {ev.inscripto?"✓ Inscripto":lleno?"Completo":"Inscribirse"}
                       </button>
                     )
                   )}
@@ -1308,38 +1273,6 @@ export default function EventosPage() {
           </div>
         );
       })()}
-
-      {/* Modal compra de entrada */}
-      {compraModal && (
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={e=>{if(e.target===e.currentTarget)setCompraModal(null)}}>
-          <div style={{background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:16,padding:28,width:"100%",maxWidth:420,position:"relative"}}>
-            <button style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:20,cursor:"pointer"}} onClick={()=>setCompraModal(null)}>&times;</button>
-            <div style={{fontSize:22,marginBottom:4}}>🎟️</div>
-            <h3 style={{margin:"0 0 6px",fontSize:17,fontWeight:800,fontFamily:"Montserrat,sans-serif"}}>{compraModal.titulo}</h3>
-            <p style={{margin:"0 0 20px",fontSize:13,color:"rgba(255,255,255,0.45)"}}>
-              Precio: <strong style={{color:"#eab308"}}>${compraModal.precio_entrada?.toLocaleString("es-AR")} {compraModal.moneda ?? "ARS"}</strong> por entrada
-            </p>
-            <div style={{marginBottom:16}}>
-              <label style={{display:"block",fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Método de pago</label>
-              {["transferencia","efectivo","mercadopago","otro"].map(m=>(
-                <label key={m} style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,cursor:"pointer"}}>
-                  <input type="radio" name="metodo" value={m} checked={metodoPago===m} onChange={()=>setMetodoPago(m)} />
-                  <span style={{fontSize:13,color:"rgba(255,255,255,0.7)",textTransform:"capitalize"}}>{m==="mercadopago"?"MercadoPago":m.charAt(0).toUpperCase()+m.slice(1)}</span>
-                </label>
-              ))}
-            </div>
-            <div style={{background:"rgba(234,179,8,0.08)",border:"1px solid rgba(234,179,8,0.2)",borderRadius:8,padding:"10px 14px",fontSize:12,color:"rgba(234,179,8,0.8)",marginBottom:20}}>
-              📌 Tu solicitud quedará en estado <strong>pendiente</strong> hasta que el equipo GFI® confirme el pago.
-            </div>
-            <button
-              onClick={handleComprarEntrada}
-              disabled={comprando}
-              style={{width:"100%",padding:"12px",background:"#cc0000",border:"none",borderRadius:8,color:"#fff",fontSize:14,fontWeight:700,fontFamily:"Montserrat,sans-serif",cursor:comprando?"not-allowed":"pointer",opacity:comprando?0.6:1}}>
-              {comprando?"Enviando...":"Solicitar entrada"}
-            </button>
-          </div>
-        </div>
-      )}
 
       {toast && <div className={`toast ${toast.tipo}`}>{toast.msg}</div>}
     </>
