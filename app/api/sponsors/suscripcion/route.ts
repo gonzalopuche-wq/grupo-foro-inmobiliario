@@ -6,7 +6,7 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// POST — admin cobra la mensualidad de un sponsor debitando del saldo prepago
+// POST — admin cobra la mensualidad de un sponsor usando RPC atómico
 export async function POST(req: NextRequest) {
   const auth = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!auth) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -16,61 +16,43 @@ export async function POST(req: NextRequest) {
   const { data: perfil } = await sb.from("perfiles").select("tipo").eq("id", user.id).single();
   if (perfil?.tipo !== "admin") return NextResponse.json({ error: "Solo admin" }, { status: 403 });
 
-  const { proveedor_id, mes } = await req.json(); // mes = "YYYY-MM"
+  const { proveedor_id, mes } = await req.json();
   if (!proveedor_id || !mes) {
     return NextResponse.json({ error: "proveedor_id y mes requeridos" }, { status: 400 });
   }
 
-  const [{ data: prov }, { data: saldo }] = await Promise.all([
-    sb.from("red_proveedores").select("id, nombre, plan_mensual_usd").eq("id", proveedor_id).single(),
-    sb.from("sponsor_saldo").select("saldo_usd").eq("proveedor_id", proveedor_id).maybeSingle(),
-  ]);
-
-  if (!prov) return NextResponse.json({ error: "Proveedor no encontrado" }, { status: 404 });
-
-  const monto = Number(prov.plan_mensual_usd ?? 50);
-  const saldoActual = Number(saldo?.saldo_usd ?? 0);
-
-  if (saldoActual < monto) {
-    return NextResponse.json({
-      error: `Saldo insuficiente. Disponible: $${saldoActual.toFixed(2)}, requerido: $${monto}`,
-    }, { status: 422 });
+  // Validar formato YYYY-MM estrictamente (P2 fix)
+  if (!/^\d{4}-\d{2}$/.test(mes)) {
+    return NextResponse.json({ error: "Formato de mes inválido. Usar YYYY-MM" }, { status: 400 });
   }
-
-  const { data: existing } = await sb.from("sponsor_suscripciones")
-    .select("id, pagada").eq("proveedor_id", proveedor_id).eq("mes", mes).maybeSingle();
-  if (existing?.pagada) {
-    return NextResponse.json({ error: `Ya se cobró la suscripción de ${mes}` }, { status: 409 });
-  }
-
-  // Vencimiento = primer día del mes siguiente
   const [year, month] = mes.split("-").map(Number);
-  const vence = new Date(year, month, 1).toISOString().split("T")[0];
-  const nuevoSaldo = saldoActual - monto;
+  if (month < 1 || month > 12) {
+    return NextResponse.json({ error: "Mes fuera de rango (01-12)" }, { status: 400 });
+  }
+  if (year < 2020 || year > 2100) {
+    return NextResponse.json({ error: "Año fuera de rango" }, { status: 400 });
+  }
 
-  await sb.from("sponsor_saldo").upsert(
-    { proveedor_id, saldo_usd: nuevoSaldo, updated_at: new Date().toISOString() },
-    { onConflict: "proveedor_id" }
-  );
-
-  await sb.from("sponsor_movimientos").insert({
-    proveedor_id,
-    tipo: "debito_suscripcion",
-    monto_usd: -monto,
-    descripcion: `Suscripción mensual ${mes}`,
+  // RPC atómico — usa FOR UPDATE para prevenir cobros duplicados concurrentes (P1 fix)
+  const { data, error } = await sb.rpc("cobrar_suscripcion_sponsor", {
+    p_proveedor_id: proveedor_id,
+    p_mes: mes,
   });
 
-  await sb.from("sponsor_suscripciones").upsert(
-    { proveedor_id, mes, monto_usd: monto, pagada: true, fecha_pago: new Date().toISOString() },
-    { onConflict: "proveedor_id,mes" }
-  );
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
-  await sb.from("red_proveedores").update({
-    suscripcion_activa: true,
-    suscripcion_vence: vence,
-  }).eq("id", proveedor_id);
+  const result = data as { ok?: boolean; error?: string; saldo_nuevo?: number; vence?: string };
+  if (result.error) {
+    const status = result.error.includes("insuficiente") ? 422
+      : result.error.includes("Ya se cobró") ? 409
+      : result.error.includes("no encontrado") ? 404
+      : 400;
+    return NextResponse.json({ error: result.error }, { status });
+  }
 
-  return NextResponse.json({ ok: true, saldo_nuevo: nuevoSaldo, vence });
+  return NextResponse.json({ ok: true, saldo_nuevo: result.saldo_nuevo, vence: result.vence });
 }
 
 // GET — historial de suscripciones de un sponsor

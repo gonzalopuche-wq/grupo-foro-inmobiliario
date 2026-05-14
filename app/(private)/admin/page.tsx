@@ -945,7 +945,7 @@ A partir de esa fecha el costo mensual será de USD 15.
   };
 
   const cobrarSuscripcionSponsor = async (provId: string) => {
-    const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+    const mesActual = new Date().toISOString().slice(0, 7);
     setCobrandoSuscripcion(provId);
     try {
       const session = (await supabase.auth.getSession()).data.session;
@@ -967,6 +967,7 @@ A partir de esa fecha el costo mensual será de USD 15.
     if (error) { mostrarToast("Error al guardar plan", "err"); }
     else { mostrarToast("Plan actualizado"); setSponsorPlanForm(f => ({ ...f, [provId]: "" })); cargarRedProveedores(); }
   };
+
 
   const cargarSaldoSponsor = async (provId: string) => {
     const monto = parseFloat(sponsorSaldoForm[provId] ?? "");
@@ -2364,17 +2365,16 @@ A partir de esa fecha el costo mensual será de USD 15.
                     const hoy = new Date();
                     const vence = rp.suscripcion_vence ? new Date(rp.suscripcion_vence) : null;
                     const suscVigente = rp.suscripcion_activa && vence && vence > hoy;
-                    const mesActual = hoy.toISOString().slice(0, 7);
+                    // Usar fecha local para evitar desfase UTC en zonas horarias negativas (P2 fix)
+                    const mesActual = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}`;
                     return (
                       <div key={rp.id} style={{ background: "rgba(14,14,14,0.9)", border: `1px solid ${suscVigente ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.07)"}`, borderRadius: 8, padding: "16px 20px" }}>
-                        {/* Header */}
                         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
                           <div>
                             <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{rp.nombre}</div>
                             {rp.sitio_web && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{rp.sitio_web}</div>}
                           </div>
                           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                            {/* Badge suscripción */}
                             {suscVigente
                               ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                                   ✓ Suscripción activa hasta {vence!.toLocaleDateString("es-AR",{month:"short",year:"numeric"})}
@@ -2383,10 +2383,9 @@ A partir de esa fecha el costo mensual será de USD 15.
                                   Sin suscripción activa
                                 </span>
                             }
-                            {/* Badge portal */}
                             {rp.portal_user_id
                               ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", color: "#3b82f6", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
-                                  Portal: {(rp.portal_usuario as any)?.nombre} {(rp.portal_usuario as any)?.apellido}
+                                  Portal: {rp.portal_usuario?.nombre} {rp.portal_usuario?.apellido}
                                 </span>
                               : <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Sin acceso al portal</span>
                             }
@@ -2394,7 +2393,6 @@ A partir de esa fecha el costo mensual será de USD 15.
                         </div>
 
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                          {/* Cargar saldo */}
                           <div>
                             <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Cargar saldo (USD)</div>
                             <div style={{ display: "flex", gap: 8 }}>
@@ -2412,7 +2410,6 @@ A partir de esa fecha el costo mensual será de USD 15.
                             </div>
                           </div>
 
-                          {/* Cobrar mensualidad */}
                           <div>
                             <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
                               Mensualidad — plan actual: <strong style={{ color: "#f59e0b" }}>${rp.plan_mensual_usd}/mes</strong>
@@ -2436,7 +2433,6 @@ A partir de esa fecha el costo mensual será de USD 15.
                             </div>
                           </div>
 
-                          {/* Vincular portal */}
                           <div>
                             <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Vincular acceso al portal (email del usuario)</div>
                             <div style={{ display: "flex", gap: 8 }}>
