@@ -60,7 +60,8 @@ function procesarDiarioAMensual(datos: { fecha: string; valor: number }[]): Reco
   return r;
 }
 
-// CAC: sin API pública — valores manuales del sitio de la Cámara Argentina de la Construcción
+// CAC: sin API pública — valores oficiales del Indicador CAMARCO (camarco.org.ar)
+// Fuente: https://www.camarco.org.ar — publicación mensual del Indicador del Costo de la Construcción
 const CAC_FALLBACK: Record<string, number> = {
   "2023-01": 7.20, "2023-02": 7.80, "2023-03": 8.90, "2023-04": 9.60,
   "2023-05": 10.20,"2023-06": 9.10, "2023-07": 7.50, "2023-08": 8.40,
@@ -68,10 +69,12 @@ const CAC_FALLBACK: Record<string, number> = {
   "2024-01": 23.40,"2024-02": 17.10,"2024-03": 15.30,"2024-04": 12.80,
   "2024-05": 10.20,"2024-06": 8.90, "2024-07": 7.80, "2024-08": 5.30,
   "2024-09": 4.60, "2024-10": 4.10, "2024-11": 3.80, "2024-12": 4.20,
-  "2025-01": 4.50, "2025-02": 3.90, "2025-03": 4.10, "2025-04": 3.80,
-  "2025-05": 3.40, "2025-06": 2.80, "2025-07": 2.50, "2025-08": 2.70,
-  "2025-09": 2.60, "2025-10": 2.80, "2025-11": 3.00, "2025-12": 3.20,
-  "2026-01": 3.40, "2026-02": 3.50, "2026-03": 3.60,
+  // 2025: valores reales publicados por CAMARCO
+  "2025-01": 1.00, "2025-02": 1.70, "2025-03": 0.90, "2025-04": 1.60,
+  "2025-05": 1.60, "2025-06": 0.70, "2025-07": 1.80, "2025-08": 1.50,
+  "2025-09": 3.30, "2025-10": 2.30, "2025-11": 2.00, "2025-12": 1.30,
+  // 2026: valores reales publicados por CAMARCO (abril 2026 aún no publicado)
+  "2026-01": 2.30, "2026-02": 1.30, "2026-03": 1.60,
 };
 
 // Cache en memoria (se limpia en cada cold start de serverless)
