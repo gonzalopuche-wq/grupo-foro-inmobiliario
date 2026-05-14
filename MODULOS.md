@@ -106,7 +106,7 @@
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
 | 66 | Venta de Entradas | ❌ | Pendiente |
-| 67 | Sistema de Sponsors | ✅ | Admin panel |
+| **67** | **Sistema de Sponsors** | ✅ | **Portal `/sponsors/portal/` — dashboard, campañas, beneficios, saldo. Suscripción mensual + cobro por referidos (adhesiones de corredores). Admin gestiona plan, saldo y mensualidad. `v20`** |
 | 68 | Publicidad en Plataforma | ✅ | Admin — banners |
 
 ---
@@ -236,4 +236,4 @@
 
 ---
 
-*Última actualización: v19 — MOD 39B (post redes IA), MOD 83 (insignias expandidas), MOD 106 (autorizaciones de venta), Perfil ampliado (TikTok, YouTube, Telegram, WhatsApp Biz, portal propio, franquicia, empleados, horario, idiomas, certificaciones, asociaciones)*
+*Última actualización: v20 — MOD 67 (Portal de Sponsors completo: suscripción mensual configurable por proveedor, cobro por referidos/adhesiones de corredores, sistema de campañas y beneficios, links de referido con tracking de clics, admin gestiona plan/saldo/mensualidad)*
