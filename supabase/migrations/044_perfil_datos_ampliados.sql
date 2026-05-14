@@ -12,5 +12,4 @@ alter table perfiles
   add column if not exists idiomas text[],
   add column if not exists descripcion_inmobiliaria text,
   add column if not exists horario_atencion text,
-  add column if not exists cant_empleados integer,
-  add column if not exists franquicia text;
+  add column if not exists cant_empleados integer;

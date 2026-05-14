@@ -34,7 +34,6 @@ interface Perfil {
   descripcion_inmobiliaria: string | null;
   horario_atencion: string | null;
   cant_empleados: number | null;
-  franquicia: string | null;
   bio: string | null;
   socio_cir: boolean;
   tipo: string;
@@ -173,7 +172,6 @@ export default function PerfilPage() {
       descripcion_inmobiliaria: perfil.descripcion_inmobiliaria,
       horario_atencion: perfil.horario_atencion,
       cant_empleados: perfil.cant_empleados,
-      franquicia: perfil.franquicia,
       bio: perfil.bio,
       socio_cir: perfil.socio_cir,
       notif_eventos: perfil.notif_eventos,
@@ -564,10 +562,6 @@ export default function PerfilPage() {
                 <div className="pf-field">
                   <label className="pf-label">Inmobiliaria / Empresa</label>
                   <input className="pf-input" placeholder="Nombre de tu inmobiliaria" value={perfil.inmobiliaria ?? ""} onChange={e => set("inmobiliaria", e.target.value)} />
-                </div>
-                <div className="pf-field">
-                  <label className="pf-label">Franquicia</label>
-                  <input className="pf-input" placeholder="Ej: RE/MAX, Century 21, independiente..." value={perfil.franquicia ?? ""} onChange={e => set("franquicia", e.target.value)} />
                 </div>
                 <div className="pf-field">
                   <label className="pf-label">Zona de trabajo</label>
