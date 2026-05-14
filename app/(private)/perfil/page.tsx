@@ -55,6 +55,8 @@ interface Perfil {
   celular_mostrar: "oficina" | "personal" | null;
   modo_silencioso: boolean;
   silencioso_hasta: string | null;
+  mfa_habilitado: boolean;
+  cocir_estado: string | null;
 }
 
 const ESPECIALIDADES_OPCIONES = [
@@ -830,13 +832,28 @@ export default function PerfilPage() {
                   { label: "Estado", val: perfil.estado ?? "—" },
                   { label: "Miembro desde", val: formatFecha(perfil.created_at) },
                   { label: "Sesión única", val: "1 dispositivo activo a la vez" },
-                  { label: "2FA", val: "Obligatorio — SMS o app autenticadora" },
                 ].map((item, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 4, border: "1px solid rgba(255,255,255,0.07)" }}>
                     <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{item.label}</span>
                     <span style={{ fontSize: 12, color: "#fff", fontWeight: 600 }}>{item.val}</span>
                   </div>
                 ))}
+                {/* 2FA */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 4, border: `1px solid ${perfil.mfa_habilitado ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}>
+                  <div>
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>2FA — Doble autenticación</span>
+                    {!perfil.mfa_habilitado && (
+                      <div style={{ fontSize: 10, color: "#f87171", marginTop: 2 }}>No configurado — requerido para corredores GFI®</div>
+                    )}
+                  </div>
+                  {perfil.mfa_habilitado ? (
+                    <span style={{ fontSize: 11, color: "#4ade80", fontWeight: 700, background: "rgba(34,197,94,0.1)", padding: "3px 8px", borderRadius: 4 }}>✓ Activo</span>
+                  ) : (
+                    <a href="/configurar-2fa" style={{ fontSize: 11, color: "#fff", fontWeight: 700, background: "#2563eb", padding: "4px 10px", borderRadius: 4, textDecoration: "none" }}>
+                      Configurar →
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           )}
