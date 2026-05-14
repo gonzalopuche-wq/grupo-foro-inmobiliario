@@ -248,6 +248,14 @@ export default function AdminPage() {
   const [respuestaForm, setRespuestaForm] = useState("");
   const [guardandoRespuesta, setGuardandoRespuesta] = useState(false);
   const [resolviendoIA, setResolviendoIA] = useState(false);
+  // Sponsors (red_proveedores)
+  interface RedProveedor { id: string; nombre: string; sitio_web: string | null; portal_user_id: string | null; slug: string | null; portal_usuario?: { nombre: string; apellido: string; email: string | null; } | null; }
+  const [redProveedores, setRedProveedores] = useState<RedProveedor[]>([]);
+  const [loadingRedProv, setLoadingRedProv] = useState(true);
+  const [sponsorSaldoForm, setSponsorSaldoForm] = useState<Record<string, string>>({});
+  const [cargandoSaldo, setCargandoSaldo] = useState<string | null>(null);
+  const [sponsorPortalForm, setSponsorPortalForm] = useState<Record<string, string>>({});
+  const [vinculandoPortal, setVinculandoPortal] = useState<string | null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -259,7 +267,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte(); cargarRedProveedores();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -922,6 +930,45 @@ A partir de esa fecha el costo mensual será de USD 15.
   const colaboradoresFiltrados = filtroColab === "todos" ? colaboradores : colaboradores.filter(c => c.estado === filtroColab);
   const formatFecha = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
   const estadoPagoColor = (estado: string) => { if (estado === "activa") return "#22c55e"; if (estado === "pendiente") return "#eab308"; return "#ff4444"; };
+
+  // ── Sponsors ────────────────────────────────────────────────────────────────
+  const cargarRedProveedores = async () => {
+    setLoadingRedProv(true);
+    const { data } = await supabase
+      .from("red_proveedores")
+      .select("id, nombre, sitio_web, portal_user_id, slug, portal_usuario:portal_user_id(nombre, apellido, email)")
+      .order("nombre");
+    setRedProveedores((data ?? []) as unknown as RedProveedor[]);
+    setLoadingRedProv(false);
+  };
+
+  const cargarSaldoSponsor = async (provId: string) => {
+    const monto = parseFloat(sponsorSaldoForm[provId] ?? "");
+    if (!monto || monto <= 0) { mostrarToast("Ingresá un monto válido", "err"); return; }
+    setCargandoSaldo(provId);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const res = await fetch("/api/sponsors/saldo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}` },
+        body: JSON.stringify({ proveedor_id: provId, monto_usd: monto, descripcion: `Recarga manual admin` }),
+      });
+      if (!res.ok) { const e = await res.json(); mostrarToast(e.error ?? "Error al cargar saldo", "err"); }
+      else { mostrarToast(`$${monto} cargados OK`); setSponsorSaldoForm(f => ({ ...f, [provId]: "" })); }
+    } finally { setCargandoSaldo(null); }
+  };
+
+  const vincularPortalSponsor = async (provId: string) => {
+    const email = (sponsorPortalForm[provId] ?? "").trim();
+    if (!email) { mostrarToast("Ingresá el email del usuario sponsor", "err"); return; }
+    setVinculandoPortal(provId);
+    const { data: usuario } = await supabase.from("perfiles").select("id, nombre, apellido").ilike("email", email).maybeSingle();
+    if (!usuario) { mostrarToast("No se encontró ningún usuario con ese email", "err"); setVinculandoPortal(null); return; }
+    const { error } = await supabase.from("red_proveedores").update({ portal_user_id: usuario.id }).eq("id", provId);
+    if (error) { mostrarToast("Error al vincular", "err"); }
+    else { mostrarToast(`Vinculado a ${usuario.nombre} ${usuario.apellido}`); setSponsorPortalForm(f => ({ ...f, [provId]: "" })); cargarRedProveedores(); }
+    setVinculandoPortal(null);
+  };
 
   if (!esAdmin) return null;
 
@@ -2276,6 +2323,74 @@ A partir de esa fecha el costo mensual será de USD 15.
                 </div>
               );
             })()}
+          </div>
+
+          {/* ── SPONSORS ─────────────────────────────────────────────────── */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <div><div className="adm-ind-titulo">Sponsors <span>de GFI</span></div><div className="adm-ind-subtitulo">Gestioná el acceso al portal y saldo de cada sponsor.</div></div>
+            </div>
+            {loadingRedProv ? <div className="adm-loading">Cargando...</div> : redProveedores.length === 0
+              ? <div className="adm-empty">No hay proveedores en red_proveedores.</div>
+              : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {redProveedores.map(rp => (
+                    <div key={rp.id} style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "16px 20px" }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
+                        <div>
+                          <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{rp.nombre}</div>
+                          {rp.sitio_web && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{rp.sitio_web}</div>}
+                        </div>
+                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          {rp.portal_user_id
+                            ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                                Portal: {(rp.portal_usuario as any)?.nombre} {(rp.portal_usuario as any)?.apellido}
+                              </span>
+                            : <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Sin acceso al portal</span>
+                          }
+                        </div>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                        {/* Cargar saldo */}
+                        <div>
+                          <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Cargar saldo (USD)</div>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <input
+                              type="number" min="0" step="10" placeholder="Ej: 500"
+                              value={sponsorSaldoForm[rp.id] ?? ""}
+                              onChange={e => setSponsorSaldoForm(f => ({ ...f, [rp.id]: e.target.value }))}
+                              style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
+                            />
+                            <button
+                              onClick={() => cargarSaldoSponsor(rp.id)}
+                              disabled={cargandoSaldo === rp.id}
+                              style={{ padding: "8px 16px", background: "#22c55e", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: cargandoSaldo === rp.id ? 0.6 : 1 }}
+                            >{cargandoSaldo === rp.id ? "..." : "+ Saldo"}</button>
+                          </div>
+                        </div>
+                        {/* Vincular portal */}
+                        <div>
+                          <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Vincular acceso al portal (email)</div>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <input
+                              type="email" placeholder="email@usuario.com"
+                              value={sponsorPortalForm[rp.id] ?? ""}
+                              onChange={e => setSponsorPortalForm(f => ({ ...f, [rp.id]: e.target.value }))}
+                              style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
+                            />
+                            <button
+                              onClick={() => vincularPortalSponsor(rp.id)}
+                              disabled={vinculandoPortal === rp.id}
+                              style={{ padding: "8px 16px", background: "#3b82f6", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: vinculandoPortal === rp.id ? 0.6 : 1 }}
+                            >{vinculandoPortal === rp.id ? "..." : "Vincular"}</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            }
           </div>
 
         </main>
