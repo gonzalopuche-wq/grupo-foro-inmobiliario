@@ -50,16 +50,16 @@ const FALLBACK_INDICES: IndicesData = {
       "2025-01": 2.20, "2025-02": 2.40, "2025-03": 3.70, "2025-04": 2.80,
       "2025-05": 1.50, "2025-06": 1.60, "2025-07": 1.90, "2025-08": 1.90,
       "2025-09": 2.10, "2025-10": 2.30, "2025-11": 2.50, "2025-12": 2.80,
-      "2026-01": 2.90, "2026-02": 2.90, "2026-03": 3.40,
+      "2026-01": 2.90, "2026-02": 2.90, "2026-03": 3.40, "2026-04": 1.70,
     },
     CAC: {
       "2024-01": 23.40,"2024-02": 17.10,"2024-03": 15.30,"2024-04": 12.80,
       "2024-05": 10.20,"2024-06": 8.90, "2024-07": 7.80, "2024-08": 5.30,
       "2024-09": 4.60, "2024-10": 4.10, "2024-11": 3.80, "2024-12": 4.20,
-      "2025-01": 4.50, "2025-02": 3.90, "2025-03": 4.10, "2025-04": 3.80,
-      "2025-05": 3.40, "2025-06": 2.80, "2025-07": 2.50, "2025-08": 2.70,
-      "2025-09": 2.60, "2025-10": 2.80, "2025-11": 3.00, "2025-12": 3.20,
-      "2026-01": 3.40, "2026-02": 3.50, "2026-03": 3.60,
+      "2025-01": 1.00, "2025-02": 1.70, "2025-03": 0.90, "2025-04": 1.60,
+      "2025-05": 1.60, "2025-06": 0.70, "2025-07": 1.80, "2025-08": 1.50,
+      "2025-09": 3.30, "2025-10": 2.30, "2025-11": 2.00, "2025-12": 1.30,
+      "2026-01": 2.30, "2026-02": 1.30, "2026-03": 1.60,
     },
     CER: {
       "2024-01": 19.19,"2024-02": 22.18,"2024-03": 17.45,"2024-04": 11.87,
@@ -195,10 +195,11 @@ export default function CalculadorasPage() {
   const calculo = useMemo(() => {
     if (!montoNum || Object.keys(datosIndice).length === 0) return null;
     const { factor, desglose } = calcularAcumulado(datosIndice, fechaUltimoAjuste, mesesPeriodo);
+    const nuevoAlquiler = Math.round(montoNum * factor / 100) * 100;
     return {
-      nuevoAlquiler: montoNum * factor,
+      nuevoAlquiler,
       variacionTotal: (factor - 1) * 100,
-      diferencia: montoNum * factor - montoNum,
+      diferencia: nuevoAlquiler - montoNum,
       desglose,
     };
   }, [montoNum, datosIndice, fechaUltimoAjuste, mesesPeriodo]);
@@ -212,7 +213,7 @@ export default function CalculadorasPage() {
     for (let i = 0; i < 4; i++) {
       const hasta = sumarMeses(desde, mesesPeriodo);
       const { factor } = calcularAcumulado(datosIndice, desde, mesesPeriodo);
-      const nuevo = montoActual * factor;
+      const nuevo = Math.round(montoActual * factor / 100) * 100;
       ajustes.push({
         periodo: `${nombreMes(desde)} → ${nombreMes(hasta)}`,
         montoAnterior: montoActual,
@@ -232,7 +233,7 @@ export default function CalculadorasPage() {
       const datos = indicesData.indices?.[ind.id] ?? {};
       if (Object.keys(datos).length === 0) return null;
       const { factor } = calcularAcumulado(datos, fechaUltimoAjuste, mesesPeriodo);
-      return { ...ind, montoNuevo: montoNum * factor, variacion: (factor - 1) * 100 };
+      return { ...ind, montoNuevo: Math.round(montoNum * factor / 100) * 100, variacion: (factor - 1) * 100 };
     }).filter(Boolean).sort((a: any, b: any) => b.variacion - a.variacion) as any[];
   }, [montoNum, indicesData, fechaUltimoAjuste, mesesPeriodo]);
 
