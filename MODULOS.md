@@ -1,4 +1,4 @@
-# GFI® — Estado de Módulos (v17 — 139 módulos)
+# GFI® — Estado de Módulos (v21 — 139 módulos)
 
 > Referencia: `public/GFI_Maestro_v17.pdf`
 > Actualizado automáticamente con cada PR.
@@ -16,10 +16,10 @@
 |---|--------|--------|--------------|
 | 0 | Dashboard Principal | ✅ | `/dashboard` |
 | 1 | Eventos y Agenda | ✅ | `/eventos` + `/agenda` |
-| 2 | Motor MIR | ✅ | `/mir` |
-| 3 | Cartera de Propiedades | ✅ | `/crm/cartera` |
+| **2** | **Motor MIR** | 🟡 | **`/mir` — Smart Prospecting push implementado; parser WA→MIR activo. Pendiente: PEDIDO URGENTE (badge+pago extra), historial WA migrado** |
+| **3** | **Cartera de Propiedades** | 🟡 | **`/crm/cartera` — Pendiente: parser IA directo desde WA (activo vía webhook), DIFUSIONES, CONTACTOS SUGERIDOS, import/export Excel** |
 | 4 | Biblioteca del Corredor | ✅ | `/biblioteca` |
-| 5 | Foro / Chat | ✅ | `/foro` |
+| **5** | **Foro / Chat** | 🟡 | **`/foro` — Grupos WA dinámicos desde DB. Webhook WhatsApp Business API activo. Pendiente: vinculación bidireccional grupos, migración historial** |
 | 6 | Sistema de Ideas | ✅ | `/ideas` |
 | 7 | Tasador Inteligente | ✅ | `/comparables/tasador` |
 
@@ -236,4 +236,4 @@
 
 ---
 
-*Última actualización: v20 — MOD 67 (Portal de Sponsors completo: suscripción mensual configurable por proveedor, cobro por referidos/adhesiones de corredores, sistema de campañas y beneficios, links de referido con tracking de clics, admin gestiona plan/saldo/mensualidad)*
+*Última actualización: v21 — WhatsApp Business API (PRIORIDAD 1): webhook de recepción + parser IA inline que clasifica mensajes como pedido/ofrecido y crea entradas en el MIR automáticamente; Smart Prospecting (push notifications instantáneas cuando ingresa propiedad compatible con búsquedas); grupos WA dinámicos desde DB en el foro; admin gestiona grupos, ve mensajes recibidos y envía mensajes directos; fuente `whatsapp` en tablas MIR para tracking de origen. Afecta MOD 2, 3, 5.*

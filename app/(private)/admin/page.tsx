@@ -259,6 +259,16 @@ export default function AdminPage() {
   const [sponsorPlanForm, setSponsorPlanForm] = useState<Record<string, string>>({});
   const [cobrandoSuscripcion, setCobrandoSuscripcion] = useState<string | null>(null);
 
+  // WhatsApp
+  interface WaGrupo { id: string; nombre: string; grupo_gfi: string; descripcion: string | null; wa_link: string | null; miembros: number; activo: boolean; mensajes_30d: number; procesados_30d: number; }
+  interface WaMensaje { id: string; numero_from: string; nombre_from: string | null; perfil_id: string | null; contenido: string; grupo_gfi: string | null; procesado: boolean; mir_entry_id: string | null; mir_tabla: string | null; error_detalle: string | null; created_at: string; }
+  const [waGrupos, setWaGrupos]         = useState<WaGrupo[]>([]);
+  const [waMensajes, setWaMensajes]     = useState<WaMensaje[]>([]);
+  const [loadingWa, setLoadingWa]       = useState(true);
+  const [waGrupoForm, setWaGrupoForm]   = useState({ id: "", nombre: "", grupo_gfi: "", descripcion: "", wa_link: "", miembros: "" });
+  const [enviandoWa, setEnviandoWa]     = useState(false);
+  const [waSendForm, setWaSendForm]     = useState({ to: "", body: "" });
+
   useEffect(() => {
     const verificar = async () => {
       const { data: userData } = await supabase.auth.getUser();
@@ -269,7 +279,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte(); cargarRedProveedores();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte(); cargarRedProveedores(); cargarWa();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -995,6 +1005,58 @@ A partir de esa fecha el costo mensual será de USD 15.
     if (error) { mostrarToast("Error al vincular", "err"); }
     else { mostrarToast(`Vinculado a ${usuario.nombre} ${usuario.apellido}`); setSponsorPortalForm(f => ({ ...f, [provId]: "" })); cargarRedProveedores(); }
     setVinculandoPortal(null);
+  };
+
+  // ── WhatsApp ────────────────────────────────────────────────────────────────
+  const cargarWa = async () => {
+    setLoadingWa(true);
+    const session = (await supabase.auth.getSession()).data.session;
+    const res = await fetch("/api/whatsapp/grupos?activos=false", {
+      headers: { Authorization: `Bearer ${session?.access_token}` },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      setWaGrupos(json.grupos ?? []);
+    }
+    const { data: msgs } = await supabase
+      .from("whatsapp_mensajes")
+      .select("id, numero_from, nombre_from, perfil_id, contenido, grupo_gfi, procesado, mir_entry_id, mir_tabla, error_detalle, created_at")
+      .order("created_at", { ascending: false })
+      .limit(30);
+    setWaMensajes((msgs ?? []) as WaMensaje[]);
+    setLoadingWa(false);
+  };
+
+  const guardarWaGrupo = async () => {
+    const session = (await supabase.auth.getSession()).data.session;
+    const payload: Record<string, unknown> = {
+      nombre: waGrupoForm.nombre, grupo_gfi: waGrupoForm.grupo_gfi,
+      descripcion: waGrupoForm.descripcion || null, wa_link: waGrupoForm.wa_link || null,
+      miembros: parseInt(waGrupoForm.miembros || "0") || 0,
+    };
+    if (waGrupoForm.id) payload.id = waGrupoForm.id;
+    const res = await fetch("/api/whatsapp/grupos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) { mostrarToast("Grupo guardado"); setWaGrupoForm({ id: "", nombre: "", grupo_gfi: "", descripcion: "", wa_link: "", miembros: "" }); cargarWa(); }
+    else mostrarToast("Error al guardar grupo", "err");
+  };
+
+  const enviarMensajeWa = async () => {
+    if (!waSendForm.to || !waSendForm.body) { mostrarToast("Completá número y mensaje", "err"); return; }
+    setEnviandoWa(true);
+    const session = (await supabase.auth.getSession()).data.session;
+    const res = await fetch("/api/whatsapp/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(waSendForm),
+    });
+    const json = await res.json();
+    if (res.ok) { mostrarToast("Mensaje enviado por WhatsApp"); setWaSendForm({ to: "", body: "" }); }
+    else mostrarToast(json.error || "Error al enviar", "err");
+    setEnviandoWa(false);
   };
 
   if (!esAdmin) return null;
@@ -2456,6 +2518,134 @@ A partir de esa fecha el costo mensual será de USD 15.
                 </div>
               )
             }
+          </div>
+
+          {/* ── WHATSAPP BUSINESS API ──────────────────────────────────── */}
+          <div>
+            <div className="adm-ind-titulo">WhatsApp <span>Business API</span></div>
+            <div className="adm-ind-subtitulo">
+              Webhook: <code style={{ fontSize: 11, background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: 4 }}>/api/whatsapp/webhook</code> — Configurá en Meta Business con verify token <code style={{ fontSize: 11, background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: 4 }}>WHATSAPP_VERIFY_TOKEN</code>.
+              Los corredores vinculan su número en su perfil (campo «WhatsApp Negocio»). Los mensajes que reciben se parsean con IA y se cargan automáticamente al MIR.
+            </div>
+
+            {loadingWa ? <div className="adm-loading">Cargando...</div> : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+
+                {/* Stats de mensajes */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px,1fr))", gap: 12 }}>
+                  {[
+                    { label: "Grupos configurados", val: waGrupos.length, color: "#3b82f6" },
+                    { label: "Mensajes recibidos (30d)", val: waGrupos.reduce((s, g) => s + g.mensajes_30d, 0), color: "#22c55e" },
+                    { label: "Entradas MIR creadas (30d)", val: waGrupos.reduce((s, g) => s + g.procesados_30d, 0), color: "#f59e0b" },
+                    { label: "Mensajes sin parsear", val: waMensajes.filter(m => !m.procesado).length, color: "#ef4444" },
+                  ].map((s, i) => (
+                    <div key={i} className="adm-ind-card">
+                      <div className="adm-ind-label">{s.label}</div>
+                      <div className="adm-ind-actual" style={{ color: s.color }}>{s.val}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Grupos */}
+                <div>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>Grupos configurados</div>
+                  <div className="adm-tabla-wrap">
+                    <table className="adm-tabla">
+                      <thead><tr>
+                        <th>Nombre</th><th>Slug GFI</th><th>Miembros</th><th>Msgs 30d</th><th>MIR 30d</th><th>Estado</th><th>Link WA</th><th>Editar</th>
+                      </tr></thead>
+                      <tbody>
+                        {waGrupos.map(g => (
+                          <tr key={g.id}>
+                            <td><span style={{ fontWeight: 600, color: "#fff" }}>{g.nombre}</span></td>
+                            <td><code style={{ fontSize: 10, background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: 4 }}>{g.grupo_gfi}</code></td>
+                            <td>{g.miembros.toLocaleString("es-AR")}</td>
+                            <td style={{ color: g.mensajes_30d > 0 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>{g.mensajes_30d}</td>
+                            <td style={{ color: g.procesados_30d > 0 ? "#f59e0b" : "rgba(255,255,255,0.3)" }}>{g.procesados_30d}</td>
+                            <td><span className={`badge badge-${g.activo ? "aprobado" : "rechazado"}`}>{g.activo ? "Activo" : "Inactivo"}</span></td>
+                            <td>{g.wa_link ? <a href={g.wa_link} target="_blank" rel="noreferrer" style={{ color: "#22c55e", fontSize: 11 }}>Abrir</a> : <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 11 }}>—</span>}</td>
+                            <td>
+                              <button className="adm-btn-destacar" onClick={() => setWaGrupoForm({ id: g.id, nombre: g.nombre, grupo_gfi: g.grupo_gfi, descripcion: g.descripcion ?? "", wa_link: g.wa_link ?? "", miembros: String(g.miembros) })}>
+                                Editar
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Form grupo */}
+                <div style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: 20 }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>
+                    {waGrupoForm.id ? "Editar grupo" : "Agregar grupo"}
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                    <input className="adm-ind-input" placeholder="Nombre del grupo" value={waGrupoForm.nombre} onChange={e => setWaGrupoForm(f => ({ ...f, nombre: e.target.value }))} />
+                    <input className="adm-ind-input" placeholder="grupo_gfi (slug)" value={waGrupoForm.grupo_gfi} onChange={e => setWaGrupoForm(f => ({ ...f, grupo_gfi: e.target.value }))} />
+                    <input className="adm-ind-input" placeholder="Miembros aprox" type="number" value={waGrupoForm.miembros} onChange={e => setWaGrupoForm(f => ({ ...f, miembros: e.target.value }))} />
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                    <input className="adm-ind-input" placeholder="Descripción" value={waGrupoForm.descripcion} onChange={e => setWaGrupoForm(f => ({ ...f, descripcion: e.target.value }))} />
+                    <input className="adm-ind-input" placeholder="Link de invitación WA" value={waGrupoForm.wa_link} onChange={e => setWaGrupoForm(f => ({ ...f, wa_link: e.target.value }))} />
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button className="adm-ind-btn" onClick={guardarWaGrupo} disabled={!waGrupoForm.nombre || !waGrupoForm.grupo_gfi}>
+                      {waGrupoForm.id ? "Actualizar" : "Agregar"}
+                    </button>
+                    {waGrupoForm.id && <button className="adm-btn-eliminar" onClick={() => setWaGrupoForm({ id: "", nombre: "", grupo_gfi: "", descripcion: "", wa_link: "", miembros: "" })}>Cancelar</button>}
+                  </div>
+                </div>
+
+                {/* Enviar mensaje WA */}
+                <div style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 8, padding: 20 }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(59,130,246,0.7)", marginBottom: 14 }}>
+                    Enviar mensaje WhatsApp
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 10, marginBottom: 12 }}>
+                    <input className="adm-ind-input" placeholder="Número (ej: 5493415551234)" value={waSendForm.to} onChange={e => setWaSendForm(f => ({ ...f, to: e.target.value }))} />
+                    <input className="adm-ind-input" placeholder="Mensaje a enviar" value={waSendForm.body} onChange={e => setWaSendForm(f => ({ ...f, body: e.target.value }))} />
+                  </div>
+                  <button className="adm-ind-btn" onClick={enviarMensajeWa} disabled={enviandoWa || !waSendForm.to || !waSendForm.body} style={{ background: "#1d4ed8" }}>
+                    {enviandoWa ? "Enviando..." : "Enviar"}
+                  </button>
+                </div>
+
+                {/* Últimos mensajes recibidos */}
+                {waMensajes.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>Últimos mensajes recibidos</div>
+                    <div className="adm-tabla-wrap">
+                      <table className="adm-tabla">
+                        <thead><tr><th>De</th><th>Contenido</th><th>Grupo inf.</th><th>Estado</th><th>Fecha</th></tr></thead>
+                        <tbody>
+                          {waMensajes.slice(0, 20).map(m => (
+                            <tr key={m.id}>
+                              <td>
+                                <div style={{ fontWeight: 600, color: "#fff", fontSize: 12 }}>{m.nombre_from ?? m.numero_from}</div>
+                                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{m.numero_from}</div>
+                              </td>
+                              <td style={{ maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 12 }}>{m.contenido}</td>
+                              <td><code style={{ fontSize: 10, background: "rgba(255,255,255,0.06)", padding: "2px 5px", borderRadius: 4 }}>{m.grupo_gfi ?? "—"}</code></td>
+                              <td>
+                                {m.procesado
+                                  ? m.mir_entry_id
+                                    ? <span className="badge badge-aprobado">MIR ✓</span>
+                                    : <span className="badge badge-pendiente">{m.error_detalle?.includes("no_es_operacion") ? "No es op." : "Error"}</span>
+                                  : <span className="badge badge-pendiente">Pendiente</span>
+                                }
+                              </td>
+                              <td style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>{new Date(m.created_at).toLocaleDateString("es-AR")}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
         </main>

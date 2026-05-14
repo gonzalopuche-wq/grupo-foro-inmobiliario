@@ -54,14 +54,15 @@ const formatTamano = (bytes?: number) => {
   return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
 };
 
-const WA_GROUPS = [
-  { name: "Foro Inmobiliario", sub: "1025 miembros", url: "https://chat.whatsapp.com/CShHa28oS2P2OWJrotLp3j", main: true },
-  { name: "Ventas — Búsqueda", sub: "", url: "https://chat.whatsapp.com/KfqcLrP6GprKPDSzgwd8MG", main: false },
-  { name: "Ventas — Ofrecidos", sub: "", url: "https://chat.whatsapp.com/CsqIVRLe2gh33wQYK7qe5p", main: false },
-  { name: "Alquileres — Búsqueda", sub: "", url: "https://chat.whatsapp.com/KkfMBkfrgdA8XhQUlWiRLs", main: false },
-  { name: "Alquileres — Ofrecidos", sub: "", url: "https://chat.whatsapp.com/FfjzdHlTeCYIHleSuhQJlP", main: false },
-  { name: "Cotizaciones", sub: "", url: "https://chat.whatsapp.com/F4Tp8bGBZ7670HPmu4RvIn", main: false },
-  { name: "Tasaciones", sub: "", url: "https://chat.whatsapp.com/GwtTHC2Qol90kUSZ46HEQk", main: false },
+// Grupos estáticos como fallback — se reemplazan con datos de DB
+const WA_GROUPS_FALLBACK = [
+  { nombre: "Foro Inmobiliario", wa_link: "https://chat.whatsapp.com/CShHa28oS2P2OWJrotLp3j", miembros: 1025, grupo_gfi: "general" },
+  { nombre: "Ventas — Búsqueda", wa_link: "https://chat.whatsapp.com/KfqcLrP6GprKPDSzgwd8MG", miembros: 0, grupo_gfi: "ventas-busqueda" },
+  { nombre: "Ventas — Ofrecidos", wa_link: "https://chat.whatsapp.com/CsqIVRLe2gh33wQYK7qe5p", miembros: 0, grupo_gfi: "ventas-ofrecidos" },
+  { nombre: "Alquileres — Búsqueda", wa_link: "https://chat.whatsapp.com/KkfMBkfrgdA8XhQUlWiRLs", miembros: 0, grupo_gfi: "alquileres-busqueda" },
+  { nombre: "Alquileres — Ofrecidos", wa_link: "https://chat.whatsapp.com/FfjzdHlTeCYIHleSuhQJlP", miembros: 0, grupo_gfi: "alquileres-ofrecidos" },
+  { nombre: "Cotizaciones", wa_link: "https://chat.whatsapp.com/F4Tp8bGBZ7670HPmu4RvIn", miembros: 0, grupo_gfi: "cotizaciones" },
+  { nombre: "Tasaciones", wa_link: "https://chat.whatsapp.com/GwtTHC2Qol90kUSZ46HEQk", miembros: 0, grupo_gfi: "tasaciones" },
 ];
 
 export default function ForoPage() {
@@ -104,6 +105,7 @@ export default function ForoPage() {
   const [eventoLinkVideo, setEventoLinkVideo] = useState("");
   const [eventoSubiendoFoto, setEventoSubiendoFoto] = useState(false);
   const [chatInput, setChatInput] = useState("");
+  const [waGroups, setWaGroups] = useState(WA_GROUPS_FALLBACK);
   const [chatLoading, setChatLoading] = useState(false);
   const [chatReplyMsg, setChatReplyMsg] = useState<ChatMsg | null>(null);
   const [chatMenuId, setChatMenuId] = useState<string | null>(null);
@@ -147,6 +149,9 @@ export default function ForoPage() {
       await loadTopics({ cat: "todas", status: "todas", q: "" });
       await loadChat();
       subscribeChat();
+      // Cargar grupos WA desde DB (con links actualizados por admin)
+      const { data: grupos } = await supabase.from("whatsapp_grupos").select("nombre,wa_link,miembros,grupo_gfi").eq("activo", true).order("miembros", { ascending: false });
+      if (grupos && grupos.length > 0) setWaGroups(grupos as typeof WA_GROUPS_FALLBACK);
     };
     init();
     return () => { supabase.channel("forum_chat").unsubscribe(); };
@@ -1115,10 +1120,10 @@ export default function ForoPage() {
         <aside className="f-right">
           <div className="f-right-box">
             <div className="f-right-title wa">💬 Grupos WhatsApp</div>
-            {WA_GROUPS.map(g => (
-              <a key={g.name} href={g.url} target="_blank" rel="noopener noreferrer" className={`f-ext-link${g.main?" main":""}`}>
-                <span className="f-ext-name">{g.name}</span>
-                {g.sub && <span className="f-ext-sub">{g.sub}</span>}
+            {waGroups.map(g => (
+              <a key={g.grupo_gfi} href={g.wa_link ?? "#"} target="_blank" rel="noopener noreferrer" className={`f-ext-link${g.grupo_gfi === "general" ? " main" : ""}`}>
+                <span className="f-ext-name">{g.nombre}</span>
+                {g.miembros > 0 && <span className="f-ext-sub">{g.miembros.toLocaleString("es-AR")} miembros</span>}
                 <span className="f-ext-arrow">↗</span>
               </a>
             ))}
