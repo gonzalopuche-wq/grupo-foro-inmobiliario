@@ -34,6 +34,7 @@ interface Perfil {
   descripcion_inmobiliaria: string | null;
   horario_atencion: string | null;
   cant_empleados: number | null;
+  cant_administraciones_declaradas: number | null;
   bio: string | null;
   socio_cir: boolean;
   tipo: string;
@@ -172,6 +173,7 @@ export default function PerfilPage() {
       descripcion_inmobiliaria: perfil.descripcion_inmobiliaria,
       horario_atencion: perfil.horario_atencion,
       cant_empleados: perfil.cant_empleados,
+      cant_administraciones_declaradas: perfil.cant_administraciones_declaradas,
       bio: perfil.bio,
       socio_cir: perfil.socio_cir,
       notif_eventos: perfil.notif_eventos,
@@ -574,6 +576,10 @@ export default function PerfilPage() {
                 <div className="pf-field">
                   <label className="pf-label">Cantidad de empleados</label>
                   <input className="pf-input" type="number" min="1" placeholder="Ej: 5" value={perfil.cant_empleados ?? ""} onChange={e => set("cant_empleados", parseInt(e.target.value) || null)} />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">Administraciones / Consorcios gestionados</label>
+                  <input className="pf-input" type="number" min="1" placeholder="Ej: 80" value={perfil.cant_administraciones_declaradas ?? ""} onChange={e => set("cant_administraciones_declaradas", parseInt(e.target.value) || null)} />
                 </div>
                 <div className="pf-field">
                   <label className="pf-label">Horario de atención</label>
