@@ -1,4 +1,6 @@
 -- Autorizaciones de venta / mandatos (MOD 106)
+SET search_path TO public;
+
 create table if not exists autorizaciones_venta (
   id                  uuid primary key default gen_random_uuid(),
   user_id             uuid not null references perfiles(id) on delete cascade,
