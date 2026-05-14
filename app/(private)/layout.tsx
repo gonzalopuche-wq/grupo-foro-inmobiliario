@@ -30,6 +30,7 @@ const NAV_CORREDOR = [
   { href: "/enlaces", label: "Enlaces", icon: "🔗" },
   { href: "/proveedores", label: "Proveedores", icon: "🏢" },
   { href: "/beneficios", label: "Beneficios", icon: "🎁" },
+  { href: "/campanas", label: "Campañas Sponsors", icon: "📢" },
   { href: "/perfil", label: "Mi Perfil", icon: "👤" },
   { href: "/mi-web", label: "Mi Web", icon: "🌐" },
   { href: "/reportes", label: "Reportes", icon: "📉" },
