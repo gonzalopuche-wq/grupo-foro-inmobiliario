@@ -16,6 +16,7 @@ interface Evento {
   tipo: string;
   gratuito: boolean;
   precio_entrada: number | null;
+  moneda: string | null;
   capacidad: number | null;
   plataforma: string | null;
   link_reunion: string | null;
@@ -717,6 +718,7 @@ export default function EventosPage() {
                       <div className="ev-acciones">
                         {procesando===ev.id?<span className="ev-spinner" />
                         :pasado?<span style={{fontSize:10,color:"rgba(255,255,255,0.2)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>FINALIZADO</span>
+                        :!ev.gratuito?<span style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>💰 {ev.precio_entrada?.toLocaleString("es-AR")} {ev.moneda??""}</span>
                         :(
                           <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
                             onClick={()=>{
@@ -1243,7 +1245,8 @@ export default function EventosPage() {
                 {/* Acciones */}
                 <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:18}}>
                   {!pasado&&(
-                    procesando===ev.id ? <span className="ev-spinner" /> : (
+                    procesando===ev.id ? <span className="ev-spinner" /> :
+                    !ev.gratuito ? <span style={{fontSize:12,color:"rgba(255,255,255,0.4)",fontWeight:700}}>💰 {ev.precio_entrada?.toLocaleString("es-AR")} {ev.moneda??""}</span> : (
                       <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
                         style={{fontSize:11,padding:"10px 20px"}}
                         disabled={lleno&&!ev.inscripto}
