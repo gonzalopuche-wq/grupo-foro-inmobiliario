@@ -187,3 +187,4 @@ CREATE POLICY "val_delete_own" ON valoraciones_corredores FOR DELETE
 ALTER TABLE denuncias ADD COLUMN IF NOT EXISTS resolucion_notas text;
 ALTER TABLE denuncias ADD COLUMN IF NOT EXISTS accion_tomada text
   CHECK (accion_tomada IN ('advertencia','suspension','eliminacion','sin_accion',NULL));
+ALTER TABLE denuncias ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now();

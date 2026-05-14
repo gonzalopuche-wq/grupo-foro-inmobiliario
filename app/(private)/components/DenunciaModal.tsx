@@ -40,7 +40,7 @@ export default function DenunciaModal({ tipoContenido, contenidoId, onClose, onS
       headers: { Authorization: `Bearer ${session?.access_token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ tipo_contenido: tipoContenido, contenido_id: contenidoId, motivo, descripcion }),
     });
-    const d = await res.json();
+    const d = res.ok ? await res.json() : { error: true };
     if (!d.error) {
       setEnviado(true);
       onSuccess?.();

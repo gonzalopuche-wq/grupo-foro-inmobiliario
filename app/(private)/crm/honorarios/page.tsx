@@ -34,7 +34,7 @@ const METODOS = ["efectivo","transferencia","cheque","otro"];
 
 const FORM_VACIO = {
   negocio_id: "", concepto: "", monto: "",
-  moneda: "USD", fecha_cobro: new Date().toISOString().split("T")[0],
+  moneda: "USD", fecha_cobro: new Date().toLocaleDateString("en-CA"),
   metodo_cobro: "transferencia", notas: "",
 };
 

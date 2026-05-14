@@ -17,8 +17,6 @@ export async function GET(req: NextRequest) {
     sb.from("curso_inscripciones").select("curso_id, estado, progreso").eq("perfil_id", user.id),
   ]);
 
-  const { count: totalCursos } = await sb.from("curso_inscripciones").select("curso_id", { count: "exact", head: true });
-
   const insMap: Record<string, { estado: string; progreso: number }> = {};
   inscripciones?.forEach(i => { insMap[i.curso_id] = { estado: i.estado, progreso: i.progreso }; });
 
