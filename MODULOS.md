@@ -170,7 +170,7 @@
 | 102 | Google Maps / Street View | 🟡 | Integrado en fichas |
 | 103 | Reconocimiento de Imágenes IA | ❌ | Diferido |
 | 104 | Gestión de Llaves | ✅ | `/crm/llaves` |
-| **105** | **Valoraciones entre Corredores** | ✅ | **`/valoraciones` — rating 1-5 estrellas, relación (colega/cliente/aliado), comentario, promedio recibido/dado — `v23`** |
+| 105 | Valoraciones entre Corredores | ❌ | Diferido |
 | **106** | **Autorizaciones de Venta** | ✅ | **`/crm/autorizaciones` — alertas 30/15/7 días — cron diario — `v18`** |
 | 109 | Gestión de Referidos | ✅ | `/referidos` |
 | 110 | Código de Ética | ✅ | Aceptación al registro |
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **67** | **48%** |
+| ✅ Implementado | **66** | **47%** |
 | 🟡 Parcial | 12 | 9% |
-| ❌ Pendiente/Diferido | 60 | 43% |
+| ❌ Pendiente/Diferido | 61 | 44% |
 | **Total** | **139** | |
 
 ---
@@ -232,4 +232,4 @@
 
 ---
 
-*Última actualización: v23 — MOD 28 (Estadísticas del Mercado: `/estadisticas-mercado`), MOD 66 (Venta de Entradas: modal compra en `/eventos`), MOD 93 (Honorarios: `/crm/honorarios` + cobros), MOD 96 (Cursos: `/cursos` + inscripciones), MOD 105 (Valoraciones: `/valoraciones` + rating 1-5), MOD 111 (Moderación: `/moderacion` + `DenunciaModal` en foro). Migration 049.*
+*Última actualización: v23 — MOD 28 (Estadísticas del Mercado: `/estadisticas-mercado`), MOD 66 (Venta de Entradas: modal compra en `/eventos`), MOD 93 (Honorarios: `/crm/honorarios` + cobros), MOD 96 (Cursos: `/cursos` + inscripciones), MOD 111 (Moderación: `/moderacion` + `DenunciaModal` en foro). Migration 049.*
