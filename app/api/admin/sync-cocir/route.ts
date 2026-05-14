@@ -233,6 +233,48 @@ export async function GET(req: NextRequest) {
       if (error) return NextResponse.json({ ok: false, error: error.message });
     }
 
+    // ── MOD 74: validar matrículas de perfiles GFI contra padrón COCIR ─────────
+    const { data: perfilesGfi } = await sb
+      .from("perfiles")
+      .select("id, matricula")
+      .not("matricula", "is", null)
+      .neq("matricula", "");
+
+    const { data: padronActual } = await sb
+      .from("cocir_padron")
+      .select("matricula, estado");
+
+    const padronMap = new Map<string, string>();
+    for (const p of padronActual ?? []) {
+      if (p.matricula) padronMap.set(String(p.matricula).trim(), p.estado ?? "activo");
+    }
+
+    let validados = 0;
+    let suspendidos = 0;
+    let noEncontrados = 0;
+
+    for (const perfil of perfilesGfi ?? []) {
+      const mat = String(perfil.matricula ?? "").trim();
+      if (!mat) continue;
+      const estadoCocir = padronMap.get(mat);
+      let nuevoEstado: string;
+      if (!estadoCocir) {
+        nuevoEstado = "no_encontrado";
+        noEncontrados++;
+      } else if (/suspendid|inhabilitad|baja/i.test(estadoCocir)) {
+        nuevoEstado = "suspendido";
+        suspendidos++;
+      } else {
+        nuevoEstado = "activo";
+        validados++;
+      }
+      await sb
+        .from("perfiles")
+        .update({ cocir_estado: nuevoEstado, cocir_ultimo_control: ahora })
+        .eq("id", perfil.id);
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     return NextResponse.json({
       ok: true,
       insertados: nuevos.length,
@@ -241,6 +283,7 @@ export async function GET(req: NextRequest) {
       total_scrapeados: todosRegistros.length,
       paginas_procesadas: ultimaPagina,
       sincronizado_at: ahora,
+      validacion_gfi: { validados, suspendidos, no_encontrados: noEncontrados },
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message });

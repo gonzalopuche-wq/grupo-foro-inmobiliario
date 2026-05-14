@@ -39,6 +39,8 @@ const NAV_CORREDOR = [
   { href: "/notificaciones", label: "Notificaciones", icon: "🔔" },
   { href: "/soporte", label: "Soporte", icon: "🛟" },
   { href: "/ideas", label: "Ideas", icon: "💡" },
+  { href: "/bolsa-trabajo", label: "Bolsa de Trabajo", icon: "💼" },
+  { href: "/foro/memoria", label: "Memoria Colectiva IA", icon: "🧠" },
   { href: "/marketplace", label: "Marketplace", icon: "🏪" },
   { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
   { href: "/agenda", label: "Agenda", icon: "📆" },

@@ -50,7 +50,7 @@
 | 38 | Pipeline de Operaciones | ✅ | `/crm/negocios` |
 | 39 | Fichas Comerciales | ✅ | `/crm/cartera/ficha/[id]` |
 | 39B | **Generador de Post Redes Sociales IA** | ✅ | Botón en ficha — Instagram + WhatsApp — `v18` |
-| 40 | Presentaciones Comerciales | ❌ | Pendiente |
+| **40** | **Presentaciones Comerciales** | ✅ | **`/crm/presentaciones` — selección de propiedades, link público /p/[token], vistas, mensaje personalizado, vencimiento — `v22`** |
 | 40B | Integración con Portales | 🟡 | `/crm/portales` |
 | 40C | Alianzas entre Corredores | ✅ | `/crm/alianzas` |
 | 40D | Web Propia por Corredor | ✅ | `/mi-web` |
@@ -71,7 +71,7 @@
 | 48 | Directorio de Contadores | ✅ | `/directorios` |
 | 49 | Proveedores del Sector | ✅ | `/proveedores` |
 | 50 | Marketplace entre Miembros | ✅ | `/marketplace` |
-| 51 | Bolsa de Trabajo | 🟡 | Sin página dedicada |
+| **51** | **Bolsa de Trabajo** | ✅ | **`/bolsa-trabajo` — ofertas y búsquedas laborales, filtros, contacto directo — `v22`** |
 | 52 | Networking Profesional | ✅ | `/networking` |
 
 ---
@@ -127,13 +127,13 @@
 |---|--------|--------|-------|
 | 72 | Panel Administrativo | ✅ | `/admin` |
 | 73 | Gestión de Usuarios y Perfiles | ✅ | `/perfil` |
-| 74 | Validación Matrícula COCIR | 🟡 | `/padron` — manual en MVP |
+| **74** | **Validación Matrícula COCIR** | ✅ | **`/padron` — sync nocturno: compara matrículas GFI vs padrón COCIR scraped, actualiza `cocir_estado` (activo/suspendido/no_encontrado) — `v22`** |
 | 75 | Control de Acceso y Permisos | ✅ | 4 roles implementados |
 | 76 | Suscripciones | ✅ | `/perfil` — email + push al aprobar |
 | 77 | Pagos y Membresías | ✅ | Admin verifica manualmente |
 | 78 | Período de Gracia | ✅ | 3 días configurados |
 | 79 | Logs de Actividad | 🟡 | Backend, sin UI |
-| 80 | Seguridad y Backups | 🟡 | 2FA sí |
+| **80** | **Seguridad y Backups** | ✅ | **2FA TOTP obligatorio para corredores: `/configurar-2fa`, QR code, Supabase MFA, badge en perfil — `v22`** |
 | 81 | Estadísticas de Uso | 🟡 | Widget admin |
 | 82 | Panel Estratégico | 🟡 | Admin |
 
@@ -207,7 +207,7 @@
 | 135 | Seguro Integrado | ❌ | Diferido |
 | 136 | Generador de Contratos | ✅ | `/contratos` |
 | 137 | Canal Educativo en Vivo | ✅ | `/canal-educativo` |
-| 138 | IA Memoria Colectiva del Foro | 🟡 | Resumidor IA integrado |
+| **138** | **IA Memoria Colectiva del Foro** | ✅ | **`/foro/memoria` — chat IA que busca con FTS (tsvector) en topics y replies del foro, sintetiza el conocimiento colectivo, cita fuentes — `v22`** |
 
 ---
 
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **55** | **40%** |
-| 🟡 Parcial | 18 | 13% |
-| ❌ Pendiente/Diferido | 66 | 47% |
+| ✅ Implementado | **61** | **44%** |
+| 🟡 Parcial | 14 | 10% |
+| ❌ Pendiente/Diferido | 64 | 46% |
 | **Total** | **139** | |
 
 ---
@@ -225,15 +225,12 @@
 ## PRÓXIMOS A IMPLEMENTAR (alta prioridad)
 
 - [ ] MOD 28 — Estadísticas del mercado (página dedicada)
-- [ ] MOD 40 — Presentaciones comerciales (PDF/PPT con datos CRM)
-- [ ] MOD 51 — Bolsa de Trabajo (página dedicada)
 - [ ] MOD 66 — Venta de entradas a eventos
 - [ ] MOD 93 — Gestión de Honorarios (página dedicada)
 - [ ] MOD 96 — Cursos y Capacitación Online
 - [ ] MOD 105 — Valoraciones entre Corredores
 - [ ] MOD 111 — Denuncias y Moderación (UI para usuarios)
-- [ ] MOD 138 — IA Memoria Colectiva (base de conocimiento buscable)
 
 ---
 
-*Última actualización: v21 — WhatsApp Business API (PRIORIDAD 1): webhook de recepción + parser IA inline que clasifica mensajes como pedido/ofrecido y crea entradas en el MIR automáticamente; Smart Prospecting (push notifications instantáneas cuando ingresa propiedad compatible con búsquedas); grupos WA dinámicos desde DB en el foro; admin gestiona grupos, ve mensajes recibidos y envía mensajes directos; fuente `whatsapp` en tablas MIR para tracking de origen. Afecta MOD 2, 3, 5.*
+*Última actualización: v22 — MOD 51 (Bolsa de Trabajo: `/bolsa-trabajo`), MOD 74 (Validación COCIR nocturna: sync actualiza `cocir_estado` en perfiles), MOD 40 (Presentaciones Comerciales: `/crm/presentaciones` + link público `/p/[token]`), MOD 80 (2FA TOTP obligatorio: `/configurar-2fa` + badge en perfil), MOD 138 (IA Memoria Colectiva: `/foro/memoria` + FTS tsvector en forum_topics/replies + API `/api/ia/memoria-colectiva`). Migration 048.*
