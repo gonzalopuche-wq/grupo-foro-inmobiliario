@@ -6,8 +6,8 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function GET(req: NextRequest, { params }: { params: { token: string } }) {
-  const { token } = params;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
 
   // Buscar la adhesión por token
   const { data: adhesion } = await sb
