@@ -21,7 +21,6 @@ const NAV_CORREDOR = [
   { href: "/networking", label: "Networking", icon: "🤝" },
   { href: "/canal-educativo", label: "Canal del Foro", icon: "📡" },
   { href: "/crm", label: "CRM", icon: "👥" },
-  { href: "/emprendimientos", label: "Emprendimientos", icon: "🏗️" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
   { href: "/comparables", label: "Comparables", icon: "📈" },
   { href: "/padron-gfi", label: "Padrón", icon: "📋" },
