@@ -30,7 +30,7 @@
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
 | 27 | Observatorio del Mercado | 🟡 | Widget dashboard, sin página dedicada |
-| 28 | Estadísticas del Mercado | ❌ | Pendiente |
+| **28** | **Estadísticas del Mercado** | ✅ | **`/estadisticas-mercado` — KPIs CRM personales, negocios por etapa/mes, cartera por tipo/zona, honorarios proyectados/realizados/cobrados — `v23`** |
 | 29 | Comparables de Venta | ✅ | `/comparables` |
 | 30 | Radar de Noticias | 🟡 | `/noticias` |
 | 31 | Encuestas de Mercado | ✅ | `/encuestas` |
@@ -105,7 +105,7 @@
 
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
-| 66 | Venta de Entradas | ❌ | Pendiente |
+| **66** | **Venta de Entradas** | ✅ | **`/eventos` — modal compra entrada para eventos de pago, estados pendiente/confirmado/cancelado, admin confirma pago — `v23`** |
 | **67** | **Sistema de Sponsors** | ✅ | **Portal `/sponsors/portal/` — dashboard, campañas, beneficios, saldo. Suscripción mensual + cobro por referidos (adhesiones de corredores). Admin gestiona plan, saldo y mensualidad. `v20`** |
 | 68 | Publicidad en Plataforma | ✅ | Admin — banners |
 
@@ -159,10 +159,10 @@
 | 90 | App Móvil Nativa | ❌ | Fase siguiente |
 | 91 | Recorridas Virtuales 360 | ❌ | Embed externo |
 | 92 | Firma Digital | ✅ | `/crm/firma` |
-| 93 | Gestión de Honorarios | 🟡 | Integrado en negocios |
+| **93** | **Gestión de Honorarios** | ✅ | **`/crm/honorarios` — proyección/realización de honorarios, registro de cobros, tabla por etapa — `v23`** |
 | 94 | Portal Vendedor | ❌ | Diferido |
 | 95 | Portal Comprador | ❌ | Diferido |
-| 96 | Cursos y Capacitación Online | ❌ | Pendiente |
+| **96** | **Cursos y Capacitación Online** | ✅ | **`/cursos` — listado con filtros, inscripción, progreso, admin crea/destaca cursos — `v23`** |
 | 98 | Webinars / Clases en Vivo | ✅ | `/canal-educativo` |
 | 99 | Garantías de Alquiler | ❌ | Diferido |
 | 100 | Seguimiento Post Cierre | ✅ | `/crm/post-cierre` |
@@ -170,11 +170,11 @@
 | 102 | Google Maps / Street View | 🟡 | Integrado en fichas |
 | 103 | Reconocimiento de Imágenes IA | ❌ | Diferido |
 | 104 | Gestión de Llaves | ✅ | `/crm/llaves` |
-| 105 | Valoraciones entre Corredores | ❌ | Pendiente |
+| 105 | Valoraciones entre Corredores | ❌ | Diferido |
 | **106** | **Autorizaciones de Venta** | ✅ | **`/crm/autorizaciones` — alertas 30/15/7 días — cron diario — `v18`** |
 | 109 | Gestión de Referidos | ✅ | `/referidos` |
 | 110 | Código de Ética | ✅ | Aceptación al registro |
-| 111 | Denuncias y Moderación | 🟡 | Sin UI visible |
+| **111** | **Denuncias y Moderación** | ✅ | **`/moderacion` (admin) + `DenunciaModal` integrado en foro — estados, resolución, acción tomada — `v23`** |
 | 112 | Panel de Notificaciones | ✅ | `/notificaciones` |
 | 113 | Metas y Objetivos | ✅ | `/crm/metas` |
 | 114 | Historial de Actividad | ✅ | `/actividades` |
@@ -215,22 +215,21 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **61** | **44%** |
-| 🟡 Parcial | 14 | 10% |
-| ❌ Pendiente/Diferido | 64 | 46% |
+| ✅ Implementado | **66** | **47%** |
+| 🟡 Parcial | 12 | 9% |
+| ❌ Pendiente/Diferido | 61 | 44% |
 | **Total** | **139** | |
 
 ---
 
 ## PRÓXIMOS A IMPLEMENTAR (alta prioridad)
 
-- [ ] MOD 28 — Estadísticas del mercado (página dedicada)
-- [ ] MOD 66 — Venta de entradas a eventos
-- [ ] MOD 93 — Gestión de Honorarios (página dedicada)
-- [ ] MOD 96 — Cursos y Capacitación Online
-- [ ] MOD 105 — Valoraciones entre Corredores
-- [ ] MOD 111 — Denuncias y Moderación (UI para usuarios)
+- [ ] MOD 27 — Observatorio del Mercado (página dedicada)
+- [ ] MOD 94 — Portal Vendedor (Diferido — v24)
+- [ ] MOD 131 — Mutual GFI (Diferido)
+- [ ] MOD 132 — Ranking/Prioridad de Pago
+- [ ] MOD 85/86 — Integración CRMs / Sistemas externos (Diferido)
 
 ---
 
-*Última actualización: v22 — MOD 51 (Bolsa de Trabajo: `/bolsa-trabajo`), MOD 74 (Validación COCIR nocturna: sync actualiza `cocir_estado` en perfiles), MOD 40 (Presentaciones Comerciales: `/crm/presentaciones` + link público `/p/[token]`), MOD 80 (2FA TOTP obligatorio: `/configurar-2fa` + badge en perfil), MOD 138 (IA Memoria Colectiva: `/foro/memoria` + FTS tsvector en forum_topics/replies + API `/api/ia/memoria-colectiva`). Migration 048. Afecta MOD 2, 3, 5 (v21 WhatsApp Business API).*
+*Última actualización: v23 — MOD 28 (Estadísticas del Mercado: `/estadisticas-mercado`), MOD 66 (Venta de Entradas: modal compra en `/eventos`), MOD 93 (Honorarios: `/crm/honorarios` + cobros), MOD 96 (Cursos: `/cursos` + inscripciones), MOD 111 (Moderación: `/moderacion` + `DenunciaModal` en foro). Migration 049.*

@@ -21,7 +21,6 @@ const NAV_CORREDOR = [
   { href: "/networking", label: "Networking", icon: "🤝" },
   { href: "/canal-educativo", label: "Canal del Foro", icon: "📡" },
   { href: "/crm", label: "CRM", icon: "👥" },
-  { href: "/emprendimientos", label: "Emprendimientos", icon: "🏗️" },
   { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
   { href: "/comparables", label: "Comparables", icon: "📈" },
   { href: "/padron-gfi", label: "Padrón", icon: "📋" },
@@ -44,6 +43,8 @@ const NAV_CORREDOR = [
   { href: "/marketplace", label: "Marketplace", icon: "🏪" },
   { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
   { href: "/agenda", label: "Agenda", icon: "📆" },
+  { href: "/estadisticas-mercado", label: "Estadísticas", icon: "📊" },
+  { href: "/cursos", label: "Cursos", icon: "🎓" },
 ];
 
 // ── Nav colaborador (funcional a comercialización) ─────────────────────────
@@ -58,6 +59,7 @@ const NAV_COLABORADOR = [
 
 const NAV_ADMIN = [
   { href: "/admin", label: "Admin", icon: "⚙️" },
+  { href: "/moderacion", label: "Moderación", icon: "🛡️" },
 ];
 
 // Rutas bloqueadas para colaboradores — redirigen al dashboard

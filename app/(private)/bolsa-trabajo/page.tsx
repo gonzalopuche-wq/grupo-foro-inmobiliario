@@ -45,6 +45,30 @@ const EMPTY: Partial<Oferta> = {
   contacto_tel: "",
 };
 
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  borderRadius: 8,
+  padding: "9px 12px",
+  fontSize: 13,
+  color: "#fff",
+  fontFamily: "Inter,sans-serif",
+  outline: "none",
+  boxSizing: "border-box",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: 11,
+  fontWeight: 600,
+  color: "rgba(255,255,255,0.4)",
+  marginBottom: 5,
+  fontFamily: "Montserrat,sans-serif",
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+};
+
 export default function BolsaTrabajoPage() {
   const [token, setToken] = useState<string | null>(null);
   const [uid, setUid] = useState<string | null>(null);
@@ -119,313 +143,390 @@ export default function BolsaTrabajoPage() {
     return true;
   });
 
+  const TABS: { key: TipoOferta | "todas"; label: string }[] = [
+    { key: "todas", label: "Todas" },
+    { key: "oferta", label: "Ofertas de empleo" },
+    { key: "busqueda", label: "Búsquedas laborales" },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <span className="text-3xl">💼</span> Bolsa de Trabajo
-            </h1>
-            <p className="text-gray-400 mt-1">Ofertas y búsquedas laborales de la comunidad GFI®</p>
+    <div style={{ maxWidth: 860, margin: "0 auto" }}>
+      <style>{`
+        .bt-card { transition: border-color 0.15s, background 0.15s; }
+        .bt-card:hover { border-color: rgba(255,255,255,0.15) !important; background: rgba(255,255,255,0.04) !important; }
+        .bt-card:hover .bt-title { color: #fff !important; }
+        .bt-input:focus { border-color: rgba(204,0,0,0.5) !important; }
+        .bt-btn-ghost:hover { color: rgba(255,255,255,0.8) !important; background: rgba(255,255,255,0.05) !important; }
+        .bt-link-email:hover { color: #60a5fa !important; }
+        .bt-link-wa:hover { color: #4ade80 !important; }
+        .bt-delete:hover { color: #f87171 !important; }
+      `}</style>
+
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 28, flexWrap: "wrap" }}>
+        <div>
+          <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 26 }}>💼</span> Bolsa de Trabajo
+          </h1>
+          <p style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)", margin: "6px 0 0" }}>
+            Ofertas y búsquedas laborales de la comunidad GFI®
+          </p>
+        </div>
+        <button
+          onClick={() => { setForm(EMPTY); setShowForm(true); setDetalle(null); }}
+          style={{ background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}
+        >
+          + Publicar
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 24 }}>
+        {[
+          { label: "Total activas", val: ofertas.length },
+          { label: "Ofertas empleo", val: ofertas.filter(o => o.tipo === "oferta").length },
+          { label: "Búsquedas", val: ofertas.filter(o => o.tipo === "busqueda").length },
+        ].map(s => (
+          <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px", textAlign: "center" }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 26, fontWeight: 800, color: "#cc0000" }}>{s.val}</div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>{s.label}</div>
           </div>
+        ))}
+      </div>
+
+      {/* Tabs + Buscar */}
+      <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 6 }}>
+          {TABS.map(t => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              style={{
+                padding: "7px 14px",
+                borderRadius: 7,
+                fontSize: 12,
+                fontFamily: "Inter,sans-serif",
+                fontWeight: 500,
+                border: "1px solid",
+                cursor: "pointer",
+                transition: "all 0.15s",
+                background: tab === t.key ? "#cc0000" : "rgba(255,255,255,0.04)",
+                borderColor: tab === t.key ? "#cc0000" : "rgba(255,255,255,0.1)",
+                color: tab === t.key ? "#fff" : "rgba(255,255,255,0.5)",
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <input
+          type="text"
+          placeholder="Buscar por título, zona..."
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+          className="bt-input"
+          style={{ flex: 1, minWidth: 180, ...inputStyle }}
+        />
+      </div>
+
+      {/* Lista */}
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "48px 0", color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", fontSize: 14 }}>
+          Cargando publicaciones...
+        </div>
+      ) : filtradas.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "48px 0" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>💼</div>
+          <p style={{ fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.35)", fontSize: 14 }}>
+            No hay publicaciones{tab !== "todas" ? ` de ${tab === "oferta" ? "ofertas" : "búsquedas"}` : ""} aún.
+          </p>
           <button
-            onClick={() => { setForm(EMPTY); setShowForm(true); setDetalle(null); }}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-semibold transition"
+            onClick={() => { setForm(EMPTY); setShowForm(true); }}
+            style={{ marginTop: 12, background: "none", border: "none", color: "#cc0000", fontFamily: "Inter,sans-serif", fontSize: 13, cursor: "pointer", textDecoration: "underline" }}
           >
-            + Publicar
+            Ser el primero en publicar
           </button>
         </div>
-
-        {/* Tabs + Buscar */}
-        <div className="flex flex-col md:flex-row gap-3 mb-6">
-          <div className="flex gap-2">
-            {(["todas", "oferta", "busqueda"] as const).map(t => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tab === t ? "bg-purple-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}
-              >
-                {t === "todas" ? "Todas" : t === "oferta" ? "Ofertas de empleo" : "Búsquedas laborales"}
-              </button>
-            ))}
-          </div>
-          <input
-            type="text"
-            placeholder="Buscar por título, zona..."
-            value={busqueda}
-            onChange={e => setBusqueda(e.target.value)}
-            className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500"
-          />
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {[
-            { label: "Total activas", val: ofertas.length },
-            { label: "Ofertas empleo", val: ofertas.filter(o => o.tipo === "oferta").length },
-            { label: "Búsquedas", val: ofertas.filter(o => o.tipo === "busqueda").length },
-          ].map(s => (
-            <div key={s.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400">{s.val}</div>
-              <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {filtradas.map(o => (
+            <div
+              key={o.id}
+              className="bt-card"
+              onClick={() => setDetalle(o)}
+              style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "18px 20px", cursor: "pointer" }}
+            >
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+                    <span style={{
+                      fontSize: 11, padding: "3px 9px", borderRadius: 20, fontWeight: 600, fontFamily: "Montserrat,sans-serif",
+                      background: o.tipo === "oferta" ? "rgba(59,130,246,0.15)" : "rgba(34,197,94,0.15)",
+                      color: o.tipo === "oferta" ? "#60a5fa" : "#4ade80",
+                    }}>
+                      {o.tipo === "oferta" ? "Oferta" : "Búsqueda"}
+                    </span>
+                    {o.tipo_contrato && (
+                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                        {CONTRATO_LABEL[o.tipo_contrato]}
+                      </span>
+                    )}
+                    {o.destacado && <span style={{ fontSize: 11, color: "#facc15", fontFamily: "Inter,sans-serif" }}>⭐ Destacado</span>}
+                  </div>
+                  <h3 className="bt-title" style={{ fontFamily: "Inter,sans-serif", fontWeight: 600, fontSize: 15, color: "rgba(255,255,255,0.9)", margin: "0 0 6px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {o.titulo}
+                  </h3>
+                  <p style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)", margin: "0 0 8px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {o.descripcion}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 12, fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                    {o.zona && <span>📍 {o.zona}</span>}
+                    {o.remuneracion && <span>💰 {o.remuneracion}</span>}
+                    {o.perfiles && <span>👤 {o.perfiles.nombre} {o.perfiles.apellido}</span>}
+                    <span>{new Date(o.created_at).toLocaleDateString("es-AR")}</span>
+                  </div>
+                </div>
+                {o.perfil_id === uid && (
+                  <button
+                    className="bt-delete"
+                    onClick={e => { e.stopPropagation(); eliminar(o.id); }}
+                    style={{ fontSize: 11, color: "rgba(248,113,113,0.6)", background: "none", border: "none", cursor: "pointer", fontFamily: "Inter,sans-serif", flexShrink: 0, transition: "color 0.15s" }}
+                  >
+                    Eliminar
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
+      )}
 
-        {/* Formulario publicar */}
-        {showForm && (
-          <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl p-6 overflow-y-auto max-h-[90vh]">
-              <h2 className="text-xl font-bold mb-4">
-                {form.id ? "Editar publicación" : "Nueva publicación"}
-              </h2>
+      {/* Modal formulario */}
+      {showForm && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, width: "100%", maxWidth: 600, padding: 28, overflowY: "auto", maxHeight: "90vh" }}>
+            <h2 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", margin: "0 0 20px" }}>
+              {form.id ? "Editar publicación" : "Nueva publicación"}
+            </h2>
 
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Tipo *</label>
-                  <select
-                    value={form.tipo}
-                    onChange={e => setForm(f => ({ ...f, tipo: e.target.value as TipoOferta }))}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"
-                  >
-                    <option value="oferta">Oferta de empleo</option>
-                    <option value="busqueda">Búsqueda laboral</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Tipo de contrato</label>
-                  <select
-                    value={form.tipo_contrato ?? "a_convenir"}
-                    onChange={e => setForm(f => ({ ...f, tipo_contrato: e.target.value as TipoContrato }))}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"
-                  >
-                    {Object.entries(CONTRATO_LABEL).map(([k, v]) => (
-                      <option key={k} value={k}>{v}</option>
-                    ))}
-                  </select>
-                </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+              <div>
+                <label style={labelStyle}>Tipo *</label>
+                <select
+                  value={form.tipo}
+                  onChange={e => setForm(f => ({ ...f, tipo: e.target.value as TipoOferta }))}
+                  className="bt-input"
+                  style={{ ...inputStyle, appearance: "none" }}
+                >
+                  <option value="oferta">Oferta de empleo</option>
+                  <option value="busqueda">Búsqueda laboral</option>
+                </select>
               </div>
+              <div>
+                <label style={labelStyle}>Tipo de contrato</label>
+                <select
+                  value={form.tipo_contrato ?? "a_convenir"}
+                  onChange={e => setForm(f => ({ ...f, tipo_contrato: e.target.value as TipoContrato }))}
+                  className="bt-input"
+                  style={{ ...inputStyle, appearance: "none" }}
+                >
+                  {Object.entries(CONTRATO_LABEL).map(([k, v]) => (
+                    <option key={k} value={k}>{v}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-              <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Título *</label>
+            <div style={{ marginBottom: 14 }}>
+              <label style={labelStyle}>Título *</label>
+              <input
+                type="text"
+                value={form.titulo ?? ""}
+                onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))}
+                placeholder="Ej: Asistente inmobiliaria zona norte"
+                className="bt-input"
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: 14 }}>
+              <label style={labelStyle}>Descripción *</label>
+              <textarea
+                value={form.descripcion ?? ""}
+                onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
+                rows={4}
+                placeholder="Describí el puesto o el perfil que buscás..."
+                className="bt-input"
+                style={{ ...inputStyle, resize: "vertical" }}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+              <div>
+                <label style={labelStyle}>Zona</label>
                 <input
                   type="text"
-                  value={form.titulo ?? ""}
-                  onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))}
-                  placeholder="Ej: Asistente inmobiliaria zona norte"
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"
+                  value={form.zona ?? ""}
+                  onChange={e => setForm(f => ({ ...f, zona: e.target.value }))}
+                  placeholder="Ej: Centro, Norte Rosario"
+                  className="bt-input"
+                  style={inputStyle}
                 />
               </div>
-
-              <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Descripción *</label>
-                <textarea
-                  value={form.descripcion ?? ""}
-                  onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
-                  rows={4}
-                  placeholder="Describí el puesto o el perfil que buscás..."
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white resize-none"
+              <div>
+                <label style={labelStyle}>Remuneración</label>
+                <input
+                  type="text"
+                  value={form.remuneracion ?? ""}
+                  onChange={e => setForm(f => ({ ...f, remuneracion: e.target.value }))}
+                  placeholder="Ej: $300.000 / a convenir"
+                  className="bt-input"
+                  style={inputStyle}
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Zona</label>
-                  <input
-                    type="text"
-                    value={form.zona ?? ""}
-                    onChange={e => setForm(f => ({ ...f, zona: e.target.value }))}
-                    placeholder="Ej: Centro, Norte Rosario"
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Remuneración</label>
-                  <input
-                    type="text"
-                    value={form.remuneracion ?? ""}
-                    onChange={e => setForm(f => ({ ...f, remuneracion: e.target.value }))}
-                    placeholder="Ej: $300.000 / a convenir"
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Requisitos</label>
-                <textarea
-                  value={form.requisitos ?? ""}
-                  onChange={e => setForm(f => ({ ...f, requisitos: e.target.value }))}
-                  rows={2}
-                  placeholder="Ej: Experiencia en atención al cliente, manejo de redes sociales..."
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white resize-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Email de contacto</label>
-                  <input
-                    type="email"
-                    value={form.contacto_email ?? ""}
-                    onChange={e => setForm(f => ({ ...f, contacto_email: e.target.value }))}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Teléfono de contacto</label>
-                  <input
-                    type="text"
-                    value={form.contacto_tel ?? ""}
-                    onChange={e => setForm(f => ({ ...f, contacto_tel: e.target.value }))}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"
-                  />
-                </div>
-              </div>
-
-              {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
-
-              <div className="flex gap-3 justify-end">
-                <button
-                  onClick={() => { setShowForm(false); setError(""); }}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={guardar}
-                  disabled={guardando}
-                  className="px-5 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 rounded-lg text-sm font-semibold transition"
-                >
-                  {guardando ? "Guardando..." : form.id ? "Actualizar" : "Publicar"}
-                </button>
               </div>
             </div>
-          </div>
-        )}
 
-        {/* Detalle oferta */}
-        {detalle && (
-          <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl p-6 overflow-y-auto max-h-[90vh]">
-              <div className="flex justify-between items-start mb-4">
-                <span className={`text-xs px-3 py-1 rounded-full font-semibold ${detalle.tipo === "oferta" ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"}`}>
-                  {detalle.tipo === "oferta" ? "Oferta de empleo" : "Búsqueda laboral"}
-                </span>
-                <button onClick={() => setDetalle(null)} className="text-gray-400 hover:text-white text-xl">✕</button>
+            <div style={{ marginBottom: 14 }}>
+              <label style={labelStyle}>Requisitos</label>
+              <textarea
+                value={form.requisitos ?? ""}
+                onChange={e => setForm(f => ({ ...f, requisitos: e.target.value }))}
+                rows={2}
+                placeholder="Ej: Experiencia en atención al cliente, manejo de redes sociales..."
+                className="bt-input"
+                style={{ ...inputStyle, resize: "vertical" }}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
+              <div>
+                <label style={labelStyle}>Email de contacto</label>
+                <input
+                  type="email"
+                  value={form.contacto_email ?? ""}
+                  onChange={e => setForm(f => ({ ...f, contacto_email: e.target.value }))}
+                  className="bt-input"
+                  style={inputStyle}
+                />
               </div>
-              <h2 className="text-2xl font-bold mb-2">{detalle.titulo}</h2>
-
-              {detalle.perfiles && (
-                <p className="text-gray-400 text-sm mb-4">
-                  Publicado por {detalle.perfiles.nombre} {detalle.perfiles.apellido}
-                  {detalle.perfiles.matricula ? ` · Mat. ${detalle.perfiles.matricula}` : ""}
-                </p>
-              )}
-
-              <div className="flex flex-wrap gap-3 mb-4">
-                {detalle.tipo_contrato && (
-                  <span className="bg-gray-800 text-gray-300 text-xs px-3 py-1 rounded-full">
-                    {CONTRATO_LABEL[detalle.tipo_contrato]}
-                  </span>
-                )}
-                {detalle.zona && (
-                  <span className="bg-gray-800 text-gray-300 text-xs px-3 py-1 rounded-full">📍 {detalle.zona}</span>
-                )}
-                {detalle.remuneracion && (
-                  <span className="bg-gray-800 text-gray-300 text-xs px-3 py-1 rounded-full">💰 {detalle.remuneracion}</span>
-                )}
-              </div>
-
-              <div className="mb-4">
-                <h3 className="text-sm font-semibold text-gray-300 mb-2">Descripción</h3>
-                <p className="text-gray-300 text-sm whitespace-pre-wrap">{detalle.descripcion}</p>
-              </div>
-
-              {detalle.requisitos && (
-                <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-gray-300 mb-2">Requisitos</h3>
-                  <p className="text-gray-300 text-sm whitespace-pre-wrap">{detalle.requisitos}</p>
-                </div>
-              )}
-
-              <div className="border-t border-gray-700 pt-4">
-                <h3 className="text-sm font-semibold text-gray-300 mb-2">Contacto</h3>
-                <div className="flex gap-4 flex-wrap">
-                  {detalle.contacto_email && (
-                    <a href={`mailto:${detalle.contacto_email}`} className="text-blue-400 hover:underline text-sm">
-                      ✉ {detalle.contacto_email}
-                    </a>
-                  )}
-                  {detalle.contacto_tel && (
-                    <a href={`https://wa.me/${detalle.contacto_tel.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="text-green-400 hover:underline text-sm">
-                      💬 {detalle.contacto_tel}
-                    </a>
-                  )}
-                </div>
+              <div>
+                <label style={labelStyle}>Teléfono de contacto</label>
+                <input
+                  type="text"
+                  value={form.contacto_tel ?? ""}
+                  onChange={e => setForm(f => ({ ...f, contacto_tel: e.target.value }))}
+                  className="bt-input"
+                  style={inputStyle}
+                />
               </div>
             </div>
-          </div>
-        )}
 
-        {/* Lista */}
-        {loading ? (
-          <div className="text-center py-12 text-gray-400">Cargando publicaciones...</div>
-        ) : filtradas.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-5xl mb-4">💼</div>
-            <p className="text-gray-400">No hay publicaciones{tab !== "todas" ? ` de ${tab === "oferta" ? "ofertas" : "búsquedas"}` : ""} aún.</p>
-            <button
-              onClick={() => { setForm(EMPTY); setShowForm(true); }}
-              className="mt-4 text-purple-400 hover:text-purple-300 text-sm underline"
-            >
-              Ser el primero en publicar
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filtradas.map(o => (
-              <div
-                key={o.id}
-                onClick={() => setDetalle(o)}
-                className="bg-gray-900 border border-gray-800 hover:border-gray-700 rounded-xl p-5 cursor-pointer transition group"
+            {error && <p style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#f87171", marginBottom: 14 }}>{error}</p>}
+
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button
+                className="bt-btn-ghost"
+                onClick={() => { setShowForm(false); setError(""); }}
+                style={{ padding: "9px 18px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.6)", fontSize: 13, fontFamily: "Inter,sans-serif", cursor: "pointer", transition: "all 0.15s" }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${o.tipo === "oferta" ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"}`}>
-                        {o.tipo === "oferta" ? "Oferta" : "Búsqueda"}
-                      </span>
-                      {o.tipo_contrato && (
-                        <span className="text-xs text-gray-500">{CONTRATO_LABEL[o.tipo_contrato]}</span>
-                      )}
-                      {o.destacado && <span className="text-xs text-yellow-400">⭐ Destacado</span>}
-                    </div>
-                    <h3 className="font-semibold text-white group-hover:text-purple-300 transition truncate">{o.titulo}</h3>
-                    <p className="text-gray-400 text-sm mt-1 line-clamp-2">{o.descripcion}</p>
-                    <div className="flex flex-wrap gap-3 mt-2 text-xs text-gray-500">
-                      {o.zona && <span>📍 {o.zona}</span>}
-                      {o.remuneracion && <span>💰 {o.remuneracion}</span>}
-                      {o.perfiles && <span>👤 {o.perfiles.nombre} {o.perfiles.apellido}</span>}
-                      <span>{new Date(o.created_at).toLocaleDateString("es-AR")}</span>
-                    </div>
-                  </div>
-                  {o.perfil_id === uid && (
-                    <button
-                      onClick={e => { e.stopPropagation(); eliminar(o.id); }}
-                      className="text-xs text-red-400 hover:text-red-300 shrink-0"
-                    >
-                      Eliminar
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+                Cancelar
+              </button>
+              <button
+                onClick={guardar}
+                disabled={guardando}
+                style={{ padding: "9px 22px", background: guardando ? "rgba(204,0,0,0.5)" : "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: guardando ? "not-allowed" : "pointer" }}
+              >
+                {guardando ? "Guardando..." : form.id ? "Actualizar" : "Publicar"}
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Modal detalle */}
+      {detalle && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, width: "100%", maxWidth: 620, padding: 28, overflowY: "auto", maxHeight: "90vh" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+              <span style={{
+                fontSize: 11, padding: "4px 12px", borderRadius: 20, fontWeight: 700, fontFamily: "Montserrat,sans-serif",
+                background: detalle.tipo === "oferta" ? "rgba(59,130,246,0.15)" : "rgba(34,197,94,0.15)",
+                color: detalle.tipo === "oferta" ? "#60a5fa" : "#4ade80",
+              }}>
+                {detalle.tipo === "oferta" ? "Oferta de empleo" : "Búsqueda laboral"}
+              </span>
+              <button onClick={() => setDetalle(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 20, cursor: "pointer", lineHeight: 1 }}>✕</button>
+            </div>
+
+            <h2 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>
+              {detalle.titulo}
+            </h2>
+
+            {detalle.perfiles && (
+              <p style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "rgba(255,255,255,0.35)", margin: "0 0 16px" }}>
+                Publicado por {detalle.perfiles.nombre} {detalle.perfiles.apellido}
+                {detalle.perfiles.matricula ? ` · Mat. ${detalle.perfiles.matricula}` : ""}
+              </p>
+            )}
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+              {detalle.tipo_contrato && (
+                <span style={{ fontSize: 12, padding: "4px 12px", borderRadius: 20, background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
+                  {CONTRATO_LABEL[detalle.tipo_contrato]}
+                </span>
+              )}
+              {detalle.zona && (
+                <span style={{ fontSize: 12, padding: "4px 12px", borderRadius: 20, background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
+                  📍 {detalle.zona}
+                </span>
+              )}
+              {detalle.remuneracion && (
+                <span style={{ fontSize: 12, padding: "4px 12px", borderRadius: 20, background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
+                  💰 {detalle.remuneracion}
+                </span>
+              )}
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <h3 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 8px" }}>Descripción</h3>
+              <p style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "rgba(255,255,255,0.7)", margin: 0, whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{detalle.descripcion}</p>
+            </div>
+
+            {detalle.requisitos && (
+              <div style={{ marginBottom: 16 }}>
+                <h3 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 8px" }}>Requisitos</h3>
+                <p style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "rgba(255,255,255,0.7)", margin: 0, whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{detalle.requisitos}</p>
+              </div>
+            )}
+
+            <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 16 }}>
+              <h3 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 10px" }}>Contacto</h3>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                {detalle.contacto_email && (
+                  <a
+                    href={`mailto:${detalle.contacto_email}`}
+                    className="bt-link-email"
+                    style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#60a5fa", textDecoration: "none", transition: "color 0.15s" }}
+                  >
+                    ✉ {detalle.contacto_email}
+                  </a>
+                )}
+                {detalle.contacto_tel && (
+                  <a
+                    href={`https://wa.me/${detalle.contacto_tel.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="bt-link-wa"
+                    style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#4ade80", textDecoration: "none", transition: "color 0.15s" }}
+                  >
+                    💬 {detalle.contacto_tel}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
