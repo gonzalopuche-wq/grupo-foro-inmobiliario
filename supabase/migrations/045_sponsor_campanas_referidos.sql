@@ -10,7 +10,8 @@ ALTER TABLE perfiles
   ADD COLUMN IF NOT EXISTS cant_administraciones_declaradas integer;
 
 -- Actualiza RLS de sponsor_beneficios para que el sponsor gestione los suyos
-CREATE POLICY IF NOT EXISTS "sponsor_gestiona_propios_beneficios"
+DROP POLICY IF EXISTS "sponsor_gestiona_propios_beneficios" ON sponsor_beneficios;
+CREATE POLICY "sponsor_gestiona_propios_beneficios"
   ON sponsor_beneficios FOR ALL
   USING (
     EXISTS (
@@ -88,7 +89,8 @@ ALTER TABLE sponsor_saldo      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sponsor_movimientos ENABLE ROW LEVEL SECURITY;
 
 -- Campañas: autenticados ven las activas; sponsor ve las suyas; admin todo
-CREATE POLICY IF NOT EXISTS "campanas_ver_activas" ON sponsor_campanas FOR SELECT
+DROP POLICY IF EXISTS "campanas_ver_activas" ON sponsor_campanas;
+CREATE POLICY "campanas_ver_activas" ON sponsor_campanas FOR SELECT
   USING (
     auth.uid() IS NOT NULL AND (
       activa = true
@@ -96,19 +98,22 @@ CREATE POLICY IF NOT EXISTS "campanas_ver_activas" ON sponsor_campanas FOR SELEC
       OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
     )
   );
-CREATE POLICY IF NOT EXISTS "campanas_sponsor_insert" ON sponsor_campanas FOR INSERT
+DROP POLICY IF EXISTS "campanas_sponsor_insert" ON sponsor_campanas;
+CREATE POLICY "campanas_sponsor_insert" ON sponsor_campanas FOR INSERT
   WITH CHECK (
     EXISTS (SELECT 1 FROM red_proveedores WHERE id = proveedor_id AND portal_user_id = auth.uid())
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
-CREATE POLICY IF NOT EXISTS "campanas_sponsor_update" ON sponsor_campanas FOR UPDATE
+DROP POLICY IF EXISTS "campanas_sponsor_update" ON sponsor_campanas;
+CREATE POLICY "campanas_sponsor_update" ON sponsor_campanas FOR UPDATE
   USING (
     EXISTS (SELECT 1 FROM red_proveedores WHERE id = proveedor_id AND portal_user_id = auth.uid())
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
 
 -- Adhesiones: corredor ve las suyas; sponsor ve adhesiones a sus campañas; admin todo
-CREATE POLICY IF NOT EXISTS "adhesiones_select" ON sponsor_adhesiones FOR SELECT
+DROP POLICY IF EXISTS "adhesiones_select" ON sponsor_adhesiones;
+CREATE POLICY "adhesiones_select" ON sponsor_adhesiones FOR SELECT
   USING (
     corredor_id = auth.uid()
     OR EXISTS (
@@ -118,25 +123,31 @@ CREATE POLICY IF NOT EXISTS "adhesiones_select" ON sponsor_adhesiones FOR SELECT
     )
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
-CREATE POLICY IF NOT EXISTS "adhesiones_corredor_insert" ON sponsor_adhesiones FOR INSERT
+DROP POLICY IF EXISTS "adhesiones_corredor_insert" ON sponsor_adhesiones;
+CREATE POLICY "adhesiones_corredor_insert" ON sponsor_adhesiones FOR INSERT
   WITH CHECK (corredor_id = auth.uid());
-CREATE POLICY IF NOT EXISTS "adhesiones_update_clics" ON sponsor_adhesiones FOR UPDATE
+DROP POLICY IF EXISTS "adhesiones_update_clics" ON sponsor_adhesiones;
+CREATE POLICY "adhesiones_update_clics" ON sponsor_adhesiones FOR UPDATE
   USING (true);
 
 -- Saldo: sponsor ve el suyo; admin gestiona
-CREATE POLICY IF NOT EXISTS "saldo_select" ON sponsor_saldo FOR SELECT
+DROP POLICY IF EXISTS "saldo_select" ON sponsor_saldo;
+CREATE POLICY "saldo_select" ON sponsor_saldo FOR SELECT
   USING (
     EXISTS (SELECT 1 FROM red_proveedores WHERE id = proveedor_id AND portal_user_id = auth.uid())
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
-CREATE POLICY IF NOT EXISTS "saldo_admin_all" ON sponsor_saldo FOR ALL
+DROP POLICY IF EXISTS "saldo_admin_all" ON sponsor_saldo;
+CREATE POLICY "saldo_admin_all" ON sponsor_saldo FOR ALL
   USING (EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin'));
 
 -- Movimientos: sponsor ve los suyos; admin gestiona
-CREATE POLICY IF NOT EXISTS "movimientos_select" ON sponsor_movimientos FOR SELECT
+DROP POLICY IF EXISTS "movimientos_select" ON sponsor_movimientos;
+CREATE POLICY "movimientos_select" ON sponsor_movimientos FOR SELECT
   USING (
     EXISTS (SELECT 1 FROM red_proveedores WHERE id = proveedor_id AND portal_user_id = auth.uid())
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
-CREATE POLICY IF NOT EXISTS "movimientos_admin_all" ON sponsor_movimientos FOR ALL
+DROP POLICY IF EXISTS "movimientos_admin_all" ON sponsor_movimientos;
+CREATE POLICY "movimientos_admin_all" ON sponsor_movimientos FOR ALL
   USING (EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin'));
