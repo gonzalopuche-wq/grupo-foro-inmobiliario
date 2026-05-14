@@ -249,13 +249,15 @@ export default function AdminPage() {
   const [guardandoRespuesta, setGuardandoRespuesta] = useState(false);
   const [resolviendoIA, setResolviendoIA] = useState(false);
   // Sponsors (red_proveedores)
-  interface RedProveedor { id: string; nombre: string; sitio_web: string | null; portal_user_id: string | null; slug: string | null; portal_usuario?: { nombre: string; apellido: string; email: string | null; } | null; }
+  interface RedProveedor { id: string; nombre: string; sitio_web: string | null; portal_user_id: string | null; slug: string | null; suscripcion_activa: boolean; plan_mensual_usd: number; suscripcion_vence: string | null; portal_usuario?: { nombre: string; apellido: string; email: string | null; } | null; }
   const [redProveedores, setRedProveedores] = useState<RedProveedor[]>([]);
   const [loadingRedProv, setLoadingRedProv] = useState(true);
   const [sponsorSaldoForm, setSponsorSaldoForm] = useState<Record<string, string>>({});
   const [cargandoSaldo, setCargandoSaldo] = useState<string | null>(null);
   const [sponsorPortalForm, setSponsorPortalForm] = useState<Record<string, string>>({});
   const [vinculandoPortal, setVinculandoPortal] = useState<string | null>(null);
+  const [sponsorPlanForm, setSponsorPlanForm] = useState<Record<string, string>>({});
+  const [cobrandoSuscripcion, setCobrandoSuscripcion] = useState<string | null>(null);
 
   useEffect(() => {
     const verificar = async () => {
@@ -936,11 +938,36 @@ A partir de esa fecha el costo mensual será de USD 15.
     setLoadingRedProv(true);
     const { data } = await supabase
       .from("red_proveedores")
-      .select("id, nombre, sitio_web, portal_user_id, slug, portal_usuario:portal_user_id(nombre, apellido, email)")
+      .select("id, nombre, sitio_web, portal_user_id, slug, suscripcion_activa, plan_mensual_usd, suscripcion_vence, portal_usuario:portal_user_id(nombre, apellido, email)")
       .order("nombre");
     setRedProveedores((data ?? []) as unknown as RedProveedor[]);
     setLoadingRedProv(false);
   };
+
+  const cobrarSuscripcionSponsor = async (provId: string) => {
+    const mesActual = new Date().toISOString().slice(0, 7);
+    setCobrandoSuscripcion(provId);
+    try {
+      const session = (await supabase.auth.getSession()).data.session;
+      const res = await fetch("/api/sponsors/suscripcion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ proveedor_id: provId, mes: mesActual }),
+      });
+      const data = await res.json();
+      if (!res.ok) { mostrarToast(data.error ?? "Error al cobrar suscripción", "err"); }
+      else { mostrarToast(`Suscripción cobrada. Nuevo saldo: $${data.saldo_nuevo?.toFixed(2)}`); cargarRedProveedores(); }
+    } finally { setCobrandoSuscripcion(null); }
+  };
+
+  const guardarPlanSponsor = async (provId: string) => {
+    const monto = parseFloat(sponsorPlanForm[provId] ?? "");
+    if (!monto || monto <= 0) { mostrarToast("Ingresá un monto válido", "err"); return; }
+    const { error } = await supabase.from("red_proveedores").update({ plan_mensual_usd: monto }).eq("id", provId);
+    if (error) { mostrarToast("Error al guardar plan", "err"); }
+    else { mostrarToast("Plan actualizado"); setSponsorPlanForm(f => ({ ...f, [provId]: "" })); cargarRedProveedores(); }
+  };
+
 
   const cargarSaldoSponsor = async (provId: string) => {
     const monto = parseFloat(sponsorSaldoForm[provId] ?? "");
@@ -2328,66 +2355,104 @@ A partir de esa fecha el costo mensual será de USD 15.
           {/* ── SPONSORS ─────────────────────────────────────────────────── */}
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-              <div><div className="adm-ind-titulo">Sponsors <span>de GFI</span></div><div className="adm-ind-subtitulo">Gestioná el acceso al portal y saldo de cada sponsor.</div></div>
+              <div><div className="adm-ind-titulo">Sponsors <span>de GFI</span></div><div className="adm-ind-subtitulo">Acceso al portal, suscripción mensual y cobro por referidos. Cada sponsor tiene saldo prepago que se debita automáticamente.</div></div>
             </div>
             {loadingRedProv ? <div className="adm-loading">Cargando...</div> : redProveedores.length === 0
               ? <div className="adm-empty">No hay proveedores en red_proveedores.</div>
               : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {redProveedores.map(rp => (
-                    <div key={rp.id} style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "16px 20px" }}>
-                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
-                        <div>
-                          <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{rp.nombre}</div>
-                          {rp.sitio_web && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{rp.sitio_web}</div>}
-                        </div>
-                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                          {rp.portal_user_id
-                            ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
-                                Portal: {(rp.portal_usuario as any)?.nombre} {(rp.portal_usuario as any)?.apellido}
-                              </span>
-                            : <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Sin acceso al portal</span>
-                          }
-                        </div>
-                      </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                        {/* Cargar saldo */}
-                        <div>
-                          <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Cargar saldo (USD)</div>
-                          <div style={{ display: "flex", gap: 8 }}>
-                            <input
-                              type="number" min="0" step="10" placeholder="Ej: 500"
-                              value={sponsorSaldoForm[rp.id] ?? ""}
-                              onChange={e => setSponsorSaldoForm(f => ({ ...f, [rp.id]: e.target.value }))}
-                              style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
-                            />
-                            <button
-                              onClick={() => cargarSaldoSponsor(rp.id)}
-                              disabled={cargandoSaldo === rp.id}
-                              style={{ padding: "8px 16px", background: "#22c55e", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: cargandoSaldo === rp.id ? 0.6 : 1 }}
-                            >{cargandoSaldo === rp.id ? "..." : "+ Saldo"}</button>
+                  {redProveedores.map(rp => {
+                    const hoy = new Date();
+                    const vence = rp.suscripcion_vence ? new Date(rp.suscripcion_vence) : null;
+                    const suscVigente = rp.suscripcion_activa && vence && vence > hoy;
+                    // Usar fecha local para evitar desfase UTC en zonas horarias negativas (P2 fix)
+                    const mesActual = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}`;
+                    return (
+                      <div key={rp.id} style={{ background: "rgba(14,14,14,0.9)", border: `1px solid ${suscVigente ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.07)"}`, borderRadius: 8, padding: "16px 20px" }}>
+                        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
+                          <div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{rp.nombre}</div>
+                            {rp.sitio_web && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{rp.sitio_web}</div>}
+                          </div>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                            {suscVigente
+                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                                  ✓ Suscripción activa hasta {vence!.toLocaleDateString("es-AR",{month:"short",year:"numeric"})}
+                                </span>
+                              : <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                                  Sin suscripción activa
+                                </span>
+                            }
+                            {rp.portal_user_id
+                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", color: "#3b82f6", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                                  Portal: {rp.portal_usuario?.nombre} {rp.portal_usuario?.apellido}
+                                </span>
+                              : <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Sin acceso al portal</span>
+                            }
                           </div>
                         </div>
-                        {/* Vincular portal */}
-                        <div>
-                          <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Vincular acceso al portal (email)</div>
-                          <div style={{ display: "flex", gap: 8 }}>
-                            <input
-                              type="email" placeholder="email@usuario.com"
-                              value={sponsorPortalForm[rp.id] ?? ""}
-                              onChange={e => setSponsorPortalForm(f => ({ ...f, [rp.id]: e.target.value }))}
-                              style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
-                            />
-                            <button
-                              onClick={() => vincularPortalSponsor(rp.id)}
-                              disabled={vinculandoPortal === rp.id}
-                              style={{ padding: "8px 16px", background: "#3b82f6", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: vinculandoPortal === rp.id ? 0.6 : 1 }}
-                            >{vinculandoPortal === rp.id ? "..." : "Vincular"}</button>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                          <div>
+                            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Cargar saldo (USD)</div>
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <input
+                                type="number" min="0" step="10" placeholder="Ej: 500"
+                                value={sponsorSaldoForm[rp.id] ?? ""}
+                                onChange={e => setSponsorSaldoForm(f => ({ ...f, [rp.id]: e.target.value }))}
+                                style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
+                              />
+                              <button
+                                onClick={() => cargarSaldoSponsor(rp.id)}
+                                disabled={cargandoSaldo === rp.id}
+                                style={{ padding: "8px 16px", background: "#22c55e", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: cargandoSaldo === rp.id ? 0.6 : 1 }}
+                              >{cargandoSaldo === rp.id ? "..." : "+ Saldo"}</button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
+                              Mensualidad — plan actual: <strong style={{ color: "#f59e0b" }}>${rp.plan_mensual_usd}/mes</strong>
+                            </div>
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <input
+                                type="number" min="0" step="10" placeholder={`Cambiar plan (actual $${rp.plan_mensual_usd})`}
+                                value={sponsorPlanForm[rp.id] ?? ""}
+                                onChange={e => setSponsorPlanForm(f => ({ ...f, [rp.id]: e.target.value }))}
+                                style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
+                              />
+                              <button
+                                onClick={() => guardarPlanSponsor(rp.id)}
+                                style={{ padding: "8px 12px", background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: 4, color: "#f59e0b", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}
+                              >Guardar plan</button>
+                              <button
+                                onClick={() => cobrarSuscripcionSponsor(rp.id)}
+                                disabled={cobrandoSuscripcion === rp.id}
+                                style={{ padding: "8px 12px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: cobrandoSuscripcion === rp.id ? 0.6 : 1, whiteSpace: "nowrap" }}
+                              >{cobrandoSuscripcion === rp.id ? "..." : `Cobrar ${mesActual}`}</button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Vincular acceso al portal (email del usuario)</div>
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <input
+                                type="email" placeholder="email@sponsor.com"
+                                value={sponsorPortalForm[rp.id] ?? ""}
+                                onChange={e => setSponsorPortalForm(f => ({ ...f, [rp.id]: e.target.value }))}
+                                style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
+                              />
+                              <button
+                                onClick={() => vincularPortalSponsor(rp.id)}
+                                disabled={vinculandoPortal === rp.id}
+                                style={{ padding: "8px 16px", background: "#3b82f6", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: vinculandoPortal === rp.id ? 0.6 : 1 }}
+                              >{vinculandoPortal === rp.id ? "..." : "Vincular"}</button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )
             }

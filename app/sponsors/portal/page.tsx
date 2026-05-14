@@ -10,11 +10,14 @@ interface DashData {
   total_administraciones: number;
   total_clics: number;
   total_cobrado: number;
+  suscripcion_activa: boolean;
+  suscripcion_vence: string | null;
+  plan_mensual_usd: number;
 }
 
 export default function SponsorPortalDashboard() {
   const [provId, setProvId] = useState<string | null>(null);
-  const [dash, setDash] = useState<DashData>({ saldo: 0, campanas_activas: 0, total_adhesiones: 0, total_administraciones: 0, total_clics: 0, total_cobrado: 0 });
+  const [dash, setDash] = useState<DashData>({ saldo: 0, campanas_activas: 0, total_adhesiones: 0, total_administraciones: 0, total_clics: 0, total_cobrado: 0, suscripcion_activa: false, suscripcion_vence: null, plan_mensual_usd: 50 });
   const [adhesiones, setAdhesiones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,7 +28,7 @@ export default function SponsorPortalDashboard() {
 
       const { data: prov } = await supabase
         .from("red_proveedores")
-        .select("id, nombre")
+        .select("id, nombre, suscripcion_activa, suscripcion_vence, plan_mensual_usd")
         .eq("portal_user_id", data.user.id)
         .maybeSingle();
       if (!prov) { setLoading(false); return; }
@@ -52,6 +55,9 @@ export default function SponsorPortalDashboard() {
         total_administraciones: adList.reduce((s, a) => s + (a.cant_administraciones ?? 0), 0),
         total_clics: adList.reduce((s, a) => s + (a.clics ?? 0), 0),
         total_cobrado: adList.reduce((s, a) => s + (a.monto_cobrado_usd ?? 0), 0),
+        suscripcion_activa: (prov as any).suscripcion_activa ?? false,
+        suscripcion_vence: (prov as any).suscripcion_vence ?? null,
+        plan_mensual_usd: (prov as any).plan_mensual_usd ?? 50,
       });
       setAdhesiones(adList);
       setLoading(false);
@@ -97,6 +103,24 @@ export default function SponsorPortalDashboard() {
           </div>
         ))}
       </div>
+
+      {/* Banner de estado de suscripción */}
+      {(() => {
+        const hoy = new Date();
+        const vence = dash.suscripcion_vence ? new Date(dash.suscripcion_vence) : null;
+        const activa = dash.suscripcion_activa && vence && vence > hoy;
+        if (activa) return (
+          <div style={{ background: "rgba(34,197,94,.06)", border: "1px solid rgba(34,197,94,.2)", borderRadius: 8, padding: "10px 16px", marginBottom: 16, fontSize: 13, color: "#22c55e", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span>✓ Suscripción activa — plan ${dash.plan_mensual_usd}/mes</span>
+            <span style={{ fontSize: 11, color: "rgba(34,197,94,.7)" }}>Vence: {vence!.toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
+          </div>
+        );
+        return (
+          <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#ef4444" }}>
+            ⚠️ <strong>Sin suscripción activa.</strong> Contactá al administrador de GFI® para activar tu plan mensual (${dash.plan_mensual_usd}/mes) y mantener acceso al portal.
+          </div>
+        );
+      })()}
 
       {dash.saldo < 50 && (
         <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 20, fontSize: 13, color: "#ef4444" }}>
