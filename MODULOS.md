@@ -233,4 +233,4 @@
 
 ---
 
-*Última actualización: v22 — MOD 51 (Bolsa de Trabajo: `/bolsa-trabajo`), MOD 74 (Validación COCIR nocturna: sync actualiza `cocir_estado` en perfiles), MOD 40 (Presentaciones Comerciales: `/crm/presentaciones` + link público `/p/[token]`), MOD 80 (2FA TOTP obligatorio: `/configurar-2fa` + badge en perfil), MOD 138 (IA Memoria Colectiva: `/foro/memoria` + FTS tsvector en forum_topics/replies + API `/api/ia/memoria-colectiva`). Migration 048.*
+*Última actualización: v22 — MOD 51 (Bolsa de Trabajo: `/bolsa-trabajo`), MOD 74 (Validación COCIR nocturna: sync actualiza `cocir_estado` en perfiles), MOD 40 (Presentaciones Comerciales: `/crm/presentaciones` + link público `/p/[token]`), MOD 80 (2FA TOTP obligatorio: `/configurar-2fa` + badge en perfil), MOD 138 (IA Memoria Colectiva: `/foro/memoria` + FTS tsvector en forum_topics/replies + API `/api/ia/memoria-colectiva`). Migration 048. Afecta MOD 2, 3, 5 (v21 WhatsApp Business API).*
