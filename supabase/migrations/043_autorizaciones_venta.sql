@@ -29,22 +29,22 @@ create table if not exists autorizaciones_venta (
 
 alter table autorizaciones_venta enable row level security;
 
-create policy "autorizaciones_select" on autorizaciones_venta for select
+create policy if not exists "autorizaciones_select" on autorizaciones_venta for select
   using (
     auth.uid() = user_id
     or exists (select 1 from perfiles where id = auth.uid() and tipo = 'admin')
   );
 
-create policy "autorizaciones_insert" on autorizaciones_venta for insert
+create policy if not exists "autorizaciones_insert" on autorizaciones_venta for insert
   with check (auth.uid() = user_id);
 
-create policy "autorizaciones_update" on autorizaciones_venta for update
+create policy if not exists "autorizaciones_update" on autorizaciones_venta for update
   using (
     auth.uid() = user_id
     or exists (select 1 from perfiles where id = auth.uid() and tipo = 'admin')
   );
 
-create policy "autorizaciones_delete" on autorizaciones_venta for delete
+create policy if not exists "autorizaciones_delete" on autorizaciones_venta for delete
   using (auth.uid() = user_id);
 
 -- Marcar como vencidas las que pasaron la fecha

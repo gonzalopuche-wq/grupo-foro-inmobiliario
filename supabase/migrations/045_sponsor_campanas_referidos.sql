@@ -88,7 +88,7 @@ ALTER TABLE sponsor_saldo      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sponsor_movimientos ENABLE ROW LEVEL SECURITY;
 
 -- Campañas: autenticados ven las activas; sponsor ve las suyas; admin todo
-CREATE POLICY "campanas_ver_activas" ON sponsor_campanas FOR SELECT
+CREATE POLICY IF NOT EXISTS "campanas_ver_activas" ON sponsor_campanas FOR SELECT
   USING (
     auth.uid() IS NOT NULL AND (
       activa = true
@@ -96,19 +96,19 @@ CREATE POLICY "campanas_ver_activas" ON sponsor_campanas FOR SELECT
       OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
     )
   );
-CREATE POLICY "campanas_sponsor_insert" ON sponsor_campanas FOR INSERT
+CREATE POLICY IF NOT EXISTS "campanas_sponsor_insert" ON sponsor_campanas FOR INSERT
   WITH CHECK (
     EXISTS (SELECT 1 FROM red_proveedores WHERE id = proveedor_id AND portal_user_id = auth.uid())
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
-CREATE POLICY "campanas_sponsor_update" ON sponsor_campanas FOR UPDATE
+CREATE POLICY IF NOT EXISTS "campanas_sponsor_update" ON sponsor_campanas FOR UPDATE
   USING (
     EXISTS (SELECT 1 FROM red_proveedores WHERE id = proveedor_id AND portal_user_id = auth.uid())
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
 
 -- Adhesiones: corredor ve las suyas; sponsor ve adhesiones a sus campañas; admin todo
-CREATE POLICY "adhesiones_select" ON sponsor_adhesiones FOR SELECT
+CREATE POLICY IF NOT EXISTS "adhesiones_select" ON sponsor_adhesiones FOR SELECT
   USING (
     corredor_id = auth.uid()
     OR EXISTS (
@@ -118,25 +118,25 @@ CREATE POLICY "adhesiones_select" ON sponsor_adhesiones FOR SELECT
     )
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
-CREATE POLICY "adhesiones_corredor_insert" ON sponsor_adhesiones FOR INSERT
+CREATE POLICY IF NOT EXISTS "adhesiones_corredor_insert" ON sponsor_adhesiones FOR INSERT
   WITH CHECK (corredor_id = auth.uid());
-CREATE POLICY "adhesiones_update_clics" ON sponsor_adhesiones FOR UPDATE
+CREATE POLICY IF NOT EXISTS "adhesiones_update_clics" ON sponsor_adhesiones FOR UPDATE
   USING (true);
 
 -- Saldo: sponsor ve el suyo; admin gestiona
-CREATE POLICY "saldo_select" ON sponsor_saldo FOR SELECT
+CREATE POLICY IF NOT EXISTS "saldo_select" ON sponsor_saldo FOR SELECT
   USING (
     EXISTS (SELECT 1 FROM red_proveedores WHERE id = proveedor_id AND portal_user_id = auth.uid())
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
-CREATE POLICY "saldo_admin_all" ON sponsor_saldo FOR ALL
+CREATE POLICY IF NOT EXISTS "saldo_admin_all" ON sponsor_saldo FOR ALL
   USING (EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin'));
 
 -- Movimientos: sponsor ve los suyos; admin gestiona
-CREATE POLICY "movimientos_select" ON sponsor_movimientos FOR SELECT
+CREATE POLICY IF NOT EXISTS "movimientos_select" ON sponsor_movimientos FOR SELECT
   USING (
     EXISTS (SELECT 1 FROM red_proveedores WHERE id = proveedor_id AND portal_user_id = auth.uid())
     OR EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin')
   );
-CREATE POLICY "movimientos_admin_all" ON sponsor_movimientos FOR ALL
+CREATE POLICY IF NOT EXISTS "movimientos_admin_all" ON sponsor_movimientos FOR ALL
   USING (EXISTS (SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo = 'admin'));
