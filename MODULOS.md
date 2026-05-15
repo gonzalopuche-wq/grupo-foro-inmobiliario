@@ -16,7 +16,7 @@
 |---|--------|--------|--------------|
 | 0 | Dashboard Principal | ✅ | `/dashboard` |
 | 1 | Eventos y Agenda | ✅ | `/eventos` + `/agenda` |
-| **2** | **Motor MIR** | 🟡 | **`/mir` — Smart Prospecting push implementado; parser WA→MIR activo. Pendiente: PEDIDO URGENTE (badge+pago extra), historial WA migrado** |
+| **2** | **Motor MIR** | ✅ | **`/mir` — Smart Prospecting push implementado; parser WA→MIR activo. PEDIDO URGENTE: badge ⚡ amarillo, 48hs de vigencia, checkbox en formulario. Migration 051.** |
 | **3** | **Cartera de Propiedades** | 🟡 | **`/crm/cartera` — Pendiente: parser IA directo desde WA (activo vía webhook), DIFUSIONES, CONTACTOS SUGERIDOS, import/export Excel** |
 | 4 | Biblioteca del Corredor | ✅ | `/biblioteca` |
 | **5** | **Foro / Chat** | 🟡 | **`/foro` — Grupos WA dinámicos desde DB. Webhook WhatsApp Business API activo. Pendiente: vinculación bidireccional grupos, migración historial** |
@@ -129,7 +129,7 @@
 | 73 | Gestión de Usuarios y Perfiles | ✅ | `/perfil` |
 | **74** | **Validación Matrícula COCIR** | ✅ | **`/padron` — sync nocturno: compara matrículas GFI vs padrón COCIR scraped, actualiza `cocir_estado` (activo/suspendido/no_encontrado) — `v22`** |
 | 75 | Control de Acceso y Permisos | ✅ | 4 roles implementados |
-| 76 | Suscripciones | ✅ | `/perfil` — email + push al aprobar |
+| **76** | **MI ABONO INTELIGENTE** | ✅ | **`/perfil` (tab Suscripción) — bonificaciones por colaboración: biblioteca, foro, comparables, seniority, referidos. Descuento real en USD calculado mes a mes. Migration 051.** |
 | 77 | Pagos y Membresías | ✅ | Admin verifica manualmente |
 | 78 | Período de Gracia | ✅ | 3 días configurados |
 | 79 | Logs de Actividad | 🟡 | Backend, sin UI |
@@ -144,7 +144,7 @@
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
 | **83** | **Sistema de Insignias/Badges** | ✅ | **`/perfil` — 14 badges en 4 tiers (Bronce/Plata/Oro/Especiales) con progress bars — `v18`** |
-| **85** | **Integración CRMs Externos** | ✅ | **`/crm/integraciones` — Tokko Broker (sync propiedades/contactos), import CSV/Excel, export Excel — `v24`** |
+| **85** | **Integración CRMs Externos** | ✅ | **`/crm/integraciones` — Tokko Broker + Kiteprop (sync propiedades/contactos, base_url configurable), import CSV/Excel, export Excel — `v25`** |
 | **86** | **Integración Sistemas Administración** | ✅ | **`/crm/integraciones` — Export contactos/cartera/negocios para contabilidad, historial de operaciones — `v24`** |
 | 87 | Sistema de Franquicias | ❌ | Diferido |
 | 88 | Expansión Regional | ❌ | Diferido |
@@ -179,7 +179,7 @@
 | 113 | Metas y Objetivos | ✅ | `/crm/metas` |
 | 114 | Historial de Actividad | ✅ | `/actividades` |
 | 115 | Comunicados COCIR | ✅ | Dashboard + `/noticias` |
-| 116 | Agenda del Sector | ✅ | `/agenda` |
+| **116** | **Agenda del Sector** | ✅ | **`/agenda` — citas, integración Google Calendar, exportación .ics (compatible Outlook/Apple Calendar) — `v25`** |
 | 117 | Foro Técnico | ✅ | `/foro` |
 | 118 | Convenios Institucionales | ✅ | Admin |
 | 120 | Comunicaciones Masivas | ✅ | Admin — push + mail |
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **66** | **47%** |
-| 🟡 Parcial | 12 | 9% |
-| ❌ Pendiente/Diferido | 61 | 44% |
+| ✅ Implementado | **68** | **49%** |
+| 🟡 Parcial | 11 | 8% |
+| ❌ Pendiente/Diferido | 60 | 43% |
 | **Total** | **139** | |
 
 ---
@@ -231,4 +231,4 @@
 
 ---
 
-*Última actualización: v24 — MOD 85/86 (Integraciones CRM: `/crm/integraciones` — Tokko Broker, import CSV/Excel, export Excel, historial). Migration 050.*
+*Última actualización: v25 — MOD 2 (MIR PEDIDO URGENTE), MOD 76 (MI ABONO INTELIGENTE bonificaciones), MOD 85 (Kiteprop integration), MOD 116 (.ics export agenda). Migration 051.*
