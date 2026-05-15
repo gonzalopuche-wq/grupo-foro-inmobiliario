@@ -53,7 +53,7 @@ export default function ModeracionPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { router.push("/login"); return; }
       const { data: p } = await supabase.from("perfiles").select("tipo").eq("id", session.user.id).single();
-      if (p?.tipo !== "admin") { router.push("/dashboard"); return; }
+      if (!p || !["admin","master"].includes(p.tipo)) { router.push("/dashboard"); return; }
       setToken(session.access_token);
       await cargarDenuncias(session.access_token, "pendiente");
     };

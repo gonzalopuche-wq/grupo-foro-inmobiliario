@@ -128,7 +128,7 @@ export default function ObservatorioPage() {
         qOf.limit(3000),
         qBus.limit(3000),
         qComps.limit(3000),
-        supabase.from("perfiles").select("id", { count: "exact", head: true }).neq("tipo", "admin"),
+        supabase.from("perfiles").select("id", { count: "exact", head: true }).not("tipo", "in", '("admin","master")'),
       ]);
 
       // --- Process comparables ---

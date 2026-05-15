@@ -429,7 +429,7 @@ export default function PerfilPage() {
             </div>
             <div className="pf-avatar-nombre">{perfil.apellido}, {perfil.nombre}</div>
             {perfil.matricula && <div className="pf-avatar-mat">Mat. {perfil.matricula}</div>}
-            <div className="pf-avatar-tipo">{perfil.tipo === "admin" ? "⚙ Admin" : "Corredor"}</div>
+            <div className="pf-avatar-tipo">{perfil.tipo === "master" ? "★ Máster" : perfil.tipo === "admin" ? "⚙ Admin" : "Corredor"}</div>
             {perfil.estado && (
               <div style={{ marginTop: 6, fontSize: 10, color: perfil.estado === "activo" ? "#22c55e" : "#ff4444", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em" }}>
                 {perfil.estado === "activo" ? "✓ Activo" : perfil.estado}
@@ -837,7 +837,7 @@ export default function PerfilPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {[
-                  { label: "Tipo de cuenta", val: perfil.tipo === "admin" ? "Administrador" : "Corredor matriculado" },
+                  { label: "Tipo de cuenta", val: perfil.tipo === "master" ? "Máster GFI®" : perfil.tipo === "admin" ? "Administrador" : "Corredor matriculado" },
                   { label: "Estado", val: perfil.estado ?? "—" },
                   { label: "Miembro desde", val: formatFecha(perfil.created_at) },
                   { label: "Sesión única", val: "1 dispositivo activo a la vez" },

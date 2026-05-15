@@ -175,7 +175,7 @@ export default function DashboardPage() {
       if (!data.user) { router.push("/login"); return; }
       const uid = data.user.id;
       supabase.from("perfiles").select("tipo").eq("id", uid).single().then(({ data: p }) => {
-        const tipo = p?.tipo === "admin" ? "admin" : p?.tipo === "colaborador" ? "colaborador" : "corredor";
+        const tipo = (p?.tipo === "admin" || p?.tipo === "master") ? "admin" : p?.tipo === "colaborador" ? "colaborador" : "corredor";
         setTipoUsuario(tipo);
         if (tipo === "colaborador") { cargarDashboardColaborador(uid); return; }
         cargarDashboardCompleto(uid);
