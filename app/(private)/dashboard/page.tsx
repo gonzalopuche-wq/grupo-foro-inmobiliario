@@ -289,6 +289,21 @@ export default function DashboardPage() {
     if (regular) return { label: "⛅ Condiciones regulares", color: "#f59e0b", bg: "rgba(245,158,11,0.12)" };
     return { label: "✓ Buen día para mostrar", color: "#22c55e", bg: "rgba(34,197,94,0.12)" };
   };
+  const climaEmoji = (cod: number, icon: string): string => {
+    const night = icon?.endsWith("n");
+    if (cod >= 200 && cod < 300) return "⛈";
+    if (cod >= 300 && cod < 400) return "🌧";
+    if (cod >= 500 && cod < 510) return cod === 500 ? "🌦" : "🌧";
+    if (cod >= 510 && cod < 600) return "🌧";
+    if (cod >= 600 && cod < 700) return "❄️";
+    if (cod === 701 || cod === 711 || cod === 721) return "🌫";
+    if (cod >= 700 && cod < 800) return "🌪";
+    if (cod === 800) return night ? "🌙" : "☀️";
+    if (cod === 801) return night ? "🌙" : "🌤";
+    if (cod === 802) return "⛅";
+    if (cod >= 803) return "☁️";
+    return "🌡";
+  };
 
   const ACCESOS_MIR = [
     { icon: "🔍", label: "Publicar búsqueda", href: "/mir?nuevo=busqueda", primary: true },
@@ -392,7 +407,7 @@ export default function DashboardPage() {
         .db-clima-card { border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: all 0.25s; border: 1px solid rgba(255,255,255,0.08); }
         .db-clima-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
         .db-clima-hero { padding: 18px 18px 12px; display: flex; align-items: flex-start; gap: 12px; position: relative; }
-        .db-clima-icon { width: 72px; height: 72px; flex-shrink: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+        .db-clima-icon { width: 72px; height: 72px; flex-shrink: 0; font-size: 56px; line-height: 72px; text-align: center; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
         .db-clima-info { flex: 1; min-width: 0; }
         .db-clima-ciudad-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
         .db-clima-ciudad { font-size: 10px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); }
@@ -594,7 +609,7 @@ export default function DashboardPage() {
             return (
               <>
                 <div className="db-clima-hero">
-                  <img src={`https://openweathermap.org/img/wn/${clima.icon}@2x.png`} alt={climaDesc} className="db-clima-icon" />
+                  <div className="db-clima-icon" aria-label={climaDesc}>{climaEmoji(clima.codIcono, clima.icon)}</div>
                   <div className="db-clima-info">
                     <div className="db-clima-ciudad-row">
                       {clima.gpsActivo && <span style={{fontSize:10}}>📍</span>}
