@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "../lib/supabase";
 import IAChatFlotante from "./components/IAChatFlotante";
 import AnuncioBanner from "../components/AnuncioBanner";
+import BusquedaGlobal from "./components/BusquedaGlobal";
 
 // ── Nav corredor matriculado (acceso completo) ─────────────────────────────
 const NAV_CORREDOR = [
@@ -40,6 +41,7 @@ const NAV_CORREDOR = [
   { href: "/ideas", label: "Ideas", icon: "💡" },
   { href: "/bolsa-trabajo", label: "Bolsa de Trabajo", icon: "💼" },
   { href: "/foro/memoria", label: "Memoria Colectiva IA", icon: "🧠" },
+  { href: "/onboarding", label: "Primeros pasos", icon: "🚀" },
   { href: "/marketplace", label: "Marketplace", icon: "🏪" },
   { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
   { href: "/agenda", label: "Agenda", icon: "📆" },
@@ -190,6 +192,8 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
               <div className="sidebar-logo-sub">Grupo Foro Inmobiliario</div>
             </div>
           </div>
+
+          <BusquedaGlobal />
 
           <nav className="sidebar-nav">
             {tipoUsuario === "colaborador" && (
