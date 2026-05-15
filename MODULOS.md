@@ -202,7 +202,7 @@
 | 130 | Gestión de Visitas | ✅ | `/crm/visitas` |
 | 131 | Mutual GFI | ❌ | Diferido |
 | 132 | Ranking/Prioridad Pago | ❌ | Diferido |
-| **133** | **Lista Negra / Alertas** | ✅ | **`/crm/lista-negra` — CRUD privado: nombre, DNI/CUIT, tipo, motivo, nivel (bajo/medio/alto), alerta toggle. Filtros por búsqueda y nivel. Migration 053. — `v26`** |
+| 133 | Lista Negra / Alertas | ❌ | Descartado |
 | 134 | Modo Silencioso | 🟡 | Campo en perfil, sin UI completa |
 | 135 | Seguro Integrado | ❌ | Diferido |
 | 136 | Generador de Contratos | ✅ | `/contratos` |
@@ -215,8 +215,8 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **70** | **50%** |
-| 🟡 Parcial | 9 | 6% |
+| ✅ Implementado | **69** | **50%** |
+| 🟡 Parcial | 10 | 7% |
 | ❌ Pendiente/Diferido | 60 | 43% |
 | **Total** | **139** | |
 
@@ -231,4 +231,4 @@
 
 ---
 
-*Última actualización: v26 — MOD 27 (Observatorio del Mercado), MOD 133 (Lista Negra `/crm/lista-negra` — CRUD, niveles, alertas, Migration 053).*
+*Última actualización: v26 — MOD 27 (Observatorio del Mercado). MOD 133 descartado.*
