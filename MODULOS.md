@@ -80,9 +80,9 @@
 
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
-| 53 | Base de Datos Desarrolladores | ✅ | `/emprendimientos` |
-| 54 | Publicación de Proyectos | ✅ | `/emprendimientos` |
-| 55 | Seguimiento de Unidades | ✅ | `/emprendimientos` |
+| **53** | **Base de Datos Desarrolladores** | ✅ | **`/emprendimientos` — marketplace bidireccional: constructoras suben proyectos (tipo=constructora), corredores GFI los ven y venden unidades. Comisión pactada por proyecto. Migration 054. — `v28`** |
+| **54** | **Publicación de Proyectos** | ✅ | **`/emprendimientos` — constructoras publican en marketplace, corredores ven todo con comisión, filtros, búsqueda, contacto directo — `v28`** |
+| **55** | **Seguimiento de Unidades** | ✅ | **`/emprendimientos` — unidades disponibles/total por proyecto, amenities, dormitorios, superficies — `v28`** |
 
 ---
 
@@ -201,7 +201,7 @@
 | 129 | Mail Bidireccional | ✅ | `/crm/emails` |
 | 130 | Gestión de Visitas | ✅ | `/crm/visitas` |
 | 131 | Mutual GFI | ❌ | Diferido |
-| 132 | Ranking/Prioridad Pago | ❌ | Diferido |
+| **132** | **Ranking/Prioridad Pago** | ✅ | **`/admin` — sección de ranking de suscripciones: KPIs, filtros por estado, alerta <15d vencimiento, tabla completa — `v28`** |
 | 133 | Lista Negra / Alertas | ❌ | Descartado |
 | 134 | Modo Silencioso | 🟡 | Campo en perfil, sin UI completa |
 | 135 | Seguro Integrado | ❌ | Diferido |
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **70** | **50%** |
+| ✅ Implementado | **72** | **52%** |
 | 🟡 Parcial | 10 | 7% |
-| ❌ Pendiente/Diferido | 60 | 43% |
+| ❌ Pendiente/Diferido | 57 | 41% |
 | **Total** | **139** | |
 
 ---
@@ -231,4 +231,4 @@
 
 ---
 
-*Última actualización: v27 — MOD 94 (Portal Vendedor `/crm/portal-vendedor` + `/vendor/[token]`). MOD 133 descartado.*
+*Última actualización: v28 — MOD 132 (Ranking/Prioridad de Pago en admin). MODs 53/54/55 refactorizados a marketplace bidireccional constructoras↔corredores. MOD 133 descartado.*

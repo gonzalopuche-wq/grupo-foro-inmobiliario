@@ -1041,7 +1041,9 @@ A partir de esa fecha el costo mensual será de USD 15.
       .select("id, nombre, apellido, matricula, email, categoria, suscripciones(estado, fecha_vencimiento, fecha_confirmacion, periodo, monto_usd, creado_at)")
       .in("tipo", ["corredor", "colaborador"])
       .eq("estado", "aprobado")
+      .order("creado_at", { foreignTable: "suscripciones", ascending: false })
       .order("apellido", { ascending: true });
+    const hoy = new Date();
     const entries: RankingPagoEntry[] = (data ?? []).map((p: any) => {
       const sub = Array.isArray(p.suscripciones) ? p.suscripciones[0] : p.suscripciones;
       return {
@@ -1055,16 +1057,22 @@ A partir de esa fecha el costo mensual será de USD 15.
         creado_at: sub?.creado_at ?? null,
       };
     });
-    // Sort: activa → pendiente → null → vencida
-    const ORDEN: Record<string, number> = { activa: 0, pendiente: 1 };
+    // Sort: activa-vigente → pendiente → sin sub → activa-vencida/rechazada
     entries.sort((a, b) => {
-      const ea = a.estado_sub ?? "z";
-      const eb = b.estado_sub ?? "z";
-      const oa = ORDEN[ea] ?? 2;
-      const ob = ORDEN[eb] ?? 2;
+      const vencA = a.fecha_vencimiento ? new Date(a.fecha_vencimiento) : null;
+      const vencB = b.fecha_vencimiento ? new Date(b.fecha_vencimiento) : null;
+      const activaA = a.estado_sub === "activa" && vencA && vencA >= hoy;
+      const activaB = b.estado_sub === "activa" && vencB && vencB >= hoy;
+      const pendA = a.estado_sub === "pendiente";
+      const pendB = b.estado_sub === "pendiente";
+      const orden = (r: RankingPagoEntry, activa: boolean, pend: boolean) =>
+        activa ? 0 : pend ? 1 : !r.estado_sub ? 2 : 3;
+      const oa = orden(a, !!activaA, pendA);
+      const ob = orden(b, !!activaB, pendB);
       if (oa !== ob) return oa - ob;
-      if (a.fecha_vencimiento && b.fecha_vencimiento)
-        return new Date(a.fecha_vencimiento).getTime() - new Date(b.fecha_vencimiento).getTime();
+      if (vencA && vencB) return vencA.getTime() - vencB.getTime();
+      if (vencA) return -1;
+      if (vencB) return 1;
       return 0;
     });
     setRankingPago(entries);
@@ -2742,9 +2750,12 @@ A partir de esa fecha el costo mensual será de USD 15.
             {loadingRanking ? <div className="adm-loading">Cargando...</div> : (() => {
               const hoy = new Date();
               const filtrados = rankingPago.filter(r => {
-                if (filtroRanking === "activa" && r.estado_sub !== "activa") return false;
-                if (filtroRanking === "pendiente" && r.estado_sub !== "pendiente") return false;
-                if (filtroRanking === "vencida" && r.estado_sub && r.estado_sub !== "rechazado") return false;
+                const vencFiltro = r.fecha_vencimiento ? new Date(r.fecha_vencimiento) : null;
+                const estaActivaFiltro  = r.estado_sub === "activa" && vencFiltro && vencFiltro >= hoy;
+                const estaVencidaFiltro = !r.estado_sub || r.estado_sub === "rechazado" || (r.estado_sub === "activa" && vencFiltro && vencFiltro < hoy);
+                if (filtroRanking === "activa"    && !estaActivaFiltro)               return false;
+                if (filtroRanking === "pendiente" && r.estado_sub !== "pendiente")    return false;
+                if (filtroRanking === "vencida"   && !estaVencidaFiltro)              return false;
                 if (rankingBusqueda) {
                   const q = rankingBusqueda.toLowerCase();
                   if (!(`${r.nombre} ${r.apellido} ${r.matricula ?? ""} ${r.email ?? ""}`.toLowerCase().includes(q))) return false;
