@@ -27,7 +27,7 @@ type ImportTipo = "contactos" | "propiedades";
 
 // Mapeo automático de columnas CSV → campo interno
 const CONTACT_MAP: Record<string, string> = {
-  nombre: "nombre", name: "nombre", "first name": "nombre", "first_name": "nombre", "nombre": "nombre",
+  nombre: "nombre", name: "nombre", "first name": "nombre", "first_name": "nombre",
   apellido: "apellido", surname: "apellido", "last name": "apellido", "last_name": "apellido",
   email: "email", correo: "email", mail: "email",
   telefono: "telefono", phone: "telefono", tel: "telefono", celular: "telefono", móvil: "telefono",
