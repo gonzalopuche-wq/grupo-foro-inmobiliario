@@ -24,6 +24,7 @@ interface EventoPropuesto {
   estado: string;
   organizador_id: string;
   created_at: string;
+  imagen_url?: string | null;
   organizador?: { nombre: string; apellido: string; matricula: string | null; };
 }
 
@@ -336,6 +337,24 @@ export default function AdminPage() {
     setLoadingEvProp(false);
   };
 
+  const publicarEnRedes = async (tipo: "evento"|"noticia"|"curso", id: string, titulo: string, descripcion: string, imagen_url: string | null, link: string) => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) return;
+      const res = await fetch("/api/social/publicar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ tipo, id, titulo, descripcion: descripcion ?? "", imagen_url, link }),
+      });
+      const json = await res.json();
+      const ok = json.results?.filter((r: any) => r.ok).map((r: any) => r.red).join(", ");
+      const err = json.results?.filter((r: any) => !r.ok && r.error !== "Sin configurar").map((r: any) => `${r.red}: ${r.error}`).join(" · ");
+      if (ok) mostrarToast(`📱 Publicado en: ${ok}`);
+      if (err) mostrarToast(`⚠️ ${err}`, "err");
+    } catch { /* silencioso — redes no son críticas */ }
+  };
+
   const aprobarEventoPropuesto = async (ev: EventoPropuesto, cfg: typeof configEvNotif) => {
     setProcesandoEvProp(ev.id);
     await supabase.from("eventos").update({
@@ -354,6 +373,7 @@ export default function AdminPage() {
       mensaje: `Tu evento "${ev.titulo}" fue aprobado y publicado.`,
       leida: false,
     });
+    publicarEnRedes("evento", ev.id, ev.titulo, ev.descripcion ?? "", ev.imagen_url ?? null, `https://foroinmobiliario.com.ar/eventos`);
     setProcesandoEvProp(null);
     setConfigEvId(null);
     cargarEventosPropuestos();
@@ -733,6 +753,7 @@ export default function AdminPage() {
     if (destinatarios && destinatarios.length > 0) {
       await supabase.from("notificaciones").insert(destinatarios.map((p: any) => ({ user_id: p.id, titulo: "📰 Nueva noticia publicada", mensaje: n.titulo, tipo: "noticias", url: "/dashboard" })));
     }
+    publicarEnRedes("noticia", n.id, n.titulo, n.cuerpo ?? "", n.imagen_url ?? null, `https://foroinmobiliario.com.ar/noticias`);
     await cargarNoticias(filtroNot); setProcesandoNot(null);
   };
 
@@ -2406,6 +2427,32 @@ A partir de esa fecha el costo mensual será de USD 15.
                   placeholder="TikTok Access Token"
                   autoComplete="off"
                 />
+              </div>
+
+              <div className="adm-redes-seccion">LinkedIn</div>
+              <div className="adm-redes-grid">
+                <div className="modal-field">
+                  <label className="modal-label">LinkedIn Access Token</label>
+                  <input
+                    className="modal-input"
+                    type="password"
+                    value={redesConfig.linkedin_access_token ?? ""}
+                    onChange={e => setRedesConfig(prev => ({ ...prev, linkedin_access_token: e.target.value }))}
+                    placeholder="Token de LinkedIn (OAuth 2.0)"
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="modal-field">
+                  <label className="modal-label">LinkedIn Organization ID</label>
+                  <input
+                    className="modal-input"
+                    type="text"
+                    value={redesConfig.linkedin_org_id ?? ""}
+                    onChange={e => setRedesConfig(prev => ({ ...prev, linkedin_org_id: e.target.value }))}
+                    placeholder="ID numérico de la página de empresa"
+                    autoComplete="off"
+                  />
+                </div>
               </div>
 
               <button className="adm-redes-btn" onClick={guardarRedes} disabled={guardandoRedes}>
