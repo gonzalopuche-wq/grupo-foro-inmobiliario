@@ -443,6 +443,12 @@ export default function AdminPage() {
     setPerfiles(prev => prev.map(p => p.id === id ? { ...p, categoria } : p));
   };
 
+  const setTipoUser = async (id: string, tipo: string) => {
+    await supabase.from("perfiles").update({ tipo }).eq("id", id);
+    setPerfiles(prev => prev.map(p => p.id === id ? { ...p, tipo } : p));
+    mostrarToast(`Tipo actualizado a "${tipo}"`);
+  };
+
   const setBonificacionUser = async (id: string, bonificacion_pct: number) => {
     if (bonificacion_pct < 0 || bonificacion_pct > 100) return;
     await supabase.from("perfiles").update({ bonificacion_pct }).eq("id", id);
@@ -1755,7 +1761,15 @@ A partir de esa fecha el costo mensual será de USD 15.
                     return (
                     <tr key={p.id}>
                       <td><div className="adm-nombre">{p.apellido}, {p.nombre}</div>{p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}{p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}</td>
-                      <td><span className={`badge badge-${p.tipo}`}>{p.tipo === "corredor" ? "Corredor" : p.tipo === "colaborador" ? "Colaborador" : "Admin"}</span></td>
+                      <td>
+                        <select value={p.tipo} onChange={e => setTipoUser(p.id, e.target.value)}
+                          style={{ background: "#0f172a", color: p.tipo === "constructora" ? "#f97316" : p.tipo === "colaborador" ? "#06b6d4" : "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", width: "100%" }}>
+                          <option value="corredor">Corredor</option>
+                          <option value="colaborador">Colaborador</option>
+                          <option value="constructora">Constructora</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </td>
                       <td>
                         <select
                           value={p.categoria ?? "standard"}
