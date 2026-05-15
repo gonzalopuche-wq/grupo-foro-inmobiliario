@@ -242,6 +242,22 @@ export default async function PropiedadDetailPage({
             </div>
           )}
 
+          {/* Tour Virtual 360° */}
+          {(prop as any).tour_virtual_url && (
+            <div className="p-section">
+              <div className="p-section-titulo">🔮 Recorrida Virtual 360°</div>
+              <div style={{ borderRadius: 10, overflow: "hidden", border: `2px solid ${t.accent}` }}>
+                <iframe
+                  src={(prop as any).tour_virtual_url}
+                  style={{ display: "block", width: "100%", height: 400, border: 0 }}
+                  allowFullScreen
+                  title="Tour virtual 360°"
+                  sandbox="allow-scripts allow-same-origin allow-forms"
+                />
+              </div>
+            </div>
+          )}
+
           {/* Dirección */}
           {prop.direccion && (
             <div className="p-section">

@@ -259,6 +259,30 @@ export default function AdminPage() {
   const [sponsorPlanForm, setSponsorPlanForm] = useState<Record<string, string>>({});
   const [cobrandoSuscripcion, setCobrandoSuscripcion] = useState<string | null>(null);
 
+  // MOD 79 — Logs de Actividad
+  interface LogActividad { id: string; user_id: string | null; accion: string; modulo: string | null; detalle: string | null; ip: string | null; created_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; } | null; }
+  const [logsActividad, setLogsActividad] = useState<LogActividad[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+  const [filtroLogs, setFiltroLogs] = useState<"todos"|"autenticacion"|"pagos"|"crm"|"admin">("todos");
+  const [busquedaLogs, setBusquedaLogs] = useState("");
+
+  // MOD 81/82 — Panel Estratégico y Estadísticas de Uso
+  const [statsEstrategicas, setStatsEstrategicas] = useState<{
+    totalCorredores: number; activosMes: number; nuevosMes: number;
+    totalPropiedades: number; totalMIR: number; totalNegocios: number;
+    ingresosMesUSD: number; suscripcionesActivas: number;
+    topZonas: { zona: string; count: number }[];
+    actividadMensual: { mes: string; nuevos: number }[];
+  } | null>(null);
+  const [loadingEstrategico, setLoadingEstrategico] = useState(true);
+
+  // MOD 132 — Ranking/Prioridad de Pago
+  interface RankingPagoEntry { id: string; nombre: string; apellido: string; matricula: string | null; email: string | null; categoria: string | null; estado_sub: string | null; fecha_vencimiento: string | null; fecha_confirmacion: string | null; periodo: string | null; monto_usd: number | null; creado_at: string | null; }
+  const [rankingPago, setRankingPago] = useState<RankingPagoEntry[]>([]);
+  const [loadingRanking, setLoadingRanking] = useState(true);
+  const [filtroRanking, setFiltroRanking] = useState<"todos"|"activa"|"pendiente"|"vencida">("todos");
+  const [rankingBusqueda, setRankingBusqueda] = useState("");
+
   // WhatsApp
   interface WaGrupo { id: string; nombre: string; grupo_gfi: string; descripcion: string | null; wa_link: string | null; miembros: number; activo: boolean; mensajes_30d: number; procesados_30d: number; }
   interface WaMensaje { id: string; numero_from: string; nombre_from: string | null; perfil_id: string | null; contenido: string; grupo_gfi: string | null; procesado: boolean; mir_entry_id: string | null; mir_tabla: string | null; error_detalle: string | null; created_at: string; }
@@ -279,7 +303,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte(); cargarRedProveedores(); cargarWa();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte(); cargarRedProveedores(); cargarWa(); cargarRankingPago(); cargarLogsActividad(); cargarStatsEstrategicas();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -417,6 +441,12 @@ export default function AdminPage() {
   const setCategoriaUser = async (id: string, categoria: string) => {
     await supabase.from("perfiles").update({ categoria }).eq("id", id);
     setPerfiles(prev => prev.map(p => p.id === id ? { ...p, categoria } : p));
+  };
+
+  const setTipoUser = async (id: string, tipo: string) => {
+    await supabase.from("perfiles").update({ tipo }).eq("id", id);
+    setPerfiles(prev => prev.map(p => p.id === id ? { ...p, tipo } : p));
+    mostrarToast(`Tipo actualizado a "${tipo}"`);
   };
 
   const setBonificacionUser = async (id: string, bonificacion_pct: number) => {
@@ -1027,6 +1057,107 @@ A partir de esa fecha el costo mensual será de USD 15.
     setLoadingWa(false);
   };
 
+  const cargarLogsActividad = async () => {
+    setLoadingLogs(true);
+    const { data } = await supabase
+      .from("logs_actividad")
+      .select("*, perfiles!user_id(nombre, apellido, matricula)")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    setLogsActividad((data ?? []) as LogActividad[]);
+    setLoadingLogs(false);
+  };
+
+  const cargarStatsEstrategicas = async () => {
+    setLoadingEstrategico(true);
+    const ahora = new Date();
+    const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1).toISOString();
+    const [
+      { count: totalCorredores },
+      { count: activosMes },
+      { count: nuevosMes },
+      { count: totalProps },
+      { count: totalMIR },
+      { count: totalNegocios },
+      { data: subActivas },
+      { data: pagosData },
+      { data: zonas },
+    ] = await Promise.all([
+      supabase.from("perfiles").select("id", { count: "exact", head: true }).in("tipo", ["corredor","colaborador"]).eq("estado","aprobado"),
+      supabase.from("logs_actividad").select("id", { count: "exact", head: true }).eq("accion","login").gte("created_at", inicioMes),
+      supabase.from("perfiles").select("id", { count: "exact", head: true }).in("tipo",["corredor","colaborador"]).gte("created_at", inicioMes),
+      supabase.from("crm_propiedades").select("id", { count: "exact", head: true }),
+      supabase.from("mir_ofrecidos").select("id", { count: "exact", head: true }),
+      supabase.from("crm_negocios").select("id", { count: "exact", head: true }),
+      supabase.from("suscripciones").select("id", { count: "exact", head: true }).eq("estado","activa"),
+      supabase.from("suscripciones").select("monto_usd").eq("estado","activa").gte("fecha_confirmacion", inicioMes),
+      supabase.from("crm_propiedades").select("barrio").not("barrio","is",null).limit(500),
+    ]);
+    // Calcular top zonas
+    const zonaCount: Record<string, number> = {};
+    (zonas ?? []).forEach((p: any) => { if (p.barrio) zonaCount[p.barrio] = (zonaCount[p.barrio] ?? 0) + 1; });
+    const topZonas = Object.entries(zonaCount).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([zona, count]) => ({ zona, count }));
+    const ingresosMesUSD = (pagosData ?? []).reduce((s: number, p: any) => s + (p.monto_usd ?? 0), 0);
+    setStatsEstrategicas({
+      totalCorredores: totalCorredores ?? 0,
+      activosMes: activosMes ?? 0,
+      nuevosMes: nuevosMes ?? 0,
+      totalPropiedades: totalProps ?? 0,
+      totalMIR: totalMIR ?? 0,
+      totalNegocios: totalNegocios ?? 0,
+      ingresosMesUSD,
+      suscripcionesActivas: (subActivas as any)?.count ?? 0,
+      topZonas,
+      actividadMensual: [],
+    });
+    setLoadingEstrategico(false);
+  };
+
+  const cargarRankingPago = async () => {
+    setLoadingRanking(true);
+    const { data } = await supabase
+      .from("perfiles")
+      .select("id, nombre, apellido, matricula, email, categoria, suscripciones(estado, fecha_vencimiento, fecha_confirmacion, periodo, monto_usd, creado_at)")
+      .in("tipo", ["corredor", "colaborador"])
+      .eq("estado", "aprobado")
+      .order("creado_at", { foreignTable: "suscripciones", ascending: false })
+      .order("apellido", { ascending: true });
+    const hoy = new Date();
+    const entries: RankingPagoEntry[] = (data ?? []).map((p: any) => {
+      const sub = Array.isArray(p.suscripciones) ? p.suscripciones[0] : p.suscripciones;
+      return {
+        id: p.id, nombre: p.nombre, apellido: p.apellido,
+        matricula: p.matricula, email: p.email, categoria: p.categoria,
+        estado_sub: sub?.estado ?? null,
+        fecha_vencimiento: sub?.fecha_vencimiento ?? null,
+        fecha_confirmacion: sub?.fecha_confirmacion ?? null,
+        periodo: sub?.periodo ?? null,
+        monto_usd: sub?.monto_usd ?? null,
+        creado_at: sub?.creado_at ?? null,
+      };
+    });
+    // Sort: activa-vigente → pendiente → sin sub → activa-vencida/rechazada
+    entries.sort((a, b) => {
+      const vencA = a.fecha_vencimiento ? new Date(a.fecha_vencimiento) : null;
+      const vencB = b.fecha_vencimiento ? new Date(b.fecha_vencimiento) : null;
+      const activaA = a.estado_sub === "activa" && vencA && vencA >= hoy;
+      const activaB = b.estado_sub === "activa" && vencB && vencB >= hoy;
+      const pendA = a.estado_sub === "pendiente";
+      const pendB = b.estado_sub === "pendiente";
+      const orden = (r: RankingPagoEntry, activa: boolean, pend: boolean) =>
+        activa ? 0 : pend ? 1 : !r.estado_sub ? 2 : 3;
+      const oa = orden(a, !!activaA, pendA);
+      const ob = orden(b, !!activaB, pendB);
+      if (oa !== ob) return oa - ob;
+      if (vencA && vencB) return vencA.getTime() - vencB.getTime();
+      if (vencA) return -1;
+      if (vencB) return 1;
+      return 0;
+    });
+    setRankingPago(entries);
+    setLoadingRanking(false);
+  };
+
   const guardarWaGrupo = async () => {
     const session = (await supabase.auth.getSession()).data.session;
     const payload: Record<string, unknown> = {
@@ -1630,7 +1761,15 @@ A partir de esa fecha el costo mensual será de USD 15.
                     return (
                     <tr key={p.id}>
                       <td><div className="adm-nombre">{p.apellido}, {p.nombre}</div>{p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}{p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}</td>
-                      <td><span className={`badge badge-${p.tipo}`}>{p.tipo === "corredor" ? "Corredor" : p.tipo === "colaborador" ? "Colaborador" : "Admin"}</span></td>
+                      <td>
+                        <select value={p.tipo} onChange={e => setTipoUser(p.id, e.target.value)}
+                          style={{ background: "#0f172a", color: p.tipo === "constructora" ? "#f97316" : p.tipo === "colaborador" ? "#06b6d4" : "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", width: "100%" }}>
+                          <option value="corredor">Corredor</option>
+                          <option value="colaborador">Colaborador</option>
+                          <option value="constructora">Constructora</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </td>
                       <td>
                         <select
                           value={p.categoria ?? "standard"}
@@ -2646,6 +2785,260 @@ A partir de esa fecha el costo mensual será de USD 15.
                 )}
               </div>
             )}
+          </div>
+
+          {/* ── RANKING / PRIORIDAD DE PAGO (MOD 132) ── */}
+          <div style={{ marginTop: 40 }}>
+            <div className="adm-header">
+              <h1>Ranking <span>prioridad de pago</span></h1>
+              <p>Estado de suscripciones de todos los corredores activos, ordenados por prioridad de atención.</p>
+            </div>
+
+            {/* KPIs rápidos */}
+            {!loadingRanking && (() => {
+              const hoy = new Date();
+              const activos   = rankingPago.filter(r => r.estado_sub === "activa" && r.fecha_vencimiento && new Date(r.fecha_vencimiento) >= hoy);
+              const porVencer = rankingPago.filter(r => r.estado_sub === "activa" && r.fecha_vencimiento && new Date(r.fecha_vencimiento) < new Date(hoy.getTime() + 15*24*60*60*1000) && new Date(r.fecha_vencimiento) >= hoy);
+              const pendientes = rankingPago.filter(r => r.estado_sub === "pendiente");
+              const sinSub    = rankingPago.filter(r => !r.estado_sub);
+              return (
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
+                  {[
+                    { label: "Activas", val: activos.length, color: "#22c55e", bg: "rgba(34,197,94,0.08)" },
+                    { label: "Vencen en <15d", val: porVencer.length, color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
+                    { label: "Pendientes de confirmación", val: pendientes.length, color: "#eab308", bg: "rgba(234,179,8,0.08)" },
+                    { label: "Sin suscripción", val: sinSub.length, color: "#ef4444", bg: "rgba(239,68,68,0.08)" },
+                    { label: "Total corredores", val: rankingPago.length, color: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.04)" },
+                  ].map(k => (
+                    <div key={k.label} style={{ background: k.bg, border: `1px solid ${k.color}33`, borderRadius: 10, padding: "12px 18px", minWidth: 120 }}>
+                      <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: k.color }}>{k.val}</div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 2 }}>{k.label}</div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
+            {/* Filtros + búsqueda */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
+              {(["todos","activa","pendiente","vencida"] as const).map(f => (
+                <button key={f} onClick={() => setFiltroRanking(f)} style={{ padding: "6px 14px", borderRadius: 6, border: "none", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroRanking === f ? "#cc0000" : "rgba(255,255,255,0.07)", color: filtroRanking === f ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                  {f === "todos" ? "Todos" : f === "activa" ? "✓ Activos" : f === "pendiente" ? "⏳ Pendientes" : "⚠ Sin/Vencidos"}
+                </button>
+              ))}
+              <input
+                placeholder="Buscar corredor..."
+                value={rankingBusqueda}
+                onChange={e => setRankingBusqueda(e.target.value)}
+                style={{ marginLeft: "auto", padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 200 }}
+              />
+            </div>
+
+            {loadingRanking ? <div className="adm-loading">Cargando...</div> : (() => {
+              const hoy = new Date();
+              const filtrados = rankingPago.filter(r => {
+                const vencFiltro = r.fecha_vencimiento ? new Date(r.fecha_vencimiento) : null;
+                const estaActivaFiltro  = r.estado_sub === "activa" && vencFiltro && vencFiltro >= hoy;
+                const estaVencidaFiltro = !r.estado_sub || r.estado_sub === "rechazado" || (r.estado_sub === "activa" && vencFiltro && vencFiltro < hoy);
+                if (filtroRanking === "activa"    && !estaActivaFiltro)               return false;
+                if (filtroRanking === "pendiente" && r.estado_sub !== "pendiente")    return false;
+                if (filtroRanking === "vencida"   && !estaVencidaFiltro)              return false;
+                if (rankingBusqueda) {
+                  const q = rankingBusqueda.toLowerCase();
+                  if (!(`${r.nombre} ${r.apellido} ${r.matricula ?? ""} ${r.email ?? ""}`.toLowerCase().includes(q))) return false;
+                }
+                return true;
+              });
+              if (filtrados.length === 0) return <div className="adm-empty">No hay resultados.</div>;
+              return (
+                <div className="adm-tabla-wrap">
+                  <table className="adm-tabla">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Corredor</th>
+                        <th>Matrícula</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Vencimiento</th>
+                        <th>Período</th>
+                        <th>Monto</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtrados.map((r, idx) => {
+                        const venc = r.fecha_vencimiento ? new Date(r.fecha_vencimiento) : null;
+                        const diasRestantes = venc ? Math.ceil((venc.getTime() - hoy.getTime()) / (1000*60*60*24)) : null;
+                        const estaActiva = r.estado_sub === "activa" && venc && venc >= hoy;
+                        const estaVencida = !r.estado_sub || r.estado_sub === "rechazado" || (r.estado_sub === "activa" && venc && venc < hoy);
+                        const estadoColor = estaActiva ? "#22c55e" : r.estado_sub === "pendiente" ? "#eab308" : "#ef4444";
+                        const estadoBg    = estaActiva ? "rgba(34,197,94,0.12)" : r.estado_sub === "pendiente" ? "rgba(234,179,8,0.12)" : "rgba(239,68,68,0.12)";
+                        const estadoLabel = estaActiva ? "Activa" : r.estado_sub === "pendiente" ? "Pendiente" : estaVencida && venc && venc < hoy ? "Vencida" : "Sin suscripción";
+                        const catConf = CATEGORIAS.find(c => c.value === r.categoria);
+                        return (
+                          <tr key={r.id}>
+                            <td style={{ color: "rgba(255,255,255,0.25)", fontSize: 12, fontWeight: 700 }}>{idx + 1}</td>
+                            <td>
+                              <div style={{ fontWeight: 600, fontSize: 13, color: "#fff" }}>{r.apellido}, {r.nombre}</div>
+                              {r.email && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{r.email}</div>}
+                            </td>
+                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>{r.matricula ?? "—"}</td>
+                            <td>
+                              {catConf
+                                ? <span style={{ padding: "2px 8px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${catConf.color}22`, color: catConf.color }}>{catConf.label}</span>
+                                : <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 12 }}>—</span>}
+                            </td>
+                            <td>
+                              <span style={{ padding: "3px 10px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: estadoBg, color: estadoColor }}>{estadoLabel}</span>
+                              {diasRestantes !== null && estaActiva && diasRestantes <= 15 && (
+                                <div style={{ fontSize: 10, color: "#f59e0b", marginTop: 2 }}>⚠ {diasRestantes}d restantes</div>
+                              )}
+                            </td>
+                            <td style={{ fontSize: 12, color: venc && venc < hoy ? "#ef4444" : "rgba(255,255,255,0.6)" }}>
+                              {r.fecha_vencimiento ? new Date(r.fecha_vencimiento).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
+                            </td>
+                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{r.periodo ?? "—"}</td>
+                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>
+                              {r.monto_usd != null ? `USD ${r.monto_usd}` : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* ── PANEL ESTRATÉGICO + ESTADÍSTICAS DE USO (MODs 81/82) ── */}
+          <div style={{ marginTop: 40 }}>
+            <div className="adm-header">
+              <h1>Panel <span>estratégico</span></h1>
+              <p>KPIs clave de la plataforma: crecimiento, actividad, ingresos y engagement.</p>
+            </div>
+
+            {loadingEstrategico ? <div className="adm-loading">Calculando KPIs...</div> : statsEstrategicas && (() => {
+              const s = statsEstrategicas;
+              const kpis = [
+                { label: "Corredores activos", val: s.totalCorredores, icon: "👥", color: "#3b82f6", bg: "rgba(59,130,246,0.08)" },
+                { label: "Suscripciones activas", val: s.suscripcionesActivas, icon: "✅", color: "#22c55e", bg: "rgba(34,197,94,0.08)" },
+                { label: "Nuevos este mes", val: s.nuevosMes, icon: "🆕", color: "#a78bfa", bg: "rgba(167,139,250,0.08)" },
+                { label: "Ingresos confirmados este mes", val: `USD ${s.ingresosMesUSD.toFixed(0)}`, icon: "💰", color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
+                { label: "Propiedades en CRM", val: s.totalPropiedades, icon: "🏠", color: "#06b6d4", bg: "rgba(6,182,212,0.08)" },
+                { label: "Entradas MIR", val: s.totalMIR, icon: "⚡", color: "#eab308", bg: "rgba(234,179,8,0.08)" },
+                { label: "Negocios totales", val: s.totalNegocios, icon: "🤝", color: "#cc0000", bg: "rgba(204,0,0,0.08)" },
+                { label: "Logins este mes", val: s.activosMes, icon: "🔐", color: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.04)" },
+              ];
+              return (
+                <div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12, marginBottom: 24 }}>
+                    {kpis.map(k => (
+                      <div key={k.label} style={{ background: k.bg, border: `1px solid ${k.color}33`, borderRadius: 10, padding: "14px 16px" }}>
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>{k.icon} {k.label}</div>
+                        <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: k.color }}>{k.val}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {s.topZonas.length > 0 && (
+                    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "16px 20px" }}>
+                      <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>Top barrios por propiedades</div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {s.topZonas.map((z, i) => {
+                          const pct = s.topZonas[0].count > 0 ? Math.round((z.count / s.topZonas[0].count) * 100) : 0;
+                          return (
+                            <div key={z.zona} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <div style={{ width: 20, fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{i + 1}</div>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                                  <span style={{ fontSize: 12, color: "#fff" }}>{z.zona}</span>
+                                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{z.count}</span>
+                                </div>
+                                <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
+                                  <div style={{ height: "100%", width: `${pct}%`, background: "#cc0000", borderRadius: 2 }} />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* ── LOGS DE ACTIVIDAD (MOD 79) ── */}
+          <div style={{ marginTop: 40 }}>
+            <div className="adm-header">
+              <h1>Logs de <span>actividad</span></h1>
+              <p>Registro de eventos del sistema. Últimas 200 entradas.</p>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
+              {(["todos","autenticacion","pagos","crm","admin"] as const).map(f => (
+                <button key={f} onClick={() => setFiltroLogs(f)} style={{ padding: "6px 14px", borderRadius: 6, border: "none", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroLogs === f ? "#cc0000" : "rgba(255,255,255,0.07)", color: filtroLogs === f ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                  {f === "todos" ? "Todos" : f === "autenticacion" ? "🔐 Auth" : f === "pagos" ? "💰 Pagos" : f === "crm" ? "📋 CRM" : "⚙ Admin"}
+                </button>
+              ))}
+              <input
+                placeholder="Buscar acción o usuario..."
+                value={busquedaLogs}
+                onChange={e => setBusquedaLogs(e.target.value)}
+                style={{ marginLeft: "auto", padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 220 }}
+              />
+              <button onClick={cargarLogsActividad} style={{ padding: "6px 12px", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.5)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>↻ Actualizar</button>
+            </div>
+
+            {loadingLogs ? <div className="adm-loading">Cargando logs...</div> : (() => {
+              const filtrados = logsActividad.filter(l => {
+                if (filtroLogs !== "todos" && l.modulo !== filtroLogs) return false;
+                if (busquedaLogs) {
+                  const q = busquedaLogs.toLowerCase();
+                  const nombre = l.perfiles ? `${l.perfiles.nombre} ${l.perfiles.apellido}` : "";
+                  if (!(`${l.accion} ${nombre} ${l.detalle ?? ""}`.toLowerCase().includes(q))) return false;
+                }
+                return true;
+              });
+              if (filtrados.length === 0) return (
+                <div className="adm-empty">
+                  {logsActividad.length === 0
+                    ? "No hay logs registrados aún. Se irán generando automáticamente con el uso del sistema."
+                    : "No hay logs que coincidan con el filtro."}
+                </div>
+              );
+              const MODULO_COLOR: Record<string, string> = {
+                autenticacion: "#3b82f6", pagos: "#22c55e", crm: "#f59e0b", admin: "#cc0000",
+              };
+              return (
+                <div className="adm-tabla-wrap">
+                  <table className="adm-tabla">
+                    <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Módulo</th><th>Detalle</th></tr></thead>
+                    <tbody>
+                      {filtrados.slice(0, 100).map(l => (
+                        <tr key={l.id}>
+                          <td style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>{new Date(l.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</td>
+                          <td>
+                            {l.perfiles ? (
+                              <div>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>{l.perfiles.nombre} {l.perfiles.apellido}</div>
+                                {l.perfiles.matricula && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>Mat. {l.perfiles.matricula}</div>}
+                              </div>
+                            ) : <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 12 }}>Sistema</span>}
+                          </td>
+                          <td style={{ fontSize: 12, color: "#fff", fontWeight: 600 }}>{l.accion}</td>
+                          <td>{l.modulo && <span style={{ padding: "2px 8px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${MODULO_COLOR[l.modulo] ?? "#6b7280"}22`, color: MODULO_COLOR[l.modulo] ?? "#6b7280" }}>{l.modulo}</span>}</td>
+                          <td style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.detalle ?? "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {filtrados.length > 100 && <div style={{ textAlign: "center", padding: "12px 0", fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Mostrando 100 de {filtrados.length} entradas. Usá el filtro para acotar.</div>}
+                </div>
+              );
+            })()}
           </div>
 
         </main>

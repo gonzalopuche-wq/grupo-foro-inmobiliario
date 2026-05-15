@@ -12,6 +12,8 @@ interface Clima {
   desc: string; icon: string; sensacion: number;
   humedad: number; viento: number; ciudad: string;
   lat: number; lon: number; gpsActivo: boolean;
+  presion: number; visibilidad: number; nubes: number;
+  windDeg: number; precipitacion: number; codIcono: number;
 }
 interface HistItem { periodo: string; valor: number; }
 interface Acum { mensual: number | null; trimestral: number | null; cuatrimestral: number | null; semestral: number | null; }
@@ -102,13 +104,32 @@ export default function DashboardPage() {
     });
   };
 
+  const parseClima = (d: any, lat: number, lon: number, gpsActivo: boolean, ciudadFallback?: string): Clima => ({
+    temp: Math.round(d.main.temp),
+    tempMin: Math.round(d.main.temp_min),
+    tempMax: Math.round(d.main.temp_max),
+    desc: d.weather?.[0]?.description ?? "",
+    icon: d.weather?.[0]?.icon ?? "01d",
+    codIcono: d.weather?.[0]?.id ?? 800,
+    sensacion: Math.round(d.main.feels_like),
+    humedad: d.main.humidity,
+    viento: Math.round((d.wind?.speed ?? 0) * 3.6),
+    windDeg: d.wind?.deg ?? 0,
+    ciudad: d.name ?? ciudadFallback ?? "Tu ubicación",
+    lat, lon, gpsActivo,
+    presion: d.main.pressure ?? 1013,
+    visibilidad: Math.round((d.visibility ?? 10000) / 1000),
+    nubes: d.clouds?.all ?? 0,
+    precipitacion: Math.round(((d.rain?.["1h"] ?? d.snow?.["1h"] ?? 0)) * 10) / 10,
+  });
+
   const fetchClimaPorCoords = async (lat: number, lon: number, gpsActivo: boolean) => {
     setClimaLoading(true); setClimaError(false);
     try {
       const r = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric&lang=es`);
       const d = await r.json();
       if (d.cod && d.cod !== 200) throw new Error(d.message);
-      setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: d.weather?.[0]?.icon ?? "01d", sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? "Tu ubicación", lat, lon, gpsActivo });
+      setClima(parseClima(d, lat, lon, gpsActivo));
     } catch { setClimaError(true); }
     setClimaLoading(false);
   };
@@ -121,7 +142,7 @@ export default function DashboardPage() {
       const r = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(ciudad)}&appid=${OWM_KEY}&units=metric&lang=es`);
       const d = await r.json();
       if (d.cod && d.cod !== 200) throw new Error(d.message);
-      setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: d.weather?.[0]?.icon ?? "01d", sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? ciudad, lat: d.coord?.lat ?? 0, lon: d.coord?.lon ?? 0, gpsActivo: false });
+      setClima(parseClima(d, d.coord?.lat ?? 0, d.coord?.lon ?? 0, false, ciudad));
       localStorage.setItem("gfi_ciudad_clima", ciudad);
       setMostrarCiudadInput(false); setCiudadInput("");
     } catch { setClimaError(true); }
@@ -203,7 +224,7 @@ export default function DashboardPage() {
           fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(ciudad)}&appid=${OWM_KEY}&units=metric&lang=es`)
             .then(r => r.json()).then(d => {
               if (d.cod && d.cod !== 200) { setClimaError(true); setClimaLoading(false); return; }
-              setClima({ temp: Math.round(d.main.temp), tempMin: Math.round(d.main.temp_min), tempMax: Math.round(d.main.temp_max), desc: d.weather?.[0]?.description ?? "", icon: d.weather?.[0]?.icon ?? "01d", sensacion: Math.round(d.main.feels_like), humedad: d.main.humidity, viento: Math.round(d.wind.speed * 3.6), ciudad: d.name ?? ciudad, lat: d.coord?.lat ?? 0, lon: d.coord?.lon ?? 0, gpsActivo: false });
+              setClima(parseClima(d, d.coord?.lat ?? 0, d.coord?.lon ?? 0, false, ciudad));
               setClimaLoading(false);
             }).catch(() => { setClimaError(true); setClimaLoading(false); });
         }, { timeout: 5000 }
@@ -242,6 +263,32 @@ export default function DashboardPage() {
   const formatPeso = (n: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
   const climaDesc = clima?.desc ? clima.desc.charAt(0).toUpperCase() + clima.desc.slice(1) : "";
   const colorAcum = (n: number | null) => n !== null ? (n > 0 ? "#f87171" : "#22c55e") : "rgba(255,255,255,0.3)";
+
+  // Weather helpers
+  const windDirStr = (deg: number) => { const dirs = ["N","NE","E","SE","S","SO","O","NO"]; return dirs[Math.round(deg / 45) % 8]; };
+  const climaGradient = (t: number) => {
+    if (t < 5)  return "linear-gradient(135deg, #0f2744 0%, #1a3a5c 100%)";
+    if (t < 15) return "linear-gradient(135deg, #0e2d3d 0%, #164e63 100%)";
+    if (t < 22) return "linear-gradient(135deg, #0a2a1f 0%, #134e2c 100%)";
+    if (t < 28) return "linear-gradient(135deg, #2a1e00 0%, #4a3300 100%)";
+    if (t < 33) return "linear-gradient(135deg, #3a1200 0%, #6b2800 100%)";
+    return "linear-gradient(135deg, #4a0900 0%, #7a0f00 100%)";
+  };
+  const climaTempColor = (t: number) => {
+    if (t < 5)  return "#60a5fa";
+    if (t < 15) return "#22d3ee";
+    if (t < 22) return "#34d399";
+    if (t < 28) return "#fbbf24";
+    if (t < 33) return "#f97316";
+    return "#ef4444";
+  };
+  const climaCalidad = (c: Clima) => {
+    const malo = c.precipitacion > 0 || c.viento > 50 || [200,201,202,210,211,212,221,230,231,232,300,301,302,310,311,312,313,314,321,500,501,502,503,504,511,520,521,522,531,600,601,602,611,612,613,615,616,620,621,622,701,711,721,731,741,751,761,762,771,781].includes(c.codIcono);
+    const regular = c.viento > 30 || c.visibilidad < 5 || c.humedad > 85 || c.nubes > 80;
+    if (malo) return { label: "⛈ No ideal para visitas", color: "#ef4444", bg: "rgba(239,68,68,0.12)" };
+    if (regular) return { label: "⛅ Condiciones regulares", color: "#f59e0b", bg: "rgba(245,158,11,0.12)" };
+    return { label: "✓ Buen día para mostrar", color: "#22c55e", bg: "rgba(34,197,94,0.12)" };
+  };
 
   const ACCESOS_MIR = [
     { icon: "🔍", label: "Publicar búsqueda", href: "/mir?nuevo=busqueda", primary: true },
@@ -342,22 +389,29 @@ export default function DashboardPage() {
         .db-hoy-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
         .db-hoy-num { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 800; color: #cc0000; line-height: 1; }
         .db-hoy-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
-        .db-clima-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
-        .db-clima-card:hover { border-color: rgba(255,255,255,0.15); }
-        .db-clima-main { padding: 16px 18px 10px; display: flex; align-items: center; gap: 10px; }
-        .db-clima-icon { width: 64px; height: 64px; flex-shrink: 0; }
+        .db-clima-card { border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: all 0.25s; border: 1px solid rgba(255,255,255,0.08); }
+        .db-clima-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+        .db-clima-hero { padding: 18px 18px 12px; display: flex; align-items: flex-start; gap: 12px; position: relative; }
+        .db-clima-icon { width: 72px; height: 72px; flex-shrink: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
         .db-clima-info { flex: 1; min-width: 0; }
-        .db-clima-temp { font-family: 'Montserrat', sans-serif; font-size: 40px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.02em; }
-        .db-clima-desc { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
-        .db-clima-minmax { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
-        .db-clima-footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 8px 18px; display: flex; align-items: center; justify-content: space-between; }
-        .db-clima-detalles { display: flex; gap: 12px; }
-        .db-clima-det { font-size: 10px; color: rgba(255,255,255,0.35); }
-        .db-clima-ciudad { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.2); }
-        .db-clima-hora { font-size: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: rgba(255,255,255,0.45); text-align: center; padding: 8px 18px; border-top: 1px solid rgba(255,255,255,0.05); letter-spacing: 0.04em; }
-        .db-clima-ciudad-btn { background: none; border: none; color: rgba(200,0,0,0.6); font-size: 10px; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; padding: 6px 18px; width: 100%; transition: color 0.2s; }
+        .db-clima-ciudad-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .db-clima-ciudad { font-size: 10px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+        .db-clima-temp { font-family: 'Montserrat', sans-serif; font-size: 48px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+        .db-clima-desc { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 3px; font-style: italic; }
+        .db-clima-minmax { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 3px; display: flex; gap: 8px; }
+        .db-clima-minmax span.up { color: #fca5a5; }
+        .db-clima-minmax span.dn { color: #93c5fd; }
+        .db-clima-hora-badge { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; color: rgba(255,255,255,0.9); letter-spacing: 0.05em; position: absolute; top: 18px; right: 18px; }
+        .db-clima-calidad { margin: 0 14px 10px; padding: 5px 12px; border-radius: 20px; font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.05em; text-align: center; }
+        .db-clima-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border-top: 1px solid rgba(255,255,255,0.08); }
+        .db-clima-stat { padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; border-right: 1px solid rgba(255,255,255,0.06); }
+        .db-clima-stat:last-child { border-right: none; }
+        .db-clima-stat-val { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; }
+        .db-clima-stat-label { font-size: 8px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .db-clima-stats2 { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border-top: 1px solid rgba(255,255,255,0.06); }
+        .db-clima-ciudad-btn { background: none; border: none; border-top: 1px solid rgba(255,255,255,0.05); color: rgba(200,0,0,0.6); font-size: 10px; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; padding: 7px 18px; width: 100%; transition: color 0.2s; }
         .db-clima-ciudad-btn:hover { color: #cc0000; }
-        .db-ciudad-form { display: flex; gap: 6px; padding: 8px 14px; background: rgba(255,255,255,0.03); border-top: 1px solid rgba(255,255,255,0.06); }
+        .db-ciudad-form { display: flex; gap: 6px; padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.06); }
         .db-ciudad-input { flex: 1; padding: 7px 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #fff; font-size: 12px; outline: none; font-family: 'Inter', sans-serif; }
         .db-ciudad-input:focus { border-color: #cc0000; }
         .db-ciudad-input::placeholder { color: rgba(255,255,255,0.25); }
@@ -514,44 +568,90 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="db-clima-card" onClick={abrirClima}>
+        <div className="db-clima-card"
+          style={{ background: clima ? climaGradient(clima.temp) : "rgba(14,14,14,0.9)" }}
+          onClick={abrirClima}>
           {climaLoading ? (
-            <div className="db-clima-main">
-              <div className="skeleton" style={{width:64,height:64,borderRadius:8,flexShrink:0}}/>
+            <div className="db-clima-hero">
+              <div className="skeleton" style={{width:72,height:72,borderRadius:12,flexShrink:0}}/>
               <div style={{flex:1}}>
-                <div className="skeleton" style={{width:70,height:40,borderRadius:4,marginBottom:6}}/>
-                <div className="skeleton" style={{width:90,height:12,borderRadius:4}}/>
+                <div className="skeleton" style={{width:55,height:14,borderRadius:4,marginBottom:8}}/>
+                <div className="skeleton" style={{width:80,height:46,borderRadius:6,marginBottom:6}}/>
+                <div className="skeleton" style={{width:100,height:12,borderRadius:4}}/>
               </div>
             </div>
           ) : climaError || !clima ? (
-            <div className="db-clima-main">
-              <div style={{fontSize:48,flexShrink:0}}>🌡️</div>
-              <div><div className="db-clima-temp" style={{fontSize:18}}>Sin datos</div><div className="db-clima-desc">No disponible</div></div>
+            <div className="db-clima-hero">
+              <div style={{fontSize:56,flexShrink:0}}>🌡️</div>
+              <div>
+                <div className="db-clima-temp" style={{fontSize:20,color:"rgba(255,255,255,0.5)"}}>Sin datos</div>
+                <div className="db-clima-desc">No disponible</div>
+              </div>
             </div>
-          ) : (
-            <>
-              <div className="db-clima-main">
-                <img src={`https://openweathermap.org/img/wn/${clima.icon}@2x.png`} alt={climaDesc} className="db-clima-icon" style={{filter:"brightness(1.2) contrast(1.1)"}} />
-                <div className="db-clima-info">
-                  <div className="db-clima-temp">{clima.temp}°</div>
-                  <div className="db-clima-desc">{climaDesc}</div>
-                  <div className="db-clima-minmax">↓{clima.tempMin}° · ↑{clima.tempMax}°</div>
+          ) : ((() => {
+            const calidad = climaCalidad(clima);
+            const tc = climaTempColor(clima.temp);
+            return (
+              <>
+                <div className="db-clima-hero">
+                  <img src={`https://openweathermap.org/img/wn/${clima.icon}@2x.png`} alt={climaDesc} className="db-clima-icon" />
+                  <div className="db-clima-info">
+                    <div className="db-clima-ciudad-row">
+                      {clima.gpsActivo && <span style={{fontSize:10}}>📍</span>}
+                      <span className="db-clima-ciudad">{clima.ciudad}</span>
+                    </div>
+                    <div className="db-clima-temp" style={{color:tc}}>{clima.temp}°<span style={{fontSize:20,fontWeight:400,opacity:0.5}}>C</span></div>
+                    <div className="db-clima-desc">{climaDesc}</div>
+                    <div className="db-clima-minmax">
+                      <span className="dn">↓ {clima.tempMin}°</span>
+                      <span className="up">↑ {clima.tempMax}°</span>
+                      <span style={{color:"rgba(255,255,255,0.3)"}}>ST {clima.sensacion}°</span>
+                    </div>
+                  </div>
+                  <div className="db-clima-hora-badge">{hora}</div>
                 </div>
-              </div>
-              <div className="db-clima-footer">
-                <div className="db-clima-detalles">
-                  <span className="db-clima-det">💧 {clima.humedad}%</span>
-                  <span className="db-clima-det">💨 {clima.viento}km/h</span>
-                  <span className="db-clima-det">🌡 ST {clima.sensacion}°</span>
+
+                <div className="db-clima-calidad" style={{color:calidad.color, background:calidad.bg}}>
+                  {calidad.label}
                 </div>
-                <span className="db-clima-ciudad">{clima.gpsActivo ? "📍 " : ""}{clima.ciudad}</span>
-              </div>
-              <div className="db-clima-hora">{hora}</div>
-            </>
-          )}
+
+                <div className="db-clima-stats">
+                  <div className="db-clima-stat">
+                    <span className="db-clima-stat-val" style={{color:"#60a5fa"}}>💧 {clima.humedad}%</span>
+                    <span className="db-clima-stat-label">Humedad</span>
+                  </div>
+                  <div className="db-clima-stat">
+                    <span className="db-clima-stat-val" style={{color:"#a5f3fc"}}>💨 {clima.viento}<span style={{fontSize:9}}> km/h</span></span>
+                    <span className="db-clima-stat-label">{windDirStr(clima.windDeg)} · Viento</span>
+                  </div>
+                  <div className="db-clima-stat">
+                    <span className="db-clima-stat-val" style={{color:"#c4b5fd"}}>☁️ {clima.nubes}%</span>
+                    <span className="db-clima-stat-label">Nubosidad</span>
+                  </div>
+                </div>
+
+                <div className="db-clima-stats2">
+                  <div className="db-clima-stat">
+                    <span className="db-clima-stat-val" style={{color:"#fde68a"}}>🌡 {clima.presion}<span style={{fontSize:9}}> hPa</span></span>
+                    <span className="db-clima-stat-label">Presión</span>
+                  </div>
+                  <div className="db-clima-stat">
+                    <span className="db-clima-stat-val" style={{color:"#86efac"}}>👁 {clima.visibilidad}<span style={{fontSize:9}}> km</span></span>
+                    <span className="db-clima-stat-label">Visibilidad</span>
+                  </div>
+                  <div className="db-clima-stat">
+                    <span className="db-clima-stat-val" style={{color: clima.precipitacion > 0 ? "#7dd3fc" : "rgba(255,255,255,0.3)"}}>
+                      🌧 {clima.precipitacion > 0 ? `${clima.precipitacion} mm` : "—"}
+                    </span>
+                    <span className="db-clima-stat-label">Precipit.</span>
+                  </div>
+                </div>
+              </>
+            );
+          })())}
           {!mostrarCiudadInput ? (
             <button className="db-clima-ciudad-btn" onClick={e => { e.stopPropagation(); setMostrarCiudadInput(true); }}>
-              {clima ? "Cambiar ciudad" : "Ingresar ciudad"}
+              {clima ? "📍 Cambiar ciudad" : "Ingresar ciudad"}
             </button>
           ) : (
             <div className="db-ciudad-form" onClick={e => e.stopPropagation()}>

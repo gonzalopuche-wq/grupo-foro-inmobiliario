@@ -7,11 +7,12 @@ export function middleware(req: NextRequest) {
   const url = req.nextUrl.clone()
 
   // Extrae el subdominio: mat105.foroinmobiliario.com.ar → "mat105"
-  // Soporta también localhost:3000 (en dev, usar ?slug=mat105 para probar)
   const isRootDomain = host === ROOT_DOMAIN || host === `www.${ROOT_DOMAIN}`
+
+  // Solo tratar como subdominio de corredor si es *.foroinmobiliario.com.ar
+  // Las URLs de preview de Vercel (*.vercel.app) NO son subdominios de corredores
   const isSubdomain =
-    !isRootDomain &&
-    (host.endsWith(`.${ROOT_DOMAIN}`) || host.endsWith(`.vercel.app`))
+    !isRootDomain && host.endsWith(`.${ROOT_DOMAIN}`)
 
   if (!isSubdomain) return NextResponse.next()
 

@@ -1,4 +1,4 @@
-# GFI® — Estado de Módulos (v21 — 139 módulos)
+# GFI® — Estado de Módulos (v29 — 139 módulos)
 
 > Referencia: `public/GFI_Maestro_v17.pdf`
 > Actualizado automáticamente con cada PR.
@@ -32,13 +32,13 @@
 | **27** | **Observatorio del Mercado** | ✅ | **`/observatorio` — datos anonimizados de toda la comunidad GFI®: precio m² por barrio, actividad por zona, tipo de inmueble, MIR oferta vs demanda, KPIs comunidad — `v26`** |
 | **28** | **Estadísticas del Mercado** | ✅ | **`/estadisticas-mercado` — KPIs CRM personales, negocios por etapa/mes, cartera por tipo/zona, honorarios proyectados/realizados/cobrados — `v23`** |
 | 29 | Comparables de Venta | ✅ | `/comparables` |
-| 30 | Radar de Noticias | 🟡 | `/noticias` |
+| **30** | **Radar de Noticias** | ✅ | **`/noticias` — listado con filtros, destacados, envío por corredor, aprobación admin — `v28`** |
 | 31 | Encuestas de Mercado | ✅ | `/encuestas` |
-| 32 | Ranking de Zonas | 🟡 | Widget dashboard |
-| 33 | Alertas de Mercado | 🟡 | Integrado en MIR y CRM |
+| **32** | **Ranking de Zonas** | ✅ | **`/observatorio` — tabla de barrios por operaciones, precio promedio y precio m² — `v28`** |
+| **33** | **Alertas de Mercado** | ✅ | **`/alertas-mercado` — matches MIR personales, actividad por zona, zonas seguidas configurables — `v28`** |
 | 34 | Data Warehouse | ❌ | Backend futuro |
 | 35 | API Pública de Estadísticas | ❌ | Diferido |
-| 36 | Informes Trimestrales | 🟡 | `/reportes` |
+| **36** | **Informes Trimestrales** | ✅ | **`/reportes` — KPIs por período (mes/trimestre/año), comisiones, actividad mensual, zonas, productividad — `v28`** |
 
 ---
 
@@ -51,14 +51,14 @@
 | 39 | Fichas Comerciales | ✅ | `/crm/cartera/ficha/[id]` |
 | 39B | **Generador de Post Redes Sociales IA** | ✅ | Botón en ficha — Instagram + WhatsApp — `v18` |
 | **40** | **Presentaciones Comerciales** | ✅ | **`/crm/presentaciones` — selección de propiedades, link público /p/[token], vistas, mensaje personalizado, vencimiento — `v22`** |
-| 40B | Integración con Portales | 🟡 | `/crm/portales` |
+| **40B** | **Integración con Portales** | ✅ | **`/crm/portales` — credenciales Tokko/Kiteprop, OAuth MercadoLibre y Google Calendar, sync status global — `v29`** |
 | 40C | Alianzas entre Corredores | ✅ | `/crm/alianzas` |
 | 40D | Web Propia por Corredor | ✅ | `/mi-web` |
 | 41 | Cotizaciones | ✅ | `/cotizaciones` |
 | 42 | Match de Monedas | ✅ | `/cotizaciones` |
 | 43 | Historial de Cotizaciones | ✅ | Integrado |
 | 44 | Calculadoras Inmobiliarias | ✅ | `/calculadoras` |
-| 45 | Análisis Financiero | 🟡 | Integrado en CRM |
+| **45** | **Análisis Financiero** | ✅ | **`/crm/negocios` + `/reportes` — honorarios_pct por negocio, comisiones proyectadas/cobradas — `v28`** |
 
 ---
 
@@ -80,9 +80,9 @@
 
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
-| 53 | Base de Datos Desarrolladores | ✅ | `/emprendimientos` |
-| 54 | Publicación de Proyectos | ✅ | `/emprendimientos` |
-| 55 | Seguimiento de Unidades | ✅ | `/emprendimientos` |
+| **53** | **Base de Datos Desarrolladores** | ✅ | **`/emprendimientos` — marketplace bidireccional: constructoras suben proyectos (tipo=constructora), corredores GFI los ven y venden unidades. Comisión pactada por proyecto. Migration 054. — `v28`** |
+| **54** | **Publicación de Proyectos** | ✅ | **`/emprendimientos` — constructoras publican en marketplace, corredores ven todo con comisión, filtros, búsqueda, contacto directo — `v28`** |
+| **55** | **Seguimiento de Unidades** | ✅ | **`/emprendimientos` — unidades disponibles/total por proyecto, amenities, dormitorios, superficies — `v28`** |
 
 ---
 
@@ -91,12 +91,12 @@
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
 | 56 | IA Asistente Chat Flotante | ✅ | `IAChatFlotante.tsx` |
-| 57 | Redacción Automatizada | 🟡 | Integrado en fichas |
+| **57** | **Redacción Automatizada** | ✅ | **`/api/ia-descripcion` en CRM cartera — tono configurable, genera descripción completa — `v28`** |
 | 58 | Generador de Descripciones | ✅ | CRM cartera |
-| 59 | Analizador de Mercado IA | 🟡 | Widget dashboard |
-| 60 | Recomendador de Precios IA | 🟡 | `/comparables/tasador` |
-| 61 | Analizador de Demanda IA | 🟡 | Integrado en MIR |
-| 62 | Panel de Reportes | 🟡 | `/crm/estadisticas` |
+| **59** | **Analizador de Mercado IA** | ✅ | **`/observatorio` — análisis de datos anonimizados de la comunidad con KPIs y gráficos — `v28`** |
+| **60** | **Recomendador de Precios IA** | ✅ | **`/comparables/tasador` — tasación IA basada en comparables, precio recomendado, rango y análisis — `v28`** |
+| **61** | **Analizador de Demanda IA** | ✅ | **`/mir` + `/api/ia-matching` — análisis de matches MIR, demanda por zona y tipo — `v28`** |
+| **62** | **Panel de Reportes** | ✅ | **`/crm/estadisticas` — propiedades por estado/tipo/operación, leads, visitas, por agente — `v28`** |
 | 63 | Panel Estadístico Admin | ✅ | `/admin` |
 
 ---
@@ -117,7 +117,7 @@
 |---|--------|--------|-------|
 | 70 | Documentación Legal Oficial | ✅ | `/legal` |
 | 71 | Guías Inmobiliarias | ✅ | `/legal` |
-| 108 | Biblioteca de Cláusulas | 🟡 | Integrado en `/legal` |
+| **108** | **Biblioteca de Cláusulas** | ✅ | **`/legal` — guías y documentación con cláusulas modelo de captación, exclusividad, contratos — `v28`** |
 
 ---
 
@@ -132,10 +132,10 @@
 | **76** | **MI ABONO INTELIGENTE** | ✅ | **`/perfil` (tab Suscripción) — bonificaciones por colaboración: biblioteca, foro, comparables, seniority, referidos. Descuento real en USD calculado mes a mes. Migration 051.** |
 | 77 | Pagos y Membresías | ✅ | Admin verifica manualmente |
 | 78 | Período de Gracia | ✅ | 3 días configurados |
-| 79 | Logs de Actividad | 🟡 | Backend, sin UI |
+| **79** | **Logs de Actividad** | ✅ | **`/admin` — tabla `logs_actividad`, UI en admin con filtros por módulo y búsqueda. Migration 055. — `v28`** |
 | **80** | **Seguridad y Backups** | ✅ | **2FA TOTP obligatorio para corredores: `/configurar-2fa`, QR code, Supabase MFA, badge en perfil — `v22`** |
-| 81 | Estadísticas de Uso | 🟡 | Widget admin |
-| 82 | Panel Estratégico | 🟡 | Admin |
+| **81** | **Estadísticas de Uso** | ✅ | **`/admin` — KPIs: logins, nuevos corredores, suscripciones activas, ingresos del mes — `v28`** |
+| **82** | **Panel Estratégico** | ✅ | **`/admin` — KPIs estratégicos: corredores, MIR, negocios, ingresos, top barrios — `v28`** |
 
 ---
 
@@ -157,7 +157,7 @@
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
 | 90 | App Móvil Nativa | ❌ | Fase siguiente |
-| 91 | Recorridas Virtuales 360 | ❌ | Embed externo |
+| **91** | **Recorridas Virtuales 360** | ✅ | **`/crm/cartera/ficha/[id]` + web pública — campo `tour_virtual_url` en cartera_propiedades, embed iframe en ficha y web. Matterport/Kuula/iStaging/Roundme. Migration 056. — `v29`** |
 | 92 | Firma Digital | ✅ | `/crm/firma` |
 | 93 | Gestión de Honorarios | ❌ | Diferido |
 | **94** | **Portal Vendedor** | ✅ | **`/crm/portal-vendedor` + `/vendor/[token]` (público) — corredor crea portales por vendedor, link seguro, estado/etapa de la operación con barra de progreso, novedades (nota/visita/oferta/escritura), datos del corredor. Migration 053. — `v27`** |
@@ -167,7 +167,7 @@
 | 99 | Garantías de Alquiler | ❌ | Diferido |
 | 100 | Seguimiento Post Cierre | ✅ | `/crm/post-cierre` |
 | 101 | Encuestas de Satisfacción | ✅ | Post-visita automática |
-| 102 | Google Maps / Street View | 🟡 | Integrado en fichas |
+| **102** | **Google Maps / Street View** | ✅ | **`/crm/cartera/ficha/[id]` — mapa embed de Google Maps por dirección + Street View — `v28`** |
 | 103 | Reconocimiento de Imágenes IA | ❌ | Diferido |
 | 104 | Gestión de Llaves | ✅ | `/crm/llaves` |
 | 105 | Valoraciones entre Corredores | ❌ | Diferido |
@@ -197,13 +197,13 @@
 | 125 | Administración de Consorcios | ❌ | Diferido |
 | 126 | Seguimiento Escrituras | ✅ | `/crm/escrituras` |
 | 127 | Gestión de Loteos | ❌ | Diferido |
-| 128 | Trámites Catastrales | 🟡 | Links en `/enlaces` |
+| 128 | Trámites Catastrales | ✅ | Links en `/enlaces` (categoría "Trámites y Portales") |
 | 129 | Mail Bidireccional | ✅ | `/crm/emails` |
 | 130 | Gestión de Visitas | ✅ | `/crm/visitas` |
 | 131 | Mutual GFI | ❌ | Diferido |
-| 132 | Ranking/Prioridad Pago | ❌ | Diferido |
+| **132** | **Ranking/Prioridad Pago** | ✅ | **`/admin` — sección de ranking de suscripciones: KPIs, filtros por estado, alerta <15d vencimiento, tabla completa — `v28`** |
 | 133 | Lista Negra / Alertas | ❌ | Descartado |
-| 134 | Modo Silencioso | 🟡 | Campo en perfil, sin UI completa |
+| **134** | **Modo Silencioso** | ✅ | **`/perfil` — toggle con datetime picker "silencioso hasta" ya implementado — `v28`** |
 | 135 | Seguro Integrado | ❌ | Diferido |
 | 136 | Generador de Contratos | ✅ | `/contratos` |
 | 137 | Canal Educativo en Vivo | ✅ | `/canal-educativo` |
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **70** | **50%** |
-| 🟡 Parcial | 10 | 7% |
-| ❌ Pendiente/Diferido | 60 | 43% |
+| ✅ Implementado | **91** | **65%** |
+| 🟡 Parcial | 2 | 1% |
+| ❌ Pendiente/Diferido | 46 | 34% |
 | **Total** | **139** | |
 
 ---
@@ -225,10 +225,12 @@
 ## PRÓXIMOS A IMPLEMENTAR (alta prioridad)
 
 - [x] MOD 27 — Observatorio del Mercado ✅ v26
-- [ ] MOD 94 — Portal Vendedor (Diferido — v24)
-- [ ] MOD 131 — Mutual GFI (Diferido)
-- [ ] MOD 132 — Ranking/Prioridad de Pago
+- [x] MOD 91 — Recorridas Virtuales 360° ✅ v29
+- [x] MOD 40B — Integración con Portales ✅ v29
+- [x] MOD 132 — Ranking/Prioridad de Pago ✅ v28
+- [ ] MOD 3 — Cartera (difusiones, parser WA→cartera directo) 🟡
+- [ ] MOD 5 — Foro (vinculación bidireccional grupos WA) 🟡
 
 ---
 
-*Última actualización: v27 — MOD 94 (Portal Vendedor `/crm/portal-vendedor` + `/vendor/[token]`). MOD 133 descartado.*
+*Última actualización: v29 — 91/139 módulos implementados (65%). MODs 91 (Recorridas 360°), 40B (Portales) implementados. Admin tipo dropdown para rol constructora. Migration 056.*

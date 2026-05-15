@@ -74,6 +74,7 @@ interface Propiedad {
   honorario_propietario: number | null;
   honorario_comprador: number | null;
   video_url: string | null;
+  tour_virtual_url: string | null;
   fotos: string[] | null;
   amenities: string[] | null;
   estado: string;
@@ -182,6 +183,7 @@ const FORM_VACIO: any = {
   // Paso 5
   descripcion: "", descripcion_privada: "", comentarios_colegas: "", aviso_legal: "",
   video_url: "",
+  tour_virtual_url: "",
   // Paso 6 — ambientes
   amb_balcon: false, amb_terraza: false, amb_patio: false, amb_jardin: false,
   amb_parrilla: false, amb_living: false, amb_comedor: false, amb_comedor_diario: false,
@@ -606,6 +608,7 @@ export default function CarteraPage() {
       comentarios_colegas: form.comentarios_colegas || null,
       aviso_legal: form.aviso_legal || null,
       video_url: form.video_url || null,
+      tour_virtual_url: form.tour_virtual_url || null,
       // Documentación / CI
       contacto_propietario_id: form.contacto_propietario_id || null,
       ci_url: form.ci_url || null,
@@ -1560,6 +1563,26 @@ export default function CarteraPage() {
                       {form.video_url && !getYouTubeId(form.video_url) && (
                         <div style={{marginTop:5,fontSize:10,color:"rgba(200,0,0,0.6)"}}>⚠️ URL de YouTube no reconocida</div>
                       )}
+                    </div>
+                  </div>
+
+                  <div className="wiz-section">
+                    <div className="wiz-section-title"><span className="wiz-section-ico">🔮</span>Recorrida Virtual 360°</div>
+                    <div className="wiz-field">
+                      <label className="wiz-label">URL del tour virtual (Matterport, Kuula, iStaging, etc.)</label>
+                      <input className="wiz-input" value={form.tour_virtual_url} onChange={e => setF("tour_virtual_url", e.target.value)} placeholder="https://my.matterport.com/show/?m=..." />
+                      {form.tour_virtual_url && (
+                        <div style={{marginTop:8,borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.1)",height:240}}>
+                          <iframe
+                            src={form.tour_virtual_url}
+                            style={{width:"100%",height:"100%",border:0}}
+                            allowFullScreen
+                            title="Preview 360°"
+                            sandbox="allow-scripts allow-same-origin allow-forms"
+                          />
+                        </div>
+                      )}
+                      <div style={{marginTop:6,fontSize:10,color:"rgba(255,255,255,0.3)"}}>Compatible con Matterport, Kuula, iStaging, Roundme y cualquier URL embebible</div>
                     </div>
                   </div>
                 </>
