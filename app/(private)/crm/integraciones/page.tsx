@@ -105,7 +105,7 @@ export default function IntegracionesPage() {
   // Export
   const [exporting, setExporting] = useState<string | null>(null);
 
-  const authHeader = useCallback(() => {
+  const authHeader = useCallback((): Record<string, string> => {
     return token ? { "Authorization": `Bearer ${token}` } : {};
   }, [token]);
 
