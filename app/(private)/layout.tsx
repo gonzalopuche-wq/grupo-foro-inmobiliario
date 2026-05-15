@@ -47,6 +47,7 @@ const NAV_CORREDOR = [
   { href: "/agenda", label: "Agenda", icon: "📆" },
   { href: "/estadisticas-mercado", label: "Estadísticas", icon: "📊" },
   { href: "/observatorio", label: "Observatorio", icon: "🔭" },
+  { href: "/alertas-mercado", label: "Alertas Mercado", icon: "🔔" },
   { href: "/cursos", label: "Cursos", icon: "🎓" },
 ];
 

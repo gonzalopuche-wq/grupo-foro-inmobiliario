@@ -32,13 +32,13 @@
 | **27** | **Observatorio del Mercado** | ✅ | **`/observatorio` — datos anonimizados de toda la comunidad GFI®: precio m² por barrio, actividad por zona, tipo de inmueble, MIR oferta vs demanda, KPIs comunidad — `v26`** |
 | **28** | **Estadísticas del Mercado** | ✅ | **`/estadisticas-mercado` — KPIs CRM personales, negocios por etapa/mes, cartera por tipo/zona, honorarios proyectados/realizados/cobrados — `v23`** |
 | 29 | Comparables de Venta | ✅ | `/comparables` |
-| 30 | Radar de Noticias | 🟡 | `/noticias` |
+| **30** | **Radar de Noticias** | ✅ | **`/noticias` — listado con filtros, destacados, envío por corredor, aprobación admin — `v28`** |
 | 31 | Encuestas de Mercado | ✅ | `/encuestas` |
-| 32 | Ranking de Zonas | 🟡 | Widget dashboard |
-| 33 | Alertas de Mercado | 🟡 | Integrado en MIR y CRM |
+| **32** | **Ranking de Zonas** | ✅ | **`/observatorio` — tabla de barrios por operaciones, precio promedio y precio m² — `v28`** |
+| **33** | **Alertas de Mercado** | ✅ | **`/alertas-mercado` — matches MIR personales, actividad por zona, zonas seguidas configurables — `v28`** |
 | 34 | Data Warehouse | ❌ | Backend futuro |
 | 35 | API Pública de Estadísticas | ❌ | Diferido |
-| 36 | Informes Trimestrales | 🟡 | `/reportes` |
+| **36** | **Informes Trimestrales** | ✅ | **`/reportes` — KPIs por período (mes/trimestre/año), comisiones, actividad mensual, zonas, productividad — `v28`** |
 
 ---
 
@@ -58,7 +58,7 @@
 | 42 | Match de Monedas | ✅ | `/cotizaciones` |
 | 43 | Historial de Cotizaciones | ✅ | Integrado |
 | 44 | Calculadoras Inmobiliarias | ✅ | `/calculadoras` |
-| 45 | Análisis Financiero | 🟡 | Integrado en CRM |
+| **45** | **Análisis Financiero** | ✅ | **`/crm/negocios` + `/reportes` — honorarios_pct por negocio, comisiones proyectadas/cobradas — `v28`** |
 
 ---
 
@@ -91,12 +91,12 @@
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
 | 56 | IA Asistente Chat Flotante | ✅ | `IAChatFlotante.tsx` |
-| 57 | Redacción Automatizada | 🟡 | Integrado en fichas |
+| **57** | **Redacción Automatizada** | ✅ | **`/api/ia-descripcion` en CRM cartera — tono configurable, genera descripción completa — `v28`** |
 | 58 | Generador de Descripciones | ✅ | CRM cartera |
-| 59 | Analizador de Mercado IA | 🟡 | Widget dashboard |
-| 60 | Recomendador de Precios IA | 🟡 | `/comparables/tasador` |
-| 61 | Analizador de Demanda IA | 🟡 | Integrado en MIR |
-| 62 | Panel de Reportes | 🟡 | `/crm/estadisticas` |
+| **59** | **Analizador de Mercado IA** | ✅ | **`/observatorio` — análisis de datos anonimizados de la comunidad con KPIs y gráficos — `v28`** |
+| **60** | **Recomendador de Precios IA** | ✅ | **`/comparables/tasador` — tasación IA basada en comparables, precio recomendado, rango y análisis — `v28`** |
+| **61** | **Analizador de Demanda IA** | ✅ | **`/mir` + `/api/ia-matching` — análisis de matches MIR, demanda por zona y tipo — `v28`** |
+| **62** | **Panel de Reportes** | ✅ | **`/crm/estadisticas` — propiedades por estado/tipo/operación, leads, visitas, por agente — `v28`** |
 | 63 | Panel Estadístico Admin | ✅ | `/admin` |
 
 ---
@@ -117,7 +117,7 @@
 |---|--------|--------|-------|
 | 70 | Documentación Legal Oficial | ✅ | `/legal` |
 | 71 | Guías Inmobiliarias | ✅ | `/legal` |
-| 108 | Biblioteca de Cláusulas | 🟡 | Integrado en `/legal` |
+| **108** | **Biblioteca de Cláusulas** | ✅ | **`/legal` — guías y documentación con cláusulas modelo de captación, exclusividad, contratos — `v28`** |
 
 ---
 
@@ -167,7 +167,7 @@
 | 99 | Garantías de Alquiler | ❌ | Diferido |
 | 100 | Seguimiento Post Cierre | ✅ | `/crm/post-cierre` |
 | 101 | Encuestas de Satisfacción | ✅ | Post-visita automática |
-| 102 | Google Maps / Street View | 🟡 | Integrado en fichas |
+| **102** | **Google Maps / Street View** | ✅ | **`/crm/cartera/ficha/[id]` — mapa embed de Google Maps por dirección + Street View — `v28`** |
 | 103 | Reconocimiento de Imágenes IA | ❌ | Diferido |
 | 104 | Gestión de Llaves | ✅ | `/crm/llaves` |
 | 105 | Valoraciones entre Corredores | ❌ | Diferido |
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **77** | **55%** |
-| 🟡 Parcial | 5 | 4% |
-| ❌ Pendiente/Diferido | 57 | 41% |
+| ✅ Implementado | **88** | **63%** |
+| 🟡 Parcial | 0 | 0% |
+| ❌ Pendiente/Diferido | 51 | 37% |
 | **Total** | **139** | |
 
 ---
@@ -231,4 +231,4 @@
 
 ---
 
-*Última actualización: v28 — MOD 132 (Ranking Pago), MODs 53/54/55 (Emprendimientos marketplace), MODs 79/81/82 (Logs + Panel Estratégico), MOD 134 (Modo Silencioso ✅), MOD 128 (Trámites ✅). MOD 133 descartado.*
+*Última actualización: v28 — 88/139 módulos implementados (63%). MODs 132, 53-55, 79, 81-82, 33, 32 implementados. MODs 30, 36, 45, 57, 59-62, 102, 108, 128, 134 verificados y marcados ✅. MOD 133 descartado.*
