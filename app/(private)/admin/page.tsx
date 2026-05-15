@@ -259,6 +259,13 @@ export default function AdminPage() {
   const [sponsorPlanForm, setSponsorPlanForm] = useState<Record<string, string>>({});
   const [cobrandoSuscripcion, setCobrandoSuscripcion] = useState<string | null>(null);
 
+  // MOD 132 — Ranking/Prioridad de Pago
+  interface RankingPagoEntry { id: string; nombre: string; apellido: string; matricula: string | null; email: string | null; categoria: string | null; estado_sub: string | null; fecha_vencimiento: string | null; fecha_confirmacion: string | null; periodo: string | null; monto_usd: number | null; creado_at: string | null; }
+  const [rankingPago, setRankingPago] = useState<RankingPagoEntry[]>([]);
+  const [loadingRanking, setLoadingRanking] = useState(true);
+  const [filtroRanking, setFiltroRanking] = useState<"todos"|"activa"|"pendiente"|"vencida">("todos");
+  const [rankingBusqueda, setRankingBusqueda] = useState("");
+
   // WhatsApp
   interface WaGrupo { id: string; nombre: string; grupo_gfi: string; descripcion: string | null; wa_link: string | null; miembros: number; activo: boolean; mensajes_30d: number; procesados_30d: number; }
   interface WaMensaje { id: string; numero_from: string; nombre_from: string | null; perfil_id: string | null; contenido: string; grupo_gfi: string | null; procesado: boolean; mir_entry_id: string | null; mir_tabla: string | null; error_detalle: string | null; created_at: string; }
@@ -279,7 +286,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte(); cargarRedProveedores(); cargarWa();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte(); cargarRedProveedores(); cargarWa(); cargarRankingPago();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -1025,6 +1032,43 @@ A partir de esa fecha el costo mensual será de USD 15.
       .limit(30);
     setWaMensajes((msgs ?? []) as WaMensaje[]);
     setLoadingWa(false);
+  };
+
+  const cargarRankingPago = async () => {
+    setLoadingRanking(true);
+    const { data } = await supabase
+      .from("perfiles")
+      .select("id, nombre, apellido, matricula, email, categoria, suscripciones(estado, fecha_vencimiento, fecha_confirmacion, periodo, monto_usd, creado_at)")
+      .in("tipo", ["corredor", "colaborador"])
+      .eq("estado", "aprobado")
+      .order("apellido", { ascending: true });
+    const entries: RankingPagoEntry[] = (data ?? []).map((p: any) => {
+      const sub = Array.isArray(p.suscripciones) ? p.suscripciones[0] : p.suscripciones;
+      return {
+        id: p.id, nombre: p.nombre, apellido: p.apellido,
+        matricula: p.matricula, email: p.email, categoria: p.categoria,
+        estado_sub: sub?.estado ?? null,
+        fecha_vencimiento: sub?.fecha_vencimiento ?? null,
+        fecha_confirmacion: sub?.fecha_confirmacion ?? null,
+        periodo: sub?.periodo ?? null,
+        monto_usd: sub?.monto_usd ?? null,
+        creado_at: sub?.creado_at ?? null,
+      };
+    });
+    // Sort: activa → pendiente → null → vencida
+    const ORDEN: Record<string, number> = { activa: 0, pendiente: 1 };
+    entries.sort((a, b) => {
+      const ea = a.estado_sub ?? "z";
+      const eb = b.estado_sub ?? "z";
+      const oa = ORDEN[ea] ?? 2;
+      const ob = ORDEN[eb] ?? 2;
+      if (oa !== ob) return oa - ob;
+      if (a.fecha_vencimiento && b.fecha_vencimiento)
+        return new Date(a.fecha_vencimiento).getTime() - new Date(b.fecha_vencimiento).getTime();
+      return 0;
+    });
+    setRankingPago(entries);
+    setLoadingRanking(false);
   };
 
   const guardarWaGrupo = async () => {
@@ -2646,6 +2690,127 @@ A partir de esa fecha el costo mensual será de USD 15.
                 )}
               </div>
             )}
+          </div>
+
+          {/* ── RANKING / PRIORIDAD DE PAGO (MOD 132) ── */}
+          <div style={{ marginTop: 40 }}>
+            <div className="adm-header">
+              <h1>Ranking <span>prioridad de pago</span></h1>
+              <p>Estado de suscripciones de todos los corredores activos, ordenados por prioridad de atención.</p>
+            </div>
+
+            {/* KPIs rápidos */}
+            {!loadingRanking && (() => {
+              const hoy = new Date();
+              const activos   = rankingPago.filter(r => r.estado_sub === "activa" && r.fecha_vencimiento && new Date(r.fecha_vencimiento) >= hoy);
+              const porVencer = rankingPago.filter(r => r.estado_sub === "activa" && r.fecha_vencimiento && new Date(r.fecha_vencimiento) < new Date(hoy.getTime() + 15*24*60*60*1000) && new Date(r.fecha_vencimiento) >= hoy);
+              const pendientes = rankingPago.filter(r => r.estado_sub === "pendiente");
+              const sinSub    = rankingPago.filter(r => !r.estado_sub);
+              return (
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
+                  {[
+                    { label: "Activas", val: activos.length, color: "#22c55e", bg: "rgba(34,197,94,0.08)" },
+                    { label: "Vencen en <15d", val: porVencer.length, color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
+                    { label: "Pendientes de confirmación", val: pendientes.length, color: "#eab308", bg: "rgba(234,179,8,0.08)" },
+                    { label: "Sin suscripción", val: sinSub.length, color: "#ef4444", bg: "rgba(239,68,68,0.08)" },
+                    { label: "Total corredores", val: rankingPago.length, color: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.04)" },
+                  ].map(k => (
+                    <div key={k.label} style={{ background: k.bg, border: `1px solid ${k.color}33`, borderRadius: 10, padding: "12px 18px", minWidth: 120 }}>
+                      <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: k.color }}>{k.val}</div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 2 }}>{k.label}</div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
+            {/* Filtros + búsqueda */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
+              {(["todos","activa","pendiente","vencida"] as const).map(f => (
+                <button key={f} onClick={() => setFiltroRanking(f)} style={{ padding: "6px 14px", borderRadius: 6, border: "none", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroRanking === f ? "#cc0000" : "rgba(255,255,255,0.07)", color: filtroRanking === f ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                  {f === "todos" ? "Todos" : f === "activa" ? "✓ Activos" : f === "pendiente" ? "⏳ Pendientes" : "⚠ Sin/Vencidos"}
+                </button>
+              ))}
+              <input
+                placeholder="Buscar corredor..."
+                value={rankingBusqueda}
+                onChange={e => setRankingBusqueda(e.target.value)}
+                style={{ marginLeft: "auto", padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 200 }}
+              />
+            </div>
+
+            {loadingRanking ? <div className="adm-loading">Cargando...</div> : (() => {
+              const hoy = new Date();
+              const filtrados = rankingPago.filter(r => {
+                if (filtroRanking === "activa" && r.estado_sub !== "activa") return false;
+                if (filtroRanking === "pendiente" && r.estado_sub !== "pendiente") return false;
+                if (filtroRanking === "vencida" && r.estado_sub && r.estado_sub !== "rechazado") return false;
+                if (rankingBusqueda) {
+                  const q = rankingBusqueda.toLowerCase();
+                  if (!(`${r.nombre} ${r.apellido} ${r.matricula ?? ""} ${r.email ?? ""}`.toLowerCase().includes(q))) return false;
+                }
+                return true;
+              });
+              if (filtrados.length === 0) return <div className="adm-empty">No hay resultados.</div>;
+              return (
+                <div className="adm-tabla-wrap">
+                  <table className="adm-tabla">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Corredor</th>
+                        <th>Matrícula</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Vencimiento</th>
+                        <th>Período</th>
+                        <th>Monto</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtrados.map((r, idx) => {
+                        const venc = r.fecha_vencimiento ? new Date(r.fecha_vencimiento) : null;
+                        const diasRestantes = venc ? Math.ceil((venc.getTime() - hoy.getTime()) / (1000*60*60*24)) : null;
+                        const estaActiva = r.estado_sub === "activa" && venc && venc >= hoy;
+                        const estaVencida = !r.estado_sub || r.estado_sub === "rechazado" || (r.estado_sub === "activa" && venc && venc < hoy);
+                        const estadoColor = estaActiva ? "#22c55e" : r.estado_sub === "pendiente" ? "#eab308" : "#ef4444";
+                        const estadoBg    = estaActiva ? "rgba(34,197,94,0.12)" : r.estado_sub === "pendiente" ? "rgba(234,179,8,0.12)" : "rgba(239,68,68,0.12)";
+                        const estadoLabel = estaActiva ? "Activa" : r.estado_sub === "pendiente" ? "Pendiente" : estaVencida && venc && venc < hoy ? "Vencida" : "Sin suscripción";
+                        const catConf = CATEGORIAS.find(c => c.value === r.categoria);
+                        return (
+                          <tr key={r.id}>
+                            <td style={{ color: "rgba(255,255,255,0.25)", fontSize: 12, fontWeight: 700 }}>{idx + 1}</td>
+                            <td>
+                              <div style={{ fontWeight: 600, fontSize: 13, color: "#fff" }}>{r.apellido}, {r.nombre}</div>
+                              {r.email && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{r.email}</div>}
+                            </td>
+                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>{r.matricula ?? "—"}</td>
+                            <td>
+                              {catConf
+                                ? <span style={{ padding: "2px 8px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${catConf.color}22`, color: catConf.color }}>{catConf.label}</span>
+                                : <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 12 }}>—</span>}
+                            </td>
+                            <td>
+                              <span style={{ padding: "3px 10px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: estadoBg, color: estadoColor }}>{estadoLabel}</span>
+                              {diasRestantes !== null && estaActiva && diasRestantes <= 15 && (
+                                <div style={{ fontSize: 10, color: "#f59e0b", marginTop: 2 }}>⚠ {diasRestantes}d restantes</div>
+                              )}
+                            </td>
+                            <td style={{ fontSize: 12, color: venc && venc < hoy ? "#ef4444" : "rgba(255,255,255,0.6)" }}>
+                              {r.fecha_vencimiento ? new Date(r.fecha_vencimiento).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
+                            </td>
+                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{r.periodo ?? "—"}</td>
+                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>
+                              {r.monto_usd != null ? `USD ${r.monto_usd}` : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
           </div>
 
         </main>
