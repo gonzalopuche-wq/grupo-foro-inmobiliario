@@ -132,10 +132,10 @@
 | **76** | **MI ABONO INTELIGENTE** | ✅ | **`/perfil` (tab Suscripción) — bonificaciones por colaboración: biblioteca, foro, comparables, seniority, referidos. Descuento real en USD calculado mes a mes. Migration 051.** |
 | 77 | Pagos y Membresías | ✅ | Admin verifica manualmente |
 | 78 | Período de Gracia | ✅ | 3 días configurados |
-| 79 | Logs de Actividad | 🟡 | Backend, sin UI |
+| **79** | **Logs de Actividad** | ✅ | **`/admin` — tabla `logs_actividad`, UI en admin con filtros por módulo y búsqueda. Migration 055. — `v28`** |
 | **80** | **Seguridad y Backups** | ✅ | **2FA TOTP obligatorio para corredores: `/configurar-2fa`, QR code, Supabase MFA, badge en perfil — `v22`** |
-| 81 | Estadísticas de Uso | 🟡 | Widget admin |
-| 82 | Panel Estratégico | 🟡 | Admin |
+| **81** | **Estadísticas de Uso** | ✅ | **`/admin` — KPIs: logins, nuevos corredores, suscripciones activas, ingresos del mes — `v28`** |
+| **82** | **Panel Estratégico** | ✅ | **`/admin` — KPIs estratégicos: corredores, MIR, negocios, ingresos, top barrios — `v28`** |
 
 ---
 
@@ -197,13 +197,13 @@
 | 125 | Administración de Consorcios | ❌ | Diferido |
 | 126 | Seguimiento Escrituras | ✅ | `/crm/escrituras` |
 | 127 | Gestión de Loteos | ❌ | Diferido |
-| 128 | Trámites Catastrales | 🟡 | Links en `/enlaces` |
+| 128 | Trámites Catastrales | ✅ | Links en `/enlaces` (categoría "Trámites y Portales") |
 | 129 | Mail Bidireccional | ✅ | `/crm/emails` |
 | 130 | Gestión de Visitas | ✅ | `/crm/visitas` |
 | 131 | Mutual GFI | ❌ | Diferido |
 | **132** | **Ranking/Prioridad Pago** | ✅ | **`/admin` — sección de ranking de suscripciones: KPIs, filtros por estado, alerta <15d vencimiento, tabla completa — `v28`** |
 | 133 | Lista Negra / Alertas | ❌ | Descartado |
-| 134 | Modo Silencioso | 🟡 | Campo en perfil, sin UI completa |
+| **134** | **Modo Silencioso** | ✅ | **`/perfil` — toggle con datetime picker "silencioso hasta" ya implementado — `v28`** |
 | 135 | Seguro Integrado | ❌ | Diferido |
 | 136 | Generador de Contratos | ✅ | `/contratos` |
 | 137 | Canal Educativo en Vivo | ✅ | `/canal-educativo` |
@@ -215,8 +215,8 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **72** | **52%** |
-| 🟡 Parcial | 10 | 7% |
+| ✅ Implementado | **77** | **55%** |
+| 🟡 Parcial | 5 | 4% |
 | ❌ Pendiente/Diferido | 57 | 41% |
 | **Total** | **139** | |
 
@@ -231,4 +231,4 @@
 
 ---
 
-*Última actualización: v28 — MOD 132 (Ranking/Prioridad de Pago en admin). MODs 53/54/55 refactorizados a marketplace bidireccional constructoras↔corredores. MOD 133 descartado.*
+*Última actualización: v28 — MOD 132 (Ranking Pago), MODs 53/54/55 (Emprendimientos marketplace), MODs 79/81/82 (Logs + Panel Estratégico), MOD 134 (Modo Silencioso ✅), MOD 128 (Trámites ✅). MOD 133 descartado.*
