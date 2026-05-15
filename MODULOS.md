@@ -144,8 +144,8 @@
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
 | **83** | **Sistema de Insignias/Badges** | ✅ | **`/perfil` — 14 badges en 4 tiers (Bronce/Plata/Oro/Especiales) con progress bars — `v18`** |
-| 85 | Integración CRMs Externos | ❌ | Diferido |
-| 86 | Integración Sistemas Administración | ❌ | Diferido |
+| **85** | **Integración CRMs Externos** | ✅ | **`/crm/integraciones` — Tokko Broker (sync propiedades/contactos), import CSV/Excel, export Excel — `v24`** |
+| **86** | **Integración Sistemas Administración** | ✅ | **`/crm/integraciones` — Export contactos/cartera/negocios para contabilidad, historial de operaciones — `v24`** |
 | 87 | Sistema de Franquicias | ❌ | Diferido |
 | 88 | Expansión Regional | ❌ | Diferido |
 | 89 | Plataforma PropTech Completa | ❌ | Diferido |
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **64** | **46%** |
+| ✅ Implementado | **66** | **47%** |
 | 🟡 Parcial | 12 | 9% |
-| ❌ Pendiente/Diferido | 63 | 45% |
+| ❌ Pendiente/Diferido | 61 | 44% |
 | **Total** | **139** | |
 
 ---
@@ -228,8 +228,7 @@
 - [ ] MOD 94 — Portal Vendedor (Diferido — v24)
 - [ ] MOD 131 — Mutual GFI (Diferido)
 - [ ] MOD 132 — Ranking/Prioridad de Pago
-- [ ] MOD 85/86 — Integración CRMs / Sistemas externos (Diferido)
 
 ---
 
-*Última actualización: v23 — MOD 28 (Estadísticas del Mercado: `/estadisticas-mercado`), MOD 66 (Venta de Entradas: modal compra en `/eventos`), MOD 93 (Honorarios: `/crm/honorarios` + cobros), MOD 96 (Cursos: `/cursos` + inscripciones), MOD 111 (Moderación: `/moderacion` + `DenunciaModal` en foro). Migration 049.*
+*Última actualización: v24 — MOD 85/86 (Integraciones CRM: `/crm/integraciones` — Tokko Broker, import CSV/Excel, export Excel, historial). Migration 050.*
