@@ -82,6 +82,26 @@ export default function DashboardPage() {
   const [colabStats, setColabStats] = useState({ cartera: 0, contactos: 0, mirBusq: 0, redGfi: 0, loading: true });
   const ciudadRef = useRef<HTMLInputElement>(null);
 
+  const WIDGET_LABELS: Record<string, string> = {
+    noticias: "Noticias", mipanel: "Mi Panel", zocalo: "Actividad GFI", acciones: "Clima & Acciones", accesos: "Accesos rápidos", indicadores: "Indicadores económicos", bottom: "Matches & Eventos",
+  };
+  const [widgetsActivos, setWidgetsActivos] = useState<Record<string, boolean>>(() => {
+    if (typeof window === "undefined") return Object.fromEntries(Object.keys(WIDGET_LABELS).map(k => [k, true]));
+    try {
+      const saved = JSON.parse(localStorage.getItem("gfi_dashboard_widgets") ?? "{}");
+      return Object.fromEntries(Object.keys(WIDGET_LABELS).map(k => [k, saved[k] !== false]));
+    } catch { return Object.fromEntries(Object.keys(WIDGET_LABELS).map(k => [k, true])); }
+  });
+  const [mostrarPersonalizar, setMostrarPersonalizar] = useState(false);
+
+  const toggleWidget = (key: string) => {
+    setWidgetsActivos(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      localStorage.setItem("gfi_dashboard_widgets", JSON.stringify(next));
+      return next;
+    });
+  };
+
   const fetchClimaPorCoords = async (lat: number, lon: number, gpsActivo: boolean) => {
     setClimaLoading(true); setClimaError(false);
     try {
@@ -382,15 +402,38 @@ export default function DashboardPage() {
         @media (max-width: 600px) { .db-accesos-grid { grid-template-columns: repeat(2,1fr) !important; } }
       `}</style>
 
-      <div className="db-fecha">{hoy}</div>
-
-      {/* 1. NOTICIAS */}
-      <div style={{ marginBottom: 20 }}>
-        <NoticiasWidget />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+        <div className="db-fecha" style={{ marginBottom: 0 }}>{hoy}</div>
+        <div style={{ position: "relative" }}>
+          <button
+            onClick={() => setMostrarPersonalizar(v => !v)}
+            title="Personalizar dashboard"
+            style={{ background: "none", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "rgba(255,255,255,0.35)", fontSize: 13, padding: "4px 10px", cursor: "pointer", fontFamily: "Inter,sans-serif", display: "flex", alignItems: "center", gap: 5, transition: "border-color 0.15s" }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"}
+            onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
+          >⚙️ <span style={{ fontSize: 11 }}>Personalizar</span></button>
+          {mostrarPersonalizar && (
+            <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, background: "#161616", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 14px", minWidth: 210, zIndex: 100, boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }}>
+              <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>MOSTRAR WIDGETS</div>
+              {Object.entries(WIDGET_LABELS).map(([key, label]) => (
+                <label key={key} style={{ display: "flex", alignItems: "center", gap: 9, padding: "5px 0", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                  <input type="checkbox" checked={widgetsActivos[key]} onChange={() => toggleWidget(key)} style={{ accentColor: "#cc0000", width: 14, height: 14, cursor: "pointer" }} />
+                  <span style={{ fontSize: 12, color: widgetsActivos[key] ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", userSelect: "none" }}>{label}</span>
+                </label>
+              ))}
+              <button onClick={() => setMostrarPersonalizar(false)} style={{ marginTop: 10, width: "100%", padding: "5px 0", background: "rgba(204,0,0,0.12)", border: "1px solid rgba(204,0,0,0.25)", borderRadius: 5, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>LISTO</button>
+            </div>
+          )}
+        </div>
       </div>
 
+      {/* 1. NOTICIAS */}
+      {widgetsActivos.noticias && <div style={{ marginBottom: 20 }}>
+        <NoticiasWidget />
+      </div>}
+
       {/* 2. MI PANEL — stats personales del corredor */}
-      <div style={{marginBottom:16}}>
+      {widgetsActivos.mipanel && <div style={{marginBottom:16}}>
         <div className="db-sec-titulo">Mi panel</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
           {[
@@ -409,10 +452,10 @@ export default function DashboardPage() {
             </a>
           ))}
         </div>
-      </div>
+      </div>}
 
       {/* 3. ZÓCALO HOY EN GFI */}
-      <div style={{
+      {widgetsActivos.zocalo && <div style={{
         display:"flex",alignItems:"stretch",
         background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",
         borderRadius:8,overflow:"hidden",marginBottom:16,
@@ -449,10 +492,10 @@ export default function DashboardPage() {
             <div style={{fontSize:12,color:"rgba(255,255,255,0.35)",fontFamily:"'Montserrat',sans-serif",fontWeight:600}}>{new Date().toLocaleDateString("es-AR",{weekday:"short",day:"numeric",month:"short"})}</div>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* 3. CLIMA + ACCESOS RÁPIDOS PERSONALES */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 220px",gap:16,marginBottom:20,alignItems:"start"}}>
+      {widgetsActivos.acciones && <div style={{display:"grid",gridTemplateColumns:"1fr 220px",gap:16,marginBottom:20,alignItems:"start"}}>
         <div style={{background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 20px"}}>
           <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:14}}>Acciones rápidas</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
@@ -519,10 +562,10 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* 4. ACCESOS RÁPIDOS */}
-      <div className="db-accesos">
+      {widgetsActivos.accesos && <div className="db-accesos">
         <div className="db-sec-titulo">Mis herramientas</div>
         <div className="db-accesos-grid" style={{gridTemplateColumns:"repeat(7,1fr)"}}>
           {ACCESOS_MI.map((a, i) => (
@@ -547,10 +590,10 @@ export default function DashboardPage() {
             </a>
           ))}
         </div>
-      </div>
+      </div>}
 
       {/* 5. INDICADORES */}
-      <div className="db-indicadores">
+      {widgetsActivos.indicadores && <div className="db-indicadores">
         <div className="db-ind">
           <div className="db-ind-label">USD Blue — Promedio</div>
           {dolarLoading ? <div className="skeleton" style={{height:28,width:120,marginTop:6}} /> : dolar ? (
@@ -603,10 +646,10 @@ export default function DashboardPage() {
           {jus.loading ? <div className="skeleton" style={{height:28,width:100,marginTop:6}} /> : <div className="db-ind-valor">{jus.valor}</div>}
           <div className="db-ind-sub">COCIR 2da Circ. · Ley 13.154</div>
         </div>
-      </div>
+      </div>}
 
       {/* 6. BOTTOM */}
-      <div className="db-bottom-row">
+      {widgetsActivos.bottom && <div className="db-bottom-row">
         <div className="db-panel">
           <div className="db-panel-titulo">Matches recientes<a href="/mir?vista=matches" className="db-link-badge">Ver todos</a></div>
           {matchesRecientes.length === 0
@@ -644,7 +687,7 @@ export default function DashboardPage() {
             })
           }
         </div>
-      </div>
+      </div>}
 
       <NotificacionesWidget />
     </>
