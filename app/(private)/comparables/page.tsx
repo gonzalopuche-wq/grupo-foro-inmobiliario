@@ -78,7 +78,7 @@ export default function ComparablesPage() {
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
       const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
-      if (perfil?.tipo === "admin") setEsAdmin(true);
+      if (perfil?.tipo === "admin" || perfil?.tipo === "master") setEsAdmin(true);
 
       fetch("https://dolarapi.com/v1/dolares/blue")
         .then(r => r.json())

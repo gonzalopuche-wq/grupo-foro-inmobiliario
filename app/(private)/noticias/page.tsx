@@ -73,7 +73,7 @@ export default function NoticiasPage() {
     setFetchandoLink(false);
   };
 
-  const esAdmin = perfil?.tipo === "admin" || perfil?.tipo === "admin_contenido";
+  const esAdmin = perfil?.tipo === "admin" || perfil?.tipo === "master" || perfil?.tipo === "admin_contenido";
 
   useEffect(() => {
     const init = async () => {
@@ -87,7 +87,7 @@ export default function NoticiasPage() {
         .eq("id", data.user.id)
         .single();
       setPerfil(p);
-      await cargarNoticias(p?.tipo === "admin" || p?.tipo === "admin_contenido");
+      await cargarNoticias(p?.tipo === "admin" || p?.tipo === "master" || p?.tipo === "admin_contenido");
       setLoading(false);
     };
     init();

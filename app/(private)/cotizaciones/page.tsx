@@ -89,7 +89,7 @@ export default function CotizacionesPage() {
       setUserId(data.user.id);
       const { data: perfil } = await supabase
         .from("perfiles").select("tipo").eq("id", data.user.id).single();
-      if (perfil?.tipo === "admin") setEsAdmin(true);
+      if (perfil?.tipo === "admin" || perfil?.tipo === "master") setEsAdmin(true);
     };
     init();
     cargarMercado();

@@ -67,7 +67,7 @@ export default function CursosPage() {
       if (!session) return;
       setToken(session.access_token);
       const { data: p } = await supabase.from("perfiles").select("tipo").eq("id", session.user.id).single();
-      if (p?.tipo === "admin") setEsAdmin(true);
+      if (p?.tipo === "admin" || p?.tipo === "master") setEsAdmin(true);
       await cargarCursos(session.access_token);
     };
     init();

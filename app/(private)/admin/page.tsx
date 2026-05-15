@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import AdminBeneficios from "../../components/AdminBeneficios";
 
-interface Perfil { id: string; tipo: string; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; insignia_mentor?: boolean; insignia_tasador?: boolean; categoria?: string; bonificacion_pct?: number; }
+interface Perfil { id: string; tipo: string; rubro: string | null; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; insignia_mentor?: boolean; insignia_tasador?: boolean; categoria?: string; bonificacion_pct?: number; }
 interface Indicador { clave: string; valor: number | string; label: string; tipo: "number" | "text"; actualizado_at?: string | null; }
 interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number; monto_ars: number | null; monto_declarado_ars: number | null; dolar_ref: number | null; estado: string; fecha_pago_declarado: string | null; fecha_confirmacion: string | null; fecha_vencimiento: string | null; periodo: string | null; comprobante: string | null; cbu_origen: string | null; nota_admin: string | null; creado_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
@@ -311,7 +311,7 @@ export default function AdminPage() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) { window.location.href = "/"; return; }
       const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", userData.user.id).single();
-      if (!perfil || perfil.tipo !== "admin") { window.location.href = "/dashboard"; return; }
+      if (!perfil || !["admin", "master"].includes(perfil.tipo)) { window.location.href = "/dashboard"; return; }
       setEsAdmin(true);
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
@@ -319,7 +319,7 @@ export default function AdminPage() {
       cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSocios(); cargarSoporte(); cargarRedProveedores(); cargarWa(); cargarRankingPago(); cargarLogsActividad(); cargarStatsEstrategicas();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
-      const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
+      const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").in("tipo", ["admin","master"]).limit(1).single();
       setRedesConfig(adminSocial?.configuracion?.redes_sociales ?? {});
     };
     verificar();
@@ -462,6 +462,11 @@ export default function AdminPage() {
     mostrarToast(`Tipo actualizado a "${tipo}"`);
   };
 
+  const setRubroUser = async (id: string, rubro: string) => {
+    await supabase.from("perfiles").update({ rubro: rubro || null }).eq("id", id);
+    setPerfiles(prev => prev.map(p => p.id === id ? { ...p, rubro: rubro || null } : p));
+  };
+
   const setBonificacionUser = async (id: string, bonificacion_pct: number) => {
     if (bonificacion_pct < 0 || bonificacion_pct > 100) return;
     await supabase.from("perfiles").update({ bonificacion_pct }).eq("id", id);
@@ -551,7 +556,7 @@ export default function AdminPage() {
 
   const guardarRedes = async () => {
     setGuardandoRedes(true);
-    const { data: adminProf } = await supabase.from("perfiles").select("configuracion, id").eq("tipo", "admin").limit(1).single();
+    const { data: adminProf } = await supabase.from("perfiles").select("configuracion, id").in("tipo", ["admin","master"]).limit(1).single();
     if (adminProf) await supabase.from("perfiles").update({ configuracion: { ...(adminProf.configuracion ?? {}), redes_sociales: redesConfig } }).eq("id", adminProf.id);
     setGuardandoRedes(false);
     mostrarToast("Configuración guardada");
@@ -1860,12 +1865,23 @@ A partir de esa fecha el costo mensual será de USD 15.
                       <td><div className="adm-nombre">{p.apellido}, {p.nombre}</div>{p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}{p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}</td>
                       <td>
                         <select value={p.tipo} onChange={e => setTipoUser(p.id, e.target.value)}
-                          style={{ background: "#0f172a", color: p.tipo === "constructora" ? "#f97316" : p.tipo === "colaborador" ? "#06b6d4" : "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", width: "100%" }}>
+                          style={{ background: "#0f172a", color: p.tipo === "master" ? "#cc0000" : p.tipo === "admin" ? "#a855f7" : p.tipo === "constructora" ? "#f97316" : p.tipo === "proveedor" ? "#eab308" : p.tipo === "colaborador" ? "#06b6d4" : "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", width: "100%", marginBottom: ["corredor","colaborador"].includes(p.tipo) ? 4 : 0 }}>
                           <option value="corredor">Corredor</option>
                           <option value="colaborador">Colaborador</option>
                           <option value="constructora">Constructora</option>
+                          <option value="proveedor">Proveedor</option>
                           <option value="admin">Admin</option>
+                          <option value="master">Máster</option>
                         </select>
+                        {["corredor","colaborador"].includes(p.tipo) && (
+                          <select value={p.rubro ?? ""} onChange={e => setRubroUser(p.id, e.target.value)}
+                            style={{ background: "#0a0a0a", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "2px 6px", fontSize: 10, fontFamily: "Inter,sans-serif", cursor: "pointer", width: "100%" }}>
+                            <option value="">— rubro —</option>
+                            <option value="alquiler">Alquiler</option>
+                            <option value="venta">Venta</option>
+                            <option value="ambos">Alquiler + Venta</option>
+                          </select>
+                        )}
                       </td>
                       <td>
                         <select

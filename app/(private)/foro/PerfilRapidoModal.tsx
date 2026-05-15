@@ -159,6 +159,7 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
                   <div className="prm-badges">
                     {perfil.matricula && <span className="prm-badge mat">✓ Matriculado</span>}
                     {perfil.socio_cir && <span className="prm-badge cir">CIR</span>}
+                    {perfil.tipo === "master" && <span className="prm-badge admin" style={{ background: "rgba(204,0,0,0.2)", color: "#cc0000", border: "1px solid rgba(204,0,0,0.4)" }}>Máster</span>}
                     {perfil.tipo === "admin" && <span className="prm-badge admin">Admin</span>}
                   </div>
                 </div>

@@ -48,7 +48,7 @@ export default function ProveedoresPage() {
       const uid = data.user.id;
       setUserId(uid);
       const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", uid).single();
-      if (perfil?.tipo === "admin") setEsAdmin(true);
+      if (perfil?.tipo === "admin" || perfil?.tipo === "master") setEsAdmin(true);
       const { data: ints } = await supabase.from("sponsor_beneficio_interesados").select("proveedor_id").eq("perfil_id", uid);
       setMisIntereses((ints ?? []).map((r: any) => r.proveedor_id));
     };

@@ -103,7 +103,7 @@ export default function MapaPadron() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         const { data: perfil } = await supabase.from('perfiles').select('tipo').eq('id', user.id).single()
-        setEsAdmin(perfil?.tipo === 'admin')
+        setEsAdmin(perfil?.tipo === 'admin' || perfil?.tipo === 'master')
       }
 
       const { data } = await supabase

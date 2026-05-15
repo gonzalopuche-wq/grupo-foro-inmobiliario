@@ -84,7 +84,7 @@ export default function CanalEducativoPage() {
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
       const { data: p } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
-      if (p?.tipo === "admin") setEsAdmin(true);
+      if (p?.tipo === "admin" || p?.tipo === "master") setEsAdmin(true);
       await cargarSesiones();
     };
     init();

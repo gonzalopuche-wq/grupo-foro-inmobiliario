@@ -60,7 +60,7 @@ export default function AdminSponsorsPage() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
       const { data: p } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
-      if (p?.tipo !== "admin") { window.location.href = "/dashboard"; return; }
+      if (!p || !["admin","master"].includes(p.tipo)) { window.location.href = "/dashboard"; return; }
       setEsAdmin(true);
       cargar();
       cargarSolicitudes();

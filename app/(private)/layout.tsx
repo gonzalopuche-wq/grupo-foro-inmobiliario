@@ -95,7 +95,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
 
       if (p) {
         setPerfil(p);
-        const tipo = p.tipo === "admin" ? "admin" : p.tipo === "colaborador" ? "colaborador" : "corredor";
+        const tipo = (p.tipo === "admin" || p.tipo === "master") ? "admin" : p.tipo === "colaborador" ? "colaborador" : "corredor";
         setTipoUsuario(tipo);
 
         // Redirigir colaborador si intenta acceder a ruta bloqueada
