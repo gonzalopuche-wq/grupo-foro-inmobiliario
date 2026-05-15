@@ -15,11 +15,14 @@ CREATE INDEX IF NOT EXISTS idx_mir_busquedas_urgente ON mir_busquedas(urgente) W
 CREATE TABLE IF NOT EXISTS bonificaciones_config (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   accion      text UNIQUE NOT NULL,
-  label       text NOT NULL,
   descuento_usd numeric(5,2) DEFAULT 0.50,
   activo      boolean DEFAULT true,
   created_at  timestamptz DEFAULT now()
 );
+
+-- Agrega columna label si no existe (idempotente para DBs con tabla preexistente)
+ALTER TABLE bonificaciones_config
+  ADD COLUMN IF NOT EXISTS label text NOT NULL DEFAULT '';
 
 INSERT INTO bonificaciones_config (accion, label, descuento_usd, activo) VALUES
   ('biblioteca',   'Subir documento a Biblioteca',           1.00, true),
@@ -27,7 +30,10 @@ INSERT INTO bonificaciones_config (accion, label, descuento_usd, activo) VALUES
   ('comparables',  'Cargar comparable de venta',             1.00, true),
   ('seniority',    'Antigüedad (por año activo)',             0.50, true),
   ('referidos',    'Referido que se suscribió',              2.00, true)
-ON CONFLICT (accion) DO NOTHING;
+ON CONFLICT (accion) DO UPDATE SET
+  label = EXCLUDED.label,
+  descuento_usd = EXCLUDED.descuento_usd,
+  activo = EXCLUDED.activo;
 
 CREATE TABLE IF NOT EXISTS bonificaciones_historial (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
