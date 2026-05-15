@@ -225,11 +225,25 @@ export default function AgendaPage() {
   }
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }:any) => {
+    supabase.auth.getUser().then(async ({ data }:any) => {
       if (!data.user) { window.location.href = '/login'; return }
-      setUid(data.user.id)
-      cargar(data.user.id)
-      setGcalCals(loadCals(data.user.id))
+      const userId = data.user.id
+      setUid(userId)
+      cargar(userId)
+      // Cargar desde DB (fuente de verdad) con fallback/migración desde localStorage
+      const { data: perfil } = await supabase.from('perfiles').select('gcal_calendarios').eq('id', userId).single()
+      const dbCals = (perfil?.gcal_calendarios as GcalCal[] | null) ?? null
+      if (dbCals && dbCals.length > 0) {
+        setGcalCals(dbCals)
+      } else {
+        const lsCals = loadCals(userId)
+        if (lsCals.length > 0) {
+          setGcalCals(lsCals)
+          await supabase.from('perfiles').update({ gcal_calendarios: lsCals }).eq('id', userId)
+        } else {
+          setGcalCals([])
+        }
+      }
     })
     return () => { if (timerRef.current) clearTimeout(timerRef.current) }
   }, [])
@@ -351,7 +365,7 @@ export default function AgendaPage() {
     setModal(true)
   }
 
-  const vincularCalendario = () => {
+  const vincularCalendario = async () => {
     if (!gcalForm.nombre.trim()) { showToast('Poné un nombre al calendario'); return }
     if (!gcalForm.embedUrl.trim()) { showToast('Pegá la URL del calendario'); return }
     setGcalGuardando(true)
@@ -365,6 +379,8 @@ export default function AgendaPage() {
       ? gcalCals.map(c => c.id === gcalEditando ? cal : c)
       : [...gcalCals, cal]
     setGcalCals(next)
+    // Persistir en DB como fuente de verdad + localStorage como caché
+    await supabase.from('perfiles').update({ gcal_calendarios: next }).eq('id', uid)
     saveCals(uid, next)
     if (!gcalEditando) setGcalActivo(next.length - 1)
     setGcalGuardando(false)
@@ -375,10 +391,11 @@ export default function AgendaPage() {
     if (vista !== 'gcal') setVista('gcal')
   }
 
-  const desvincularCalendario = (id: string) => {
+  const desvincularCalendario = async (id: string) => {
     if (!confirm('¿Desvincular este calendario?')) return
     const next = gcalCals.filter(c => c.id !== id)
     setGcalCals(next)
+    await supabase.from('perfiles').update({ gcal_calendarios: next }).eq('id', uid)
     saveCals(uid, next)
     setGcalActivo(Math.max(0, gcalActivo - 1))
     showToast('Calendario desvinculado')
