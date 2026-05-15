@@ -72,6 +72,7 @@ interface Ofrecido {
   antiguedad: string | null;
   apto_credito: boolean; uso_comercial: boolean; barrio_cerrado: boolean;
   con_cochera: boolean; acepta_mascotas: boolean; acepta_bitcoin: boolean;
+  urgente: boolean; urgente_expires_at?: string | null;
   descripcion: string | null; activo: boolean; created_at: string;
   nombre_publicante?: string | null;
   ci_responsable_id?: string | null;
@@ -89,6 +90,7 @@ interface Busqueda {
   tipo_superficie: string; antiguedad: string | null;
   apto_credito: boolean; uso_comercial: boolean; con_cochera: boolean;
   barrio_cerrado: boolean; acepta_mascotas: boolean; acepta_bitcoin: boolean;
+  urgente: boolean; urgente_expires_at?: string | null;
   descripcion: string | null; activo: boolean; created_at: string;
   nombre_publicante?: string | null;
   ci_responsable_id?: string | null;
@@ -144,6 +146,7 @@ const FORM_O = {
   antiguedad: "",
   apto_credito: false, uso_comercial: false, barrio_cerrado: false,
   con_cochera: false, acepta_mascotas: false, acepta_bitcoin: false,
+  urgente: false,
   descripcion: "",
 };
 
@@ -157,6 +160,7 @@ const FORM_B = {
   antiguedad: "",
   apto_credito: false, uso_comercial: false, con_cochera: false,
   barrio_cerrado: false, acepta_mascotas: false, acepta_bitcoin: false,
+  urgente: false,
   descripcion: "",
 };
 
@@ -525,6 +529,8 @@ export default function MirPage() {
       apto_credito: formO.apto_credito, uso_comercial: formO.uso_comercial,
       barrio_cerrado: formO.barrio_cerrado, con_cochera: formO.con_cochera,
       acepta_mascotas: formO.acepta_mascotas, acepta_bitcoin: formO.acepta_bitcoin,
+      urgente: formO.urgente,
+      urgente_expires_at: formO.urgente ? new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString() : null,
       descripcion: formO.descripcion || null,
     }).select().single();
     if (!error && nuevo) await matchearOfrecido(nuevo as Ofrecido);
@@ -547,6 +553,8 @@ export default function MirPage() {
       apto_credito: formB.apto_credito, uso_comercial: formB.uso_comercial,
       con_cochera: formB.con_cochera, barrio_cerrado: formB.barrio_cerrado,
       acepta_mascotas: formB.acepta_mascotas, acepta_bitcoin: formB.acepta_bitcoin,
+      urgente: formB.urgente,
+      urgente_expires_at: formB.urgente ? new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString() : null,
       descripcion: formB.descripcion || null,
     }).select().single();
     if (!error && nueva) await matchearBusqueda(nueva as Busqueda);
@@ -624,7 +632,9 @@ export default function MirPage() {
         .mir-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.2s; }
         .mir-card:hover { border-color: rgba(200,0,0,0.2); }
         .mir-card.propia { border-color: rgba(200,0,0,0.2); background: rgba(200,0,0,0.03); }
-        .mir-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+        .mir-card.urgente-card { border-color: rgba(234,179,8,0.4); box-shadow: 0 0 12px rgba(234,179,8,0.08); }
+        .mir-urgente-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.35); color: #eab308; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 10px; }
+        .mir-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
         .mir-card-titulo { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
         .mir-op-badge { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; flex-shrink: 0; }
         .mir-precio { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; color: #22c55e; }
@@ -800,8 +810,10 @@ export default function MirPage() {
             const color = OP_COLOR[o.operacion] ?? "#fff";
             const extras = [o.apto_credito && "Apto credito", o.uso_comercial && "Uso comercial", o.barrio_cerrado && "B. cerrado", o.con_cochera && "Cochera", o.acepta_mascotas && "Mascotas", o.acepta_bitcoin && "Bitcoin"].filter(Boolean) as string[];
             const esPropia = o.perfil_id === userId;
+            const esUrgente = o.urgente && (!o.urgente_expires_at || new Date(o.urgente_expires_at) > new Date());
             return (
-              <div key={o.id} className={`mir-card${esPropia ? " propia" : ""}`}>
+              <div key={o.id} className={`mir-card${esPropia ? " propia" : ""}${esUrgente ? " urgente-card" : ""}`}>
+                {esUrgente && <div className="mir-urgente-badge">⚡ URGENTE</div>}
                 <div className="mir-card-top">
                   <div className="mir-card-titulo">{o.tipo_propiedad}</div>
                   <span className="mir-op-badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{OP_LABEL[o.operacion]}</span>
@@ -851,8 +863,10 @@ export default function MirPage() {
             const color = OP_COLOR[b.operacion] ?? "#fff";
             const extras = [b.apto_credito && "Apto credito", b.uso_comercial && "Uso comercial", b.con_cochera && "Con cochera", b.barrio_cerrado && "B. cerrado", b.acepta_mascotas && "Mascotas", b.acepta_bitcoin && "Bitcoin"].filter(Boolean) as string[];
             const esPropia = b.perfil_id === userId;
+            const esUrgente = b.urgente && (!b.urgente_expires_at || new Date(b.urgente_expires_at) > new Date());
             return (
-              <div key={b.id} className={`mir-card${esPropia ? " propia" : ""}`}>
+              <div key={b.id} className={`mir-card${esPropia ? " propia" : ""}${esUrgente ? " urgente-card" : ""}`}>
+                {esUrgente && <div className="mir-urgente-badge">⚡ URGENTE</div>}
                 <div className="mir-card-top">
                   <div className="mir-card-titulo">{b.tipo_propiedad}</div>
                   <span className="mir-op-badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{OP_LABEL[b.operacion]}</span>
@@ -1239,6 +1253,11 @@ export default function MirPage() {
               </div>
             </div>
             <div className="fn-field"><label className="fn-label">Descripcion</label><textarea className="fn-textarea" placeholder="Detalles adicionales..." value={formO.descripcion} onChange={e => setFormO(p => ({...p, descripcion: e.target.value}))} /></div>
+            <div className="fn-divider"/>
+            <div style={{background:"rgba(234,179,8,0.06)",border:"1px solid rgba(234,179,8,0.2)",borderRadius:6,padding:"14px 16px"}}>
+              <Toggle label="⚡ PEDIDO URGENTE — aparece destacado 48hs (función premium)" value={formO.urgente} onChange={v => setFormO(p => ({...p, urgente: v}))} />
+              {formO.urgente && <div style={{fontSize:10,color:"rgba(234,179,8,0.7)",marginTop:8,fontFamily:"Inter,sans-serif"}}>Tu publicación se destacará con badge dorado y aparecerá primero en la lista durante 48 horas.</div>}
+            </div>
             <div className="fn-modal-actions">
               <button className="fn-btn-cancelar" onClick={() => setMostrarFormO(false)}>Cancelar</button>
               <button className="fn-btn-guardar" onClick={guardarOfrecido} disabled={guardando || !formO.ciudad}>
@@ -1336,6 +1355,11 @@ export default function MirPage() {
               </div>
             </div>
             <div className="fn-field"><label className="fn-label">Descripcion</label><textarea className="fn-textarea" placeholder="Requisitos especificos del cliente..." value={formB.descripcion} onChange={e => setFormB(p => ({...p, descripcion: e.target.value}))} /></div>
+            <div className="fn-divider"/>
+            <div style={{background:"rgba(234,179,8,0.06)",border:"1px solid rgba(234,179,8,0.2)",borderRadius:6,padding:"14px 16px"}}>
+              <Toggle label="⚡ PEDIDO URGENTE — aparece destacado 48hs (función premium)" value={formB.urgente} onChange={v => setFormB(p => ({...p, urgente: v}))} />
+              {formB.urgente && <div style={{fontSize:10,color:"rgba(234,179,8,0.7)",marginTop:8,fontFamily:"Inter,sans-serif"}}>Tu búsqueda se destacará con badge dorado y aparecerá primero en la lista durante 48 horas.</div>}
+            </div>
             <div className="fn-modal-actions">
               <button className="fn-btn-cancelar" onClick={() => setMostrarFormB(false)}>Cancelar</button>
               <button className="fn-btn-guardar" onClick={guardarBusqueda} disabled={guardando || !formB.ciudad}>

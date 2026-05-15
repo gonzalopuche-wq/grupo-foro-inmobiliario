@@ -103,6 +103,8 @@ export default function PerfilPage() {
   const [cambioPassword, setCambioPassword] = useState({ actual: "", nueva: "", confirmar: "" });
   const [cambiandoPassword, setCambiandoPassword] = useState(false);
   const [repStats, setRepStats] = useState({ docs: 0, comparables: 0, meses: 0, tasaciones: 0, propiedades: 0, negocios: 0, networking: 0, foro: 0, referidos: 0 });
+  const [bonConfig, setBonConfig] = useState<{ accion: string; label: string; descuento_usd: number; activo: boolean }[]>([]);
+  const [bonHistorial, setBonHistorial] = useState<{ accion: string; mes: string; descuento_aplicado: number }[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -125,6 +127,13 @@ export default function PerfilPage() {
           sc(supabase.from("referidos").select("id", { count: "exact", head: true }).eq("referidor_id", data.user.id) as any),
         ]);
         setRepStats({ docs, comparables, meses, tasaciones, propiedades, negocios, networking, foro, referidos });
+        const mesCurrent = new Date().toISOString().slice(0, 7);
+        const [{ data: bc }, { data: bh }] = await Promise.all([
+          supabase.from("bonificaciones_config").select("accion,label,descuento_usd,activo").eq("activo", true),
+          supabase.from("bonificaciones_historial").select("accion,mes,descuento_aplicado").eq("perfil_id", data.user.id).eq("mes", mesCurrent),
+        ]);
+        if (bc) setBonConfig(bc as { accion: string; label: string; descuento_usd: number; activo: boolean }[]);
+        if (bh) setBonHistorial(bh as { accion: string; mes: string; descuento_aplicado: number }[]);
       }
       setLoading(false);
 
@@ -875,23 +884,65 @@ export default function PerfilPage() {
                 </div>
               </div>
 
-              <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                {[
-                  { label: "Documentos en Biblioteca", ico: "📚", pts: "Bonifica suscripción" },
-                  { label: "Aportes en el Foro", ico: "💬", pts: "Bonifica suscripción" },
-                  { label: "Comparables cargados", ico: "📊", pts: "Bonifica suscripción" },
-                  { label: "Seniority GFI", ico: "⭐", pts: "Bonifica suscripción" },
-                  { label: "Referidos suscriptos", ico: "👥", pts: "Bonifica suscripción" },
-                ].map((b, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 6 }}>
-                    <span style={{ fontSize: 18 }}>{b.ico}</span>
-                    <div>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{b.label}</div>
-                      <div style={{ fontSize: 10, color: "rgba(200,0,0,0.7)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{b.pts}</div>
+              {/* MI ABONO INTELIGENTE — bonificaciones reales */}
+              {(() => {
+                const icoMap: Record<string, string> = { biblioteca: "📚", foro: "💬", comparables: "📊", seniority: "⭐", referidos: "👥" };
+                const totalDescuento = bonHistorial.reduce((sum, h) => sum + (h.descuento_aplicado ?? 0), 0);
+                const precioBase = perfil.tipo === "colaborador" ? 5 : 15;
+                const precioFinal = Math.max(0, precioBase - totalDescuento);
+                return (
+                  <>
+                    {bonConfig.length > 0 && (
+                      <div style={{ marginTop: 16, padding: "12px 16px", background: "rgba(204,0,0,0.06)", border: "1px solid rgba(204,0,0,0.15)", borderRadius: 8 }}>
+                        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 800, color: "#cc0000", letterSpacing: "0.12em", marginBottom: 8 }}>MI ABONO INTELIGENTE — ESTE MES</div>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
+                          <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff" }}>USD {precioFinal.toFixed(2)}</span>
+                          {totalDescuento > 0 && (
+                            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>USD {precioBase}</span>
+                          )}
+                          {totalDescuento > 0 && (
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#22c55e", fontFamily: "Montserrat,sans-serif" }}>−USD {totalDescuento.toFixed(2)}</span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>
+                          {totalDescuento > 0 ? `Bonificación activa: USD ${totalDescuento.toFixed(2)} este mes por tu colaboración` : "Contribuí para reducir tu abono mensual"}
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                      {bonConfig.map((b) => {
+                        const aplicado = bonHistorial.find(h => h.accion === b.accion);
+                        return (
+                          <div key={b.accion} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: aplicado ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.03)", border: `1px solid ${aplicado ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.07)"}`, borderRadius: 6 }}>
+                            <span style={{ fontSize: 18 }}>{icoMap[b.accion] ?? "🎯"}</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{b.label}</div>
+                              <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: aplicado ? "#22c55e" : "rgba(204,0,0,0.7)" }}>
+                                {aplicado ? `✓ −USD ${aplicado.descuento_aplicado.toFixed(2)} aplicado` : `Bonifica USD ${b.descuento_usd.toFixed(2)}`}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {bonConfig.length === 0 && [
+                        { label: "Documentos en Biblioteca", ico: "📚" },
+                        { label: "Aportes en el Foro", ico: "💬" },
+                        { label: "Comparables cargados", ico: "📊" },
+                        { label: "Seniority GFI", ico: "⭐" },
+                        { label: "Referidos suscriptos", ico: "👥" },
+                      ].map((b, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 6 }}>
+                          <span style={{ fontSize: 18 }}>{b.ico}</span>
+                          <div>
+                            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{b.label}</div>
+                            <div style={{ fontSize: 10, color: "rgba(200,0,0,0.7)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>Bonifica suscripción</div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  </>
+                );
+              })()}
 
               <div style={{ marginTop: 16, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 6, fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
                 💳 El pago se realiza por <strong style={{ color: "rgba(255,255,255,0.7)" }}>transferencia bancaria</strong>. El admin verifica el mismo día hábil. 3 días de gracia ante vencimiento.

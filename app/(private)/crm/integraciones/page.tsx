@@ -22,7 +22,7 @@ interface ConfigEntry {
   created_at: string;
 }
 
-type Tab = "tokko" | "importar" | "exportar" | "historial";
+type Tab = "tokko" | "kiteprop" | "importar" | "exportar" | "historial";
 type ImportTipo = "contactos" | "propiedades";
 
 // Mapeo automático de columnas CSV → campo interno
@@ -92,6 +92,14 @@ export default function IntegracionesPage() {
   const [tokkoSaved, setTokkoSaved] = useState(false);
   const [tokkoSyncing, setTokkoSyncing] = useState<string | null>(null);
   const [tokkoMsg, setTokkoMsg] = useState<{ tipo: "ok" | "err"; texto: string } | null>(null);
+
+  // Kiteprop
+  const [kitepropKey, setKitepropKey] = useState("");
+  const [kitepropBaseUrl, setKitepropBaseUrl] = useState("https://api.kiteprop.com/api/v1");
+  const [kitepropSaving, setKitepropSaving] = useState(false);
+  const [kitepropSaved, setKitepropSaved] = useState(false);
+  const [kitepropSyncing, setKitepropSyncing] = useState<string | null>(null);
+  const [kitepropMsg, setKitepropMsg] = useState<{ tipo: "ok" | "err"; texto: string } | null>(null);
 
   // Import
   const [importTipo, setImportTipo] = useState<ImportTipo>("contactos");
@@ -195,6 +203,82 @@ export default function IntegracionesPage() {
 
   const tokkoConfig = configs.find(c => c.tipo === "tokko");
 
+  // ── Kiteprop ──────────────────────────────────────────────────────────────
+
+  async function guardarKiteprop() {
+    if (!kitepropKey.trim()) return;
+    setKitepropSaving(true);
+    const res = await fetch("/api/crm/integraciones", {
+      method: "POST",
+      headers: { ...authHeader(), "Content-Type": "application/json" },
+      body: JSON.stringify({ accion: "guardar_config", tipo: "kiteprop", config: { api_key: kitepropKey.trim(), base_url: kitepropBaseUrl.trim() } }),
+    });
+    const json = await res.json();
+    setKitepropSaving(false);
+    if (json.ok) { setKitepropSaved(true); setTimeout(() => setKitepropSaved(false), 2500); cargarDatos(); }
+    else setKitepropMsg({ tipo: "err", texto: json.error });
+  }
+
+  async function syncKiteprop(action: "propiedades" | "contactos") {
+    setKitepropSyncing(action);
+    setKitepropMsg(null);
+    try {
+      const res = await fetch(`/api/crm/kiteprop?action=${action}`, { headers: authHeader() });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error);
+      const items = json.data?.results ?? json.data?.objects ?? json.data ?? [];
+      const arr = Array.isArray(items) ? items : [];
+      let mapped: Record<string, string>[] = [];
+      if (action === "propiedades") {
+        mapped = arr.map((p: Record<string, unknown>) => ({
+          codigo: String(p.code ?? p.id ?? ""),
+          titulo: String(p.title ?? p.address ?? ""),
+          tipo: String(p.property_type ?? p.type ?? "Otro"),
+          operacion: String(p.operation_type ?? p.operation ?? "Venta"),
+          precio: String(p.price ?? ""),
+          moneda: String(p.currency ?? "USD"),
+          direccion: String(p.address ?? p.street ?? ""),
+          zona: String(p.neighborhood ?? p.zone ?? p.location ?? ""),
+          dormitorios: String(p.bedrooms ?? p.rooms ?? ""),
+          banos: String(p.bathrooms ?? ""),
+          superficie_cubierta: String(p.covered_area ?? p.roofed_surface ?? ""),
+          superficie_total: String(p.total_area ?? p.total_surface ?? ""),
+          descripcion: String(p.description ?? ""),
+        }));
+      } else {
+        mapped = arr.map((c: Record<string, unknown>) => ({
+          nombre: String(c.first_name ?? c.name ?? ""),
+          apellido: String(c.last_name ?? c.surname ?? ""),
+          email: String(c.email ?? ""),
+          telefono: String(c.phone ?? c.mobile ?? ""),
+        }));
+      }
+      if (mapped.length === 0) {
+        setKitepropMsg({ tipo: "err", texto: "No se encontraron registros en Kiteprop" });
+        setKitepropSyncing(null);
+        return;
+      }
+      const impRes = await fetch("/api/crm/integraciones", {
+        method: "POST",
+        headers: { ...authHeader(), "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: action === "propiedades" ? "importar_propiedades" : "importar_contactos", [action]: mapped, fuente: "kiteprop" }),
+      });
+      const impJson = await impRes.json();
+      await fetch("/api/crm/integraciones", {
+        method: "POST",
+        headers: { ...authHeader(), "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: "update_sync", tipo: "kiteprop" }),
+      });
+      setKitepropMsg({ tipo: "ok", texto: `${action === "propiedades" ? "Propiedades" : "Contactos"} sincronizados: ${impJson.importados} importados${impJson.errores > 0 ? `, ${impJson.errores} con error` : ""}` });
+      cargarDatos();
+    } catch (e: unknown) {
+      setKitepropMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error al conectar con Kiteprop" });
+    }
+    setKitepropSyncing(null);
+  }
+
+  const kitepropConfig = configs.find(c => c.tipo === "kiteprop");
+
   // ── Import CSV/Excel ──────────────────────────────────────────────────────
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -282,7 +366,8 @@ export default function IntegracionesPage() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   const TABS: { id: Tab; label: string; icon: string }[] = [
-    { id: "tokko", label: "Tokko Broker", icon: "🔗" },
+    { id: "tokko", label: "Tokko Broker", icon: "🏢" },
+    { id: "kiteprop", label: "Kiteprop", icon: "🔗" },
     { id: "importar", label: "Importar", icon: "📥" },
     { id: "exportar", label: "Exportar", icon: "📤" },
     { id: "historial", label: "Historial", icon: "📋" },
@@ -407,6 +492,85 @@ export default function IntegracionesPage() {
                 </div>
                 <span className="int-badge" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)", marginLeft: "auto" }}>PRÓXIMAMENTE</span>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Tab: Kiteprop ─────────────────────────────────────────────── */}
+        {tab === "kiteprop" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="int-card">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(168,85,247,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🔗</div>
+                <div>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>Kiteprop</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Sincronizá propiedades y contactos desde tu cuenta Kiteprop</div>
+                </div>
+                {kitepropConfig && (
+                  <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                )}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>API KEY</div>
+                  <input
+                    className="int-input"
+                    type="password"
+                    placeholder="Ingresá tu API Key de Kiteprop"
+                    value={kitepropKey}
+                    onChange={e => setKitepropKey(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>BASE URL <span style={{ fontSize: 10, fontWeight: 400, color: "rgba(255,255,255,0.25)" }}>(opcional — para instancias personalizadas)</span></div>
+                  <input
+                    className="int-input"
+                    type="text"
+                    placeholder="https://api.kiteprop.com/api/v1"
+                    value={kitepropBaseUrl}
+                    onChange={e => setKitepropBaseUrl(e.target.value)}
+                  />
+                </div>
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <button className="int-btn int-btn-red" onClick={guardarKiteprop} disabled={kitepropSaving || !kitepropKey.trim()}>
+                    {kitepropSaving ? "Guardando…" : kitepropSaved ? "✓ Guardado" : "Guardar credenciales"}
+                  </button>
+                </div>
+              </div>
+
+              {kitepropConfig?.ultima_sincronizacion && (
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>
+                  Última sincronización: {formatFecha(kitepropConfig.ultima_sincronizacion)}
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button className="int-btn int-btn-red" onClick={() => syncKiteprop("propiedades")} disabled={!kitepropConfig || kitepropSyncing !== null}>
+                  {kitepropSyncing === "propiedades" ? "Sincronizando…" : "🏠 Sincronizar Propiedades"}
+                </button>
+                <button className="int-btn int-btn-outline" onClick={() => syncKiteprop("contactos")} disabled={!kitepropConfig || kitepropSyncing !== null}>
+                  {kitepropSyncing === "contactos" ? "Sincronizando…" : "👥 Sincronizar Contactos"}
+                </button>
+              </div>
+
+              {!kitepropConfig && (
+                <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                  ℹ️ Para obtener tu API Key ingresá a Kiteprop → Configuración → API → Generar clave
+                </div>
+              )}
+
+              {kitepropMsg && (
+                <div className={kitepropMsg.tipo === "ok" ? "int-msg-ok" : "int-msg-err"} style={{ marginTop: 14 }}>
+                  {kitepropMsg.tipo === "ok" ? "✓ " : "✕ "}{kitepropMsg.texto}
+                </div>
+              )}
+            </div>
+
+            <div className="int-card" style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, fontFamily: "Inter,sans-serif" }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", marginBottom: 10 }}>ACERCA DE KITEPROP</div>
+              Kiteprop es un software de gestión inmobiliaria argentino. La integración sincroniza tu cartera y contactos de Kiteprop directamente al CRM de GFI®.<br /><br />
+              Si usás una instancia propia (self-hosted), modificá la Base URL para apuntar a tu servidor. La API Key se envía tanto por header <code style={{ background: "rgba(255,255,255,0.06)", padding: "1px 5px", borderRadius: 3 }}>X-Api-Key</code> como por parámetro de query para máxima compatibilidad.
             </div>
           </div>
         )}

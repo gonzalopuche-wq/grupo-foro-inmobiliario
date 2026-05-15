@@ -82,6 +82,34 @@ function labelFechaCorta(fecha: string): string {
   return new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short'})
 }
 
+function buildIcs(eventos: { titulo:string; fecha:string; hora:string|null; hora_fin:string|null; descripcion:string|null; lugar:string|null }[]): string {
+  const fmt = (d: string, h: string) => `${d.replace(/-/g,'')}T${h.replace(':','')}00`
+  const esc = (s: string) => s.replace(/,/g,'\\,').replace(/;/g,'\\;').replace(/\n/g,'\\n')
+  const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2)}@gfi`
+  const lines = [
+    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GFI//Agenda GFI//ES','CALSCALE:GREGORIAN',
+    'X-WR-CALNAME:Agenda GFI®','X-WR-TIMEZONE:America/Argentina/Buenos_Aires',
+  ]
+  for (const ev of eventos) {
+    const dtStart = ev.hora ? `DTSTART:${fmt(ev.fecha, ev.hora)}` : `DTSTART;VALUE=DATE:${ev.fecha.replace(/-/g,'')}`
+    const dtEnd   = ev.hora_fin ? `DTEND:${fmt(ev.fecha, ev.hora_fin)}` : (ev.hora ? `DTEND:${fmt(ev.fecha, ev.hora)}` : `DTEND;VALUE=DATE:${ev.fecha.replace(/-/g,'')}`)
+    lines.push('BEGIN:VEVENT', `UID:${uid()}`, dtStart, dtEnd,
+      `SUMMARY:${esc(ev.titulo)}`,
+      ...(ev.descripcion ? [`DESCRIPTION:${esc(ev.descripcion)}`] : []),
+      ...(ev.lugar ? [`LOCATION:${esc(ev.lugar)}`] : []),
+      'END:VEVENT')
+  }
+  lines.push('END:VCALENDAR')
+  return lines.join('\r\n')
+}
+
+function downloadIcs(eventos: { titulo:string; fecha:string; hora:string|null; hora_fin:string|null; descripcion:string|null; lugar:string|null }[], filename = 'agenda-gfi.ics') {
+  const blob = new Blob([buildIcs(eventos)], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click()
+  URL.revokeObjectURL(url)
+}
+
 function gcalUrl(ev: { titulo:string; fecha:string; hora:string|null; hora_fin:string|null; descripcion:string|null; lugar:string|null }, calSrc?: string) {
   const fmt = (d: string, h: string) => `${d.replace(/-/g,'')}T${h.replace(':','')}00`
   const start = ev.hora ? fmt(ev.fecha, ev.hora) : ev.fecha.replace(/-/g,'')
@@ -579,6 +607,13 @@ export default function AgendaPage() {
             </button>
           ))}
           <button onClick={()=>setModal(true)} style={S.btn(true)}>+ Nueva cita</button>
+          <button
+            onClick={()=>downloadIcs(items.map(i=>({titulo:i.titulo,fecha:i.fecha,hora:i.hora,hora_fin:i.hora_fin,descripcion:i.descripcion,lugar:i.lugar})))}
+            style={{padding:'8px 14px',background:'transparent',border:'1px solid rgba(255,255,255,0.12)',borderRadius:8,color:'rgba(255,255,255,0.45)',fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',gap:5}}
+            title="Exportar agenda como .ics (compatible Google Calendar, Outlook, Apple Calendar)"
+          >
+            📥 .ics
+          </button>
         </div>
       </div>
 
