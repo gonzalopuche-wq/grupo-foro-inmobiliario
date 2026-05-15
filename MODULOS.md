@@ -29,7 +29,7 @@
 
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
-| 27 | Observatorio del Mercado | 🟡 | Widget dashboard, sin página dedicada |
+| **27** | **Observatorio del Mercado** | ✅ | **`/observatorio` — datos anonimizados de toda la comunidad GFI®: precio m² por barrio, actividad por zona, tipo de inmueble, MIR oferta vs demanda, KPIs comunidad — `v26`** |
 | **28** | **Estadísticas del Mercado** | ✅ | **`/estadisticas-mercado` — KPIs CRM personales, negocios por etapa/mes, cartera por tipo/zona, honorarios proyectados/realizados/cobrados — `v23`** |
 | 29 | Comparables de Venta | ✅ | `/comparables` |
 | 30 | Radar de Noticias | 🟡 | `/noticias` |
@@ -215,8 +215,8 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **68** | **49%** |
-| 🟡 Parcial | 11 | 8% |
+| ✅ Implementado | **69** | **50%** |
+| 🟡 Parcial | 10 | 7% |
 | ❌ Pendiente/Diferido | 60 | 43% |
 | **Total** | **139** | |
 
@@ -224,11 +224,11 @@
 
 ## PRÓXIMOS A IMPLEMENTAR (alta prioridad)
 
-- [ ] MOD 27 — Observatorio del Mercado (página dedicada)
+- [x] MOD 27 — Observatorio del Mercado ✅ v26
 - [ ] MOD 94 — Portal Vendedor (Diferido — v24)
 - [ ] MOD 131 — Mutual GFI (Diferido)
 - [ ] MOD 132 — Ranking/Prioridad de Pago
 
 ---
 
-*Última actualización: v25 — MOD 2 (MIR PEDIDO URGENTE), MOD 76 (MI ABONO INTELIGENTE bonificaciones), MOD 85 (Kiteprop integration), MOD 116 (.ics export agenda). Migration 051.*
+*Última actualización: v26 — MOD 27 (Observatorio del Mercado `/observatorio` — datos comunidad GFI®, precio m² por barrio, MIR oferta vs demanda).*
