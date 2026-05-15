@@ -29,6 +29,8 @@ interface EventoPropuesto {
 
 interface Colaborador { id: string; corredor_id: string; user_id: string | null; nombre: string; apellido: string; email: string; telefono: string | null; dni: string | null; rol: string; estado: string; notas: string | null; created_at: string; corredor?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface FinanzaEntry { id: string; tipo: "ingreso" | "gasto"; categoria: string; concepto: string; monto: number; moneda: string; fecha: string; referencia: string | null; created_at: string; }
+interface AdminSocio { id: string; nombre: string; porcentaje: number; activo: boolean; created_at: string; }
+interface AdminRetiro { id: string; socio_id: string; monto: number; moneda: string; concepto: string | null; fecha: string; periodo: string; created_at: string; }
 interface SoporteTicket { id: string; user_id: string; asunto: string; descripcion: string; estado: "abierto" | "en_proceso" | "resuelto" | "cerrado"; prioridad: "baja" | "normal" | "alta" | "urgente"; respuesta: string | null; respuesta_ia: string | null; created_at: string; updated_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 
 const CATS_INGRESO = ["suscripcion", "match", "pauta", "servicio", "otro"];
@@ -240,6 +242,17 @@ export default function AdminPage() {
   const [formFinanza, setFormFinanza] = useState(FORM_FIN_VACIO);
   const [guardandoFinanza, setGuardandoFinanza] = useState(false);
   const [mostrarFormFinanza, setMostrarFormFinanza] = useState(false);
+  // Liquidación mensual — socios y retiros
+  const [socios, setSocios] = useState<AdminSocio[]>([]);
+  const [retiros, setRetiros] = useState<AdminRetiro[]>([]);
+  const [loadingSocios, setLoadingSocios] = useState(true);
+  const [mostrarGestionSocios, setMostrarGestionSocios] = useState(false);
+  const [formSocio, setFormSocio] = useState({ nombre: "", porcentaje: "100" });
+  const [guardandoSocio, setGuardandoSocio] = useState(false);
+  const [formRetiro, setFormRetiro] = useState<{ socio_id: string; monto: string; concepto: string; moneda: string } | null>(null);
+  const [guardandoRetiro, setGuardandoRetiro] = useState(false);
+  const PCT_RESERVA = 0.30;
+  const PCT_DISTRIBUIBLE = 0.70;
   // Soporte
   const [soporteTickets, setSoporteTickets] = useState<SoporteTicket[]>([]);
   const [loadingSoporte, setLoadingSoporte] = useState(true);
@@ -303,7 +316,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSoporte(); cargarRedProveedores(); cargarWa(); cargarRankingPago(); cargarLogsActividad(); cargarStatsEstrategicas();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSocios(); cargarSoporte(); cargarRedProveedores(); cargarWa(); cargarRankingPago(); cargarLogsActividad(); cargarStatsEstrategicas();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").eq("tipo", "admin").limit(1).single();
@@ -897,6 +910,62 @@ A partir de esa fecha el costo mensual será de USD 15.
     mostrarToast("Eliminado", "ok");
   };
 
+  const cargarSocios = async () => {
+    setLoadingSocios(true);
+    const [{ data: s }, { data: r }] = await Promise.all([
+      supabase.from("admin_socios").select("*").eq("activo", true).order("created_at"),
+      supabase.from("admin_retiros").select("*").order("created_at", { ascending: false }),
+    ]);
+    setSocios((s ?? []) as AdminSocio[]);
+    setRetiros((r ?? []) as AdminRetiro[]);
+    setLoadingSocios(false);
+  };
+
+  const guardarSocio = async () => {
+    const pct = parseFloat(formSocio.porcentaje);
+    if (!formSocio.nombre.trim() || isNaN(pct) || pct <= 0 || pct > 100) return;
+    setGuardandoSocio(true);
+    await supabase.from("admin_socios").insert({ nombre: formSocio.nombre.trim(), porcentaje: pct });
+    setFormSocio({ nombre: "", porcentaje: "100" });
+    setGuardandoSocio(false);
+    cargarSocios();
+    mostrarToast("Socio agregado", "ok");
+  };
+
+  const eliminarSocio = async (id: string) => {
+    if (!confirm("¿Eliminar este socio?")) return;
+    await supabase.from("admin_socios").update({ activo: false }).eq("id", id);
+    cargarSocios();
+    mostrarToast("Socio eliminado", "ok");
+  };
+
+  const guardarRetiro = async () => {
+    if (!formRetiro) return;
+    const monto = parseFloat(formRetiro.monto.replace(/\./g, "").replace(",", "."));
+    if (isNaN(monto) || monto <= 0 || !formRetiro.socio_id) return;
+    setGuardandoRetiro(true);
+    const periodo = periodoFinanzas;
+    await supabase.from("admin_retiros").insert({
+      socio_id: formRetiro.socio_id,
+      monto,
+      moneda: formRetiro.moneda,
+      concepto: formRetiro.concepto || null,
+      fecha: new Date().toISOString().slice(0, 10),
+      periodo,
+    });
+    setFormRetiro(null);
+    setGuardandoRetiro(false);
+    cargarSocios();
+    mostrarToast("Retiro registrado", "ok");
+  };
+
+  const eliminarRetiro = async (id: string) => {
+    if (!confirm("¿Eliminar este retiro?")) return;
+    await supabase.from("admin_retiros").delete().eq("id", id);
+    cargarSocios();
+    mostrarToast("Retiro eliminado", "ok");
+  };
+
   const cargarSoporte = async () => {
     setLoadingSoporte(true);
     const { data } = await supabase
@@ -1370,6 +1439,34 @@ A partir de esa fecha el costo mensual será de USD 15.
         .fin-badge-gasto { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; }
         .fin-btn-del { padding: 4px 10px; background: transparent; border: 1px solid rgba(255,68,68,0.25); border-radius: 3px; color: rgba(255,68,68,0.6); font-size: 11px; cursor: pointer; }
         .fin-btn-del:hover { border-color: rgba(255,68,68,0.6); color: #ff4444; }
+        /* Liquidación mensual */
+        .liq-panel { background: linear-gradient(135deg, rgba(10,20,10,0.95) 0%, rgba(14,14,14,0.95) 100%); border: 1px solid rgba(34,197,94,0.2); border-radius: 10px; padding: 20px 22px; margin-bottom: 20px; }
+        .liq-title { font-family:'Montserrat',sans-serif; font-size:11px; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; color:rgba(34,197,94,0.7); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .liq-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+        .liq-card { background:rgba(0,0,0,0.3); border-radius:8px; padding:14px 16px; text-align:center; }
+        .liq-card-label { font-size:9px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:6px; }
+        .liq-card-val { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:800; }
+        .liq-card-pct { font-size:9px; color:rgba(255,255,255,0.25); margin-top:3px; font-family:'Montserrat',sans-serif; }
+        .liq-socios { display:flex; flex-direction:column; gap:10px; }
+        .liq-socio-row { background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:14px 16px; }
+        .liq-socio-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
+        .liq-socio-nombre { font-family:'Montserrat',sans-serif; font-size:13px; font-weight:800; color:#fff; }
+        .liq-socio-pct { font-size:10px; color:rgba(255,255,255,0.35); font-family:'Montserrat',sans-serif; margin-top:2px; }
+        .liq-socio-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:10px; }
+        .liq-mini-card { background:rgba(255,255,255,0.03); border-radius:6px; padding:10px 12px; }
+        .liq-mini-label { font-size:8px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.25); margin-bottom:4px; }
+        .liq-mini-val { font-family:'Montserrat',sans-serif; font-size:15px; font-weight:800; }
+        .liq-retiros-lista { display:flex; flex-direction:column; gap:4px; }
+        .liq-retiro-item { display:flex; align-items:center; justify-content:space-between; padding:5px 8px; background:rgba(255,255,255,0.02); border-radius:4px; font-size:11px; color:rgba(255,255,255,0.4); }
+        .liq-btn-retiro { padding:5px 14px; background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.3); border-radius:4px; color:#fbbf24; font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
+        .liq-btn-retiro:hover { background:rgba(251,191,36,0.2); }
+        .liq-proy { background:rgba(30,20,0,0.5); border:1px solid rgba(251,191,36,0.15); border-radius:8px; padding:12px 16px; margin-top:12px; }
+        .liq-proy-title { font-size:9px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(251,191,36,0.6); margin-bottom:8px; }
+        .liq-proy-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+        .liq-form-retiro { background:rgba(14,14,14,0.98); border:1px solid rgba(251,191,36,0.2); border-radius:6px; padding:16px 18px; margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+        .liq-gestion-socios { background:rgba(14,14,14,0.95); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:16px 18px; margin-bottom:16px; }
+        .liq-btn-gestion { padding:7px 16px; background:transparent; border:1px solid rgba(255,255,255,0.15); border-radius:4px; color:rgba(255,255,255,0.4); font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
+        .liq-btn-gestion:hover { border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.7); }
         @media (max-width: 768px) {
           .adm-ind-grid { grid-template-columns: 1fr; }
           .cbu-grid { grid-template-columns: 1fr; }
@@ -2406,6 +2503,215 @@ A partir de esa fecha el costo mensual será de USD 15.
                     * El balance solo incluye registros en ARS. Hay registros en otras monedas (USD/EUR/USDT) que no están convertidos.
                   </div>
                 )}
+
+                {/* ── LIQUIDACIÓN MENSUAL ── */}
+                {(() => {
+                  const neto = balance; // totalIngresos - totalGastos
+                  const reserva = neto * PCT_RESERVA;
+                  const distribuible = neto * PCT_DISTRIBUIBLE;
+                  const fmtARS = (n: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
+                  const retirosMes = retiros.filter(r => r.periodo === periodoFinanzas && r.moneda === "ARS");
+
+                  // Proyección fin de mes
+                  const hoyDia = new Date();
+                  const diasMes = new Date(hoyDia.getFullYear(), hoyDia.getMonth() + 1, 0).getDate();
+                  const diaActual = hoyDia.getDate();
+                  const factorProyeccion = diasMes / Math.max(diaActual, 1);
+                  const ingresosProyectados = totalIngresos * factorProyeccion;
+                  const netoProy = ingresosProyectados - totalGastos;
+                  const reservaProy = netoProy * PCT_RESERVA;
+                  const distribuibleProy = netoProy * PCT_DISTRIBUIBLE;
+
+                  const totalPorcentajes = socios.reduce((s, x) => s + x.porcentaje, 0);
+
+                  return (
+                    <>
+                      <div className="liq-panel">
+                        <div className="liq-title">📊 Liquidación del mes — {periodoFinanzas}</div>
+
+                        {/* Resumen distribución actual */}
+                        <div className="liq-grid">
+                          <div className="liq-card">
+                            <div className="liq-card-label">Neto del período</div>
+                            <div className="liq-card-val" style={{ color: neto >= 0 ? "#22c55e" : "#ef4444" }}>{fmtARS(neto)}</div>
+                            <div className="liq-card-pct">Ingresos − Gastos</div>
+                          </div>
+                          <div className="liq-card">
+                            <div className="liq-card-label">Reserva 30%</div>
+                            <div className="liq-card-val" style={{ color: "#60a5fa" }}>{fmtARS(Math.max(0, reserva))}</div>
+                            <div className="liq-card-pct">Retención obligatoria</div>
+                          </div>
+                          <div className="liq-card">
+                            <div className="liq-card-label">Distribuible 70%</div>
+                            <div className="liq-card-val" style={{ color: "#fbbf24" }}>{fmtARS(Math.max(0, distribuible))}</div>
+                            <div className="liq-card-pct">A repartir entre socios</div>
+                          </div>
+                        </div>
+
+                        {/* Proyección fin de mes */}
+                        <div className="liq-proy">
+                          <div className="liq-proy-title">📈 Proyección al {diasMes}/{hoyDia.getMonth() + 1} (día {diaActual}/{diasMes})</div>
+                          <div className="liq-proy-grid">
+                            <div>
+                              <div className="liq-mini-label">Neto proyectado</div>
+                              <div className="liq-mini-val" style={{ fontSize: 13, color: netoProy >= 0 ? "#34d399" : "#f87171" }}>{fmtARS(netoProy)}</div>
+                            </div>
+                            <div>
+                              <div className="liq-mini-label">Reserva proyectada</div>
+                              <div className="liq-mini-val" style={{ fontSize: 13, color: "#93c5fd" }}>{fmtARS(Math.max(0, reservaProy))}</div>
+                            </div>
+                            <div>
+                              <div className="liq-mini-label">Distribuible proyectado</div>
+                              <div className="liq-mini-val" style={{ fontSize: 13, color: "#fde68a" }}>{fmtARS(Math.max(0, distribuibleProy))}</div>
+                            </div>
+                          </div>
+                          <div style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>
+                            Proyección lineal basada en {diaActual} días de {diasMes} transcurridos. Los gastos no se proyectan.
+                          </div>
+                        </div>
+
+                        {/* Distribución por socio */}
+                        {neto > 0 && socios.length > 0 && (
+                          <div style={{ marginTop: 16 }}>
+                            <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>
+                              Distribución por socio
+                              {Math.abs(totalPorcentajes - 100) > 0.01 && (
+                                <span style={{ color: "#f87171", marginLeft: 8 }}>⚠ Los porcentajes suman {totalPorcentajes.toFixed(1)}% (deben sumar 100%)</span>
+                              )}
+                            </div>
+                            <div className="liq-socios">
+                              {socios.map(socio => {
+                                const montoSocio = distribuible * (socio.porcentaje / 100);
+                                const retiradoSocio = retirosMes.filter(r => r.socio_id === socio.id).reduce((s, r) => s + r.monto, 0);
+                                const disponible = montoSocio - retiradoSocio;
+                                const retirosSocio = retirosMes.filter(r => r.socio_id === socio.id);
+                                return (
+                                  <div key={socio.id} className="liq-socio-row">
+                                    <div className="liq-socio-header">
+                                      <div>
+                                        <div className="liq-socio-nombre">{socio.nombre}</div>
+                                        <div className="liq-socio-pct">{socio.porcentaje}% de participación</div>
+                                      </div>
+                                      <button className="liq-btn-retiro"
+                                        onClick={() => setFormRetiro({ socio_id: socio.id, monto: "", concepto: "", moneda: "ARS" })}>
+                                        + Registrar retiro
+                                      </button>
+                                    </div>
+                                    <div className="liq-socio-stats">
+                                      <div className="liq-mini-card">
+                                        <div className="liq-mini-label">Le corresponde</div>
+                                        <div className="liq-mini-val" style={{ color: "#fbbf24" }}>{fmtARS(montoSocio)}</div>
+                                      </div>
+                                      <div className="liq-mini-card">
+                                        <div className="liq-mini-label">Ya retirado</div>
+                                        <div className="liq-mini-val" style={{ color: "#f87171" }}>{fmtARS(retiradoSocio)}</div>
+                                      </div>
+                                      <div className="liq-mini-card">
+                                        <div className="liq-mini-label">Disponible</div>
+                                        <div className="liq-mini-val" style={{ color: disponible >= 0 ? "#22c55e" : "#ef4444" }}>{fmtARS(disponible)}</div>
+                                      </div>
+                                    </div>
+
+                                    {/* Form retiro inline */}
+                                    {formRetiro?.socio_id === socio.id && (
+                                      <div className="liq-form-retiro">
+                                        <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#fbbf24", marginBottom: 2 }}>
+                                          Registrar retiro — {socio.nombre}
+                                        </div>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 2fr", gap: 8 }}>
+                                          <div>
+                                            <div className="fin-form-label">Monto</div>
+                                            <input className="fin-input" type="number" placeholder="0" value={formRetiro.monto}
+                                              onChange={e => setFormRetiro(p => p ? { ...p, monto: e.target.value } : null)} />
+                                          </div>
+                                          <div>
+                                            <div className="fin-form-label">Moneda</div>
+                                            <select className="fin-select" value={formRetiro.moneda}
+                                              onChange={e => setFormRetiro(p => p ? { ...p, moneda: e.target.value } : null)}>
+                                              {MONEDAS_FIN.map(m => <option key={m}>{m}</option>)}
+                                            </select>
+                                          </div>
+                                          <div>
+                                            <div className="fin-form-label">Concepto (opcional)</div>
+                                            <input className="fin-input" placeholder="Adelanto, sueldo, etc." value={formRetiro.concepto}
+                                              onChange={e => setFormRetiro(p => p ? { ...p, concepto: e.target.value } : null)} />
+                                          </div>
+                                        </div>
+                                        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                                          <button className="fin-btn-cancel" onClick={() => setFormRetiro(null)}>Cancelar</button>
+                                          <button className="fin-btn-save" disabled={guardandoRetiro} onClick={guardarRetiro}>
+                                            {guardandoRetiro ? "Guardando..." : "Confirmar retiro"}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Historial de retiros */}
+                                    {retirosSocio.length > 0 && (
+                                      <div className="liq-retiros-lista" style={{ marginTop: 8 }}>
+                                        <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", marginBottom: 4 }}>Retiros del mes</div>
+                                        {retirosSocio.map(r => (
+                                          <div key={r.id} className="liq-retiro-item">
+                                            <span>{new Date(r.fecha + "T12:00:00").toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" })} — {r.concepto ?? "Sin concepto"}</span>
+                                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                              <span style={{ color: "#f87171", fontWeight: 700 }}>{new Intl.NumberFormat("es-AR").format(r.monto)} {r.moneda}</span>
+                                              <button className="fin-btn-del" style={{ padding: "2px 7px", fontSize: 10 }} onClick={() => eliminarRetiro(r.id)}>✕</button>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {socios.length === 0 && !loadingSocios && (
+                          <div style={{ textAlign: "center", padding: "16px 0", fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+                            No hay socios configurados. Agregá uno para ver la distribución.
+                          </div>
+                        )}
+
+                        {/* Gestión de socios */}
+                        <div style={{ marginTop: 16, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12 }}>
+                          <button className="liq-btn-gestion" onClick={() => setMostrarGestionSocios(v => !v)}>
+                            {mostrarGestionSocios ? "✕ Cerrar" : "⚙ Gestionar socios"}
+                          </button>
+                          {mostrarGestionSocios && (
+                            <div className="liq-gestion-socios" style={{ marginTop: 12 }}>
+                              <div style={{ fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>
+                                Socios activos
+                                {socios.length > 0 && (
+                                  <span style={{ marginLeft: 10, color: Math.abs(totalPorcentajes - 100) < 0.01 ? "#22c55e" : "#f87171" }}>
+                                    Suma: {totalPorcentajes.toFixed(1)}%
+                                  </span>
+                                )}
+                              </div>
+                              {socios.map(s => (
+                                <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, padding: "6px 10px", background: "rgba(255,255,255,0.02)", borderRadius: 5 }}>
+                                  <span style={{ flex: 1, fontSize: 13, color: "#fff" }}>{s.nombre}</span>
+                                  <span style={{ fontSize: 12, color: "#fbbf24", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{s.porcentaje}%</span>
+                                  <button className="fin-btn-del" onClick={() => eliminarSocio(s.id)}>✕</button>
+                                </div>
+                              ))}
+                              <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                                <input className="fin-input" placeholder="Nombre del socio" style={{ flex: 2, minWidth: 140 }}
+                                  value={formSocio.nombre} onChange={e => setFormSocio(p => ({ ...p, nombre: e.target.value }))} />
+                                <input className="fin-input" type="number" placeholder="%" style={{ width: 70 }}
+                                  value={formSocio.porcentaje} onChange={e => setFormSocio(p => ({ ...p, porcentaje: e.target.value }))} />
+                                <button className="fin-btn-save" disabled={guardandoSocio} onClick={guardarSocio}>
+                                  {guardandoSocio ? "..." : "+ Agregar"}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
 
                 {/* Controles */}
                 <div className="fin-filtros">
