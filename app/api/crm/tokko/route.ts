@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
+
+const sb = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 const TOKKO_BASE = "https://www.tokkobroker.com/api/v1";
 
 export async function GET(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const jwt = req.headers.get("authorization")?.replace("Bearer ", "") ?? "";
+  if (!jwt) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const { data: { user } } = await sb.auth.getUser(jwt);
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const action = req.nextUrl.searchParams.get("action") ?? "propiedades";
 
-  const { data: configRow } = await supabase
+  const { data: configRow } = await sb
     .from("crm_integraciones_config")
     .select("config")
     .eq("perfil_id", user.id)
