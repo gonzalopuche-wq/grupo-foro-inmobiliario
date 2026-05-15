@@ -31,9 +31,7 @@ INSERT INTO bonificaciones_config (accion, label, descuento_usd, activo) VALUES
   ('seniority',    'Antigüedad (por año activo)',             0.50, true),
   ('referidos',    'Referido que se suscribió',              2.00, true)
 ON CONFLICT (accion) DO UPDATE SET
-  label = EXCLUDED.label,
-  descuento_usd = EXCLUDED.descuento_usd,
-  activo = EXCLUDED.activo;
+  label = EXCLUDED.label;
 
 CREATE TABLE IF NOT EXISTS bonificaciones_historial (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
