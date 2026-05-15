@@ -19,7 +19,6 @@ const CRM_NAV = [
   { href: "/crm/plantillas", label: "Plantillas", icon: "📄", exact: false },
   { href: "/crm/presentaciones", label: "Presentaciones", icon: "📊", exact: false },
   { href: "/crm/integraciones", label: "Integraciones", icon: "🔗", exact: false },
-  { href: "/crm/lista-negra", label: "Lista Negra", icon: "🚫", exact: false },
   { href: "/emprendimientos", label: "Emprendimientos", icon: "🏗️", exact: false },
 ];
 
