@@ -160,7 +160,7 @@
 | 91 | Recorridas Virtuales 360 | ❌ | Embed externo |
 | 92 | Firma Digital | ✅ | `/crm/firma` |
 | 93 | Gestión de Honorarios | ❌ | Diferido |
-| 94 | Portal Vendedor | ❌ | Diferido |
+| **94** | **Portal Vendedor** | ✅ | **`/crm/portal-vendedor` + `/vendor/[token]` (público) — corredor crea portales por vendedor, link seguro, estado/etapa de la operación con barra de progreso, novedades (nota/visita/oferta/escritura), datos del corredor. Migration 053. — `v27`** |
 | 95 | Portal Comprador | ❌ | Diferido |
 | **96** | **Cursos y Capacitación Online** | ✅ | **`/cursos` — listado con filtros, inscripción, progreso, admin crea/destaca cursos — `v23`** |
 | 98 | Webinars / Clases en Vivo | ✅ | `/canal-educativo` |
@@ -215,7 +215,7 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **69** | **50%** |
+| ✅ Implementado | **70** | **50%** |
 | 🟡 Parcial | 10 | 7% |
 | ❌ Pendiente/Diferido | 60 | 43% |
 | **Total** | **139** | |
@@ -231,4 +231,4 @@
 
 ---
 
-*Última actualización: v26 — MOD 27 (Observatorio del Mercado). MOD 133 descartado.*
+*Última actualización: v27 — MOD 94 (Portal Vendedor `/crm/portal-vendedor` + `/vendor/[token]`). MOD 133 descartado.*
