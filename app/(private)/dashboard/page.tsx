@@ -406,24 +406,22 @@ export default function DashboardPage() {
         .db-hoy-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
         .db-clima-card { border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: all 0.25s; border: 1px solid rgba(255,255,255,0.08); }
         .db-clima-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
-        .db-clima-hero { padding: 18px 18px 12px; display: flex; align-items: flex-start; gap: 12px; position: relative; }
-        .db-clima-icon { width: 72px; height: 72px; flex-shrink: 0; font-size: 56px; line-height: 72px; text-align: center; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
-        .db-clima-info { flex: 1; min-width: 0; }
-        .db-clima-ciudad-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-        .db-clima-ciudad { font-size: 10px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); }
-        .db-clima-temp { font-family: 'Montserrat', sans-serif; font-size: 48px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
-        .db-clima-desc { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 3px; font-style: italic; }
-        .db-clima-minmax { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 3px; display: flex; gap: 8px; }
-        .db-clima-minmax span.up { color: #fca5a5; }
-        .db-clima-minmax span.dn { color: #93c5fd; }
-        .db-clima-hora-badge { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; color: rgba(255,255,255,0.9); letter-spacing: 0.05em; position: absolute; top: 18px; right: 18px; }
-        .db-clima-calidad { margin: 0 14px 10px; padding: 5px 12px; border-radius: 20px; font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.05em; text-align: center; }
+        .db-clima-top { padding: 14px 16px 0; display: flex; align-items: center; justify-content: space-between; }
+        .db-clima-ciudad { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+        .db-clima-hora { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.35); }
+        .db-clima-centro { padding: 10px 16px 8px; text-align: center; }
+        .db-clima-emoji { font-size: 40px; line-height: 1; display: block; margin-bottom: 4px; }
+        .db-clima-temp { font-family: 'Montserrat', sans-serif; font-size: 42px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+        .db-clima-desc { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 4px; font-style: italic; }
+        .db-clima-minmax { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 5px; display: flex; gap: 8px; justify-content: center; }
+        .db-clima-minmax .up { color: #fca5a5; }
+        .db-clima-minmax .dn { color: #93c5fd; }
+        .db-clima-calidad { margin: 0 12px 10px; padding: 5px 10px; border-radius: 20px; font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.05em; text-align: center; }
         .db-clima-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border-top: 1px solid rgba(255,255,255,0.08); }
-        .db-clima-stat { padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; border-right: 1px solid rgba(255,255,255,0.06); }
+        .db-clima-stat { padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; border-right: 1px solid rgba(255,255,255,0.06); }
         .db-clima-stat:last-child { border-right: none; }
-        .db-clima-stat-val { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; }
-        .db-clima-stat-label { font-size: 8px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Montserrat',sans-serif; font-weight: 700; }
-        .db-clima-stats2 { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border-top: 1px solid rgba(255,255,255,0.06); }
+        .db-clima-stat-val { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; }
+        .db-clima-stat-label { font-size: 7px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Montserrat',sans-serif; font-weight: 700; }
         .db-clima-ciudad-btn { background: none; border: none; border-top: 1px solid rgba(255,255,255,0.05); color: rgba(200,0,0,0.6); font-size: 10px; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; padding: 7px 18px; width: 100%; transition: color 0.2s; }
         .db-clima-ciudad-btn:hover { color: #cc0000; }
         .db-ciudad-form { display: flex; gap: 6px; padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.06); }
@@ -587,78 +585,50 @@ export default function DashboardPage() {
           style={{ background: clima ? climaGradient(clima.temp) : "rgba(14,14,14,0.9)" }}
           onClick={abrirClima}>
           {climaLoading ? (
-            <div className="db-clima-hero">
-              <div className="skeleton" style={{width:72,height:72,borderRadius:12,flexShrink:0}}/>
-              <div style={{flex:1}}>
-                <div className="skeleton" style={{width:55,height:14,borderRadius:4,marginBottom:8}}/>
-                <div className="skeleton" style={{width:80,height:46,borderRadius:6,marginBottom:6}}/>
-                <div className="skeleton" style={{width:100,height:12,borderRadius:4}}/>
-              </div>
+            <div style={{padding:"24px 16px",textAlign:"center"}}>
+              <div className="skeleton" style={{width:40,height:40,borderRadius:20,margin:"0 auto 10px"}}/>
+              <div className="skeleton" style={{width:80,height:40,borderRadius:6,margin:"0 auto 8px"}}/>
+              <div className="skeleton" style={{width:100,height:12,borderRadius:4,margin:"0 auto"}}/>
             </div>
           ) : climaError || !clima ? (
-            <div className="db-clima-hero">
-              <div style={{fontSize:56,flexShrink:0}}>🌡️</div>
-              <div>
-                <div className="db-clima-temp" style={{fontSize:20,color:"rgba(255,255,255,0.5)"}}>Sin datos</div>
-                <div className="db-clima-desc">No disponible</div>
-              </div>
+            <div style={{padding:"30px 16px",textAlign:"center"}}>
+              <div style={{fontSize:36,marginBottom:8}}>🌡️</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,0.3)"}}>Sin datos</div>
             </div>
           ) : ((() => {
             const calidad = climaCalidad(clima);
             const tc = climaTempColor(clima.temp);
             return (
               <>
-                <div className="db-clima-hero">
-                  <div className="db-clima-icon" aria-label={climaDesc}>{climaEmoji(clima.codIcono, clima.icon)}</div>
-                  <div className="db-clima-info">
-                    <div className="db-clima-ciudad-row">
-                      {clima.gpsActivo && <span style={{fontSize:10}}>📍</span>}
-                      <span className="db-clima-ciudad">{clima.ciudad}</span>
-                    </div>
-                    <div className="db-clima-temp" style={{color:tc}}>{clima.temp}°<span style={{fontSize:20,fontWeight:400,opacity:0.5}}>C</span></div>
-                    <div className="db-clima-desc">{climaDesc}</div>
-                    <div className="db-clima-minmax">
-                      <span className="dn">↓ {clima.tempMin}°</span>
-                      <span className="up">↑ {clima.tempMax}°</span>
-                      <span style={{color:"rgba(255,255,255,0.3)"}}>ST {clima.sensacion}°</span>
-                    </div>
-                  </div>
-                  <div className="db-clima-hora-badge">{hora}</div>
+                <div className="db-clima-top">
+                  <span className="db-clima-ciudad">{clima.gpsActivo ? "📍 " : ""}{clima.ciudad}</span>
+                  <span className="db-clima-hora">{hora}</span>
                 </div>
-
+                <div className="db-clima-centro">
+                  <span className="db-clima-emoji">{climaEmoji(clima.codIcono, clima.icon)}</span>
+                  <div className="db-clima-temp" style={{color:tc}}>{clima.temp}°<span style={{fontSize:18,fontWeight:400,opacity:0.5}}>C</span></div>
+                  <div className="db-clima-desc">{climaDesc}</div>
+                  <div className="db-clima-minmax">
+                    <span className="dn">↓ {clima.tempMin}°</span>
+                    <span className="up">↑ {clima.tempMax}°</span>
+                    <span>ST {clima.sensacion}°</span>
+                  </div>
+                </div>
                 <div className="db-clima-calidad" style={{color:calidad.color, background:calidad.bg}}>
                   {calidad.label}
                 </div>
-
                 <div className="db-clima-stats">
                   <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color:"#60a5fa"}}>💧 {clima.humedad}%</span>
-                    <span className="db-clima-stat-label">Humedad</span>
+                    <span className="db-clima-stat-val" style={{color:"#60a5fa"}}>{clima.humedad}%</span>
+                    <span className="db-clima-stat-label">💧 Humedad</span>
                   </div>
                   <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color:"#a5f3fc"}}>💨 {clima.viento}<span style={{fontSize:9}}> km/h</span></span>
-                    <span className="db-clima-stat-label">{windDirStr(clima.windDeg)} · Viento</span>
+                    <span className="db-clima-stat-val" style={{color:"#a5f3fc"}}>{clima.viento} <span style={{fontSize:9}}>km/h</span></span>
+                    <span className="db-clima-stat-label">💨 Viento</span>
                   </div>
                   <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color:"#c4b5fd"}}>☁️ {clima.nubes}%</span>
-                    <span className="db-clima-stat-label">Nubosidad</span>
-                  </div>
-                </div>
-
-                <div className="db-clima-stats2">
-                  <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color:"#fde68a"}}>🌡 {clima.presion}<span style={{fontSize:9}}> hPa</span></span>
-                    <span className="db-clima-stat-label">Presión</span>
-                  </div>
-                  <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color:"#86efac"}}>👁 {clima.visibilidad}<span style={{fontSize:9}}> km</span></span>
-                    <span className="db-clima-stat-label">Visibilidad</span>
-                  </div>
-                  <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color: clima.precipitacion > 0 ? "#7dd3fc" : "rgba(255,255,255,0.3)"}}>
-                      🌧 {clima.precipitacion > 0 ? `${clima.precipitacion} mm` : "—"}
-                    </span>
-                    <span className="db-clima-stat-label">Precipit.</span>
+                    <span className="db-clima-stat-val" style={{color: clima.precipitacion > 0 ? "#7dd3fc" : "rgba(255,255,255,0.3)"}}>{clima.precipitacion > 0 ? `${clima.precipitacion}mm` : `${clima.nubes}%`}</span>
+                    <span className="db-clima-stat-label">{clima.precipitacion > 0 ? "🌧 Lluvia" : "☁️ Nubos."}</span>
                   </div>
                 </div>
               </>
