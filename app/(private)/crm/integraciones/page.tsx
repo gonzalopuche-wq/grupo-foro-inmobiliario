@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ── Tipos ───────────────────────────────────────────────────────────────────
 
@@ -77,6 +78,13 @@ export default function IntegracionesPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [configs, setConfigs] = useState<ConfigEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setToken(data.session?.access_token ?? null);
+    });
+  }, []);
 
   // Tokko
   const [tokkoKey, setTokkoKey] = useState("");
@@ -97,16 +105,20 @@ export default function IntegracionesPage() {
   // Export
   const [exporting, setExporting] = useState<string | null>(null);
 
+  const authHeader = useCallback(() => {
+    return token ? { "Authorization": `Bearer ${token}` } : {};
+  }, [token]);
+
   const cargarDatos = useCallback(async () => {
     setLoading(true);
-    const res = await fetch("/api/crm/integraciones");
+    const res = await fetch("/api/crm/integraciones", { headers: authHeader() });
     const json = await res.json();
     setLogs(json.logs ?? []);
     setConfigs(json.configs ?? []);
     setLoading(false);
-  }, []);
+  }, [authHeader]);
 
-  useEffect(() => { cargarDatos(); }, [cargarDatos]);
+  useEffect(() => { if (token !== null) cargarDatos(); }, [token, cargarDatos]);
 
   // ── Tokko ─────────────────────────────────────────────────────────────────
 
@@ -115,7 +127,7 @@ export default function IntegracionesPage() {
     setTokkoSaving(true);
     const res = await fetch("/api/crm/integraciones", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { ...authHeader(), "Content-Type": "application/json" },
       body: JSON.stringify({ accion: "guardar_config", tipo: "tokko", config: { api_key: tokkoKey.trim() } }),
     });
     const json = await res.json();
@@ -128,7 +140,7 @@ export default function IntegracionesPage() {
     setTokkoSyncing(action);
     setTokkoMsg(null);
     try {
-      const res = await fetch(`/api/crm/tokko?action=${action}`);
+      const res = await fetch(`/api/crm/tokko?action=${action}`, { headers: authHeader() });
       const json = await res.json();
       if (!json.ok) throw new Error(json.error);
       const items = json.data?.objects ?? json.data?.results ?? [];
@@ -164,13 +176,13 @@ export default function IntegracionesPage() {
       }
       const impRes = await fetch("/api/crm/integraciones", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader(), "Content-Type": "application/json" },
         body: JSON.stringify({ accion: action === "propiedades" ? "importar_propiedades" : "importar_contactos", [action]: mapped, fuente: "tokko" }),
       });
       const impJson = await impRes.json();
       await fetch("/api/crm/integraciones", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader(), "Content-Type": "application/json" },
         body: JSON.stringify({ accion: "update_sync", tipo: "tokko" }),
       });
       setTokkoMsg({ tipo: "ok", texto: `${action === "propiedades" ? "Propiedades" : "Contactos"} sincronizados: ${impJson.importados} importados${impJson.errores > 0 ? `, ${impJson.errores} con error` : ""}` });
@@ -226,7 +238,7 @@ export default function IntegracionesPage() {
     const key = importTipo === "contactos" ? "contactos" : "propiedades";
     const res = await fetch("/api/crm/integraciones", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { ...authHeader(), "Content-Type": "application/json" },
       body: JSON.stringify({ accion, [key]: items, fuente: "csv" }),
     });
     const json = await res.json();
@@ -246,7 +258,7 @@ export default function IntegracionesPage() {
 
   async function exportar(tipo: "contactos" | "propiedades" | "negocios") {
     setExporting(tipo);
-    const res = await fetch(`/api/crm/integraciones?export=${tipo}`);
+    const res = await fetch(`/api/crm/integraciones?export=${tipo}`, { headers: authHeader() });
     const json = await res.json();
     if (!json.data?.length) {
       setExporting(null);
@@ -260,7 +272,7 @@ export default function IntegracionesPage() {
     XLSX.writeFile(wb, `GFI_${tipo}_${new Date().toISOString().slice(0, 10)}.xlsx`);
     await fetch("/api/crm/integraciones", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { ...authHeader(), "Content-Type": "application/json" },
       body: JSON.stringify({ accion: "log", tipo: "export", estado: "completado", filas_importadas: json.data.length, filas_error: 0, detalle: { subtipo: tipo } }),
     });
     cargarDatos();
