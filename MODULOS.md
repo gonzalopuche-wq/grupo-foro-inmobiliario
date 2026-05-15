@@ -51,7 +51,7 @@
 | 39 | Fichas Comerciales | ✅ | `/crm/cartera/ficha/[id]` |
 | 39B | **Generador de Post Redes Sociales IA** | ✅ | Botón en ficha — Instagram + WhatsApp — `v18` |
 | **40** | **Presentaciones Comerciales** | ✅ | **`/crm/presentaciones` — selección de propiedades, link público /p/[token], vistas, mensaje personalizado, vencimiento — `v22`** |
-| 40B | Integración con Portales | 🟡 | `/crm/portales` |
+| **40B** | **Integración con Portales** | ✅ | **`/crm/portales` — credenciales Tokko/Kiteprop, OAuth MercadoLibre y Google Calendar, sync status global — `v29`** |
 | 40C | Alianzas entre Corredores | ✅ | `/crm/alianzas` |
 | 40D | Web Propia por Corredor | ✅ | `/mi-web` |
 | 41 | Cotizaciones | ✅ | `/cotizaciones` |
@@ -215,9 +215,9 @@
 
 | Estado | Cantidad | % |
 |--------|----------|---|
-| ✅ Implementado | **88** | **63%** |
-| 🟡 Parcial | 0 | 0% |
-| ❌ Pendiente/Diferido | 51 | 37% |
+| ✅ Implementado | **91** | **65%** |
+| 🟡 Parcial | 2 | 1% |
+| ❌ Pendiente/Diferido | 46 | 34% |
 | **Total** | **139** | |
 
 ---
@@ -225,10 +225,12 @@
 ## PRÓXIMOS A IMPLEMENTAR (alta prioridad)
 
 - [x] MOD 27 — Observatorio del Mercado ✅ v26
-- [ ] MOD 94 — Portal Vendedor (Diferido — v24)
-- [ ] MOD 131 — Mutual GFI (Diferido)
-- [ ] MOD 132 — Ranking/Prioridad de Pago
+- [x] MOD 91 — Recorridas Virtuales 360° ✅ v29
+- [x] MOD 40B — Integración con Portales ✅ v29
+- [x] MOD 132 — Ranking/Prioridad de Pago ✅ v28
+- [ ] MOD 3 — Cartera (difusiones, parser WA→cartera directo) 🟡
+- [ ] MOD 5 — Foro (vinculación bidireccional grupos WA) 🟡
 
 ---
 
-*Última actualización: v28 — 88/139 módulos implementados (63%). MODs 132, 53-55, 79, 81-82, 33, 32 implementados. MODs 30, 36, 45, 57, 59-62, 102, 108, 128, 134 verificados y marcados ✅. MOD 133 descartado.*
+*Última actualización: v29 — 91/139 módulos implementados (65%). MODs 91 (Recorridas 360°), 40B (Portales) implementados. Admin tipo dropdown para rol constructora. Migration 056.*
