@@ -7,13 +7,17 @@ export const metadata: Metadata = {
   title: "GFI — Grupo Foro Inmobiliario",
   description: "Plataforma profesional para corredores inmobiliarios de Rosario",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "GFI" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "GFI®" },
   icons: {
     icon: [
-      { url: "/logo_gfi.png", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/logo_gfi.png",
-    shortcut: "/logo_gfi.png",
+    apple: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/favicon-32.png",
   },
 };
 
@@ -32,8 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="GFI" />
-        <link rel="apple-touch-icon" href="/logo_gfi.png" />
-        <link rel="icon" type="image/png" href="/logo_gfi.png" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
       </head>
       <body suppressHydrationWarning={true}>
         {children}
