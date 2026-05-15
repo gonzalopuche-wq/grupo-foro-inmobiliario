@@ -1,4 +1,4 @@
-# GFI® — Estado de Módulos (v21 — 139 módulos)
+# GFI® — Estado de Módulos (v29 — 139 módulos)
 
 > Referencia: `public/GFI_Maestro_v17.pdf`
 > Actualizado automáticamente con cada PR.
@@ -157,7 +157,7 @@
 | # | Módulo | Estado | Notas |
 |---|--------|--------|-------|
 | 90 | App Móvil Nativa | ❌ | Fase siguiente |
-| 91 | Recorridas Virtuales 360 | ❌ | Embed externo |
+| **91** | **Recorridas Virtuales 360** | ✅ | **`/crm/cartera/ficha/[id]` + web pública — campo `tour_virtual_url` en cartera_propiedades, embed iframe en ficha y web. Matterport/Kuula/iStaging/Roundme. Migration 056. — `v29`** |
 | 92 | Firma Digital | ✅ | `/crm/firma` |
 | 93 | Gestión de Honorarios | ❌ | Diferido |
 | **94** | **Portal Vendedor** | ✅ | **`/crm/portal-vendedor` + `/vendor/[token]` (público) — corredor crea portales por vendedor, link seguro, estado/etapa de la operación con barra de progreso, novedades (nota/visita/oferta/escritura), datos del corredor. Migration 053. — `v27`** |

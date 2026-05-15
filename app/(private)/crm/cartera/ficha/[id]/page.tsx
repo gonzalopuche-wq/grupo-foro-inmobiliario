@@ -21,6 +21,7 @@ async function getData(id: string) {
       superficie_cubierta, superficie_total, cocheras, ambientes,
       antiguedad, piso, orientacion, amenities, observaciones,
       fotos, estado, expensas, precio_expensas_moneda,
+      video_url, tour_virtual_url,
       perfil:perfiles(nombre, apellido, matricula, telefono, email, foto_url, inmobiliaria)
     `)
     .eq("id", id)
@@ -108,6 +109,11 @@ export default async function FichaPage({ params }: Props) {
         .ficha-mapa { margin-top: 24px; border-radius: 10px; overflow: hidden; border: 1px solid #eee; }
         .ficha-mapa iframe { display: block; width: 100%; height: 240px; border: 0; }
         .ficha-mapa-label { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #999; padding: 10px 0 6px; }
+
+        /* Tour virtual 360° */
+        .ficha-tour { margin-top: 24px; border-radius: 10px; overflow: hidden; border: 2px solid #cc0000; position: relative; }
+        .ficha-tour-label { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #cc0000; padding: 10px 0 6px; display: flex; align-items: center; gap: 6px; }
+        .ficha-tour iframe { display: block; width: 100%; height: 400px; border: 0; }
 
         @media (max-width: 640px) {
           .ficha-body { padding: 20px 16px; }
@@ -244,6 +250,22 @@ export default async function FichaPage({ params }: Props) {
               <hr className="ficha-divider" />
               <div className="ficha-section-title">Observaciones internas</div>
               <p className="ficha-desc" style={{ color: "#888", fontStyle: "italic" }}>{prop.observaciones}</p>
+            </>
+          )}
+
+          {/* Tour Virtual 360° */}
+          {(prop as any).tour_virtual_url && (
+            <>
+              <hr className="ficha-divider" />
+              <div className="ficha-tour-label">🔮 Recorrida Virtual 360°</div>
+              <div className="ficha-tour">
+                <iframe
+                  src={(prop as any).tour_virtual_url}
+                  allowFullScreen
+                  title="Tour virtual 360°"
+                  sandbox="allow-scripts allow-same-origin allow-forms"
+                />
+              </div>
             </>
           )}
 
