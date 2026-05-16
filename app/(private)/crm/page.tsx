@@ -1507,12 +1507,12 @@ export default function CrmPage() {
                                         <div style={{flexShrink:0,fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,color: prop.compatibilidad >= 80 ? "#22c55e" : prop.compatibilidad >= 55 ? "#f59e0b" : "rgba(255,255,255,0.35)",background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"2px 7px",border:`1px solid ${prop.compatibilidad >= 80 ? "rgba(34,197,94,0.3)" : prop.compatibilidad >= 55 ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.1)"}`}}>{prop.compatibilidad}%</div>
                                       )}
                                     </div>
-                                    {prop.direccion && prop.titulo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Inter,sans-serif"}}>📍 {prop.direccion}{prop.barrio ? `, ${prop.barrio}` : ""}</div>}
+                                    {prop.direccion && prop.titulo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Inter,sans-serif"}}>📍 {prop.direccion}{prop.zona ? `, ${prop.zona}` : ""}</div>}
                                     {prop.razon && <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"Inter,sans-serif",marginTop:2,lineHeight:1.4,fontStyle:"italic"}}>✦ {prop.razon}</div>}
                                     <div className="prop-card-meta">
                                       {prop.precio && <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#fff"}}>{prop.moneda ?? "USD"} {prop.precio.toLocaleString("es-AR")}</span>}
-                                      {prop.tipo_operacion && <span style={{padding:"1px 6px",borderRadius:8,border:"1px solid rgba(255,255,255,0.1)",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.4)"}}>{prop.tipo_operacion}</span>}
-                                      {prop.barrio && !prop.titulo && <span>{prop.barrio}</span>}
+                                      {prop.operacion && <span style={{padding:"1px 6px",borderRadius:8,border:"1px solid rgba(255,255,255,0.1)",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.4)"}}>{prop.operacion}</span>}
+                                      {prop.zona && !prop.titulo && <span>{prop.zona}</span>}
                                     </div>
                                   </div>
                                 ))}

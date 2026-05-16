@@ -752,7 +752,7 @@ export default function CarteraPage() {
 
   const compartirWhatsApp = (p: any) => {
     const precio = p.precio ? `${p.moneda ?? "USD"} ${p.precio.toLocaleString("es-AR")}` : "A consultar";
-    const loc = [p.ciudad, p.zona, p.barrio].filter(Boolean).join(", ");
+    const loc = [p.ciudad, p.zona].filter(Boolean).join(", ");
     const feats: string[] = [];
     if (p.dormitorios) feats.push(`${p.dormitorios} dorm.`);
     if (p.banos) feats.push(`${p.banos} baños`);

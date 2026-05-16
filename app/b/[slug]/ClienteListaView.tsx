@@ -23,7 +23,7 @@ interface Propiedad {
   descripcion?: string
   tipo?: string
   operacion?: string
-  barrio?: string
+  zona?: string
   ciudad?: string
   direccion?: string
   precio_actual?: number
@@ -174,10 +174,10 @@ function PropCard({ propiedad, alertas }: { propiedad: Propiedad; alertas: Alert
           <h3 className="font-semibold text-gray-900 leading-snug line-clamp-2">
             {propiedad.titulo}
           </h3>
-          {propiedad.barrio && (
+          {(propiedad.zona || propiedad.ciudad) && (
             <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
               <MapPin className="w-3.5 h-3.5" />
-              {propiedad.barrio}{propiedad.ciudad ? `, ${propiedad.ciudad}` : ''}
+              {[propiedad.zona, propiedad.ciudad].filter(Boolean).join(', ')}
             </div>
           )}
         </div>
