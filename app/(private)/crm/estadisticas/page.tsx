@@ -17,6 +17,7 @@ interface Stats {
   topVistas: { id: string; titulo: string; vistas: number; publicada_web: boolean }[];
   leads: { total: number; porEstado: Record<string, number>; porOrigen: Record<string, number> };
   visitas: { total: number; porEstado: Record<string, number> };
+  webLeads: { total: number; noLeidos: number; esteMes: number; contacto: number; tasacion: number };
 }
 
 const ESTADO_COLOR: Record<string, string> = {
@@ -71,7 +72,11 @@ export default function EstadisticasPage() {
   }, []);
 
   const cargarStats = async (uid: string) => {
-    const [{ data: props }, { data: syncs }, { data: leadsRaw }, { data: visitasRaw }, { data: leadsBy }, { data: visitasBy }, { data: colabs }] = await Promise.all([
+    const inicioMes = new Date();
+    inicioMes.setDate(1);
+    inicioMes.setHours(0, 0, 0, 0);
+
+    const [{ data: props }, { data: syncs }, { data: leadsRaw }, { data: visitasRaw }, { data: leadsBy }, { data: visitasBy }, { data: colabs }, { data: webLeadsRaw }] = await Promise.all([
       supabase.from("cartera_propiedades").select("id, titulo, estado, operacion, tipo, precio, moneda, created_at, publicada_web, vistas").eq("perfil_id", uid),
       supabase.from("cartera_sync_portales").select("propiedad_id, tokko_id, kiteprop_id"),
       supabase.from("crm_leads").select("estado, origen").eq("perfil_id", uid),
@@ -79,6 +84,7 @@ export default function EstadisticasPage() {
       supabase.from("crm_leads").select("created_by").eq("perfil_id", uid).not("created_by", "is", null),
       supabase.from("cartera_visitas").select("created_by").eq("perfil_id", uid).not("created_by", "is", null),
       supabase.from("perfiles").select("id,nombre,apellido").eq("corredor_ref_id", uid),
+      supabase.from("web_leads").select("tipo, leido, created_at").eq("perfil_id", uid),
     ]);
 
     const all = props ?? [];
@@ -143,6 +149,13 @@ export default function EstadisticasPage() {
       topVistas,
       leads: { total: leads.length, porEstado: countKey(leads, "estado"), porOrigen: countKey(leads, "origen") },
       visitas: { total: visitas.length, porEstado: countKey(visitas, "estado") },
+      webLeads: {
+        total: (webLeadsRaw ?? []).length,
+        noLeidos: (webLeadsRaw ?? []).filter((l: any) => !l.leido).length,
+        esteMes: (webLeadsRaw ?? []).filter((l: any) => new Date(l.created_at) >= inicioMes).length,
+        contacto: (webLeadsRaw ?? []).filter((l: any) => l.tipo === "contacto").length,
+        tasacion: (webLeadsRaw ?? []).filter((l: any) => l.tipo === "tasacion").length,
+      },
     });
   };
 
@@ -331,6 +344,38 @@ export default function EstadisticasPage() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Leads de la web */}
+              {stats.webLeads.total > 0 && (
+                <div className="est-section">
+                  <div className="est-section-title">Leads de tu web pública</div>
+                  <div className="est-panel">
+                    <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginBottom: 20 }}>
+                      <div>
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Total</div>
+                        <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff" }}>{stats.webLeads.total}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Este mes</div>
+                        <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#22c55e" }}>{stats.webLeads.esteMes}</div>
+                      </div>
+                      {stats.webLeads.noLeidos > 0 && (
+                        <div>
+                          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Sin leer</div>
+                          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#ef4444" }}>{stats.webLeads.noLeidos}</div>
+                        </div>
+                      )}
+                    </div>
+                    <StatBar label="Consultas de propiedades" count={stats.webLeads.contacto} total={stats.webLeads.total} color="#3b82f6" />
+                    <StatBar label="Solicitudes de tasación" count={stats.webLeads.tasacion} total={stats.webLeads.total} color="#f59e0b" />
+                    <div style={{ marginTop: 14 }}>
+                      <Link href="/mi-web/leads" style={{ fontSize: 11, color: "#60a5fa", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
+                        Ver todos los leads →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               )}
