@@ -779,7 +779,8 @@ export default function AdminPage() {
   const confirmarPago = async (pago: Pago) => {
     setProcesandoPago(pago.id);
     const vencimiento = new Date(); vencimiento.setMonth(vencimiento.getMonth() + 1); vencimiento.setDate(vencimiento.getDate() + 3);
-    await supabase.from("suscripciones").update({ estado: "activa", fecha_confirmacion: new Date().toISOString().slice(0, 10), fecha_vencimiento: vencimiento.toISOString().slice(0, 10), nota_admin: notaAdmin[pago.id] || null }).eq("id", pago.id);
+    const { error: errSubConf } = await supabase.from("suscripciones").update({ estado: "activa", fecha_confirmacion: new Date().toISOString().slice(0, 10), fecha_vencimiento: vencimiento.toISOString().slice(0, 10), nota_admin: notaAdmin[pago.id] || null }).eq("id", pago.id);
+    if (errSubConf) { mostrarToast("Error al confirmar suscripción", "err"); setProcesandoPago(null); return; }
     await supabase.from("perfiles").update({ estado: "aprobado" }).eq("id", pago.perfil_id);
     if (pago.perfiles?.email) {
       try {
