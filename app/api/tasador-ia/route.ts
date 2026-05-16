@@ -309,6 +309,11 @@ const tasacionTool: Anthropic.Tool = {
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
   const datos = await req.json();
 
   if (!process.env.ANTHROPIC_API_KEY) {
