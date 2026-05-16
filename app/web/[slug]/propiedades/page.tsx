@@ -32,7 +32,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function getData(slug: string, operacion?: string, tipo?: string, dormitorios?: string, busqueda?: string, precioMin?: string, precioMax?: string) {
+async function getData(slug: string, operacion?: string, tipo?: string, dormitorios?: string, busqueda?: string, precioMin?: string, precioMax?: string, orden?: string) {
   const { data: cfg } = await supabase
     .from("web_corredor_config")
     .select("*")
@@ -51,7 +51,10 @@ async function getData(slug: string, operacion?: string, tipo?: string, dormitor
         .eq("perfil_id", cfg.perfil_id)
         .eq("publicada_web", true)
         .eq("estado", "activa")
-        .order("created_at", { ascending: false });
+        .order(
+          orden === "precio_asc" || orden === "precio_desc" ? "precio" : "created_at",
+          { ascending: orden === "precio_asc", nullsFirst: false }
+        );
       if (operacion && operacion !== "todas") q = q.eq("operacion", operacion);
       if (tipo) q = q.eq("tipo", tipo);
       if (dormitorios) q = q.gte("dormitorios", parseInt(dormitorios));
@@ -90,11 +93,11 @@ export default async function PropiedadesPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ operacion?: string; tipo?: string; dormitorios?: string; q?: string; precio_min?: string; precio_max?: string }>;
+  searchParams: Promise<{ operacion?: string; tipo?: string; dormitorios?: string; q?: string; precio_min?: string; precio_max?: string; orden?: string }>;
 }) {
   const { slug } = await params;
-  const { operacion, tipo, dormitorios, q, precio_min, precio_max } = await searchParams;
-  const data = await getData(slug, operacion, tipo, dormitorios, q || undefined, precio_min, precio_max);
+  const { operacion, tipo, dormitorios, q, precio_min, precio_max, orden } = await searchParams;
+  const data = await getData(slug, operacion, tipo, dormitorios, q || undefined, precio_min, precio_max, orden);
   if (!data) return notFound();
 
   const { cfg, perfil, propiedades } = data;
@@ -109,6 +112,7 @@ export default async function PropiedadesPage({
   const busquedaActiva = q || "";
   const precioMinActivo = precio_min || "";
   const precioMaxActivo = precio_max || "";
+  const ordenActivo = orden || "recientes";
 
   // Build base query string preserving current filters (excluding the one being changed)
   const qp = (overrides: Record<string, string | undefined>) => {
@@ -119,6 +123,7 @@ export default async function PropiedadesPage({
     if (q) params.q = q;
     if (precio_min) params.precio_min = precio_min;
     if (precio_max) params.precio_max = precio_max;
+    if (orden) params.orden = orden;
     Object.assign(params, overrides);
     Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
     const qs = new URLSearchParams(params).toString();
@@ -239,6 +244,7 @@ export default async function PropiedadesPage({
         {operacion && operacion !== "todas" && <input type="hidden" name="operacion" value={operacion} />}
         {tipo && <input type="hidden" name="tipo" value={tipo} />}
         {dormitorios && <input type="hidden" name="dormitorios" value={dormitorios} />}
+        {orden && <input type="hidden" name="orden" value={orden} />}
         <input
           type="text"
           name="q"
@@ -293,6 +299,17 @@ export default async function PropiedadesPage({
           </a>
         )}
         <span className="results-count">{propiedades.length} resultado{propiedades.length !== 1 ? "s" : ""}</span>
+        <span style={{ marginLeft: 8, color: "inherit", opacity: 0.4, fontSize: 11 }}>|</span>
+        <span className="filters-label" style={{ marginLeft: 8 }}>Orden:</span>
+        {[
+          { v: "recientes", l: "Recientes" },
+          { v: "precio_asc", l: "Menor precio" },
+          { v: "precio_desc", l: "Mayor precio" },
+        ].map(({ v, l }) => (
+          <a key={v}
+            href={`/web/${cfg.slug}/propiedades${qp({ orden: v === "recientes" ? undefined : v })}`}
+            className={`filter-btn${ordenActivo === v ? " active" : ""}`}>{l}</a>
+        ))}
       </div>
       {tiposDisponibles.length > 1 && (
         <div className="filters" style={{ borderTop: "none", paddingTop: 10, paddingBottom: 12 }}>
