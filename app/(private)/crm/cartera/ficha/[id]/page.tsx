@@ -21,7 +21,7 @@ async function getData(id: string) {
       superficie_cubierta, superficie_total, estacionamientos, con_cochera, ambientes,
       antiguedad, piso, orientacion, amenities, observaciones,
       fotos, estado, expensas, precio_expensas_moneda,
-      video_url, tour_virtual_url,
+      video_url, tour_virtual_url, vistas, publicada_web, created_at,
       perfil:perfiles(nombre, apellido, matricula, telefono, email, foto_url, inmobiliaria)
     `)
     .eq("id", id)
@@ -165,6 +165,23 @@ export default async function FichaPage({ params }: Props) {
             </div>
           )}
           <div className="ficha-titulo">{prop.titulo}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
+            {(prop as any).publicada_web && (
+              <span style={{ fontSize: 11, padding: "2px 10px", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 4, color: "#22c55e", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em" }}>
+                🌐 Publicada en web
+              </span>
+            )}
+            {(prop as any).vistas > 0 && (
+              <span style={{ fontSize: 11, padding: "2px 10px", background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.25)", borderRadius: 4, color: "#a78bfa", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                👁 {(prop as any).vistas} vista{(prop as any).vistas !== 1 ? "s" : ""}
+              </span>
+            )}
+            {(prop as any).created_at && (
+              <span style={{ fontSize: 11, color: "#aaa" }}>
+                Cargada el {new Date((prop as any).created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}
+              </span>
+            )}
+          </div>
           <div className="ficha-ubicacion">
             <span>📍</span>
             {[prop.direccion, prop.zona, prop.ciudad].filter(Boolean).join(", ")}
