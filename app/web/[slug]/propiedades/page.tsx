@@ -32,7 +32,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function getData(slug: string, operacion?: string, tipo?: string, dormitorios?: string, busqueda?: string) {
+async function getData(slug: string, operacion?: string, tipo?: string, dormitorios?: string, busqueda?: string, precioMin?: string, precioMax?: string) {
   const { data: cfg } = await supabase
     .from("web_corredor_config")
     .select("*")
@@ -56,6 +56,8 @@ async function getData(slug: string, operacion?: string, tipo?: string, dormitor
       if (tipo) q = q.eq("tipo", tipo);
       if (dormitorios) q = q.gte("dormitorios", parseInt(dormitorios));
       if (busqueda) q = q.or(`titulo.ilike.%${busqueda}%,descripcion.ilike.%${busqueda}%,zona.ilike.%${busqueda}%,ciudad.ilike.%${busqueda}%`);
+      if (precioMin) q = q.gte("precio", parseInt(precioMin));
+      if (precioMax) q = q.lte("precio", parseInt(precioMax));
       return q;
     })(),
   ]);
@@ -88,11 +90,11 @@ export default async function PropiedadesPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ operacion?: string; tipo?: string; dormitorios?: string; q?: string }>;
+  searchParams: Promise<{ operacion?: string; tipo?: string; dormitorios?: string; q?: string; precio_min?: string; precio_max?: string }>;
 }) {
   const { slug } = await params;
-  const { operacion, tipo, dormitorios, q } = await searchParams;
-  const data = await getData(slug, operacion, tipo, dormitorios, q || undefined);
+  const { operacion, tipo, dormitorios, q, precio_min, precio_max } = await searchParams;
+  const data = await getData(slug, operacion, tipo, dormitorios, q || undefined, precio_min, precio_max);
   if (!data) return notFound();
 
   const { cfg, perfil, propiedades } = data;
@@ -105,6 +107,8 @@ export default async function PropiedadesPage({
   const tipoActivo = tipo || "";
   const dormitoriosActivo = dormitorios || "";
   const busquedaActiva = q || "";
+  const precioMinActivo = precio_min || "";
+  const precioMaxActivo = precio_max || "";
 
   // Build base query string preserving current filters (excluding the one being changed)
   const qp = (overrides: Record<string, string | undefined>) => {
@@ -113,6 +117,8 @@ export default async function PropiedadesPage({
     if (tipo) params.tipo = tipo;
     if (dormitorios) params.dormitorios = dormitorios;
     if (q) params.q = q;
+    if (precio_min) params.precio_min = precio_min;
+    if (precio_max) params.precio_max = precio_max;
     Object.assign(params, overrides);
     Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
     const qs = new URLSearchParams(params).toString();
@@ -229,7 +235,7 @@ export default async function PropiedadesPage({
       </div>
 
       {/* SEARCH */}
-      <form method="GET" action={`/web/${cfg.slug}/propiedades`} className="search-bar">
+      <form method="GET" action={`/web/${cfg.slug}/propiedades`} className="search-bar" style={{ flexWrap: "wrap" }}>
         {operacion && operacion !== "todas" && <input type="hidden" name="operacion" value={operacion} />}
         {tipo && <input type="hidden" name="tipo" value={tipo} />}
         {dormitorios && <input type="hidden" name="dormitorios" value={dormitorios} />}
@@ -240,10 +246,29 @@ export default async function PropiedadesPage({
           placeholder="Buscar por título, zona, ciudad…"
           defaultValue={busquedaActiva}
           autoComplete="off"
+          style={{ minWidth: 180 }}
+        />
+        <input
+          type="number"
+          name="precio_min"
+          className="search-input"
+          placeholder="Precio min"
+          defaultValue={precioMinActivo}
+          min={0}
+          style={{ width: 110, flexShrink: 0 }}
+        />
+        <input
+          type="number"
+          name="precio_max"
+          className="search-input"
+          placeholder="Precio max"
+          defaultValue={precioMaxActivo}
+          min={0}
+          style={{ width: 110, flexShrink: 0 }}
         />
         <button type="submit" className="search-btn">Buscar</button>
-        {busquedaActiva && (
-          <a href={`/web/${cfg.slug}/propiedades${qp({ q: undefined })}`}
+        {(busquedaActiva || precioMinActivo || precioMaxActivo) && (
+          <a href={`/web/${cfg.slug}/propiedades${qp({ q: undefined, precio_min: undefined, precio_max: undefined })}`}
             style={{ padding: "10px 12px", background: "transparent", border: `1px solid ${t.cardBorder}`, borderRadius: 8, color: t.textMuted, fontSize: 13, display: "flex", alignItems: "center" }}>
             ✕
           </a>
