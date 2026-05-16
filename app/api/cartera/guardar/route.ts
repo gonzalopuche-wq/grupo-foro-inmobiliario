@@ -16,8 +16,17 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { datos, editandoId } = body;
 
-  // Forzar perfil_id al usuario autenticado (seguridad)
-  datos.perfil_id = user.id;
+  // Resolve effective perfil_id: colaboradores work on behalf of their corredor
+  let efectivoId = user.id;
+  const { data: perfil } = await supabaseAdmin
+    .from("perfiles").select("tipo").eq("id", user.id).single();
+  if (perfil?.tipo === "colaborador") {
+    const { data: colab } = await supabaseAdmin
+      .from("colaboradores").select("corredor_id").eq("user_id", user.id).single();
+    if (colab?.corredor_id) efectivoId = colab.corredor_id;
+  }
+
+  datos.perfil_id = efectivoId;
   datos.updated_at = new Date().toISOString();
 
   let propId: string | null = null;
@@ -27,7 +36,7 @@ export async function POST(req: NextRequest) {
       .from("cartera_propiedades")
       .update(datos)
       .eq("id", editandoId)
-      .eq("perfil_id", user.id);
+      .eq("perfil_id", efectivoId);
     if (error) {
       console.error("[cartera/guardar] update error:", error);
       return NextResponse.json({ error: error.message, code: error.code }, { status: 400 });
