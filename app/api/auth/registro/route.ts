@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit, getIp } from "../../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  if (!rateLimit(`registro:${getIp(req)}`, 5, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Demasiados intentos. Esperá un momento e intentá de nuevo." }, { status: 429 });
+  }
   const body = await req.json();
   const {
     email, password, tipo, nombre, apellido,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit, getIp } from "../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,9 @@ const sbAdmin = createClient(
 );
 
 export async function POST(req: NextRequest) {
+  if (!rateLimit(`matricula:${getIp(req)}`, 20, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Demasiados intentos. Intentá de nuevo en un momento." }, { status: 429 });
+  }
   const { matricula } = await req.json();
   if (!matricula?.trim()) {
     return NextResponse.json({ error: "Ingresá tu número de matrícula." }, { status: 400 });
