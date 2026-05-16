@@ -1207,16 +1207,16 @@ A partir de esa fecha el costo mensual será de USD 15.
       supabase.from("perfiles").select("id", { count: "exact", head: true }).in("tipo", ["corredor","colaborador"]).eq("estado","aprobado"),
       supabase.from("logs_actividad").select("id", { count: "exact", head: true }).eq("accion","login").gte("created_at", inicioMes),
       supabase.from("perfiles").select("id", { count: "exact", head: true }).in("tipo",["corredor","colaborador"]).gte("created_at", inicioMes),
-      supabase.from("crm_propiedades").select("id", { count: "exact", head: true }),
+      supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }),
       supabase.from("mir_ofrecidos").select("id", { count: "exact", head: true }),
       supabase.from("crm_negocios").select("id", { count: "exact", head: true }),
       supabase.from("suscripciones").select("id", { count: "exact", head: true }).eq("estado","activa"),
       supabase.from("suscripciones").select("monto_usd").eq("estado","activa").gte("fecha_confirmacion", inicioMes),
-      supabase.from("crm_propiedades").select("barrio").not("barrio","is",null).limit(500),
+      supabase.from("cartera_propiedades").select("zona").not("zona","is",null).limit(500),
     ]);
     // Calcular top zonas
     const zonaCount: Record<string, number> = {};
-    (zonas ?? []).forEach((p: any) => { if (p.barrio) zonaCount[p.barrio] = (zonaCount[p.barrio] ?? 0) + 1; });
+    (zonas ?? []).forEach((p: any) => { if (p.zona) zonaCount[p.zona] = (zonaCount[p.zona] ?? 0) + 1; });
     const topZonas = Object.entries(zonaCount).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([zona, count]) => ({ zona, count }));
     const ingresosMesUSD = (pagosData ?? []).reduce((s: number, p: any) => s + (p.monto_usd ?? 0), 0);
     setStatsEstrategicas({
