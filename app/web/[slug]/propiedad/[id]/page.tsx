@@ -210,8 +210,11 @@ export default async function PropiedadDetailPage({
             {prop.superficie_total != null && prop.superficie_total !== prop.superficie_cubierta && (
               <div className="p-chip"><span className="p-chip-icon">📏</span> {prop.superficie_total}m² totales</div>
             )}
-            {prop.cochera && (
+            {(prop as any).con_cochera && (
               <div className="p-chip"><span className="p-chip-icon">🚗</span> Cochera</div>
+            )}
+            {(prop as any).apto_credito && (
+              <div className="p-chip"><span className="p-chip-icon">🏦</span> Apto crédito</div>
             )}
             {prop.piso && (
               <div className="p-chip"><span className="p-chip-icon">🏢</span> Piso {prop.piso}</div>
@@ -241,6 +244,26 @@ export default async function PropiedadDetailPage({
               </div>
             </div>
           )}
+
+          {/* Video YouTube */}
+          {(prop as any).video_url && (() => {
+            const url: string = (prop as any).video_url;
+            const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+            if (!m) return null;
+            return (
+              <div className="p-section">
+                <div className="p-section-titulo">🎬 Video de la propiedad</div>
+                <div style={{ borderRadius: 10, overflow: "hidden", border: `1px solid ${t.cardBorder}`, aspectRatio: "16/9" }}>
+                  <iframe
+                    src={`https://www.youtube.com/embed/${m[1]}`}
+                    style={{ display: "block", width: "100%", height: "100%", border: 0 }}
+                    allowFullScreen
+                    title="Video de la propiedad"
+                  />
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Tour Virtual 360° */}
           {(prop as any).tour_virtual_url && (
