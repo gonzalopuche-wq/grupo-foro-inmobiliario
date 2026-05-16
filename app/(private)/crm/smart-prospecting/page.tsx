@@ -126,50 +126,49 @@ export default function SmartProspectingPage() {
   };
 
   return (
-    <div style={{ padding: "24px 28px", maxWidth: 900, margin: "0 auto" }}>
+    <div style={{ maxWidth: 900, margin: "0 auto", fontFamily: "Inter,sans-serif" }}>
       <div style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-          <span style={{ fontSize: 24 }}>🎯</span>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111" }}>Smart Prospecting</h1>
-        </div>
-        <p style={{ fontSize: 13, color: "#6b7280" }}>
-          Clientes de tu CRM con propiedades de tu cartera que coinciden con sus criterios de búsqueda.
+        <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", margin: "0 0 6px" }}>
+          Smart Prospecting
+        </h1>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", margin: 0 }}>
+          Contactos de tu CRM con propiedades de tu cartera que coinciden con sus criterios de búsqueda.
         </p>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 60, color: "#9ca3af" }}>Analizando coincidencias…</div>
+        <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>Analizando coincidencias…</div>
       ) : matches.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 60, background: "#f9fafb", borderRadius: 12, border: "1px solid #e5e7eb" }}>
+        <div style={{ textAlign: "center", padding: 60, background: "rgba(255,255,255,0.03)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.07)" }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
-          <div style={{ fontWeight: 600, color: "#374151", marginBottom: 6 }}>Sin coincidencias por ahora</div>
-          <p style={{ fontSize: 13, color: "#6b7280", maxWidth: 380, margin: "0 auto" }}>
+          <div style={{ fontWeight: 600, color: "rgba(255,255,255,0.6)", marginBottom: 6 }}>Sin coincidencias por ahora</div>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", maxWidth: 380, margin: "0 auto" }}>
             Completá los campos <strong>Zona de interés</strong> y <strong>Presupuesto</strong> en tus contactos del CRM para que el sistema detecte propiedades compatibles.
           </p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ fontSize: 12, color: "#6b7280", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "10px 14px" }}>
-            💡 {matches.length} cliente{matches.length > 1 ? "s" : ""} con propiedades que coinciden con su búsqueda. ¡Contactalos ahora!
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ fontSize: 12, color: "#60a5fa", background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)", borderRadius: 8, padding: "10px 14px" }}>
+            💡 {matches.length} contacto{matches.length > 1 ? "s" : ""} con propiedades que coinciden con su búsqueda. ¡Contactalos ahora!
           </div>
 
           {matches.map(({ contacto, propiedades }) => {
             const abierto = contactoAbierto === contacto.id;
             const nombre = [contacto.nombre, contacto.apellido].filter(Boolean).join(" ") || "Sin nombre";
             return (
-              <div key={contacto.id} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, overflow: "hidden" }}>
+              <div key={contacto.id} style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, overflow: "hidden" }}>
                 {/* Header contacto */}
                 <button
                   onClick={() => setContactoAbierto(abierto ? null : contacto.id)}
                   style={{ width: "100%", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#eff6ff", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
+                    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(204,0,0,0.12)", border: "1px solid rgba(204,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>
                       👤
                     </div>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 15, color: "#111" }}>{nombre}</div>
-                      <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: "#fff" }}>{nombre}</div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
                         {contacto.zona_interes && `📍 ${contacto.zona_interes}`}
                         {contacto.presupuesto_max && ` · hasta ${fmt(contacto.presupuesto_max, contacto.moneda ?? "USD")}`}
                         {contacto.interes && ` · ${contacto.interes}`}
@@ -177,16 +176,16 @@ export default function SmartProspectingPage() {
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#3b82f6", background: "#eff6ff", padding: "4px 10px", borderRadius: 20 }}>
-                      {propiedades.length} prop{propiedades.length > 1 ? "." : "."}
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#cc0000", background: "rgba(204,0,0,0.12)", padding: "3px 10px", borderRadius: 20, border: "1px solid rgba(204,0,0,0.25)" }}>
+                      {propiedades.length} propiedad{propiedades.length > 1 ? "es" : ""}
                     </span>
-                    <span style={{ color: "#9ca3af", fontSize: 16 }}>{abierto ? "▲" : "▼"}</span>
+                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 14 }}>{abierto ? "▲" : "▼"}</span>
                   </div>
                 </button>
 
                 {/* Propiedades */}
                 {abierto && (
-                  <div style={{ borderTop: "1px solid #f3f4f6", padding: "12px 20px 20px" }}>
+                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", padding: "12px 20px 20px" }}>
                     {contacto.telefono && (
                       <a
                         href={`https://wa.me/${contacto.telefono.replace(/\D/g,"")}`}
@@ -197,26 +196,26 @@ export default function SmartProspectingPage() {
                         💬 WhatsApp a {contacto.nombre}
                       </a>
                     )}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                       {propiedades.map(prop => {
                         const wa = waLink(contacto, prop);
                         const foto = prop.fotos?.[0];
                         return (
-                          <div key={prop.id} style={{ display: "flex", gap: 12, background: "#f9fafb", borderRadius: 8, border: "1px solid #e5e7eb", overflow: "hidden" }}>
-                            <div style={{ width: 80, height: 68, flexShrink: 0, background: "#e5e7eb", overflow: "hidden" }}>
+                          <div key={prop.id} style={{ display: "flex", gap: 12, background: "rgba(255,255,255,0.03)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                            <div style={{ width: 80, height: 68, flexShrink: 0, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
                               {foto
                                 ? <img src={foto} alt={prop.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                                 : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>🏠</div>}
                             </div>
                             <div style={{ flex: 1, padding: "10px 0", minWidth: 0 }}>
-                              <div style={{ fontWeight: 600, fontSize: 13, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{prop.titulo}</div>
-                              <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>
+                              <div style={{ fontWeight: 600, fontSize: 13, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{prop.titulo}</div>
+                              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
                                 {[prop.zona, prop.ciudad].filter(Boolean).join(", ")}
                                 {prop.dormitorios && ` · ${prop.dormitorios} dorm.`}
                                 {prop.superficie_cubierta && ` · ${prop.superficie_cubierta}m²`}
                               </div>
                               {prop.precio && (
-                                <div style={{ fontSize: 13, fontWeight: 700, color: "#2563eb", marginTop: 2 }}>{fmt(prop.precio, prop.moneda)}</div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: "#f59e0b", marginTop: 2 }}>{fmt(prop.precio, prop.moneda)}</div>
                               )}
                             </div>
                             <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
@@ -231,9 +230,9 @@ export default function SmartProspectingPage() {
                                 </a>
                               )}
                               <a
-                                href={`/cartera/${prop.id}`}
+                                href={`/crm/cartera/ficha/${prop.id}`}
                                 target="_blank"
-                                style={{ fontSize: 11, padding: "5px 10px", background: "#eff6ff", color: "#2563eb", borderRadius: 4, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap", border: "1px solid #bfdbfe" }}
+                                style={{ fontSize: 11, padding: "5px 10px", background: "rgba(204,0,0,0.1)", color: "#cc0000", borderRadius: 4, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap", border: "1px solid rgba(204,0,0,0.25)" }}
                               >
                                 Ver ficha
                               </a>

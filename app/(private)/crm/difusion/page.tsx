@@ -28,7 +28,7 @@ function DifusionInner() {
         .from("crm_contactos")
         .select("id, nombre, apellido, tipo, email, telefono")
         .eq("perfil_id", auth.user.id)
-        .eq("archivado", false)
+        .neq("estado", "archivado")
         .order("nombre");
       setContactos(data ?? []);
 

@@ -258,7 +258,7 @@ export default function AgendaPage() {
     const [{ data: citasData }, { data: recData }, { data: tarData }] = await Promise.all([
       supabase.from('eventos_agenda').select('*').eq('usuario_id', id).order('fecha'),
       supabase.from('crm_recordatorios').select('*, contacto:crm_contactos(nombre,apellido,telefono)').eq('perfil_id', id).neq('estado','completado'),
-      supabase.from('crm_tareas').select('*').eq('perfil_id', id).eq('completada', false).not('fecha_vencimiento','is',null),
+      supabase.from('crm_tareas').select('*').eq('perfil_id', id).neq('estado', 'completada').not('fecha_vencimiento','is',null),
     ])
     const all: EventoItem[] = [
       ...((citasData ?? []).map((e:any) => ({
@@ -279,7 +279,7 @@ export default function AgendaPage() {
       ...((tarData ?? []).map((t:any) => ({
         id: `tar-${t.id}`, titulo: t.titulo, fecha: t.fecha_vencimiento?.split('T')[0]??'',
         hora: null, hora_fin: null,
-        tipo: 'tarea' as TipoEvento, estado: t.completada ? 'completada' : 'pendiente',
+        tipo: 'tarea' as TipoEvento, estado: t.estado ?? 'pendiente',
         descripcion: t.descripcion??null, lugar: null,
         contacto_nombre: null, contacto_telefono: null, fuente: 'crm_tareas' as const,
       }))),
