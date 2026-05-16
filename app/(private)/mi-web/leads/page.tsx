@@ -26,6 +26,8 @@ export default function LeadsPage() {
   const [filtro, setFiltro] = useState<"todos" | "contacto" | "tasacion" | "no_leidos">("todos");
   const [convirtiendo, setConvirtiendo] = useState<string | null>(null);
   const [convertidos, setConvertidos] = useState<Set<string>>(new Set());
+  const [creandoNegocio, setCreandoNegocio] = useState<string | null>(null);
+  const [negociosCreados, setNegociosCreados] = useState<Set<string>>(new Set());
   const [tablaNoExiste, setTablaNoExiste] = useState(false);
 
   useEffect(() => {
@@ -94,6 +96,47 @@ export default function LeadsPage() {
       await marcarLeido(lead.id);
     }
     setConvirtiendo(null);
+  };
+
+  const crearNegocio = async (lead: Lead) => {
+    setCreandoNegocio(lead.id);
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) { setCreandoNegocio(null); return; }
+
+    // Create contact first
+    const { data: contacto } = await supabase.from("crm_contactos").insert({
+      perfil_id: auth.user.id,
+      nombre: lead.nombre.split(" ")[0] ?? lead.nombre,
+      apellido: lead.nombre.split(" ").slice(1).join(" ") || null,
+      email: lead.email || null,
+      telefono: lead.telefono || null,
+      tipo: "cliente",
+      estado: "lead:nuevo",
+      origen: "web",
+      interes: lead.cartera_propiedades?.titulo ? `Consulta por: ${lead.cartera_propiedades.titulo}` : null,
+      notas: lead.mensaje ? `Lead web: "${lead.mensaje}"` : null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }).select("id").single();
+
+    // Then create negocio linked to contact
+    const titulo = lead.cartera_propiedades?.titulo
+      ? `${lead.nombre.split(" ")[0]} — ${lead.cartera_propiedades.titulo}`
+      : `Lead web: ${lead.nombre}`;
+    await supabase.from("crm_negocios").insert({
+      perfil_id: auth.user.id,
+      contacto_id: contacto?.id ?? null,
+      titulo,
+      tipo_operacion: "venta",
+      etapa: "prospecto",
+      notas: lead.mensaje ? `Mensaje del lead: "${lead.mensaje}"` : null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    setNegociosCreados(prev => new Set([...prev, lead.id]));
+    await marcarLeido(lead.id);
+    setCreandoNegocio(null);
   };
 
   const filtrados = leads.filter(l => {
@@ -255,6 +298,19 @@ export default function LeadsPage() {
                       style={{ fontSize: 11, padding: "6px 12px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: 6, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
                     >
                       {convirtiendo === lead.id ? "…" : "+ CRM"}
+                    </button>
+                  )}
+                  {negociosCreados.has(lead.id) ? (
+                    <div style={{ fontSize: 11, padding: "6px 12px", background: "#f0fdf4", color: "#15803d", borderRadius: 6, fontWeight: 700, textAlign: "center" }}>
+                      ✓ Negocio
+                    </div>
+                  ) : (
+                    <button
+                      onClick={e => { e.stopPropagation(); crearNegocio(lead); }}
+                      disabled={creandoNegocio === lead.id}
+                      style={{ fontSize: 11, padding: "6px 12px", background: "#fefce8", color: "#a16207", border: "1px solid #fde68a", borderRadius: 6, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
+                    >
+                      {creandoNegocio === lead.id ? "…" : "+ Negocio"}
                     </button>
                   )}
                 </div>

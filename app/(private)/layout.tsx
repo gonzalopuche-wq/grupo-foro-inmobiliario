@@ -95,6 +95,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const [pagoEnviado, setPagoEnviado] = useState(false);
   const [pagoError, setPagoError] = useState("");
   const [copiadoBloq, setCopiadoBloq] = useState<string | null>(null);
+  const [leadsNoLeidos, setLeadsNoLeidos] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -118,6 +119,13 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         if (tipo === "colaborador") {
           const bloqueada = RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
           if (bloqueada) { router.replace("/dashboard"); return; }
+        }
+
+        // Badge de leads web no leídos (solo corredor/admin)
+        if (tipo !== "colaborador") {
+          supabase.from("web_leads").select("id", { count: "exact", head: true })
+            .eq("perfil_id", auth.user.id).eq("leido", false)
+            .then(({ count }) => setLeadsNoLeidos(count ?? 0));
         }
 
         // Verificar suscripción bloqueada (solo para no-admin)
@@ -163,6 +171,13 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
       setLoading(false);
     };
     init();
+  }, [pathname]);
+
+  // Clear leads badge when user is viewing the mi-web section
+  useEffect(() => {
+    if (pathname.startsWith("/mi-web") && leadsNoLeidos > 0) {
+      setLeadsNoLeidos(0);
+    }
   }, [pathname]);
 
   const copiarBloq = (valor: string, key: string) => {
@@ -397,6 +412,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
               >
                 <span className="nav-item-icon">{item.icon}</span>
                 {item.label}
+                {item.href === "/mi-web" && leadsNoLeidos > 0 && (
+                  <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                    {leadsNoLeidos > 99 ? "99+" : leadsNoLeidos}
+                  </span>
+                )}
               </Link>
             ))}
 
