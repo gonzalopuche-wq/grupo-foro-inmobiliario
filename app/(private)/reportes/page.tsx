@@ -86,11 +86,11 @@ export default function ReportesPage() {
       supabase.from('cartera_propiedades').select('id,estado,zona').eq('perfil_id',id),
       supabase.from('crm_contactos').select('id,created_at').eq('perfil_id',id),
       supabase.from('crm_negocios').select('id,etapa,created_at').eq('perfil_id',id),
-      supabase.from('crm_tareas').select('id,completada').eq('perfil_id',id),
+      supabase.from('crm_tareas').select('id,estado').eq('perfil_id',id),
       supabase.from('crm_interacciones').select('id,created_at').eq('perfil_id',id),
       supabase.from('tasaciones_historial').select('id,created_at').eq('usuario_id',id),
       supabase.from('comisiones').select('*').eq('perfil_id',id).order('fecha_operacion',{ascending:false}),
-      supabase.from('crm_visitas').select('id,created_at').eq('perfil_id',id).gte('created_at',desde),
+      supabase.from('cartera_visitas').select('id,created_at').eq('perfil_id',id).gte('created_at',desde),
     ])
 
     const pl = props ?? []; const cl = contactos ?? []; const nl = negocios ?? []
@@ -105,7 +105,7 @@ export default function ReportesPage() {
       contactos_nuevos: cl.filter((x:any) => x.created_at >= desde).length,
       negocios: nl.length,
       negocios_cerrados: nl.filter((x:any) => x.etapa === 'cerrado').length,
-      tareas_completadas: tl.filter((x:any) => x.completada).length,
+      tareas_completadas: tl.filter((x:any) => x.estado === 'completada').length,
       tareas_total: tl.length,
       interacciones: il.filter((x:any) => x.created_at >= desde).length,
       tasaciones: tal.filter((x:any) => x.created_at >= desde).length,

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
-interface Perfil { id: string; nombre: string; apellido: string; matricula: string | null; inmobiliaria: string | null; foto_url: string | null; }
+interface Perfil { id: string; nombre: string; apellido: string; matricula: string | null; inmobiliaria: string | null; foto_url: string | null; telefono: string | null; }
 interface Negocio { id: string; titulo: string; }
 interface Alianza {
   id: string;
@@ -61,7 +61,7 @@ export default function AlianzasPage() {
   const cargar = async (uid: string) => {
     const { data } = await supabase
       .from("crm_alianzas")
-      .select("*, proponente:perfiles!crm_alianzas_proponente_id_fkey(id,nombre,apellido,matricula,inmobiliaria,foto_url), receptor:perfiles!crm_alianzas_receptor_id_fkey(id,nombre,apellido,matricula,inmobiliaria,foto_url), negocio:crm_negocios(titulo)")
+      .select("*, proponente:perfiles!crm_alianzas_proponente_id_fkey(id,nombre,apellido,matricula,inmobiliaria,foto_url,telefono), receptor:perfiles!crm_alianzas_receptor_id_fkey(id,nombre,apellido,matricula,inmobiliaria,foto_url,telefono), negocio:crm_negocios(titulo)")
       .or(`proponente_id.eq.${uid},receptor_id.eq.${uid}`)
       .order("created_at", { ascending: false });
     setAlianzas((data ?? []) as Alianza[]);
@@ -73,7 +73,7 @@ export default function AlianzasPage() {
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
       await cargar(data.user.id);
-      const { data: col } = await supabase.from("perfiles").select("id,nombre,apellido,matricula,inmobiliaria,foto_url").eq("estado", "activo").neq("id", data.user.id).order("apellido").limit(200);
+      const { data: col } = await supabase.from("perfiles").select("id,nombre,apellido,matricula,inmobiliaria,foto_url,telefono").eq("estado", "activo").neq("id", data.user.id).order("apellido").limit(200);
       setColegas((col ?? []) as Perfil[]);
       const { data: neg } = await supabase.from("crm_negocios").select("id,titulo").eq("perfil_id", data.user.id).eq("archivado", false).order("updated_at", { ascending: false });
       setNegocios((neg ?? []) as Negocio[]);
@@ -221,7 +221,7 @@ export default function AlianzasPage() {
                   )}
                   {/* WhatsApp al colega */}
                   {contraparte && (
-                    <a href={`https://wa.me/${((contraparte as any).telefono ?? "").replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
+                    <a href={`https://wa.me/${(contraparte.telefono ?? "").replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
                       style={{ background: "#052e16", color: "#22c55e", border: "1px solid #166534", borderRadius: 8, padding: "7px 14px", fontSize: 13, textDecoration: "none" }}>
                       💬 WhatsApp
                     </a>
