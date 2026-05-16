@@ -259,6 +259,9 @@ export default function CarteraPage() {
   const [filtroOp, setFiltroOp] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
+  const [filtroPrecioMin, setFiltroPrecioMin] = useState("");
+  const [filtroPrecioMax, setFiltroPrecioMax] = useState("");
+  const [filtroSoloWeb, setFiltroSoloWeb] = useState(false);
   const [orden, setOrden] = useState("nuevas");
   const [duplicando, setDuplicando] = useState<string | null>(null);
 
@@ -935,10 +938,15 @@ export default function CarteraPage() {
 
   // ── Filtrado y orden ──────────────────────────────────────────────────────
   const filtradas = useMemo(() => {
+    const precioMin = filtroPrecioMin ? parseFloat(filtroPrecioMin.replace(/\D/g, "")) : null;
+    const precioMax = filtroPrecioMax ? parseFloat(filtroPrecioMax.replace(/\D/g, "")) : null;
     const base = propiedades.filter(p => {
       if (filtroOp && p.operacion !== filtroOp) return false;
       if (filtroTipo && p.tipo !== filtroTipo) return false;
       if (filtroEstado && p.estado !== filtroEstado) return false;
+      if (filtroSoloWeb && !p.publicada_web) return false;
+      if (precioMin !== null && (p.precio ?? 0) < precioMin) return false;
+      if (precioMax !== null && (p.precio ?? 0) > precioMax) return false;
       if (busqueda.trim()) { const q = busqueda.toLowerCase(); return p.titulo?.toLowerCase().includes(q) || p.direccion?.toLowerCase().includes(q) || p.zona?.toLowerCase().includes(q); }
       return true;
     });
@@ -949,7 +957,7 @@ export default function CarteraPage() {
     else if (orden === "alfa") sorted.sort((a, b) => (a.titulo ?? "").localeCompare(b.titulo ?? "", "es"));
     else sorted.sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
     return sorted;
-  }, [propiedades, filtroOp, filtroTipo, filtroEstado, busqueda, orden]);
+  }, [propiedades, filtroOp, filtroTipo, filtroEstado, filtroSoloWeb, filtroPrecioMin, filtroPrecioMax, busqueda, orden]);
 
   const estadoInfo = (e: string) => ESTADOS.find(x => x.value === e) ?? { value: e, label: e.toUpperCase(), color: "#6b7280" };
   const pct = Math.round((paso / 7) * 100);
@@ -1193,8 +1201,25 @@ export default function CarteraPage() {
             <option value="precio_asc">Precio ↑</option>
             <option value="alfa">Alfabético</option>
           </select>
-          {(filtroOp || filtroTipo || filtroEstado || busqueda) && (
-            <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); }}>✕ Limpiar</button>
+          <input
+            placeholder="Precio mín"
+            value={filtroPrecioMin}
+            onChange={e => setFiltroPrecioMin(e.target.value)}
+            style={{width:90,padding:"7px 8px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:"rgba(255,255,255,0.6)",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none"}}
+          />
+          <input
+            placeholder="Precio máx"
+            value={filtroPrecioMax}
+            onChange={e => setFiltroPrecioMax(e.target.value)}
+            style={{width:90,padding:"7px 8px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:"rgba(255,255,255,0.6)",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none"}}
+          />
+          <button
+            onClick={() => setFiltroSoloWeb(v => !v)}
+            style={{padding:"7px 10px",background:filtroSoloWeb?"rgba(59,130,246,0.12)":"rgba(255,255,255,0.04)",border:filtroSoloWeb?"1px solid rgba(59,130,246,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroSoloWeb?"#60a5fa":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
+            title="Mostrar solo propiedades publicadas en el sitio web"
+          >🌐 Web</button>
+          {(filtroOp || filtroTipo || filtroEstado || busqueda || filtroPrecioMin || filtroPrecioMax || filtroSoloWeb) && (
+            <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); setFiltroPrecioMin(""); setFiltroPrecioMax(""); setFiltroSoloWeb(false); }}>✕ Limpiar</button>
           )}
           <span className="cart-count">{filtradas.length} propiedades</span>
         </div>
