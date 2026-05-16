@@ -6,16 +6,16 @@ import { supabase } from "../../../lib/supabase";
 interface Propiedad {
   id: string;
   titulo: string;
-  tipo_operacion: string;
-  tipo_propiedad: string;
+  operacion: string;
+  tipo: string;
   precio: number | null;
   moneda: string | null;
   dormitorios: number | null;
   superficie_total: number | null;
   fotos: string[] | null;
   direccion: string | null;
-  barrio: string | null;
-  localidad: string | null;
+  zona: string | null;
+  ciudad: string | null;
   estado: string;
 }
 
@@ -61,7 +61,7 @@ export default function PresentacionesPage() {
     const [resProps, resPres] = await Promise.all([
       supabase
         .from("cartera_propiedades")
-        .select("id, titulo, tipo_operacion, tipo_propiedad, precio, moneda, dormitorios, superficie_total, fotos, direccion, barrio, localidad, estado")
+        .select("id, titulo, operacion, tipo, precio, moneda, dormitorios, superficie_total, fotos, direccion, zona, ciudad, estado")
         .eq("perfil_id", uid)
         .eq("estado", "activa")
         .order("created_at", { ascending: false }),
@@ -120,7 +120,7 @@ export default function PresentacionesPage() {
     if (!busqueda) return true;
     const q = busqueda.toLowerCase();
     return (p.titulo ?? "").toLowerCase().includes(q) ||
-      (p.barrio ?? "").toLowerCase().includes(q) ||
+      (p.zona ?? "").toLowerCase().includes(q) ||
       (p.direccion ?? "").toLowerCase().includes(q);
   });
 
@@ -213,7 +213,7 @@ export default function PresentacionesPage() {
                           >
                             <div className="font-medium truncate">{p.titulo}</div>
                             <div className="text-xs text-gray-400 mt-0.5">
-                              {p.tipo_operacion} · {p.tipo_propiedad}
+                              {p.operacion} · {p.tipo}
                               {p.precio ? ` · ${p.moneda === "USD" ? "U$S" : "$"} ${p.precio.toLocaleString("es-AR")}` : ""}
                             </div>
                           </button>

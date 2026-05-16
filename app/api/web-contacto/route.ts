@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
           estado: "prospecto",
           interes: tipo === "tasacion" ? "Tasación" : "Consulta general",
           notas: origenNota,
-          fuente: "web_propia",
+          origen: "web_propia",
         });
       }
     } catch { /* no bloquear */ }
