@@ -11,8 +11,10 @@ interface Lead {
   telefono: string | null;
   mensaje: string | null;
   direccion_propiedad: string | null;
+  propiedad_id: string | null;
   leido: boolean;
   created_at: string;
+  cartera_propiedades?: { titulo: string } | null;
 }
 
 const TIPO_COLOR = { contacto: "#3b82f6", tasacion: "#f59e0b" };
@@ -40,7 +42,7 @@ export default function LeadsPage() {
     try {
       const { data, error } = await supabase
         .from("web_leads")
-        .select("*")
+        .select("*, cartera_propiedades(titulo)")
         .eq("perfil_id", uid)
         .order("created_at", { ascending: false });
 
@@ -59,6 +61,13 @@ export default function LeadsPage() {
     setLeads(prev => prev.map(l => l.id === id ? { ...l, leido: true } : l));
   };
 
+  const marcarTodosLeidos = async () => {
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+    await supabase.from("web_leads").update({ leido: true }).eq("perfil_id", auth.user.id).eq("leido", false);
+    setLeads(prev => prev.map(l => ({ ...l, leido: true })));
+  };
+
   const convertirCRM = async (lead: Lead) => {
     setConvirtiendo(lead.id);
     const { data: auth } = await supabase.auth.getUser();
@@ -72,7 +81,9 @@ export default function LeadsPage() {
       telefono: lead.telefono || null,
       tipo: "cliente",
       origen: "web",
-      interes: lead.tipo === "tasacion" ? `Tasación: ${lead.direccion_propiedad ?? "sin dirección"}` : null,
+      interes: lead.tipo === "tasacion"
+        ? `Tasación: ${lead.direccion_propiedad ?? "sin dirección"}`
+        : lead.cartera_propiedades?.titulo ? `Consulta por: ${lead.cartera_propiedades.titulo}` : null,
       notas: lead.mensaje ? `Lead web: "${lead.mensaje}"` : null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -131,7 +142,7 @@ export default function LeadsPage() {
           </div>
           <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>Consultas recibidas desde tu web pública</p>
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {(["todos","no_leidos","contacto","tasacion"] as const).map(f => (
             <button
               key={f}
@@ -141,6 +152,14 @@ export default function LeadsPage() {
               {f === "todos" ? "Todos" : f === "no_leidos" ? `Sin leer (${noLeidos})` : f === "contacto" ? "Contacto" : "Tasación"}
             </button>
           ))}
+          {noLeidos > 0 && (
+            <button
+              onClick={marcarTodosLeidos}
+              style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", color: "#6b7280", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+            >
+              ✓ Marcar todos
+            </button>
+          )}
         </div>
       </div>
 
@@ -172,6 +191,11 @@ export default function LeadsPage() {
                     <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: TIPO_COLOR[lead.tipo] + "20", color: TIPO_COLOR[lead.tipo], border: `1px solid ${TIPO_COLOR[lead.tipo]}40` }}>
                       {TIPO_LABEL[lead.tipo]}
                     </span>
+                    {lead.cartera_propiedades?.titulo && (
+                      <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 20, background: "#f3e8ff", color: "#7c3aed", border: "1px solid #e9d5ff", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        🏠 {lead.cartera_propiedades.titulo}
+                      </span>
+                    )}
                     <span style={{ fontSize: 11, color: "#9ca3af" }}>{formatFecha(lead.created_at)}</span>
                   </div>
 
@@ -202,9 +226,17 @@ export default function LeadsPage() {
 
                 {/* Acciones */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                  {lead.propiedad_id && (
+                    <a
+                      href={`/crm/cartera/ficha/${lead.propiedad_id}`}
+                      style={{ fontSize: 11, padding: "6px 12px", background: "#f3e8ff", color: "#7c3aed", border: "1px solid #e9d5ff", borderRadius: 6, fontWeight: 700, textDecoration: "none", textAlign: "center" }}
+                    >
+                      🏠 Ver prop.
+                    </a>
+                  )}
                   {lead.telefono && (
                     <a
-                      href={`https://wa.me/${lead.telefono.replace(/\D/g,"")}?text=${encodeURIComponent(`Hola ${lead.nombre.split(" ")[0]}, te contacto de Grupo Foro Inmobiliario respecto a tu consulta.`)}`}
+                      href={`https://wa.me/${lead.telefono.replace(/\D/g,"")}?text=${encodeURIComponent(`Hola ${lead.nombre.split(" ")[0]}, te contacto por${lead.cartera_propiedades?.titulo ? ` la propiedad "${lead.cartera_propiedades.titulo}"` : " tu consulta"} en mi web inmobiliaria.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ fontSize: 11, padding: "6px 12px", background: "#25D366", color: "#fff", borderRadius: 6, fontWeight: 700, textDecoration: "none", textAlign: "center" }}
