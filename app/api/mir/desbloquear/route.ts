@@ -7,10 +7,16 @@ const supabaseAdmin = createClient(
 );
 
 export async function POST(req: NextRequest) {
-  try {
-    const { match_id, user_id, es_duenio_ofrecido } = await req.json();
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-    if (!match_id || !user_id) {
+  try {
+    const { match_id, es_duenio_ofrecido } = await req.json();
+    const user_id = user.id;
+
+    if (!match_id) {
       return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
     }
 

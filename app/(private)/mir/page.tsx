@@ -442,10 +442,11 @@ export default function MirPage() {
     if (!userId || desbloqueando) return;
     setDesbloqueando(match_id);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch("/api/mir/desbloquear", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ match_id, user_id: userId, es_duenio_ofrecido }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ match_id, es_duenio_ofrecido }),
       });
       const data = await res.json();
       if (data.ok) await cargarDatos();

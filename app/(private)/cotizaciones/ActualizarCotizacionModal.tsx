@@ -133,9 +133,10 @@ export default function ActualizarCotizacionModal({ proveedor, userId, esAdmin, 
         ? { imageBase64: preview.split(",")[1], mediaType: mimeType }
         : { texto: textoLibre };
 
+      const { data: { session: cotSession } } = await supabase.auth.getSession();
       const response = await fetch("/api/extraer-cotizacion", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${cotSession?.access_token}` },
         body: JSON.stringify(body),
       });
       const data = await response.json();

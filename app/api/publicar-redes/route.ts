@@ -132,6 +132,13 @@ function buildOAuth1Header(method: string, url: string, apiKey: string, apiSecre
 }
 
 export async function POST(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return NextResponse.json({ ok: false, error: "No autorizado" }, { status: 401 });
+  const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+  if (!user) return NextResponse.json({ ok: false, error: "No autorizado" }, { status: 401 });
+  const { data: perfil } = await supabaseAdmin.from("perfiles").select("tipo").eq("id", user.id).single();
+  if (perfil?.tipo !== "admin") return NextResponse.json({ ok: false, error: "No autorizado" }, { status: 403 });
+
   const { evento } = await req.json();
 
   // Load social config from admin profile
