@@ -80,8 +80,26 @@ export default function ObservatorioPage() {
   const [mirStats, setMirStats] = useState<MIRStat[]>([]);
   const [comunidad, setComunidad] = useState<ComunidadStat>({ total_corredores: 0, total_comparables: 0, total_mir: 0 });
   const [precioM2Global, setPrecioM2Global] = useState(0);
+  const [analisisIA, setAnalisisIA] = useState<string | null>(null);
+  const [generandoAnalisis, setGenerandoAnalisis] = useState(false);
 
   useEffect(() => { cargar(); }, [periodo]);
+
+  const generarAnalisisIA = async () => {
+    setGenerandoAnalisis(true);
+    setAnalisisIA(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/ia-analisis-mercado", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ barrioStats, tipoStats, mirStats, comunidadStat: comunidad, periodo }),
+      });
+      const json = await res.json();
+      if (json.analisis) setAnalisisIA(json.analisis);
+    } catch {}
+    setGenerandoAnalisis(false);
+  };
 
   const cargar = async () => {
     setLoading(true);
@@ -270,6 +288,38 @@ export default function ObservatorioPage() {
                 sub="USD/m² · Todas las zonas"
                 color="#22c55e"
               />
+            </div>
+
+            {/* IA Market Analysis Panel */}
+            <div style={{ background: "rgba(168,85,247,0.05)", border: "1px solid rgba(168,85,247,0.2)", borderRadius: 14, padding: 20, marginBottom: 24 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: analisisIA ? 14 : 0 }}>
+                <div>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)", marginBottom: 2 }}>
+                    🤖 Análisis IA del mercado
+                  </div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                    Síntesis automática de los datos del Observatorio para el período seleccionado
+                  </div>
+                </div>
+                <button
+                  onClick={generarAnalisisIA}
+                  disabled={generandoAnalisis || loading}
+                  style={{ padding: "8px 16px", background: generandoAnalisis ? "rgba(168,85,247,0.1)" : "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.35)", borderRadius: 6, color: "#c084fc", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", cursor: generandoAnalisis || loading ? "not-allowed" : "pointer", opacity: generandoAnalisis || loading ? 0.6 : 1, whiteSpace: "nowrap" }}
+                >
+                  {generandoAnalisis ? "Analizando..." : analisisIA ? "↺ Regenerar" : "✨ Generar análisis"}
+                </button>
+              </div>
+              {generandoAnalisis && (
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 14, color: "rgba(192,132,252,0.7)", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
+                  <span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid rgba(192,132,252,0.3)", borderTopColor: "#c084fc", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                  Procesando datos del mercado...
+                </div>
+              )}
+              {analisisIA && !generandoAnalisis && (
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: 1.75, fontFamily: "Inter,sans-serif", borderTop: "1px solid rgba(168,85,247,0.15)", paddingTop: 14, marginTop: 14 }}>
+                  {analisisIA}
+                </div>
+              )}
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
