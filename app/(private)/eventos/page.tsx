@@ -224,9 +224,10 @@ export default function EventosPage() {
     if (!textoParser.trim()) { mostrarToast("Pega el texto del evento", "err"); return; }
     setParseando(true);
     try {
+      const { data: { session: parsSession } } = await supabase.auth.getSession();
       const res = await fetch("/api/eventos/parsear", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${parsSession?.access_token}` },
         body: JSON.stringify({ texto: textoParser }),
       });
       const json = await res.json();
@@ -318,9 +319,10 @@ export default function EventosPage() {
     if (esAdmin && eventoCreado) {
       mostrarToast("Publicando en redes sociales...");
       try {
+        const { data: { session: evSession } } = await supabase.auth.getSession();
         const resp = await fetch("/api/publicar-redes", {
           method: "POST",
-          headers: { "content-type": "application/json" },
+          headers: { "content-type": "application/json", Authorization: `Bearer ${evSession?.access_token}` },
           body: JSON.stringify({ evento: eventoCreado }),
         });
         const { resultados } = await resp.json();

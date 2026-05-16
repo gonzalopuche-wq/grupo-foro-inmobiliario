@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { createClient } from "@supabase/supabase-js";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 const cotizacionTool: Anthropic.Tool = {
   name: "cotizacion_extraida",
@@ -17,6 +19,11 @@ const cotizacionTool: Anthropic.Tool = {
 };
 
 export async function POST(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const { data: { user } } = await sb.auth.getUser(token);
+  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
   try {
     const body = await req.json();
     const { imageBase64, mediaType, texto } = body;
