@@ -10,7 +10,7 @@ interface PropiedadCardProps {
     url_original: string
     titulo: string
     descripcion?: string
-    barrio?: string
+    zona?: string
     ciudad?: string
     precio_actual?: number
     moneda?: string
@@ -44,7 +44,7 @@ const PORTAL_LABELS: Record<string, string> = {
 }
 
 export default function PropiedadCard({ propiedad, seleccionada, onToggle }: PropiedadCardProps) {
-  const { portal, url_original, titulo, descripcion, barrio, precio_actual,
+  const { portal, url_original, titulo, descripcion, zona, precio_actual,
           moneda, expensas, superficie_total, dormitorios, banos, imagen_principal } = propiedad
 
   const formatPrecio = (n: number, m: string) =>
@@ -95,10 +95,10 @@ export default function PropiedadCard({ propiedad, seleccionada, onToggle }: Pro
           {titulo}
         </h3>
 
-        {barrio && (
+        {zona && (
           <div className="flex items-center gap-1 text-gray-400 text-xs">
             <MapPin className="w-3 h-3" />
-            {barrio}
+            {zona}
           </div>
         )}
 

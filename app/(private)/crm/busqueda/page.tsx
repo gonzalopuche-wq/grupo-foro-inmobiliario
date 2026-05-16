@@ -16,7 +16,7 @@ interface Propiedad {
   descripcion?: string
   tipo?: string
   operacion?: string
-  barrio?: string
+  zona?: string
   ciudad?: string
   precio_actual?: number
   moneda?: string
@@ -180,7 +180,7 @@ export default function BusquedaPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      setResultados(data.propiedades || [])
+      setResultados((data.propiedades || []).map((p: any) => ({ ...p, zona: p.zona || p.barrio || '' })))
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -225,7 +225,7 @@ export default function BusquedaPage() {
               portal_id: item.id,
               url_original: item.permalink || url,
               titulo: item.title || url,
-              barrio: atributos['NEIGHBORHOOD'] || '',
+              zona: atributos['NEIGHBORHOOD'] || '',
               ciudad: atributos['CITY'] || 'Rosario',
               precio_actual: item.price,
               moneda: item.currency_id === 'ARS' ? 'ARS' : 'USD',
@@ -249,7 +249,7 @@ export default function BusquedaPage() {
         portal_id: `manual_${Date.now()}`,
         url_original: url,
         titulo: `Propiedad en ${portal.charAt(0).toUpperCase() + portal.slice(1)}`,
-        barrio: zona || '',
+        zona: zona || '',
         ciudad: 'Rosario',
         disponible: true,
       }, ...prev])
