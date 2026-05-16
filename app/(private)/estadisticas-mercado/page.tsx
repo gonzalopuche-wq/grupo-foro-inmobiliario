@@ -11,7 +11,7 @@ interface EstadNegocio {
 }
 
 interface EstadPropiedad {
-  tipo_operacion: string;
+  operacion: string;
   cantidad: number;
   precio_promedio: number;
   superficie_promedio: number;
@@ -183,8 +183,8 @@ export default function EstadisticasMercadoPage() {
 
       // Propiedades cartera
       let qCart = supabase
-        .from("crm_cartera")
-        .select("tipo_operacion, precio, moneda, superficie_total, zona, activo")
+        .from("cartera_propiedades")
+        .select("operacion, precio, moneda, superficie_total, zona")
         .eq("perfil_id", uid);
       if (fechaDesde) qCart = qCart.gte("created_at", fechaDesde);
       const { data: cartera } = await qCart;
@@ -192,8 +192,8 @@ export default function EstadisticasMercadoPage() {
       const tipoMap: Record<string, EstadPropiedad> = {};
       const zonaMap: Record<string, EstadZona> = {};
       for (const p of cartera ?? []) {
-        const tipo = p.tipo_operacion ?? "otro";
-        if (!tipoMap[tipo]) tipoMap[tipo] = { tipo_operacion: tipo, cantidad: 0, precio_promedio: 0, superficie_promedio: 0 };
+        const tipo = (p.operacion ?? "otro").toLowerCase();
+        if (!tipoMap[tipo]) tipoMap[tipo] = { operacion: tipo, cantidad: 0, precio_promedio: 0, superficie_promedio: 0 };
         tipoMap[tipo].cantidad++;
         if (p.precio && p.moneda === "USD") tipoMap[tipo].precio_promedio += p.precio;
         if (p.superficie_total) tipoMap[tipo].superficie_promedio += p.superficie_total;
@@ -307,7 +307,7 @@ export default function EstadisticasMercadoPage() {
                 <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Sin propiedades cargadas</p>
               ) : (
                 <BarChart data={propiedadesPorTipo.map(p => ({
-                  label: TIPO_LABELS[p.tipo_operacion] ?? p.tipo_operacion,
+                  label: TIPO_LABELS[p.operacion] ?? p.operacion,
                   value: p.cantidad,
                   color: "rgba(99,102,241,0.7)",
                 }))} />
@@ -315,8 +315,8 @@ export default function EstadisticasMercadoPage() {
               {propiedadesPorTipo.length > 0 && (
                 <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                   {propiedadesPorTipo.map(p => p.precio_promedio > 0 && (
-                    <div key={p.tipo_operacion} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>
-                      <span>{TIPO_LABELS[p.tipo_operacion] ?? p.tipo_operacion} — precio prom.</span>
+                    <div key={p.operacion} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>
+                      <span>{TIPO_LABELS[p.operacion] ?? p.operacion} — precio prom.</span>
                       <span>{formatMoneda(p.precio_promedio)}</span>
                     </div>
                   ))}
