@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
       const ind = Object.fromEntries((indicadores ?? []).map((r: any) => [r.clave, r.valor]));
       const cbu = ind.cbu_cvu ?? "CVU no configurado — contactar al administrador";
       const cbuAlias = ind.cbu_alias ?? "";
-      const precioEmail = perfil?.tipo === "colaborador" ? (ind.precio_colaborador_usd ?? 5) : (ind.precio_corredor_usd ?? 10);
+      const precioEmail = s.plan === "colaborador" ? (ind.precio_colaborador_usd ?? 5) : (ind.precio_corredor_usd ?? 10);
 
       // 5. Enviar email de suspensión
       if (email) {

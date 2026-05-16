@@ -800,8 +800,10 @@ export default function AdminPage() {
     if (!confirm(`¿Reactivar suscripción de ${pago.perfiles?.nombre ?? "este corredor"}?`)) return;
     setProcesandoPago(pago.id);
     const vencimiento = new Date(); vencimiento.setMonth(vencimiento.getMonth() + 1);
-    await supabase.from("suscripciones").update({ estado: "activa", fecha_confirmacion: new Date().toISOString().slice(0, 10), fecha_vencimiento: vencimiento.toISOString().slice(0, 10), nota_admin: notaAdmin[pago.id] || "Reactivado manualmente por admin" }).eq("id", pago.id);
-    await supabase.from("perfiles").update({ estado: "aprobado" }).eq("id", pago.perfil_id);
+    const { error: errSub } = await supabase.from("suscripciones").update({ estado: "activa", fecha_confirmacion: new Date().toISOString().slice(0, 10), fecha_vencimiento: vencimiento.toISOString().slice(0, 10), nota_admin: notaAdmin[pago.id] || "Reactivado manualmente por admin" }).eq("id", pago.id);
+    if (errSub) { mostrarToast("Error al reactivar suscripción", "err"); setProcesandoPago(null); return; }
+    const { error: errProf } = await supabase.from("perfiles").update({ estado: "aprobado" }).eq("id", pago.perfil_id);
+    if (errProf) mostrarToast("Error al actualizar perfil", "err");
     setProcesandoPago(null); cargarPagos(); mostrarToast("Suscripción reactivada");
   };
 
@@ -1070,7 +1072,7 @@ A partir de esa fecha el costo mensual será de USD 15.
 
   const formatARS = (n: number | null) => n !== null ? new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(n) : "—";
   const formatHora = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) + " · " + new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" }) : null;
-  const pagosFiltrados = filtroPagos === "todos" ? pagos : pagos.filter(p => p.estado === filtroPagos);
+  const pagosFiltrados = filtroPagos === "todos" ? pagos : filtroPagos === "suspendida" ? pagos.filter(p => p.estado === "suspendida" || p.estado === "bloqueado") : pagos.filter(p => p.estado === filtroPagos);
   const contadoresPagos = { pendiente: pagos.filter(p => p.estado === "pendiente").length, activa: pagos.filter(p => p.estado === "activa").length, suspendida: pagos.filter(p => p.estado === "suspendida" || p.estado === "bloqueado").length, todos: pagos.length };
   const perfilesFiltrados = filtro === "todos" ? perfiles : perfiles.filter(p => p.estado === filtro);
   const contadores = { todos: perfiles.length, pendiente: perfiles.filter(p => p.estado === "pendiente").length, aprobado: perfiles.filter(p => p.estado === "aprobado").length, rechazado: perfiles.filter(p => p.estado === "rechazado").length };

@@ -132,7 +132,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
 
           const estadoSub = sub?.estado ?? null;
           const bloqueado = estadoSub && ["vencida", "suspendida", "bloqueado"].includes(estadoSub);
-          const enGracia = estadoSub === "activa" && sub?.fecha_vencimiento && new Date(sub.fecha_vencimiento) < new Date();
+          const enGracia = estadoSub === "activa" && sub?.fecha_vencimiento && sub.fecha_vencimiento < new Date().toISOString().slice(0, 10);
           const enPendiente = estadoSub === "pendiente";
 
           if (bloqueado || enGracia) {
@@ -174,10 +174,12 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const declararPago = async () => {
     if (!pagoFecha) { setPagoError("Ingresá la fecha de la transferencia."); return; }
     if (!pagoMonto) { setPagoError("Ingresá el monto transferido."); return; }
+    const montoLimpio = pagoMonto.replace(/\./g, "").replace(",", ".");
+    const montoNum = parseFloat(montoLimpio);
+    if (isNaN(montoNum) || montoNum <= 0) { setPagoError("Ingresá un monto válido."); return; }
     if (!pagoComprobante) { setPagoError("Ingresá el número de comprobante."); return; }
     setPagoEnviando(true);
     setPagoError("");
-    const montoNum = parseFloat(pagoMonto.replace(/\./g, "").replace(",", "."));
     const periodo = new Date().toISOString().slice(0, 7);
     const { error: err } = await supabase.from("suscripciones").insert({
       perfil_id: userId,
