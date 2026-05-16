@@ -132,20 +132,61 @@ export async function GET(req: NextRequest) {
     const { data: existing } = await sb
       .from("cartera_sync_portales")
       .select("tokko_id, propiedad_id");
-    const existingTokkoIds = new Set((existing ?? []).map((r: any) => String(r.tokko_id)));
+    // Map tokko_id → propiedad_id for existing synced properties
+    const tokkoMap = new Map<string, string>();
+    (existing ?? []).forEach((r: any) => {
+      if (r.tokko_id) tokkoMap.set(String(r.tokko_id), r.propiedad_id);
+    });
 
     let importadas = 0;
+    let actualizadas = 0;
     let saltadas = 0;
     const errores: string[] = [];
+    const ahora = new Date().toISOString();
 
     for (const t of allProps) {
       const tokkoId = String(t.id);
+      const propiedadId = tokkoMap.get(tokkoId);
 
-      if (soloNuevas && existingTokkoIds.has(tokkoId)) {
-        saltadas++;
+      if (propiedadId) {
+        // Property already exists — update volatile fields (price, status, description, fotos)
+        if (soloNuevas) {
+          saltadas++;
+          continue;
+        }
+        try {
+          const op = t.operations?.[0];
+          const price = op?.prices?.[0];
+          const statusId: number = t.status?.id ?? t.status_id ?? 2;
+          const currencyRaw: string = price?.currency ?? (t.currency === 2 ? "USD" : "ARS");
+          const photos = (t.photos ?? [])
+            .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
+            .map((ph: any) => ph.image ?? ph.url)
+            .filter(Boolean)
+            .slice(0, 20);
+          const { error: updErr } = await sb
+            .from("cartera_propiedades")
+            .update({
+              precio: price?.price ?? t.price ?? null,
+              moneda: currencyRaw === "USD" ? "USD" : currencyRaw === "EUR" ? "EUR" : "ARS",
+              estado: STATUS[statusId] ?? "activa",
+              descripcion: t.description ?? null,
+              fotos: photos.length ? photos : undefined,
+              updated_at: ahora,
+            })
+            .eq("id", propiedadId);
+          if (updErr) { errores.push(`#${tokkoId} upd: ${updErr.message}`); continue; }
+          await sb.from("cartera_sync_portales")
+            .update({ tokko_synced_at: ahora })
+            .eq("propiedad_id", propiedadId);
+          actualizadas++;
+        } catch (e: any) {
+          errores.push(`#${tokkoId}: ${e.message}`);
+        }
         continue;
       }
 
+      // New property — insert
       try {
         const carteraData = mapTokkoToCartera(t, perfilId);
         const { data: newProp, error: insertErr } = await sb
@@ -160,7 +201,7 @@ export async function GET(req: NextRequest) {
         }
 
         await sb.from("cartera_sync_portales").upsert(
-          { propiedad_id: newProp.id, tokko_id: tokkoId, tokko_synced_at: new Date().toISOString() },
+          { propiedad_id: newProp.id, tokko_id: tokkoId, tokko_synced_at: ahora },
           { onConflict: "propiedad_id" }
         );
 
@@ -170,7 +211,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ ok: true, total: allProps.length, importadas, saltadas, errores: errores.slice(0, 20) });
+    return NextResponse.json({ ok: true, total: allProps.length, importadas, actualizadas, saltadas, errores: errores.slice(0, 20) });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

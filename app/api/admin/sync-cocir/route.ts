@@ -90,6 +90,22 @@ function urlPagina(n: number, patron: string): string {
   return patron.replace("{n}", String(n));
 }
 
+// Normalize Argentine phone numbers to +54 9 XXXXXXXXXX format
+function normalizarTelefono(raw: string): string | null {
+  const digits = raw.replace(/[^\d+]/g, "");
+  if (!digits) return null;
+  const d = digits.replace(/^\+/, "");
+  // Already international
+  if (d.startsWith("549") && d.length >= 12) return `+${d}`;
+  if (d.startsWith("54") && d.length >= 11) return `+54 9 ${d.slice(2)}`;
+  // Local with 0: 011... or 0341...
+  if (d.startsWith("0") && d.length >= 10) return `+54 9 ${d.slice(1)}`;
+  // 10-digit local
+  if (d.length === 10) return `+54 9 ${d}`;
+  if (d.length < 8) return null;
+  return `+54 9 ${d}`;
+}
+
 async function fetchPagina(url: string): Promise<string | null> {
   try {
     const res = await fetch(url, { headers: HEADERS });
@@ -233,45 +249,63 @@ export async function GET(req: NextRequest) {
       if (error) return NextResponse.json({ ok: false, error: error.message });
     }
 
-    // ── MOD 74: validar matrículas de perfiles GFI contra padrón COCIR ─────────
+    // ── Validar matrículas de perfiles GFI + sincronizar teléfono desde COCIR ──
     const { data: perfilesGfi } = await sb
       .from("perfiles")
-      .select("id, matricula")
+      .select("id, matricula, telefono, whatsapp_negocio")
       .not("matricula", "is", null)
       .neq("matricula", "");
 
     const { data: padronActual } = await sb
       .from("cocir_padron")
-      .select("matricula, estado");
+      .select("matricula, estado, telefono, email");
 
-    const padronMap = new Map<string, string>();
+    interface PadronEntry { estado: string; telefono: string | null; email: string | null }
+    const padronMap = new Map<string, PadronEntry>();
     for (const p of padronActual ?? []) {
-      if (p.matricula) padronMap.set(String(p.matricula).trim(), p.estado ?? "activo");
+      if (p.matricula) {
+        padronMap.set(String(p.matricula).trim(), {
+          estado: p.estado ?? "activo",
+          telefono: p.telefono ?? null,
+          email: p.email ?? null,
+        });
+      }
     }
 
     let validados = 0;
     let suspendidos = 0;
     let noEncontrados = 0;
+    let telefonosSincronizados = 0;
 
     for (const perfil of perfilesGfi ?? []) {
       const mat = String(perfil.matricula ?? "").trim();
       if (!mat) continue;
-      const estadoCocir = padronMap.get(mat);
+      const entrada = padronMap.get(mat);
       let nuevoEstado: string;
-      if (!estadoCocir) {
+      if (!entrada) {
         nuevoEstado = "no_encontrado";
         noEncontrados++;
-      } else if (/suspendid|inhabilitad|baja/i.test(estadoCocir)) {
+      } else if (/suspendid|inhabilitad|baja/i.test(entrada.estado)) {
         nuevoEstado = "suspendido";
         suspendidos++;
       } else {
         nuevoEstado = "activo";
         validados++;
       }
-      await sb
-        .from("perfiles")
-        .update({ cocir_estado: nuevoEstado, cocir_ultimo_control: ahora })
-        .eq("id", perfil.id);
+
+      const upd: Record<string, any> = { cocir_estado: nuevoEstado, cocir_ultimo_control: ahora };
+
+      // Backfill phone from COCIR if the profile has none
+      if (entrada?.telefono && !perfil.telefono && !perfil.whatsapp_negocio) {
+        const tel = normalizarTelefono(entrada.telefono);
+        if (tel) {
+          upd.telefono = tel;
+          upd.whatsapp_negocio = tel;
+          telefonosSincronizados++;
+        }
+      }
+
+      await sb.from("perfiles").update(upd).eq("id", perfil.id);
     }
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -283,7 +317,7 @@ export async function GET(req: NextRequest) {
       total_scrapeados: todosRegistros.length,
       paginas_procesadas: ultimaPagina,
       sincronizado_at: ahora,
-      validacion_gfi: { validados, suspendidos, no_encontrados: noEncontrados },
+      validacion_gfi: { validados, suspendidos, no_encontrados: noEncontrados, telefonos_sincronizados: telefonosSincronizados },
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message });
