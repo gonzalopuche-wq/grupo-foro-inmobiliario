@@ -76,8 +76,11 @@ async function verificarPropiedad(prop: any): Promise<{ precio?: number; disponi
       return verificarZonaProp(prop.url_original)
     case 'argenprop':
       return verificarZonaProp(prop.url_original) // mismo método HTML
-    case 'mercadolibre':
-      return verificarMercadoLibre(prop.portal_id)
+    case 'mercadolibre': {
+      // portal_id may be null for older rows; extract from URL as fallback
+      const mlId = prop.portal_id || prop.url_original?.match(/MLA-?(\d+)/i)?.[0]?.replace('-', '')
+      return mlId ? verificarMercadoLibre(mlId) : { disponible: true }
+    }
     default:
       return { disponible: true }
   }
