@@ -85,6 +85,7 @@ export default function CrmNegociosPage() {
   const [form, setForm]       = useState(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
   const [toast, setToast]     = useState<string | null>(null);
+  const [vista, setVista]     = useState<"lista" | "kanban">("lista");
 
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(null), 3200); };
 
@@ -238,6 +239,12 @@ export default function CrmNegociosPage() {
         .n-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
         .n-field { margin-bottom: 12px; }
         .n-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: 'Montserrat',sans-serif; }
+        .n-kanban-wrap { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 16px; }
+        .n-kanban-col { flex-shrink: 0; width: 220px; display: flex; flex-direction: column; gap: 8px; }
+        .n-kanban-header { padding: 8px 12px; border-radius: 6px 6px 0 0; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .n-kanban-body { display: flex; flex-direction: column; gap: 6px; min-height: 60px; }
+        .n-kanban-card { background: rgba(14,14,14,0.92); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 12px; cursor: pointer; transition: border-color 0.15s; }
+        .n-kanban-card:hover { border-color: rgba(255,255,255,0.18); }
         @media (max-width: 600px) {
           .n-stats { grid-template-columns: repeat(2, 1fr) !important; }
           .n-grid { grid-template-columns: 1fr !important; }
@@ -255,9 +262,17 @@ export default function CrmNegociosPage() {
               Pipeline de operaciones inmobiliarias
             </div>
           </div>
-          <button className="n-btn" style={{ background: "#cc0000", color: "#fff" }} onClick={abrirNuevo}>
-            + Nuevo negocio
-          </button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="n-btn"
+              style={{ background: vista === "lista" ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)", color: vista === "lista" ? "#cc0000" : "rgba(255,255,255,0.5)", border: `1px solid ${vista === "lista" ? "rgba(200,0,0,0.4)" : "rgba(255,255,255,0.1)"}` }}
+              onClick={() => setVista("lista")}>☰ Lista</button>
+            <button className="n-btn"
+              style={{ background: vista === "kanban" ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)", color: vista === "kanban" ? "#cc0000" : "rgba(255,255,255,0.5)", border: `1px solid ${vista === "kanban" ? "rgba(200,0,0,0.4)" : "rgba(255,255,255,0.1)"}` }}
+              onClick={() => setVista("kanban")}>⬛ Kanban</button>
+            <button className="n-btn" style={{ background: "#cc0000", color: "#fff" }} onClick={abrirNuevo}>
+              + Nuevo negocio
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -295,8 +310,64 @@ export default function CrmNegociosPage() {
           </button>
         </div>
 
-        {/* Lista */}
-        {loading ? (
+        {/* Vista Kanban */}
+        {vista === "kanban" && !loading && (
+          <div className="n-kanban-wrap" style={{ maxWidth: "calc(100vw - 240px)" }}>
+            {ETAPAS.filter(e => !["perdido"].includes(e.value) || negociosFiltrados.some(n => n.etapa === e.value)).map(etapa => {
+              const columna = negociosFiltrados.filter(n => n.etapa === etapa.value && !n.archivado);
+              const valorCol = columna.reduce((s, n) => s + (n.valor_operacion ?? 0), 0);
+              const idxEtapa = ETAPAS.findIndex(e => e.value === etapa.value);
+              const siguiente = ETAPAS[idxEtapa + 1];
+              return (
+                <div key={etapa.value} className="n-kanban-col">
+                  <div className="n-kanban-header" style={{ background: `${etapa.color}18`, color: etapa.color, border: `1px solid ${etapa.color}35` }}>
+                    <span>{etapa.label}</span>
+                    <span style={{ background: `${etapa.color}30`, borderRadius: 10, padding: "1px 7px", fontSize: 10 }}>{columna.length}</span>
+                  </div>
+                  {valorCol > 0 && (
+                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textAlign: "center", padding: "2px 0" }}>
+                      USD {Math.round(valorCol).toLocaleString("es-AR")}
+                    </div>
+                  )}
+                  <div className="n-kanban-body">
+                    {columna.length === 0 && (
+                      <div style={{ border: "1px dashed rgba(255,255,255,0.06)", borderRadius: 6, padding: "14px 10px", textAlign: "center", color: "rgba(255,255,255,0.15)", fontSize: 11 }}>vacío</div>
+                    )}
+                    {columna.map(n => (
+                      <div key={n.id} className="n-kanban-card" onClick={() => abrirEditar(n)}>
+                        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 6, lineHeight: 1.3 }}>{n.titulo}</div>
+                        {n.valor_operacion != null && (
+                          <div style={{ fontSize: 11, color: "#f59e0b", fontWeight: 600, marginBottom: 4 }}>{fmtMoneda(n.valor_operacion, n.moneda)}</div>
+                        )}
+                        {contactoNombre(n.contacto_id) && (
+                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>👤 {contactoNombre(n.contacto_id)}</div>
+                        )}
+                        {n.direccion && (
+                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>📍 {n.direccion}</div>
+                        )}
+                        <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+                          {siguiente && !["cerrado","perdido"].includes(n.etapa) && (
+                            <button className="n-btn"
+                              style={{ flex: 1, background: `${siguiente.color}15`, color: siguiente.color, border: `1px solid ${siguiente.color}30`, padding: "4px 0", fontSize: 9 }}
+                              onClick={e => { e.stopPropagation(); avanzarEtapa(n); }}>
+                              → {siguiente.label}
+                            </button>
+                          )}
+                          <button className="n-btn"
+                            style={{ background: "rgba(239,68,68,0.08)", color: "rgba(239,68,68,0.7)", border: "1px solid rgba(239,68,68,0.2)", padding: "4px 8px", fontSize: 9 }}
+                            onClick={e => { e.stopPropagation(); eliminar(n.id); }}>×</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Vista Lista */}
+        {vista === "lista" && (loading ? (
           <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 40, fontFamily: "Inter,sans-serif" }}>Cargando negocios...</div>
         ) : negociosFiltrados.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px 20px", color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif" }}>
@@ -351,7 +422,7 @@ export default function CrmNegociosPage() {
               );
             })}
           </div>
-        )}
+        ))}
       </div>
 
       {/* Modal */}
