@@ -71,6 +71,7 @@ interface Config {
   facebook: string;
   twitter: string;
   linkedin: string;
+  tiktok: string;
   whatsapp: string;
   limite_propiedades_home: string;
   google_analytics: string;
@@ -88,7 +89,7 @@ const CONFIG_VACIA: Config = {
   mostrar_propiedades_destacadas: true, mostrar_sobre_mi: true,
   mostrar_testimonios: false, mostrar_blog: false,
   seo_titulo: "", seo_descripcion: "", seo_keywords: "",
-  instagram: "", facebook: "", twitter: "", linkedin: "", whatsapp: "",
+  instagram: "", facebook: "", twitter: "", linkedin: "", tiktok: "", whatsapp: "",
   limite_propiedades_home: "6",
   google_analytics: "", script_header: "", script_footer: "",
 };
@@ -172,6 +173,7 @@ export default function MiWebPage() {
           facebook: cfg.facebook ?? "",
           twitter: cfg.twitter ?? "",
           linkedin: cfg.linkedin ?? "",
+          tiktok: cfg.tiktok ?? "",
           whatsapp: cfg.whatsapp ?? "",
           limite_propiedades_home: cfg.limite_propiedades_home?.toString() ?? "6",
           google_analytics: cfg.google_analytics ?? "",
@@ -224,6 +226,7 @@ export default function MiWebPage() {
       facebook: config.facebook || null,
       twitter: config.twitter || null,
       linkedin: config.linkedin || null,
+      tiktok: config.tiktok || null,
       whatsapp: config.whatsapp || null,
       limite_propiedades_home: parseInt(config.limite_propiedades_home) || 6,
       google_analytics: config.google_analytics || null,
@@ -686,6 +689,7 @@ export default function MiWebPage() {
                   { key: "facebook", icon: "👤", label: "Facebook", placeholder: "https://facebook.com/tupage" },
                   { key: "twitter", icon: "🐦", label: "Twitter / X", placeholder: "https://twitter.com/tucuenta" },
                   { key: "linkedin", icon: "💼", label: "LinkedIn", placeholder: "https://linkedin.com/in/tuperfil" },
+                  { key: "tiktok", icon: "🎵", label: "TikTok", placeholder: "https://tiktok.com/@tucuenta" },
                   { key: "whatsapp", icon: "💬", label: "WhatsApp", placeholder: "5493415001234" },
                 ].map(s => (
                   <div key={s.key} className="mw-social-item">
