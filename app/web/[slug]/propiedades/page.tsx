@@ -32,7 +32,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function getData(slug: string, operacion?: string, tipo?: string) {
+async function getData(slug: string, operacion?: string, tipo?: string, dormitorios?: string) {
   const { data: cfg } = await supabase
     .from("web_corredor_config")
     .select("*")
@@ -54,6 +54,7 @@ async function getData(slug: string, operacion?: string, tipo?: string) {
         .order("created_at", { ascending: false });
       if (operacion && operacion !== "todas") q = q.eq("operacion", operacion);
       if (tipo) q = q.eq("tipo", tipo);
+      if (dormitorios) q = q.gte("dormitorios", parseInt(dormitorios));
       return q;
     })(),
   ]);
@@ -86,11 +87,11 @@ export default async function PropiedadesPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ operacion?: string; tipo?: string }>;
+  searchParams: Promise<{ operacion?: string; tipo?: string; dormitorios?: string }>;
 }) {
   const { slug } = await params;
-  const { operacion, tipo } = await searchParams;
-  const data = await getData(slug, operacion, tipo);
+  const { operacion, tipo, dormitorios } = await searchParams;
+  const data = await getData(slug, operacion, tipo, dormitorios);
   if (!data) return notFound();
 
   const { cfg, perfil, propiedades } = data;
@@ -101,11 +102,25 @@ export default async function PropiedadesPage({
   const wa = cfg.whatsapp || perfil.telefono;
   const filtroActivo = operacion || "todas";
   const tipoActivo = tipo || "";
+  const dormitoriosActivo = dormitorios || "";
+
+  // Build base query string preserving current filters (excluding the one being changed)
+  const qp = (overrides: Record<string, string | undefined>) => {
+    const params: Record<string, string> = {};
+    if (operacion && operacion !== "todas") params.operacion = operacion;
+    if (tipo) params.tipo = tipo;
+    if (dormitorios) params.dormitorios = dormitorios;
+    Object.assign(params, overrides);
+    Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
+    const qs = new URLSearchParams(params).toString();
+    return qs ? `?${qs}` : "";
+  };
 
   const ventas = propiedades.filter(p => p.operacion === "Venta").length;
   const alquileres = propiedades.filter(p => p.operacion === "Alquiler").length;
   const temporales = propiedades.filter(p => p.operacion === "Alquiler temporal").length;
   const tiposDisponibles = [...new Set(propiedades.map(p => p.tipo).filter(Boolean))].sort();
+  const tieneDormitorios = propiedades.some(p => p.dormitorios != null);
 
   return (
     <>
@@ -208,17 +223,17 @@ export default async function PropiedadesPage({
       {/* FILTERS */}
       <div className="filters">
         <span className="filters-label">Filtrar:</span>
-        <a href={`/web/${cfg.slug}/propiedades`} className={`filter-btn${filtroActivo === "todas" ? " active" : ""}`}>
+        <a href={`/web/${cfg.slug}/propiedades${qp({ operacion: undefined })}`} className={`filter-btn${filtroActivo === "todas" ? " active" : ""}`}>
           Todas
         </a>
-        <a href={`/web/${cfg.slug}/propiedades?operacion=Venta`} className={`filter-btn${filtroActivo === "Venta" ? " active" : ""}`}>
+        <a href={`/web/${cfg.slug}/propiedades${qp({ operacion: "Venta" })}`} className={`filter-btn${filtroActivo === "Venta" ? " active" : ""}`}>
           Venta
         </a>
-        <a href={`/web/${cfg.slug}/propiedades?operacion=Alquiler`} className={`filter-btn${filtroActivo === "Alquiler" ? " active" : ""}`}>
+        <a href={`/web/${cfg.slug}/propiedades${qp({ operacion: "Alquiler" })}`} className={`filter-btn${filtroActivo === "Alquiler" ? " active" : ""}`}>
           Alquiler
         </a>
         {temporales > 0 && (
-          <a href={`/web/${cfg.slug}/propiedades?operacion=Alquiler+temporal`} className={`filter-btn${filtroActivo === "Alquiler temporal" ? " active" : ""}`}>
+          <a href={`/web/${cfg.slug}/propiedades${qp({ operacion: "Alquiler temporal" })}`} className={`filter-btn${filtroActivo === "Alquiler temporal" ? " active" : ""}`}>
             Temporario
           </a>
         )}
@@ -227,12 +242,24 @@ export default async function PropiedadesPage({
       {tiposDisponibles.length > 1 && (
         <div className="filters" style={{ borderTop: "none", paddingTop: 10, paddingBottom: 12 }}>
           <span className="filters-label">Tipo:</span>
-          <a href={`/web/${cfg.slug}/propiedades${operacion ? `?operacion=${encodeURIComponent(operacion)}` : ""}`}
+          <a href={`/web/${cfg.slug}/propiedades${qp({ tipo: undefined })}`}
             className={`filter-btn${!tipoActivo ? " active" : ""}`}>Todos</a>
           {tiposDisponibles.map(tp => (
             <a key={tp}
-              href={`/web/${cfg.slug}/propiedades?${operacion ? `operacion=${encodeURIComponent(operacion)}&` : ""}tipo=${encodeURIComponent(tp)}`}
+              href={`/web/${cfg.slug}/propiedades${qp({ tipo: tp })}`}
               className={`filter-btn${tipoActivo === tp ? " active" : ""}`}>{tp}</a>
+          ))}
+        </div>
+      )}
+      {tieneDormitorios && (
+        <div className="filters" style={{ borderTop: "none", paddingTop: 10, paddingBottom: 12 }}>
+          <span className="filters-label">Dorm.:</span>
+          <a href={`/web/${cfg.slug}/propiedades${qp({ dormitorios: undefined })}`}
+            className={`filter-btn${!dormitoriosActivo ? " active" : ""}`}>Todos</a>
+          {["1","2","3","4"].map(d => (
+            <a key={d}
+              href={`/web/${cfg.slug}/propiedades${qp({ dormitorios: d })}`}
+              className={`filter-btn${dormitoriosActivo === d ? " active" : ""}`}>{d}+ dorm.</a>
           ))}
         </div>
       )}
