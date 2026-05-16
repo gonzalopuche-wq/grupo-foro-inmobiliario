@@ -106,6 +106,21 @@ interface Propiedad {
   ci_numero: string | null;
   ci_observaciones: string | null;
   url_portal_origen: string | null;
+  // Captación
+  fecha_captacion: string | null;
+  origen_propietario: string | null;
+  fecha_sesion_fotos: string | null;
+  fecha_inicio_exclusividad: string | null;
+  fecha_fin_exclusividad: string | null;
+  usa_home_staging: boolean;
+  // Videos adicionales
+  video_url_2: string | null;
+  video_url_3: string | null;
+  // Links de portales
+  link_zonaprop: string | null;
+  link_argenprop: string | null;
+  link_mercadolibre: string | null;
+  link_tokko: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -124,7 +139,7 @@ const ORIENTACIONES = ["Norte", "Sur", "Este", "Oeste", "Noreste", "Noroeste", "
 const DISPOSICIONES = ["Frente", "Contrafrente", "Lateral", "Interno"];
 const TIPOS_DEPTO = ["Monoambiente", "1 ambiente", "2 ambientes", "3 ambientes", "4 ambientes", "5+ ambientes", "Duplex", "Triplex"];
 const HONORARIOS_COMPARTIR = ["No comparte", "50%", "40%", "30%"];
-const MAX_FOTOS = 20;
+const MAX_FOTOS = 40;
 
 const AMBIENTES_LIST = [
   { key: "amb_balcon", label: "Balcón" }, { key: "amb_terraza", label: "Terraza" },
@@ -180,10 +195,15 @@ const FORM_VACIO: any = {
   apto_credito: false, con_cochera: false, amoblado: false, habitada: false,
   acepta_permuta: false, acepta_mascotas: false, barrio_cerrado: false,
   uso_comercial: false, energia_solar: false,
+  // Captación
+  fecha_captacion: "", origen_propietario: "", fecha_sesion_fotos: "",
+  fecha_inicio_exclusividad: "", fecha_fin_exclusividad: "", usa_home_staging: false,
   // Paso 5
   descripcion: "", descripcion_privada: "", comentarios_colegas: "", aviso_legal: "",
-  video_url: "",
+  video_url: "", video_url_2: "", video_url_3: "",
   tour_virtual_url: "",
+  // Links de portales
+  link_zonaprop: "", link_argenprop: "", link_mercadolibre: "", link_tokko: "",
   // Paso 6 — ambientes
   amb_balcon: false, amb_terraza: false, amb_patio: false, amb_jardin: false,
   amb_parrilla: false, amb_living: false, amb_comedor: false, amb_comedor_diario: false,
@@ -608,7 +628,21 @@ export default function CarteraPage() {
       comentarios_colegas: form.comentarios_colegas || null,
       aviso_legal: form.aviso_legal || null,
       video_url: form.video_url || null,
+      video_url_2: form.video_url_2 || null,
+      video_url_3: form.video_url_3 || null,
       tour_virtual_url: form.tour_virtual_url || null,
+      // Captación
+      fecha_captacion: form.fecha_captacion || null,
+      origen_propietario: form.origen_propietario || null,
+      fecha_sesion_fotos: form.fecha_sesion_fotos || null,
+      fecha_inicio_exclusividad: form.fecha_inicio_exclusividad || null,
+      fecha_fin_exclusividad: form.fecha_fin_exclusividad || null,
+      usa_home_staging: form.usa_home_staging || false,
+      // Links de portales
+      link_zonaprop: form.link_zonaprop || null,
+      link_argenprop: form.link_argenprop || null,
+      link_mercadolibre: form.link_mercadolibre || null,
+      link_tokko: form.link_tokko || null,
       // Documentación / CI
       contacto_propietario_id: form.contacto_propietario_id || null,
       ci_url: form.ci_url || null,
@@ -1260,6 +1294,38 @@ export default function CarteraPage() {
                       </div>
                     </div>
                   </div>
+
+                  <div className="wiz-section">
+                    <div className="wiz-section-title"><span className="wiz-section-ico">📋</span>Captación</div>
+                    <div className="wiz-grid-3">
+                      <div className="wiz-field">
+                        <label className="wiz-label">Fecha de captación</label>
+                        <input className="wiz-input" type="date" value={form.fecha_captacion} onChange={e => setF("fecha_captacion", e.target.value)} />
+                      </div>
+                      <div className="wiz-field">
+                        <label className="wiz-label">Fecha sesión fotos</label>
+                        <input className="wiz-input" type="date" value={form.fecha_sesion_fotos} onChange={e => setF("fecha_sesion_fotos", e.target.value)} />
+                      </div>
+                      <div className="wiz-field">
+                        <label className="wiz-label">Origen del propietario</label>
+                        <input className="wiz-input" value={form.origen_propietario} onChange={e => setF("origen_propietario", e.target.value)} placeholder="Referido, Instagram, Cartel..." />
+                      </div>
+                      <div className="wiz-field">
+                        <label className="wiz-label">Inicio exclusividad</label>
+                        <input className="wiz-input" type="date" value={form.fecha_inicio_exclusividad} onChange={e => setF("fecha_inicio_exclusividad", e.target.value)} />
+                      </div>
+                      <div className="wiz-field">
+                        <label className="wiz-label">Fin exclusividad</label>
+                        <input className="wiz-input" type="date" value={form.fecha_fin_exclusividad} onChange={e => setF("fecha_fin_exclusividad", e.target.value)} />
+                      </div>
+                      <div className="wiz-field" style={{display:"flex",alignItems:"center",gap:10,paddingTop:18}}>
+                        <div className={`wiz-check-item${form.usa_home_staging ? " on" : ""}`} onClick={() => toggleF("usa_home_staging")} style={{display:"inline-flex",gap:8}}>
+                          <div className={`wiz-check-box${form.usa_home_staging ? " on" : ""}`}>{form.usa_home_staging && <span style={{fontSize:8,color:"#fff"}}>✓</span>}</div>
+                          <span className="wiz-check-label">Home staging</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
 
@@ -1584,6 +1650,49 @@ export default function CarteraPage() {
                         </div>
                       )}
                       <div style={{marginTop:6,fontSize:10,color:"rgba(255,255,255,0.3)"}}>Compatible con Matterport, Kuula, iStaging, Roundme y cualquier URL embebible</div>
+                    </div>
+                  </div>
+
+                  <div className="wiz-section">
+                    <div className="wiz-section-title"><span className="wiz-section-ico">▶️</span>Videos adicionales</div>
+                    <div className="wiz-field">
+                      <label className="wiz-label">Video 2 (YouTube)</label>
+                      <input className="wiz-input" value={form.video_url_2} onChange={e => setF("video_url_2", e.target.value)} placeholder="https://www.youtube.com/watch?v=..." />
+                      {form.video_url_2 && getYouTubeId(form.video_url_2) && (
+                        <div className="video-preview" style={{marginTop:8}}>
+                          <iframe src={`https://www.youtube.com/embed/${getYouTubeId(form.video_url_2)}`} allowFullScreen title="Preview video 2" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="wiz-field" style={{marginTop:8}}>
+                      <label className="wiz-label">Video 3 (YouTube)</label>
+                      <input className="wiz-input" value={form.video_url_3} onChange={e => setF("video_url_3", e.target.value)} placeholder="https://www.youtube.com/watch?v=..." />
+                      {form.video_url_3 && getYouTubeId(form.video_url_3) && (
+                        <div className="video-preview" style={{marginTop:8}}>
+                          <iframe src={`https://www.youtube.com/embed/${getYouTubeId(form.video_url_3)}`} allowFullScreen title="Preview video 3" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="wiz-section">
+                    <div className="wiz-section-title"><span className="wiz-section-ico">🔗</span>Links de portales</div>
+                    <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:12,fontFamily:"Inter,sans-serif"}}>Donde está publicada esta propiedad. Solo para uso interno / referencia.</div>
+                    <div className="wiz-field">
+                      <label className="wiz-label">ZonaProp</label>
+                      <input className="wiz-input" value={form.link_zonaprop} onChange={e => setF("link_zonaprop", e.target.value)} placeholder="https://www.zonaprop.com.ar/propiedades/..." />
+                    </div>
+                    <div className="wiz-field" style={{marginTop:8}}>
+                      <label className="wiz-label">Argenprop</label>
+                      <input className="wiz-input" value={form.link_argenprop} onChange={e => setF("link_argenprop", e.target.value)} placeholder="https://www.argenprop.com/..." />
+                    </div>
+                    <div className="wiz-field" style={{marginTop:8}}>
+                      <label className="wiz-label">MercadoLibre</label>
+                      <input className="wiz-input" value={form.link_mercadolibre} onChange={e => setF("link_mercadolibre", e.target.value)} placeholder="https://inmuebles.mercadolibre.com.ar/..." />
+                    </div>
+                    <div className="wiz-field" style={{marginTop:8}}>
+                      <label className="wiz-label">Tokko Broker</label>
+                      <input className="wiz-input" value={form.link_tokko} onChange={e => setF("link_tokko", e.target.value)} placeholder="https://..." />
                     </div>
                   </div>
                 </>
