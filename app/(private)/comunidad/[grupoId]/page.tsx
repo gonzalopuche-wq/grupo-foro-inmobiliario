@@ -230,7 +230,7 @@ export default function GrupoChatPage() {
     const { data: msg } = await supabase.from("mensajes_chat").insert(ins).select("*, perfiles(id,nombre,apellido,matricula,foto_url)").single();
     if (msg) setMensajes(prev => prev.map(m => m.id === temp.id ? {...msg as Mensaje, _reply: temp._reply} : m));
     if (grupo.va_al_mir && msg && txt) {
-      try { const r = await fetch("/api/comunidad/parser",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({texto:txt,grupo_id:grupoId,user_id:userId,mensaje_id:(msg as any).id})}); const res = await r.json(); if (res.cargado) { setParserInfo(`Cargado al MIR como ${res.tipo}`); setTimeout(()=>setParserInfo(null),4000); } } catch {}
+      try { const { data: { session: comSession } } = await supabase.auth.getSession(); const r = await fetch("/api/comunidad/parser",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${comSession?.access_token}`},body:JSON.stringify({texto:txt,grupo_id:grupoId,mensaje_id:(msg as any).id})}); const res = await r.json(); if (res.cargado) { setParserInfo(`Cargado al MIR como ${res.tipo}`); setTimeout(()=>setParserInfo(null),4000); } } catch {}
     }
     setEnviando(false); inputRef.current?.focus();
   };

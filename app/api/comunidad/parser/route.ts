@@ -81,8 +81,14 @@ function extraerDatosDeUrl(url: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return NextResponse.json({ cargado: false, motivo: "no_auth" });
+  const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+  if (!user) return NextResponse.json({ cargado: false, motivo: "no_auth" });
+
   try {
-    const { texto, grupo_id, user_id, mensaje_id } = await req.json();
+    const { texto, grupo_id, mensaje_id } = await req.json();
+    const user_id = user.id;
 
     const tipoOperacion = GRUPOS_MIR[grupo_id];
     if (!tipoOperacion) {
