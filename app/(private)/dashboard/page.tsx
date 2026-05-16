@@ -76,7 +76,7 @@ export default function DashboardPage() {
   const [ipcData, setIpcData] = useState<{ acum: Acum; periodo: string; loading: boolean }>({ acum: { mensual: null, trimestral: null, cuatrimestral: null, semestral: null }, periodo: "", loading: true });
   const [jus, setJus] = useState<{ valor: string; loading: boolean }>({ valor: "", loading: true });
   const [stats, setStats] = useState({ busquedas: 0, ofrecidos: 0, matches: 0, miembros: 0, enLinea: 0 });
-  const [miStats, setMiStats] = useState({ cartera: 0, crm: 0, leads: 0, loadingMi: true });
+  const [miStats, setMiStats] = useState({ cartera: 0, crm: 0, leads: 0, negocios: 0, tareas: 0, loadingMi: true });
   const [matchesRecientes, setMatchesRecientes] = useState<{ id: string; created_at: string }[]>([]);
   const [proximosEventos, setProximosEventos] = useState<{ id: string; titulo: string; fecha: string; tipo: string; gratuito: boolean }[]>([]);
   const [grupos, setGrupos] = useState<Grupo[]>([]);
@@ -201,12 +201,14 @@ export default function DashboardPage() {
     setStats({ busquedas: b.count ?? 0, ofrecidos: o.count ?? 0, matches: m.count ?? 0, miembros: p.count ?? 0, enLinea: en.count ?? 0 });
 
     // Stats personales del corredor
-    const [cartera, crm, leads] = await Promise.all([
+    const [cartera, crm, leads, negocios, tareas] = await Promise.all([
       supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("estado", "activa"),
       supabase.from("crm_contactos").select("id", { count: "exact", head: true }).eq("perfil_id", uid).neq("estado", "archivado"),
       supabase.from("web_leads").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("leido", false),
+      supabase.from("crm_negocios").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("archivado", false).not("etapa", "in", '("cerrado","perdido")'),
+      supabase.from("crm_tareas").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("estado", "pendiente"),
     ]);
-    setMiStats({ cartera: cartera.count ?? 0, crm: crm.count ?? 0, leads: leads.count ?? 0, loadingMi: false });
+    setMiStats({ cartera: cartera.count ?? 0, crm: crm.count ?? 0, leads: leads.count ?? 0, negocios: negocios.count ?? 0, tareas: tareas.count ?? 0, loadingMi: false });
 
     // Matches y eventos
     supabase.from("mir_matches").select("id, created_at").order("created_at", { ascending: false }).limit(5)
@@ -520,11 +522,13 @@ export default function DashboardPage() {
       {/* 2. MI PANEL — stats personales del corredor */}
       {widgetsActivos.mipanel && <div style={{marginBottom:16}}>
         <div className="db-sec-titulo">Mi panel</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12}}>
           {[
             { n: miStats.loadingMi ? "…" : miStats.cartera.toString(), l: "Propiedades activas", ic: "🏘️", href: "/crm/cartera", color: "#cc0000" },
             { n: miStats.loadingMi ? "…" : miStats.crm.toString(), l: "Contactos CRM", ic: "👥", href: "/crm", color: "#3b82f6" },
-            { n: miStats.loadingMi ? "…" : miStats.leads.toString(), l: "Leads sin leer", ic: "📬", href: "/mi-web/leads", color: miStats.leads > 0 ? "#f59e0b" : "rgba(255,255,255,0.3)" },
+            { n: miStats.loadingMi ? "…" : miStats.negocios.toString(), l: "Negocios activos", ic: "🤝", href: "/crm/negocios", color: miStats.negocios > 0 ? "#f59e0b" : "rgba(255,255,255,0.3)" },
+            { n: miStats.loadingMi ? "…" : miStats.tareas.toString(), l: "Tareas pendientes", ic: "✅", href: "/crm/tareas", color: miStats.tareas > 0 ? "#a855f7" : "rgba(255,255,255,0.3)" },
+            { n: miStats.loadingMi ? "…" : miStats.leads.toString(), l: "Leads sin leer", ic: "📬", href: "/mi-web/leads", color: miStats.leads > 0 ? "#f97316" : "rgba(255,255,255,0.3)" },
           ].map(({ n, l, ic, href, color }) => (
             <a key={l} href={href} style={{background:"rgba(14,14,14,0.9)",border:`1px solid rgba(255,255,255,0.07)`,borderRadius:8,padding:"16px 20px",display:"flex",alignItems:"center",gap:14,textDecoration:"none",transition:"border-color 0.2s"}}
               onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)")}
