@@ -43,7 +43,7 @@ export default async function BlogPublicoPage({ params }: { params: Promise<{ sl
 
   const { data: posts } = await supabase
     .from("mi_web_posts")
-    .select("id, titulo, slug, resumen, imagen_url, created_at")
+    .select("id, titulo, slug, resumen, imagen_url, contenido, created_at")
     .eq("perfil_id", cfg.perfil_id)
     .eq("publicado", true)
     .order("created_at", { ascending: false });
@@ -78,7 +78,8 @@ export default async function BlogPublicoPage({ params }: { params: Promise<{ sl
         .blog-card-img img { width: 100%; height: 100%; object-fit: cover; }
         .blog-card-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; color: ${t.textMuted}; }
         .blog-card-body { padding: 20px; }
-        .blog-card-date { font-size: 11px; color: ${t.accent}; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+        .blog-card-date { font-size: 11px; color: ${t.accent}; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .blog-card-min { font-size: 10px; color: ${t.textMuted}; font-weight: 500; font-family: 'Inter',sans-serif; letter-spacing: 0; text-transform: none; }
         .blog-card-titulo { font-family: ${t.fontH}; font-size: 17px; font-weight: 700; color: ${t.text}; margin-bottom: 8px; line-height: 1.3; }
         .blog-card-resumen { font-size: 13px; color: ${t.textMuted}; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .blog-empty { text-align: center; padding: 80px 20px; }
@@ -128,7 +129,8 @@ export default async function BlogPublicoPage({ params }: { params: Promise<{ sl
                 </div>
                 <div className="blog-card-body">
                   <div className="blog-card-date">
-                    {new Date(post.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}
+                    <span>{new Date(post.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
+                    {post.contenido && <span className="blog-card-min">· {Math.max(1, Math.ceil(post.contenido.split(/\s+/).filter(Boolean).length / 200))} min</span>}
                   </div>
                   <div className="blog-card-titulo">{post.titulo}</div>
                   {post.resumen && <p className="blog-card-resumen">{post.resumen}</p>}
