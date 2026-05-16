@@ -303,6 +303,7 @@ export default function CarteraPage() {
   const [generandoDesc, setGenerandoDesc] = useState(false);
   const [tonoDesc, setTonoDesc] = useState<'profesional' | 'premium' | 'amigable' | 'vendedor'>('profesional');
   const [perfilData, setPerfilData] = useState<{nombre:string;apellido:string;telefono:string|null}|null>(null);
+  const [webSlug, setWebSlug] = useState<string|null>(null);
   const [generandoPost, setGenerandoPost] = useState<string|null>(null);
   const [reparando, setReparando] = useState<string|null>(null);
   const [postModal, setPostModal] = useState<{titulo:string;caption:string;hashtags:string}|null>(null);
@@ -331,6 +332,8 @@ export default function CarteraPage() {
       setUserId(efectivoId);
       const { data: pd } = await supabase.from("perfiles").select("nombre,apellido,telefono").eq("id", efectivoId).single();
       if (pd) setPerfilData(pd as any);
+      const { data: wc } = await supabase.from("web_corredor_config").select("slug").eq("perfil_id", efectivoId).maybeSingle();
+      if (wc?.slug) setWebSlug(wc.slug);
       await cargar(efectivoId);
       const { data: ctcs } = await supabase
         .from("crm_contactos")
@@ -1358,6 +1361,16 @@ export default function CarteraPage() {
                     >
                       {p.publicada_web ? "🌐 En Web" : "🌐 Web"}
                     </button>
+                    {p.publicada_web && webSlug && (
+                      <button
+                        className="cart-acc-btn"
+                        title="Copiar link de la propiedad"
+                        style={{background:"rgba(167,139,250,0.08)",border:"1px solid rgba(167,139,250,0.2)",color:"#a78bfa"}}
+                        onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/web/${webSlug}/propiedad/${p.id}`).catch(()=>{}); setToastGuardado("Link copiado"); setTimeout(()=>setToastGuardado(""),2000); }}
+                      >
+                        🔗 Link
+                      </button>
+                    )}
                     <button
                       className={`cart-acc-btn cart-acc-red${p.compartir_en_red ? " on" : ""}`}
                       onClick={() => compartirEnRed(p.id)}
