@@ -91,10 +91,11 @@ export async function GET(req: NextRequest) {
       const { data: indicadores } = await supabaseAdmin
         .from("indicadores")
         .select("clave, valor")
-        .in("clave", ["cbu_cvu", "cbu_alias", "cbu_titular"]);
+        .in("clave", ["cbu_cvu", "cbu_alias", "cbu_titular", "precio_corredor_usd", "precio_colaborador_usd"]);
       const ind = Object.fromEntries((indicadores ?? []).map((r: any) => [r.clave, r.valor]));
       const cbu = ind.cbu_cvu ?? "CVU no configurado — contactar al administrador";
       const cbuAlias = ind.cbu_alias ?? "";
+      const precioEmail = perfil?.tipo === "colaborador" ? (ind.precio_colaborador_usd ?? 5) : (ind.precio_corredor_usd ?? 10);
 
       // 5. Enviar email de suspensión
       if (email) {
@@ -178,7 +179,7 @@ export async function GET(req: NextRequest) {
                 <tr>
                   <td style="padding:16px 24px;">
                     <span style="font-size:12px;color:rgba(255,255,255,0.4);font-family:'Montserrat',Arial,sans-serif;">
-                      Monto: <strong style="color:#fff;">USD ${s.plan === "colaborador" ? "5" : "15"} / mes</strong>
+                      Monto: <strong style="color:#fff;">USD ${precioEmail} / mes</strong>
                       &nbsp;·&nbsp; Mat. ${perfil?.matricula ?? ""}
                     </span>
                   </td>

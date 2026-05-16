@@ -37,7 +37,7 @@ export default function SuscripcionPage() {
   const [perfil, setPerfil] = useState<any>(null);
   const [suscripciones, setSuscripciones] = useState<Suscripcion[]>([]);
   const [dolarBlue, setDolarBlue] = useState<number | null>(null);
-  const [precioUsd, setPrecioUsd] = useState<number>(15);
+  const [precioUsd, setPrecioUsd] = useState<number>(10);
   const [cbuDatos, setCbuDatos] = useState<Record<string, string>>({
     titular: "Gonzalo Leandro Puche",
     cvu: "0000003100046173873221",
@@ -103,7 +103,7 @@ export default function SuscripcionPage() {
       if (ind) {
         const get = (k: string) => ind.find((i: any) => i.clave === k)?.valor;
         const tipoPerfil = p?.tipo ?? "corredor";
-        const precio = get(tipoPerfil === "colaborador" ? "precio_colaborador_usd" : "precio_corredor_usd") ?? (tipoPerfil === "colaborador" ? 5 : 15);
+        const precio = get(tipoPerfil === "colaborador" ? "precio_colaborador_usd" : "precio_corredor_usd") ?? (tipoPerfil === "colaborador" ? 5 : 10);
         setPrecioUsd(precio);
 
         // CBU desde indicadores si existen

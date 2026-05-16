@@ -879,7 +879,7 @@ export default function PerfilPage() {
                   <div className="sus-plan-sub">Acceso completo a todos los módulos</div>
                 </div>
                 <div>
-                  <div className="sus-plan-precio">USD {perfil.tipo === "colaborador" ? "5" : "15"}<span style={{ fontSize: 13, fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>/mes</span></div>
+                  <div className="sus-plan-precio">USD {perfil.tipo === "colaborador" ? "5" : "10"}<span style={{ fontSize: 13, fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>/mes</span></div>
                   <div className="sus-plan-sub">Equivalente en ARS al tipo de cambio del día</div>
                 </div>
               </div>
@@ -888,7 +888,7 @@ export default function PerfilPage() {
               {(() => {
                 const icoMap: Record<string, string> = { biblioteca: "📚", foro: "💬", comparables: "📊", seniority: "⭐", referidos: "👥" };
                 const totalDescuento = bonHistorial.reduce((sum, h) => sum + (h.descuento_aplicado ?? 0), 0);
-                const precioBase = perfil.tipo === "colaborador" ? 5 : 15;
+                const precioBase = perfil.tipo === "colaborador" ? 5 : 10;
                 const precioFinal = Math.max(0, precioBase - totalDescuento);
                 return (
                   <>
