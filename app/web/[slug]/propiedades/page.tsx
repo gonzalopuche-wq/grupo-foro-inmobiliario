@@ -156,6 +156,13 @@ export default async function PropiedadesPage({
         .w-footer-logo { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; }
         .w-footer-logo span { color: ${t.accent}; }
         .w-footer-gfi { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: rgba(255,255,255,0.25); }
+        .wa-float { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; align-items: center; gap: 10px; background: #25D366; color: #fff; padding: 13px 20px; border-radius: 50px; text-decoration: none; font-family: 'Montserrat',sans-serif; font-weight: 700; font-size: 13px; box-shadow: 0 4px 20px rgba(37,211,102,0.45); transition: transform 0.2s, box-shadow 0.2s; }
+        .wa-float:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(37,211,102,0.6); }
+        .wa-float-icon { font-size: 20px; line-height: 1; }
+        @media (max-width: 768px) {
+          .wa-float { padding: 12px 16px; font-size: 0; border-radius: 50%; width: 52px; height: 52px; justify-content: center; }
+          .wa-float-icon { font-size: 24px; }
+        }
         @media (max-width: 768px) {
           .w-nav { display: none; }
           .props-grid { grid-template-columns: 1fr; }
@@ -275,6 +282,19 @@ export default async function PropiedadesPage({
           Sitio creado con <strong>GFI® Grupo Foro Inmobiliario</strong> · Rosario, Argentina
         </div>
       </footer>
+
+      {wa && (
+        <a
+          href={`https://wa.me/${wa.replace(/\D/g,"")}?text=${encodeURIComponent("Hola, me interesa conocer sus propiedades disponibles.")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="wa-float"
+          aria-label="Contactar por WhatsApp"
+        >
+          <span className="wa-float-icon">💬</span>
+          <span>WhatsApp</span>
+        </a>
+      )}
 
       {cfg.google_analytics && (
         <>

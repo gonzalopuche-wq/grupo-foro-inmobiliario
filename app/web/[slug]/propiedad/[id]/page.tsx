@@ -159,6 +159,10 @@ export default async function PropiedadDetailPage({
         .p-thumb img { width: 100%; height: 100%; object-fit: cover; }
         /* Footer */
         .p-footer { background: ${t.footer}; color: ${isDark ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.6)"}; padding: 24px 5%; text-align: center; font-size: 12px; font-family: 'Montserrat',sans-serif; margin-top: 40px; }
+        /* Floating WA */
+        .wa-float { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; align-items: center; gap: 10px; background: #25D366; color: #fff; padding: 13px 20px; border-radius: 50px; text-decoration: none; font-family: 'Montserrat',sans-serif; font-weight: 700; font-size: 13px; box-shadow: 0 4px 20px rgba(37,211,102,0.45); transition: transform 0.2s, box-shadow 0.2s; }
+        .wa-float:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(37,211,102,0.6); }
+        @media (max-width: 768px) { .wa-float { padding: 12px; border-radius: 50%; font-size: 0; width: 52px; height: 52px; justify-content: center; } .wa-float span:last-child { display: none; } }
         @media (max-width: 768px) {
           .p-body { grid-template-columns: 1fr; }
           .p-sidebar { order: -1; }
@@ -361,6 +365,20 @@ export default async function PropiedadDetailPage({
           Sitio creado con GFI® Grupo Foro Inmobiliario · Rosario, Argentina
         </div>
       </footer>
+
+      {/* Floating WhatsApp */}
+      {wa && (
+        <a
+          href={`https://wa.me/${wa.replace(/\D/g,"")}?text=${encodeURIComponent(`Hola, me interesa la propiedad: ${prop.titulo}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="wa-float"
+          aria-label="Contactar por WhatsApp"
+        >
+          <span style={{ fontSize: 20 }}>💬</span>
+          <span>WhatsApp</span>
+        </a>
+      )}
     </>
   );
 }
