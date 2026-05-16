@@ -34,7 +34,7 @@ interface Propiedad {
   operacion: string; tipo: string; precio: number | null; moneda: string;
   ciudad: string; zona: string | null; dormitorios: number | null;
   banos: number | null; superficie_cubierta: number | null;
-  fotos: string[] | null; estado: string;
+  fotos: string[] | null; estado: string; destacada_web: boolean;
 }
 
 interface Testimonio {
@@ -61,7 +61,7 @@ async function getData(slug: string) {
 
   const [{ data: perfil }, { data: props }, { data: testimoniosRaw }] = await Promise.all([
     supabase.from("perfiles").select("nombre,apellido,matricula,telefono,email,inmobiliaria,foto_url,especialidades").eq("id", cfg.perfil_id).single(),
-    supabase.from("cartera_propiedades").select("id,titulo,descripcion,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,fotos,estado").eq("perfil_id", cfg.perfil_id).eq("publicada_web", true).eq("estado", "activa").limit(cfg.limite_propiedades_home ?? 6),
+    supabase.from("cartera_propiedades").select("id,titulo,descripcion,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,fotos,estado,destacada_web").eq("perfil_id", cfg.perfil_id).eq("publicada_web", true).eq("estado", "activa").order("destacada_web", { ascending: false }).limit(cfg.limite_propiedades_home ?? 6),
     cfg.mostrar_testimonios
       ? supabase.from("mi_web_testimonios").select("id,nombre_cliente,cargo_cliente,texto,rating").eq("perfil_id", cfg.perfil_id).eq("activo", true).order("orden").limit(12)
       : Promise.resolve({ data: [] }),
@@ -316,12 +316,17 @@ function WebTemplate({ cfg, perfil, propiedades, testimonios }: { cfg: Config; p
           </div>
           <div className="w-props-grid">
             {propiedades.map(p => (
-              <a key={p.id} href={`/web/${cfg.slug}/propiedad/${p.id}`} className="w-prop-card">
+              <a key={p.id} href={`/web/${cfg.slug}/propiedad/${p.id}`} className="w-prop-card" style={p.destacada_web ? { borderColor: `${t.accent}60` } : {}}>
                 <div className="w-prop-img">
                   {p.fotos && p.fotos.length > 0
                     ? <img src={p.fotos[0]} alt={p.titulo} loading="lazy" />
                     : <div className="w-prop-img-placeholder">🏠</div>}
                   <div className="w-prop-op-badge">{p.operacion}</div>
+                  {p.destacada_web && (
+                    <div style={{ position: "absolute", top: 8, left: 8, background: "rgba(0,0,0,0.72)", backdropFilter: "blur(4px)", borderRadius: 4, padding: "2px 7px", fontSize: 9, fontWeight: 700, color: "#eab308", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: 3 }}>
+                      ⭐ DESTACADA
+                    </div>
+                  )}
                 </div>
                 <div className="w-prop-body">
                   <div className="w-prop-titulo">{p.titulo}</div>
