@@ -100,8 +100,9 @@ export default async function PropiedadesPage({
   const wa = cfg.whatsapp || perfil.telefono;
   const filtroActivo = operacion || "todas";
 
-  const ventas = propiedades.filter(p => p.operacion === "venta").length;
-  const alquileres = propiedades.filter(p => p.operacion === "alquiler").length;
+  const ventas = propiedades.filter(p => p.operacion === "Venta").length;
+  const alquileres = propiedades.filter(p => p.operacion === "Alquiler").length;
+  const temporales = propiedades.filter(p => p.operacion === "Alquiler temporal").length;
 
   return (
     <>
@@ -188,6 +189,8 @@ export default async function PropiedadesPage({
           {ventas > 0 && `${ventas} en venta`}
           {ventas > 0 && alquileres > 0 && " · "}
           {alquileres > 0 && `${alquileres} en alquiler`}
+          {(ventas > 0 || alquileres > 0) && temporales > 0 && " · "}
+          {temporales > 0 && `${temporales} temporario`}
           {propiedades.length === 0 && "Sin resultados para el filtro seleccionado"}
         </p>
       </div>
@@ -198,12 +201,17 @@ export default async function PropiedadesPage({
         <a href={`/web/${cfg.slug}/propiedades`} className={`filter-btn${filtroActivo === "todas" ? " active" : ""}`}>
           Todas
         </a>
-        <a href={`/web/${cfg.slug}/propiedades?operacion=venta`} className={`filter-btn${filtroActivo === "venta" ? " active" : ""}`}>
+        <a href={`/web/${cfg.slug}/propiedades?operacion=Venta`} className={`filter-btn${filtroActivo === "Venta" ? " active" : ""}`}>
           Venta
         </a>
-        <a href={`/web/${cfg.slug}/propiedades?operacion=alquiler`} className={`filter-btn${filtroActivo === "alquiler" ? " active" : ""}`}>
+        <a href={`/web/${cfg.slug}/propiedades?operacion=Alquiler`} className={`filter-btn${filtroActivo === "Alquiler" ? " active" : ""}`}>
           Alquiler
         </a>
+        {temporales > 0 && (
+          <a href={`/web/${cfg.slug}/propiedades?operacion=Alquiler+temporal`} className={`filter-btn${filtroActivo === "Alquiler temporal" ? " active" : ""}`}>
+            Temporario
+          </a>
+        )}
         <span className="results-count">{propiedades.length} resultado{propiedades.length !== 1 ? "s" : ""}</span>
       </div>
 
