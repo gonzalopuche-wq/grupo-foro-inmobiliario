@@ -23,7 +23,7 @@ interface Propiedad {
   descripcion?: string
   tipo?: string
   operacion?: string
-  barrio?: string
+  zona?: string
   ciudad?: string
   precio_actual?: number
   moneda?: string
@@ -154,7 +154,7 @@ export default function ListaDetallePage() {
         descripcion: scraped.descripcion ?? null,
         tipo: scraped.tipo ?? null,
         operacion: scraped.operacion ?? null,
-        barrio: scraped.zona ?? null,
+        zona: scraped.zona ?? null,
         ciudad: scraped.ciudad ?? null,
         precio_actual: scraped.precio ?? null,
         moneda: scraped.moneda ?? 'USD',
@@ -215,7 +215,7 @@ export default function ListaDetallePage() {
       .from('cartera_propiedades')
       .select('id,titulo,tipo,operacion,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,fotos')
       .eq('perfil_id', user.id)
-      .eq('activo', true)
+      .eq('estado', 'activa')
       .order('created_at', { ascending: false })
       .limit(100)
     setCarteraItems((data as CarteraItem[]) ?? [])
@@ -229,7 +229,7 @@ export default function ListaDetallePage() {
       titulo: prop.titulo,
       tipo: prop.tipo,
       operacion: prop.operacion,
-      barrio: prop.zona,
+      zona: prop.zona,
       ciudad: prop.ciudad,
       precio_actual: prop.precio,
       moneda: prop.moneda,
@@ -284,7 +284,7 @@ export default function ListaDetallePage() {
       descripcion: prop.descripcion,
       tipo: prop.tipo_propiedad,
       operacion: OP_LABEL[prop.operacion] ?? prop.operacion,
-      barrio: prop.zona,
+      zona: prop.zona,
       ciudad: prop.ciudad,
       precio_actual: prop.precio,
       moneda: prop.moneda ?? 'USD',
@@ -594,7 +594,7 @@ export default function ListaDetallePage() {
                   <span style={{ fontFamily: 'Montserrat,sans-serif', fontWeight: 800, color: '#22c55e', fontSize: 14 }}>
                     {fmtPrecio(prop.precio_actual, prop.moneda)}
                   </span>
-                  {(prop.barrio || prop.ciudad) && <span>📍 {[prop.barrio, prop.ciudad].filter(Boolean).join(', ')}</span>}
+                  {(prop.zona || prop.ciudad) && <span>📍 {[prop.zona, prop.ciudad].filter(Boolean).join(', ')}</span>}
                   {prop.superficie_total && <span>📐 {prop.superficie_total} m²</span>}
                   {prop.dormitorios && <span>🛏 {prop.dormitorios} dorm.</span>}
                   {prop.banos && <span>🚿 {prop.banos} baños</span>}
