@@ -29,9 +29,19 @@ async function geocodificar(direccion: string, localidad: string): Promise<{ lat
   return null
 }
 
+async function authorizado(req: NextRequest): Promise<boolean> {
+  const auth = req.headers.get('authorization')
+  if (auth === `Bearer ${process.env.CRON_SECRET}`) return true
+  const token = auth?.replace('Bearer ', '')
+  if (!token) return false
+  const { data } = await sb.auth.getUser(token)
+  if (!data.user) return false
+  const { data: p } = await sb.from('perfiles').select('tipo').eq('id', data.user.id).single()
+  return p?.tipo === 'admin'
+}
+
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!(await authorizado(req))) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
   }
 
