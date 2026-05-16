@@ -164,9 +164,10 @@ export default function VisitasPage() {
   const enviarACalendar = async (v: Visita) => {
     if (!userId) return;
     setEnviandoCalendar(v.id);
+    const { data: { session } } = await supabase.auth.getSession();
     const res = await fetch("/api/cartera/sync-calendar", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: {"Content-Type":"application/json", Authorization: `Bearer ${session?.access_token}`},
       body: JSON.stringify({visita_id: v.id, perfil_id: userId}),
     });
     const data = await res.json();

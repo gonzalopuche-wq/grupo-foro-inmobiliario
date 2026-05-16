@@ -150,6 +150,19 @@ async function syncKiteProp(p: any, kiteId: string | null, perfilId?: string) {
 
 export async function POST(req: NextRequest) {
   try {
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    const { data: { user } } = await supabase.auth.getUser(token);
+    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    let efectivoId = user.id;
+    const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", user.id).single();
+    if (perfil?.tipo === "colaborador") {
+      const { data: colab } = await supabase.from("colaboradores").select("corredor_id").eq("user_id", user.id).single();
+      if (colab?.corredor_id) efectivoId = colab.corredor_id;
+    }
+
     const { propiedad_id, portales } = await req.json();
     if (!propiedad_id || !portales?.length) {
       return NextResponse.json({ error: "propiedad_id y portales requeridos" }, { status: 400 });
@@ -157,7 +170,7 @@ export async function POST(req: NextRequest) {
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
       return NextResponse.json({ error: "SUPABASE_SERVICE_ROLE_KEY no configurada en variables de entorno de Vercel" }, { status: 500 });
     }
-    const { data: prop, error: propErr } = await supabase.from("cartera_propiedades").select("*").eq("id", propiedad_id).single();
+    const { data: prop, error: propErr } = await supabase.from("cartera_propiedades").select("*").eq("id", propiedad_id).eq("perfil_id", efectivoId).single();
     if (propErr || !prop) return NextResponse.json({ error: "Propiedad no encontrada" }, { status: 404 });
     const { data: sync } = await supabase.from("cartera_sync_portales").select("*").eq("propiedad_id", propiedad_id).single();
     const resultados: Record<string, any> = {};

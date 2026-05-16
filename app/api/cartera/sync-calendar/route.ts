@@ -12,9 +12,25 @@ const sb = createClient(
 
 export async function POST(req: NextRequest) {
   try {
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    const { data: { user } } = await sb.auth.getUser(token);
+    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    let efectivoId = user.id;
+    const { data: perfil } = await sb.from("perfiles").select("tipo").eq("id", user.id).single();
+    if (perfil?.tipo === "colaborador") {
+      const { data: colab } = await sb.from("colaboradores").select("corredor_id").eq("user_id", user.id).single();
+      if (colab?.corredor_id) efectivoId = colab.corredor_id;
+    }
+
     const { visita_id, perfil_id } = await req.json();
     if (!visita_id || !perfil_id) {
       return NextResponse.json({ error: "visita_id y perfil_id requeridos" }, { status: 400 });
+    }
+    if (perfil_id !== efectivoId) {
+      return NextResponse.json({ error: "No autorizado para este perfil" }, { status: 403 });
     }
 
     const accessToken = await getGoogleToken(perfil_id);

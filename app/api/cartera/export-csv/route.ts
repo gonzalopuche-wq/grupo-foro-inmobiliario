@@ -29,9 +29,23 @@ function esc(val: any): string {
 }
 
 export async function GET(req: NextRequest) {
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+  const { data: { user } } = await sb.auth.getUser(token);
+  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+  let efectivoId = user.id;
+  const { data: perfil } = await sb.from("perfiles").select("tipo").eq("id", user.id).single();
+  if (perfil?.tipo === "colaborador") {
+    const { data: colab } = await sb.from("colaboradores").select("corredor_id").eq("user_id", user.id).single();
+    if (colab?.corredor_id) efectivoId = colab.corredor_id;
+  }
+
   const { searchParams } = new URL(req.url);
   const perfilId = searchParams.get("perfil_id");
   if (!perfilId) return NextResponse.json({ error: "perfil_id requerido" }, { status: 400 });
+  if (perfilId !== efectivoId) return NextResponse.json({ error: "No autorizado para este perfil" }, { status: 403 });
 
   const [{ data: props }, { data: syncs }] = await Promise.all([
     sb.from("cartera_propiedades").select("*").eq("perfil_id", perfilId).order("created_at", { ascending: false }),

@@ -453,7 +453,10 @@ export default function CarteraPage() {
     setImportError("");
     setImportResult(null);
     try {
-      const res = await fetch(`/api/cartera/import-tokko?perfil_id=${userId}`);
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`/api/cartera/import-tokko?perfil_id=${userId}`, {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error(json.error || "Error al importar desde Tokko");
       setImportResult({ importadas: json.importadas, saltadas: json.saltadas, errores: json.errores });
@@ -884,7 +887,8 @@ export default function CarteraPage() {
   const sincronizarPortal = async (propiedadId: string, portales: string[]) => {
     setSincronizando(propiedadId);
     try {
-      const res = await fetch("/api/cartera/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ propiedad_id: propiedadId, portales }) });
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/sync", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ propiedad_id: propiedadId, portales }) });
       const data = await res.json();
       if (data.ok) {
         if (userId) await cargar(userId);
@@ -1110,7 +1114,7 @@ export default function CarteraPage() {
             <Link href="/crm/portales" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>🔗 Portales</Link>
             <Link href="/crm/cartera/parametros" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>⚙ Parámetros</Link>
             <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setXlsxNombre(""); setTabImport("url"); }}>↓ Importar</button>
-            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => userId && window.open(`/api/cartera/export-csv?perfil_id=${userId}`, "_blank")}>↑ Exportar CSV</button>
+            <button style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "rgba(255,255,255,0.45)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => { if (!userId) return; const { data: { session } } = await supabase.auth.getSession(); const res = await fetch(`/api/cartera/export-csv?perfil_id=${userId}`, { headers: { Authorization: `Bearer ${session?.access_token}` } }); if (!res.ok) return; const blob = await res.blob(); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `cartera-gfi-${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url); }}>↑ Exportar CSV</button>
             <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva propiedad</button>
             <button style={{ padding: "7px 14px", background: "rgba(255,165,0,0.08)", border: "1px solid rgba(255,165,0,0.2)", borderRadius: 4, color: "rgba(255,165,0,0.8)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => {
               const { data: { session } } = await supabase.auth.getSession();
