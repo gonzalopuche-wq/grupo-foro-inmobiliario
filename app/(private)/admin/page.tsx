@@ -304,6 +304,11 @@ export default function AdminPage() {
   const [filtroReferidos, setFiltroReferidos] = useState<"todos"|"pendiente"|"activo">("pendiente");
   const [procesandoReferido, setProcesandoReferido] = useState<string | null>(null);
 
+  // Clearing bancario
+  const [clearingResult, setClearingResult] = useState<any>(null);
+  const [clearingCargando, setClearingCargando] = useState(false);
+  const [clearingError, setClearingError] = useState("");
+
   // WhatsApp
   interface WaGrupo { id: string; nombre: string; grupo_gfi: string; descripcion: string | null; wa_link: string | null; miembros: number; activo: boolean; mensajes_30d: number; procesados_30d: number; }
   interface WaMensaje { id: string; numero_from: string; nombre_from: string | null; perfil_id: string | null; contenido: string; grupo_gfi: string | null; procesado: boolean; mir_entry_id: string | null; mir_tabla: string | null; error_detalle: string | null; created_at: string; }
@@ -1274,6 +1279,38 @@ A partir de esa fecha el costo mensual será de USD 15.
     setLoadingRanking(false);
   };
 
+  const procesarClearingBancario = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setClearingCargando(true);
+    setClearingError("");
+    setClearingResult(null);
+    try {
+      const session = (await supabase.auth.getSession()).data.session;
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/admin/clearing-bancario", { method: "POST", headers: { Authorization: `Bearer ${session?.access_token}` }, body: fd });
+      const json = await res.json();
+      if (json.ok) setClearingResult(json);
+      else setClearingError(json.error ?? "Error al procesar el archivo");
+    } catch {
+      setClearingError("Error de conexión");
+    }
+    setClearingCargando(false);
+    e.target.value = "";
+  };
+
+  const confirmarMatchClearing = async (pagoId: string) => {
+    const session = (await supabase.auth.getSession()).data.session;
+    if (!session) return;
+    const vencimiento = new Date(); vencimiento.setMonth(vencimiento.getMonth() + 1);
+    const { error } = await supabase.from("suscripciones").update({ estado: "activa", fecha_confirmacion: new Date().toISOString().slice(0, 10), fecha_vencimiento: vencimiento.toISOString().slice(0, 10), nota_admin: "Confirmado por clearing bancario" }).eq("id", pagoId);
+    if (error) { mostrarToast("Error al confirmar", "err"); return; }
+    mostrarToast("Pago confirmado por clearing ✓");
+    setClearingResult((prev: any) => prev ? { ...prev, matches: prev.matches.filter((m: any) => m.pago.id !== pagoId) } : prev);
+    cargarPagos();
+  };
+
   const cargarReferidos = async () => {
     setLoadingReferidos(true);
     const { data } = await supabase
@@ -1913,6 +1950,101 @@ A partir de esa fecha el costo mensual será de USD 15.
                 <button className="adm-ind-btn" onClick={guardarCbu} disabled={guardandoCbu}>{guardandoCbu ? "Guardando..." : "Guardar datos de transferencia"}</button>
                 {cbuOk && <span className="adm-ind-ok">✓ Guardado</span>}
               </div>
+            </div>
+          </div>
+
+          {/* ── CLEARING BANCARIO ── */}
+          <div>
+            <div className="adm-header">
+              <h1>Clearing <span>bancario</span></h1>
+              <p>Subí el extracto bancario (Excel/CSV) para cruzar automáticamente con los pagos declarados pendientes.</p>
+            </div>
+            <div style={{background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6,padding:"22px 24px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:16}}>
+                <label style={{display:"inline-flex",alignItems:"center",gap:8,padding:"9px 18px",background:clearingCargando?"rgba(255,255,255,0.04)":"rgba(200,0,0,0.12)",border:"1px solid rgba(200,0,0,0.4)",borderRadius:6,cursor:clearingCargando?"not-allowed":"pointer",color:clearingCargando?"rgba(255,255,255,0.4)":"#fff",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.08em"}}>
+                  {clearingCargando?<><span style={{display:"inline-block",width:13,height:13,border:"2px solid rgba(255,255,255,0.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/> Procesando...</>:"📊 Subir extracto bancario"}
+                  <input type="file" accept=".xlsx,.xls,.csv,.ods" onChange={procesarClearingBancario} style={{display:"none"}} disabled={clearingCargando}/>
+                </label>
+                <span style={{fontSize:11,color:"rgba(255,255,255,0.3)",fontFamily:"Inter,sans-serif"}}>Formatos: .xlsx · .xls · .csv — Columnas detectadas automáticamente (fecha, importe, descripción, CBU)</span>
+              </div>
+
+              {clearingError && <div style={{padding:"10px 14px",background:"rgba(200,0,0,0.08)",border:"1px solid rgba(200,0,0,0.2)",borderRadius:6,fontSize:12,color:"#ff6666",marginBottom:12}}>{clearingError}</div>}
+
+              {clearingResult && (
+                <>
+                  {/* Resumen */}
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:20}}>
+                    {[
+                      {l:"Transacciones banco",v:clearingResult.total_transacciones,c:"#60a5fa"},
+                      {l:"Pagos pendientes DB",v:clearingResult.total_pagos_pendientes,c:"#eab308"},
+                      {l:"Matches encontrados",v:clearingResult.matches?.length??0,c:"#22c55e"},
+                    ].map(s => (
+                      <div key={s.l} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"12px 16px"}}>
+                        <div style={{fontSize:22,fontWeight:800,color:s.c,fontFamily:"Montserrat,sans-serif"}}>{s.v}</div>
+                        <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",marginTop:2,fontFamily:"Montserrat,sans-serif",letterSpacing:"0.06em"}}>{s.l}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Columnas detectadas */}
+                  {clearingResult.columnas_detectadas && (
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif",marginBottom:16,letterSpacing:"0.06em"}}>
+                      Columnas detectadas: {Object.entries(clearingResult.columnas_detectadas).filter(([,v])=>v).map(([k,v])=>`${k}: "${v}"`).join(" · ")}
+                    </div>
+                  )}
+
+                  {/* Matches confirmables */}
+                  {clearingResult.matches?.length > 0 && (
+                    <div style={{marginBottom:20}}>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"#22c55e",marginBottom:10}}>✓ MATCHES DETECTADOS — PENDIENTES DE CONFIRMAR</div>
+                      <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                        {clearingResult.matches.map((m: any, i: number) => (
+                          <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:"rgba(34,197,94,0.05)",border:"1px solid rgba(34,197,94,0.15)",borderRadius:8}}>
+                            <div style={{flex:1,minWidth:0}}>
+                              <div style={{fontSize:12,color:"#fff",fontWeight:600,marginBottom:2}}>{m.pago.perfiles?.nombre} {m.pago.perfiles?.apellido}{m.pago.perfiles?.matricula?` · Mat. ${m.pago.perfiles.matricula}`:""}</div>
+                              <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"Inter,sans-serif"}}>
+                                Declaró: ${Number(m.pago.monto_declarado_ars).toLocaleString("es-AR")} el {m.pago.fecha_pago_declarado}
+                                {" · "}Banco: ${m.banco.monto.toLocaleString("es-AR")} el {m.banco.fecha}
+                                {" · "}<span style={{color:m.confianza==="alta"?"#22c55e":"#eab308",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>{m.confianza==="alta"?"● Alta confianza":"◐ Media confianza"}</span>
+                              </div>
+                              {m.banco.descripcion && <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:2}}>{m.banco.descripcion}</div>}
+                            </div>
+                            <button className="adm-btn-aprobar" onClick={() => confirmarMatchClearing(m.pago.id)} style={{whiteSpace:"nowrap"}}>✓ Confirmar</button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Transacciones sin match */}
+                  {clearingResult.sin_match_banco?.length > 0 && (
+                    <div style={{marginBottom:20}}>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"rgba(255,255,255,0.4)",marginBottom:8}}>TRANSACCIONES DEL BANCO SIN MATCH</div>
+                      <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                        {clearingResult.sin_match_banco.map((t: any, i: number) => (
+                          <div key={i} style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"Inter,sans-serif",padding:"6px 12px",background:"rgba(255,255,255,0.02)",borderRadius:4,border:"1px solid rgba(255,255,255,0.05)"}}>
+                            ${t.monto.toLocaleString("es-AR")} · {t.fecha} {t.descripcion && `· ${t.descripcion.slice(0,60)}`}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pagos declarados sin match en banco */}
+                  {clearingResult.pagos_no_encontrados?.length > 0 && (
+                    <div>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"#f97316",marginBottom:8}}>⚠ PAGOS DECLARADOS SIN MATCH EN BANCO</div>
+                      <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                        {clearingResult.pagos_no_encontrados.map((p: any, i: number) => (
+                          <div key={i} style={{fontSize:11,color:"rgba(255,255,255,0.5)",fontFamily:"Inter,sans-serif",padding:"6px 12px",background:"rgba(249,115,22,0.04)",borderRadius:4,border:"1px solid rgba(249,115,22,0.1)"}}>
+                            {p.perfiles?.nombre} {p.perfiles?.apellido} — declaró ${Number(p.monto_declarado_ars).toLocaleString("es-AR")} el {p.fecha_pago_declarado} (no aparece en el extracto)
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
