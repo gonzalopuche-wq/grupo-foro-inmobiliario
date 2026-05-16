@@ -162,7 +162,7 @@ export default function MapaPadron() {
     try {
       const token = (await supabase.auth.getSession()).data.session?.access_token
       const res = await fetch('/api/admin/geocodificar-padron', {
-        headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || ''}` },
+        headers: { Authorization: `Bearer ${token ?? ''}` },
       })
       const data = await res.json()
       if (data.ok) {
