@@ -121,6 +121,7 @@ interface Propiedad {
   link_argenprop: string | null;
   link_mercadolibre: string | null;
   link_tokko: string | null;
+  vistas: number;
   created_at: string;
   updated_at: string;
 }
@@ -1328,6 +1329,7 @@ export default function CarteraPage() {
                         {p.estado === "activa" && <span className="cart-mir-badge">🔄 En MIR</span>}
                         {p.compartir_en_red && <span className="cart-mir-badge-red">🌐 Red GFI</span>}
                         {p.publicada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#60a5fa",letterSpacing:"0.06em"}}>🌐 WEB</span>}
+                        {(p.vistas ?? 0) > 0 && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.35)",letterSpacing:"0.04em"}} title="Vistas en el sitio web">👁 {p.vistas}</span>}
                       </div>
                       <div style={{display:"flex",gap:4}}>
                         {sync?.tokko_id && <span className="sync-badge sync-badge-tokko">Tokko ✓</span>}
