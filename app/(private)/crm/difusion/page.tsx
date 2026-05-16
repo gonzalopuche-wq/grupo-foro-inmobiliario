@@ -93,8 +93,10 @@ function DifusionInner() {
       perfil_id: userId,
       contacto_id: c.id,
       tipo: "email",
-      descripcion: mensaje.replace("{nombre}", c.nombre ?? "").replace("{apellido}", c.apellido ?? ""),
-      ...(propId ? { nota: `Difusión propiedad: ${propTitulo ?? propId}` } : {}),
+      descripcion: [
+        mensaje.replace("{nombre}", c.nombre ?? "").replace("{apellido}", c.apellido ?? ""),
+        propId ? `[Propiedad: ${propTitulo ?? propId}]` : null,
+      ].filter(Boolean).join(" — "),
     }));
     await supabase.from("crm_interacciones").insert(inserts);
 
