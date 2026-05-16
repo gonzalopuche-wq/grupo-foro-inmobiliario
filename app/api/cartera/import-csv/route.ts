@@ -254,10 +254,31 @@ function rowToCartera(row: Record<string, string>, perfilId: string): any {
 
 export async function POST(req: NextRequest) {
   try {
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    const { data: { user } } = await sb.auth.getUser(token);
+    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    // Resolve effective perfil_id (colaboradores work on behalf of their corredor)
+    let efectivoId = user.id;
+    const { data: perfil } = await sb
+      .from("perfiles").select("tipo").eq("id", user.id).single();
+    if (perfil?.tipo === "colaborador") {
+      const { data: colab } = await sb
+        .from("colaboradores").select("corredor_id").eq("user_id", user.id).single();
+      if (colab?.corredor_id) efectivoId = colab.corredor_id;
+    }
+
     const body = await req.json();
     const { csv, perfil_id, preview, selectedRows } = body;
     if (!csv || !perfil_id) {
       return NextResponse.json({ error: "csv y perfil_id requeridos" }, { status: 400 });
+    }
+
+    // Ensure the caller owns the target perfil_id
+    if (perfil_id !== efectivoId) {
+      return NextResponse.json({ error: "No autorizado para este perfil" }, { status: 403 });
     }
 
     const { rows } = parsearCSV(csv);
