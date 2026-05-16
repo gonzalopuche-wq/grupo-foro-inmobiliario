@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { slug, tipo, nombre, email, telefono, mensaje, direccion } = body;
+    const { slug, tipo, nombre, email, telefono, mensaje, direccion, propiedad_id } = body;
 
     if (!slug || !nombre || !tipo) {
       return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
         telefono: telefono || null,
         mensaje: mensaje || null,
         direccion_propiedad: direccion || null,
+        propiedad_id: propiedad_id || null,
       });
     } catch { /* silenciar si la tabla no existe todavía */ }
 
