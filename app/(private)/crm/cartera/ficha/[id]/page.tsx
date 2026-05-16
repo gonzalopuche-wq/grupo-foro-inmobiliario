@@ -253,6 +253,25 @@ export default async function FichaPage({ params }: Props) {
             </>
           )}
 
+          {/* Video YouTube */}
+          {prop.video_url && (() => {
+            const m = prop.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+            if (!m) return null;
+            return (
+              <>
+                <hr className="ficha-divider" />
+                <div className="ficha-tour-label">🎬 Video de la propiedad</div>
+                <div className="ficha-tour">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${m[1]}`}
+                    allowFullScreen
+                    title="Video de la propiedad"
+                  />
+                </div>
+              </>
+            );
+          })()}
+
           {/* Tour Virtual 360° */}
           {(prop as any).tour_virtual_url && (
             <>
@@ -268,6 +287,32 @@ export default async function FichaPage({ params }: Props) {
               </div>
             </>
           )}
+
+          {/* Links de portales */}
+          {(() => {
+            const p = prop as any;
+            const links = [
+              p.link_zonaprop && { label: "ZonaProp", url: p.link_zonaprop },
+              p.link_argenprop && { label: "Argenprop", url: p.link_argenprop },
+              p.link_mercadolibre && { label: "MercadoLibre", url: p.link_mercadolibre },
+              p.link_tokko && { label: "Tokko Broker", url: p.link_tokko },
+            ].filter(Boolean) as { label: string; url: string }[];
+            if (!links.length) return null;
+            return (
+              <>
+                <hr className="ficha-divider" />
+                <div className="ficha-section-title">Publicada en portales</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {links.map(l => (
+                    <a key={l.label} href={l.url} target="_blank" rel="noopener noreferrer"
+                      style={{ padding: "6px 14px", background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.25)", borderRadius: 6, fontSize: 12, fontWeight: 700, color: "#60a5fa", fontFamily: "Montserrat,sans-serif", textDecoration: "none" }}>
+                      🔗 {l.label}
+                    </a>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
 
           {/* Google Maps */}
           {(prop.direccion || prop.ciudad) && (() => {

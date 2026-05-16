@@ -11,6 +11,7 @@ interface Stats {
   porTipo: Record<string, number>;
   valorTotal: Record<string, number>;
   syncStatus: { tokko: number; kiteprop: number; sinSync: number };
+  publicadasWeb: number;
   recientes: { id: string; titulo: string; estado: string; created_at: string }[];
   leads: { total: number; porEstado: Record<string, number>; porOrigen: Record<string, number> };
   visitas: { total: number; porEstado: Record<string, number> };
@@ -69,7 +70,7 @@ export default function EstadisticasPage() {
 
   const cargarStats = async (uid: string) => {
     const [{ data: props }, { data: syncs }, { data: leadsRaw }, { data: visitasRaw }, { data: leadsBy }, { data: visitasBy }, { data: colabs }] = await Promise.all([
-      supabase.from("cartera_propiedades").select("id, titulo, estado, operacion, tipo, precio, moneda, created_at").eq("perfil_id", uid),
+      supabase.from("cartera_propiedades").select("id, titulo, estado, operacion, tipo, precio, moneda, created_at, publicada_web").eq("perfil_id", uid),
       supabase.from("cartera_sync_portales").select("propiedad_id, tokko_id, kiteprop_id"),
       supabase.from("crm_leads").select("estado, origen").eq("perfil_id", uid),
       supabase.from("cartera_visitas").select("estado").eq("perfil_id", uid),
@@ -128,6 +129,7 @@ export default function EstadisticasPage() {
         kiteprop: kiteIds.size,
         sinSync: all.filter(p => !syncedIds.has(p.id)).length,
       },
+      publicadasWeb: all.filter((p: any) => p.publicada_web).length,
       recientes,
       leads: { total: leads.length, porEstado: countKey(leads, "estado"), porOrigen: countKey(leads, "origen") },
       visitas: { total: visitas.length, porEstado: countKey(visitas, "estado") },
@@ -181,6 +183,7 @@ export default function EstadisticasPage() {
                 {card("Activas", stats.porEstado.activa ?? 0, "disponibles para cerrar", "#22c55e")}
                 {card("Reservadas", stats.porEstado.reservada ?? 0, "en proceso", "#eab308")}
                 {card("Vendidas", stats.porEstado.vendida ?? 0, "cerradas", "#60a5fa")}
+                {card("En sitio web", stats.publicadasWeb, "publicadas online", "#60a5fa")}
               </div>
 
               {/* Valor cartera */}
