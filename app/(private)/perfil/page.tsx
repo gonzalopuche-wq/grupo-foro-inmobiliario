@@ -105,6 +105,9 @@ export default function PerfilPage() {
   const [repStats, setRepStats] = useState({ docs: 0, comparables: 0, meses: 0, tasaciones: 0, propiedades: 0, negocios: 0, networking: 0, foro: 0, referidos: 0 });
   const [bonConfig, setBonConfig] = useState<{ accion: string; label: string; descuento_usd: number; activo: boolean }[]>([]);
   const [bonHistorial, setBonHistorial] = useState<{ accion: string; mes: string; descuento_aplicado: number }[]>([]);
+  const [cocirSyncState, setCocirSyncState] = useState<"idle" | "loading" | "preview" | "applying">("idle");
+  const [cocirSyncData, setCocirSyncData] = useState<{ telefono: string | null; email: string | null; inmobiliaria: string | null } | null>(null);
+  const [cocirSyncError, setCocirSyncError] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -150,6 +153,31 @@ export default function PerfilPage() {
   const mostrarToast = (msg: string, tipo: "ok" | "err" = "ok") => {
     setToast({ msg, tipo });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const sincronizarCOCIR = async () => {
+    setCocirSyncState("loading");
+    setCocirSyncError(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) { setCocirSyncState("idle"); return; }
+    const res = await fetch("/api/cocir/sync-profile", { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
+    if (!res.ok) { setCocirSyncError(json.error ?? "Error al consultar COCIR."); setCocirSyncState("idle"); return; }
+    setCocirSyncData(json.cocir);
+    setCocirSyncState("preview");
+  };
+
+  const aplicarCOCIR = () => {
+    if (!cocirSyncData || !perfil) return;
+    const updates: Partial<Perfil> = {};
+    if (cocirSyncData.telefono && !perfil.telefono) updates.telefono = cocirSyncData.telefono;
+    if (cocirSyncData.email && !perfil.email) updates.email = cocirSyncData.email;
+    if (cocirSyncData.inmobiliaria && !perfil.inmobiliaria) updates.inmobiliaria = cocirSyncData.inmobiliaria;
+    setPerfil(prev => prev ? { ...prev, ...updates } : prev);
+    setCocirSyncState("idle");
+    setCocirSyncData(null);
+    mostrarToast("Datos de COCIR aplicados. Guardá para confirmar.");
   };
 
   const guardar = async () => {
@@ -476,6 +504,39 @@ export default function PerfilPage() {
                 <div className="pf-field">
                   <label className="pf-label">Matrícula COCIR</label>
                   <input className="pf-input" value={perfil.matricula ?? ""} disabled />
+                  {perfil.matricula && (
+                    <div style={{ marginTop: 8 }}>
+                      {cocirSyncState === "idle" && (
+                        <button onClick={sincronizarCOCIR} style={{ background: "none", border: "1px solid rgba(99,102,241,0.4)", borderRadius: 6, color: "#818cf8", fontSize: 11, fontWeight: 700, padding: "5px 12px", cursor: "pointer", fontFamily: "Inter,sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
+                          <span>🔄</span> Sincronizar con COCIR
+                        </button>
+                      )}
+                      {cocirSyncState === "loading" && (
+                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontStyle: "italic" }}>Consultando COCIR…</span>
+                      )}
+                      {cocirSyncError && (
+                        <span style={{ fontSize: 11, color: "#f87171" }}>{cocirSyncError}</span>
+                      )}
+                      {cocirSyncState === "preview" && cocirSyncData && (
+                        <div style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 8, padding: "10px 14px", marginTop: 4 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: "#818cf8", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", marginBottom: 8 }}>DATOS EN COCIR</div>
+                          {[
+                            { label: "Teléfono", val: cocirSyncData.telefono },
+                            { label: "Email", val: cocirSyncData.email },
+                            { label: "Inmobiliaria", val: cocirSyncData.inmobiliaria },
+                          ].filter(f => f.val).map(f => (
+                            <div key={f.label} style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", marginBottom: 3 }}>
+                              <span style={{ color: "rgba(255,255,255,0.4)", width: 80, display: "inline-block" }}>{f.label}:</span> {f.val}
+                            </div>
+                          ))}
+                          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                            <button onClick={aplicarCOCIR} style={{ padding: "5px 14px", background: "#6366f1", border: "none", borderRadius: 6, color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "Montserrat,sans-serif" }}>Aplicar campos vacíos</button>
+                            <button onClick={() => { setCocirSyncState("idle"); setCocirSyncData(null); }} style={{ padding: "5px 10px", background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.4)", fontSize: 11, cursor: "pointer" }}>Cancelar</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="pf-field">
                   <label className="pf-label">Teléfono / WhatsApp</label>
