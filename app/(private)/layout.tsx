@@ -96,6 +96,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const [pagoError, setPagoError] = useState("");
   const [copiadoBloq, setCopiadoBloq] = useState<string | null>(null);
   const [leadsNoLeidos, setLeadsNoLeidos] = useState(0);
+  const [notifsNoLeidas, setNotifsNoLeidas] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -127,6 +128,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
             .eq("perfil_id", auth.user.id).eq("leido", false)
             .then(({ count }) => setLeadsNoLeidos(count ?? 0));
         }
+
+        // Badge de notificaciones no leídas
+        supabase.from("notificaciones").select("id", { count: "exact", head: true })
+          .eq("user_id", auth.user.id).eq("leida", false)
+          .then(({ count }) => setNotifsNoLeidas(count ?? 0));
 
         // Verificar suscripción bloqueada (solo para no-admin)
         if (tipo !== "admin") {
@@ -178,7 +184,26 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     if (pathname.startsWith("/mi-web") && leadsNoLeidos > 0) {
       setLeadsNoLeidos(0);
     }
+    if (pathname === "/notificaciones" && notifsNoLeidas > 0) {
+      setNotifsNoLeidas(0);
+    }
   }, [pathname]);
+
+  // Real-time badge for new notifications
+  useEffect(() => {
+    if (!userId) return;
+    const ch = supabase.channel(`notifs_badge_${userId}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notificaciones", filter: `user_id=eq.${userId}` },
+        () => setNotifsNoLeidas(n => n + 1))
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "notificaciones", filter: `user_id=eq.${userId}` },
+        () => {
+          supabase.from("notificaciones").select("id", { count: "exact", head: true })
+            .eq("user_id", userId).eq("leida", false)
+            .then(({ count }) => setNotifsNoLeidas(count ?? 0));
+        })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [userId]);
 
   const copiarBloq = (valor: string, key: string) => {
     navigator.clipboard.writeText(valor);
@@ -415,6 +440,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
                 {item.href === "/mi-web" && leadsNoLeidos > 0 && (
                   <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
                     {leadsNoLeidos > 99 ? "99+" : leadsNoLeidos}
+                  </span>
+                )}
+                {item.href === "/notificaciones" && notifsNoLeidas > 0 && (
+                  <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                    {notifsNoLeidas > 99 ? "99+" : notifsNoLeidas}
                   </span>
                 )}
               </Link>
