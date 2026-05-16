@@ -97,7 +97,7 @@ export default async function PropiedadDetailPage({
   const tituloSitio = cfg.titulo_sitio || corredorNombre;
 
   const fotos = prop.fotos?.filter(Boolean) ?? [];
-  const ubicacion = [prop.barrio, prop.zona, prop.ciudad].filter(Boolean).join(", ");
+  const ubicacion = [prop.zona, prop.ciudad].filter(Boolean).join(", ");
 
   return (
     <>

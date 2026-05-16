@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
   const { data: prop } = await sb
     .from("cartera_propiedades")
-    .select("titulo, descripcion, operacion, tipo, precio, moneda, ciudad, zona, direccion, dormitorios, banos, superficie_cubierta, superficie_total, cocheras, ambientes, antiguedad, amenities, perfil_id")
+    .select("titulo, descripcion, operacion, tipo, precio, moneda, ciudad, zona, direccion, dormitorios, banos, superficie_cubierta, superficie_total, estacionamientos, con_cochera, ambientes, antiguedad, amenities, perfil_id")
     .eq("id", propiedad_id)
     .single();
 
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     prop.ambientes && `${prop.ambientes} ambientes`,
     prop.dormitorios && `${prop.dormitorios} dormitorios`,
     prop.banos && `${prop.banos} baños`,
-    prop.cocheras && `${prop.cocheras} cochera${prop.cocheras > 1 ? "s" : ""}`,
+    prop.con_cochera && "cochera",
     prop.antiguedad === 0 ? "a estrenar" : prop.antiguedad && `${prop.antiguedad} años`,
   ].filter(Boolean).join(", ");
 

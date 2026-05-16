@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const detalle = [
       `Tipo: ${p.tipo ?? ""} en ${p.operacion ?? ""}`,
       `Precio: ${p.moneda ?? "USD"} ${p.precio?.toLocaleString("es-AR") ?? "A consultar"}`,
-      `Ubicación: ${[p.ciudad, p.zona, p.barrio].filter(Boolean).join(", ")}`,
+      `Ubicación: ${[p.ciudad, p.zona].filter(Boolean).join(", ")}`,
       p.dormitorios ? `Dormitorios: ${p.dormitorios}` : null,
       p.banos ? `Baños: ${p.banos}` : null,
       p.superficie_cubierta ? `Superficie cubierta: ${p.superficie_cubierta}m²` : null,

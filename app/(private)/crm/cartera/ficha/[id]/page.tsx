@@ -18,7 +18,7 @@ async function getData(id: string) {
     .select(`
       id, titulo, descripcion, operacion, tipo, precio, moneda,
       ciudad, zona, direccion, dormitorios, banos, toilettes,
-      superficie_cubierta, superficie_total, cocheras, ambientes,
+      superficie_cubierta, superficie_total, estacionamientos, con_cochera, ambientes,
       antiguedad, piso, orientacion, amenities, observaciones,
       fotos, estado, expensas, precio_expensas_moneda,
       video_url, tour_virtual_url,
@@ -202,10 +202,10 @@ export default async function FichaPage({ params }: Props) {
                 <div className="ficha-spec-label">Baños</div>
               </div>
             )}
-            {prop.cocheras && (
+            {(prop.con_cochera || prop.estacionamientos) && (
               <div className="ficha-spec">
-                <div className="ficha-spec-val">{prop.cocheras}</div>
-                <div className="ficha-spec-label">Cocheras</div>
+                <div className="ficha-spec-val">{prop.estacionamientos ?? 1}</div>
+                <div className="ficha-spec-label">Cochera{(prop.estacionamientos ?? 1) > 1 ? "s" : ""}</div>
               </div>
             )}
             {prop.piso && (
