@@ -359,6 +359,16 @@ export default async function PropiedadDetailPage({
             textMuted={t.textMuted}
           />
 
+          <CalculadoraHipoteca
+            precioBase={prop.precio}
+            moneda={prop.moneda}
+            accent={t.accent}
+            cardBorder={t.cardBorder}
+            textMuted={t.textMuted}
+            text={t.text}
+            card={t.card}
+          />
+
           <Link href={`/web/${slug}/propiedades`} style={{ display: "block", textAlign: "center", fontSize: 12, color: t.textMuted, padding: "8px 0" }}>
             ← Ver todas las propiedades
           </Link>
@@ -393,6 +403,7 @@ export default async function PropiedadDetailPage({
 // Gallery con navegación (client component incrustado)
 import { GallerySection } from "./GallerySection";
 import { ShareButton } from "./ShareButton";
+import { CalculadoraHipoteca } from "./CalculadoraHipoteca";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; id: string }> }) {
   const { slug, id } = await params;
