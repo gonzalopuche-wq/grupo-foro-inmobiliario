@@ -399,6 +399,11 @@ export default function MiWebPage() {
               <span style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", fontWeight: 500 }}>Instagram</span>
               <span style={{ marginLeft: "auto", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>→</span>
             </Link>
+            <Link href="/mi-web/testimonios" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0", borderTop: "1px solid rgba(255,255,255,0.05)", marginTop: 2 }}>
+              <span style={{ fontSize: 14 }}>💬</span>
+              <span style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", fontWeight: 500 }}>Testimonios</span>
+              <span style={{ marginLeft: "auto", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>→</span>
+            </Link>
           </div>
         </div>
 
