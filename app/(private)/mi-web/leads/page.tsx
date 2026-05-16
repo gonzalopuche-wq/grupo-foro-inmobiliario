@@ -28,6 +28,30 @@ export default function LeadsPage() {
   const [convertidos, setConvertidos] = useState<Set<string>>(new Set());
   const [creandoNegocio, setCreandoNegocio] = useState<string | null>(null);
   const [negociosCreados, setNegociosCreados] = useState<Set<string>>(new Set());
+
+  const exportarCSV = () => {
+    const filas = [
+      ["Fecha", "Tipo", "Nombre", "Teléfono", "Email", "Mensaje", "Propiedad", "Leído"],
+      ...leads.map(l => [
+        new Date(l.created_at).toLocaleDateString("es-AR"),
+        TIPO_LABEL[l.tipo],
+        l.nombre,
+        l.telefono ?? "",
+        l.email ?? "",
+        (l.mensaje ?? "").replace(/"/g, '""'),
+        l.cartera_propiedades?.titulo ?? l.direccion_propiedad ?? "",
+        l.leido ? "Sí" : "No",
+      ]),
+    ];
+    const csv = filas.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `leads-web-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   const [tablaNoExiste, setTablaNoExiste] = useState(false);
 
   useEffect(() => {
@@ -201,6 +225,14 @@ export default function LeadsPage() {
               style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", color: "#6b7280", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
             >
               ✓ Marcar todos
+            </button>
+          )}
+          {leads.length > 0 && (
+            <button
+              onClick={exportarCSV}
+              style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", color: "#6b7280", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+            >
+              ⬇ CSV
             </button>
           )}
         </div>
