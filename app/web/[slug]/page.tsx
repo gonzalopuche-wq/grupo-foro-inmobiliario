@@ -186,6 +186,9 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
         .w-footer-red { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6); text-decoration: none; transition: background 0.18s, color 0.18s, border-color 0.18s; }
         .w-footer-red:hover { background: ${t.accent}; border-color: ${t.accent}; color: #fff; }
         .w-footer-gfi { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: rgba(255,255,255,0.25); }
+        .wa-float { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; align-items: center; gap: 10px; background: #25D366; color: #fff; padding: 13px 20px; border-radius: 50px; text-decoration: none; font-family: 'Montserrat',sans-serif; font-weight: 700; font-size: 13px; box-shadow: 0 4px 20px rgba(37,211,102,0.45); transition: transform 0.2s, box-shadow 0.2s; }
+        .wa-float:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(37,211,102,0.6); }
+        @media (max-width: 768px) { .wa-float { padding: 12px; border-radius: 50%; font-size: 0; width: 52px; height: 52px; justify-content: center; } .wa-float span:last-child { display: none; } }
         @media (max-width: 768px) {
           .w-stats { flex-direction: column; margin: 0 3%; }
           .w-stat { border-right: none; border-bottom: 1px solid ${t.cardBorder}; }
@@ -452,6 +455,20 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
           Sitio creado con <strong>GFI® Grupo Foro Inmobiliario</strong> · Rosario, Argentina
         </div>
       </footer>
+
+      {/* Floating WhatsApp */}
+      {wa && (
+        <a
+          href={`https://wa.me/${wa.replace(/\D/g,"")}?text=${encodeURIComponent("Hola, me comunico desde tu web inmobiliaria.")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="wa-float"
+          aria-label="Contactar por WhatsApp"
+        >
+          <span style={{ fontSize: 20 }}>💬</span>
+          <span>WhatsApp</span>
+        </a>
+      )}
 
       {/* Google Analytics */}
       {cfg.google_analytics && (
