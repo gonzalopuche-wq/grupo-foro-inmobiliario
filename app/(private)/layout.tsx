@@ -97,6 +97,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const [copiadoBloq, setCopiadoBloq] = useState<string | null>(null);
   const [leadsNoLeidos, setLeadsNoLeidos] = useState(0);
   const [notifsNoLeidas, setNotifsNoLeidas] = useState(0);
+  const [crmPendientes, setCrmPendientes] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -133,6 +134,18 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         supabase.from("notificaciones").select("id", { count: "exact", head: true })
           .eq("user_id", auth.user.id).eq("leida", false)
           .then(({ count }) => setNotifsNoLeidas(count ?? 0));
+
+        // Badge de tareas y recordatorios vencidos en CRM
+        const hoy = new Date().toISOString().slice(0, 10);
+        const [tareasRes, recsRes] = await Promise.all([
+          supabase.from("crm_tareas").select("id", { count: "exact", head: true })
+            .eq("perfil_id", auth.user.id).eq("estado", "pendiente")
+            .lte("fecha_vencimiento", hoy).not("fecha_vencimiento", "is", null),
+          supabase.from("crm_recordatorios").select("id", { count: "exact", head: true })
+            .eq("perfil_id", auth.user.id).eq("completado", false)
+            .lte("fecha_recordatorio", new Date().toISOString()),
+        ]);
+        setCrmPendientes((tareasRes.count ?? 0) + (recsRes.count ?? 0));
 
         // Verificar suscripción bloqueada (solo para no-admin)
         if (tipo !== "admin") {
@@ -186,6 +199,9 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     }
     if (pathname === "/notificaciones" && notifsNoLeidas > 0) {
       setNotifsNoLeidas(0);
+    }
+    if (pathname.startsWith("/crm") && crmPendientes > 0) {
+      setCrmPendientes(0);
     }
   }, [pathname]);
 
@@ -445,6 +461,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
                 {item.href === "/notificaciones" && notifsNoLeidas > 0 && (
                   <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
                     {notifsNoLeidas > 99 ? "99+" : notifsNoLeidas}
+                  </span>
+                )}
+                {item.href === "/crm" && crmPendientes > 0 && (
+                  <span style={{ marginLeft: "auto", background: "#f59e0b", color: "#000", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                    {crmPendientes > 99 ? "99+" : crmPendientes}
                   </span>
                 )}
               </Link>
