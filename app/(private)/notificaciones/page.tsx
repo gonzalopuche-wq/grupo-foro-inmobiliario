@@ -1,8 +1,41 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 import ActivarNotificaciones from '../../components/ActivarNotificaciones'
+
+interface Notificacion {
+  id: string
+  titulo: string
+  mensaje: string | null
+  tipo: string | null
+  url: string | null
+  leida: boolean
+  created_at: string
+}
+
+const TIPO_ICON: Record<string, string> = {
+  cartera: '🏘️', mir: '🔗', crm: '👥', web_lead: '📬', suscripcion: '💳',
+  foro: '💬', evento: '📅', smart: '🎯', sistema: '⚙️',
+}
+const TIPO_COLOR: Record<string, string> = {
+  cartera: '#60a5fa', mir: '#34d399', crm: '#a78bfa', web_lead: '#fb923c',
+  suscripcion: '#f87171', foro: '#facc15', evento: '#38bdf8', smart: '#f472b6', sistema: 'rgba(255,255,255,0.4)',
+}
+
+function tipoIcon(tipo: string | null) { return TIPO_ICON[tipo ?? ''] ?? '🔔' }
+function tipoColor(tipo: string | null) { return TIPO_COLOR[tipo ?? ''] ?? 'rgba(255,255,255,0.5)' }
+
+function fmtFecha(iso: string) {
+  const d = new Date(iso)
+  const diff = Math.floor((Date.now() - d.getTime()) / 1000)
+  if (diff < 60) return 'Ahora'
+  if (diff < 3600) return `${Math.floor(diff / 60)} min`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`
+  if (diff < 86400 * 7) return `${Math.floor(diff / 86400)}d`
+  return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' })
+}
 
 interface NotifConfig {
   canal: 'push' | 'email' | 'whatsapp'
@@ -44,25 +77,63 @@ const defaultConfig = (): ConfigMap => {
 }
 
 export default function NotificacionesPage() {
+  const router = useRouter()
   const [userId, setUserId] = useState('')
+  const [tab, setTab] = useState<'bandeja' | 'config'>('bandeja')
   const [config, setConfig] = useState<ConfigMap>(defaultConfig())
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
+  const [notifs, setNotifs] = useState<Notificacion[]>([])
+  const [cargandoNotifs, setCargandoNotifs] = useState(true)
   const mostrarToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500) }
+
+  const cargarNotifs = async (uid: string) => {
+    const { data } = await supabase
+      .from('notificaciones')
+      .select('id, titulo, mensaje, tipo, url, leida, created_at')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .limit(100)
+    setNotifs((data as Notificacion[]) ?? [])
+    setCargandoNotifs(false)
+  }
+
+  const marcarLeida = async (id: string, url: string | null) => {
+    await supabase.from('notificaciones').update({ leida: true }).eq('id', id)
+    setNotifs(prev => prev.map(n => n.id === id ? { ...n, leida: true } : n))
+    if (url) router.push(url)
+  }
+
+  const marcarTodasLeidas = async () => {
+    if (!userId) return
+    await supabase.from('notificaciones').update({ leida: true }).eq('user_id', userId).eq('leida', false)
+    setNotifs(prev => prev.map(n => ({ ...n, leida: true })))
+    mostrarToast('Todas marcadas como leídas')
+  }
+
+  const eliminar = async (id: string) => {
+    await supabase.from('notificaciones').delete().eq('id', id)
+    setNotifs(prev => prev.filter(n => n.id !== id))
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }: { data: { user: { id: string } | null } }) => {
       if (!data.user) { window.location.href = '/login'; return }
-      setUserId(data.user.id)
-      // Load config from perfil or use defaults
-      const { data: perfil } = await supabase
-        .from('perfiles')
-        .select('notif_config')
-        .eq('id', data.user.id)
-        .single()
-      if (perfil?.notif_config) setConfig(perfil.notif_config as ConfigMap)
-      setCargando(false)
+      const uid = data.user.id
+      setUserId(uid)
+      await Promise.all([
+        cargarNotifs(uid),
+        (async () => {
+          const { data: perfil } = await supabase
+            .from('perfiles')
+            .select('notif_config')
+            .eq('id', uid)
+            .single()
+          if (perfil?.notif_config) setConfig(perfil.notif_config as ConfigMap)
+          setCargando(false)
+        })(),
+      ])
     })
   }, [])
 
@@ -88,6 +159,8 @@ export default function NotificacionesPage() {
     mostrarToast('✅ Preferencias guardadas')
   }
 
+  const noLeidas = notifs.filter(n => !n.leida).length
+
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 0 64px' }}>
 
@@ -98,12 +171,66 @@ export default function NotificacionesPage() {
       )}
 
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>Módulo 112</div>
+      <div style={{ marginBottom: 20 }}>
         <h1 style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>Notificaciones</h1>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>Configurá qué alertas recibís y por qué canal</p>
       </div>
 
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: 0 }}>
+        {([['bandeja', '🔔 Bandeja', noLeidas], ['config', '⚙️ Configuración', 0]] as const).map(([t, label, badge]) => (
+          <button key={t} onClick={() => setTab(t)} style={{ padding: '8px 16px', background: 'none', border: 'none', borderBottom: `2px solid ${tab === t ? '#cc0000' : 'transparent'}`, color: tab === t ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', transition: 'color 0.15s', display: 'flex', alignItems: 'center', gap: 6, marginBottom: -1 }}>
+            {label}
+            {badge > 0 && <span style={{ background: '#cc0000', color: '#fff', fontSize: 10, fontWeight: 800, padding: '1px 6px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif' }}>{badge}</span>}
+          </button>
+        ))}
+      </div>
+
+      {/* BANDEJA */}
+      {tab === 'bandeja' && (
+        <div>
+          {noLeidas > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+              <button onClick={marcarTodasLeidas} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 600, padding: '5px 14px', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
+                Marcar todas como leídas
+              </button>
+            </div>
+          )}
+          {cargandoNotifs ? (
+            <div style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
+          ) : notifs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '64px 0' }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🔔</div>
+              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }}>No tenés notificaciones todavía</div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {notifs.map(n => (
+                <div key={n.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', background: n.leida ? 'rgba(14,14,14,0.6)' : 'rgba(20,20,20,0.95)', border: `1px solid ${n.leida ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 8, cursor: 'pointer', transition: 'border-color 0.15s' }}
+                  onClick={() => marcarLeida(n.id, n.url)}
+                >
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: `${tipoColor(n.tipo)}15`, border: `1px solid ${tipoColor(n.tipo)}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>
+                    {tipoIcon(n.tipo)}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                      <span style={{ fontSize: 13, fontWeight: n.leida ? 500 : 700, color: n.leida ? 'rgba(255,255,255,0.6)' : '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.titulo}</span>
+                      {!n.leida && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#cc0000', flexShrink: 0 }} />}
+                    </div>
+                    {n.mensaje && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.mensaje}</div>}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap' }}>{fmtFecha(n.created_at)}</span>
+                    <button onClick={e => { e.stopPropagation(); eliminar(n.id) }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: '2px 4px' }} title="Eliminar">✕</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* CONFIG */}
+      {tab === 'config' && <>
       {/* Push — activar en este dispositivo */}
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '14px 18px', marginBottom: 20 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: 8 }}>🔔 Push en este dispositivo</div>
@@ -190,6 +317,8 @@ export default function NotificacionesPage() {
           </p>
         </>
       )}
+      </>}
+
     </div>
   )
 }
