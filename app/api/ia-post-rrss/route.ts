@@ -8,10 +8,23 @@ const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPAB
 
 export async function POST(req: NextRequest) {
   try {
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    const { data: { user } } = await sb.auth.getUser(token);
+    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    let efectivoId = user.id;
+    const { data: perfil } = await sb.from("perfiles").select("tipo").eq("id", user.id).single();
+    if (perfil?.tipo === "colaborador") {
+      const { data: colab } = await sb.from("colaboradores").select("corredor_id").eq("user_id", user.id).single();
+      if (colab?.corredor_id) efectivoId = colab.corredor_id;
+    }
+
     const { propiedad_id } = await req.json();
     if (!propiedad_id) return NextResponse.json({ error: "propiedad_id requerido" }, { status: 400 });
 
-    const { data: p } = await sb.from("cartera_propiedades").select("*").eq("id", propiedad_id).single();
+    const { data: p } = await sb.from("cartera_propiedades").select("*").eq("id", propiedad_id).eq("perfil_id", efectivoId).single();
     if (!p) return NextResponse.json({ error: "Propiedad no encontrada" }, { status: 404 });
 
     const apiKey = process.env.ANTHROPIC_API_KEY;

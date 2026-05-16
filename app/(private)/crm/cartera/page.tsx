@@ -748,9 +748,10 @@ export default function CarteraPage() {
     // Smart Prospecting: si es propiedad nueva, buscar contactos que coincidan
     if (!editandoId && propId && userId) {
       try {
+        const { data: { session: matchSess } } = await supabase.auth.getSession();
         const res = await fetch("/api/ia-matching", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${matchSess?.access_token}` },
           body: JSON.stringify({ perfil_id: userId, propiedad_id: propId }),
         });
         const data = await res.json();
@@ -857,7 +858,8 @@ export default function CarteraPage() {
   const generarPostRRSS = async (p: any) => {
     setGenerandoPost(p.id);
     try {
-      const res = await fetch("/api/ia-post-rrss", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({propiedad_id: p.id}) });
+      const { data: { session: rrSess } } = await supabase.auth.getSession();
+      const res = await fetch("/api/ia-post-rrss", { method: "POST", headers: {"Content-Type":"application/json", Authorization: `Bearer ${rrSess?.access_token}`}, body: JSON.stringify({propiedad_id: p.id}) });
       const json = await res.json();
       if (json.caption) setPostModal({titulo: p.titulo || "Propiedad", caption: json.caption, hashtags: json.hashtags ?? ""});
     } catch {}
@@ -1655,7 +1657,8 @@ export default function CarteraPage() {
                         <button type="button" disabled={generandoDesc} onClick={async () => {
                           setGenerandoDesc(true);
                           try {
-                            const res = await fetch("/api/ia-descripcion", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({propiedad:form,tono:tonoDesc})});
+                            const { data: { session: descSess } } = await supabase.auth.getSession();
+                            const res = await fetch("/api/ia-descripcion", {method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${descSess?.access_token}`},body:JSON.stringify({propiedad:form,tono:tonoDesc})});
                             const {descripcion} = await res.json();
                             if (descripcion) setF("descripcion", descripcion);
                           } catch {}
