@@ -80,11 +80,25 @@ function mapTokkoToCartera(t: any, perfilId: string) {
 
 export async function GET(req: NextRequest) {
   try {
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    const { data: { user } } = await sb.auth.getUser(token);
+    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    let efectivoId = user.id;
+    const { data: perfil } = await sb.from("perfiles").select("tipo").eq("id", user.id).single();
+    if (perfil?.tipo === "colaborador") {
+      const { data: colab } = await sb.from("colaboradores").select("corredor_id").eq("user_id", user.id).single();
+      if (colab?.corredor_id) efectivoId = colab.corredor_id;
+    }
+
     const { searchParams } = new URL(req.url);
     const perfilId = searchParams.get("perfil_id");
     const soloNuevas = searchParams.get("solo_nuevas") !== "false";
 
     if (!perfilId) return NextResponse.json({ error: "perfil_id requerido" }, { status: 400 });
+    if (perfilId !== efectivoId) return NextResponse.json({ error: "No autorizado para este perfil" }, { status: 403 });
 
     // API key: per-user first, fallback global
     const { data: creds } = await sb
