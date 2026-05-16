@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const PRIVATE_IP = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.|169\.254\.|::1$|fc|fd)/i;
+
+function isSafeUrl(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    if (PRIVATE_IP.test(u.hostname)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams.get("url");
   if (!url) return NextResponse.json({ ok: false, mensaje: "URL requerida" }, { status: 400 });
+  if (!isSafeUrl(url)) return NextResponse.json({ ok: false, mensaje: "URL no permitida" }, { status: 400 });
 
   try {
     const controller = new AbortController();
