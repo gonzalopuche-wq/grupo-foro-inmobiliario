@@ -30,14 +30,18 @@ CREATE INDEX IF NOT EXISTS idx_crm_rec_fecha   ON crm_recordatorios(fecha_record
 CREATE INDEX IF NOT EXISTS idx_crm_rec_estado  ON crm_recordatorios(estado);
 CREATE INDEX IF NOT EXISTS idx_crm_rec_contacto ON crm_recordatorios(contacto_id);
 
--- Trigger para mantener completado sincronizado con estado
+-- Trigger para mantener completado y estado sincronizados bidireccionalmente.
+-- La UI puede actualizar completado (booleano) o estado (texto); el trigger
+-- propaga el cambio al otro campo para evitar inconsistencias.
 CREATE OR REPLACE FUNCTION sync_recordatorio_completado()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN
-  IF NEW.estado = 'completado' THEN
-    NEW.completado = true;
-  ELSIF NEW.estado = 'pendiente' THEN
-    NEW.completado = false;
+  -- On INSERT, or when estado changed: estado is authoritative → sync completado
+  IF TG_OP = 'INSERT' OR NEW.estado IS DISTINCT FROM OLD.estado THEN
+    NEW.completado = (NEW.estado = 'completado');
+  -- When only completado changed: completado is authoritative → sync estado
+  ELSIF NEW.completado IS DISTINCT FROM OLD.completado THEN
+    NEW.estado = CASE WHEN NEW.completado THEN 'completado' ELSE 'pendiente' END;
   END IF;
   NEW.updated_at = now();
   RETURN NEW;
@@ -46,5 +50,5 @@ $$;
 
 DROP TRIGGER IF EXISTS trg_crm_rec_completado ON crm_recordatorios;
 CREATE TRIGGER trg_crm_rec_completado
-  BEFORE UPDATE ON crm_recordatorios
+  BEFORE INSERT OR UPDATE ON crm_recordatorios
   FOR EACH ROW EXECUTE FUNCTION sync_recordatorio_completado();
