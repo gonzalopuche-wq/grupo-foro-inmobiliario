@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit, getIp } from "../../../lib/ratelimit";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,6 +8,9 @@ const supabaseAdmin = createClient(
 );
 
 export async function POST(req: NextRequest) {
+  if (!rateLimit(`sponsor:${getIp(req)}`, 3, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Demasiadas solicitudes. Intentá de nuevo más tarde." }, { status: 429 });
+  }
   try {
     const body = await req.json();
     const { empresa, rubro, descripcion, contacto_nombre, contacto_email, contacto_telefono, sitio_web, mensaje } = body;
