@@ -809,6 +809,21 @@ export default function CarteraPage() {
     if (userId) cargar(userId);
   };
 
+  const toggleDestacadaWeb = async (p: Propiedad) => {
+    const nuevoValor = !p.destacada_web;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ datos: { destacada_web: nuevoValor, updated_at: new Date().toISOString() }, editandoId: p.id }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) alert("Error: " + (json.error ?? "Error desconocido"));
+      else setPropiedades(prev => prev.map((x: Propiedad) => x.id === p.id ? { ...x, destacada_web: nuevoValor } : x));
+    } catch (e: any) { alert("Error de red: " + e.message); }
+  };
+
   const eliminar = async (id: string) => {
     if (!confirm("¿Eliminar esta propiedad? También se eliminará del MIR.")) return;
     try {
@@ -1334,6 +1349,7 @@ export default function CarteraPage() {
                         {p.estado === "activa" && <span className="cart-mir-badge">🔄 En MIR</span>}
                         {p.compartir_en_red && <span className="cart-mir-badge-red">🌐 Red GFI</span>}
                         {p.publicada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#60a5fa",letterSpacing:"0.06em"}}>🌐 WEB</span>}
+                        {p.destacada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.3)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#eab308",letterSpacing:"0.06em"}}>⭐ DEST.</span>}
                         {(p.vistas ?? 0) > 0 && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.35)",letterSpacing:"0.04em"}} title="Vistas en el sitio web">👁 {p.vistas}</span>}
                       </div>
                       <div style={{display:"flex",gap:4}}>
@@ -1361,6 +1377,18 @@ export default function CarteraPage() {
                     >
                       {p.publicada_web ? "🌐 En Web" : "🌐 Web"}
                     </button>
+                    {p.publicada_web && (
+                      <button
+                        className="cart-acc-btn"
+                        onClick={() => toggleDestacadaWeb(p)}
+                        title={p.destacada_web ? "Quitar de destacadas" : "Destacar en el sitio web"}
+                        style={p.destacada_web
+                          ? {background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.35)",color:"#eab308"}
+                          : {background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.25)"}}
+                      >
+                        {p.destacada_web ? "⭐ Destacada" : "⭐ Destacar"}
+                      </button>
+                    )}
                     {p.publicada_web && webSlug && (
                       <button
                         className="cart-acc-btn"

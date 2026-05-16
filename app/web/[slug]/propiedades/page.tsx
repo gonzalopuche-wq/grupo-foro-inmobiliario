@@ -24,7 +24,7 @@ interface Propiedad {
   operacion: string; tipo: string; precio: number | null; moneda: string;
   ciudad: string; zona: string | null; dormitorios: number | null;
   banos: number | null; superficie_cubierta: number | null;
-  fotos: string[] | null;
+  fotos: string[] | null; destacada_web: boolean;
 }
 
 const supabase = createClient(
@@ -47,7 +47,7 @@ async function getData(slug: string, operacion?: string, tipo?: string, dormitor
     (() => {
       let q = supabase
         .from("cartera_propiedades")
-        .select("id,titulo,descripcion,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,fotos")
+        .select("id,titulo,descripcion,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,fotos,destacada_web")
         .eq("perfil_id", cfg.perfil_id)
         .eq("publicada_web", true)
         .eq("estado", "activa")
@@ -65,7 +65,12 @@ async function getData(slug: string, operacion?: string, tipo?: string, dormitor
     })(),
   ]);
 
-  return { cfg: cfg as Config, perfil: perfil as Perfil, propiedades: (props as Propiedad[]) ?? [] };
+  const propiedades = (props as Propiedad[]) ?? [];
+  // Destacadas primero cuando no hay orden explícito de precio
+  if (!orden || orden === "recientes") {
+    propiedades.sort((a, b) => (b.destacada_web ? 1 : 0) - (a.destacada_web ? 1 : 0));
+  }
+  return { cfg: cfg as Config, perfil: perfil as Perfil, propiedades };
 }
 
 const TEMAS: Record<string, { bg: string; bgAlt: string; header: string; footer: string; accent: string; text: string; textMuted: string; card: string; cardBorder: string; fontH: string; }> = {
@@ -347,12 +352,17 @@ export default async function PropiedadesPage({
         ) : (
           <div className="props-grid">
             {propiedades.map(p => (
-              <a key={p.id} href={`/web/${cfg.slug}/propiedad/${p.id}`} className="prop-card">
+              <a key={p.id} href={`/web/${cfg.slug}/propiedad/${p.id}`} className="prop-card" style={p.destacada_web ? { borderColor: `${t.accent}60` } : {}}>
                 <div className="prop-img">
                   {p.fotos && p.fotos.length > 0
                     ? <img src={p.fotos[0]} alt={p.titulo} loading="lazy" />
                     : <div className="prop-img-placeholder">🏠</div>}
                   <div className="prop-op-badge">{p.operacion}</div>
+                  {p.destacada_web && (
+                    <div style={{ position: "absolute", top: 8, left: 8, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)", borderRadius: 4, padding: "2px 7px", fontSize: 9, fontWeight: 700, color: "#eab308", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: 3 }}>
+                      ⭐ DESTACADA
+                    </div>
+                  )}
                 </div>
                 <div className="prop-body">
                   <div className="prop-titulo">{p.titulo}</div>
