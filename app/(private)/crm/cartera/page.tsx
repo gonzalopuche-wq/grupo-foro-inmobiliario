@@ -919,6 +919,15 @@ export default function CarteraPage() {
     .filter(p => p.diasCI <= 30)
     .sort((a, b) => a.diasCI - b.diasCI);
 
+  const alertasExclusividad = propiedades
+    .filter(p => p.fecha_fin_exclusividad && p.estado === "activa")
+    .map(p => {
+      const dias = Math.ceil((new Date(p.fecha_fin_exclusividad!).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      return { ...p, diasExcl: dias };
+    })
+    .filter(p => p.diasExcl <= 30)
+    .sort((a, b) => a.diasExcl - b.diasExcl);
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <>
@@ -1153,6 +1162,30 @@ export default function CarteraPage() {
                   </span>
                   <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
                     {p.ci_fecha_vencimiento ? new Date(p.ci_fecha_vencimiento).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Alertas de Exclusividad próximas a vencer */}
+        {!loading && alertasExclusividad.length > 0 && (
+          <div style={{ margin: "10px 0 0", padding: "14px 18px", background: "rgba(168,85,247,0.05)", border: "1px solid rgba(168,85,247,0.2)", borderRadius: 6 }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#a855f7", marginBottom: 10 }}>
+              🔑 Exclusividades próximas a vencer
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {alertasExclusividad.map(p => (
+                <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {p.titulo || p.direccion || "Propiedad sin título"}
+                  </span>
+                  <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: p.diasExcl <= 0 ? "#ff4444" : p.diasExcl <= 7 ? "#ff8800" : "#a855f7", whiteSpace: "nowrap" }}>
+                    {p.diasExcl <= 0 ? `VENCIDA hace ${Math.abs(p.diasExcl)} días` : `Vence en ${p.diasExcl} días`}
+                  </span>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
+                    {p.fecha_fin_exclusividad ? new Date(p.fecha_fin_exclusividad).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""}
                   </span>
                 </div>
               ))}
