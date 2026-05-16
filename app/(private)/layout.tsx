@@ -78,14 +78,29 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const router = useRouter();
   const [perfil, setPerfil] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [tipoUsuario, setTipoUsuario] = useState<"admin" | "corredor" | "colaborador">("corredor");
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [suscripcionBlocked, setSuscripcionBlocked] = useState(false);
+  const [cbuDatos, setCbuDatos] = useState({ titular: "Gonzalo Leandro Puche", cvu: "0000003100046173873221", alias: "foroinmobiliario.gp", cuit: "20-25750876-6", banco: "Mercado Pago" });
+  const [precioUsd, setPrecioUsd] = useState(15);
+  const [dolarBlue, setDolarBlue] = useState<number | null>(null);
+  const [pagoFecha, setPagoFecha] = useState("");
+  const [pagoMonto, setPagoMonto] = useState("");
+  const [pagoComprobante, setPagoComprobante] = useState("");
+  const [pagoCbu, setPagoCbu] = useState("");
+  const [pagoEnviando, setPagoEnviando] = useState(false);
+  const [pagoEnviado, setPagoEnviado] = useState(false);
+  const [pagoError, setPagoError] = useState("");
+  const [copiadoBloq, setCopiadoBloq] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) { router.push("/login"); return; }
+
+      setUserId(auth.user.id);
 
       const { data: p } = await supabase
         .from("perfiles")
@@ -103,11 +118,75 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           const bloqueada = RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
           if (bloqueada) { router.replace("/dashboard"); return; }
         }
+
+        // Verificar suscripción bloqueada (solo para no-admin)
+        if (tipo !== "admin") {
+          const { data: sub } = await supabase
+            .from("suscripciones")
+            .select("estado")
+            .eq("perfil_id", auth.user.id)
+            .order("creado_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (sub?.estado && ["vencida", "suspendida", "bloqueado"].includes(sub.estado)) {
+            const [{ data: ind }, dolarRes] = await Promise.all([
+              supabase.from("indicadores").select("clave, valor"),
+              fetch("https://dolarapi.com/v1/dolares/blue").then(r => r.json()).catch(() => null),
+            ]);
+            if (ind) {
+              const get = (k: string) => ind.find((i: any) => i.clave === k)?.valor;
+              const precio = Number(get(p.tipo === "colaborador" ? "precio_colaborador_usd" : "precio_corredor_usd") ?? (p.tipo === "colaborador" ? 5 : 15));
+              setPrecioUsd(precio);
+              setCbuDatos({
+                titular: get("cbu_titular") ?? "Gonzalo Leandro Puche",
+                cvu: get("cbu_cvu") ?? "0000003100046173873221",
+                alias: get("cbu_alias") ?? "foroinmobiliario.gp",
+                cuit: get("cbu_cuit") ?? "20-25750876-6",
+                banco: get("cbu_banco") ?? "Mercado Pago",
+              });
+            }
+            if (dolarRes?.compra) setDolarBlue(Math.round((dolarRes.compra + dolarRes.venta) / 2));
+            setSuscripcionBlocked(true);
+          }
+        }
       }
       setLoading(false);
     };
     init();
   }, [pathname]);
+
+  const copiarBloq = (valor: string, key: string) => {
+    navigator.clipboard.writeText(valor);
+    setCopiadoBloq(key);
+    setTimeout(() => setCopiadoBloq(null), 2000);
+  };
+
+  const declararPago = async () => {
+    if (!pagoFecha) { setPagoError("Ingresá la fecha de la transferencia."); return; }
+    if (!pagoMonto) { setPagoError("Ingresá el monto transferido."); return; }
+    if (!pagoComprobante) { setPagoError("Ingresá el número de comprobante."); return; }
+    setPagoEnviando(true);
+    setPagoError("");
+    const montoNum = parseFloat(pagoMonto.replace(/\./g, "").replace(",", "."));
+    const periodo = new Date().toISOString().slice(0, 7);
+    const { error: err } = await supabase.from("suscripciones").insert({
+      perfil_id: userId,
+      tipo: perfil?.tipo ?? "corredor",
+      monto_usd: precioUsd,
+      monto_ars: dolarBlue ? Math.round(precioUsd * dolarBlue) : null,
+      monto_declarado_ars: isNaN(montoNum) ? null : montoNum,
+      dolar_ref: dolarBlue,
+      estado: "pendiente",
+      fecha_pago_declarado: pagoFecha,
+      comprobante: pagoComprobante,
+      cbu_origen: pagoCbu || null,
+      periodo,
+    });
+    setPagoEnviando(false);
+    if (err) { setPagoError("Error al registrar. Intentá de nuevo."); return; }
+    setPagoEnviado(true);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -128,6 +207,102 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
+
+  if (suscripcionBlocked) {
+    const montoArs = dolarBlue ? Math.round(precioUsd * dolarBlue) : null;
+    const inp: React.CSSProperties = { width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "10px 12px", color: "#fff", fontSize: 14, fontFamily: "'Inter',sans-serif", outline: "none", boxSizing: "border-box" };
+    const row = (label: string, valor: string, key: string): React.ReactNode => (
+      <div key={key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", minWidth: 80 }}>{label}</span>
+        <span style={{ fontSize: 13, color: "#fff", fontFamily: "'Inter',sans-serif", fontWeight: 500 }}>{valor}</span>
+        <button onClick={() => copiarBloq(valor, key)} style={{ background: copiadoBloq === key ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, color: copiadoBloq === key ? "#22c55e" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "3px 10px", cursor: "pointer", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>
+          {copiadoBloq === key ? "✓" : "Copiar"}
+        </button>
+      </div>
+    );
+    return (
+      <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px 16px", fontFamily: "'Inter',sans-serif" }}>
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');`}</style>
+        <div style={{ width: "100%", maxWidth: 480 }}>
+          {/* Logo */}
+          <div style={{ textAlign: "center", marginBottom: 28 }}>
+            <img src="/logo_gfi.png" alt="GFI" style={{ height: 44, objectFit: "contain" }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          </div>
+
+          {/* Alert */}
+          <div style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.25)", borderRadius: 8, padding: "16px 20px", marginBottom: 20, textAlign: "center" }}>
+            <div style={{ fontSize: 22, marginBottom: 8 }}>🔒</div>
+            <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 14, color: "#fff", letterSpacing: "0.04em", marginBottom: 6 }}>Acceso pausado por falta de pago</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.5 }}>
+              Tu suscripción está vencida. Realizá la transferencia y registrala abajo — el equipo GFI confirmará el acceso.
+            </div>
+          </div>
+
+          {/* Monto */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Cuota mensual</span>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", fontFamily: "'Montserrat',sans-serif" }}>USD {precioUsd}</div>
+              {montoArs && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>≈ $ {montoArs.toLocaleString("es-AR")} ARS</div>}
+            </div>
+          </div>
+
+          {/* CBU */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
+            <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>Datos de transferencia</div>
+            {row("Titular", cbuDatos.titular, "titular")}
+            {row("CVU / CBU", cbuDatos.cvu, "cvu")}
+            {row("Alias", cbuDatos.alias, "alias")}
+            {row("CUIT", cbuDatos.cuit, "cuit")}
+            {row("Banco", cbuDatos.banco, "banco")}
+          </div>
+
+          {/* Formulario */}
+          {!pagoEnviado ? (
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "18px 18px" }}>
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 14 }}>Registrar transferencia</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div>
+                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 4 }}>Fecha de transferencia *</label>
+                  <input type="date" value={pagoFecha} onChange={e => setPagoFecha(e.target.value)} style={inp} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 4 }}>Monto transferido (ARS) *</label>
+                  <input type="text" inputMode="numeric" placeholder="Ej: 150000" value={pagoMonto} onChange={e => setPagoMonto(e.target.value)} style={inp} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 4 }}>Número de comprobante *</label>
+                  <input type="text" placeholder="Ej: 20240516001234" value={pagoComprobante} onChange={e => setPagoComprobante(e.target.value)} style={inp} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 4 }}>CBU / alias de origen (opcional)</label>
+                  <input type="text" placeholder="Tu CBU o alias de homebanking" value={pagoCbu} onChange={e => setPagoCbu(e.target.value)} style={inp} />
+                </div>
+              </div>
+              {pagoError && <div style={{ marginTop: 10, fontSize: 12, color: "#ff6666", fontFamily: "'Inter',sans-serif" }}>{pagoError}</div>}
+              <button
+                onClick={declararPago}
+                disabled={pagoEnviando}
+                style={{ marginTop: 16, width: "100%", padding: "12px", background: pagoEnviando ? "rgba(200,0,0,0.4)" : "#cc0000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", cursor: pagoEnviando ? "not-allowed" : "pointer" }}
+              >
+                {pagoEnviando ? "Enviando..." : "Registrar pago"}
+              </button>
+            </div>
+          ) : (
+            <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "24px 20px", textAlign: "center" }}>
+              <div style={{ fontSize: 28, marginBottom: 10 }}>✅</div>
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 14, color: "#22c55e", marginBottom: 8 }}>Pago registrado</div>
+              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>El equipo GFI confirmará dentro de las 24hs hábiles. Recibirás acceso completo una vez aprobado.</div>
+            </div>
+          )}
+
+          <div style={{ textAlign: "center", marginTop: 20 }}>
+            <button onClick={handleLogout} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", fontSize: 12, cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
