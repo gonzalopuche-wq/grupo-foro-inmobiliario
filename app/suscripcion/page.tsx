@@ -165,12 +165,13 @@ export default function SuscripcionPage() {
   const handleDeclarar = async () => {
     if (!fechaPago) { setError("Ingresá la fecha de la transferencia."); return; }
     if (!montoDeclarado) { setError("Ingresá el monto transferido."); return; }
+    const montoNum = parseFloat(montoDeclarado.replace(/\./g, "").replace(",", "."));
+    if (isNaN(montoNum) || montoNum <= 0) { setError("Ingresá un monto válido."); return; }
     if (!comprobante) { setError("Ingresá el número de comprobante."); return; }
     setEnviando(true);
     setError("");
 
     const periodo = new Date().toISOString().slice(0, 7);
-    const montoNum = parseFloat(montoDeclarado.replace(/\./g, "").replace(",", "."));
 
     const { error: err } = await supabase.from("suscripciones").insert({
       perfil_id: perfil.id,

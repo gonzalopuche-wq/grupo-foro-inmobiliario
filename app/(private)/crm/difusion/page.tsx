@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
-export default function DifusionPage() {
+function DifusionInner() {
   const router = useRouter();
+  const params = useSearchParams();
+  const propId = params.get("prop");
+  const propTitulo = params.get("titulo");
+
   const [contactos, setContactos] = useState<any[]>([]);
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set());
   const [mensaje, setMensaje] = useState("");
@@ -27,10 +31,15 @@ export default function DifusionPage() {
         .eq("archivado", false)
         .order("nombre");
       setContactos(data ?? []);
+
+      if (propTitulo) {
+        setMensaje(`Hola {nombre}, te comparto una propiedad que puede interesarte: ${propTitulo}.\n\nComunicate conmigo para más información.`);
+      }
+
       setLoading(false);
     };
     init();
-  }, []);
+  }, [propTitulo]);
 
   const contactosFiltrados = contactos.filter(c => {
     const q = filtroBusqueda.toLowerCase();
@@ -64,7 +73,6 @@ export default function DifusionPage() {
     setEnviando(true);
     const contactosSelec = contactos.filter(c => seleccionados.has(c.id));
 
-    // Enviar emails a contactos que tienen dirección de email
     const conEmail = contactosSelec.filter(c => c.email);
     await Promise.allSettled(
       conEmail.map(c => {
@@ -74,19 +82,19 @@ export default function DifusionPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             to: c.email,
-            subject: "Mensaje de Grupo Foro Inmobiliario",
+            subject: propTitulo ? `Propiedad de tu interés: ${propTitulo}` : "Mensaje de Grupo Foro Inmobiliario",
             html: `<p style="font-family:Arial,sans-serif;font-size:15px;color:#222;white-space:pre-wrap">${cuerpo.replace(/\n/g, "<br>")}</p>`,
           }),
         });
       })
     );
 
-    // Registrar interacción en CRM para todos los contactos seleccionados
     const inserts = contactosSelec.map(c => ({
       perfil_id: userId,
       contacto_id: c.id,
       tipo: "email",
       descripcion: mensaje.replace("{nombre}", c.nombre ?? "").replace("{apellido}", c.apellido ?? ""),
+      ...(propId ? { nota: `Difusión propiedad: ${propTitulo ?? propId}` } : {}),
     }));
     await supabase.from("crm_interacciones").insert(inserts);
 
@@ -160,6 +168,11 @@ export default function DifusionPage() {
         .dif-right-body { padding: 20px; }
         .dif-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 8px; display: block; font-family: 'Montserrat',sans-serif; }
         .dif-vars-hint { font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; margin-bottom: 6px; }
+        .dif-prop-banner { display: flex; align-items: center; gap: 12px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; }
+        .dif-prop-banner-text { font-size: 12px; color: rgba(255,255,255,0.6); font-family: 'Inter',sans-serif; }
+        .dif-prop-banner-titulo { font-size: 13px; font-weight: 600; color: #fff; font-family: 'Montserrat',sans-serif; }
+        .dif-prop-back { font-size: 11px; color: rgba(59,130,246,0.8); text-decoration: none; font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .dif-prop-back:hover { color: #3b82f6; }
         @media (max-width: 768px) { .dif-cols { grid-template-columns: 1fr; } }
       `}</style>
 
@@ -169,6 +182,17 @@ export default function DifusionPage() {
           <div className="dif-titulo">Difusión con Reporte</div>
           <div className="dif-desc">Enviá un mensaje personalizado a múltiples contactos y registrá la interacción automáticamente.</div>
         </div>
+
+        {propId && propTitulo && (
+          <div className="dif-prop-banner">
+            <span style={{ fontSize: 20 }}>📢</span>
+            <div style={{ flex: 1 }}>
+              <div className="dif-prop-banner-text">Difundiendo propiedad</div>
+              <div className="dif-prop-banner-titulo">{propTitulo}</div>
+            </div>
+            <a href={`/crm/cartera`} className="dif-prop-back">← Volver a cartera</a>
+          </div>
+        )}
 
         <div className="dif-cols">
 
@@ -297,5 +321,13 @@ export default function DifusionPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function DifusionPage() {
+  return (
+    <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50vh", color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>Cargando...</div>}>
+      <DifusionInner />
+    </Suspense>
   );
 }
