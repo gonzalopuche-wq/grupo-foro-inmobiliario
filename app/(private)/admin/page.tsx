@@ -297,6 +297,13 @@ export default function AdminPage() {
   const [filtroRanking, setFiltroRanking] = useState<"todos"|"activa"|"pendiente"|"vencida">("todos");
   const [rankingBusqueda, setRankingBusqueda] = useState("");
 
+  // Referidos
+  interface ReferidoAdmin { id: string; referidor_id: string; referido_nombre: string; referido_email: string | null; referido_telefono: string | null; tipo: string; estado: string; recompensa_aplicada: boolean; nota_admin: string | null; created_at: string; referidor?: { nombre: string; apellido: string; matricula: string | null; } | null; }
+  const [referidos, setReferidos] = useState<ReferidoAdmin[]>([]);
+  const [loadingReferidos, setLoadingReferidos] = useState(true);
+  const [filtroReferidos, setFiltroReferidos] = useState<"todos"|"pendiente"|"activo">("pendiente");
+  const [procesandoReferido, setProcesandoReferido] = useState<string | null>(null);
+
   // WhatsApp
   interface WaGrupo { id: string; nombre: string; grupo_gfi: string; descripcion: string | null; wa_link: string | null; miembros: number; activo: boolean; mensajes_30d: number; procesados_30d: number; }
   interface WaMensaje { id: string; numero_from: string; nombre_from: string | null; perfil_id: string | null; contenido: string; grupo_gfi: string | null; procesado: boolean; mir_entry_id: string | null; mir_tabla: string | null; error_detalle: string | null; created_at: string; }
@@ -317,7 +324,7 @@ export default function AdminPage() {
       setAdminId(userData.user.id);
       cargarPerfiles(); cargarIndicadores(); cargarPagos(); cargarProveedores(); cargarCbu();
       cargarDocumentos("pendiente"); cargarNoticias("pendiente"); cargarColaboradores("pendiente"); cargarEventosPropuestos(); cargarStatsColab(); cargarBonifConfig();
-      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSocios(); cargarSoporte(); cargarRedProveedores(); cargarWa(); cargarRankingPago(); cargarLogsActividad(); cargarStatsEstrategicas();
+      cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSocios(); cargarSoporte(); cargarRedProveedores(); cargarWa(); cargarRankingPago(); cargarLogsActividad(); cargarStatsEstrategicas(); cargarReferidos();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
       const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").in("tipo", ["admin","master"]).limit(1).single();
@@ -1267,6 +1274,37 @@ A partir de esa fecha el costo mensual será de USD 15.
     setLoadingRanking(false);
   };
 
+  const cargarReferidos = async () => {
+    setLoadingReferidos(true);
+    const { data } = await supabase
+      .from("referidos")
+      .select("*, referidor:referidor_id(nombre, apellido, matricula)")
+      .order("created_at", { ascending: false });
+    setReferidos((data as any) ?? []);
+    setLoadingReferidos(false);
+  };
+
+  const activarReferido = async (ref: ReferidoAdmin) => {
+    setProcesandoReferido(ref.id);
+    const { error } = await supabase.from("referidos").update({ estado: "activo", recompensa_aplicada: true }).eq("id", ref.id);
+    if (error) { mostrarToast("Error al activar referido", "err"); }
+    else {
+      const mes = new Date().toISOString().slice(0, 7);
+      await supabase.from("bonificaciones_historial").upsert({ perfil_id: ref.referidor_id, accion: "referidos", mes, descuento_aplicado: 2 }, { onConflict: "perfil_id,accion,mes" });
+      mostrarToast("Referido activado y recompensa aplicada ✓");
+      cargarReferidos();
+    }
+    setProcesandoReferido(null);
+  };
+
+  const rechazarReferido = async (id: string) => {
+    setProcesandoReferido(id);
+    await supabase.from("referidos").update({ estado: "inactivo" }).eq("id", id);
+    mostrarToast("Referido marcado como inactivo");
+    setProcesandoReferido(null);
+    cargarReferidos();
+  };
+
   const guardarWaGrupo = async () => {
     const session = (await supabase.auth.getSession()).data.session;
     const payload: Record<string, unknown> = {
@@ -1800,6 +1838,62 @@ A partir de esa fecha el costo mensual será de USD 15.
                   })}
                 </tbody>
               </table>}
+            </div>
+          </div>
+
+          {/* ── REFERIDOS ── */}
+          <div>
+            <div className="adm-header">
+              <h1>Gestión de <span>referidos</span></h1>
+              <p>Activá referidos verificados para aplicar la recompensa en el abono del corredor que lo registró.</p>
+            </div>
+            <div className="adm-filtros">
+              {(["pendiente","activo","todos"] as const).map(f => (
+                <button key={f} className={`adm-filtro-btn${filtroReferidos === f ? " activo" : ""}`} onClick={() => setFiltroReferidos(f)}>
+                  {f === "pendiente" ? "Pendientes" : f === "activo" ? "Activos" : "Todos"}
+                  {f === "pendiente" && referidos.filter(r => r.estado === "pendiente").length > 0 && (
+                    <span className="adm-filtro-count">{referidos.filter(r => r.estado === "pendiente").length}</span>
+                  )}
+                </button>
+              ))}
+              <button style={{marginLeft:"auto",fontSize:11,padding:"4px 12px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"rgba(255,255,255,0.5)",cursor:"pointer"}} onClick={cargarReferidos}>↻ Actualizar</button>
+            </div>
+            <div className="adm-tabla-wrap">
+              {loadingReferidos ? <div className="adm-loading">Cargando...</div>
+               : (() => {
+                   const filtrados = filtroReferidos === "todos" ? referidos : referidos.filter(r => r.estado === filtroReferidos);
+                   return filtrados.length === 0
+                     ? <div className="adm-empty">No hay referidos en esta categoría.</div>
+                     : <table className="adm-tabla">
+                         <thead><tr><th>Referidor</th><th>Referido</th><th>Tipo</th><th>Contacto</th><th>Estado</th><th>Recompensa</th><th>Acciones</th></tr></thead>
+                         <tbody>
+                           {filtrados.map(r => (
+                             <tr key={r.id}>
+                               <td>
+                                 <div style={{fontSize:12,fontWeight:600,color:"#fff"}}>{r.referidor?.nombre} {r.referidor?.apellido}</div>
+                                 {r.referidor?.matricula && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>Mat. {r.referidor.matricula}</div>}
+                               </td>
+                               <td style={{fontSize:12,color:"rgba(255,255,255,0.7)"}}>{r.referido_nombre}</td>
+                               <td><span style={{fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:700,padding:"2px 8px",borderRadius:10,background:r.tipo==="corredor"?"rgba(59,130,246,0.15)":r.tipo==="cliente"?"rgba(34,197,94,0.15)":"rgba(245,158,11,0.15)",color:r.tipo==="corredor"?"#3b82f6":r.tipo==="cliente"?"#22c55e":"#f59e0b"}}>{r.tipo}</span></td>
+                               <td>
+                                 {r.referido_email && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>{r.referido_email}</div>}
+                                 {r.referido_telefono && <a href={`https://wa.me/${r.referido_telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"rgba(34,197,94,0.7)",textDecoration:"none"}}>💬 {r.referido_telefono}</a>}
+                               </td>
+                               <td><span style={{fontSize:11,fontWeight:600,color:r.estado==="activo"?"#22c55e":r.estado==="pendiente"?"#eab308":"#ff4444"}}>{r.estado}</span></td>
+                               <td>{r.recompensa_aplicada ? <span style={{fontSize:11,color:"#22c55e",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>✓ Aplicada</span> : <span style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>—</span>}</td>
+                               <td>
+                                 {procesandoReferido === r.id ? <span className="adm-spinner" /> : r.estado === "pendiente" ? (
+                                   <div className="adm-acciones">
+                                     <button className="adm-btn-aprobar" onClick={() => activarReferido(r)}>✓ Activar</button>
+                                     <button className="adm-btn-rechazar" onClick={() => rechazarReferido(r.id)}>✗ Rechazar</button>
+                                   </div>
+                                 ) : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{r.estado}</span>}
+                               </td>
+                             </tr>
+                           ))}
+                         </tbody>
+                       </table>;
+                 })()}
             </div>
           </div>
 
