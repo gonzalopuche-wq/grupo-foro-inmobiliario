@@ -1,9 +1,12 @@
 // IA Decoración de fotos — amobla habitaciones vacías o cambia el estilo
 // Requiere: REPLICATE_API_TOKEN en variables de entorno de Vercel
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
+
+const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 const ESTILOS: Record<string, string> = {
   moderno: "modern minimalist interior design, clean lines, neutral colors, contemporary furniture",
@@ -16,6 +19,11 @@ const ESTILOS: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
+    const authToken = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!authToken) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    const { data: { user } } = await sb.auth.getUser(authToken);
+    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
     const { foto_url, estilo = "moderno" } = await req.json();
 
     if (!foto_url) return NextResponse.json({ error: "foto_url requerida" }, { status: 400 });

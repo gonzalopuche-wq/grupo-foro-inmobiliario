@@ -50,9 +50,10 @@ export default function TasadorIAPage() {
     setError("");
     setResultado(null);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const resp = await fetch("/api/tasador-ia", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", Authorization: `Bearer ${session?.access_token}` },
         body: JSON.stringify(form),
       });
       const data = await resp.json();
