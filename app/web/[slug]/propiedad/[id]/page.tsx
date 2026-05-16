@@ -352,7 +352,14 @@ export default async function PropiedadDetailPage({
             />
           </div>
 
-          <Link href={`/web/${slug}`} style={{ display: "block", textAlign: "center", fontSize: 12, color: t.textMuted, padding: "8px 0" }}>
+          <ShareButton
+            titulo={prop.titulo}
+            accent={t.accent}
+            cardBorder={t.cardBorder}
+            textMuted={t.textMuted}
+          />
+
+          <Link href={`/web/${slug}/propiedades`} style={{ display: "block", textAlign: "center", fontSize: 12, color: t.textMuted, padding: "8px 0" }}>
             ← Ver todas las propiedades
           </Link>
         </aside>
@@ -385,6 +392,7 @@ export default async function PropiedadDetailPage({
 
 // Gallery con navegación (client component incrustado)
 import { GallerySection } from "./GallerySection";
+import { ShareButton } from "./ShareButton";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; id: string }> }) {
   const { slug, id } = await params;
