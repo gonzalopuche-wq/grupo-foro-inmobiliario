@@ -314,7 +314,7 @@ export default function DashboardPage() {
     { icon: "💬", label: "Foro", href: "/foro", primary: false },
     { icon: "📋", label: "Padrón", href: "/padron-gfi", primary: false },
     { icon: "📚", label: "Biblioteca", href: "/biblioteca", primary: false },
-    { icon: "💰", label: "Suscripción", href: "/perfil", primary: false },
+    { icon: "💰", label: "Suscripción", href: "/suscripcion", primary: false },
   ];
 
   const ACCESOS_MI = [
