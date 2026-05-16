@@ -32,7 +32,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function getData(slug: string, operacion?: string) {
+async function getData(slug: string, operacion?: string, tipo?: string) {
   const { data: cfg } = await supabase
     .from("web_corredor_config")
     .select("*")
@@ -53,6 +53,7 @@ async function getData(slug: string, operacion?: string) {
         .eq("estado", "activa")
         .order("created_at", { ascending: false });
       if (operacion && operacion !== "todas") q = q.eq("operacion", operacion);
+      if (tipo) q = q.eq("tipo", tipo);
       return q;
     })(),
   ]);
@@ -85,11 +86,11 @@ export default async function PropiedadesPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ operacion?: string }>;
+  searchParams: Promise<{ operacion?: string; tipo?: string }>;
 }) {
   const { slug } = await params;
-  const { operacion } = await searchParams;
-  const data = await getData(slug, operacion);
+  const { operacion, tipo } = await searchParams;
+  const data = await getData(slug, operacion, tipo);
   if (!data) return notFound();
 
   const { cfg, perfil, propiedades } = data;
@@ -99,10 +100,12 @@ export default async function PropiedadesPage({
   const titulo = cfg.titulo_sitio || nombre;
   const wa = cfg.whatsapp || perfil.telefono;
   const filtroActivo = operacion || "todas";
+  const tipoActivo = tipo || "";
 
   const ventas = propiedades.filter(p => p.operacion === "Venta").length;
   const alquileres = propiedades.filter(p => p.operacion === "Alquiler").length;
   const temporales = propiedades.filter(p => p.operacion === "Alquiler temporal").length;
+  const tiposDisponibles = [...new Set(propiedades.map(p => p.tipo).filter(Boolean))].sort();
 
   return (
     <>
@@ -214,6 +217,18 @@ export default async function PropiedadesPage({
         )}
         <span className="results-count">{propiedades.length} resultado{propiedades.length !== 1 ? "s" : ""}</span>
       </div>
+      {tiposDisponibles.length > 1 && (
+        <div className="filters" style={{ borderTop: "none", paddingTop: 10, paddingBottom: 12 }}>
+          <span className="filters-label">Tipo:</span>
+          <a href={`/web/${cfg.slug}/propiedades${operacion ? `?operacion=${encodeURIComponent(operacion)}` : ""}`}
+            className={`filter-btn${!tipoActivo ? " active" : ""}`}>Todos</a>
+          {tiposDisponibles.map(tp => (
+            <a key={tp}
+              href={`/web/${cfg.slug}/propiedades?${operacion ? `operacion=${encodeURIComponent(operacion)}&` : ""}tipo=${encodeURIComponent(tp)}`}
+              className={`filter-btn${tipoActivo === tp ? " active" : ""}`}>{tp}</a>
+          ))}
+        </div>
+      )}
 
       {/* GRID */}
       <div className="content">

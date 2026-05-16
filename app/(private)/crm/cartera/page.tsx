@@ -781,6 +781,21 @@ export default function CarteraPage() {
     if (userId) cargar(userId);
   };
 
+  const togglePublicadaWeb = async (p: Propiedad) => {
+    const nuevoValor = !p.publicada_web;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ datos: { publicada_web: nuevoValor, updated_at: new Date().toISOString() }, editandoId: p.id }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) alert("Error: " + (json.error ?? "Error desconocido"));
+    } catch (e: any) { alert("Error de red: " + e.message); }
+    if (userId) cargar(userId);
+  };
+
   const eliminar = async (id: string) => {
     if (!confirm("¿Eliminar esta propiedad? También se eliminará del MIR.")) return;
     try {
@@ -1200,6 +1215,7 @@ export default function CarteraPage() {
                         <span className="cart-card-fecha">{formatFecha(p.updated_at)}</span>
                         {p.estado === "activa" && <span className="cart-mir-badge">🔄 En MIR</span>}
                         {p.compartir_en_red && <span className="cart-mir-badge-red">🌐 Red GFI</span>}
+                        {p.publicada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#60a5fa",letterSpacing:"0.06em"}}>🌐 WEB</span>}
                       </div>
                       <div style={{display:"flex",gap:4}}>
                         {sync?.tokko_id && <span className="sync-badge sync-badge-tokko">Tokko ✓</span>}
@@ -1216,6 +1232,16 @@ export default function CarteraPage() {
                     <select className="cart-estado-select" value={p.estado} onChange={e => cambiarEstado(p.id, e.target.value)}>
                       {ESTADOS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </select>
+                    <button
+                      className="cart-acc-btn"
+                      onClick={() => togglePublicadaWeb(p)}
+                      title={p.publicada_web ? "Quitar del sitio web" : "Publicar en el sitio web"}
+                      style={p.publicada_web
+                        ? {background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",color:"#60a5fa"}
+                        : {background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.35)"}}
+                    >
+                      {p.publicada_web ? "🌐 En Web" : "🌐 Web"}
+                    </button>
                     <button
                       className={`cart-acc-btn cart-acc-red${p.compartir_en_red ? " on" : ""}`}
                       onClick={() => compartirEnRed(p.id)}
