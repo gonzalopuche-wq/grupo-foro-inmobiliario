@@ -276,6 +276,10 @@ export default function CarteraPage() {
   const [importResult, setImportResult] = useState<{ importadas: number; saltadas?: number; errores?: string[] } | null>(null);
   const [csvTexto, setCsvTexto] = useState("");
   const [xlsxNombre, setXlsxNombre] = useState("");
+  const [csvPreview, setCsvPreview] = useState<any[] | null>(null);
+  const [csvPreviewSel, setCsvPreviewSel] = useState<boolean[]>([]);
+  const [cargandoPreview, setCargandoPreview] = useState(false);
+  const [tokkoProgreso, setTokkoProgreso] = useState<string>("");
 
   // Contactos CRM (para vincular propietario)
   const [contactosCRM, setContactosCRM] = useState<{id:string;nombre:string|null;apellido:string|null}[]>([]);
@@ -461,6 +465,28 @@ export default function CarteraPage() {
   };
 
   // ── Importar desde CSV ────────────────────────────────────────────────────
+  const previewCSV = async () => {
+    if (!userId || !csvTexto.trim()) return;
+    setCargandoPreview(true);
+    setImportError("");
+    setCsvPreview(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/import-csv", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ csv: csvTexto, perfil_id: userId, preview: true }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || "Error al analizar CSV");
+      setCsvPreview(json.preview);
+      setCsvPreviewSel(new Array(json.preview.length).fill(true));
+    } catch (e: any) {
+      setImportError(e.message || "Error desconocido");
+    }
+    setCargandoPreview(false);
+  };
+
   const importarDesdeCSV = async () => {
     if (!userId || !csvTexto.trim()) return;
     setImportando(true);
@@ -468,14 +494,18 @@ export default function CarteraPage() {
     setImportResult(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      const selectedIdxs = csvPreview
+        ? csvPreview.filter((_, i) => csvPreviewSel[i]).map(r => r.idx)
+        : undefined;
       const res = await fetch("/api/cartera/import-csv", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ csv: csvTexto, perfil_id: userId }),
+        body: JSON.stringify({ csv: csvTexto, perfil_id: userId, selectedRows: selectedIdxs }),
       });
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error(json.error || "Error al importar CSV");
       setImportResult({ importadas: json.importadas, errores: json.errores });
+      setCsvPreview(null);
       if (json.importadas > 0) await cargar(userId);
     } catch (e: any) {
       setImportError(e.message || "Error desconocido");
@@ -491,6 +521,7 @@ export default function CarteraPage() {
     setCsvTexto("");
     setImportError("");
     setImportResult(null);
+    setCsvPreview(null);
     setXlsxNombre(file.name);
     try {
       if (file.name.toLowerCase().endsWith(".csv")) {
@@ -1937,10 +1968,62 @@ export default function CarteraPage() {
                       <div style={{ marginTop: 6, fontSize: 11, color: "#f87171" }}>{importResult.errores.slice(0, 5).join(" · ")}</div>
                     )}
                   </div>
+                ) : csvPreview ? (
+                  <>
+                    {/* Staging table */}
+                    <div style={{ marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
+                        {csvPreviewSel.filter(Boolean).length} de {csvPreview.length} seleccionadas
+                      </div>
+                      <button onClick={() => setCsvPreviewSel(s => s.map(() => !s.every(Boolean)))} style={{ background: "none", border: "none", color: "#cc0000", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                        {csvPreviewSel.every(Boolean) ? "Deseleccionar todo" : "Seleccionar todo"}
+                      </button>
+                    </div>
+                    <div style={{ maxHeight: 240, overflowY: "auto", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, marginBottom: 12 }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, fontFamily: "Inter,sans-serif" }}>
+                        <thead>
+                          <tr style={{ background: "rgba(255,255,255,0.04)", position: "sticky", top: 0 }}>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600, width: 28 }}></th>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Título</th>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Tipo</th>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Op.</th>
+                            <th style={{ padding: "6px 8px", textAlign: "right", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Precio</th>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Ciudad</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {csvPreview.map((row, i) => (
+                            <tr key={i} onClick={() => setCsvPreviewSel(s => { const n=[...s]; n[i]=!n[i]; return n; })}
+                              style={{ borderTop: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", background: csvPreviewSel[i] ? "transparent" : "rgba(255,255,255,0.01)", opacity: csvPreviewSel[i] ? 1 : 0.4 }}>
+                              <td style={{ padding: "5px 8px" }}>
+                                <div style={{ width: 14, height: 14, borderRadius: 3, border: `1px solid ${csvPreviewSel[i] ? "#cc0000" : "rgba(255,255,255,0.2)"}`, background: csvPreviewSel[i] ? "#cc0000" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  {csvPreviewSel[i] && <span style={{ fontSize: 8, color: "#fff", fontWeight: 900 }}>✓</span>}
+                                </div>
+                              </td>
+                              <td style={{ padding: "5px 8px", color: "#fff", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.titulo}</td>
+                              <td style={{ padding: "5px 8px", color: "rgba(255,255,255,0.5)" }}>{row.tipo}</td>
+                              <td style={{ padding: "5px 8px", color: "rgba(255,255,255,0.5)" }}>{row.operacion?.slice(0, 6)}</td>
+                              <td style={{ padding: "5px 8px", color: "rgba(255,255,255,0.5)", textAlign: "right", whiteSpace: "nowrap" }}>{row.precio ? `${row.moneda} ${Number(row.precio).toLocaleString("es-AR")}` : "—"}</td>
+                              <td style={{ padding: "5px 8px", color: "rgba(255,255,255,0.5)" }}>{row.ciudad}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={() => { setCsvPreview(null); setCsvPreviewSel([]); }} style={{ padding: "10px 16px", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                        ← Volver
+                      </button>
+                      <button onClick={importarDesdeCSV} disabled={importando || !csvPreviewSel.some(Boolean)}
+                        style={{ flex: 1, padding: "10px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: importando || !csvPreviewSel.some(Boolean) ? 0.5 : 1 }}>
+                        {importando ? "Importando…" : `Importar ${csvPreviewSel.filter(Boolean).length} propiedad${csvPreviewSel.filter(Boolean).length !== 1 ? "es" : ""}`}
+                      </button>
+                    </div>
+                  </>
                 ) : (
-                  <button onClick={importarDesdeCSV} disabled={importando || !csvTexto.trim()}
-                    style={{ width: "100%", padding: "11px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: importando || !csvTexto.trim() ? 0.5 : 1 }}>
-                    {importando ? "Importando…" : xlsxNombre ? `Importar "${xlsxNombre}"` : "Importar desde CSV"}
+                  <button onClick={previewCSV} disabled={cargandoPreview || !csvTexto.trim()}
+                    style={{ width: "100%", padding: "11px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: cargandoPreview || !csvTexto.trim() ? 0.5 : 1 }}>
+                    {cargandoPreview ? "Analizando…" : xlsxNombre ? `Vista previa de "${xlsxNombre}"` : "Vista previa del CSV"}
                   </button>
                 )}
               </>

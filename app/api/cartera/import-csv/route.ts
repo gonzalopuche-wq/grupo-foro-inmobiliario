@@ -255,7 +255,7 @@ function rowToCartera(row: Record<string, string>, perfilId: string): any {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { csv, perfil_id } = body;
+    const { csv, perfil_id, preview, selectedRows } = body;
     if (!csv || !perfil_id) {
       return NextResponse.json({ error: "csv y perfil_id requeridos" }, { status: 400 });
     }
@@ -265,13 +265,40 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "El archivo no tiene filas válidas. Verificá que las columnas tengan nombres reconocibles." }, { status: 400 });
     }
 
+    // Preview mode: return parsed rows without saving
+    if (preview) {
+      const previewRows = rows.map((row, i) => {
+        const vals = Object.values(row).filter(v => v && v !== "0");
+        if (vals.length < 2) return null;
+        const d = rowToCartera(row, perfil_id);
+        return {
+          idx: i,
+          titulo: d.titulo,
+          tipo: d.tipo,
+          operacion: d.operacion,
+          precio: d.precio,
+          moneda: d.moneda,
+          ciudad: d.ciudad,
+          zona: d.zona,
+          dormitorios: d.dormitorios,
+          superficie_cubierta: d.superficie_cubierta,
+        };
+      }).filter(Boolean);
+      return NextResponse.json({ ok: true, preview: previewRows, total: previewRows.length });
+    }
+
+    // Normal import: save rows (optionally filtered by selectedRows index array)
+    const toImport = selectedRows
+      ? rows.filter((_, i) => (selectedRows as number[]).includes(i))
+      : rows;
+
     let importadas = 0;
     const errores: string[] = [];
 
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
+    for (let i = 0; i < toImport.length; i++) {
+      const row = toImport[i];
       const vals = Object.values(row).filter(v => v && v !== "0");
-      if (vals.length < 2) continue; // skip empty rows
+      if (vals.length < 2) continue;
       try {
         const data = rowToCartera(row, perfil_id);
         const { error } = await sb.from("cartera_propiedades").insert(data);
@@ -282,7 +309,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ ok: true, total: rows.length, importadas, errores: errores.slice(0, 20) });
+    return NextResponse.json({ ok: true, total: toImport.length, importadas, errores: errores.slice(0, 20) });
   } catch (e: any) {
     console.error("Error en import-csv:", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
