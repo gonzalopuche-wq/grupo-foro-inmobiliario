@@ -22,6 +22,24 @@ export async function POST(req: NextRequest) {
     }
 
     await sb.rpc("incrementar_vistas", { prop_id: propiedad_id });
+
+    // Check for view milestones and notify the corredor
+    const MILESTONES = [10, 50, 100, 500];
+    const { data: prop } = await sb
+      .from("cartera_propiedades")
+      .select("vistas, titulo, perfil_id")
+      .eq("id", propiedad_id)
+      .single();
+    if (prop && MILESTONES.includes(prop.vistas)) {
+      sb.from("notificaciones").insert({
+        user_id: prop.perfil_id,
+        titulo: `🎯 ${prop.vistas} vistas en tu propiedad`,
+        mensaje: `"${prop.titulo ?? "Tu propiedad"}" alcanzó ${prop.vistas} visitas en tu sitio web.`,
+        tipo: "cartera",
+        url: "/crm/estadisticas",
+      }).then(() => {});
+    }
+
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ ok: false });
