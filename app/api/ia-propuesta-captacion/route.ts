@@ -29,10 +29,11 @@ export async function POST(req: NextRequest) {
   if (zona) {
     const { data: comps } = await sb
       .from("comparables")
-      .select("tipo_operacion, precio_venta, moneda, sup_cubierta, barrio, fecha_comparable")
+      .select("tipo_inmueble, precio_venta, sup_cubierta, barrio, anio, mes")
       .ilike("barrio", `%${zona}%`)
       .not("precio_venta", "is", null)
-      .order("fecha_comparable", { ascending: false })
+      .order("anio", { ascending: false })
+      .order("mes", { ascending: false })
       .limit(10);
 
     if (comps && comps.length > 0) {
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
       comparablesTexto = `Zona: ${zona}
 Comparables recientes (últimas ${comps.length} operaciones):
 ${comps.map(c =>
-  `- ${c.tipo_operacion ?? "Venta"}: ${c.moneda ?? "USD"} ${c.precio_venta?.toLocaleString("es-AR") ?? "—"}${c.sup_cubierta ? ` · ${c.sup_cubierta} m²` : ""}`
+  `- ${c.tipo_inmueble ?? "Inmueble"}: USD ${c.precio_venta?.toLocaleString("es-AR") ?? "—"}${c.sup_cubierta ? ` · ${c.sup_cubierta} m²` : ""}`
 ).join("\n")}
 ${promedioM2 > 0 ? `Precio promedio/m²: USD ${Math.round(promedioM2).toLocaleString("es-AR")}` : ""}`;
     }

@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
   if (exportar === "negocios") {
     const { data, error } = await sb
       .from("crm_negocios")
-      .select("titulo,etapa,tipo,monto,moneda,fecha_cierre_estimada,honorario_estimado,honorario_cobrado,notas,created_at")
+      .select("titulo,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,fecha_cierre,notas,created_at")
       .eq("perfil_id", user.id)
       .order("created_at", { ascending: false });
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
         telefono:  c.telefono?.trim() || null,
         notas:     c.notas?.trim() || null,
         estado:    "prospecto",
-        fuente:    fuente || "csv_import",
+        origen:    fuente || "csv_import",
       });
       if (error) err++; else ok++;
     }

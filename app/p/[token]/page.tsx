@@ -29,7 +29,7 @@ async function getData(token: string) {
   if (propIds.length > 0) {
     const { data: ps } = await sb
       .from("cartera_propiedades")
-      .select("id, titulo, tipo_operacion, tipo_propiedad, precio, moneda, superficie_total, superficie_cubierta, dormitorios, banos, descripcion, fotos, direccion, barrio, localidad, expensas, garage")
+      .select("id, titulo, operacion, tipo, precio, moneda, superficie_total, superficie_cubierta, dormitorios, banos, descripcion, fotos, direccion, zona, ciudad, expensas, con_cochera")
       .in("id", propIds);
 
     // Mantener el orden de selección
@@ -114,8 +114,8 @@ export default async function PresentacionPublicaPage({ params }: { params: Prom
                   <h2 className="font-bold text-gray-900 mb-1">{p.titulo}</h2>
 
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full capitalize">{p.tipo_operacion}</span>
-                    <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full capitalize">{p.tipo_propiedad}</span>
+                    <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full capitalize">{p.operacion}</span>
+                    <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full capitalize">{p.tipo}</span>
                   </div>
 
                   {p.precio && (
@@ -130,12 +130,12 @@ export default async function PresentacionPublicaPage({ params }: { params: Prom
                     {p.superficie_total && <span>📐 {p.superficie_total} m² tot.</span>}
                     {p.superficie_cubierta && <span>📐 {p.superficie_cubierta} m² cub.</span>}
                     {p.expensas && <span>💰 Expensas ${p.expensas.toLocaleString("es-AR")}</span>}
-                    {p.garage && <span>🚗 Cochera</span>}
+                    {p.con_cochera && <span>🚗 Cochera</span>}
                   </div>
 
-                  {(p.barrio || p.localidad || p.direccion) && (
+                  {(p.zona || p.ciudad || p.direccion) && (
                     <p className="text-xs text-gray-500">
-                      📍 {[p.direccion, p.barrio, p.localidad].filter(Boolean).join(", ")}
+                      📍 {[p.direccion, p.zona, p.ciudad].filter(Boolean).join(", ")}
                     </p>
                   )}
 

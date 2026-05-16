@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     if (props.length > 0) {
       const { data: ps } = await sb
         .from("cartera_propiedades")
-        .select("id, titulo, tipo_operacion, tipo_propiedad, precio, moneda, superficie_total, superficie_cubierta, dormitorios, banos, descripcion, fotos, direccion, barrio, localidad, expensas, garage, amenities")
+        .select("id, titulo, operacion, tipo, precio, moneda, superficie_total, superficie_cubierta, dormitorios, banos, descripcion, fotos, direccion, zona, ciudad, expensas, con_cochera, amenities")
         .in("id", props);
       propiedades = ps ?? [];
     }
