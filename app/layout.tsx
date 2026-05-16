@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "GFI®" },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.ico?v=3", sizes: "any" },
       { url: "/favicon-32.png?v=3", sizes: "32x32", type: "image/png" },
       { url: "/icon-192.png?v=3", sizes: "192x192", type: "image/png" },
       { url: "/icon-512.png?v=3", sizes: "512x512", type: "image/png" },
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     apple: [
       { url: "/icon-192.png?v=3", sizes: "192x192", type: "image/png" },
     ],
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon.ico?v=3",
   },
 };
 
@@ -38,9 +38,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="GFI" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png?v=3" />
-        <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=3" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=3" />
       </head>
       <body suppressHydrationWarning={true}>
         {children}

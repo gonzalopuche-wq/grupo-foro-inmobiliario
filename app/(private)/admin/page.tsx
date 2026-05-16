@@ -576,10 +576,12 @@ export default function AdminPage() {
 
   const guardarRedes = async () => {
     setGuardandoRedes(true);
-    const { data: adminProf } = await supabase.from("perfiles").select("configuracion, id").in("tipo", ["admin","master"]).limit(1).single();
-    if (adminProf) await supabase.from("perfiles").update({ configuracion: { ...(adminProf.configuracion ?? {}), redes_sociales: redesConfig } }).eq("id", adminProf.id);
+    const { data: adminProf, error: profErr } = await supabase.from("perfiles").select("configuracion, id").in("tipo", ["admin","master"]).limit(1).single();
+    if (profErr || !adminProf) { setGuardandoRedes(false); mostrarToast("Error: no se encontró el perfil admin", "err"); return; }
+    const { error: updErr } = await supabase.from("perfiles").update({ configuracion: { ...(adminProf.configuracion ?? {}), redes_sociales: redesConfig } }).eq("id", adminProf.id);
     setGuardandoRedes(false);
-    mostrarToast("Configuración guardada");
+    if (updErr) mostrarToast(`Error al guardar: ${updErr.message}`, "err");
+    else mostrarToast("Configuración de redes guardada ✓");
   };
 
   const mostrarToast = (msg: string, tipo: "ok"|"err" = "ok") => {
