@@ -3,6 +3,15 @@
 -- Idempotente: seguro correr aunque algunas ya estén aplicadas.
 -- ============================================================
 
+-- Función helper de admin (idempotente con CREATE OR REPLACE)
+CREATE OR REPLACE FUNCTION es_admin_gfi() RETURNS boolean
+  LANGUAGE sql SECURITY DEFINER STABLE AS
+$$
+  SELECT EXISTS (
+    SELECT 1 FROM perfiles WHERE id = auth.uid() AND tipo IN ('admin', 'master')
+  );
+$$;
+
 
 -- ────────────────────────────────────────────────────────────
 -- 062: Tablas core CRM
