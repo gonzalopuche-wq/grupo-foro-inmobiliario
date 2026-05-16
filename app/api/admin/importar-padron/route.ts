@@ -60,7 +60,19 @@ function inferirColumnasDesdeData(filas: any[][], filaInicio: number) {
   };
 }
 
+async function authorizado(req: NextRequest): Promise<boolean> {
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return false;
+  const { data } = await sb.auth.getUser(token);
+  if (!data.user) return false;
+  const { data: p } = await sb.from("perfiles").select("tipo").eq("id", data.user.id).single();
+  return p?.tipo === "admin";
+}
+
 export async function POST(req: NextRequest) {
+  if (!(await authorizado(req))) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
   try {
     const formData = await req.formData();
     const archivo = formData.get("archivo") as File | null;

@@ -704,7 +704,8 @@ export default function AdminPage() {
     try {
       const fd = new FormData();
       fd.append("archivo", archivo);
-      const res = await fetch("/api/admin/importar-padron", { method: "POST", body: fd });
+      const { data: { session: sess } } = await supabase.auth.getSession();
+      const res = await fetch("/api/admin/importar-padron", { method: "POST", headers: { Authorization: `Bearer ${sess?.access_token}` }, body: fd });
       const json = await res.json();
       setImportPadronRes(json);
       if (json.ok) mostrarToast(`✓ ${json.insertados ?? 0} nuevos · ${json.actualizados ?? 0} actualizados`);
