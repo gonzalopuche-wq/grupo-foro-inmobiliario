@@ -32,7 +32,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function getData(slug: string, operacion?: string, tipo?: string) {
+async function getData(slug: string, operacion?: string, tipo?: string, dormitorios?: string, busqueda?: string) {
   const { data: cfg } = await supabase
     .from("web_corredor_config")
     .select("*")
@@ -54,6 +54,8 @@ async function getData(slug: string, operacion?: string, tipo?: string) {
         .order("created_at", { ascending: false });
       if (operacion && operacion !== "todas") q = q.eq("operacion", operacion);
       if (tipo) q = q.eq("tipo", tipo);
+      if (dormitorios) q = q.gte("dormitorios", parseInt(dormitorios));
+      if (busqueda) q = q.or(`titulo.ilike.%${busqueda}%,descripcion.ilike.%${busqueda}%,zona.ilike.%${busqueda}%,ciudad.ilike.%${busqueda}%`);
       return q;
     })(),
   ]);
@@ -86,11 +88,11 @@ export default async function PropiedadesPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ operacion?: string; tipo?: string }>;
+  searchParams: Promise<{ operacion?: string; tipo?: string; dormitorios?: string; q?: string }>;
 }) {
   const { slug } = await params;
-  const { operacion, tipo } = await searchParams;
-  const data = await getData(slug, operacion, tipo);
+  const { operacion, tipo, dormitorios, q } = await searchParams;
+  const data = await getData(slug, operacion, tipo, dormitorios, q || undefined);
   if (!data) return notFound();
 
   const { cfg, perfil, propiedades } = data;
@@ -101,11 +103,27 @@ export default async function PropiedadesPage({
   const wa = cfg.whatsapp || perfil.telefono;
   const filtroActivo = operacion || "todas";
   const tipoActivo = tipo || "";
+  const dormitoriosActivo = dormitorios || "";
+  const busquedaActiva = q || "";
+
+  // Build base query string preserving current filters (excluding the one being changed)
+  const qp = (overrides: Record<string, string | undefined>) => {
+    const params: Record<string, string> = {};
+    if (operacion && operacion !== "todas") params.operacion = operacion;
+    if (tipo) params.tipo = tipo;
+    if (dormitorios) params.dormitorios = dormitorios;
+    if (q) params.q = q;
+    Object.assign(params, overrides);
+    Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
+    const qs = new URLSearchParams(params).toString();
+    return qs ? `?${qs}` : "";
+  };
 
   const ventas = propiedades.filter(p => p.operacion === "Venta").length;
   const alquileres = propiedades.filter(p => p.operacion === "Alquiler").length;
   const temporales = propiedades.filter(p => p.operacion === "Alquiler temporal").length;
   const tiposDisponibles = [...new Set(propiedades.map(p => p.tipo).filter(Boolean))].sort();
+  const tieneDormitorios = propiedades.some(p => p.dormitorios != null);
 
   return (
     <>
@@ -128,6 +146,11 @@ export default async function PropiedadesPage({
         .page-breadcrumb a { color: ${t.accent}; }
         .page-title { font-family: ${t.fontH}; font-size: clamp(22px,3vw,36px); font-weight: 800; color: ${t.text}; margin-bottom: 6px; }
         .page-subtitle { font-size: 14px; color: ${t.textMuted}; }
+        .search-bar { padding: 16px 5%; background: ${t.bgAlt}; border-bottom: 1px solid ${t.cardBorder}; display: flex; gap: 8px; }
+        .search-input { flex: 1; padding: 10px 14px; background: ${t.bg}; border: 1px solid ${t.cardBorder}; border-radius: 8px; color: ${t.text}; font-size: 13px; font-family: Inter,sans-serif; outline: none; }
+        .search-input::placeholder { color: ${t.textMuted}; }
+        .search-input:focus { border-color: ${t.accent}; }
+        .search-btn { padding: 10px 18px; background: ${t.accent}; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; font-family: Montserrat,sans-serif; cursor: pointer; }
         .filters { display: flex; gap: 8px; padding: 20px 5%; background: ${t.bg}; border-bottom: 1px solid ${t.cardBorder}; flex-wrap: wrap; align-items: center; }
         .filters-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: ${t.textMuted}; font-family: 'Montserrat',sans-serif; margin-right: 4px; }
         .filter-btn { padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; font-family: 'Montserrat',sans-serif; border: 1px solid ${t.cardBorder}; background: transparent; color: ${t.textMuted}; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
@@ -205,20 +228,42 @@ export default async function PropiedadesPage({
         </p>
       </div>
 
+      {/* SEARCH */}
+      <form method="GET" action={`/web/${cfg.slug}/propiedades`} className="search-bar">
+        {operacion && operacion !== "todas" && <input type="hidden" name="operacion" value={operacion} />}
+        {tipo && <input type="hidden" name="tipo" value={tipo} />}
+        {dormitorios && <input type="hidden" name="dormitorios" value={dormitorios} />}
+        <input
+          type="text"
+          name="q"
+          className="search-input"
+          placeholder="Buscar por título, zona, ciudad…"
+          defaultValue={busquedaActiva}
+          autoComplete="off"
+        />
+        <button type="submit" className="search-btn">Buscar</button>
+        {busquedaActiva && (
+          <a href={`/web/${cfg.slug}/propiedades${qp({ q: undefined })}`}
+            style={{ padding: "10px 12px", background: "transparent", border: `1px solid ${t.cardBorder}`, borderRadius: 8, color: t.textMuted, fontSize: 13, display: "flex", alignItems: "center" }}>
+            ✕
+          </a>
+        )}
+      </form>
+
       {/* FILTERS */}
       <div className="filters">
         <span className="filters-label">Filtrar:</span>
-        <a href={`/web/${cfg.slug}/propiedades`} className={`filter-btn${filtroActivo === "todas" ? " active" : ""}`}>
+        <a href={`/web/${cfg.slug}/propiedades${qp({ operacion: undefined })}`} className={`filter-btn${filtroActivo === "todas" ? " active" : ""}`}>
           Todas
         </a>
-        <a href={`/web/${cfg.slug}/propiedades?operacion=Venta`} className={`filter-btn${filtroActivo === "Venta" ? " active" : ""}`}>
+        <a href={`/web/${cfg.slug}/propiedades${qp({ operacion: "Venta" })}`} className={`filter-btn${filtroActivo === "Venta" ? " active" : ""}`}>
           Venta
         </a>
-        <a href={`/web/${cfg.slug}/propiedades?operacion=Alquiler`} className={`filter-btn${filtroActivo === "Alquiler" ? " active" : ""}`}>
+        <a href={`/web/${cfg.slug}/propiedades${qp({ operacion: "Alquiler" })}`} className={`filter-btn${filtroActivo === "Alquiler" ? " active" : ""}`}>
           Alquiler
         </a>
         {temporales > 0 && (
-          <a href={`/web/${cfg.slug}/propiedades?operacion=Alquiler+temporal`} className={`filter-btn${filtroActivo === "Alquiler temporal" ? " active" : ""}`}>
+          <a href={`/web/${cfg.slug}/propiedades${qp({ operacion: "Alquiler temporal" })}`} className={`filter-btn${filtroActivo === "Alquiler temporal" ? " active" : ""}`}>
             Temporario
           </a>
         )}
@@ -227,12 +272,24 @@ export default async function PropiedadesPage({
       {tiposDisponibles.length > 1 && (
         <div className="filters" style={{ borderTop: "none", paddingTop: 10, paddingBottom: 12 }}>
           <span className="filters-label">Tipo:</span>
-          <a href={`/web/${cfg.slug}/propiedades${operacion ? `?operacion=${encodeURIComponent(operacion)}` : ""}`}
+          <a href={`/web/${cfg.slug}/propiedades${qp({ tipo: undefined })}`}
             className={`filter-btn${!tipoActivo ? " active" : ""}`}>Todos</a>
           {tiposDisponibles.map(tp => (
             <a key={tp}
-              href={`/web/${cfg.slug}/propiedades?${operacion ? `operacion=${encodeURIComponent(operacion)}&` : ""}tipo=${encodeURIComponent(tp)}`}
+              href={`/web/${cfg.slug}/propiedades${qp({ tipo: tp })}`}
               className={`filter-btn${tipoActivo === tp ? " active" : ""}`}>{tp}</a>
+          ))}
+        </div>
+      )}
+      {tieneDormitorios && (
+        <div className="filters" style={{ borderTop: "none", paddingTop: 10, paddingBottom: 12 }}>
+          <span className="filters-label">Dorm.:</span>
+          <a href={`/web/${cfg.slug}/propiedades${qp({ dormitorios: undefined })}`}
+            className={`filter-btn${!dormitoriosActivo ? " active" : ""}`}>Todos</a>
+          {["1","2","3","4"].map(d => (
+            <a key={d}
+              href={`/web/${cfg.slug}/propiedades${qp({ dormitorios: d })}`}
+              className={`filter-btn${dormitoriosActivo === d ? " active" : ""}`}>{d}+ dorm.</a>
           ))}
         </div>
       )}
