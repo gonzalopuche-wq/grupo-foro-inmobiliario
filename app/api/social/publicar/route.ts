@@ -182,18 +182,17 @@ export async function POST(req: NextRequest) {
   const results = resultados.map(r => r.status === "fulfilled" ? r.value : { red: "?", ok: false, error: "Error interno" });
 
   // Loguear en DB (no crítico — no rompe si la tabla no existe)
-  try {
-    await sb.from("social_posts").insert(
-      results.map(r => ({
-        red: r.red,
-        contenido_tipo: tipo,
-        contenido_id: id,
-        estado: r.ok ? "success" : "error",
-        post_id: (r as any).post_id ?? null,
-        error_msg: r.ok ? null : r.error,
-      }))
-    );
-  } catch { /* tabla puede no existir aún */ }
+  const { error: dbErr } = await sb.from("social_posts").insert(
+    results.map(r => ({
+      red: r.red,
+      contenido_tipo: tipo,
+      contenido_id: id,
+      estado: r.ok ? "success" : "error",
+      post_id: (r as any).post_id ?? null,
+      error_msg: r.ok ? null : r.error,
+    }))
+  );
+  if (dbErr) console.error("[social_posts] insert error:", dbErr.message);
 
   return NextResponse.json({ results });
 }
