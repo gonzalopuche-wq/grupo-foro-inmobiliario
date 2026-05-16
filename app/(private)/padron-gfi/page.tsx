@@ -97,12 +97,17 @@ export default function PadronGFIPage() {
   const [perfilRapidoId, setPerfilRapidoId] = useState<string | null>(null);
   const [pagina, setPagina] = useState(0);
   const POR_PAGINA = 50;
+  const [syncPhonesState, setSyncPhonesState] = useState<"idle" | "loading" | "done">("idle");
+  const [syncPhonesResult, setSyncPhonesResult] = useState<{ actualizados: number; omitidos: number; errores: number; total_perfiles: number } | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { window.location.href = "/login"; return; }
       setUserId(session.user.id);
+      const { data: p } = await supabase.from("perfiles").select("tipo").eq("id", session.user.id).single();
+      setIsAdmin(p?.tipo === "admin" || p?.tipo === "master");
       try {
         const resultado = await cargarPadron(session.access_token)
         if (resultado.errores.cocir) setErrorCarga(`Error COCIR: ${resultado.errores.cocir}`)
@@ -200,6 +205,21 @@ export default function PadronGFIPage() {
   const cambiarFuente = (f: Fuente) => { setFuente(f); setBusqueda(""); setPagina(0); };
   const cambiarBusqueda = (v: string) => { setBusqueda(v); setPagina(0); };
 
+  const sincronizarTelefonos = async () => {
+    setSyncPhonesState("loading");
+    setSyncPhonesResult(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const res = await fetch("/api/admin/sync-phones-cocir", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ campos: ["telefono", "email", "inmobiliaria"] }),
+    });
+    const json = await res.json();
+    setSyncPhonesResult(json);
+    setSyncPhonesState("done");
+  };
+
   const ultimaSync = useMemo(() => {
     if (!cocirData.length) return null;
     const max = cocirData.reduce((acc, c) => {
@@ -285,7 +305,25 @@ export default function PadronGFIPage() {
           <a href="/padron-gfi/mapa" className="pad-fuente-btn" style={{ textDecoration: 'none' }}>
             📍 Mapa de zonas
           </a>
+          {isAdmin && (
+            <button
+              className="pad-fuente-btn"
+              onClick={sincronizarTelefonos}
+              disabled={syncPhonesState === "loading"}
+              style={{ borderColor: syncPhonesState === "done" ? "rgba(34,197,94,0.5)" : "rgba(99,102,241,0.4)", color: syncPhonesState === "done" ? "#22c55e" : "#818cf8" }}
+            >
+              {syncPhonesState === "loading" ? "⏳ Sincronizando…" : syncPhonesState === "done" ? "✓ Sincronizado" : "🔄 Sync teléfonos COCIR"}
+            </button>
+          )}
         </div>
+        {syncPhonesState === "done" && syncPhonesResult && (
+          <div style={{ padding: "10px 16px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif" }}>
+            <strong style={{ color: "#22c55e" }}>{syncPhonesResult.actualizados}</strong> perfiles actualizados ·{" "}
+            <strong style={{ color: "rgba(255,255,255,0.4)" }}>{syncPhonesResult.omitidos}</strong> sin cambios ·{" "}
+            <strong style={{ color: syncPhonesResult.errores > 0 ? "#f87171" : "rgba(255,255,255,0.4)" }}>{syncPhonesResult.errores}</strong> errores
+            {" · "}Total: {syncPhonesResult.total_perfiles} perfiles con matrícula
+          </div>
+        )}
 
         {/* Stats */}
         <div className="pad-statsbar">
