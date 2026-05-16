@@ -14,6 +14,7 @@ interface Stats {
   publicadasWeb: number;
   totalVistas: number;
   recientes: { id: string; titulo: string; estado: string; created_at: string }[];
+  topVistas: { id: string; titulo: string; vistas: number; publicada_web: boolean }[];
   leads: { total: number; porEstado: Record<string, number>; porOrigen: Record<string, number> };
   visitas: { total: number; porEstado: Record<string, number> };
 }
@@ -102,6 +103,12 @@ export default function EstadisticasPage() {
       .slice(0, 5)
       .map(p => ({ id: p.id, titulo: p.titulo, estado: p.estado, created_at: p.created_at }));
 
+    const topVistas = [...all]
+      .filter((p: any) => (p.vistas ?? 0) > 0)
+      .sort((a: any, b: any) => (b.vistas ?? 0) - (a.vistas ?? 0))
+      .slice(0, 5)
+      .map((p: any) => ({ id: p.id, titulo: p.titulo, vistas: p.vistas, publicada_web: p.publicada_web }));
+
     const leads = leadsRaw ?? [];
     const visitas = visitasRaw ?? [];
 
@@ -133,6 +140,7 @@ export default function EstadisticasPage() {
       publicadasWeb: all.filter((p: any) => p.publicada_web).length,
       totalVistas: all.reduce((sum: number, p: any) => sum + (p.vistas ?? 0), 0),
       recientes,
+      topVistas,
       leads: { total: leads.length, porEstado: countKey(leads, "estado"), porOrigen: countKey(leads, "origen") },
       visitas: { total: visitas.length, porEstado: countKey(visitas, "estado") },
     });
@@ -304,6 +312,25 @@ export default function EstadisticasPage() {
                         <div style={{ fontSize:18, fontWeight:800, fontFamily:"Montserrat,sans-serif", color: a.visitas > 0 ? "#22c55e" : "rgba(255,255,255,0.2)", textAlign:"right", borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:6 }}>{a.visitas}</div>
                       </>))}
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Top vistas */}
+              {stats.topVistas.length > 0 && (
+                <div className="est-section">
+                  <div className="est-section-title">Propiedades más vistas en web</div>
+                  <div className="est-panel">
+                    {stats.topVistas.map((p, i) => (
+                      <div key={p.id} className="est-reciente">
+                        <div style={{ width: 20, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: i === 0 ? "#f59e0b" : "rgba(255,255,255,0.3)", flexShrink: 0 }}>#{i + 1}</div>
+                        <div style={{ flex: 1, fontSize: 13, color: "rgba(255,255,255,0.8)" }}>{p.titulo}</div>
+                        {p.publicada_web && <span style={{ fontSize: 10, color: "#22c55e", marginRight: 8 }}>🌐</span>}
+                        <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "#a78bfa", minWidth: 48, textAlign: "right" }}>
+                          👁 {p.vistas}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
