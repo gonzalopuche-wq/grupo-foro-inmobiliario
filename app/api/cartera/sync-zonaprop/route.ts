@@ -48,6 +48,19 @@ function mapearANavent(p: any, accountId: string) {
 
 export async function POST(req: NextRequest) {
   try {
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    const { data: { user } } = await sb.auth.getUser(token);
+    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+    let efectivoId = user.id;
+    const { data: perfilRow } = await sb.from("perfiles").select("tipo").eq("id", user.id).single();
+    if (perfilRow?.tipo === "colaborador") {
+      const { data: colab } = await sb.from("colaboradores").select("corredor_id").eq("user_id", user.id).single();
+      if (colab?.corredor_id) efectivoId = colab.corredor_id;
+    }
+
     const { propiedad_id, portal = "zonaprop" } = await req.json();
     if (!propiedad_id) return NextResponse.json({ error: "propiedad_id requerido" }, { status: 400 });
 
@@ -61,7 +74,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { data: prop } = await sb.from("cartera_propiedades").select("*").eq("id", propiedad_id).single();
+    const { data: prop } = await sb.from("cartera_propiedades").select("*").eq("id", propiedad_id).eq("perfil_id", efectivoId).single();
     if (!prop) return NextResponse.json({ error: "Propiedad no encontrada" }, { status: 404 });
 
     const { data: sync } = await sb.from("cartera_sync_portales").select("zonaprop_id,argenprop_id").eq("propiedad_id", propiedad_id).maybeSingle();

@@ -493,9 +493,10 @@ export default function CrmPage() {
     if (!contactoSeleccionado) return;
     setCargandoIA(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const resp = await fetch("/api/ia-respuesta", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", Authorization: `Bearer ${session?.access_token}` },
         body: JSON.stringify({ contacto: contactoSeleccionado, interacciones: interacciones.slice(0, 8), tipo: nuevaInteraccion.tipo }),
       });
       const { text } = await resp.json();
@@ -525,9 +526,10 @@ export default function CrmPage() {
     setLoadingPropiedades(true);
     try {
       // Primero intentar IA matching
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch("/api/ia-matching", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
         body: JSON.stringify({ perfil_id: userId, contacto_id: contacto.id }),
       });
       if (res.ok) {
