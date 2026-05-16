@@ -83,8 +83,9 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [loading, setLoading] = useState(true);
   const [suscripcionBlocked, setSuscripcionBlocked] = useState(false);
+  const [suscripcionWarning, setSuscripcionWarning] = useState<"gracia" | "pendiente" | null>(null);
   const [cbuDatos, setCbuDatos] = useState({ titular: "Gonzalo Leandro Puche", cvu: "0000003100046173873221", alias: "foroinmobiliario.gp", cuit: "20-25750876-6", banco: "Mercado Pago" });
-  const [precioUsd, setPrecioUsd] = useState(15);
+  const [precioUsd, setPrecioUsd] = useState(10);
   const [dolarBlue, setDolarBlue] = useState<number | null>(null);
   const [pagoFecha, setPagoFecha] = useState("");
   const [pagoMonto, setPagoMonto] = useState("");
@@ -123,20 +124,25 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         if (tipo !== "admin") {
           const { data: sub } = await supabase
             .from("suscripciones")
-            .select("estado")
+            .select("estado, fecha_vencimiento")
             .eq("perfil_id", auth.user.id)
             .order("creado_at", { ascending: false })
             .limit(1)
             .maybeSingle();
 
-          if (sub?.estado && ["vencida", "suspendida", "bloqueado"].includes(sub.estado)) {
+          const estadoSub = sub?.estado ?? null;
+          const bloqueado = estadoSub && ["vencida", "suspendida", "bloqueado"].includes(estadoSub);
+          const enGracia = estadoSub === "activa" && sub?.fecha_vencimiento && sub.fecha_vencimiento < new Date().toISOString().slice(0, 10);
+          const enPendiente = estadoSub === "pendiente";
+
+          if (bloqueado || enGracia) {
             const [{ data: ind }, dolarRes] = await Promise.all([
               supabase.from("indicadores").select("clave, valor"),
               fetch("https://dolarapi.com/v1/dolares/blue").then(r => r.json()).catch(() => null),
             ]);
             if (ind) {
               const get = (k: string) => ind.find((i: any) => i.clave === k)?.valor;
-              const precio = Number(get(p.tipo === "colaborador" ? "precio_colaborador_usd" : "precio_corredor_usd") ?? (p.tipo === "colaborador" ? 5 : 15));
+              const precio = Number(get(p.tipo === "colaborador" ? "precio_colaborador_usd" : "precio_corredor_usd") ?? (p.tipo === "colaborador" ? 5 : 10));
               setPrecioUsd(precio);
               setCbuDatos({
                 titular: get("cbu_titular") ?? "Gonzalo Leandro Puche",
@@ -147,7 +153,10 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
               });
             }
             if (dolarRes?.compra) setDolarBlue(Math.round((dolarRes.compra + dolarRes.venta) / 2));
-            setSuscripcionBlocked(true);
+            if (bloqueado) setSuscripcionBlocked(true);
+            else setSuscripcionWarning("gracia");
+          } else if (enPendiente) {
+            setSuscripcionWarning("pendiente");
           }
         }
       }
@@ -165,10 +174,12 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const declararPago = async () => {
     if (!pagoFecha) { setPagoError("Ingresá la fecha de la transferencia."); return; }
     if (!pagoMonto) { setPagoError("Ingresá el monto transferido."); return; }
+    const montoLimpio = pagoMonto.replace(/\./g, "").replace(",", ".");
+    const montoNum = parseFloat(montoLimpio);
+    if (isNaN(montoNum) || montoNum <= 0) { setPagoError("Ingresá un monto válido."); return; }
     if (!pagoComprobante) { setPagoError("Ingresá el número de comprobante."); return; }
     setPagoEnviando(true);
     setPagoError("");
-    const montoNum = parseFloat(pagoMonto.replace(/\./g, "").replace(",", "."));
     const periodo = new Date().toISOString().slice(0, 7);
     const { error: err } = await supabase.from("suscripciones").insert({
       perfil_id: userId,
@@ -431,6 +442,21 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
             <div className="topbar-logo">GFI<span>®</span></div>
             <button className="topbar-menu-btn" onClick={() => setMenuAbierto(true)}>☰</button>
           </div>
+          {suscripcionWarning === "gracia" && (
+            <div style={{ background: "rgba(234,179,8,0.1)", borderBottom: "1px solid rgba(234,179,8,0.25)", padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <span style={{ fontSize: 13, color: "#eab308", fontFamily: "'Inter',sans-serif" }}>
+                ⚠️ Tu suscripción venció. Tenés período de gracia activo — realizá el pago para mantener el acceso.
+              </span>
+              <a href="/suscripcion" style={{ flexShrink: 0, background: "#eab308", color: "#000", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", padding: "5px 14px", borderRadius: 4, textDecoration: "none" }}>Pagar ahora</a>
+            </div>
+          )}
+          {suscripcionWarning === "pendiente" && (
+            <div style={{ background: "rgba(59,130,246,0.08)", borderBottom: "1px solid rgba(59,130,246,0.2)", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 13, color: "#60a5fa", fontFamily: "'Inter',sans-serif" }}>
+                ⏳ Tu pago está siendo verificado. El acceso se mantiene mientras el equipo GFI confirma la transferencia.
+              </span>
+            </div>
+          )}
           <AnuncioBanner />
           <div className="page-content">
             {children}

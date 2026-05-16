@@ -82,6 +82,7 @@ export default function DashboardPage() {
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [loadingGrupos, setLoadingGrupos] = useState(false);
   const [colabStats, setColabStats] = useState({ cartera: 0, contactos: 0, mirBusq: 0, redGfi: 0, loading: true });
+  const [cocirEstado, setCocirEstado] = useState<string | null>(null);
   const ciudadRef = useRef<HTMLInputElement>(null);
 
   const WIDGET_LABELS: Record<string, string> = {
@@ -174,9 +175,10 @@ export default function DashboardPage() {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) { router.push("/login"); return; }
       const uid = data.user.id;
-      supabase.from("perfiles").select("tipo").eq("id", uid).single().then(({ data: p }) => {
+      supabase.from("perfiles").select("tipo, cocir_estado").eq("id", uid).single().then(({ data: p }) => {
         const tipo = (p?.tipo === "admin" || p?.tipo === "master") ? "admin" : p?.tipo === "colaborador" ? "colaborador" : "corredor";
         setTipoUsuario(tipo);
+        if (p?.cocir_estado && p.cocir_estado !== "activo") setCocirEstado(p.cocir_estado);
         if (tipo === "colaborador") { cargarDashboardColaborador(uid); return; }
         cargarDashboardCompleto(uid);
       });
@@ -498,6 +500,22 @@ export default function DashboardPage() {
       {widgetsActivos.noticias && <div style={{ marginBottom: 20 }}>
         <NoticiasWidget />
       </div>}
+
+      {/* BADGE COCIR — solo cuando validación está pendiente */}
+      {cocirEstado && cocirEstado !== "activo" && tipoUsuario !== "admin" && (
+        <a href="/padron-gfi" style={{ display:"flex", alignItems:"center", gap:12, background:"rgba(249,115,22,0.08)", border:"1px solid rgba(249,115,22,0.25)", borderRadius:8, padding:"10px 16px", marginBottom:16, textDecoration:"none" }}>
+          <span style={{ fontSize:18 }}>⚠️</span>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:"#f97316", fontFamily:"'Montserrat',sans-serif", letterSpacing:"0.06em" }}>
+              {cocirEstado === "suspendido" ? "Matrícula suspendida en COCIR" : cocirEstado === "no_encontrado" ? "Matrícula no encontrada en COCIR" : "Validación COCIR en curso"}
+            </div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginTop:2 }}>
+              {cocirEstado === "suspendido" ? "Tu matrícula figura como suspendida en el padrón COCIR. Contactá al administrador." : "Tu matrícula está siendo verificada. Se actualiza automáticamente cada noche."}
+            </div>
+          </div>
+          <span style={{ fontSize:11, color:"rgba(249,115,22,0.7)", fontFamily:"'Montserrat',sans-serif", flexShrink:0 }}>Ver padrón →</span>
+        </a>
+      )}
 
       {/* 2. MI PANEL — stats personales del corredor */}
       {widgetsActivos.mipanel && <div style={{marginBottom:16}}>

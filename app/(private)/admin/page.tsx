@@ -169,7 +169,7 @@ export default function AdminPage() {
   const [cbuOk, setCbuOk] = useState(false);
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [loadingPagos, setLoadingPagos] = useState(true);
-  const [filtroPagos, setFiltroPagos] = useState<"pendiente"|"activa"|"todos">("pendiente");
+  const [filtroPagos, setFiltroPagos] = useState<"pendiente"|"activa"|"suspendida"|"todos">("pendiente");
   const [procesandoPago, setProcesandoPago] = useState<string | null>(null);
   const [notaAdmin, setNotaAdmin] = useState<Record<string, string>>({});
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
@@ -796,6 +796,17 @@ export default function AdminPage() {
     setProcesandoPago(null); cargarPagos();
   };
 
+  const reactivarSuscripcion = async (pago: Pago) => {
+    if (!confirm(`¿Reactivar suscripción de ${pago.perfiles?.nombre ?? "este corredor"}?`)) return;
+    setProcesandoPago(pago.id);
+    const vencimiento = new Date(); vencimiento.setMonth(vencimiento.getMonth() + 1);
+    const { error: errSub } = await supabase.from("suscripciones").update({ estado: "activa", fecha_confirmacion: new Date().toISOString().slice(0, 10), fecha_vencimiento: vencimiento.toISOString().slice(0, 10), nota_admin: notaAdmin[pago.id] || "Reactivado manualmente por admin" }).eq("id", pago.id);
+    if (errSub) { mostrarToast("Error al reactivar suscripción", "err"); setProcesandoPago(null); return; }
+    const { error: errProf } = await supabase.from("perfiles").update({ estado: "aprobado" }).eq("id", pago.perfil_id);
+    if (errProf) mostrarToast("Error al actualizar perfil", "err");
+    setProcesandoPago(null); cargarPagos(); mostrarToast("Suscripción reactivada");
+  };
+
   const guardarIndicador = async (clave: string) => {
     const raw = editando[clave]?.replace(/\./g, "").replace(",", ".");
     const valor = parseFloat(raw);
@@ -1061,8 +1072,8 @@ A partir de esa fecha el costo mensual será de USD 15.
 
   const formatARS = (n: number | null) => n !== null ? new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(n) : "—";
   const formatHora = (iso: string | null) => iso ? new Date(iso).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) + " · " + new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" }) : null;
-  const pagosFiltrados = filtroPagos === "todos" ? pagos : pagos.filter(p => p.estado === filtroPagos);
-  const contadoresPagos = { pendiente: pagos.filter(p => p.estado === "pendiente").length, activa: pagos.filter(p => p.estado === "activa").length, todos: pagos.length };
+  const pagosFiltrados = filtroPagos === "todos" ? pagos : filtroPagos === "suspendida" ? pagos.filter(p => p.estado === "suspendida" || p.estado === "bloqueado") : pagos.filter(p => p.estado === filtroPagos);
+  const contadoresPagos = { pendiente: pagos.filter(p => p.estado === "pendiente").length, activa: pagos.filter(p => p.estado === "activa").length, suspendida: pagos.filter(p => p.estado === "suspendida" || p.estado === "bloqueado").length, todos: pagos.length };
   const perfilesFiltrados = filtro === "todos" ? perfiles : perfiles.filter(p => p.estado === filtro);
   const contadores = { todos: perfiles.length, pendiente: perfiles.filter(p => p.estado === "pendiente").length, aprobado: perfiles.filter(p => p.estado === "aprobado").length, rechazado: perfiles.filter(p => p.estado === "rechazado").length };
   const contadoresColab = { pendiente: colaboradores.filter(c => c.estado === "pendiente").length, activo: colaboradores.filter(c => c.estado === "activo").length, suspendido: colaboradores.filter(c => c.estado === "suspendido").length, todos: colaboradores.length };
@@ -1760,12 +1771,13 @@ A partir de esa fecha el costo mensual será de USD 15.
               <p>Confirmá o rechazá los pagos declarados. Se envía email automático al corredor.</p>
             </div>
             <div className="adm-filtros">
-              {(["pendiente","activa","todos"] as const).map(f => (
+              {(["pendiente","activa","suspendida","todos"] as const).map(f => (
                 <button key={f} className={`adm-filtro-btn${filtroPagos === f ? " activo" : ""}`} onClick={() => setFiltroPagos(f)}>
-                  {f === "pendiente" ? "Pendientes" : f === "activa" ? "Confirmados" : "Todos"}
-                  <span className="adm-filtro-count">{contadoresPagos[f]}</span>
+                  {f === "pendiente" ? "Pendientes" : f === "activa" ? "Activos" : f === "suspendida" ? "Suspendidos" : "Todos"}
+                  {(contadoresPagos[f] ?? 0) > 0 && <span className="adm-filtro-count" style={f === "suspendida" ? {background:"rgba(200,0,0,0.25)",color:"#ff6666"} : {}}>{contadoresPagos[f]}</span>}
                 </button>
               ))}
+              <button style={{marginLeft:"auto",fontSize:11,padding:"4px 12px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"rgba(255,255,255,0.5)",cursor:"pointer"}} onClick={cargarPagos}>↻ Actualizar</button>
             </div>
             <div className="adm-tabla-wrap">
               {loadingPagos ? <div className="adm-loading">Cargando...</div>
@@ -1782,7 +1794,7 @@ A partir de esa fecha el costo mensual será de USD 15.
                       <td><div className="adm-comprobante">{p.comprobante ?? "—"}</div>{p.cbu_origen && <div className="adm-sub">{p.cbu_origen}</div>}</td>
                       <td style={{fontSize:12,color:"rgba(255,255,255,0.5)"}}>{p.fecha_pago_declarado ? formatFecha(p.fecha_pago_declarado) : "—"}{p.fecha_confirmacion && <div className="adm-sub">Conf: {formatFecha(p.fecha_confirmacion)}</div>}{p.fecha_vencimiento && <div className="adm-sub">Vence: {formatFecha(p.fecha_vencimiento)}</div>}</td>
                       <td><span className="badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{p.estado.toUpperCase()}</span></td>
-                      <td>{procesandoPago === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div><input className="adm-nota-input" placeholder="Nota interna (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => confirmarPago(p)}>✓ Confirmar</button><button className="adm-btn-rechazar" onClick={() => rechazarPago(p)}>✗ Rechazar</button></div></div>) : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{p.nota_admin ?? "—"}</span>}</td>
+                      <td>{procesandoPago === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div><input className="adm-nota-input" placeholder="Nota interna (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => confirmarPago(p)}>✓ Confirmar</button><button className="adm-btn-rechazar" onClick={() => rechazarPago(p)}>✗ Rechazar</button></div></div>) : (p.estado === "suspendida" || p.estado === "bloqueado") ? (<div><input className="adm-nota-input" placeholder="Nota (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => reactivarSuscripcion(p)}>↺ Reactivar</button></div></div>) : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{p.nota_admin ?? "—"}</span>}</td>
                     </tr>;
                   })}
                 </tbody>
