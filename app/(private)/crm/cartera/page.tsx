@@ -254,11 +254,13 @@ export default function CarteraPage() {
   const [propiedades, setPropiedades] = useState<Propiedad[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filtros
+  // Filtros y orden
   const [busqueda, setBusqueda] = useState("");
   const [filtroOp, setFiltroOp] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
+  const [orden, setOrden] = useState("nuevas");
+  const [duplicando, setDuplicando] = useState<string | null>(null);
 
   // Modal wizard
   const [mostrarWizard, setMostrarWizard] = useState(false);
@@ -886,6 +888,36 @@ export default function CarteraPage() {
     setReparando(null);
   };
 
+  const duplicarPropiedad = async (p: Propiedad) => {
+    if (!userId) return;
+    setDuplicando(p.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const copia = {
+        titulo: `${p.titulo ?? "Propiedad"} (copia)`,
+        tipo: p.tipo, operacion: p.operacion, estado: "activa",
+        precio: p.precio, moneda: p.moneda, ciudad: p.ciudad, zona: p.zona,
+        direccion: p.direccion, dormitorios: p.dormitorios, banos: p.banos,
+        ambientes: p.ambientes, superficie_cubierta: p.superficie_cubierta,
+        superficie_total: p.superficie_total, antiguedad: (p as any).antiguedad,
+        descripcion: p.descripcion, apto_credito: p.apto_credito,
+        con_cochera: (p as any).con_cochera, expensas: (p as any).expensas,
+        video_url: p.video_url, fotos: p.fotos ?? [],
+        publicada_web: false, ocultar_precio: false,
+        ocultar_ubicacion: false, ocultar_de_redes: false, ocultar_web: false,
+      };
+      const res = await fetch("/api/cartera/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ datos: copia }),
+      });
+      const json = await res.json();
+      if (json.ok) { await cargar(userId); setToastGuardado("Propiedad duplicada"); setTimeout(() => setToastGuardado(""), 3000); }
+      else alert("Error al duplicar: " + (json.error ?? "Error desconocido"));
+    } catch (e: any) { alert("Error: " + e.message); }
+    setDuplicando(null);
+  };
+
   const sincronizarPortal = async (propiedadId: string, portales: string[]) => {
     setSincronizando(propiedadId);
     try {
@@ -901,14 +933,23 @@ export default function CarteraPage() {
     setSincronizando(null);
   };
 
-  // ── Filtrado ──────────────────────────────────────────────────────────────
-  const filtradas = useMemo(() => propiedades.filter(p => {
-    if (filtroOp && p.operacion !== filtroOp) return false;
-    if (filtroTipo && p.tipo !== filtroTipo) return false;
-    if (filtroEstado && p.estado !== filtroEstado) return false;
-    if (busqueda.trim()) { const q = busqueda.toLowerCase(); return p.titulo?.toLowerCase().includes(q) || p.direccion?.toLowerCase().includes(q) || p.zona?.toLowerCase().includes(q); }
-    return true;
-  }), [propiedades, filtroOp, filtroTipo, filtroEstado, busqueda]);
+  // ── Filtrado y orden ──────────────────────────────────────────────────────
+  const filtradas = useMemo(() => {
+    const base = propiedades.filter(p => {
+      if (filtroOp && p.operacion !== filtroOp) return false;
+      if (filtroTipo && p.tipo !== filtroTipo) return false;
+      if (filtroEstado && p.estado !== filtroEstado) return false;
+      if (busqueda.trim()) { const q = busqueda.toLowerCase(); return p.titulo?.toLowerCase().includes(q) || p.direccion?.toLowerCase().includes(q) || p.zona?.toLowerCase().includes(q); }
+      return true;
+    });
+    const sorted = [...base];
+    if (orden === "antiguas") sorted.sort((a, b) => (a.created_at ?? "").localeCompare(b.created_at ?? ""));
+    else if (orden === "precio_asc") sorted.sort((a, b) => (a.precio ?? 0) - (b.precio ?? 0));
+    else if (orden === "precio_desc") sorted.sort((a, b) => (b.precio ?? 0) - (a.precio ?? 0));
+    else if (orden === "alfa") sorted.sort((a, b) => (a.titulo ?? "").localeCompare(b.titulo ?? "", "es"));
+    else sorted.sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+    return sorted;
+  }, [propiedades, filtroOp, filtroTipo, filtroEstado, busqueda, orden]);
 
   const estadoInfo = (e: string) => ESTADOS.find(x => x.value === e) ?? { value: e, label: e.toUpperCase(), color: "#6b7280" };
   const pct = Math.round((paso / 7) * 100);
@@ -1145,6 +1186,13 @@ export default function CarteraPage() {
             <option value="">Estado</option>
             {ESTADOS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
+          <select className="cart-select" value={orden} onChange={e => setOrden(e.target.value)}>
+            <option value="nuevas">Más nuevas</option>
+            <option value="antiguas">Más antiguas</option>
+            <option value="precio_desc">Precio ↓</option>
+            <option value="precio_asc">Precio ↑</option>
+            <option value="alfa">Alfabético</option>
+          </select>
           {(filtroOp || filtroTipo || filtroEstado || busqueda) && (
             <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); }}>✕ Limpiar</button>
           )}
@@ -1305,6 +1353,11 @@ export default function CarteraPage() {
                         {reparando === p.id ? "..." : "🔧 Fotos"}
                       </button>
                     )}
+                    <button className="cart-acc-btn" onClick={() => duplicarPropiedad(p)} disabled={duplicando === p.id}
+                      title="Crear una copia de esta propiedad"
+                      style={{background:"rgba(99,102,241,0.07)",border:"1px solid rgba(99,102,241,0.18)",color:"rgba(129,140,248,0.9)"}}>
+                      {duplicando === p.id ? "..." : "⧉ Copiar"}
+                    </button>
                     <button className="cart-acc-btn cart-acc-eliminar" onClick={() => eliminar(p.id)}>Eliminar</button>
                   </div>
                 </div>
