@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import VistaTracker from "./VistaTracker";
+import ContactForm from "./ContactForm";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -333,6 +334,18 @@ export default async function PropiedadDetailPage({
                 <span style={{ color: t.text, fontWeight: 600 }}>{r.val}</span>
               </div>
             ))}
+          </div>
+
+          <div className="p-card">
+            <ContactForm
+              slug={slug}
+              propiedadId={prop.id}
+              propiedadTitulo={prop.titulo ?? ""}
+              accentColor={t.accent}
+              textColor={t.text}
+              cardBorder={t.cardBorder}
+              textMuted={t.textMuted}
+            />
           </div>
 
           <Link href={`/web/${slug}`} style={{ display: "block", textAlign: "center", fontSize: 12, color: t.textMuted, padding: "8px 0" }}>
