@@ -45,6 +45,23 @@ CREATE TABLE IF NOT EXISTS crm_contactos (
 
 ALTER TABLE crm_contactos ENABLE ROW LEVEL SECURITY;
 
+-- Columnas que pueden faltar si la tabla existía antes con schema reducido
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS estado        text DEFAULT 'lead:nuevo';
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS tipo          text DEFAULT 'cliente';
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS origen        text;
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS interes       text;
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS presupuesto_min numeric(14,2);
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS presupuesto_max numeric(14,2);
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS moneda        text DEFAULT 'USD';
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS zona_interes  text;
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS dni           text;
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS domicilio     text;
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS matricula     text;
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS inmobiliaria  text;
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS corredor_ref_id uuid REFERENCES perfiles(id) ON DELETE SET NULL;
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS etiquetas     text[];
+ALTER TABLE crm_contactos ADD COLUMN IF NOT EXISTS notas         text;
+
 DROP POLICY IF EXISTS "crm_contactos_own_select" ON crm_contactos;
 CREATE POLICY "crm_contactos_own_select" ON crm_contactos FOR SELECT USING (auth.uid() = perfil_id);
 DROP POLICY IF EXISTS "crm_contactos_own_insert" ON crm_contactos;
@@ -90,6 +107,25 @@ CREATE TABLE IF NOT EXISTS crm_negocios (
 
 ALTER TABLE crm_negocios ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS etapa              text NOT NULL DEFAULT 'prospecto';
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS tipo_operacion     text NOT NULL DEFAULT 'venta';
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS descripcion        text;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS direccion          text;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS valor_operacion    numeric(14,2);
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS moneda             text NOT NULL DEFAULT 'USD';
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS honorarios_pct     numeric(5,2);
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS fecha_primer_contacto date;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS fecha_visita       date;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS fecha_reserva      date;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS fecha_escritura    date;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS fecha_cierre       date;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS colega_id          uuid REFERENCES perfiles(id) ON DELETE SET NULL;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS split_pct          numeric(5,2);
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS etiquetas          text[];
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS notas              text;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS archivado          boolean NOT NULL DEFAULT false;
+ALTER TABLE crm_negocios ADD COLUMN IF NOT EXISTS contacto_id        uuid REFERENCES crm_contactos(id) ON DELETE SET NULL;
+
 DROP POLICY IF EXISTS "crm_negocios_own_select" ON crm_negocios;
 CREATE POLICY "crm_negocios_own_select" ON crm_negocios FOR SELECT USING (auth.uid() = perfil_id);
 DROP POLICY IF EXISTS "crm_negocios_own_insert" ON crm_negocios;
@@ -128,6 +164,17 @@ CREATE TABLE IF NOT EXISTS crm_tareas (
 
 ALTER TABLE crm_tareas ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS estado            text NOT NULL DEFAULT 'pendiente';
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS tipo              text NOT NULL DEFAULT 'tarea';
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS prioridad         text NOT NULL DEFAULT 'media';
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS descripcion       text;
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS fecha_vencimiento date;
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS fecha_completada  timestamptz;
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS etiquetas         text[];
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS notas             text;
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS contacto_id       uuid REFERENCES crm_contactos(id) ON DELETE SET NULL;
+ALTER TABLE crm_tareas ADD COLUMN IF NOT EXISTS negocio_id        uuid REFERENCES crm_negocios(id) ON DELETE SET NULL;
+
 DROP POLICY IF EXISTS "crm_tareas_own_select" ON crm_tareas;
 CREATE POLICY "crm_tareas_own_select" ON crm_tareas FOR SELECT USING (auth.uid() = perfil_id);
 DROP POLICY IF EXISTS "crm_tareas_own_insert" ON crm_tareas;
@@ -161,6 +208,13 @@ CREATE TABLE IF NOT EXISTS crm_notas (
 
 ALTER TABLE crm_notas ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE crm_notas ADD COLUMN IF NOT EXISTS titulo      text;
+ALTER TABLE crm_notas ADD COLUMN IF NOT EXISTS tipo        text NOT NULL DEFAULT 'general';
+ALTER TABLE crm_notas ADD COLUMN IF NOT EXISTS fijada      boolean NOT NULL DEFAULT false;
+ALTER TABLE crm_notas ADD COLUMN IF NOT EXISTS etiquetas   text[];
+ALTER TABLE crm_notas ADD COLUMN IF NOT EXISTS contacto_id uuid REFERENCES crm_contactos(id) ON DELETE SET NULL;
+ALTER TABLE crm_notas ADD COLUMN IF NOT EXISTS negocio_id  uuid REFERENCES crm_negocios(id) ON DELETE SET NULL;
+
 DROP POLICY IF EXISTS "crm_notas_own_select" ON crm_notas;
 CREATE POLICY "crm_notas_own_select" ON crm_notas FOR SELECT USING (auth.uid() = perfil_id);
 DROP POLICY IF EXISTS "crm_notas_own_insert" ON crm_notas;
@@ -190,6 +244,11 @@ CREATE TABLE IF NOT EXISTS crm_interacciones (
 );
 
 ALTER TABLE crm_interacciones ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE crm_interacciones ADD COLUMN IF NOT EXISTS tipo        text NOT NULL DEFAULT 'nota';
+ALTER TABLE crm_interacciones ADD COLUMN IF NOT EXISTS descripcion text NOT NULL DEFAULT '';
+ALTER TABLE crm_interacciones ADD COLUMN IF NOT EXISTS contacto_id uuid REFERENCES crm_contactos(id) ON DELETE CASCADE;
+ALTER TABLE crm_interacciones ADD COLUMN IF NOT EXISTS negocio_id  uuid REFERENCES crm_negocios(id) ON DELETE SET NULL;
 
 DROP POLICY IF EXISTS "crm_interacciones_own_select" ON crm_interacciones;
 CREATE POLICY "crm_interacciones_own_select" ON crm_interacciones FOR SELECT USING (auth.uid() = perfil_id);
@@ -226,6 +285,15 @@ CREATE TABLE IF NOT EXISTS crm_recordatorios (
 );
 
 ALTER TABLE crm_recordatorios ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE crm_recordatorios ADD COLUMN IF NOT EXISTS estado             text NOT NULL DEFAULT 'pendiente';
+ALTER TABLE crm_recordatorios ADD COLUMN IF NOT EXISTS completado         boolean NOT NULL DEFAULT false;
+ALTER TABLE crm_recordatorios ADD COLUMN IF NOT EXISTS titulo             text;
+ALTER TABLE crm_recordatorios ADD COLUMN IF NOT EXISTS descripcion        text NOT NULL DEFAULT '';
+ALTER TABLE crm_recordatorios ADD COLUMN IF NOT EXISTS notas              text;
+ALTER TABLE crm_recordatorios ADD COLUMN IF NOT EXISTS fecha_recordatorio timestamptz;
+ALTER TABLE crm_recordatorios ADD COLUMN IF NOT EXISTS contacto_id        uuid REFERENCES crm_contactos(id) ON DELETE SET NULL;
+ALTER TABLE crm_recordatorios ADD COLUMN IF NOT EXISTS negocio_id         uuid REFERENCES crm_negocios(id) ON DELETE SET NULL;
 
 DROP POLICY IF EXISTS "crm_rec_own_select" ON crm_recordatorios;
 CREATE POLICY "crm_rec_own_select" ON crm_recordatorios FOR SELECT USING (auth.uid() = perfil_id);
@@ -264,6 +332,12 @@ CREATE TABLE IF NOT EXISTS eventos_agenda (
 );
 
 ALTER TABLE eventos_agenda ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE eventos_agenda ADD COLUMN IF NOT EXISTS tipo        text NOT NULL DEFAULT 'cita';
+ALTER TABLE eventos_agenda ADD COLUMN IF NOT EXISTS descripcion text;
+ALTER TABLE eventos_agenda ADD COLUMN IF NOT EXISTS lugar       text;
+ALTER TABLE eventos_agenda ADD COLUMN IF NOT EXISTS hora        text;
+ALTER TABLE eventos_agenda ADD COLUMN IF NOT EXISTS hora_fin    text;
 
 DROP POLICY IF EXISTS "eventos_agenda_own_select" ON eventos_agenda;
 CREATE POLICY "eventos_agenda_own_select" ON eventos_agenda FOR SELECT USING (auth.uid() = usuario_id);
@@ -416,6 +490,12 @@ CREATE TABLE IF NOT EXISTS crm_integraciones_log (
 );
 
 ALTER TABLE crm_integraciones_log ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE crm_integraciones_log ADD COLUMN IF NOT EXISTS estado           text NOT NULL DEFAULT 'completado';
+ALTER TABLE crm_integraciones_log ADD COLUMN IF NOT EXISTS filas_importadas integer DEFAULT 0;
+ALTER TABLE crm_integraciones_log ADD COLUMN IF NOT EXISTS filas_error      integer DEFAULT 0;
+ALTER TABLE crm_integraciones_log ADD COLUMN IF NOT EXISTS detalle          jsonb;
+
 DROP POLICY IF EXISTS "crm_il_own" ON crm_integraciones_log;
 CREATE POLICY "crm_il_own"   ON crm_integraciones_log FOR ALL USING (auth.uid() = perfil_id) WITH CHECK (auth.uid() = perfil_id);
 DROP POLICY IF EXISTS "crm_il_admin" ON crm_integraciones_log;
@@ -441,6 +521,13 @@ CREATE TABLE IF NOT EXISTS crm_posts_sociales (
 );
 
 ALTER TABLE crm_posts_sociales ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE crm_posts_sociales ADD COLUMN IF NOT EXISTS plataforma       text NOT NULL DEFAULT 'instagram';
+ALTER TABLE crm_posts_sociales ADD COLUMN IF NOT EXISTS imagen_url       text;
+ALTER TABLE crm_posts_sociales ADD COLUMN IF NOT EXISTS fecha_programada timestamptz;
+ALTER TABLE crm_posts_sociales ADD COLUMN IF NOT EXISTS estado           text NOT NULL DEFAULT 'programado';
+ALTER TABLE crm_posts_sociales ADD COLUMN IF NOT EXISTS error_detalle    text;
+
 DROP POLICY IF EXISTS "crm_ps_own" ON crm_posts_sociales;
 CREATE POLICY "crm_ps_own"   ON crm_posts_sociales FOR ALL USING (auth.uid() = perfil_id) WITH CHECK (auth.uid() = perfil_id);
 DROP POLICY IF EXISTS "crm_ps_admin" ON crm_posts_sociales;
