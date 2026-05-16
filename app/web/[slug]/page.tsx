@@ -37,6 +37,11 @@ interface Propiedad {
   fotos: string[] | null; estado: string;
 }
 
+interface Testimonio {
+  id: string; nombre_cliente: string; cargo_cliente: string | null;
+  texto: string; rating: number;
+}
+
 // ── Server Component ────────────────────────────────────────────────────────
 
 const supabase = createClient(
@@ -54,12 +59,15 @@ async function getData(slug: string) {
 
   if (!cfg) return null;
 
-  const [{ data: perfil }, { data: props }] = await Promise.all([
+  const [{ data: perfil }, { data: props }, { data: testimoniosRaw }] = await Promise.all([
     supabase.from("perfiles").select("nombre,apellido,matricula,telefono,email,inmobiliaria,foto_url,especialidades").eq("id", cfg.perfil_id).single(),
     supabase.from("cartera_propiedades").select("id,titulo,descripcion,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,fotos,estado").eq("perfil_id", cfg.perfil_id).eq("publicada_web", true).eq("estado", "activa").limit(cfg.limite_propiedades_home ?? 6),
+    cfg.mostrar_testimonios
+      ? supabase.from("mi_web_testimonios").select("id,nombre_cliente,cargo_cliente,texto,rating").eq("perfil_id", cfg.perfil_id).eq("activo", true).order("orden").limit(12)
+      : Promise.resolve({ data: [] }),
   ]);
 
-  return { cfg: cfg as Config, perfil: perfil as Perfil, propiedades: (props as Propiedad[]) ?? [] };
+  return { cfg: cfg as Config, perfil: perfil as Perfil, propiedades: (props as Propiedad[]) ?? [], testimonios: (testimoniosRaw as Testimonio[]) ?? [] };
 }
 
 // ── Plantillas ──────────────────────────────────────────────────────────────
@@ -86,7 +94,7 @@ const formatPrecio = (p: number, m: string) =>
 
 // ── Template Component ────────────────────────────────────────────────────
 
-function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil; propiedades: Propiedad[] }) {
+function WebTemplate({ cfg, perfil, propiedades, testimonios }: { cfg: Config; perfil: Perfil; propiedades: Propiedad[]; testimonios: Testimonio[] }) {
   const t = TEMAS[cfg.plantilla] ?? TEMAS["rosario-classic"];
   const isDark = DARK_THEMES.includes(cfg.plantilla);
   const nombre = `${perfil.nombre} ${perfil.apellido}`;
@@ -178,6 +186,13 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
         .w-contacto-icon { width: 40px; height: 40px; border-radius: 8px; background: ${t.accent}15; border: 1px solid ${t.accent}30; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .w-contacto-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; color: ${t.textMuted}; font-family: 'Montserrat',sans-serif; margin-bottom: 3px; }
         .w-contacto-val { font-size: 14px; color: ${t.text}; font-weight: 500; }
+        /* Testimonios */
+        .w-test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .w-test-card { background: ${t.card}; border: 1px solid ${t.cardBorder}; border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+        .w-test-stars { color: #f59e0b; font-size: 15px; letter-spacing: 2px; }
+        .w-test-texto { font-size: 14px; color: ${t.textMuted}; line-height: 1.7; flex: 1; font-style: italic; }
+        .w-test-nombre { font-size: 13px; font-weight: 700; color: ${t.text}; }
+        .w-test-cargo { font-size: 11px; color: ${t.accent}; font-family: 'Montserrat',sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
         /* Footer */
         .w-footer { background: ${t.footer}; color: ${isDark ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.6)"}; padding: 32px 5%; text-align: center; font-size: 12px; font-family: 'Montserrat',sans-serif; }
         .w-footer-logo { font-size: 16px; font-weight: 800; color: ${isDark ? "#fff" : "#fff"}; margin-bottom: 8px; }
@@ -209,6 +224,7 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
         <nav className="w-nav">
           <a href={`/web/${cfg.slug}/propiedades`}>Propiedades</a>
           {cfg.mostrar_sobre_mi && <a href="#sobre-mi">Sobre mí</a>}
+          {cfg.mostrar_testimonios && testimonios.length > 0 && <a href="#testimonios">Testimonios</a>}
           {cfg.mostrar_formulario_tasacion && <a href="#tasacion">Tasación</a>}
           <a href="#contacto">Contacto</a>
         </nav>
@@ -352,6 +368,27 @@ function WebTemplate({ cfg, perfil, propiedades }: { cfg: Config; perfil: Perfil
         </section>
       )}
 
+      {/* ── TESTIMONIOS ── */}
+      {cfg.mostrar_testimonios && testimonios.length > 0 && (
+        <section className="w-section alt" id="testimonios">
+          <div className="w-section-tag">Testimonios</div>
+          <h2 className="w-section-h2">Lo que dicen mis clientes</h2>
+          <p className="w-section-desc">Experiencias reales de personas que confiaron en mí para comprar, vender o alquilar.</p>
+          <div className="w-test-grid">
+            {testimonios.map(t => (
+              <div key={t.id} className="w-test-card">
+                <div className="w-test-stars">{"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}</div>
+                <p className="w-test-texto">"{t.texto}"</p>
+                <div>
+                  <div className="w-test-nombre">{t.nombre_cliente}</div>
+                  {t.cargo_cliente && <div className="w-test-cargo">{t.cargo_cliente}</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ── FORMULARIO TASACIÓN ── */}
       {cfg.mostrar_formulario_tasacion && (
         <section className="w-section" id="tasacion" style={{ background: `linear-gradient(135deg, ${t.accent}10, ${t.bgAlt})` }}>
@@ -487,7 +524,7 @@ export default async function WebCorredorPage({ params }: { params: Promise<{ sl
   const { slug } = await params;
   const data = await getData(slug);
   if (!data) return notFound();
-  return <WebTemplate {...data} />;
+  return <WebTemplate cfg={data.cfg} perfil={data.perfil} propiedades={data.propiedades} testimonios={data.testimonios} />;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
