@@ -102,6 +102,14 @@ export default function RegistroPage() {
       setNombre(json.nombre ?? "");
       setApellido(json.apellido ?? "");
       setInmobiliaria(json.inmobiliaria ?? "");
+      if (json.telefono && !celularPersonal) {
+        const d = json.telefono.replace(/[^\d]/g, "");
+        const norm = d.startsWith("549") && d.length >= 12 ? `+${d}`
+          : d.startsWith("54") && d.length >= 11 ? `+54 9 ${d.slice(2)}`
+          : d.startsWith("0") && d.length >= 10 ? `+54 9 ${d.slice(1)}`
+          : d.length >= 8 ? `+54 9 ${d}` : null;
+        if (norm) setCelularPersonal(norm);
+      }
     } catch {
       setEstadoMatricula("error");
       setMensajeMatricula("Error de conexión. Intentá de nuevo.");

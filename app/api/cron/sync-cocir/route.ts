@@ -11,7 +11,10 @@ export async function GET(req: NextRequest) {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
-  const res = await fetch(`${baseUrl}/api/admin/sync-cocir`, { method: "GET" });
+  const res = await fetch(`${baseUrl}/api/admin/sync-cocir`, {
+    method: "GET",
+    headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
+  });
   const data = await res.json();
   return NextResponse.json(data);
 }

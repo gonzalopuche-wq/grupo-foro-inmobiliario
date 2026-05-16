@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   while (true) {
     const { data, error } = await sbAdmin
       .from("cocir_padron")
-      .select("nombre, apellido, inmobiliaria, estado, matricula")
+      .select("nombre, apellido, inmobiliaria, estado, matricula, telefono")
       .range(desde, desde + 999);
     if (error) return NextResponse.json({ error: `DB error: ${error.message}` }, { status: 500 });
     if (!data || data.length === 0) break;
@@ -85,5 +85,5 @@ export async function POST(req: NextRequest) {
   const { data: perfilExistente } = await sbAdmin.from("perfiles").select("id").eq("matricula", String(data.matricula)).maybeSingle();
   if (perfilExistente) return NextResponse.json({ error: "Esta matrícula ya tiene una cuenta registrada." }, { status: 409 });
 
-  return NextResponse.json({ ok: true, nombre: data.nombre, apellido: data.apellido, inmobiliaria: data.inmobiliaria ?? "", matricula: data.matricula });
+  return NextResponse.json({ ok: true, nombre: data.nombre, apellido: data.apellido, inmobiliaria: data.inmobiliaria ?? "", matricula: data.matricula, telefono: data.telefono ?? null });
 }

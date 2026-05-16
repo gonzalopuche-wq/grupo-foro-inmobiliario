@@ -681,7 +681,10 @@ export default function AdminPage() {
     setSyncingCocir(true);
     setSyncCocirRes(null);
     try {
-      const res = await fetch("/api/admin/sync-cocir");
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/admin/sync-cocir", {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
       const json = await res.json();
       setSyncCocirRes(json);
       if (json.ok) mostrarToast(`Padrón sincronizado: ${json.total} registros`);
@@ -833,6 +836,29 @@ export default function AdminPage() {
     setProcesando(id);
     await supabase.from("perfiles").update({ estado: nuevoEstado }).eq("id", id);
     if (nuevoEstado === "aprobado") {
+      // Backfill phone from COCIR if profile has none
+      const perfilAprobando = perfiles.find(p => p.id === id);
+      if (perfilAprobando?.matricula && !perfilAprobando.telefono) {
+        const mat = String(perfilAprobando.matricula).trim();
+        const { data: cocirRow } = await supabase
+          .from("cocir_padron")
+          .select("telefono")
+          .or(`matricula.eq.${mat},matricula.eq.${parseInt(mat, 10) || 0}`)
+          .maybeSingle();
+        if (cocirRow?.telefono) {
+          const digits = cocirRow.telefono.replace(/[^\d+]/g, "");
+          const d = digits.replace(/^\+/, "");
+          let tel: string | null = null;
+          if (d.startsWith("549") && d.length >= 12) tel = `+${d}`;
+          else if (d.startsWith("54") && d.length >= 11) tel = `+54 9 ${d.slice(2)}`;
+          else if (d.startsWith("0") && d.length >= 10) tel = `+54 9 ${d.slice(1)}`;
+          else if (d.length === 10) tel = `+54 9 ${d}`;
+          else if (d.length >= 8) tel = `+54 9 ${d}`;
+          if (tel) {
+            await supabase.from("perfiles").update({ telefono: tel, whatsapp_negocio: tel }).eq("id", id);
+          }
+        }
+      }
       // Primer mes siempre gratis para nuevos ingresos
       const treintaDias = new Date();
       treintaDias.setDate(treintaDias.getDate() + 30);
