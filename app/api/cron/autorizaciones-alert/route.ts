@@ -88,5 +88,40 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // ── Exclusividades de cartera_propiedades ─────────────────────────────────
+  // Check at 15 and 7 days — uses exact date match to avoid duplicate pushes
+  const UMBRALES_EXCL = [
+    { dias: 15, emoji: "⚠️", nivel: "15 días" },
+    { dias: 7,  emoji: "🚨", nivel: "7 días" },
+  ];
+
+  for (const { dias, emoji, nivel } of UMBRALES_EXCL) {
+    const fechaTarget = new Date();
+    fechaTarget.setDate(fechaTarget.getDate() + dias);
+    const fechaStr = fechaTarget.toISOString().slice(0, 10);
+
+    const { data: excls } = await sb
+      .from("cartera_propiedades")
+      .select("id, titulo, direccion, perfil_id")
+      .eq("estado", "activa")
+      .eq("fecha_fin_exclusividad", fechaStr);
+
+    if (!excls?.length) continue;
+
+    for (const prop of excls) {
+      const nombre = prop.titulo || prop.direccion || "Propiedad sin título";
+      const titulo = `${emoji} Exclusividad por vencer — ${nivel}`;
+      const cuerpo = `La exclusividad de "${nombre}" vence en ${dias} días. Renovar o liberar la propiedad.`;
+
+      await Promise.all([
+        enviarPush(prop.perfil_id, titulo, cuerpo, "/crm/cartera"),
+        insertarNotifInApp(prop.perfil_id, titulo, cuerpo),
+      ]);
+
+      enviadas++;
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   return NextResponse.json({ ok: true, enviadas });
 }
