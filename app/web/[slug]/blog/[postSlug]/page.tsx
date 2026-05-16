@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { ShareButton } from "./ShareButton";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,6 +49,28 @@ export default async function PostPublicoPage({ params }: { params: Promise<{ sl
 
   if (!post) return notFound();
 
+  const [{ data: prevPosts }, { data: nextPosts }] = await Promise.all([
+    supabase.from("mi_web_posts")
+      .select("titulo, slug")
+      .eq("perfil_id", cfg.perfil_id)
+      .eq("publicado", true)
+      .lt("created_at", post.created_at)
+      .order("created_at", { ascending: false })
+      .limit(1),
+    supabase.from("mi_web_posts")
+      .select("titulo, slug")
+      .eq("perfil_id", cfg.perfil_id)
+      .eq("publicado", true)
+      .gt("created_at", post.created_at)
+      .order("created_at", { ascending: true })
+      .limit(1),
+  ]);
+  const postPrev = prevPosts?.[0];
+  const postNext = nextPosts?.[0];
+
+  const words = post.contenido.split(/\s+/).filter(Boolean).length;
+  const minutosLectura = Math.max(1, Math.ceil(words / 200));
+
   const t = TEMAS[cfg.plantilla] ?? TEMAS["rosario-classic"];
   const isDark = DARK_THEMES.includes(cfg.plantilla);
   const nombre = perfil ? `${perfil.nombre} ${perfil.apellido}` : cfg.titulo_sitio ?? "Corredor";
@@ -85,6 +108,12 @@ export default async function PostPublicoPage({ params }: { params: Promise<{ sl
         .post-autor-mat { font-size: 11px; color: ${t.accent}; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
         .post-wa { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 9px 18px; background: ${t.accent}; color: #fff; border-radius: 6px; font-size: 12px; font-weight: 700; font-family: 'Montserrat',sans-serif; }
         .post-back { display: inline-flex; align-items: center; gap: 6px; margin-top: 32px; font-size: 13px; color: ${t.accent}; font-weight: 600; }
+        .post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; padding-top: 32px; border-top: 1px solid ${t.cardBorder}; }
+        .post-nav-item { padding: 16px; background: ${t.card}; border: 1px solid ${t.cardBorder}; border-radius: 10px; display: flex; flex-direction: column; gap: 6px; transition: border-color 0.2s; }
+        .post-nav-item:hover { border-color: ${t.accent}; }
+        .post-nav-label { font-size: 10px; color: ${t.textMuted}; font-family: 'Montserrat',sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+        .post-nav-titulo { font-size: 13px; color: ${t.text}; font-weight: 600; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .post-nav-right { text-align: right; }
         .w-footer { background: ${t.footer}; color: ${isDark ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.6)"}; padding: 28px 5%; text-align: center; font-size: 12px; font-family: 'Montserrat',sans-serif; }
         .w-footer-logo { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 6px; }
         .w-footer-logo span { color: ${t.accent}; }
@@ -113,6 +142,7 @@ export default async function PostPublicoPage({ params }: { params: Promise<{ sl
         <h1 className="post-titulo">{post.titulo}</h1>
         <div className="post-fecha">
           {new Date(post.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}
+          {" · "}{minutosLectura} min de lectura
         </div>
       </div>
 
@@ -141,6 +171,25 @@ export default async function PostPublicoPage({ params }: { params: Promise<{ sl
             )}
           </div>
         </div>
+
+        <ShareButton titulo={post.titulo} accent={t.accent} cardBorder={t.cardBorder} textMuted={t.textMuted} />
+
+        {(postPrev || postNext) && (
+          <div className="post-nav">
+            {postPrev ? (
+              <Link href={`/web/${slug}/blog/${postPrev.slug}`} className="post-nav-item">
+                <div className="post-nav-label">← Anterior</div>
+                <div className="post-nav-titulo">{postPrev.titulo}</div>
+              </Link>
+            ) : <div />}
+            {postNext ? (
+              <Link href={`/web/${slug}/blog/${postNext.slug}`} className="post-nav-item post-nav-right">
+                <div className="post-nav-label">Siguiente →</div>
+                <div className="post-nav-titulo">{postNext.titulo}</div>
+              </Link>
+            ) : <div />}
+          </div>
+        )}
 
         <Link href={`/web/${slug}/blog`} className="post-back">
           ← Volver al blog
