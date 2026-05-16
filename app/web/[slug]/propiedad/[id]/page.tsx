@@ -343,7 +343,6 @@ export default async function PropiedadDetailPage({
               propiedadTitulo={prop.titulo ?? ""}
               accentColor={t.accent}
               textColor={t.text}
-              cardBg={t.card}
               cardBorder={t.cardBorder}
               textMuted={t.textMuted}
             />

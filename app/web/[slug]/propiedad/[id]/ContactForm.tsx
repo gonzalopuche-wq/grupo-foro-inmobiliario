@@ -7,12 +7,11 @@ interface Props {
   propiedadTitulo: string;
   accentColor: string;
   textColor: string;
-  cardBg: string;
   cardBorder: string;
   textMuted: string;
 }
 
-export default function ContactForm({ slug, propiedadId, propiedadTitulo, accentColor, textColor, cardBg, cardBorder, textMuted }: Props) {
+export default function ContactForm({ slug, propiedadId, propiedadTitulo, accentColor, textColor, cardBorder, textMuted }: Props) {
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -58,9 +57,9 @@ export default function ContactForm({ slug, propiedadId, propiedadTitulo, accent
   return (
     <form onSubmit={enviar} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: textMuted, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Consultá por esta propiedad</div>
-      <input style={inp} placeholder="Tu nombre *" value={nombre} onChange={e => setNombre(e.target.value)} required />
-      <input style={inp} placeholder="Tu teléfono / WhatsApp" value={telefono} onChange={e => setTelefono(e.target.value)} />
-      <textarea style={{ ...inp, resize: "vertical", minHeight: 80 }} placeholder="Tu mensaje (opcional)" value={mensaje} onChange={e => setMensaje(e.target.value)} />
+      <input style={inp} placeholder="Tu nombre *" value={nombre} onChange={e => setNombre(e.target.value)} required aria-label="Nombre" />
+      <input style={inp} placeholder="Tu teléfono / WhatsApp" value={telefono} onChange={e => setTelefono(e.target.value)} aria-label="Teléfono" />
+      <textarea style={{ ...inp, resize: "vertical", minHeight: 80 }} placeholder="Tu mensaje (opcional)" value={mensaje} onChange={e => setMensaje(e.target.value)} aria-label="Mensaje" />
       {estado === "error" && <div style={{ fontSize: 12, color: "#ef4444" }}>Error al enviar. Intentá de nuevo.</div>}
       <button type="submit" disabled={estado === "enviando" || !nombre.trim()}
         style={{ padding: "11px", background: accentColor, color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 700, fontFamily: "Montserrat,sans-serif", cursor: "pointer", opacity: (estado === "enviando" || !nombre.trim()) ? 0.6 : 1 }}>

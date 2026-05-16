@@ -31,13 +31,13 @@ export async function POST(req: NextRequest) {
       .eq("id", propiedad_id)
       .single();
     if (prop && MILESTONES.includes(prop.vistas)) {
-      sb.from("notificaciones").insert({
+      await sb.from("notificaciones").insert({
         user_id: prop.perfil_id,
         titulo: `🎯 ${prop.vistas} vistas en tu propiedad`,
         mensaje: `"${prop.titulo ?? "Tu propiedad"}" alcanzó ${prop.vistas} visitas en tu sitio web.`,
         tipo: "cartera",
         url: "/crm/estadisticas",
-      }).then(() => {});
+      });
     }
 
     return NextResponse.json({ ok: true });
