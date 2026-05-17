@@ -424,70 +424,180 @@ export default function DashboardPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
-        .db-fecha { font-size: 12px; color: rgba(255,255,255,0.3); text-transform: capitalize; margin-bottom: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+
+        /* ── Tokens ── */
+        :root {
+          --db-bg: #060608;
+          --db-s1: rgba(255,255,255,0.025);
+          --db-s2: rgba(255,255,255,0.04);
+          --db-bd: rgba(255,255,255,0.07);
+          --db-bd2: rgba(255,255,255,0.12);
+          --db-red: #cc0000;
+          --db-red-soft: rgba(204,0,0,0.08);
+          --db-red-bd: rgba(204,0,0,0.28);
+          --db-txt: rgba(255,255,255,0.88);
+          --db-txt2: rgba(255,255,255,0.45);
+          --db-txt3: rgba(255,255,255,0.22);
+        }
+
+        /* ── Base ── */
+        .db-fecha {
+          font-size: 11px; color: var(--db-txt3); text-transform: capitalize;
+          margin-bottom: 24px; font-family: 'Montserrat',sans-serif;
+          font-weight: 500; letter-spacing: 0.08em;
+        }
+
+        /* ── Panels ── */
+        .db-panel {
+          background: var(--db-s1);
+          border: 1px solid var(--db-bd);
+          border-radius: 10px;
+          padding: 22px 26px;
+          position: relative;
+          overflow: hidden;
+          backdrop-filter: blur(4px);
+        }
+        .db-panel::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 10px;
+          background: linear-gradient(135deg, rgba(255,255,255,0.015) 0%, transparent 60%);
+          pointer-events: none;
+        }
+        .db-panel.red-top { border-top-color: var(--db-red); }
+        .db-panel.red-top::after {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0; height: 1px;
+          background: linear-gradient(90deg, var(--db-red) 0%, rgba(204,0,0,0.15) 60%, transparent 100%);
+        }
+
+        /* ── Section title ── */
+        .db-sec-titulo {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 9px; font-weight: 800;
+          letter-spacing: 0.26em; text-transform: uppercase;
+          color: var(--db-txt3);
+          margin-bottom: 16px;
+          display: flex; align-items: center; gap: 10px;
+        }
+        .db-sec-titulo::after {
+          content: ''; flex: 1; height: 1px;
+          background: linear-gradient(90deg, var(--db-bd) 0%, transparent 100%);
+        }
+
+        /* ── Clima ── */
         .db-top-row { display: grid; grid-template-columns: 1fr 220px; gap: 16px; margin-bottom: 20px; }
-        .db-panel { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 24px; position: relative; overflow: hidden; }
-        .db-panel.red-top::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #cc0000, transparent); }
-        .db-sec-titulo { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
         .db-hoy-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
-        .db-hoy-num { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 800; color: #cc0000; line-height: 1; }
-        .db-hoy-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
-        .db-clima-card { border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: all 0.25s; border: 1px solid rgba(255,255,255,0.08); }
-        .db-clima-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+        .db-hoy-num { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 900; color: var(--db-red); line-height: 1; }
+        .db-hoy-label { font-size: 10px; color: var(--db-txt2); margin-top: 5px; font-family: 'Inter',sans-serif; }
+        .db-clima-card {
+          border-radius: 10px; display: flex; flex-direction: column; overflow: hidden;
+          cursor: pointer; transition: all 0.22s; border: 1px solid var(--db-bd);
+          background: var(--db-s1);
+        }
+        .db-clima-card:hover { border-color: var(--db-bd2); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
         .db-clima-top { padding: 14px 16px 0; display: flex; align-items: center; justify-content: space-between; }
-        .db-clima-ciudad { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
-        .db-clima-hora { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.35); }
+        .db-clima-ciudad { font-size: 8px; font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--db-txt2); }
+        .db-clima-hora { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; color: var(--db-txt3); }
         .db-clima-centro { padding: 10px 16px 8px; text-align: center; }
-        .db-clima-emoji { font-size: 40px; line-height: 1; display: block; margin-bottom: 4px; }
-        .db-clima-temp { font-family: 'Montserrat', sans-serif; font-size: 42px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
-        .db-clima-desc { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 4px; font-style: italic; }
-        .db-clima-minmax { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 5px; display: flex; gap: 8px; justify-content: center; }
-        .db-clima-minmax .up { color: #fca5a5; }
-        .db-clima-minmax .dn { color: #93c5fd; }
-        .db-clima-calidad { margin: 0 12px 10px; padding: 5px 10px; border-radius: 20px; font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.05em; text-align: center; }
-        .db-clima-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border-top: 1px solid rgba(255,255,255,0.08); }
-        .db-clima-stat { padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; border-right: 1px solid rgba(255,255,255,0.06); }
+        .db-clima-emoji { font-size: 38px; line-height: 1; display: block; margin-bottom: 4px; }
+        .db-clima-temp { font-family: 'Montserrat', sans-serif; font-size: 44px; font-weight: 900; line-height: 1; letter-spacing: -0.04em; }
+        .db-clima-desc { font-size: 10px; color: var(--db-txt2); margin-top: 5px; font-style: italic; }
+        .db-clima-minmax { font-size: 10px; color: var(--db-txt3); margin-top: 5px; display: flex; gap: 8px; justify-content: center; }
+        .db-clima-minmax .up { color: #fca5a5; } .db-clima-minmax .dn { color: #93c5fd; }
+        .db-clima-calidad { margin: 0 12px 10px; padding: 5px 10px; border-radius: 20px; font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 800; letter-spacing: 0.08em; text-align: center; }
+        .db-clima-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border-top: 1px solid var(--db-bd); }
+        .db-clima-stat { padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; border-right: 1px solid rgba(255,255,255,0.05); }
         .db-clima-stat:last-child { border-right: none; }
         .db-clima-stat-val { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; }
-        .db-clima-stat-label { font-size: 7px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Montserrat',sans-serif; font-weight: 700; }
-        .db-clima-ciudad-btn { background: none; border: none; border-top: 1px solid rgba(255,255,255,0.05); color: rgba(200,0,0,0.6); font-size: 10px; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; padding: 7px 18px; width: 100%; transition: color 0.2s; }
-        .db-clima-ciudad-btn:hover { color: #cc0000; }
+        .db-clima-stat-label { font-size: 7px; color: var(--db-txt3); text-transform: uppercase; letter-spacing: 0.12em; font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .db-clima-ciudad-btn { background: none; border: none; border-top: 1px solid rgba(255,255,255,0.05); color: rgba(204,0,0,0.5); font-size: 10px; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; padding: 7px 18px; width: 100%; transition: color 0.2s; }
+        .db-clima-ciudad-btn:hover { color: var(--db-red); }
         .db-ciudad-form { display: flex; gap: 6px; padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.06); }
-        .db-ciudad-input { flex: 1; padding: 7px 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #fff; font-size: 12px; outline: none; font-family: 'Inter', sans-serif; }
-        .db-ciudad-input:focus { border-color: #cc0000; }
-        .db-ciudad-input::placeholder { color: rgba(255,255,255,0.25); }
-        .db-ciudad-btn { padding: 7px 12px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-size: 13px; cursor: pointer; font-weight: 700; }
+        .db-ciudad-input { flex: 1; padding: 7px 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 5px; color: #fff; font-size: 12px; outline: none; font-family: 'Inter', sans-serif; }
+        .db-ciudad-input:focus { border-color: var(--db-red); }
+        .db-ciudad-input::placeholder { color: var(--db-txt3); }
+        .db-ciudad-btn { padding: 7px 12px; background: var(--db-red); border: none; border-radius: 5px; color: #fff; font-size: 13px; cursor: pointer; font-weight: 700; }
+
+        /* ── Accesos rápidos ── */
         .db-accesos { margin-bottom: 20px; }
-        .db-accesos-grid { display: grid; grid-template-columns: repeat(8,1fr); gap: 10px; }
-        .db-acceso { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
-        .db-acceso:hover { border-color: rgba(200,0,0,0.4); background: rgba(200,0,0,0.06); transform: translateY(-2px); }
-        .db-acceso.primary { border-color: rgba(200,0,0,0.3); background: rgba(200,0,0,0.07); }
-        .db-acceso.primary:hover { background: rgba(200,0,0,0.14); border-color: #cc0000; }
-        .db-acceso-icon { font-size: 22px; }
-        .db-acceso-label { font-size: 9px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.04em; line-height: 1.3; }
-        .db-acceso.primary .db-acceso-label { color: rgba(255,255,255,0.8); }
-        .db-indicadores { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-        .db-ind { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px 20px; }
-        .db-ind-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.25); font-family: 'Montserrat', sans-serif; margin-bottom: 8px; }
-        .db-ind-valor { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; line-height: 1; }
-        .db-ind-valor.verde { color: #22c55e; }
-        .db-ind-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; }
-        .db-ind-cv { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
-        .db-ind-cv b { color: rgba(255,255,255,0.7); }
-        .db-acums { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; }
-        .db-acum-item { text-align: center; }
-        .db-acum-label { font-size: 7px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 3px; }
-        .db-acum-val { font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 800; }
-        .db-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-        .db-panel-titulo { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-        .db-link-badge { font-size: 9px; padding: 3px 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.3); border-radius: 20px; color: #cc0000; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-        .db-empty { font-size: 13px; color: rgba(255,255,255,0.2); text-align: center; padding: 24px 0; font-style: italic; }
-        .skeleton { background: rgba(255,255,255,0.06); border-radius: 4px; animation: pulse 1.5s ease-in-out infinite; }
-        @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
-        @media (max-width: 1100px) {
-          .db-accesos-grid { grid-template-columns: repeat(4,1fr) !important; }
+        .db-accesos-grid { display: grid; grid-template-columns: repeat(8,1fr); gap: 8px; }
+        .db-acceso {
+          background: var(--db-s1); border: 1px solid var(--db-bd);
+          border-radius: 10px; padding: 16px 8px;
+          display: flex; flex-direction: column; align-items: center; gap: 9px;
+          cursor: pointer; text-align: center; text-decoration: none;
+          transition: all 0.18s;
+          position: relative; overflow: hidden;
         }
+        .db-acceso::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%); pointer-events: none; }
+        .db-acceso:hover { border-color: var(--db-red-bd); background: var(--db-red-soft); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+        .db-acceso.primary { border-color: var(--db-red-bd); background: var(--db-red-soft); }
+        .db-acceso.primary:hover { background: rgba(204,0,0,0.14); border-color: var(--db-red); box-shadow: 0 8px 24px rgba(204,0,0,0.15); }
+        .db-acceso-icon { font-size: 21px; }
+        .db-acceso-label { font-size: 8px; color: var(--db-txt2); font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.05em; line-height: 1.4; text-transform: uppercase; }
+        .db-acceso.primary .db-acceso-label { color: rgba(255,255,255,0.85); }
+
+        /* ── Indicadores económicos ── */
+        .db-indicadores { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .db-ind {
+          background: var(--db-s1); border: 1px solid var(--db-bd);
+          border-radius: 10px; padding: 18px 22px;
+          position: relative; overflow: hidden;
+          transition: border-color 0.18s;
+        }
+        .db-ind:hover { border-color: var(--db-bd2); }
+        .db-ind::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, transparent 100%); }
+        .db-ind-label { font-size: 8px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--db-txt3); font-family: 'Montserrat', sans-serif; margin-bottom: 10px; }
+        .db-ind-valor { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: var(--db-txt); line-height: 1; letter-spacing: -0.01em; }
+        .db-ind-valor.verde { color: #22c55e; }
+        .db-ind-sub { font-size: 10px; color: var(--db-txt3); margin-top: 5px; font-family: 'Inter',sans-serif; }
+        .db-ind-cv { font-size: 11px; color: var(--db-txt2); margin-top: 3px; font-family: 'Inter',sans-serif; }
+        .db-ind-cv b { color: var(--db-txt); font-weight: 600; }
+        .db-acums { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; }
+        .db-acum-item { text-align: center; }
+        .db-acum-label { font-size: 7px; font-family: 'Montserrat',sans-serif; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--db-txt3); margin-bottom: 4px; }
+        .db-acum-val { font-size: 12px; font-family: 'Montserrat',sans-serif; font-weight: 800; }
+
+        /* ── Bottom row panels ── */
+        .db-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .db-panel-titulo {
+          font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800;
+          letter-spacing: 0.22em; text-transform: uppercase;
+          color: var(--db-txt3); margin-bottom: 16px;
+          display: flex; align-items: center; justify-content: space-between;
+        }
+        .db-link-badge {
+          font-size: 8px; padding: 3px 9px;
+          background: var(--db-red-soft); border: 1px solid var(--db-red-bd);
+          border-radius: 20px; color: var(--db-red);
+          text-decoration: none; font-family: 'Montserrat', sans-serif;
+          font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+          transition: background 0.15s;
+        }
+        .db-link-badge:hover { background: rgba(204,0,0,0.16); }
+        .db-empty { font-size: 12px; color: var(--db-txt3); text-align: center; padding: 28px 0; font-family: 'Inter',sans-serif; }
+
+        /* ── Skeleton ── */
+        .skeleton { background: rgba(255,255,255,0.05); border-radius: 5px; animation: db-pulse 1.8s ease-in-out infinite; }
+        @keyframes db-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.75; } }
+
+        /* ── Mi panel stat cards ── */
+        .db-mi-card {
+          background: var(--db-s1); border: 1px solid var(--db-bd);
+          border-radius: 10px; padding: 18px 20px;
+          display: flex; align-items: center; gap: 16px;
+          text-decoration: none; transition: all 0.18s;
+          position: relative; overflow: hidden;
+        }
+        .db-mi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.06) 0%, transparent 100%); pointer-events: none; }
+        .db-mi-card:hover { border-color: var(--db-bd2); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
+
+        /* ── Responsive ── */
+        @media (max-width: 1100px) { .db-accesos-grid { grid-template-columns: repeat(4,1fr) !important; } }
         @media (max-width: 900px) {
           .db-top-row { grid-template-columns: 1fr; }
           .db-accesos-grid { grid-template-columns: repeat(4,1fr) !important; }
@@ -551,18 +661,16 @@ export default function DashboardPage() {
           {[
             { n: miStats.loadingMi ? "…" : miStats.cartera.toString(), l: "Propiedades activas", ic: "🏘️", href: "/crm/cartera", color: "#cc0000" },
             { n: miStats.loadingMi ? "…" : miStats.crm.toString(), l: "Contactos CRM", ic: "👥", href: "/crm", color: "#3b82f6" },
-            { n: miStats.loadingMi ? "…" : miStats.negocios.toString(), l: "Negocios activos", ic: "🤝", href: "/crm/negocios", color: miStats.negocios > 0 ? "#f59e0b" : "rgba(255,255,255,0.3)" },
-            { n: miStats.loadingMi ? "…" : miStats.tareas.toString(), l: "Tareas pendientes", ic: "✅", href: "/crm/tareas", color: miStats.tareas > 0 ? "#a855f7" : "rgba(255,255,255,0.3)" },
-            { n: miStats.loadingMi ? "…" : miStats.leads.toString(), l: "Leads sin leer", ic: "📬", href: "/mi-web/leads", color: miStats.leads > 0 ? "#f97316" : "rgba(255,255,255,0.3)" },
-            { n: miStats.loadingMi ? "…" : miStats.vistas.toString(), l: "Vistas web", ic: "👁", href: "/crm/estadisticas", color: miStats.vistas > 0 ? "#a78bfa" : "rgba(255,255,255,0.3)" },
+            { n: miStats.loadingMi ? "…" : miStats.negocios.toString(), l: "Negocios activos", ic: "🤝", href: "/crm/negocios", color: miStats.negocios > 0 ? "#10b981" : "rgba(255,255,255,0.35)" },
+            { n: miStats.loadingMi ? "…" : miStats.tareas.toString(), l: "Tareas pendientes", ic: "📋", href: "/crm/tareas", color: miStats.tareas > 0 ? "#f97316" : "rgba(255,255,255,0.35)" },
+            { n: miStats.loadingMi ? "…" : miStats.leads.toString(), l: "Leads sin leer", ic: "📬", href: "/mi-web/leads", color: miStats.leads > 0 ? "#e879f9" : "rgba(255,255,255,0.35)" },
+            { n: miStats.loadingMi ? "…" : miStats.vistas.toString(), l: "Vistas web", ic: "👁", href: "/crm/estadisticas", color: miStats.vistas > 0 ? "#a78bfa" : "rgba(255,255,255,0.35)" },
           ].map(({ n, l, ic, href, color }) => (
-            <a key={l} href={href} style={{background:"rgba(14,14,14,0.9)",border:`1px solid rgba(255,255,255,0.07)`,borderRadius:8,padding:"16px 20px",display:"flex",alignItems:"center",gap:14,textDecoration:"none",transition:"border-color 0.2s"}}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)")}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)")}>
-              <span style={{fontSize:26,flexShrink:0}}>{ic}</span>
-              <div>
-                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:28,fontWeight:800,color,lineHeight:1}}>{n}</div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:4,fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>{l}</div>
+            <a key={l} href={href} className="db-mi-card">
+              <span style={{fontSize:24,flexShrink:0,filter:"saturate(0.8)"}}>{ic}</span>
+              <div style={{minWidth:0}}>
+                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:30,fontWeight:900,color,lineHeight:1,letterSpacing:"-0.02em"}}>{n}</div>
+                <div style={{fontSize:9,color:"rgba(255,255,255,0.38)",marginTop:5,fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",textTransform:"uppercase",fontWeight:700}}>{l}</div>
               </div>
             </a>
           ))}

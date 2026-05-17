@@ -401,10 +401,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         .sidebar-logout { padding: 4px 6px; background: none; border: none; color: rgba(255,255,255,0.25); cursor: pointer; font-size: 14px; transition: color 0.15s; }
         .sidebar-logout:hover { color: #cc0000; }
         .main-content { margin-left: 220px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
-        .topbar { display: none; height: 56px; background: rgba(6,6,6,0.98); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0 16px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
-        .topbar-logo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
+        .topbar { display: none; height: 54px; background: rgba(5,5,5,0.98); border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0 14px; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 40; backdrop-filter: blur(8px); }
+        .topbar-logo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; flex: 1; text-align: center; letter-spacing: 0.04em; }
         .topbar-logo span { color: #cc0000; }
-        .topbar-menu-btn { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 20px; cursor: pointer; padding: 6px; }
+        .topbar-menu-btn { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.65); font-size: 18px; cursor: pointer; padding: 5px 9px; line-height: 1; flex-shrink: 0; transition: all 0.15s; }
+        .topbar-menu-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
         .page-content { flex: 1; padding: 24px 28px; }
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 45; }
         @media (max-width: 900px) {
@@ -510,8 +511,9 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
 
         <main className="main-content">
           <div className="topbar">
-            <div className="topbar-logo">GFI<span>®</span></div>
             <button className="topbar-menu-btn" onClick={() => setMenuAbierto(true)}>☰</button>
+            <div className="topbar-logo">GFI<span>®</span></div>
+            <div style={{width:40,flexShrink:0}} />
           </div>
           {suscripcionWarning === "gracia" && (
             <div style={{ background: "rgba(234,179,8,0.1)", borderBottom: "1px solid rgba(234,179,8,0.25)", padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
