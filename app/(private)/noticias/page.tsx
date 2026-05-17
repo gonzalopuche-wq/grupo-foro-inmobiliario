@@ -57,6 +57,9 @@ export default function NoticiasPage() {
   const [fetchandoLink, setFetchandoLink] = useState(false);
   const [publicandoRedes, setPublicandoRedes] = useState<string | null>(null);
   const [redesResultados, setRedesResultados] = useState<Record<string, { red: string; ok: boolean; error?: string }[]>>({});
+  const [verificando, setVerificando] = useState(false);
+  const [verificacionResult, setVerificacionResult] = useState<{ red: string; ok: boolean; configurada: boolean; nombre?: string; detalle?: string; error?: string }[] | null>(null);
+  const [mostrarVerificacion, setMostrarVerificacion] = useState(false);
 
   const fetchLinkPreview = async (url: string) => {
     if (!url.startsWith("http")) return;
@@ -145,6 +148,23 @@ export default function NoticiasPage() {
     // Auto-publicar en redes al aprobar
     const noticia = noticias.find(n => n.id === id);
     if (noticia) publicarEnRedes({ ...noticia, estado: "aprobada" });
+  };
+
+  const verificarRedes = async () => {
+    setVerificando(true);
+    setVerificacionResult(null);
+    setMostrarVerificacion(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/social/verificar", {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+      const data = await res.json();
+      setVerificacionResult(data.resultados ?? []);
+    } catch {
+      setVerificacionResult([{ red: "Error", ok: false, configurada: false, error: "No se pudo conectar al servidor" }]);
+    }
+    setVerificando(false);
   };
 
   const publicarEnRedes = async (noticia: Noticia) => {
@@ -281,6 +301,17 @@ export default function NoticiasPage() {
         .not-toggle { width: 38px; height: 22px; border-radius: 11px; position: relative; transition: background 0.2s; flex-shrink: 0; }
         .not-toggle-knob { position: absolute; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left 0.2s; }
         .not-empty { padding: 60px 32px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
+        .not-btn-verificar { padding: 7px 14px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; color: #8b5cf6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+        .not-btn-verificar:hover { background: rgba(139,92,246,0.2); }
+        .not-btn-verificar:disabled { opacity: 0.5; cursor: not-allowed; }
+        .not-verif-panel { background: rgba(14,14,14,0.98); border: 1px solid rgba(139,92,246,0.25); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .not-verif-titulo { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #8b5cf6; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .not-verif-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .not-verif-card { padding: 12px 14px; border-radius: 6px; border: 1px solid; }
+        .not-verif-red { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+        .not-verif-nombre { font-size: 13px; font-weight: 600; }
+        .not-verif-detalle { font-size: 10px; margin-top: 2px; opacity: 0.55; }
+        .not-verif-error { font-size: 11px; margin-top: 4px; }
 
         @media (max-width: 768px) {
           .not-container { flex-direction: column; height: auto; }
@@ -299,10 +330,53 @@ export default function NoticiasPage() {
             Información relevante para el corredor inmobiliario
           </div>
         </div>
-        <button className="not-btn-nueva" onClick={() => setMostrarForm(true)}>
-          + Nueva noticia
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          {esAdmin && (
+            <button className="not-btn-verificar" onClick={verificarRedes} disabled={verificando}>
+              {verificando ? "Verificando..." : "🔍 Verificar redes"}
+            </button>
+          )}
+          <button className="not-btn-nueva" onClick={() => setMostrarForm(true)}>
+            + Nueva noticia
+          </button>
+        </div>
       </div>
+
+      {/* Panel de verificación de tokens */}
+      {mostrarVerificacion && (
+        <div className="not-verif-panel">
+          <div className="not-verif-titulo">
+            <span>Estado de conexiones — Chequeo interno</span>
+            <button onClick={() => setMostrarVerificacion(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 16, cursor: "pointer" }}>✕</button>
+          </div>
+          {verificando ? (
+            <div style={{ display: "flex", gap: 10, alignItems: "center", color: "rgba(255,255,255,0.4)", fontSize: 13 }}>
+              <div style={{ width: 16, height: 16, border: "2px solid rgba(139,92,246,0.3)", borderTopColor: "#8b5cf6", borderRadius: "50%", animation: "spin 0.7s linear infinite", flexShrink: 0 }} />
+              Consultando APIs de cada red social...
+            </div>
+          ) : (
+            <div className="not-verif-grid">
+              {(verificacionResult ?? []).map(r => (
+                <div key={r.red} className="not-verif-card" style={{ background: r.ok ? "rgba(34,197,94,0.05)" : r.configurada ? "rgba(239,68,68,0.05)" : "rgba(255,255,255,0.03)", borderColor: r.ok ? "rgba(34,197,94,0.2)" : r.configurada ? "rgba(239,68,68,0.2)" : "rgba(255,255,255,0.07)" }}>
+                  <div className="not-verif-red" style={{ color: r.ok ? "#22c55e" : r.configurada ? "#ef4444" : "rgba(255,255,255,0.3)" }}>
+                    {r.ok ? "✓" : r.configurada ? "✗" : "—"} {r.red}
+                  </div>
+                  {r.ok ? (
+                    <>
+                      <div className="not-verif-nombre" style={{ color: "#fff" }}>{r.nombre}</div>
+                      {r.detalle && <div className="not-verif-detalle" style={{ color: "rgba(255,255,255,0.5)" }}>{r.detalle}</div>}
+                    </>
+                  ) : (
+                    <div className="not-verif-error" style={{ color: r.configurada ? "#ef4444" : "rgba(255,255,255,0.3)" }}>
+                      {r.error ?? (r.configurada ? "Error de autenticación" : "Sin configurar")}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {loading ? (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
