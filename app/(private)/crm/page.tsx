@@ -1211,6 +1211,7 @@ export default function CrmPage() {
           <Link href="/crm/comisiones-pendientes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones</Link>
           <Link href="/crm/pipeline-visual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🗂️ Pipeline Visual</Link>
           <Link href="/crm/forecast-pipeline" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📈 Forecast</Link>
+          <Link href="/crm/checklist-cierre" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Checklist Cierre</Link>
         </div>
 
         <div className="crm-tab-content">
