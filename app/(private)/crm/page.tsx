@@ -1192,6 +1192,7 @@ export default function CrmPage() {
           <Link href="/crm/retencion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔄 Retención</Link>
           <Link href="/crm/onboarding" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Onboarding</Link>
           <Link href="/crm/negociacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Negociación</Link>
+          <Link href="/crm/clientes-vip" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💎 Clientes VIP</Link>
         </div>
 
         <div className="crm-tab-content">
