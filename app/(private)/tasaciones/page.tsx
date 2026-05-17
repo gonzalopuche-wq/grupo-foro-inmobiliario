@@ -138,6 +138,72 @@ export default function TasacionesPage() {
     setTasando(false)
   }
 
+  const exportarPDF = () => {
+    if (!resultado) return
+    const fecha = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' })
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<title>Tasación GFI® — ${form.barrio}</title>
+<style>
+  body { font-family: 'Georgia',serif; color: #111; margin: 0; padding: 32px 40px; font-size: 13px; line-height: 1.6; }
+  h1 { font-size: 22px; font-weight: 700; color: #cc0000; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .subtitle { color: #666; font-size: 12px; margin-bottom: 28px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .kpi { background: #f8f8f8; border: 1px solid #e8e8e8; border-radius: 6px; padding: 14px 16px; }
+  .kpi-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-family: sans-serif; margin-bottom: 4px; }
+  .kpi-val { font-size: 18px; font-weight: 700; color: #111; font-family: sans-serif; }
+  .kpi-val.highlight { color: #cc0000; }
+  .section { margin-bottom: 20px; }
+  .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; font-family: sans-serif; border-bottom: 1px solid #e0e0e0; padding-bottom: 5px; margin-bottom: 10px; }
+  .analisis { color: #333; }
+  .factor-list { margin: 0; padding-left: 18px; }
+  .factor-list li { margin-bottom: 3px; }
+  .factor-pos { color: #166534; }
+  .factor-neg { color: #991b1b; }
+  .comp-card { background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px 14px; margin-bottom: 8px; }
+  .comp-portal { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #888; font-family: sans-serif; }
+  .comp-titulo { font-weight: 600; color: #111; margin: 2px 0; }
+  .comp-meta { font-size: 11px; color: #555; }
+  .rec { background: #fff8f0; border-left: 3px solid #f97316; padding: 10px 14px; font-style: italic; color: #333; margin-top: 6px; }
+  .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e0e0e0; font-size: 10px; color: #aaa; text-align: center; font-family: sans-serif; }
+  @media print { @page { margin: 1.5cm; } }
+</style>
+</head>
+<body>
+<h1>Tasación IA GFI®</h1>
+<div class="subtitle">${form.tipo} · ${form.barrio} · ${form.sup_cubierta} m² · ${form.ambientes} amb. · Fecha: ${fecha}</div>
+
+<div class="grid">
+  <div class="kpi"><div class="kpi-label">Valor sugerido</div><div class="kpi-val highlight">USD ${resultado.valor_sugerido.toLocaleString('es-AR')}</div></div>
+  <div class="kpi"><div class="kpi-label">Rango</div><div class="kpi-val">USD ${resultado.valor_min.toLocaleString('es-AR')} – ${resultado.valor_max.toLocaleString('es-AR')}</div></div>
+  <div class="kpi"><div class="kpi-label">Precio/m²</div><div class="kpi-val">USD ${resultado.precio_m2.toLocaleString('es-AR')}/m²</div></div>
+  ${resultado.alquiler_estimado ? `<div class="kpi"><div class="kpi-label">Alquiler estimado</div><div class="kpi-val">ARS ${resultado.alquiler_estimado.toLocaleString('es-AR')}/mes</div></div>` : ''}
+</div>
+
+${resultado.justificacion_valor_hoy ? `<div class="section"><div class="section-title">Justificación del valor</div><div class="analisis">${resultado.justificacion_valor_hoy}</div></div>` : ''}
+
+<div class="section"><div class="section-title">Análisis de mercado</div><div class="analisis">${resultado.analisis}</div></div>
+
+${resultado.factores_positivos.length > 0 ? `<div class="section"><div class="section-title">Factores positivos</div><ul class="factor-list">${resultado.factores_positivos.map(f => `<li class="factor-pos">${f}</li>`).join('')}</ul></div>` : ''}
+${resultado.factores_negativos.length > 0 ? `<div class="section"><div class="section-title">Factores negativos</div><ul class="factor-list">${resultado.factores_negativos.map(f => `<li class="factor-neg">${f}</li>`).join('')}</ul></div>` : ''}
+
+${resultado.comparables_reales && resultado.comparables_reales.length > 0 ? `<div class="section"><div class="section-title">Comparables reales utilizados</div>${resultado.comparables_reales.map((c, i) => { const sup = c.m2 ?? 0; return `<div class="comp-card"><div class="comp-portal">${c.portal ?? 'Portal'}</div><div class="comp-titulo">${c.titulo}</div><div class="comp-meta">${sup > 0 ? `${sup} m² · ` : ''}USD ${c.precio.toLocaleString('es-AR')}${sup > 0 ? ` · USD ${Math.round(c.precio / sup).toLocaleString('es-AR')}/m²` : ''}${resultado.comparables_justificaciones?.[i] ? ` · ${resultado.comparables_justificaciones[i]}` : ''}</div></div>`; }).join('')}</div>` : ''}
+
+<div class="section"><div class="section-title">Recomendación</div><div class="rec">${resultado.recomendacion}</div></div>
+
+<div class="footer">Tasación generada por IA · Grupo Foro Inmobiliario · ${fecha} · Este informe es orientativo y no reemplaza una tasación profesional certificada.</div>
+</body>
+</html>`
+    const win = window.open('', '_blank')
+    if (!win) return
+    win.document.write(html)
+    win.document.close()
+    win.focus()
+    setTimeout(() => { win.print(); }, 400)
+  }
+
   const copiarResultado = () => {
     if (!resultado) return
     const txt = `TASACIÓN IA GFI® — ${new Date().toLocaleDateString('es-AR')}
@@ -483,8 +549,8 @@ ${resultado.recomendacion}`
                 <button onClick={copiarResultado} style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
                   📋 Copiar tasación
                 </button>
-                <button onClick={() => window.print()} style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
-                  🖨 Imprimir / PDF
+                <button onClick={exportarPDF} style={{ flex: 1, padding: '10px', background: 'rgba(204,0,0,0.08)', border: '1px solid rgba(204,0,0,0.25)', borderRadius: 8, color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
+                  📄 Exportar PDF
                 </button>
               </div>
 
