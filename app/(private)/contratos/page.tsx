@@ -109,6 +109,7 @@ export default function ContratosPage() {
   const [plantillaPreview, setPlantillaPreview] = useState('')
   const [guardando, setGuardando]         = useState(false)
   const [plantillaMsg, setPlantillaMsg]   = useState('')
+  const [analizando, setAnalizando]       = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }: { data: { user: { id: string } | null } }) => {
@@ -246,6 +247,32 @@ export default function ContratosPage() {
       setTimeout(() => setPlantillaMsg(''), 3000)
     }
     setGuardando(false)
+  }
+
+  const analizarConIA = async () => {
+    if (!plantillaContenido.trim()) return
+    setAnalizando(true)
+    setPlantillaMsg('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/ia-plantilla-analizar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ contenido: plantillaContenido }),
+      })
+      const { contenido: procesado, variables_insertadas, error } = await res.json()
+      if (error) {
+        setPlantillaMsg(`Error: ${error}`)
+      } else {
+        setPlantillaContenido(procesado)
+        setPlantillaMsg(`✅ IA detectó y aplicó ${variables_insertadas} variable${variables_insertadas !== 1 ? 's' : ''} distintas`)
+        setTimeout(() => setPlantillaMsg(''), 5000)
+      }
+    } catch {
+      setPlantillaMsg('Error al conectar con la IA. Intentá de nuevo.')
+    } finally {
+      setAnalizando(false)
+    }
   }
 
   const eliminarPlantilla = async (id: string) => {
@@ -560,13 +587,27 @@ export default function ContratosPage() {
                   </select>
                 </div>
                 <div className="cf" style={{ marginBottom: 14 }}>
-                  <label className="cl">Contenido de la plantilla</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <label className="cl" style={{ marginBottom: 0 }}>Contenido de la plantilla</label>
+                    {plantillaContenido.trim() && (
+                      <button
+                        onClick={analizarConIA}
+                        disabled={analizando}
+                        title="La IA detecta los datos variables y coloca las {{VARIABLES}} automáticamente"
+                        style={{ padding: '5px 12px', background: analizando ? 'rgba(204,0,0,0.08)' : 'rgba(204,0,0,0.15)', border: '1px solid rgba(204,0,0,0.3)', borderRadius: 6, color: analizando ? 'rgba(255,255,255,0.4)' : '#fff', fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: analizando ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}
+                      >
+                        {analizando
+                          ? <><span style={{ width: 10, height: 10, border: '2px solid rgba(204,0,0,0.2)', borderTopColor: '#cc0000', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} /> Detectando...</>
+                          : '✨ Detectar variables con IA'}
+                      </button>
+                    )}
+                  </div>
                   <textarea
                     className="cta"
                     value={plantillaContenido}
                     onChange={e => setPlantillaContenido(e.target.value)}
                     rows={14}
-                    placeholder={'Pegá o escribí el texto de tu contrato modelo.\n\nUsá variables entre dobles llaves para que se completen automáticamente:\n\n{{VENDEDOR_NOMBRE}}, {{COMPRADOR_NOMBRE}},\n{{PROPIEDAD_DIRECCION}}, {{PRECIO}} {{MONEDA}},\n{{FECHA_HOY}}, {{HONORARIOS_PCT}}, etc.\n\nVer lista completa de variables a la derecha.'}
+                    placeholder={'Pegá tu contrato modelo tal cual lo tenés.\n\nLuego hacé clic en "Detectar variables con IA" y Claude reemplazará automáticamente los nombres, DNIs, montos, fechas, etc. con las variables correspondientes.\n\nTambién podés escribir las variables manualmente:\n{{VENDEDOR_NOMBRE}}, {{PRECIO}} {{MONEDA}}, {{FECHA_HOY}}, etc.'}
                   />
                 </div>
                 {plantillaMsg && (
