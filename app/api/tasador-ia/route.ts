@@ -150,7 +150,6 @@ async function scrapePropia(barrio: string, tipo: string, op: string): Promise<P
     const res = await fetch(fallbackUrl, { headers: { ...HEADERS_FETCH, Referer: "https://red.propia.com.ar/" }, signal: AbortSignal.timeout(9000) })
     if (!res.ok) return []
     const html = await res.text()
-    // Propia puede usar __NEXT_DATA__ o una variable de estado propia
     const match = html.match(/__NEXT_DATA__\s*=\s*({[\s\S]+?})\s*;?\s*<\/script>/)
       || html.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]+?});\s*<\/script>/)
     if (!match) return []
@@ -203,21 +202,79 @@ async function scrapePropiaCom(barrio: string, tipo: string, op: string): Promis
   } catch { return [] }
 }
 
-function filtrarComparables(props: PropComp[], monedaEsperada: string, m2Ref?: number): PropComp[] {
-  return props
-    .filter(p => {
-      if (p.moneda !== monedaEsperada) return false
-      if (p.precio <= 0) return false
-      // Filtrar por m2 si disponible (±60% del de referencia)
-      if (m2Ref && p.m2) {
-        const ratio = p.m2 / m2Ref
-        if (ratio < 0.4 || ratio > 2.5) return false
-      }
-      return true
+// Red GFI: propiedades publicadas de otros corredores en la plataforma
+async function scrapeRedGFI(barrio: string, tipo: string, op: string, uid: string): Promise<PropComp[]> {
+  try {
+    const opNorm = op === "alquiler" ? "Alquiler" : "Venta"
+    const tipoNorm = tipo.charAt(0).toUpperCase() + tipo.slice(1)
+
+    // Buscar en toda la red (excluye las propias del usuario)
+    const { data, error } = await supabaseAdmin
+      .from("cartera_propiedades")
+      .select("id, titulo, tipo, operacion, zona, ciudad, precio, moneda, superficie_cubierta")
+      .eq("publicada_web", true)
+      .eq("operacion", opNorm)
+      .neq("perfil_id", uid)
+      .gt("precio", 0)
+      .limit(40)
+
+    if (error || !data) return []
+
+    // Normalizar barrio para comparación
+    const barrioLower = barrio.toLowerCase().trim()
+    const palabrasBarrio = barrioLower.split(/\s+/).filter(w => w.length > 2)
+
+    // Filtrar por tipo y proximidad geográfica
+    const filtrados = data.filter((p: any) => {
+      // Verificar tipo
+      const tipoP = (p.tipo || "").toLowerCase()
+      const tipoQ = tipoNorm.toLowerCase()
+      if (!tipoP.includes(tipoQ.substring(0, 5)) && !tipoQ.includes(tipoP.substring(0, 5))) return false
+
+      // Verificar zona/ciudad
+      const zonaP = ((p.zona || "") + " " + (p.ciudad || "")).toLowerCase()
+      const matchZona = palabrasBarrio.some(w => zonaP.includes(w)) || zonaP.includes(barrioLower.split(" ")[0])
+      return matchZona
     })
-    // Deduplicar por precio+m2
-    .filter((p, i, arr) => arr.findIndex(x => x.precio === p.precio && x.m2 === p.m2) === i)
-    .slice(0, 8)
+
+    return filtrados.slice(0, 10).map((p: any) => ({
+      portal: "Red GFI",
+      titulo: p.titulo || `${p.tipo} en ${p.zona || p.ciudad}`,
+      precio: p.precio || 0,
+      moneda: p.moneda === "ARS" ? "ARS" : "USD",
+      m2: p.superficie_cubierta || null,
+      barrio: p.zona || p.ciudad || barrio,
+      url: `/cartera?id=${p.id}`,
+    }))
+  } catch { return [] }
+}
+
+function filtrarComparables(props: PropComp[], monedaEsperada: string, m2Ref?: number): PropComp[] {
+  // Primera pasada: filtro estricto (±60% del m2 de referencia)
+  const pasada1 = props.filter(p => {
+    if (p.moneda !== monedaEsperada) return false
+    if (p.precio <= 0) return false
+    if (m2Ref && p.m2) {
+      const ratio = p.m2 / m2Ref
+      if (ratio < 0.4 || ratio > 2.5) return false
+    }
+    return true
+  }).filter((p, i, arr) => arr.findIndex(x => x.precio === p.precio && x.m2 === p.m2) === i)
+
+  if (pasada1.length >= 3) return pasada1.slice(0, 8)
+
+  // Segunda pasada: relaja filtro m2 a ±80%
+  const pasada2 = props.filter(p => {
+    if (p.moneda !== monedaEsperada) return false
+    if (p.precio <= 0) return false
+    if (m2Ref && p.m2) {
+      const ratio = p.m2 / m2Ref
+      if (ratio < 0.2 || ratio > 5.0) return false
+    }
+    return true
+  }).filter((p, i, arr) => arr.findIndex(x => x.precio === p.precio && x.m2 === p.m2) === i)
+
+  return pasada2.slice(0, 8)
 }
 
 // ─── Build price table from auto-calculated DB data ───────────────────────────
@@ -292,17 +349,26 @@ const tasacionTool: Anthropic.Tool = {
       precio_m2:          { type: "number",  description: "Precio por m² en USD" },
       moneda:             { type: "string",  enum: ["USD"] },
       alquiler_estimado:  { type: ["number","null"], description: "Alquiler estimado mensual en ARS para la operación de venta. Valores mínimos 2026: 1 amb ARS 600k, 2 amb ARS 850k, 3 amb ARS 1.200k. Null si la operación es Alquiler." },
-      analisis:           { type: "string",  description: "2-3 párrafos de análisis del mercado y justificación del valor, referenciando los comparables reales" },
+      analisis:           { type: "string",  description: "2-3 párrafos de análisis del mercado y justificación del valor, referenciando los comparables reales por número y portal" },
       factores_positivos: { type: "array",   items: { type: "string" } },
       factores_negativos: { type: "array",   items: { type: "string" } },
       indices_comparables: {
         type: "array",
-        description: "Índices (base 1) de los comparables más relevantes de la lista real proporcionada, ordenados por relevancia. Máximo 5. Si no hay comparables reales, dejar vacío.",
+        description: "Índices (base 1) de exactamente 3 comparables más relevantes de la lista real proporcionada, ordenados por relevancia. OBLIGATORIO elegir exactamente 3 si hay comparables disponibles.",
         items: { type: "number" },
+      },
+      comparables_justificaciones: {
+        type: "array",
+        description: "Para cada índice en indices_comparables (mismo orden, exactamente 3 entradas): una oración concisa explicando por qué ese comparable es relevante y qué ajuste realizaste respecto a él (diferencia de m², estado, ubicación, etc.).",
+        items: { type: "string" },
+      },
+      justificacion_valor_hoy: {
+        type: "string",
+        description: "Una oración concisa que explique por qué el valor sugerido es el que es en la fecha actual, referenciando el rango de precios de los 3 comparables elegidos y los ajustes realizados. Ej: 'Al 17 de mayo de 2026, los 3 comparables muestran precios de USD 85.000-105.000; ajustando a la baja por estado Regular y ausencia de cochera, el valor sugerido de USD 90.000 representa el percentil 40 del mercado de Alberdi.'",
       },
       recomendacion: { type: "string", description: "Recomendación estratégica: precio de publicación, tiempo estimado de comercialización, tips de negociación" },
     },
-    required: ["valor_min","valor_max","valor_sugerido","precio_m2","moneda","analisis","factores_positivos","factores_negativos","indices_comparables","recomendacion"],
+    required: ["valor_min","valor_max","valor_sugerido","precio_m2","moneda","analisis","factores_positivos","factores_negativos","indices_comparables","comparables_justificaciones","justificacion_valor_hoy","recomendacion"],
   },
 };
 
@@ -321,7 +387,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const hoy = new Date().toLocaleDateString("es-AR", { month: "long", year: "numeric" })
+    const hoy = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })
     const opBusqueda = (datos.operacion || "Venta").toLowerCase()
     const tipoBusqueda = (datos.tipo || "Departamento").toLowerCase()
     const m2Ref = datos.sup_cubierta ? parseFloat(datos.sup_cubierta) : undefined
@@ -336,17 +402,21 @@ export async function POST(req: NextRequest) {
       ? JSON.parse(preciosDB.valor_texto)
       : null
 
-    // Buscar comparables reales en paralelo
-    const [resZona, resArgen, resML, resPropia, resPropiaCom] = await Promise.allSettled([
+    // Buscar comparables reales en paralelo: 5 portales externos + Red GFI
+    const [resZona, resArgen, resML, resPropia, resPropiaCom, resRedGFI] = await Promise.allSettled([
       scrapeZonaProp(datos.barrio, tipoBusqueda, opBusqueda),
       scrapeArgenprop(datos.barrio, tipoBusqueda, opBusqueda),
       scrapeMercadoLibre(datos.barrio, tipoBusqueda, opBusqueda),
       scrapePropia(datos.barrio, tipoBusqueda, opBusqueda),
       scrapePropiaCom(datos.barrio, tipoBusqueda, opBusqueda),
+      scrapeRedGFI(datos.barrio, tipoBusqueda, opBusqueda, user.id),
     ])
 
     const monedaComp = opBusqueda === "alquiler" ? "ARS" : "USD"
+
+    // Red GFI primero para priorizar comparables propios de la red
     const todosComps = [
+      ...(resRedGFI.status === "fulfilled" ? resRedGFI.value : []),
       ...(resZona.status === "fulfilled" ? resZona.value : []),
       ...(resArgen.status === "fulfilled" ? resArgen.value : []),
       ...(resML.status === "fulfilled" ? resML.value : []),
@@ -355,7 +425,7 @@ export async function POST(req: NextRequest) {
     ]
     const comparablesFiltrados = filtrarComparables(todosComps, monedaComp, m2Ref)
 
-    // Si los scrapers no devolvieron nada (bot protection), agregar stubs con links de búsqueda verificables
+    // Stubs de búsqueda solo cuando no hay ni un comparable real
     const portalesStub: PropComp[] = comparablesFiltrados.length === 0
       ? ["ZonaProp", "Argenprop", "MercadoLibre", "Propia"].map(portal => ({
           portal,
@@ -368,16 +438,18 @@ export async function POST(req: NextRequest) {
         }))
       : []
 
+    const gfiCount = resRedGFI.status === "fulfilled" ? resRedGFI.value.length : 0
+
     const comparablesTexto = comparablesFiltrados.length > 0
-      ? `\nCOMPARABLES REALES ENCONTRADOS EN PORTALES (${comparablesFiltrados.length} propiedades):\n` +
+      ? `\nCOMPARABLES REALES ENCONTRADOS (${comparablesFiltrados.length} propiedades — incluye Red GFI con ${gfiCount} publicación/es de la propia red):\n` +
         comparablesFiltrados.map((c, i) =>
           `${i+1}. [${c.portal}] ${c.titulo} | Barrio: ${c.barrio} | Precio: ${c.moneda} ${c.precio.toLocaleString("es-AR")}${c.m2 ? ` | ${c.m2} m²` : ""}`
         ).join("\n")
-      : "\n(No se obtuvieron comparables reales de portales. Usar estimados del mercado.)"
+      : "\n(No se obtuvieron comparables reales de portales ni de la red GFI. Usar estimados del mercado.)"
 
     const preciosSection = buildPreciosSection(preciosAuto, hoy)
 
-    const prompt = `Sos un tasador inmobiliario matriculado especialista en Rosario y Argentina. Fecha: ${hoy}.
+    const prompt = `Sos un tasador inmobiliario matriculado especialista en Rosario y Argentina. Fecha actual: ${hoy}.
 
 ════════════ PRECIOS DE MERCADO VIGENTES — ${hoy} ════════════
 ${preciosSection}
@@ -409,15 +481,17 @@ Observaciones: ${datos.observaciones || "Ninguna"}
 ${comparablesTexto}
 
 ════════════ INSTRUCCIONES ════════════
-1. Analizá los comparables reales de los portales (listados arriba con índice 1, 2, 3...) para calibrar el precio.
-2. En "indices_comparables" devolvé los índices (1-based) de los 3 a 5 comparables más relevantes para esta propiedad, ordenados de mayor a menor relevancia. Si no hay comparables reales, devolvé array vacío.
-3. El valor_min y valor_max deben derivarse directamente del rango de precios de los comparables seleccionados, ajustado por diferencias de m², estado y zona.
-4. El alquiler_estimado DEBE estar dentro de los rangos de mercado indicados arriba, nunca por debajo de los mínimos. Datos: ${preciosAuto ? "actualizados automáticamente desde portales" : "estimados 2026"}.
-5. El analisis debe mencionar los portales consultados (ZonaProp, Argenprop, Propia, MercadoLibre) y la fecha ${hoy}, y explicar cómo los comparables justifican el rango de valor.`
+1. Analizá los comparables reales listados arriba (con índice 1, 2, 3...). Los marcados como [Red GFI] son propiedades publicadas por otros corredores de la misma red.
+2. En "indices_comparables" elegí EXACTAMENTE 3 comparables más relevantes (1-based), priorizando los que más se parecen a la propiedad a tasar en tipo, m² y zona.
+3. En "comparables_justificaciones" escribí UNA ORACIÓN por cada comparable elegido (mismo orden que indices_comparables) explicando: por qué es relevante y qué ajuste de precio realizás respecto a él (ej: "más m², ajuste a la baja", "misma zona, estado similar, precio referencia directo", etc.).
+4. En "justificacion_valor_hoy" escribí una oración que explique el valor sugerido en términos del rango de los 3 comparables elegidos y los ajustes, mencionando la fecha ${hoy}.
+5. El valor_min y valor_max deben derivarse del rango de los 3 comparables seleccionados, ajustado por diferencias de m², estado y zona.
+6. El alquiler_estimado DEBE estar dentro de los rangos de mercado indicados, nunca por debajo de los mínimos. Datos: ${preciosAuto ? "actualizados automáticamente desde portales" : "estimados 2026"}.
+7. El analisis debe mencionar los portales/fuentes consultados y la fecha ${hoy}, y explicar cómo los comparables justifican el rango de valor.`
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2000,
+      max_tokens: 2500,
       tools: [tasacionTool],
       tool_choice: { type: "tool", name: "tasacion_result" },
       messages: [{ role: "user", content: prompt }],
@@ -430,29 +504,37 @@ ${comparablesTexto}
 
     const input = toolUse.input as Record<string, unknown>
     const indices: number[] = Array.isArray(input.indices_comparables) ? (input.indices_comparables as number[]) : []
-    // Resolve selected indices to real scraped comparables (1-based)
+    const justificaciones: string[] = Array.isArray(input.comparables_justificaciones) ? (input.comparables_justificaciones as string[]) : []
+
+    // Resolver índices a comparables reales
     const comparablesSeleccionados = indices
       .map(idx => comparablesFiltrados[idx - 1])
       .filter(Boolean)
       .slice(0, 5)
-    // Use: AI-selected → first 3 scraped → portal search stubs
+
+    // Fallback: primeros 3 reales → stubs
     const comparablesReales = comparablesSeleccionados.length > 0
       ? comparablesSeleccionados
       : comparablesFiltrados.length > 0
         ? comparablesFiltrados.slice(0, 3)
         : portalesStub
 
+    const portalesConsultados = [
+      resRedGFI.status === "fulfilled" && resRedGFI.value.length > 0 ? "Red GFI" : null,
+      resZona.status === "fulfilled" && resZona.value.length > 0 ? "ZonaProp" : null,
+      resArgen.status === "fulfilled" && resArgen.value.length > 0 ? "Argenprop" : null,
+      resML.status === "fulfilled" && resML.value.length > 0 ? "MercadoLibre" : null,
+      resPropia.status === "fulfilled" && resPropia.value.length > 0 ? "Propia" : null,
+      resPropiaCom.status === "fulfilled" && resPropiaCom.value.length > 0 ? "Propia.com.ar" : null,
+    ].filter(Boolean)
+
     const resultadoFinal = {
       ...input,
       comparables_reales: comparablesReales,
-      _portales_consultados: [
-        resZona.status === "fulfilled" && resZona.value.length > 0 ? "ZonaProp" : null,
-        resArgen.status === "fulfilled" && resArgen.value.length > 0 ? "Argenprop" : null,
-        resML.status === "fulfilled" && resML.value.length > 0 ? "MercadoLibre" : null,
-        resPropia.status === "fulfilled" && resPropia.value.length > 0 ? "Propia" : null,
-        resPropiaCom.status === "fulfilled" && resPropiaCom.value.length > 0 ? "Propia.com.ar" : null,
-      ].filter(Boolean),
+      comparables_justificaciones: justificaciones,
+      _portales_consultados: portalesConsultados,
       _total_comparables_encontrados: comparablesFiltrados.length,
+      _red_gfi_count: gfiCount,
       _comparables_tipo: comparablesFiltrados.length > 0 ? "reales" : "busqueda",
     }
     return NextResponse.json(resultadoFinal);
