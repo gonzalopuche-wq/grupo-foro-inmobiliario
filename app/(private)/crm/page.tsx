@@ -1180,6 +1180,8 @@ export default function CrmPage() {
           <Link href="/crm/agenda-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Agenda Semanal</Link>
           <Link href="/crm/comparador" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Comparador</Link>
           <Link href="/crm/comisiones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones</Link>
+          <Link href="/crm/tasacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Tasación</Link>
+          <Link href="/crm/zona" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📍 Análisis Zona</Link>
         </div>
 
         <div className="crm-tab-content">
