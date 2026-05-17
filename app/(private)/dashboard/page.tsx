@@ -79,6 +79,8 @@ export default function DashboardPage() {
   const [miStats, setMiStats] = useState({ cartera: 0, crm: 0, leads: 0, negocios: 0, tareas: 0, vistas: 0, loadingMi: true });
   const [matchesRecientes, setMatchesRecientes] = useState<{ id: string; created_at: string }[]>([]);
   const [proximosEventos, setProximosEventos] = useState<{ id: string; titulo: string; fecha: string; tipo: string; gratuito: boolean }[]>([]);
+  const [socialPostsRecientes, setSocialPostsRecientes] = useState<{ id: string; red: string; contenido_tipo: string; created_at: string }[]>([]);
+  const [loadingSocialPosts, setLoadingSocialPosts] = useState(true);
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [loadingGrupos, setLoadingGrupos] = useState(false);
   const [colabStats, setColabStats] = useState({ cartera: 0, contactos: 0, mirBusq: 0, redGfi: 0, loading: true });
@@ -92,7 +94,7 @@ export default function DashboardPage() {
   const ciudadRef = useRef<HTMLInputElement>(null);
 
   const WIDGET_LABELS: Record<string, string> = {
-    noticias: "Noticias", mipanel: "Mi Panel", agenda: "Agenda de hoy", zocalo: "Actividad GFI", acciones: "Clima & Acciones", accesos: "Accesos rápidos", indicadores: "Indicadores económicos", bottom: "Matches & Eventos",
+    noticias: "Noticias", mipanel: "Mi Panel", agenda: "Agenda de hoy", zocalo: "Actividad GFI", acciones: "Clima & Acciones", accesos: "Accesos rápidos", indicadores: "Indicadores económicos", bottom: "Matches & Eventos", socialPosts: "Publicaciones sociales",
   };
   const [widgetsActivos, setWidgetsActivos] = useState<Record<string, boolean>>(() => {
     if (typeof window === "undefined") return Object.fromEntries(Object.keys(WIDGET_LABELS).map(k => [k, true]));
@@ -234,6 +236,12 @@ export default function DashboardPage() {
       .eq("estado", "publicado").gte("fecha", new Date().toISOString().split("T")[0])
       .order("fecha", { ascending: true }).limit(3)
       .then(({ data }) => setProximosEventos(data ?? []));
+
+    // Últimas publicaciones sociales
+    supabase.from("social_posts").select("id, red, contenido_tipo, created_at")
+      .eq("estado", "success").order("created_at", { ascending: false }).limit(5)
+      .then(({ data }) => { setSocialPostsRecientes(data ?? []); setLoadingSocialPosts(false); });
+    setLoadingSocialPosts(false);
 
     // Clima
     const ciudadGuardada = localStorage.getItem("gfi_ciudad_clima");
@@ -876,6 +884,41 @@ export default function DashboardPage() {
           }
         </div>
       </div>}
+
+      {/* WIDGET PUBLICACIONES SOCIALES */}
+      {widgetsActivos.socialPosts && tipoUsuario === "admin" && (
+        <div className="db-panel" style={{background:"rgba(14,14,14,0.95)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"18px 20px",marginTop:0}}>
+          <div className="db-panel-titulo" style={{fontFamily:"'Montserrat',sans-serif",fontSize:11,fontWeight:800,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.4)",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            Últimas publicaciones sociales
+            <a href="/noticias" style={{fontSize:9,fontWeight:700,color:"rgba(200,0,0,0.7)",textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase",padding:"3px 8px",border:"1px solid rgba(200,0,0,0.2)",borderRadius:3}}>Ver noticias</a>
+          </div>
+          {loadingSocialPosts ? (
+            <div style={{color:"rgba(255,255,255,0.2)",fontSize:12,fontStyle:"italic"}}>Cargando...</div>
+          ) : socialPostsRecientes.length === 0 ? (
+            <div style={{color:"rgba(255,255,255,0.2)",fontSize:12,fontStyle:"italic",padding:"12px 0"}}>No hay publicaciones sociales todavía</div>
+          ) : (
+            <div style={{display:"flex",flexDirection:"column",gap:0}}>
+              {socialPostsRecientes.map((sp, i) => {
+                const RED_ICONS: Record<string, string> = { facebook: "FB", instagram: "IG", linkedin: "LK", twitter: "X", todas: "ALL" };
+                const RED_COLORS: Record<string, string> = { facebook: "#1877f2", instagram: "#e1306c", linkedin: "#0077b5", twitter: "#1da1f2", todas: "#cc0000" };
+                const color = RED_COLORS[sp.red] ?? "#cc0000";
+                return (
+                  <div key={sp.id} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 0",borderBottom:i < socialPostsRecientes.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none"}}>
+                    <span style={{width:28,height:28,borderRadius:6,background:`${color}18`,border:`1px solid ${color}30`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color,fontFamily:"'Montserrat',sans-serif",flexShrink:0}}>
+                      {RED_ICONS[sp.red] ?? sp.red.slice(0, 2).toUpperCase()}
+                    </span>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:11,color:"rgba(255,255,255,0.7)",textTransform:"capitalize"}}>{sp.contenido_tipo}</div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>{new Date(sp.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"short",year:"numeric"})}</div>
+                    </div>
+                    <span style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,color,letterSpacing:"0.06em",textTransform:"uppercase"}}>{sp.red}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       <NotificacionesWidget />
     </>

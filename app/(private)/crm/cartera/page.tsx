@@ -804,8 +804,48 @@ export default function CarteraPage() {
         body: JSON.stringify({ datos: { publicada_web: nuevoValor, updated_at: new Date().toISOString() }, editandoId: p.id }),
       });
       const json = await res.json();
-      if (!res.ok || !json.ok) alert("Error: " + (json.error ?? "Error desconocido"));
-    } catch (e: any) { alert("Error de red: " + e.message); }
+      if (!res.ok || !json.ok) { alert("Error: " + (json.error ?? "Error desconocido")); return; }
+
+      // Auto-post en redes al publicar en web
+      if (nuevoValor) {
+        setToastGuardado("Publicando en redes...");
+        try {
+          // 1. Generar caption IA
+          const iaRes = await fetch("/api/ia-post-rrss", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+            body: JSON.stringify({ propiedad_id: p.id }),
+          });
+          const iaJson = await iaRes.json();
+          const caption = iaJson.caption ?? iaJson.texto ?? `${p.titulo} — ${p.operacion} en ${p.zona ?? p.ciudad ?? "Rosario"}`;
+
+          // 2. Publicar en redes sociales
+          const socialRes = await fetch("/api/social/publicar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+            body: JSON.stringify({
+              tipo: "propiedad",
+              id: p.id,
+              titulo: p.titulo,
+              descripcion: caption,
+              imagen_url: (p.fotos && p.fotos.length > 0) ? p.fotos[0] : null,
+              link: window.location.origin + "/crm/cartera",
+            }),
+          });
+          const socialJson = await socialRes.json();
+          const exitosos = (socialJson.results ?? []).filter((r: { ok: boolean }) => r.ok).map((r: { red: string }) => r.red);
+          if (exitosos.length > 0) {
+            setToastGuardado(`Publicado en: ${exitosos.join(", ")}`);
+          } else {
+            setToastGuardado("Publicada en web (redes no disponibles)");
+          }
+          setTimeout(() => setToastGuardado(""), 4000);
+        } catch {
+          setToastGuardado("Publicada en web (error en redes)");
+          setTimeout(() => setToastGuardado(""), 3000);
+        }
+      }
+    } catch (e: any) { alert("Error de red: " + (e as Error).message); }
     if (userId) cargar(userId);
   };
 
