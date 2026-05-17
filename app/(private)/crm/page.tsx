@@ -1203,6 +1203,7 @@ export default function CrmPage() {
           <Link href="/crm/gastos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💸 Gastos</Link>
           <Link href="/crm/objetivos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Objetivos</Link>
           <Link href="/crm/scoring" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⭐ Scoring</Link>
+          <Link href="/crm/cobranzas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💳 Cobranzas</Link>
         </div>
 
         <div className="crm-tab-content">
