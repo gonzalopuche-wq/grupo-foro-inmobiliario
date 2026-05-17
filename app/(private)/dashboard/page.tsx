@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import NotificacionesWidget from "./NotificacionesWidget";
 import NoticiasWidget from "./NoticiasWidget";
+import TendenciasWidget from "./TendenciasWidget";
 
 interface Dolar { compra: number; venta: number; promedio: number; }
 interface Clima {
@@ -94,8 +95,9 @@ export default function DashboardPage() {
   const ciudadRef = useRef<HTMLInputElement>(null);
 
   const WIDGET_LABELS: Record<string, string> = {
-    noticias: "Noticias", mipanel: "Mi Panel", agenda: "Agenda de hoy", zocalo: "Actividad GFI", acciones: "Clima & Acciones", accesos: "Accesos rápidos", indicadores: "Indicadores económicos", bottom: "Matches & Eventos", socialPosts: "Publicaciones sociales",
+    noticias: "Noticias", mipanel: "Mi Panel", tendencias: "Pipeline & Tendencias", agenda: "Agenda de hoy", zocalo: "Actividad GFI", acciones: "Clima & Acciones", accesos: "Accesos rápidos", indicadores: "Indicadores económicos", bottom: "Matches & Eventos", socialPosts: "Publicaciones sociales",
   };
+  const [dashUid, setDashUid] = useState("");
   const [widgetsActivos, setWidgetsActivos] = useState<Record<string, boolean>>(() => {
     if (typeof window === "undefined") return Object.fromEntries(Object.keys(WIDGET_LABELS).map(k => [k, true]));
     try {
@@ -183,6 +185,7 @@ export default function DashboardPage() {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) { router.push("/login"); return; }
       const uid = data.user.id;
+      setDashUid(uid);
       supabase.from("perfiles").select("tipo, cocir_estado").eq("id", uid).single().then(({ data: p }) => {
         const tipo = (p?.tipo === "admin" || p?.tipo === "master") ? "admin" : p?.tipo === "colaborador" ? "colaborador" : "corredor";
         setTipoUsuario(tipo);
@@ -676,6 +679,11 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>}
+
+      {/* 2b. TENDENCIAS — pipeline + leads vs cierres */}
+      {widgetsActivos.tendencias && dashUid && (
+        <TendenciasWidget uid={dashUid} />
+      )}
 
       {/* 3. AGENDA DE HOY */}
       {widgetsActivos.agenda && (() => {
