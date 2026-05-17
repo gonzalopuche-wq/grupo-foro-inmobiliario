@@ -1220,6 +1220,8 @@ export default function CrmPage() {
           <Link href="/crm/metas-personales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Metas Personales</Link>
           <Link href="/crm/contratos-activos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Contratos Activos</Link>
           <Link href="/crm/kpi-diario" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 KPI Diario</Link>
+          <Link href="/crm/propuesta-comercial" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📄 Propuesta Comercial</Link>
+          <Link href="/crm/seguimiento-post-venta" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Post-Venta</Link>
         </div>
 
         <div className="crm-tab-content">
