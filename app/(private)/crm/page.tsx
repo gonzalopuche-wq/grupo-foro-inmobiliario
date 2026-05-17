@@ -1169,6 +1169,11 @@ export default function CrmPage() {
           <Link href="/crm/firma" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✍️ Firma</Link>
           <Link href="/crm/emails" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✉️ Emails</Link>
           <Link href="/agenda" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📆 Agenda</Link>
+          <Link href="/crm/hoy" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🌅 Hoy</Link>
+          <Link href="/crm/seguimiento" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📡 Seguimiento</Link>
+          <Link href="/crm/conversion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Conversión</Link>
+          <Link href="/crm/proyeccion-ingresos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Proyección</Link>
+          <Link href="/crm/reporte-mensual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Reporte</Link>
         </div>
 
         <div className="crm-tab-content">
