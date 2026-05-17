@@ -59,15 +59,16 @@ async function getData(slug: string) {
 
   if (!cfg) return null;
 
-  const [{ data: perfil }, { data: props }, { data: testimoniosRaw }] = await Promise.all([
+  const [{ data: perfil }, { data: props }, { data: testimoniosRaw }, { data: noticiasRaw }] = await Promise.all([
     supabase.from("perfiles").select("nombre,apellido,matricula,telefono,email,inmobiliaria,foto_url,especialidades").eq("id", cfg.perfil_id).single(),
     supabase.from("cartera_propiedades").select("id,titulo,descripcion,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,superficie_cubierta,fotos,estado,destacada_web").eq("perfil_id", cfg.perfil_id).eq("publicada_web", true).eq("estado", "activa").order("destacada_web", { ascending: false }).limit(cfg.limite_propiedades_home ?? 6),
     cfg.mostrar_testimonios
       ? supabase.from("mi_web_testimonios").select("id,nombre_cliente,cargo_cliente,texto,rating").eq("perfil_id", cfg.perfil_id).eq("activo", true).order("orden").limit(12)
       : Promise.resolve({ data: [] }),
+    supabase.from("noticias").select("id,titulo,cuerpo,link,imagen_url,fuente,aprobado_at").eq("estado", "aprobada").order("aprobado_at", { ascending: false }).limit(3),
   ]);
 
-  return { cfg: cfg as Config, perfil: perfil as Perfil, propiedades: (props as Propiedad[]) ?? [], testimonios: (testimoniosRaw as Testimonio[]) ?? [] };
+  return { cfg: cfg as Config, perfil: perfil as Perfil, propiedades: (props as Propiedad[]) ?? [], testimonios: (testimoniosRaw as Testimonio[]) ?? [], noticias: (noticiasRaw as { id: string; titulo: string; cuerpo: string; link: string | null; imagen_url: string | null; fuente: string | null; aprobado_at: string | null }[]) ?? [] };
 }
 
 // ── Plantillas ──────────────────────────────────────────────────────────────
@@ -94,7 +95,9 @@ const formatPrecio = (p: number, m: string) =>
 
 // ── Template Component ────────────────────────────────────────────────────
 
-function WebTemplate({ cfg, perfil, propiedades, testimonios }: { cfg: Config; perfil: Perfil; propiedades: Propiedad[]; testimonios: Testimonio[] }) {
+interface NoticiaGFI { id: string; titulo: string; cuerpo: string; link: string | null; imagen_url: string | null; fuente: string | null; aprobado_at: string | null; }
+
+function WebTemplate({ cfg, perfil, propiedades, testimonios, noticias = [] }: { cfg: Config; perfil: Perfil; propiedades: Propiedad[]; testimonios: Testimonio[]; noticias?: NoticiaGFI[] }) {
   const t = TEMAS[cfg.plantilla] ?? TEMAS["rosario-classic"];
   const isDark = DARK_THEMES.includes(cfg.plantilla);
   const nombre = `${perfil.nombre} ${perfil.apellido}`;
@@ -461,6 +464,32 @@ function WebTemplate({ cfg, perfil, propiedades, testimonios }: { cfg: Config; p
         </section>
       )}
 
+      {/* ── NOVEDADES GFI ── */}
+      {noticias.length > 0 && (
+        <section className="w-section" style={{background: t.bgAlt}}>
+          <div className="w-section-tag">Novedades del sector</div>
+          <div className="w-section-h2">Novedades GFI</div>
+          <div className="w-section-desc">Últimas noticias del mercado inmobiliario de Rosario y la región.</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>
+            {noticias.map(n => (
+              <a key={n.id} href={n.link ?? "#"} target={n.link ? "_blank" : "_self"} rel="noopener noreferrer"
+                style={{display:"block",background:t.card,border:`1px solid ${t.cardBorder}`,borderRadius:10,overflow:"hidden",textDecoration:"none",transition:"all 0.2s"}}>
+                {n.imagen_url && (
+                  <img src={n.imagen_url} alt={n.titulo} style={{width:"100%",height:140,objectFit:"cover",display:"block"}} />
+                )}
+                <div style={{padding:"14px 16px"}}>
+                  {n.fuente && <div style={{fontSize:9,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:t.accent,fontFamily:"Montserrat,sans-serif",marginBottom:6}}>{n.fuente}</div>}
+                  <div style={{fontSize:13,fontWeight:700,color:t.text,fontFamily:t.fontH,lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:3,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{n.titulo}</div>
+                  <div style={{fontSize:11,color:t.textMuted}}>
+                    {n.aprobado_at ? new Date(n.aprobado_at).toLocaleDateString("es-AR",{day:"2-digit",month:"long",year:"numeric"}) : ""}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ── FOOTER ── */}
       <footer className="w-footer">
         <div className="w-footer-logo">
@@ -546,7 +575,7 @@ export default async function WebCorredorPage({ params }: { params: Promise<{ sl
   const { slug } = await params;
   const data = await getData(slug);
   if (!data) return notFound();
-  return <WebTemplate cfg={data.cfg} perfil={data.perfil} propiedades={data.propiedades} testimonios={data.testimonios} />;
+  return <WebTemplate cfg={data.cfg} perfil={data.perfil} propiedades={data.propiedades} testimonios={data.testimonios} noticias={data.noticias} />;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {

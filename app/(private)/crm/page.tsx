@@ -1286,11 +1286,30 @@ export default function CrmPage() {
                     : contactosFiltrados.length === 0 ? <div className="crm-empty-lista">{busqueda || filtroEtiqueta ? "Sin resultados" : "No hay contactos.\nHacé clic en + Nuevo."}</div>
                     : contactosFiltrados.map(c => {
                       const estadoLead = ESTADOS_LEAD.find(e => e.value === c.estado);
+                      const diasDesdeInteraccion = c.updated_at
+                        ? Math.floor((Date.now() - new Date(c.updated_at).getTime()) / 86400000)
+                        : null;
+                      const badgeColor = diasDesdeInteraccion === null ? "rgba(255,255,255,0.3)"
+                        : diasDesdeInteraccion < 7 ? "#22c55e"
+                        : diasDesdeInteraccion <= 30 ? "#eab308"
+                        : "#f87171";
+                      const badgeBg = diasDesdeInteraccion === null ? "rgba(255,255,255,0.05)"
+                        : diasDesdeInteraccion < 7 ? "rgba(34,197,94,0.1)"
+                        : diasDesdeInteraccion <= 30 ? "rgba(234,179,8,0.1)"
+                        : "rgba(248,113,113,0.1)";
+                      const badgeLabel = diasDesdeInteraccion === null ? "" : diasDesdeInteraccion === 0 ? "Hoy" : `Hace ${diasDesdeInteraccion}d`;
                       return (
                         <div key={c.id} className={`crm-item${contactoSeleccionado?.id === c.id ? " activo" : ""}`} onClick={() => cargarDetalle(c)}>
                           <div className="crm-avatar">{iniciales(c)}</div>
                           <div className="crm-item-info">
-                            <div className="crm-item-nombre">{c.apellido ? `${c.apellido}, ${c.nombre}` : c.nombre}</div>
+                            <div style={{display:"flex",alignItems:"center",gap:6,justifyContent:"space-between"}}>
+                              <div className="crm-item-nombre" style={{flex:1,minWidth:0}}>{c.apellido ? `${c.apellido}, ${c.nombre}` : c.nombre}</div>
+                              {badgeLabel && (
+                                <span style={{fontSize:8,fontFamily:"Montserrat,sans-serif",fontWeight:700,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",background:badgeBg,color:badgeColor,border:`1px solid ${badgeColor}40`,flexShrink:0,whiteSpace:"nowrap"}}>
+                                  {badgeLabel}
+                                </span>
+                              )}
+                            </div>
                             <div className="crm-item-sub">{c.telefono ?? c.email ?? c.inmobiliaria ?? c.tipo ?? ""}</div>
                             {estadoLead && <span className="lead-badge" style={{color:estadoLead.color,borderColor:`${estadoLead.color}40`,background:`${estadoLead.color}12`}}>{estadoLead.label}</span>}
                             {(c.etiquetas ?? []).length > 0 && <div className="crm-item-etqs">{(c.etiquetas ?? []).slice(0, 3).map(e => <span key={e} className="crm-etq">{e}</span>)}</div>}

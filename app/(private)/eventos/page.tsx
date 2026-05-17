@@ -70,6 +70,8 @@ export default function EventosPage() {
   const [procesando, setProcesando] = useState<string | null>(null);
   const [filtroTipo, setFiltroTipo] = useState<string>("todos");
   const [filtroVista, setFiltroVista] = useState<"proximos"|"mis"|"todos">("proximos");
+  const [publicandoEvento, setPublicandoEvento] = useState<string | null>(null);
+  const [eventoRedesResult, setEventoRedesResult] = useState<Record<string, { red: string; ok: boolean; error?: string }[]>>({});
 
   // Calendario
   const hoy = new Date();
@@ -127,6 +129,37 @@ export default function EventosPage() {
   const mostrarToast = (msg: string, tipo: "ok"|"err" = "ok") => {
     setToast({ msg, tipo });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const publicarEventoEnRedes = async (evento: Evento) => {
+    if (publicandoEvento === evento.id) return;
+    setPublicandoEvento(evento.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/social/publicar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({
+          tipo: "evento",
+          id: evento.id,
+          titulo: evento.titulo,
+          descripcion: evento.descripcion ?? null,
+          imagen_url: (evento.media && Array.isArray(evento.media) && evento.media.length > 0)
+            ? (evento.media as { tipo: string; url: string }[]).find(m => m.tipo === "foto")?.url ?? null
+            : null,
+          link: window.location.origin + "/eventos",
+        }),
+      });
+      const data = await res.json();
+      setEventoRedesResult(prev => ({ ...prev, [evento.id]: data.results ?? [] }));
+      const exitosos = (data.results ?? []).filter((r: { ok: boolean }) => r.ok).map((r: { red: string }) => r.red);
+      if (exitosos.length > 0) mostrarToast(`Publicado en: ${exitosos.join(", ")}`);
+      else mostrarToast("No se pudo publicar en ninguna red", "err");
+    } catch {
+      setEventoRedesResult(prev => ({ ...prev, [evento.id]: [{ red: "error", ok: false, error: "Error de conexión" }] }));
+      mostrarToast("Error al publicar en redes", "err");
+    }
+    setPublicandoEvento(null);
   };
 
   const toggleInscripcion = async (eventoId: string, yaInscripto: boolean, capacidad: number | null, total: number) => {
@@ -320,20 +353,25 @@ export default function EventosPage() {
       mostrarToast("Publicando en redes sociales...");
       try {
         const { data: { session: evSession } } = await supabase.auth.getSession();
-        const resp = await fetch("/api/publicar-redes", {
+        const resp = await fetch("/api/social/publicar", {
           method: "POST",
           headers: { "content-type": "application/json", Authorization: `Bearer ${evSession?.access_token}` },
-          body: JSON.stringify({ evento: eventoCreado }),
+          body: JSON.stringify({
+            tipo: "evento",
+            id: eventoCreado.id,
+            titulo: eventoCreado.titulo,
+            descripcion: eventoCreado.descripcion ?? null,
+            imagen_url: (eventoCreado.media && Array.isArray(eventoCreado.media) && eventoCreado.media.length > 0)
+              ? (eventoCreado.media as { tipo: string; url: string }[]).find((m: { tipo: string; url: string }) => m.tipo === "foto")?.url ?? null
+              : null,
+            link: window.location.origin + "/eventos",
+          }),
         });
-        const { resultados } = await resp.json();
-        const exitosos = Object.entries(resultados).filter(([, v]: any) => v.ok).map(([k]) => k);
-        const fallidos = Object.entries(resultados).filter(([, v]: any) => !v.ok).map(([k]) => k);
-        if (exitosos.length > 0) {
-          mostrarToast(`✅ Publicado en: ${exitosos.join(", ")}`);
-        }
-        if (fallidos.length > 0) {
-          mostrarToast(`⚠️ No se pudo publicar en: ${fallidos.join(", ")} (configurá las redes en Admin)`);
-        }
+        const data = await resp.json();
+        const exitosos = (data.results ?? []).filter((r: { ok: boolean }) => r.ok).map((r: { red: string }) => r.red);
+        const fallidos = (data.results ?? []).filter((r: { ok: boolean }) => !r.ok).map((r: { red: string }) => r.red);
+        if (exitosos.length > 0) mostrarToast(`Publicado en: ${exitosos.join(", ")}`);
+        if (fallidos.length > 0) mostrarToast(`No se pudo publicar en: ${fallidos.join(", ")}`, "err");
       } catch {
         mostrarToast("Evento guardado (redes no disponibles)", "err");
       }
@@ -745,6 +783,23 @@ export default function EventosPage() {
                           Ver evento
                         </button>
                         {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#60a5fa",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Unirse</a>}
+                        {esAdmin&&ev.estado==="publicado"&&(
+                          <button
+                            onClick={() => publicarEventoEnRedes(ev)}
+                            disabled={publicandoEvento === ev.id}
+                            style={{padding:"5px 10px",background:"rgba(59,130,246,0.1)",border:"1px solid rgba(59,130,246,0.3)",borderRadius:3,color:"#3b82f6",fontFamily:"'Montserrat',sans-serif",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",whiteSpace:"nowrap"}}>
+                            {publicandoEvento === ev.id ? "..." : "📤 Redes"}
+                          </button>
+                        )}
+                        {esAdmin&&ev.estado==="publicado"&&eventoRedesResult[ev.id]&&(
+                          <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
+                            {eventoRedesResult[ev.id].map(r => (
+                              <span key={r.red} style={{fontSize:8,fontFamily:"'Montserrat',sans-serif",fontWeight:700,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",textTransform:"uppercase",background:r.ok?"rgba(34,197,94,0.12)":"rgba(200,0,0,0.12)",border:`1px solid ${r.ok?"rgba(34,197,94,0.3)":"rgba(200,0,0,0.3)"}`,color:r.ok?"#22c55e":"#f87171"}}>
+                                {r.red} {r.ok ? "✓" : "✗"}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         {esAdmin&&!pasado&&<button className="ev-btn-cancelar-ev" onClick={()=>cancelarEvento(ev.id)}>Cancelar</button>}
                       </div>
                     </div>

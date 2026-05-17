@@ -6,6 +6,12 @@ interface NoticiaPublica {
   imagen_url: string | null; fuente: string | null; aprobado_at: string | null; destacado: boolean;
 }
 
+interface EventoProximo {
+  id: string; titulo: string; descripcion: string | null; fecha: string;
+  tipo: string; gratuito: boolean; precio_entrada: number | null; moneda: string | null;
+  lugar: string | null; plataforma: string | null; imagen_url: string | null;
+}
+
 const HEATMAP_DOTS = [
   {x:52,y:44,r:22,op:0.55,c:"#cc0000"},{x:54,y:46,r:14,op:0.7,c:"#ff3333"},
   {x:50,y:43,r:8,op:0.9,c:"#fff"},{x:53,y:45,r:6,op:0.85,c:"#fff"},
@@ -97,6 +103,7 @@ function RevealSection({ children, className, id }: { children: React.ReactNode;
 
 export default function LandingPage() {
   const [novedades, setNovedades] = useState<NoticiaPublica[]>([]);
+  const [eventosProximos, setEventosProximos] = useState<EventoProximo[]>([]);
   const [scrolled, setScrolled] = useState(false);
   const [parallaxY, setParallaxY] = useState(0);
   const [cursorX, setCursorX] = useState(-100);
@@ -112,6 +119,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     fetch("/api/noticias-publicas").then(r => r.json()).then(d => setNovedades(d.noticias ?? [])).catch(() => {});
+    fetch("/api/eventos-proximos").then(r => r.json()).then(d => setEventosProximos(d.eventos ?? [])).catch(() => {});
   }, []);
 
   // Parallax + scroll
@@ -339,6 +347,19 @@ export default function LandingPage() {
         .novedad-fecha{font-size:10px;color:rgba(255,255,255,0.25);margin-top:auto}
         @media(max-width:860px){.novedades-grid{grid-template-columns:1fr 1fr}}
         @media(max-width:520px){.novedades-grid{grid-template-columns:1fr}}
+
+        /* EVENTOS PROXIMOS */
+        .eventos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+        .evento-prox-card{background:var(--s2);border:1px solid var(--bd);border-radius:6px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s;display:flex;flex-direction:column}
+        .evento-prox-card:hover{border-color:var(--red-bd);transform:translateY(-2px)}
+        .evento-prox-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:rgba(255,255,255,0.04)}
+        .evento-prox-img-placeholder{aspect-ratio:16/9;background:rgba(204,0,0,0.06);border-bottom:1px solid rgba(204,0,0,0.12);display:flex;align-items:center;justify-content:center;font-size:32px}
+        .evento-prox-body{padding:14px 16px;flex:1;display:flex;flex-direction:column}
+        .evento-prox-fecha{font-size:9px;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:6px}
+        .evento-prox-titulo{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--tx);line-height:1.4;margin-bottom:6px}
+        .evento-prox-lugar{font-size:10px;color:rgba(255,255,255,0.3);margin-top:auto}
+        @media(max-width:860px){.eventos-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:520px){.eventos-grid{grid-template-columns:1fr}}
 
         /* REDES */
         .redes-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:1100px;margin-top:48px}
@@ -686,6 +707,45 @@ export default function LandingPage() {
           </a>
         </div>
 
+        {/* Próximos Eventos GFI */}
+        {eventosProximos.length > 0 && (
+          <div style={{marginTop:56}}>
+            <div className="sec-label" style={{marginBottom:16}}>Próximos eventos GFI</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:14}}>
+              {eventosProximos.map(ev => {
+                const TIPOS: Record<string,{label:string;color:string}> = {
+                  gfi:{label:"GFI®",color:"#cc0000"},cocir:{label:"COCIR",color:"#f97316"},
+                  cir:{label:"CIR",color:"#818cf8"},comercial:{label:"Comercial",color:"#eab308"},
+                  privado:{label:"Privado",color:"#94a3b8"},externo:{label:"Externo",color:"#64748b"},
+                };
+                const tipo = TIPOS[ev.tipo] ?? TIPOS.externo;
+                const fecha = new Date(ev.fecha);
+                return (
+                  <a key={ev.id} href="/registro" style={{display:"block",background:"rgba(20,20,20,0.8)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",textDecoration:"none",transition:"all 0.2s"}}>
+                    {ev.imagen_url && (
+                      <img src={ev.imagen_url} alt={ev.titulo} style={{width:"100%",height:120,objectFit:"cover",display:"block"}} />
+                    )}
+                    <div style={{padding:"14px 16px"}}>
+                      <div style={{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}}>
+                        <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:10,border:`1px solid ${tipo.color}40`,color:tipo.color,background:`${tipo.color}15`,fontFamily:"Montserrat,sans-serif"}}>{tipo.label}</span>
+                        <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:10,border:`1px solid ${ev.gratuito?"rgba(34,197,94,0.3)":"rgba(234,179,8,0.3)"}`,color:ev.gratuito?"#22c55e":"#eab308",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",fontFamily:"Montserrat,sans-serif"}}>{ev.gratuito?"Gratuito":"Con entrada"}</span>
+                        {ev.plataforma && ev.plataforma !== "presencial" && (
+                          <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:10,border:"1px solid rgba(96,165,250,0.3)",color:"#60a5fa",background:"rgba(96,165,250,0.08)",fontFamily:"Montserrat,sans-serif"}}>Online</span>
+                        )}
+                      </div>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:700,color:"#fff",lineHeight:1.4,marginBottom:8}}>{ev.titulo}</div>
+                      <div style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>
+                        {fecha.toLocaleDateString("es-AR",{weekday:"short",day:"numeric",month:"long"})} · {fecha.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}hs
+                      </div>
+                      {ev.lugar && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:3}}>📍 {ev.lugar}</div>}
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Novedades */}
         {novedades.length > 0 && (
           <div style={{marginTop:56}}>
@@ -706,6 +766,35 @@ export default function LandingPage() {
                   </div>
                 </a>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Próximos eventos */}
+        {eventosProximos.length > 0 && (
+          <div style={{marginTop:56}}>
+            <div className="sec-label" style={{marginBottom:16}}>Próximos eventos GFI</div>
+            <div className="eventos-grid">
+              {eventosProximos.map(ev => {
+                const TIPO_COLOR: Record<string,string> = { gfi:"#cc0000", cocir:"#f97316", cir:"#818cf8", comercial:"#eab308", externo:"#64748b" };
+                const fechaStr = new Date(ev.fecha).toLocaleDateString("es-AR", { weekday:"long", day:"numeric", month:"long" });
+                return (
+                  <a key={ev.id} href="/eventos" className="evento-prox-card">
+                    {ev.imagen_url
+                      ? <img src={ev.imagen_url} alt={ev.titulo} className="evento-prox-img" />
+                      : <div className="evento-prox-img-placeholder">📅</div>
+                    }
+                    <div className="evento-prox-body">
+                      <div className="evento-prox-fecha" style={{color: TIPO_COLOR[ev.tipo] ?? "#cc0000"}}>{fechaStr}</div>
+                      <div className="evento-prox-titulo">{ev.titulo}</div>
+                      <div className="evento-prox-lugar">
+                        {ev.gratuito ? "Gratuito" : `${ev.moneda ?? "ARS"} ${ev.precio_entrada?.toLocaleString("es-AR") ?? ""}`}
+                        {ev.lugar ? ` · ${ev.lugar}` : ev.plataforma ? ` · ${ev.plataforma}` : ""}
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}
