@@ -516,6 +516,71 @@ ${resultado.recomendacion}`
             <p style={{ fontSize: 13, color: 'rgba(59,130,246,0.8)', lineHeight: 1.6, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12, marginTop: 12 }}>
               <strong style={{ color: '#3b82f6' }}>Recomendación: </strong>{verDetalle.resultado?.recomendacion}
             </p>
+
+            {/* Justificación del valor */}
+            {verDetalle.resultado?.justificacion_valor_hoy && (
+              <div style={{ marginTop: 16, padding: 14, background: 'rgba(204,0,0,0.06)', border: '1px solid rgba(204,0,0,0.15)', borderRadius: 8 }}>
+                <div style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#cc0000', marginBottom: 8 }}>
+                  Justificación del valor
+                </div>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>{verDetalle.resultado.justificacion_valor_hoy}</p>
+              </div>
+            )}
+
+            {/* Factores positivos y negativos */}
+            {((verDetalle.resultado?.factores_positivos?.length ?? 0) > 0 || (verDetalle.resultado?.factores_negativos?.length ?? 0) > 0) && (
+              <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {(verDetalle.resultado?.factores_positivos?.length ?? 0) > 0 && (
+                  <div style={{ padding: 12, background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 8 }}>
+                    <div style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#22c55e', marginBottom: 8 }}>
+                      Factores positivos
+                    </div>
+                    {verDetalle.resultado!.factores_positivos.map((f, i) => (
+                      <div key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, marginBottom: 4, paddingLeft: 10, position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0, color: '#22c55e' }}>+</span>{f}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {(verDetalle.resultado?.factores_negativos?.length ?? 0) > 0 && (
+                  <div style={{ padding: 12, background: 'rgba(248,113,113,0.05)', border: '1px solid rgba(248,113,113,0.15)', borderRadius: 8 }}>
+                    <div style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#f87171', marginBottom: 8 }}>
+                      Factores negativos
+                    </div>
+                    {verDetalle.resultado!.factores_negativos.map((f, i) => (
+                      <div key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, marginBottom: 4, paddingLeft: 10, position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0, color: '#f87171' }}>−</span>{f}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Comparables reales */}
+            {(verDetalle.resultado?.comparables_reales?.length ?? 0) > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 6 }}>
+                  Comparables reales · {verDetalle.resultado!.comparables_reales.length} propiedades
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {verDetalle.resultado!.comparables_reales.map((c, i) => (
+                    <a key={i} href={c.url} target="_blank" rel="noopener noreferrer"
+                      style={{ display: 'block', padding: '10px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, textDecoration: 'none', transition: 'background 0.15s' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', lineHeight: 1.4, marginBottom: 3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{c.titulo}</div>
+                          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>{c.barrio}{c.m2 ? ` · ${c.m2} m²` : ''} · {c.portal}</div>
+                        </div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#cc0000', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          {c.moneda} {c.precio?.toLocaleString('es-AR')}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
