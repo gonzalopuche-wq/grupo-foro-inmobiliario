@@ -400,6 +400,7 @@ export default function CalculadorasPage() {
             { href: "/calculadoras/roi-renovacion", label: "ROI de Renovación", icon: "🔨", active: false },
             { href: "/calculadoras/gastos-escritura", label: "Gastos de Escritura", icon: "📜", active: false },
             { href: "/calculadoras/simulador-ajuste", label: "Simulador de Ajuste", icon: "📈", active: false },
+            { href: "/calculadoras/comercial", label: "Alquiler Comercial", icon: "🏢", active: false },
           ].map(({ href, label, icon, active }) => (
             <Link key={href} href={href} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, background: active ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${active ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, color: active ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}>
               <span style={{ fontSize: 13 }}>{icon}</span> {label}
