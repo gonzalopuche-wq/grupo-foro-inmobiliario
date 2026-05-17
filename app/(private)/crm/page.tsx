@@ -1176,6 +1176,7 @@ export default function CrmPage() {
           <Link href="/crm/reporte-mensual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Reporte</Link>
           <Link href="/crm/smart-match" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Smart Match</Link>
           <Link href="/crm/pipeline-velocity" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚡ Velocity</Link>
+          <Link href="/crm/whatsapp-templates" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💬 Templates WA</Link>
         </div>
 
         <div className="crm-tab-content">
