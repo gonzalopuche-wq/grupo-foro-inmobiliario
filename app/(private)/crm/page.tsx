@@ -1222,6 +1222,8 @@ export default function CrmPage() {
           <Link href="/crm/kpi-diario" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 KPI Diario</Link>
           <Link href="/crm/propuesta-comercial" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📄 Propuesta Comercial</Link>
           <Link href="/crm/seguimiento-post-venta" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Post-Venta</Link>
+          <Link href="/crm/tiempo-venta" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⏱️ Tiempo en Mercado</Link>
+          <Link href="/crm/campana-cumpleanos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎂 Cumpleaños</Link>
         </div>
 
         <div className="crm-tab-content">
