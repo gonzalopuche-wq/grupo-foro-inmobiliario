@@ -1182,6 +1182,8 @@ export default function CrmPage() {
           <Link href="/crm/comisiones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones</Link>
           <Link href="/crm/tasacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Tasación</Link>
           <Link href="/crm/zona" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📍 Análisis Zona</Link>
+          <Link href="/crm/documentos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Documentos</Link>
+          <Link href="/crm/actividad" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚡ Actividad</Link>
         </div>
 
         <div className="crm-tab-content">
