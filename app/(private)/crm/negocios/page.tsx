@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
 interface Negocio {
@@ -353,6 +354,11 @@ export default function CrmNegociosPage() {
                               → {siguiente.label}
                             </button>
                           )}
+                          <Link href={`/crm/negocios/${n.id}`}
+                            onClick={e => e.stopPropagation()}
+                            style={{ background: "rgba(204,0,0,0.08)", color: "rgba(204,0,0,0.8)", border: "1px solid rgba(204,0,0,0.2)", padding: "4px 8px", fontSize: 9, borderRadius: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textDecoration: "none" }}>
+                            ↗
+                          </Link>
                           <button className="n-btn"
                             style={{ background: "rgba(239,68,68,0.08)", color: "rgba(239,68,68,0.7)", border: "1px solid rgba(239,68,68,0.2)", padding: "4px 8px", fontSize: 9 }}
                             onClick={e => { e.stopPropagation(); eliminar(n.id); }}>×</button>
@@ -410,6 +416,7 @@ export default function CrmNegociosPage() {
                           → {siguiente.label}
                         </button>
                       )}
+                      <Link href={`/crm/negocios/${n.id}`} style={{ padding: "5px 10px", borderRadius: 5, background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.25)", color: "#cc0000", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textDecoration: "none" }}>Ficha ↗</Link>
                       <button className="n-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.1)", padding: "5px 10px", fontSize: 10 }}
                         onClick={() => abrirEditar(n)}>Editar</button>
                       <button className="n-btn" style={{ background: "rgba(107,114,128,0.12)", color: "#9ca3af", border: "1px solid rgba(107,114,128,0.25)", padding: "5px 10px", fontSize: 10 }}
