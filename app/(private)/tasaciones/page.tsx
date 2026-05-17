@@ -45,6 +45,13 @@ const TIPOS_PROPIEDAD = ['Casa', 'Departamento', 'PH', 'Local comercial', 'Ofici
 const OPERACIONES = ['Venta', 'Alquiler']
 const ESTADOS_CONSERVACION = ['Excelente', 'Muy bueno', 'Bueno', 'Regular', 'A reciclar']
 
+const REDES = [
+  { value: 'todas',     label: 'Todas las redes' },
+  { value: 'gfi',       label: 'Red GFI' },
+  { value: 'propia',    label: 'Propia' },
+  { value: 'red_propia',label: 'Red Propia' },
+]
+
 const FORM_VACIO = {
   tipo: 'Departamento',
   operacion: 'Venta',
@@ -61,6 +68,7 @@ const FORM_VACIO = {
   cochera: false,
   amenities: '',
   observaciones: '',
+  red: 'todas',
 }
 
 export default function TasacionesPage() {
@@ -321,6 +329,18 @@ ${resultado.recomendacion}`
               <textarea value={form.observaciones} onChange={e => setF('observaciones', e.target.value)} placeholder="Vistas, reformas, particularidades del inmueble..." rows={2} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
             </div>
 
+            {/* Selector de red */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 7 }}>Buscar comparables en</label>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {REDES.map(r => (
+                  <button key={r.value} onClick={() => setF('red', r.value)} style={{ padding: '6px 12px', borderRadius: 6, fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, cursor: 'pointer', border: form.red === r.value ? '1px solid rgba(204,0,0,0.5)' : '1px solid rgba(255,255,255,0.1)', background: form.red === r.value ? 'rgba(204,0,0,0.15)' : 'rgba(255,255,255,0.04)', color: form.red === r.value ? '#cc0000' : 'rgba(255,255,255,0.5)' }}>
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {error && <div style={{ marginBottom: 12, padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, fontSize: 12, color: '#ef4444' }}>{error}</div>}
 
             <button
@@ -420,56 +440,31 @@ ${resultado.recomendacion}`
                       </div>
                     )}
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {resultado.comparables_reales.map((c, i) => {
                       const esBusqueda = c.precio === 0
-                      const justificacion = resultado.comparables_justificaciones?.[i]
                       const esRedGFI = c.portal === 'Red GFI'
                       return (
-                        <div key={i} style={{ background: esBusqueda ? 'rgba(255,255,255,0.02)' : (esRedGFI ? 'rgba(204,0,0,0.04)' : 'rgba(255,255,255,0.03)'), border: `1px solid ${esBusqueda ? 'rgba(255,255,255,0.05)' : (esRedGFI ? 'rgba(204,0,0,0.15)' : 'rgba(255,255,255,0.08)')}`, borderRadius: 8, padding: '10px 12px' }}>
-                          {esBusqueda ? (
-                            /* Portal search stub */
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div>
-                                <span style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', marginRight: 8 }}>{c.portal}</span>
-                                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Ver publicaciones en {c.barrio}</span>
-                              </div>
+                        <div key={i} style={{ background: esRedGFI ? 'rgba(204,0,0,0.04)' : 'rgba(255,255,255,0.03)', border: `1px solid ${esBusqueda ? 'rgba(255,255,255,0.05)' : (esRedGFI ? 'rgba(204,0,0,0.15)' : 'rgba(255,255,255,0.08)')}`, borderRadius: 8, padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <span style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: esRedGFI ? 'rgba(204,0,0,0.12)' : 'rgba(255,255,255,0.06)', color: esRedGFI ? '#cc0000' : 'rgba(255,255,255,0.35)', border: `1px solid ${esRedGFI ? 'rgba(204,0,0,0.2)' : 'rgba(255,255,255,0.08)'}`, marginRight: 7 }}>{c.portal}</span>
+                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{esBusqueda ? `Ver ${c.barrio}` : (c.titulo || c.barrio)}</span>
+                            {!esBusqueda && c.m2 && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginLeft: 8 }}>{c.m2} m²</span>}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                            {!esBusqueda && (
+                              <span style={{ fontSize: 14, fontWeight: 800, color: '#fff', fontFamily: 'Montserrat,sans-serif' }}>
+                                {c.moneda} {c.precio.toLocaleString('es-AR')}
+                              </span>
+                            )}
+                            {esRedGFI ? (
+                              <span style={{ fontSize: 10, color: 'rgba(204,0,0,0.6)', fontFamily: 'Montserrat,sans-serif', fontWeight: 600 }}>interna</span>
+                            ) : (
                               <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#3b82f6', textDecoration: 'none', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '4px 10px', borderRadius: 5, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', whiteSpace: 'nowrap' }}>
-                                Buscar en {c.portal} →
+                                Ver →
                               </a>
-                            </div>
-                          ) : (
-                            /* Real listing */
-                            <>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <span style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: esRedGFI ? 'rgba(204,0,0,0.12)' : 'rgba(255,255,255,0.06)', color: esRedGFI ? '#cc0000' : 'rgba(255,255,255,0.4)', border: `1px solid ${esRedGFI ? 'rgba(204,0,0,0.2)' : 'rgba(255,255,255,0.08)'}`, marginRight: 6 }}>{c.portal}</span>
-                                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', fontWeight: 500 }}>{c.titulo || c.barrio}</span>
-                                </div>
-                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                                  <div style={{ fontSize: 15, fontWeight: 800, color: '#fff', fontFamily: 'Montserrat,sans-serif' }}>
-                                    {c.moneda} {c.precio.toLocaleString('es-AR')}
-                                  </div>
-                                  {c.m2 && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>{c.m2} m² · {c.moneda} {Math.round(c.precio / c.m2).toLocaleString('es-AR')}/m²</div>}
-                                </div>
-                              </div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: justificacion ? 6 : 0 }}>
-                                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>📍 {c.barrio}</span>
-                                {esRedGFI ? (
-                                  <span style={{ fontSize: 11, color: 'rgba(204,0,0,0.7)', fontFamily: 'Montserrat,sans-serif', fontWeight: 600 }}>Red GFI · publicación interna</span>
-                                ) : (
-                                  <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#3b82f6', textDecoration: 'none', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '3px 10px', borderRadius: 5, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)' }}>
-                                    Ver publicación →
-                                  </a>
-                                )}
-                              </div>
-                              {justificacion && (
-                                <div style={{ fontSize: 11, color: 'rgba(234,179,8,0.7)', lineHeight: 1.5, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 6, marginTop: 2 }}>
-                                  ⚖ {justificacion}
-                                </div>
-                              )}
-                            </>
-                          )}
+                            )}
+                          </div>
                         </div>
                       )
                     })}

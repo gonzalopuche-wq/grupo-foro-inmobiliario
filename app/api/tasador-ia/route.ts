@@ -402,14 +402,20 @@ export async function POST(req: NextRequest) {
       ? JSON.parse(preciosDB.valor_texto)
       : null
 
-    // Buscar comparables reales en paralelo: 5 portales externos + Red GFI
-    const [resZona, resArgen, resML, resPropia, resPropiaCom, resRedGFI] = await Promise.allSettled([
+    // red controla qué redes internas se consultan; portales externos siempre
+    const red: string = datos.red || "todas"
+    const useGFI      = red === "todas" || red === "gfi"
+    const usePropia   = red === "todas" || red === "propia"
+    const useRedPropia= red === "todas" || red === "red_propia"
+
+    // Buscar comparables reales en paralelo
+    const [resZona, resArgen, resML, resPropiaCom, resPropia, resRedGFI] = await Promise.allSettled([
       scrapeZonaProp(datos.barrio, tipoBusqueda, opBusqueda),
       scrapeArgenprop(datos.barrio, tipoBusqueda, opBusqueda),
       scrapeMercadoLibre(datos.barrio, tipoBusqueda, opBusqueda),
-      scrapePropia(datos.barrio, tipoBusqueda, opBusqueda),
-      scrapePropiaCom(datos.barrio, tipoBusqueda, opBusqueda),
-      scrapeRedGFI(datos.barrio, tipoBusqueda, opBusqueda, user.id),
+      usePropia    ? scrapePropiaCom(datos.barrio, tipoBusqueda, opBusqueda) : Promise.resolve([]),
+      useRedPropia ? scrapePropia(datos.barrio, tipoBusqueda, opBusqueda)    : Promise.resolve([]),
+      useGFI       ? scrapeRedGFI(datos.barrio, tipoBusqueda, opBusqueda, user.id) : Promise.resolve([]),
     ])
 
     const monedaComp = opBusqueda === "alquiler" ? "ARS" : "USD"
