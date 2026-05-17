@@ -276,6 +276,9 @@ export default function CrmPage() {
   const [guardandoNegocio, setGuardandoNegocio] = useState(false);
   const [filtroEtapaNegocio, setFiltroEtapaNegocio] = useState("");
   const [busquedaNegocio, setBusquedaNegocio] = useState("");
+  const [vistaNegocios, setVistaNegocios] = useState<"lista" | "kanban">("lista");
+  const [draggedNegocioId, setDraggedNegocioId] = useState<string | null>(null);
+  const [dragOverEtapa, setDragOverEtapa] = useState<string | null>(null);
 
   // ── Tareas ────────────────────────────────────────────────────────────────
   const [tareas, setTareas] = useState<Tarea[]>([]);
@@ -591,6 +594,13 @@ export default function CrmPage() {
       await supabase.from("crm_negocios").update({ etapa: nuevaEtapa, updated_at: new Date().toISOString() }).eq("id", n.id);
       if (userId) cargarNegocios(userId);
     }
+  };
+
+  const moverAEtapa = async (negocioId: string, nuevaEtapa: string) => {
+    const n = negocios.find(x => x.id === negocioId);
+    if (!n || n.etapa === nuevaEtapa) return;
+    setNegocios(prev => prev.map(x => x.id === negocioId ? { ...x, etapa: nuevaEtapa } : x));
+    await supabase.from("crm_negocios").update({ etapa: nuevaEtapa, updated_at: new Date().toISOString() }).eq("id", negocioId);
   };
 
   // ── CRUD Tareas ───────────────────────────────────────────────────────────
@@ -1005,6 +1015,36 @@ export default function CrmPage() {
         .neg-btn-avanzar:hover { background: rgba(200,0,0,0.15); }
         .neg-btn-edit { padding: 3px 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 3px; color: rgba(255,255,255,0.35); font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; }
         .neg-btn-del { padding: 3px 8px; background: transparent; border: 1px solid rgba(200,0,0,0.15); border-radius: 3px; color: rgba(200,0,0,0.4); font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; }
+        .neg-vista-toggle { display: flex; border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; flex-shrink: 0; }
+        .neg-vista-btn { padding: 5px 10px; background: transparent; border: none; color: rgba(255,255,255,0.35); font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; letter-spacing: 0.06em; transition: all 0.15s; }
+        .neg-vista-btn.activo { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); }
+
+        /* ── Kanban ── */
+        .neg-kanban { flex: 1; overflow-x: auto; overflow-y: hidden; display: flex; gap: 10px; padding: 14px 16px; }
+        .neg-kanban::-webkit-scrollbar { height: 4px; }
+        .neg-kanban::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+        .kb-col { display: flex; flex-direction: column; min-width: 210px; width: 210px; flex-shrink: 0; border-radius: 7px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); transition: background 0.15s, border-color 0.15s; }
+        .kb-col.drag-over { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
+        .kb-col-head { padding: 10px 12px 8px; border-bottom: 2px solid; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .kb-col-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+        .kb-col-count { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; opacity: 0.5; }
+        .kb-col-body { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; min-height: 60px; }
+        .kb-col-body::-webkit-scrollbar { width: 2px; }
+        .kb-col-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+        .kb-mini-card { background: #141414; border: 1px solid rgba(255,255,255,0.07); border-radius: 5px; padding: 9px 10px; cursor: grab; transition: border-color 0.12s, box-shadow 0.12s; user-select: none; }
+        .kb-mini-card:active { cursor: grabbing; }
+        .kb-mini-card:hover { border-color: rgba(255,255,255,0.14); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .kb-mini-card.dragging { opacity: 0.4; }
+        .kb-mini-titulo { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85); margin-bottom: 4px; line-height: 1.35; }
+        .kb-mini-meta { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; margin-bottom: 3px; }
+        .kb-mini-op { font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; text-transform: uppercase; }
+        .kb-mini-valor { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.7); margin-top: 3px; }
+        .kb-mini-contacto { font-size: 9px; color: rgba(200,0,0,0.55); margin-top: 2px; }
+        .kb-mini-actions { display: flex; gap: 4px; margin-top: 6px; }
+        .kb-mini-btn { padding: 3px 7px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 3px; color: rgba(255,255,255,0.3); font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; transition: all 0.1s; }
+        .kb-mini-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+        .kb-mini-btn-del { border-color: rgba(200,0,0,0.15); color: rgba(200,0,0,0.35); }
+        .kb-mini-btn-del:hover { background: rgba(200,0,0,0.08); color: rgba(200,0,0,0.7); }
 
         /* ── Tareas ── */
         .tar-full { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -1565,9 +1605,75 @@ export default function CrmPage() {
                   ))}
                 </div>
                 <div style={{flex:1}} />
+                <div className="neg-vista-toggle">
+                  <button className={`neg-vista-btn${vistaNegocios === "lista" ? " activo" : ""}`} onClick={() => setVistaNegocios("lista")}>≡ Lista</button>
+                  <button className={`neg-vista-btn${vistaNegocios === "kanban" ? " activo" : ""}`} onClick={() => setVistaNegocios("kanban")}>⊞ Kanban</button>
+                </div>
                 <button className="crm-btn-nuevo" onClick={abrirFormNuevoNegocio}>+ Nuevo negocio</button>
               </div>
-              <div className="neg-list">
+
+              {/* ── Vista Kanban ── */}
+              {vistaNegocios === "kanban" && (
+                <div className="neg-kanban">
+                  {ETAPAS_NEGOCIO.map(etapa => {
+                    const cols = negocios.filter(n => n.etapa === etapa.value && !n.archivado);
+                    const isDragOver = dragOverEtapa === etapa.value;
+                    return (
+                      <div
+                        key={etapa.value}
+                        className={`kb-col${isDragOver ? " drag-over" : ""}`}
+                        onDragOver={e => { e.preventDefault(); setDragOverEtapa(etapa.value); }}
+                        onDragLeave={() => setDragOverEtapa(null)}
+                        onDrop={e => {
+                          e.preventDefault();
+                          setDragOverEtapa(null);
+                          if (draggedNegocioId) moverAEtapa(draggedNegocioId, etapa.value);
+                          setDraggedNegocioId(null);
+                        }}
+                      >
+                        <div className="kb-col-head" style={{borderBottomColor: etapa.color}}>
+                          <span className="kb-col-label" style={{color: etapa.color}}>{etapa.label}</span>
+                          <span className="kb-col-count">{cols.length}</span>
+                        </div>
+                        <div className="kb-col-body">
+                          {cols.length === 0 && (
+                            <div style={{fontSize:10,color:"rgba(255,255,255,0.12)",textAlign:"center",padding:"12px 0",fontFamily:"Inter,sans-serif"}}>Sin negocios</div>
+                          )}
+                          {cols.map(n => {
+                            const op = TIPOS_OPERACION.find(t => t.value === n.tipo_operacion);
+                            const contactName = nombreContacto(n.contacto_id);
+                            return (
+                              <div
+                                key={n.id}
+                                className={`kb-mini-card${draggedNegocioId === n.id ? " dragging" : ""}`}
+                                draggable
+                                onDragStart={() => setDraggedNegocioId(n.id)}
+                                onDragEnd={() => { setDraggedNegocioId(null); setDragOverEtapa(null); }}
+                              >
+                                <div className="kb-mini-titulo">{n.titulo}</div>
+                                <div className="kb-mini-meta">
+                                  <span className="kb-mini-op">{op?.label ?? n.tipo_operacion}</span>
+                                </div>
+                                {n.valor_operacion && (
+                                  <div className="kb-mini-valor">{n.moneda} {n.valor_operacion.toLocaleString("es-AR")}</div>
+                                )}
+                                {contactName && <div className="kb-mini-contacto">👤 {contactName}</div>}
+                                <div className="kb-mini-actions">
+                                  <button className="kb-mini-btn" onClick={() => abrirFormEditarNegocio(n)}>Editar</button>
+                                  <button className="kb-mini-btn kb-mini-btn-del" onClick={() => eliminarNegocio(n.id)}>✕</button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* ── Vista Lista ── */}
+              {vistaNegocios === "lista" && <div className="neg-list">
                 {loadingNegocios ? <div className="crm-empty-lista">Cargando...</div>
                   : negociosFiltrados.length === 0 ? <div className="crm-empty-lista">No hay negocios activos.<br/>Hacé clic en + Nuevo negocio.</div>
                   : negociosFiltrados.map(n => {
@@ -1627,7 +1733,7 @@ export default function CrmPage() {
                       </div>
                     );
                   })}
-              </div>
+              </div>}
             </div>
           )}
 
