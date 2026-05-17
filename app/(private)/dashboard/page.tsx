@@ -83,10 +83,16 @@ export default function DashboardPage() {
   const [loadingGrupos, setLoadingGrupos] = useState(false);
   const [colabStats, setColabStats] = useState({ cartera: 0, contactos: 0, mirBusq: 0, redGfi: 0, loading: true });
   const [cocirEstado, setCocirEstado] = useState<string | null>(null);
+  const [agendaHoy, setAgendaHoy] = useState<{
+    tareas: { id: string; titulo: string; tipo: string; prioridad: string }[];
+    visitas: { id: string; cliente_nombre: string; fecha_visita: string | null; propiedad?: { titulo: string } | null }[];
+    recordatorios: { id: string; descripcion: string; contacto?: { nombre: string; apellido: string | null } | null }[];
+    loading: boolean;
+  }>({ tareas: [], visitas: [], recordatorios: [], loading: true });
   const ciudadRef = useRef<HTMLInputElement>(null);
 
   const WIDGET_LABELS: Record<string, string> = {
-    noticias: "Noticias", mipanel: "Mi Panel", zocalo: "Actividad GFI", acciones: "Clima & Acciones", accesos: "Accesos rápidos", indicadores: "Indicadores económicos", bottom: "Matches & Eventos",
+    noticias: "Noticias", mipanel: "Mi Panel", agenda: "Agenda de hoy", zocalo: "Actividad GFI", acciones: "Clima & Acciones", accesos: "Accesos rápidos", indicadores: "Indicadores económicos", bottom: "Matches & Eventos",
   };
   const [widgetsActivos, setWidgetsActivos] = useState<Record<string, boolean>>(() => {
     if (typeof window === "undefined") return Object.fromEntries(Object.keys(WIDGET_LABELS).map(k => [k, true]));
@@ -211,6 +217,15 @@ export default function DashboardPage() {
     ]);
     const totalVistas = (vistasRes.data ?? []).reduce((s: number, p: any) => s + (p.vistas ?? 0), 0);
     setMiStats({ cartera: cartera.count ?? 0, crm: crm.count ?? 0, leads: leads.count ?? 0, negocios: negocios.count ?? 0, tareas: tareas.count ?? 0, vistas: totalVistas, loadingMi: false });
+
+    // Agenda de hoy
+    const hoyStr = new Date().toISOString().split("T")[0];
+    const [tareasHoy, visitasHoy, recordatoriosHoy] = await Promise.all([
+      supabase.from("crm_tareas").select("id, titulo, tipo, prioridad").eq("perfil_id", uid).eq("estado", "pendiente").lte("fecha_vencimiento", hoyStr).order("prioridad").limit(5),
+      supabase.from("cartera_visitas").select("id, cliente_nombre, fecha_visita, propiedad:cartera_propiedades(titulo)").eq("perfil_id", uid).eq("estado", "pendiente").gte("fecha_visita", hoyStr + "T00:00:00").lte("fecha_visita", hoyStr + "T23:59:59").order("fecha_visita").limit(5),
+      supabase.from("crm_recordatorios").select("id, descripcion, contacto:crm_contactos(nombre, apellido)").eq("perfil_id", uid).eq("completado", false).gte("fecha_recordatorio", hoyStr).lte("fecha_recordatorio", hoyStr + "T23:59:59").order("fecha_recordatorio").limit(5),
+    ]);
+    setAgendaHoy({ tareas: tareasHoy.data as any ?? [], visitas: visitasHoy.data as any ?? [], recordatorios: recordatoriosHoy.data as any ?? [], loading: false });
 
     // Matches y eventos
     supabase.from("mir_matches").select("id, created_at").order("created_at", { ascending: false }).limit(5)
@@ -546,7 +561,70 @@ export default function DashboardPage() {
         </div>
       </div>}
 
-      {/* 3. ZÓCALO HOY EN GFI */}
+      {/* 3. AGENDA DE HOY */}
+      {widgetsActivos.agenda && (() => {
+        const totalAgenda = agendaHoy.tareas.length + agendaHoy.visitas.length + agendaHoy.recordatorios.length;
+        if (!agendaHoy.loading && totalAgenda === 0) return null;
+        const prioColor: Record<string, string> = { urgente: "#ef4444", alta: "#f97316", normal: "#3b82f6", baja: "#6b7280" };
+        const tipoIcon: Record<string, string> = { llamar: "📞", whatsapp: "💬", email: "✉️", visita: "🏠", documentacion: "📄", tasacion: "🏷️", publicar: "📢", seguimiento: "🔄", general: "✓" };
+        return (
+          <div style={{ marginBottom: 16 }}>
+            <div className="db-sec-titulo">Agenda de hoy</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 12 }}>
+
+              {/* Tareas */}
+              {agendaHoy.tareas.length > 0 && (
+                <a href="/crm/tareas" style={{ textDecoration: "none", background: "rgba(14,14,14,0.9)", border: "1px solid rgba(168,85,247,0.2)", borderRadius: 8, padding: "14px 16px", display: "block" }}>
+                  <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(168,85,247,0.7)", textTransform: "uppercase", marginBottom: 10 }}>Tareas vencidas / hoy ({agendaHoy.tareas.length})</div>
+                  {agendaHoy.tareas.map(t => (
+                    <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
+                      <span style={{ fontSize: 14 }}>{tipoIcon[t.tipo] ?? "✓"}</span>
+                      <span style={{ flex: 1, fontSize: 12, color: "rgba(255,255,255,0.8)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.titulo}</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: prioColor[t.prioridad] ?? "#6b7280", flexShrink: 0 }}>{t.prioridad.toUpperCase()}</span>
+                    </div>
+                  ))}
+                </a>
+              )}
+
+              {/* Visitas */}
+              {agendaHoy.visitas.length > 0 && (
+                <a href="/crm/visitas" style={{ textDecoration: "none", background: "rgba(14,14,14,0.9)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "14px 16px", display: "block" }}>
+                  <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(34,197,94,0.7)", textTransform: "uppercase", marginBottom: 10 }}>Visitas de hoy ({agendaHoy.visitas.length})</div>
+                  {agendaHoy.visitas.map(v => (
+                    <div key={v.id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
+                      <span style={{ fontSize: 14 }}>🏠</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.cliente_nombre}</div>
+                        {v.propiedad && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(v.propiedad as any).titulo}</div>}
+                      </div>
+                      {v.fecha_visita && <span style={{ fontSize: 10, color: "rgba(34,197,94,0.7)", flexShrink: 0 }}>{new Date(v.fecha_visita).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}</span>}
+                    </div>
+                  ))}
+                </a>
+              )}
+
+              {/* Recordatorios */}
+              {agendaHoy.recordatorios.length > 0 && (
+                <a href="/crm/recordatorios" style={{ textDecoration: "none", background: "rgba(14,14,14,0.9)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 8, padding: "14px 16px", display: "block" }}>
+                  <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(245,158,11,0.7)", textTransform: "uppercase", marginBottom: 10 }}>Recordatorios de hoy ({agendaHoy.recordatorios.length})</div>
+                  {agendaHoy.recordatorios.map(r => (
+                    <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
+                      <span style={{ fontSize: 14 }}>🔔</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.descripcion}</div>
+                        {r.contacto && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{(r.contacto as any).nombre} {(r.contacto as any).apellido ?? ""}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </a>
+              )}
+
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* 4. ZÓCALO HOY EN GFI */}
       {widgetsActivos.zocalo && <div style={{
         display:"flex",alignItems:"stretch",
         background:"rgba(14,14,14,0.9)",border:"1px solid rgba(255,255,255,0.07)",
