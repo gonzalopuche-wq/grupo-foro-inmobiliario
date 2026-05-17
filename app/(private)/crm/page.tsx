@@ -1226,6 +1226,8 @@ export default function CrmPage() {
           <Link href="/crm/campana-cumpleanos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎂 Cumpleaños</Link>
           <Link href="/crm/carga-masiva" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📥 Carga Masiva</Link>
           <Link href="/crm/scorecard-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏆 Scorecard Semanal</Link>
+          <Link href="/crm/pipeline-kanban" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Pipeline Kanban</Link>
+          <Link href="/crm/base-conocimiento" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📚 Base de Conocimiento</Link>
         </div>
 
         <div className="crm-tab-content">
