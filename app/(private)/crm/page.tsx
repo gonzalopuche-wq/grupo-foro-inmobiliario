@@ -1231,6 +1231,7 @@ export default function CrmPage() {
           <Link href="/crm/gestion-honorarios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Honorarios</Link>
           <Link href="/crm/recordatorios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔔 Recordatorios</Link>
           <Link href="/crm/analisis-zona" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📍 Análisis de Zona</Link>
+          <Link href="/crm/reporte-mensual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📑 Reporte Mensual</Link>
         </div>
 
         <div className="crm-tab-content">
