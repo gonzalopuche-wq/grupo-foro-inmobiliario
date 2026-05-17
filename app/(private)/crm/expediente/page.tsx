@@ -12,7 +12,7 @@ interface Documento {
   id: string;
   nombre: string;
   tipo: TipoDoc;
-  responsable: "comprador" | "vendedor" | "escribano" | "banco" | "garante" | "inmobiliaria" | "otro";
+  responsable: "comprador" | "vendedor" | "escribano" | "banco" | "inmobiliaria" | "otro";
   estado: EstadoDoc;
   fechaVencimiento: string | null;
   notas: string;
@@ -56,7 +56,175 @@ interface NegocioDB {
   fecha_cierre: string | null;
 }
 
-// ── Helpers de persistencia ───────────────────────────────────────────────────
+// ── Estilos compartidos ───────────────────────────────────────────────────────
+
+const ST = {
+  card: {
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "12px",
+    padding: "20px",
+  } as React.CSSProperties,
+  input: {
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "8px",
+    color: "#fff",
+    padding: "8px 12px",
+    fontSize: "0.9rem",
+    fontFamily: "'Inter', sans-serif",
+    outline: "none",
+    width: "100%",
+    boxSizing: "border-box" as const,
+  } as React.CSSProperties,
+  select: {
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "8px",
+    color: "#fff",
+    padding: "8px 12px",
+    fontSize: "0.9rem",
+    fontFamily: "'Inter', sans-serif",
+    outline: "none",
+    width: "100%",
+    boxSizing: "border-box" as const,
+    cursor: "pointer",
+  } as React.CSSProperties,
+  btn: {
+    background: "#cc0000",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "8px 16px",
+    fontSize: "0.85rem",
+    fontFamily: "'Inter', sans-serif",
+    fontWeight: 600,
+    cursor: "pointer",
+    whiteSpace: "nowrap" as const,
+  } as React.CSSProperties,
+  btnGhost: {
+    background: "rgba(255,255,255,0.06)",
+    color: "rgba(255,255,255,0.7)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "8px",
+    padding: "7px 14px",
+    fontSize: "0.85rem",
+    fontFamily: "'Inter', sans-serif",
+    cursor: "pointer",
+    whiteSpace: "nowrap" as const,
+  } as React.CSSProperties,
+  label: {
+    fontSize: "0.75rem",
+    color: "rgba(255,255,255,0.45)",
+    marginBottom: "4px",
+    display: "block",
+    fontFamily: "'Inter', sans-serif",
+  } as React.CSSProperties,
+  textarea: {
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "8px",
+    color: "#fff",
+    padding: "12px",
+    fontSize: "0.9rem",
+    fontFamily: "'Inter', sans-serif",
+    outline: "none",
+    resize: "vertical" as const,
+    width: "100%",
+    boxSizing: "border-box" as const,
+    lineHeight: 1.6,
+  } as React.CSSProperties,
+  subheading: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontWeight: 700,
+    fontSize: "1rem",
+    color: "#fff",
+    margin: 0,
+  } as React.CSSProperties,
+};
+
+function chip(color: string, bg: string): React.CSSProperties {
+  return {
+    display: "inline-block",
+    padding: "2px 10px",
+    borderRadius: "999px",
+    fontSize: "0.75rem",
+    fontWeight: 600,
+    color,
+    background: bg,
+    fontFamily: "'Inter', sans-serif",
+  };
+}
+
+// ── Constantes ────────────────────────────────────────────────────────────────
+
+const ESTADO_DOC_META: Record<EstadoDoc, { label: string; color: string; bg: string }> = {
+  pendiente: { label: "Pendiente", color: "#9ca3af", bg: "rgba(156,163,175,0.15)" },
+  enviado:   { label: "Enviado",   color: "#60a5fa", bg: "rgba(96,165,250,0.15)"  },
+  recibido:  { label: "Recibido",  color: "#fbbf24", bg: "rgba(251,191,36,0.15)"  },
+  aprobado:  { label: "Aprobado",  color: "#34d399", bg: "rgba(52,211,153,0.15)"  },
+  rechazado: { label: "Rechazado", color: "#cc0000", bg: "rgba(204,0,0,0.15)"     },
+};
+
+const ROL_COLORS: Record<string, string> = {
+  comprador:    "#60a5fa",
+  vendedor:     "#fbbf24",
+  escribano:    "#a78bfa",
+  banco:        "#34d399",
+  garante:      "#f97316",
+  inmobiliaria: "#ec4899",
+  otro:         "#9ca3af",
+};
+
+const HITO_ICONS: Record<string, string> = {
+  nota:      "📝",
+  documento: "📄",
+  reunion:   "🤝",
+  firma:     "✍️",
+  pago:      "💰",
+  otro:      "•",
+};
+
+// ── Plantillas ────────────────────────────────────────────────────────────────
+
+function getPlantilla(tipo: string | null): Omit<Documento, "id">[] {
+  const esVenta = !tipo || tipo === "venta" || tipo === "loteo";
+
+  if (esVenta) {
+    const items: Array<[string, TipoDoc, Documento["responsable"]]> = [
+      ["DNI comprador",                 "dni",         "comprador"   ],
+      ["DNI vendedor",                  "dni",         "vendedor"    ],
+      ["Escritura anterior",            "escritura",   "vendedor"    ],
+      ["Certificado de libre deuda",    "certificado", "escribano"   ],
+      ["Certificado no inhibición",     "certificado", "escribano"   ],
+      ["Título de propiedad",           "titulo",      "vendedor"    ],
+      ["Planos",                        "planos",      "vendedor"    ],
+      ["Reglamento PH (si aplica)",     "reglamento",  "vendedor"    ],
+      ["Certificado de deudas impuestos","impuestos",  "vendedor"    ],
+      ["Boleto compraventa",            "contrato",    "escribano"   ],
+      ["Escritura traslativa",          "escritura",   "escribano"   ],
+    ];
+    return items.map(([nombre, tipo, responsable]) => ({
+      nombre, tipo, responsable,
+      estado: "pendiente", fechaVencimiento: null, notas: "", obligatorio: true,
+    }));
+  }
+
+  const items: Array<[string, TipoDoc, Documento["responsable"]]> = [
+    ["DNI inquilino",          "dni",      "comprador"   ],
+    ["DNI garante",            "dni",      "otro"        ],
+    ["Recibo de sueldo",       "otro",     "comprador"   ],
+    ["Garantía propietaria",   "otro",     "otro"        ],
+    ["Contrato de alquiler",   "contrato", "escribano"   ],
+    ["Inventario del inmueble","otro",     "inmobiliaria"],
+  ];
+  return items.map(([nombre, tipo, responsable]) => ({
+    nombre, tipo, responsable,
+    estado: "pendiente", fechaVencimiento: null, notas: "", obligatorio: true,
+  }));
+}
+
+// ── Persistencia ──────────────────────────────────────────────────────────────
 
 const LS_KEY = "crm_expedientes_v1";
 
@@ -92,83 +260,6 @@ function loadExpediente(negocioId: string): Expediente {
   );
 }
 
-// ── Constantes de colores ─────────────────────────────────────────────────────
-
-const ESTADO_DOC_META: Record<EstadoDoc, { label: string; color: string; bg: string }> = {
-  pendiente:  { label: "Pendiente",  color: "#9ca3af", bg: "rgba(156,163,175,0.15)" },
-  enviado:    { label: "Enviado",    color: "#60a5fa", bg: "rgba(96,165,250,0.15)"  },
-  recibido:   { label: "Recibido",   color: "#fbbf24", bg: "rgba(251,191,36,0.15)" },
-  aprobado:   { label: "Aprobado",   color: "#34d399", bg: "rgba(52,211,153,0.15)" },
-  rechazado:  { label: "Rechazado",  color: "#cc0000", bg: "rgba(204,0,0,0.15)"    },
-};
-
-const ROL_COLORS: Record<string, string> = {
-  comprador:  "#60a5fa",
-  vendedor:   "#fbbf24",
-  escribano:  "#a78bfa",
-  banco:      "#34d399",
-  garante:    "#f97316",
-  inmobiliaria: "#ec4899",
-  otro:       "#9ca3af",
-};
-
-const HITO_ICONS: Record<string, string> = {
-  nota:      "📝",
-  documento: "📄",
-  reunion:   "🤝",
-  firma:     "✍️",
-  pago:      "💰",
-  otro:      "•",
-};
-
-// ── Plantillas de documentos ──────────────────────────────────────────────────
-
-function getPlantilla(tipo: string | null): Omit<Documento, "id">[] {
-  const esVenta = !tipo || tipo === "venta" || tipo === "loteo";
-  if (esVenta) {
-    const nombres = [
-      ["DNI comprador", "dni", "comprador"],
-      ["DNI vendedor", "dni", "vendedor"],
-      ["Escritura anterior", "escritura", "vendedor"],
-      ["Certificado de libre deuda", "certificado", "escribano"],
-      ["Certificado no inhibición", "certificado", "escribano"],
-      ["Título de propiedad", "titulo", "vendedor"],
-      ["Planos", "planos", "vendedor"],
-      ["Reglamento PH (si aplica)", "reglamento", "vendedor"],
-      ["Certificado de deudas impuestos", "impuestos", "vendedor"],
-      ["Boleto compraventa", "contrato", "escribano"],
-      ["Escritura traslativa", "escritura", "escribano"],
-    ] as const;
-    return nombres.map(([nombre, tipo, responsable]) => ({
-      nombre,
-      tipo: tipo as TipoDoc,
-      responsable,
-      estado: "pendiente" as EstadoDoc,
-      fechaVencimiento: null,
-      notas: "",
-      obligatorio: true,
-    }));
-  } else {
-    const nombres = [
-      ["DNI inquilino", "dni", "comprador"],
-      ["DNI garante", "dni", "otro"],
-      ["Recibo de sueldo", "otro", "otro"],
-      ["Garantía propietaria", "otro", "otro"],
-      ["Contrato de alquiler", "contrato", "escribano"],
-      ["Inventario del inmueble", "otro", "inmobiliaria"],
-    ] as const;
-    return nombres.map(([nombre, tipo, responsable]) => ({
-      nombre,
-      tipo: tipo as TipoDoc,
-      responsable: responsable as Documento["responsable"],
-      estado: "pendiente" as EstadoDoc,
-      fechaVencimiento: null,
-      notas: "",
-      obligatorio: true,
-    }));
-  }
-}
-
 // ── Utilidades ────────────────────────────────────────────────────────────────
 
 function uid(): string {
@@ -201,16 +292,20 @@ function formatPrecio(precio: number | null, moneda: string | null): string {
   return `${moneda ?? "ARS"} ${precio.toLocaleString("es-AR")}`;
 }
 
-// ── Componente principal ──────────────────────────────────────────────────────
+// ── Tipos auxiliares ──────────────────────────────────────────────────────────
+
+type TabId = "documentos" | "partes" | "timeline" | "notas";
+type UpdateExpFn = (fn: (prev: Expediente) => Expediente) => void;
+
+// ── Página principal ──────────────────────────────────────────────────────────
 
 export default function ExpedientePage() {
   const [negocios, setNegocios] = useState<NegocioDB[]>([]);
   const [negocioId, setNegocioId] = useState<string>("");
   const [exp, setExp] = useState<Expediente | null>(null);
-  const [tab, setTab] = useState<"documentos" | "partes" | "timeline" | "notas">("documentos");
+  const [tab, setTab] = useState<TabId>("documentos");
   const [loading, setLoading] = useState(true);
 
-  // Cargar lista de negocios
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -225,7 +320,6 @@ export default function ExpedientePage() {
     })();
   }, []);
 
-  // Al seleccionar negocio: cargar expediente
   useEffect(() => {
     if (!negocioId) { setExp(null); return; }
     setExp(loadExpediente(negocioId));
@@ -243,145 +337,53 @@ export default function ExpedientePage() {
 
   const negocioActivo = negocios.find((n) => n.id === negocioId) ?? null;
 
-  // ── Estilos base ────────────────────────────────────────────────────────────
-
-  const chipStyle = (color: string, bg: string): React.CSSProperties => ({
-    display: "inline-block",
-    padding: "2px 10px",
-    borderRadius: "999px",
-    fontSize: "0.75rem",
-    fontWeight: 600,
-    color,
-    background: bg,
-    fontFamily: "'Inter', sans-serif",
-  });
-
-  const s: Record<string, React.CSSProperties> = {
-    page: {
-      background: "#0a0a0a",
-      minHeight: "100vh",
-      color: "#fff",
-      fontFamily: "'Inter', sans-serif",
-      padding: "24px",
-    },
-    heading: {
-      fontFamily: "'Montserrat', sans-serif",
-      fontWeight: 800,
-      fontSize: "1.6rem",
-      color: "#fff",
-      margin: 0,
-      letterSpacing: "-0.02em",
-    },
-    subheading: {
-      fontFamily: "'Montserrat', sans-serif",
-      fontWeight: 700,
-      fontSize: "1rem",
-      color: "#fff",
-      margin: 0,
-    },
-    card: {
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: "12px",
-      padding: "20px",
-    },
-    select: {
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "8px",
-      color: "#fff",
-      padding: "10px 14px",
-      fontSize: "0.95rem",
-      fontFamily: "'Inter', sans-serif",
-      outline: "none",
-      cursor: "pointer",
-      width: "100%",
-    },
-    input: {
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "8px",
-      color: "#fff",
-      padding: "8px 12px",
-      fontSize: "0.9rem",
-      fontFamily: "'Inter', sans-serif",
-      outline: "none",
-      width: "100%",
-      boxSizing: "border-box" as const,
-    },
-    btn: {
-      background: "#cc0000",
-      color: "#fff",
-      border: "none",
-      borderRadius: "8px",
-      padding: "8px 16px",
-      fontSize: "0.85rem",
-      fontFamily: "'Inter', sans-serif",
-      fontWeight: 600,
-      cursor: "pointer",
-      whiteSpace: "nowrap" as const,
-    },
-    btnGhost: {
-      background: "rgba(255,255,255,0.06)",
-      color: "rgba(255,255,255,0.7)",
-      border: "1px solid rgba(255,255,255,0.1)",
-      borderRadius: "8px",
-      padding: "7px 14px",
-      fontSize: "0.85rem",
-      fontFamily: "'Inter', sans-serif",
-      cursor: "pointer",
-      whiteSpace: "nowrap" as const,
-    },
-    label: {
-      fontSize: "0.75rem",
-      color: "rgba(255,255,255,0.45)",
-      marginBottom: "4px",
-      display: "block",
-      fontFamily: "'Inter', sans-serif",
-    },
-    divider: {
-      borderColor: "rgba(255,255,255,0.07)",
-      margin: "16px 0",
-    },
-    textarea: {
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "8px",
-      color: "#fff",
-      padding: "12px",
-      fontSize: "0.9rem",
-      fontFamily: "'Inter', sans-serif",
-      outline: "none",
-      resize: "vertical" as const,
-      width: "100%",
-      boxSizing: "border-box" as const,
-      lineHeight: 1.6,
-    },
-  };
-
-  // ── Render: cabecera + selector ─────────────────────────────────────────────
+  const TABS: Array<{ id: TabId; label: string }> = [
+    { id: "documentos", label: `Documentos (${exp?.documentos.length ?? 0})` },
+    { id: "partes",     label: `Partes (${exp?.partes.length ?? 0})` },
+    { id: "timeline",   label: `Timeline (${exp?.hitos.length ?? 0})` },
+    { id: "notas",      label: "Notas" },
+  ];
 
   return (
-    <div style={s.page}>
+    <div
+      style={{
+        background: "#0a0a0a",
+        minHeight: "100vh",
+        color: "#fff",
+        fontFamily: "'Inter', sans-serif",
+        padding: "24px",
+      }}
+    >
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
         {/* Header */}
-        <div style={{ marginBottom: "24px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-          <div>
-            <p style={{ margin: 0, fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", marginBottom: "4px" }}>CRM · Operaciones</p>
-            <h1 style={s.heading}>Expediente Digital</h1>
-          </div>
+        <div style={{ marginBottom: "24px" }}>
+          <p style={{ margin: 0, fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", marginBottom: "4px" }}>
+            CRM · Operaciones
+          </p>
+          <h1
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontWeight: 800,
+              fontSize: "1.6rem",
+              color: "#fff",
+              margin: 0,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Expediente Digital
+          </h1>
         </div>
 
         {/* Selector de negocio */}
-        <div style={{ ...s.card, marginBottom: "20px" }}>
-          <label style={s.label}>Seleccionar operación</label>
+        <div style={{ ...ST.card, marginBottom: "20px" }}>
+          <label style={ST.label}>Seleccionar operación</label>
           {loading ? (
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.9rem", margin: 0 }}>Cargando negocios...</p>
           ) : (
             <select
               value={negocioId}
               onChange={(e) => setNegocioId(e.target.value)}
-              style={s.select}
+              style={{ ...ST.select, padding: "10px 14px", fontSize: "0.95rem" }}
             >
               <option value="">— Seleccioná una operación —</option>
               {negocios.map((n) => (
@@ -401,192 +403,160 @@ export default function ExpedientePage() {
           )}
         </div>
 
-        {/* Sin negocio seleccionado */}
+        {/* Pantalla de bienvenida */}
         {!negocioId && (
-          <div style={{ ...s.card, textAlign: "center", padding: "56px 24px" }}>
+          <div style={{ ...ST.card, textAlign: "center", padding: "56px 24px" }}>
             <div style={{ fontSize: "2.5rem", marginBottom: "16px" }}>📂</div>
-            <p style={{ ...s.subheading, marginBottom: "8px" }}>Seleccioná una operación para comenzar</p>
+            <p style={{ ...ST.subheading, marginBottom: "8px" }}>Seleccioná una operación para comenzar</p>
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.9rem", margin: 0 }}>
               El expediente centraliza partes, documentos, timeline y notas de cada negocio.
             </p>
           </div>
         )}
 
-        {/* Contenido del expediente */}
+        {/* Expediente activo */}
         {negocioId && exp && negocioActivo && (
-          <ExpedientePanel
-            negocio={negocioActivo}
-            exp={exp}
-            tab={tab}
-            setTab={setTab}
-            updateExp={updateExp}
-            s={s}
-          />
+          <>
+            <ResumenNegocio negocio={negocioActivo} exp={exp} />
+
+            {/* Tabs */}
+            <div
+              style={{
+                display: "flex",
+                gap: "4px",
+                marginBottom: "20px",
+                borderBottom: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    borderBottom: tab === t.id ? "2px solid #cc0000" : "2px solid transparent",
+                    color: tab === t.id ? "#fff" : "rgba(255,255,255,0.45)",
+                    padding: "10px 16px",
+                    fontSize: "0.88rem",
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: tab === t.id ? 600 : 400,
+                    cursor: "pointer",
+                    transition: "color 0.2s",
+                    marginBottom: "-1px",
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            {tab === "documentos" && (
+              <TabDocumentos exp={exp} updateExp={updateExp} negocioTipo={negocioActivo.tipo} />
+            )}
+            {tab === "partes" && <TabPartes exp={exp} updateExp={updateExp} />}
+            {tab === "timeline" && <TabTimeline exp={exp} updateExp={updateExp} />}
+            {tab === "notas" && <TabNotas exp={exp} updateExp={updateExp} />}
+          </>
         )}
       </div>
     </div>
   );
 }
 
-// ── Panel principal del expediente ────────────────────────────────────────────
+// ── Resumen ───────────────────────────────────────────────────────────────────
 
-interface ExpedientePanelProps {
-  negocio: NegocioDB;
-  exp: Expediente;
-  tab: "documentos" | "partes" | "timeline" | "notas";
-  setTab: (t: "documentos" | "partes" | "timeline" | "notas") => void;
-  updateExp: (fn: (prev: Expediente) => Expediente) => void;
-  s: Record<string, React.CSSProperties>;
-}
-
-function ExpedientePanel({ negocio, exp, tab, setTab, updateExp, s }: ExpedientePanelProps) {
-  const chipFn = (color: string, bg: string): React.CSSProperties => ({
-    display: "inline-block", padding: "2px 10px", borderRadius: "999px",
-    fontSize: "0.75rem", fontWeight: 600, color, background: bg, fontFamily: "'Inter',sans-serif",
-  });
-
+function ResumenNegocio({ negocio, exp }: { negocio: NegocioDB; exp: Expediente }) {
   const docsObligatorios = exp.documentos.filter((d) => d.obligatorio);
   const docsCompletados  = docsObligatorios.filter((d) => d.estado === "aprobado");
   const pct = docsObligatorios.length > 0
     ? Math.round((docsCompletados.length / docsObligatorios.length) * 100)
     : 0;
-
-  const docsVencidos    = exp.documentos.filter((d) => estaVencido(d.fechaVencimiento));
-  const docsPorVencer   = exp.documentos.filter((d) => esPorVencer(d.fechaVencimiento));
-
-  const TABS = [
-    { id: "documentos", label: `Documentos (${exp.documentos.length})` },
-    { id: "partes",     label: `Partes (${exp.partes.length})` },
-    { id: "timeline",   label: `Timeline (${exp.hitos.length})` },
-    { id: "notas",      label: "Notas" },
-  ] as const;
+  const docsVencidos  = exp.documentos.filter((d) => estaVencido(d.fechaVencimiento));
+  const docsPorVencer = exp.documentos.filter((d) => esPorVencer(d.fechaVencimiento));
 
   return (
-    <>
-      {/* Panel de resumen */}
-      <div style={{ ...s.card as React.CSSProperties, marginBottom: "20px" }}>
-        <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", marginBottom: "16px" }}>
-          <div>
-            <span style={s.label as React.CSSProperties}>Tipo</span>
-            <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>{negocio.tipo?.toUpperCase() ?? "—"}</span>
+    <div style={{ ...ST.card, marginBottom: "20px" }}>
+      <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", marginBottom: "16px" }}>
+        {(
+          [
+            ["Tipo", negocio.tipo?.toUpperCase() ?? "—"],
+            ["Barrio", negocio.barrio ?? "—"],
+            ["Propiedad", negocio.tipo_propiedad ?? "—"],
+            ["Precio cierre", formatPrecio(negocio.precio_cierre, negocio.moneda)],
+          ] as Array<[string, string]>
+        ).map(([k, v]) => (
+          <div key={k}>
+            <span style={ST.label}>{k}</span>
+            <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>{v}</span>
           </div>
-          <div>
-            <span style={s.label as React.CSSProperties}>Barrio</span>
-            <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>{negocio.barrio ?? "—"}</span>
-          </div>
-          <div>
-            <span style={s.label as React.CSSProperties}>Propiedad</span>
-            <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>{negocio.tipo_propiedad ?? "—"}</span>
-          </div>
-          <div>
-            <span style={s.label as React.CSSProperties}>Precio cierre</span>
-            <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>{formatPrecio(negocio.precio_cierre, negocio.moneda)}</span>
-          </div>
-          <div>
-            <span style={s.label as React.CSSProperties}>Estado</span>
-            <span style={{ fontWeight: 600, fontSize: "0.95rem", color: "#34d399" }}>{negocio.estado ?? "—"}</span>
-          </div>
-          {negocio.fecha_cierre && (
-            <div>
-              <span style={s.label as React.CSSProperties}>Fecha cierre</span>
-              <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                {new Date(negocio.fecha_cierre).toLocaleDateString("es-AR")}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Progress bar */}
-        <div style={{ marginBottom: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.5)" }}>
-            Documentos obligatorios aprobados
-          </span>
-          <span style={{ fontSize: "0.82rem", fontWeight: 700, color: pct === 100 ? "#34d399" : "#fff" }}>
-            {docsCompletados.length}/{docsObligatorios.length} ({pct}%)
+        ))}
+        <div>
+          <span style={ST.label}>Estado</span>
+          <span style={{ fontWeight: 600, fontSize: "0.95rem", color: "#34d399" }}>
+            {negocio.estado ?? "—"}
           </span>
         </div>
-        <div style={{ height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "999px", overflow: "hidden" }}>
-          <div
-            style={{
-              height: "100%",
-              width: `${pct}%`,
-              background: pct === 100 ? "#34d399" : "#cc0000",
-              borderRadius: "999px",
-              transition: "width 0.4s ease",
-            }}
-          />
-        </div>
-
-        {/* Alertas */}
-        {(docsVencidos.length > 0 || docsPorVencer.length > 0) && (
-          <div style={{ marginTop: "12px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            {docsVencidos.length > 0 && (
-              <div style={{ ...chipFn("#cc0000", "rgba(204,0,0,0.15)"), fontSize: "0.8rem", padding: "4px 12px" }}>
-                ⚠ {docsVencidos.length} doc{docsVencidos.length > 1 ? "s" : ""} vencido{docsVencidos.length > 1 ? "s" : ""}
-              </div>
-            )}
-            {docsPorVencer.length > 0 && (
-              <div style={{ ...chipFn("#fbbf24", "rgba(251,191,36,0.12)"), fontSize: "0.8rem", padding: "4px 12px" }}>
-                ⏰ {docsPorVencer.length} por vencer (7 días)
-              </div>
-            )}
+        {negocio.fecha_cierre && (
+          <div>
+            <span style={ST.label}>Fecha cierre</span>
+            <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+              {new Date(negocio.fecha_cierre).toLocaleDateString("es-AR")}
+            </span>
           </div>
         )}
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: "flex", gap: "4px", marginBottom: "20px", borderBottom: "1px solid rgba(255,255,255,0.07)", paddingBottom: "0" }}>
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            style={{
-              background: "none",
-              border: "none",
-              borderBottom: tab === t.id ? "2px solid #cc0000" : "2px solid transparent",
-              color: tab === t.id ? "#fff" : "rgba(255,255,255,0.45)",
-              padding: "10px 16px",
-              fontSize: "0.88rem",
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: tab === t.id ? 600 : 400,
-              cursor: "pointer",
-              transition: "color 0.2s",
-              marginBottom: "-1px",
-            }}
-          >
-            {t.label}
-          </button>
-        ))}
+      {/* Progress bar */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+        <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.5)" }}>
+          Documentos obligatorios aprobados
+        </span>
+        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: pct === 100 ? "#34d399" : "#fff" }}>
+          {docsCompletados.length}/{docsObligatorios.length} ({pct}%)
+        </span>
+      </div>
+      <div
+        style={{
+          height: "6px",
+          background: "rgba(255,255,255,0.08)",
+          borderRadius: "999px",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${pct}%`,
+            background: pct === 100 ? "#34d399" : "#cc0000",
+            borderRadius: "999px",
+            transition: "width 0.4s ease",
+          }}
+        />
       </div>
 
-      {/* Tab content */}
-      {tab === "documentos" && (
-        <TabDocumentos exp={exp} updateExp={updateExp} negocioTipo={negocio.tipo} s={s} />
+      {(docsVencidos.length > 0 || docsPorVencer.length > 0) && (
+        <div style={{ marginTop: "12px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          {docsVencidos.length > 0 && (
+            <span style={{ ...chip("#cc0000", "rgba(204,0,0,0.15)"), fontSize: "0.8rem", padding: "4px 12px" }}>
+              ⚠ {docsVencidos.length} doc{docsVencidos.length > 1 ? "s" : ""} vencido
+              {docsVencidos.length > 1 ? "s" : ""}
+            </span>
+          )}
+          {docsPorVencer.length > 0 && (
+            <span
+              style={{ ...chip("#fbbf24", "rgba(251,191,36,0.12)"), fontSize: "0.8rem", padding: "4px 12px" }}
+            >
+              ⏰ {docsPorVencer.length} por vencer (7 días)
+            </span>
+          )}
+        </div>
       )}
-      {tab === "partes" && (
-        <TabPartes exp={exp} updateExp={updateExp} s={s} />
-      )}
-      {tab === "timeline" && (
-        <TabTimeline exp={exp} updateExp={updateExp} s={s} />
-      )}
-      {tab === "notas" && (
-        <TabNotas exp={exp} updateExp={updateExp} s={s} />
-      )}
-    </>
+    </div>
   );
 }
 
 // ── Tab: Documentos ───────────────────────────────────────────────────────────
-
-interface TabProps {
-  exp: Expediente;
-  updateExp: (fn: (prev: Expediente) => Expediente) => void;
-  s: Record<string, React.CSSProperties>;
-}
-
-interface TabDocumentosProps extends TabProps {
-  negocioTipo: string | null;
-}
 
 const DOC_VACÍO = (): Omit<Documento, "id"> => ({
   nombre: "",
@@ -598,15 +568,28 @@ const DOC_VACÍO = (): Omit<Documento, "id"> => ({
   obligatorio: true,
 });
 
-function TabDocumentos({ exp, updateExp, negocioTipo, s }: TabDocumentosProps) {
-  const [expandido, setExpandido] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<Omit<Documento, "id">>(DOC_VACÍO());
+const TIPOS_DOC: TipoDoc[] = [
+  "dni","escritura","titulo","certificado","impuestos","planos","reglamento","contrato","otro",
+];
+const RESPONSABLES: Documento["responsable"][] = [
+  "comprador","vendedor","escribano","banco","inmobiliaria","otro",
+];
+const ESTADOS_DOC: EstadoDoc[] = [
+  "pendiente","enviado","recibido","aprobado","rechazado",
+];
 
-  const chipFn = (color: string, bg: string): React.CSSProperties => ({
-    display: "inline-block", padding: "2px 10px", borderRadius: "999px",
-    fontSize: "0.75rem", fontWeight: 600, color, background: bg, fontFamily: "'Inter',sans-serif",
-  });
+function TabDocumentos({
+  exp,
+  updateExp,
+  negocioTipo,
+}: {
+  exp: Expediente;
+  updateExp: UpdateExpFn;
+  negocioTipo: string | null;
+}) {
+  const [expandido, setExpandido] = useState<string | null>(null);
+  const [showForm, setShowForm]   = useState(false);
+  const [form, setForm]           = useState<Omit<Documento, "id">>(DOC_VACÍO());
 
   function agregarDoc() {
     if (!form.nombre.trim()) return;
@@ -618,7 +601,7 @@ function TabDocumentos({ exp, updateExp, negocioTipo, s }: TabDocumentosProps) {
     setShowForm(false);
   }
 
-  function editarDoc(id: string, campo: keyof Documento, valor: Documento[keyof Documento]) {
+  function editarDoc<K extends keyof Documento>(id: string, campo: K, valor: Documento[K]) {
     updateExp((prev) => ({
       ...prev,
       documentos: prev.documentos.map((d) => (d.id === id ? { ...d, [campo]: valor } : d)),
@@ -639,73 +622,82 @@ function TabDocumentos({ exp, updateExp, negocioTipo, s }: TabDocumentosProps) {
     updateExp((prev) => ({ ...prev, documentos: [...prev.documentos, ...nuevos] }));
   }
 
-  const inputStyle = s.input as React.CSSProperties;
-  const btnStyle   = s.btn  as React.CSSProperties;
-  const btnGhost   = s.btnGhost as React.CSSProperties;
-  const cardStyle  = s.card as React.CSSProperties;
-  const labelStyle = s.label as React.CSSProperties;
+  const esAlquiler = negocioTipo === "alquiler" || negocioTipo === "alquiler_temporal";
 
   return (
     <div>
-      {/* Acciones */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
-        <button onClick={() => setShowForm(!showForm)} style={btnStyle}>
+        <button onClick={() => setShowForm(!showForm)} style={ST.btn}>
           + Agregar documento
         </button>
-        <button onClick={aplicarPlantilla} style={btnGhost}>
-          📋 Plantilla {negocioTipo === "alquiler" || negocioTipo === "alquiler_temporal" ? "alquiler" : "venta"}
+        <button onClick={aplicarPlantilla} style={ST.btnGhost}>
+          📋 Plantilla {esAlquiler ? "alquiler" : "venta"}
         </button>
       </div>
 
-      {/* Formulario nuevo doc */}
       {showForm && (
-        <div style={{ ...cardStyle, marginBottom: "16px", borderColor: "rgba(204,0,0,0.3)" }}>
-          <p style={{ ...s.subheading as React.CSSProperties, marginBottom: "14px" }}>Nuevo documento</p>
+        <div style={{ ...ST.card, marginBottom: "16px", borderColor: "rgba(204,0,0,0.3)" }}>
+          <p style={{ ...ST.subheading, marginBottom: "14px" }}>Nuevo documento</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
             <div>
-              <label style={labelStyle}>Nombre *</label>
+              <label style={ST.label}>Nombre *</label>
               <input
-                style={inputStyle}
+                style={ST.input}
                 value={form.nombre}
                 onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                 placeholder="Ej: DNI comprador"
               />
             </div>
             <div>
-              <label style={labelStyle}>Tipo</label>
-              <select style={inputStyle} value={form.tipo} onChange={(e) => setForm({ ...form, tipo: e.target.value as TipoDoc })}>
-                {(["dni","escritura","titulo","certificado","impuestos","planos","reglamento","contrato","otro"] as TipoDoc[]).map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
+              <label style={ST.label}>Tipo</label>
+              <select
+                style={ST.select}
+                value={form.tipo}
+                onChange={(e) => setForm({ ...form, tipo: e.target.value as TipoDoc })}
+              >
+                {TIPOS_DOC.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Responsable</label>
-              <select style={inputStyle} value={form.responsable} onChange={(e) => setForm({ ...form, responsable: e.target.value as Documento["responsable"] })}>
-                {(["comprador","vendedor","escribano","banco","inmobiliaria","otro"] as const).map((r) => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
+              <label style={ST.label}>Responsable</label>
+              <select
+                style={ST.select}
+                value={form.responsable}
+                onChange={(e) => setForm({ ...form, responsable: e.target.value as Documento["responsable"] })}
+              >
+                {RESPONSABLES.map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Estado</label>
-              <select style={inputStyle} value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value as EstadoDoc })}>
-                {(["pendiente","enviado","recibido","aprobado","rechazado"] as EstadoDoc[]).map((st) => (
-                  <option key={st} value={st}>{st}</option>
-                ))}
+              <label style={ST.label}>Estado</label>
+              <select
+                style={ST.select}
+                value={form.estado}
+                onChange={(e) => setForm({ ...form, estado: e.target.value as EstadoDoc })}
+              >
+                {ESTADOS_DOC.map((st) => <option key={st} value={st}>{st}</option>)}
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Fecha vencimiento</label>
+              <label style={ST.label}>Fecha vencimiento</label>
               <input
                 type="date"
-                style={inputStyle}
+                style={ST.input}
                 value={form.fechaVencimiento ?? ""}
                 onChange={(e) => setForm({ ...form, fechaVencimiento: e.target.value || null })}
               />
             </div>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: "8px", paddingBottom: "0" }}>
-              <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", marginBottom: 0 }}>
+            <div style={{ display: "flex", alignItems: "flex-end" }}>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  fontSize: "0.85rem",
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
                 <input
                   type="checkbox"
                   checked={form.obligatorio}
@@ -717,133 +709,163 @@ function TabDocumentos({ exp, updateExp, negocioTipo, s }: TabDocumentosProps) {
             </div>
           </div>
           <div style={{ marginBottom: "12px" }}>
-            <label style={labelStyle}>Notas</label>
+            <label style={ST.label}>Notas</label>
             <input
-              style={inputStyle}
+              style={ST.input}
               value={form.notas}
               onChange={(e) => setForm({ ...form, notas: e.target.value })}
               placeholder="Notas opcionales..."
             />
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
-            <button onClick={agregarDoc} style={btnStyle}>Guardar</button>
-            <button onClick={() => { setShowForm(false); setForm(DOC_VACÍO()); }} style={btnGhost}>Cancelar</button>
+            <button onClick={agregarDoc} style={ST.btn}>Guardar</button>
+            <button
+              onClick={() => { setShowForm(false); setForm(DOC_VACÍO()); }}
+              style={ST.btnGhost}
+            >
+              Cancelar
+            </button>
           </div>
         </div>
       )}
 
-      {/* Lista de documentos */}
       {exp.documentos.length === 0 ? (
-        <div style={{ ...cardStyle, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
+        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
           No hay documentos. Agregá uno o usá la plantilla.
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {exp.documentos.map((doc) => {
-            const meta = ESTADO_DOC_META[doc.estado];
-            const vencido    = estaVencido(doc.fechaVencimiento);
-            const porVencer  = esPorVencer(doc.fechaVencimiento);
-            const isOpen     = expandido === doc.id;
+            const meta      = ESTADO_DOC_META[doc.estado];
+            const vencido   = estaVencido(doc.fechaVencimiento);
+            const porVencer = esPorVencer(doc.fechaVencimiento);
+            const isOpen    = expandido === doc.id;
 
             return (
               <div
                 key={doc.id}
                 style={{
-                  ...cardStyle,
+                  ...ST.card,
                   padding: "12px 16px",
-                  borderColor: vencido ? "rgba(204,0,0,0.4)" : porVencer ? "rgba(251,191,36,0.3)" : undefined,
+                  borderColor: vencido
+                    ? "rgba(204,0,0,0.4)"
+                    : porVencer
+                    ? "rgba(251,191,36,0.3)"
+                    : undefined,
                   cursor: "pointer",
                 }}
                 onClick={() => setExpandido(isOpen ? null : doc.id)}
               >
-                {/* Fila principal */}
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                   <span style={{ flex: 1, fontWeight: 600, fontSize: "0.9rem" }}>{doc.nombre}</span>
-                  <span style={chipFn(ROL_COLORS[doc.responsable] ?? "#9ca3af", "rgba(255,255,255,0.07)")}>
+                  <span style={chip(ROL_COLORS[doc.responsable] ?? "#9ca3af", "rgba(255,255,255,0.07)")}>
                     {doc.responsable}
                   </span>
-                  <span style={chipFn(meta.color, meta.bg)}>{meta.label}</span>
+                  <span style={chip(meta.color, meta.bg)}>{meta.label}</span>
                   {doc.obligatorio && (
                     <span style={{ fontSize: "0.7rem", color: "#cc0000", fontWeight: 700 }}>OBL</span>
                   )}
                   {doc.fechaVencimiento && (
-                    <span style={{
-                      fontSize: "0.75rem",
-                      color: vencido ? "#cc0000" : porVencer ? "#fbbf24" : "rgba(255,255,255,0.4)",
-                    }}>
-                      {vencido ? "⚠ Vencido" : porVencer ? "⏰" : ""} {new Date(doc.fechaVencimiento).toLocaleDateString("es-AR")}
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        color: vencido ? "#cc0000" : porVencer ? "#fbbf24" : "rgba(255,255,255,0.4)",
+                      }}
+                    >
+                      {vencido ? "⚠ Vencido" : porVencer ? "⏰" : ""}{" "}
+                      {new Date(doc.fechaVencimiento).toLocaleDateString("es-AR")}
                     </span>
                   )}
-                  <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.8rem" }}>{isOpen ? "▲" : "▼"}</span>
+                  <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.8rem" }}>
+                    {isOpen ? "▲" : "▼"}
+                  </span>
                 </div>
 
-                {/* Fila de notas (colapsada) */}
                 {!isOpen && doc.notas && (
-                  <p style={{ margin: "6px 0 0", fontSize: "0.8rem", color: "rgba(255,255,255,0.35)" }}>{doc.notas}</p>
+                  <p style={{ margin: "6px 0 0", fontSize: "0.8rem", color: "rgba(255,255,255,0.35)" }}>
+                    {doc.notas}
+                  </p>
                 )}
 
-                {/* Editor expandido */}
                 {isOpen && (
                   <div
-                    style={{ marginTop: "14px", borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: "14px" }}
+                    style={{
+                      marginTop: "14px",
+                      borderTop: "1px solid rgba(255,255,255,0.07)",
+                      paddingTop: "14px",
+                    }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "10px",
+                        marginBottom: "10px",
+                      }}
+                    >
                       <div>
-                        <label style={labelStyle}>Nombre</label>
+                        <label style={ST.label}>Nombre</label>
                         <input
-                          style={inputStyle}
+                          style={ST.input}
                           value={doc.nombre}
                           onChange={(e) => editarDoc(doc.id, "nombre", e.target.value)}
                         />
                       </div>
                       <div>
-                        <label style={labelStyle}>Estado</label>
+                        <label style={ST.label}>Estado</label>
                         <select
-                          style={inputStyle}
+                          style={ST.select}
                           value={doc.estado}
                           onChange={(e) => editarDoc(doc.id, "estado", e.target.value as EstadoDoc)}
                         >
-                          {(["pendiente","enviado","recibido","aprobado","rechazado"] as EstadoDoc[]).map((st) => (
-                            <option key={st} value={st}>{st}</option>
-                          ))}
+                          {ESTADOS_DOC.map((st) => <option key={st} value={st}>{st}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label style={labelStyle}>Responsable</label>
+                        <label style={ST.label}>Responsable</label>
                         <select
-                          style={inputStyle}
+                          style={ST.select}
                           value={doc.responsable}
-                          onChange={(e) => editarDoc(doc.id, "responsable", e.target.value as Documento["responsable"])}
+                          onChange={(e) =>
+                            editarDoc(doc.id, "responsable", e.target.value as Documento["responsable"])
+                          }
                         >
-                          {(["comprador","vendedor","escribano","banco","inmobiliaria","otro"] as const).map((r) => (
-                            <option key={r} value={r}>{r}</option>
-                          ))}
+                          {RESPONSABLES.map((r) => <option key={r} value={r}>{r}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label style={labelStyle}>Tipo</label>
+                        <label style={ST.label}>Tipo</label>
                         <select
-                          style={inputStyle}
+                          style={ST.select}
                           value={doc.tipo}
                           onChange={(e) => editarDoc(doc.id, "tipo", e.target.value as TipoDoc)}
                         >
-                          {(["dni","escritura","titulo","certificado","impuestos","planos","reglamento","contrato","otro"] as TipoDoc[]).map((t) => (
-                            <option key={t} value={t}>{t}</option>
-                          ))}
+                          {TIPOS_DOC.map((t) => <option key={t} value={t}>{t}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label style={labelStyle}>Fecha vencimiento</label>
+                        <label style={ST.label}>Fecha vencimiento</label>
                         <input
                           type="date"
-                          style={inputStyle}
+                          style={ST.input}
                           value={doc.fechaVencimiento ?? ""}
-                          onChange={(e) => editarDoc(doc.id, "fechaVencimiento", e.target.value || null)}
+                          onChange={(e) =>
+                            editarDoc(doc.id, "fechaVencimiento", e.target.value || null)
+                          }
                         />
                       </div>
-                      <div style={{ display: "flex", alignItems: "flex-end", paddingBottom: "2px" }}>
-                        <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", marginBottom: 0 }}>
+                      <div style={{ display: "flex", alignItems: "flex-end" }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            cursor: "pointer",
+                            fontSize: "0.85rem",
+                            fontFamily: "'Inter', sans-serif",
+                          }}
+                        >
                           <input
                             type="checkbox"
                             checked={doc.obligatorio}
@@ -855,9 +877,9 @@ function TabDocumentos({ exp, updateExp, negocioTipo, s }: TabDocumentosProps) {
                       </div>
                     </div>
                     <div style={{ marginBottom: "12px" }}>
-                      <label style={labelStyle}>Notas</label>
+                      <label style={ST.label}>Notas</label>
                       <input
-                        style={inputStyle}
+                        style={ST.input}
                         value={doc.notas}
                         onChange={(e) => editarDoc(doc.id, "notas", e.target.value)}
                         placeholder="Notas del documento..."
@@ -865,7 +887,12 @@ function TabDocumentos({ exp, updateExp, negocioTipo, s }: TabDocumentosProps) {
                     </div>
                     <button
                       onClick={() => eliminarDoc(doc.id)}
-                      style={{ ...btnGhost, color: "#cc0000", borderColor: "rgba(204,0,0,0.3)", fontSize: "0.8rem" }}
+                      style={{
+                        ...ST.btnGhost,
+                        color: "#cc0000",
+                        borderColor: "rgba(204,0,0,0.3)",
+                        fontSize: "0.8rem",
+                      }}
                     >
                       Eliminar documento
                     </button>
@@ -891,16 +918,15 @@ const PARTE_VACÍA = (): Parte => ({
   notas: "",
 });
 
-function TabPartes({ exp, updateExp, s }: TabProps) {
+const ROLES_PARTE: Parte["rol"][] = ["comprador","vendedor","escribano","banco","garante","otro"];
+const CAMPOS_PARTE: Array<Exclude<keyof Parte, "rol">> = [
+  "nombre","telefono","email","dni","notas",
+];
+
+function TabPartes({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn }) {
   const [editIdx, setEditIdx] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<Parte>(PARTE_VACÍA());
-
-  const btnStyle  = s.btn  as React.CSSProperties;
-  const btnGhost  = s.btnGhost as React.CSSProperties;
-  const cardStyle = s.card as React.CSSProperties;
-  const inputStyle = s.input as React.CSSProperties;
-  const labelStyle = s.label as React.CSSProperties;
 
   function agregarParte() {
     if (!form.nombre.trim()) return;
@@ -924,69 +950,113 @@ function TabPartes({ exp, updateExp, s }: TabProps) {
   return (
     <div>
       <div style={{ marginBottom: "16px" }}>
-        <button onClick={() => setShowForm(!showForm)} style={btnStyle}>+ Agregar parte</button>
+        <button onClick={() => setShowForm(!showForm)} style={ST.btn}>
+          + Agregar parte
+        </button>
       </div>
 
-      {/* Formulario nueva parte */}
       {showForm && (
-        <div style={{ ...cardStyle, marginBottom: "16px", borderColor: "rgba(204,0,0,0.3)" }}>
-          <p style={{ ...s.subheading as React.CSSProperties, marginBottom: "14px" }}>Nueva parte</p>
+        <div style={{ ...ST.card, marginBottom: "16px", borderColor: "rgba(204,0,0,0.3)" }}>
+          <p style={{ ...ST.subheading, marginBottom: "14px" }}>Nueva parte</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
             <div>
-              <label style={labelStyle}>Nombre *</label>
-              <input style={inputStyle} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Nombre completo" />
+              <label style={ST.label}>Nombre *</label>
+              <input
+                style={ST.input}
+                value={form.nombre}
+                onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                placeholder="Nombre completo"
+              />
             </div>
             <div>
-              <label style={labelStyle}>Rol</label>
-              <select style={inputStyle} value={form.rol} onChange={(e) => setForm({ ...form, rol: e.target.value as Parte["rol"] })}>
-                {(["comprador","vendedor","escribano","banco","garante","otro"] as const).map((r) => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
+              <label style={ST.label}>Rol</label>
+              <select
+                style={ST.select}
+                value={form.rol}
+                onChange={(e) => setForm({ ...form, rol: e.target.value as Parte["rol"] })}
+              >
+                {ROLES_PARTE.map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Teléfono</label>
-              <input style={inputStyle} value={form.telefono} onChange={(e) => setForm({ ...form, telefono: e.target.value })} placeholder="+54 9 11..." />
+              <label style={ST.label}>Teléfono</label>
+              <input
+                style={ST.input}
+                value={form.telefono}
+                onChange={(e) => setForm({ ...form, telefono: e.target.value })}
+                placeholder="+54 9 11..."
+              />
             </div>
             <div>
-              <label style={labelStyle}>Email</label>
-              <input style={inputStyle} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="email@ejemplo.com" />
+              <label style={ST.label}>Email</label>
+              <input
+                style={ST.input}
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="email@ejemplo.com"
+              />
             </div>
             <div>
-              <label style={labelStyle}>DNI</label>
-              <input style={inputStyle} value={form.dni} onChange={(e) => setForm({ ...form, dni: e.target.value })} placeholder="12.345.678" />
+              <label style={ST.label}>DNI</label>
+              <input
+                style={ST.input}
+                value={form.dni}
+                onChange={(e) => setForm({ ...form, dni: e.target.value })}
+                placeholder="12.345.678"
+              />
             </div>
             <div>
-              <label style={labelStyle}>Notas</label>
-              <input style={inputStyle} value={form.notas} onChange={(e) => setForm({ ...form, notas: e.target.value })} placeholder="Notas..." />
+              <label style={ST.label}>Notas</label>
+              <input
+                style={ST.input}
+                value={form.notas}
+                onChange={(e) => setForm({ ...form, notas: e.target.value })}
+                placeholder="Notas..."
+              />
             </div>
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
-            <button onClick={agregarParte} style={btnStyle}>Guardar</button>
-            <button onClick={() => { setShowForm(false); setForm(PARTE_VACÍA()); }} style={btnGhost}>Cancelar</button>
+            <button onClick={agregarParte} style={ST.btn}>Guardar</button>
+            <button
+              onClick={() => { setShowForm(false); setForm(PARTE_VACÍA()); }}
+              style={ST.btnGhost}
+            >
+              Cancelar
+            </button>
           </div>
         </div>
       )}
 
-      {/* Cards de partes */}
       {exp.partes.length === 0 ? (
-        <div style={{ ...cardStyle, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
+        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
           No hay partes registradas.
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "12px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: "12px",
+          }}
+        >
           {exp.partes.map((parte, idx) => {
             const rolColor = ROL_COLORS[parte.rol] ?? "#9ca3af";
-            const isEdit = editIdx === idx;
+            const isEdit   = editIdx === idx;
 
             return (
               <div
                 key={idx}
-                style={{ ...cardStyle, cursor: "pointer" }}
+                style={{ ...ST.card, cursor: isEdit ? "default" : "pointer" }}
                 onClick={() => !isEdit && setEditIdx(idx)}
               >
-                {/* Rol y nombre */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
                   <div>
                     <span
                       style={{
@@ -1000,24 +1070,26 @@ function TabPartes({ exp, updateExp, s }: TabProps) {
                         marginBottom: "6px",
                         textTransform: "uppercase" as const,
                         letterSpacing: "0.05em",
+                        fontFamily: "'Inter', sans-serif",
                       }}
                     >
                       {parte.rol}
                     </span>
                     <p style={{ margin: 0, fontWeight: 700, fontSize: "1rem" }}>
-                      {parte.nombre || <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin nombre</span>}
+                      {parte.nombre || (
+                        <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin nombre</span>
+                      )}
                     </p>
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); setEditIdx(isEdit ? null : idx); }}
-                    style={{ ...btnGhost, padding: "4px 10px", fontSize: "0.75rem" }}
+                    style={{ ...ST.btnGhost, padding: "4px 10px", fontSize: "0.75rem" }}
                   >
                     {isEdit ? "Listo" : "Editar"}
                   </button>
                 </div>
 
                 {!isEdit ? (
-                  /* Vista colapsada */
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     {parte.telefono && (
                       <a
@@ -1040,48 +1112,54 @@ function TabPartes({ exp, updateExp, s }: TabProps) {
                       </a>
                     )}
                     {parte.dni && (
-                      <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)" }}>DNI: {parte.dni}</span>
+                      <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)" }}>
+                        DNI: {parte.dni}
+                      </span>
                     )}
                     {parte.notas && (
-                      <p style={{ margin: 0, fontSize: "0.8rem", color: "rgba(255,255,255,0.35)", fontStyle: "italic" }}>{parte.notas}</p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.8rem",
+                          color: "rgba(255,255,255,0.35)",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        {parte.notas}
+                      </p>
                     )}
                   </div>
                 ) : (
-                  /* Editor inline */
                   <div onClick={(e) => e.stopPropagation()}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "12px" }}>
-                      <div>
-                        <label style={labelStyle}>Rol</label>
-                        <select style={inputStyle} value={parte.rol} onChange={(e) => actualizarParte(idx, "rol", e.target.value)}>
-                          {(["comprador","vendedor","escribano","banco","garante","otro"] as const).map((r) => (
-                            <option key={r} value={r}>{r}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label style={labelStyle}>Nombre</label>
-                        <input style={inputStyle} value={parte.nombre} onChange={(e) => actualizarParte(idx, "nombre", e.target.value)} />
-                      </div>
-                      <div>
-                        <label style={labelStyle}>Teléfono</label>
-                        <input style={inputStyle} value={parte.telefono} onChange={(e) => actualizarParte(idx, "telefono", e.target.value)} />
-                      </div>
-                      <div>
-                        <label style={labelStyle}>Email</label>
-                        <input style={inputStyle} value={parte.email} onChange={(e) => actualizarParte(idx, "email", e.target.value)} />
-                      </div>
-                      <div>
-                        <label style={labelStyle}>DNI</label>
-                        <input style={inputStyle} value={parte.dni} onChange={(e) => actualizarParte(idx, "dni", e.target.value)} />
-                      </div>
-                      <div>
-                        <label style={labelStyle}>Notas</label>
-                        <input style={inputStyle} value={parte.notas} onChange={(e) => actualizarParte(idx, "notas", e.target.value)} />
-                      </div>
+                    <div style={{ marginBottom: "8px" }}>
+                      <label style={ST.label}>Rol</label>
+                      <select
+                        style={ST.select}
+                        value={parte.rol}
+                        onChange={(e) => actualizarParte(idx, "rol", e.target.value)}
+                      >
+                        {ROLES_PARTE.map((r) => <option key={r} value={r}>{r}</option>)}
+                      </select>
                     </div>
+                    {CAMPOS_PARTE.map((campo) => (
+                      <div key={campo} style={{ marginBottom: "8px" }}>
+                        <label style={ST.label}>{campo.charAt(0).toUpperCase() + campo.slice(1)}</label>
+                        <input
+                          style={ST.input}
+                          value={parte[campo]}
+                          onChange={(e) => actualizarParte(idx, campo, e.target.value)}
+                        />
+                      </div>
+                    ))}
                     <button
                       onClick={() => eliminarParte(idx)}
-                      style={{ ...btnGhost, color: "#cc0000", borderColor: "rgba(204,0,0,0.3)", fontSize: "0.8rem" }}
+                      style={{
+                        ...ST.btnGhost,
+                        color: "#cc0000",
+                        borderColor: "rgba(204,0,0,0.3)",
+                        fontSize: "0.8rem",
+                        marginTop: "4px",
+                      }}
                     >
                       Eliminar parte
                     </button>
@@ -1105,18 +1183,15 @@ const HITO_VACÍO = (): Omit<Hito, "id"> => ({
   autor: "",
 });
 
-function TabTimeline({ exp, updateExp, s }: TabProps) {
+const TIPOS_HITO: Hito["tipo"][] = ["nota","documento","reunion","firma","pago","otro"];
+
+function TabTimeline({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn }) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<Omit<Hito, "id">>(HITO_VACÍO());
 
-  const btnStyle  = s.btn  as React.CSSProperties;
-  const btnGhost  = s.btnGhost as React.CSSProperties;
-  const cardStyle = s.card as React.CSSProperties;
-  const inputStyle = s.input as React.CSSProperties;
-  const labelStyle = s.label as React.CSSProperties;
-  const textareaStyle = s.textarea as React.CSSProperties;
-
-  const sorted = [...exp.hitos].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+  const sorted = [...exp.hitos].sort(
+    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+  );
 
   function agregarHito() {
     if (!form.descripcion.trim()) return;
@@ -1135,35 +1210,40 @@ function TabTimeline({ exp, updateExp, s }: TabProps) {
   return (
     <div>
       <div style={{ marginBottom: "16px" }}>
-        <button onClick={() => setShowForm(!showForm)} style={btnStyle}>+ Agregar hito</button>
+        <button onClick={() => setShowForm(!showForm)} style={ST.btn}>
+          + Agregar hito
+        </button>
       </div>
 
-      {/* Formulario nuevo hito */}
       {showForm && (
-        <div style={{ ...cardStyle, marginBottom: "20px", borderColor: "rgba(204,0,0,0.3)" }}>
-          <p style={{ ...s.subheading as React.CSSProperties, marginBottom: "14px" }}>Nuevo hito</p>
+        <div style={{ ...ST.card, marginBottom: "20px", borderColor: "rgba(204,0,0,0.3)" }}>
+          <p style={{ ...ST.subheading, marginBottom: "14px" }}>Nuevo hito</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
             <div>
-              <label style={labelStyle}>Tipo</label>
-              <select style={inputStyle} value={form.tipo} onChange={(e) => setForm({ ...form, tipo: e.target.value as Hito["tipo"] })}>
-                {(["nota","documento","reunion","firma","pago","otro"] as const).map((t) => (
+              <label style={ST.label}>Tipo</label>
+              <select
+                style={ST.select}
+                value={form.tipo}
+                onChange={(e) => setForm({ ...form, tipo: e.target.value as Hito["tipo"] })}
+              >
+                {TIPOS_HITO.map((t) => (
                   <option key={t} value={t}>{HITO_ICONS[t]} {t}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Fecha</label>
+              <label style={ST.label}>Fecha</label>
               <input
                 type="date"
-                style={inputStyle}
+                style={ST.input}
                 value={form.fecha}
                 onChange={(e) => setForm({ ...form, fecha: e.target.value })}
               />
             </div>
             <div>
-              <label style={labelStyle}>Autor</label>
+              <label style={ST.label}>Autor</label>
               <input
-                style={inputStyle}
+                style={ST.input}
                 value={form.autor}
                 onChange={(e) => setForm({ ...form, autor: e.target.value })}
                 placeholder="Tu nombre..."
@@ -1171,29 +1251,32 @@ function TabTimeline({ exp, updateExp, s }: TabProps) {
             </div>
           </div>
           <div style={{ marginBottom: "12px" }}>
-            <label style={labelStyle}>Descripción *</label>
+            <label style={ST.label}>Descripción *</label>
             <textarea
-              style={{ ...textareaStyle, minHeight: "80px" }}
+              style={{ ...ST.textarea, minHeight: "80px" }}
               value={form.descripcion}
               onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
               placeholder="Describí el evento..."
             />
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
-            <button onClick={agregarHito} style={btnStyle}>Guardar</button>
-            <button onClick={() => { setShowForm(false); setForm(HITO_VACÍO()); }} style={btnGhost}>Cancelar</button>
+            <button onClick={agregarHito} style={ST.btn}>Guardar</button>
+            <button
+              onClick={() => { setShowForm(false); setForm(HITO_VACÍO()); }}
+              style={ST.btnGhost}
+            >
+              Cancelar
+            </button>
           </div>
         </div>
       )}
 
-      {/* Timeline */}
       {sorted.length === 0 ? (
-        <div style={{ ...cardStyle, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
+        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
           No hay hitos en el timeline.
         </div>
       ) : (
         <div style={{ position: "relative" }}>
-          {/* Línea vertical */}
           <div
             style={{
               position: "absolute",
@@ -1207,7 +1290,6 @@ function TabTimeline({ exp, updateExp, s }: TabProps) {
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {sorted.map((hito) => (
               <div key={hito.id} style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-                {/* Icono */}
                 <div
                   style={{
                     width: "40px",
@@ -1226,9 +1308,15 @@ function TabTimeline({ exp, updateExp, s }: TabProps) {
                   {HITO_ICONS[hito.tipo]}
                 </div>
 
-                {/* Contenido */}
-                <div style={{ ...cardStyle, flex: 1, padding: "12px 16px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "6px" }}>
+                <div style={{ ...ST.card, flex: 1, padding: "12px 16px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      marginBottom: "6px",
+                    }}
+                  >
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <span
                         style={{
@@ -1237,12 +1325,15 @@ function TabTimeline({ exp, updateExp, s }: TabProps) {
                           color: "#cc0000",
                           textTransform: "uppercase" as const,
                           letterSpacing: "0.06em",
+                          fontFamily: "'Inter', sans-serif",
                         }}
                       >
                         {hito.tipo}
                       </span>
                       {hito.autor && (
-                        <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>· {hito.autor}</span>
+                        <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>
+                          · {hito.autor}
+                        </span>
                       )}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1251,7 +1342,12 @@ function TabTimeline({ exp, updateExp, s }: TabProps) {
                       </span>
                       <button
                         onClick={() => eliminarHito(hito.id)}
-                        style={{ ...btnGhost, padding: "2px 8px", fontSize: "0.7rem", color: "rgba(255,255,255,0.3)" }}
+                        style={{
+                          ...ST.btnGhost,
+                          padding: "2px 8px",
+                          fontSize: "0.7rem",
+                          color: "rgba(255,255,255,0.3)",
+                        }}
                       >
                         ✕
                       </button>
@@ -1270,13 +1366,20 @@ function TabTimeline({ exp, updateExp, s }: TabProps) {
 
 // ── Tab: Notas ────────────────────────────────────────────────────────────────
 
-function TabNotas({ exp, updateExp, s }: TabProps) {
-  const [guardando, setGuardando] = useState(false);
-  const [guardado, setGuardado] = useState(false);
+function TabNotas({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn }) {
+  const [guardando, setGuardando]     = useState(false);
+  const [guardado, setGuardado]       = useState(false);
+  const [localNotas, setLocalNotas]   = useState(exp.notas);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const textareaStyle = s.textarea as React.CSSProperties;
+
+  useEffect(() => {
+    setLocalNotas(exp.notas);
+    setGuardado(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exp.negocioId]);
 
   function handleChange(val: string) {
+    setLocalNotas(val);
     setGuardado(false);
     setGuardando(true);
 
@@ -1286,16 +1389,19 @@ function TabNotas({ exp, updateExp, s }: TabProps) {
       setGuardando(false);
       setGuardado(true);
     }, 800);
-
-    // Actualizar valor local inmediatamente (sin persistir)
-    updateExp((prev) => ({ ...prev, notas: val }));
   }
 
   return (
     <div>
-      {/* Indicador de guardado */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-        <p style={{ ...s.subheading as React.CSSProperties, fontSize: "0.9rem", color: "rgba(255,255,255,0.5)" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "12px",
+        }}
+      >
+        <p style={{ ...ST.subheading, fontSize: "0.9rem", color: "rgba(255,255,255,0.5)" }}>
           Notas libres del expediente
         </p>
         <span
@@ -1311,14 +1417,17 @@ function TabNotas({ exp, updateExp, s }: TabProps) {
       </div>
 
       <textarea
-        style={{ ...textareaStyle, minHeight: "320px" }}
-        value={exp.notas}
+        style={{ ...ST.textarea, minHeight: "320px" }}
+        value={localNotas}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Escribí notas generales sobre el expediente, instrucciones, pendientes, observaciones..."
       />
 
-      <div style={{ marginTop: "8px", textAlign: "right", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)" }}>
-        {exp.notas.length} caracteres · Última actualización: {new Date(exp.updatedAt).toLocaleString("es-AR")}
+      <div
+        style={{ marginTop: "8px", textAlign: "right", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)" }}
+      >
+        {localNotas.length} caracteres · Última actualización:{" "}
+        {new Date(exp.updatedAt).toLocaleString("es-AR")}
       </div>
     </div>
   );
