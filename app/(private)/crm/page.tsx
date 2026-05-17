@@ -1201,6 +1201,7 @@ export default function CrmPage() {
           <Link href="/crm/win-loss" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Win/Loss</Link>
           <Link href="/crm/referidos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Referidos</Link>
           <Link href="/crm/gastos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💸 Gastos</Link>
+          <Link href="/crm/objetivos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Objetivos</Link>
         </div>
 
         <div className="crm-tab-content">
