@@ -1235,6 +1235,7 @@ export default function CrmPage() {
           <Link href="/crm/simulador-negociacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Simulador Negociación</Link>
           <Link href="/crm/mapa-calor" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔥 Mapa de Actividad</Link>
           <Link href="/crm/buscador" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Buscador</Link>
+          <Link href="/crm/configuracion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚙️ Configuración</Link>
         </div>
 
         <div className="crm-tab-content">
