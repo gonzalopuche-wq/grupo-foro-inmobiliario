@@ -352,11 +352,11 @@ export default function DashboardPage() {
   const ACCESOS_MI = [
     { icon: "🏘️", label: "Mi cartera", href: "/crm/cartera", primary: true },
     { icon: "👥", label: "CRM", href: "/crm", primary: true },
+    { icon: "🗺️", label: "Mapa", href: "/crm/cartera/mapa", primary: false },
     { icon: "🌐", label: "Mi web", href: "/mi-web", primary: false },
     { icon: "📬", label: "Leads", href: "/mi-web/leads", primary: false, badge: miStats.leads > 0 ? miStats.leads : 0 },
     { icon: "🎯", label: "Prospectos", href: "/crm/smart-prospecting", primary: false },
     { icon: "📊", label: "Tasador IA", href: "/comparables/tasador", primary: false },
-    { icon: "⚙️", label: "Parámetros", href: "/crm/cartera/parametros", primary: false },
   ];
 
   // ── VISTA COLABORADOR ─────────────────────────────────────────────────────
