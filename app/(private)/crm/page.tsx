@@ -1196,6 +1196,7 @@ export default function CrmPage() {
           <Link href="/crm/competencia" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔎 Competencia</Link>
           <Link href="/crm/reporte-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Reporte Semanal</Link>
           <Link href="/crm/alertas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🚨 Alertas</Link>
+          <Link href="/crm/embudo" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔻 Embudo</Link>
         </div>
 
         <div className="crm-tab-content">
