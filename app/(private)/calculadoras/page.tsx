@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 
 // ── Tipos ───────────────────────────────────────────────────────────────────
 
@@ -342,6 +343,20 @@ export default function CalculadorasPage() {
       `}</style>
 
       <div className="c-wrap">
+        {/* Sub-calculadoras nav */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          {[
+            { href: "/calculadoras", label: "Índices", icon: "📊", active: true },
+            { href: "/calculadoras/operacion", label: "Costos de Operación", icon: "📋", active: false },
+            { href: "/calculadoras/rentabilidad", label: "Rentabilidad", icon: "📈", active: false },
+            { href: "/calculadoras/credito", label: "Crédito Hipotecario", icon: "🏦", active: false },
+          ].map(({ href, label, icon, active }) => (
+            <Link key={href} href={href} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, background: active ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${active ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, color: active ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}>
+              <span style={{ fontSize: 13 }}>{icon}</span> {label}
+            </Link>
+          ))}
+        </div>
+
         {/* Header */}
         <div>
           <div className="c-titulo">Calculadora de <span>Alquileres</span></div>
