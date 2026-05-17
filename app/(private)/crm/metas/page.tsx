@@ -53,12 +53,92 @@ export default function MetasPage() {
   const [guardando, setGuardando] = useState(false);
   const [toast, setToast] = useState("");
   const [soloActivas, setSoloActivas] = useState(true);
+  const [reales, setReales] = useState<Record<string, number>>({});
+  const [sincronizando, setSincronizando] = useState(false);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const cargar = async (uid: string) => {
     const { data } = await supabase.from("crm_metas").select("*").eq("perfil_id", uid).order("created_at", { ascending: false });
-    setMetas((data ?? []) as Meta[]);
+    const lista = (data ?? []) as Meta[];
+    setMetas(lista);
+    await calcularReales(lista, uid);
+  };
+
+  const calcularReales = async (lista: Meta[], uid: string) => {
+    if (!lista.length) return;
+    const hoy = new Date().toISOString().slice(0, 10);
+
+    const resultados: Record<string, number> = {};
+
+    await Promise.all(lista.map(async (m) => {
+      const start = m.fecha_inicio;
+      const end = m.fecha_fin ?? hoy;
+
+      if (m.tipo === "operaciones") {
+        const { count } = await supabase
+          .from("crm_negocios")
+          .select("*", { count: "exact", head: true })
+          .eq("perfil_id", uid)
+          .eq("etapa", "cerrado")
+          .gte("updated_at", start)
+          .lte("updated_at", end + "T23:59:59");
+        resultados[m.id] = count ?? 0;
+
+      } else if (m.tipo === "honorarios") {
+        const { data: comisiones } = await supabase
+          .from("crm_honorarios")
+          .select("monto_cobrado")
+          .eq("perfil_id", uid)
+          .eq("estado", "cobrada")
+          .gte("created_at", start)
+          .lte("created_at", end + "T23:59:59");
+        resultados[m.id] = Math.round((comisiones ?? []).reduce((s, c) => s + (c.monto_cobrado ?? 0), 0));
+
+      } else if (m.tipo === "contactos") {
+        const { count } = await supabase
+          .from("crm_contactos")
+          .select("*", { count: "exact", head: true })
+          .eq("perfil_id", uid)
+          .gte("created_at", start)
+          .lte("created_at", end + "T23:59:59");
+        resultados[m.id] = count ?? 0;
+
+      } else if (m.tipo === "visitas") {
+        const { count } = await supabase
+          .from("cartera_visitas")
+          .select("*", { count: "exact", head: true })
+          .eq("perfil_id", uid)
+          .eq("estado", "realizada")
+          .gte("created_at", start)
+          .lte("created_at", end + "T23:59:59");
+        resultados[m.id] = count ?? 0;
+
+      } else if (m.tipo === "publicaciones") {
+        const { count } = await supabase
+          .from("cartera_propiedades")
+          .select("*", { count: "exact", head: true })
+          .eq("perfil_id", uid)
+          .eq("publicada_web", true)
+          .gte("created_at", start)
+          .lte("created_at", end + "T23:59:59");
+        resultados[m.id] = count ?? 0;
+      }
+    }));
+
+    setReales(resultados);
+  };
+
+  const sincronizarTodo = async () => {
+    if (!userId) return;
+    setSincronizando(true);
+    await Promise.all(
+      metas.filter(m => m.activa && reales[m.id] !== undefined && reales[m.id] !== m.progreso).map(m =>
+        actualizarProgreso(m.id, reales[m.id])
+      )
+    );
+    setSincronizando(false);
+    showToast("✅ Progreso sincronizado con datos reales");
   };
 
   useEffect(() => {
@@ -140,6 +220,12 @@ export default function MetasPage() {
             style={{ background: "transparent", color: soloActivas ? "#6366f1" : "#94a3b8", border: `1px solid ${soloActivas ? "#6366f1" : "#334155"}`, borderRadius: 8, padding: "7px 14px", cursor: "pointer", fontSize: 13 }}>
             {soloActivas ? "Solo activas" : "Todas"}
           </button>
+          {metas.length > 0 && (
+            <button onClick={sincronizarTodo} disabled={sincronizando}
+              style={{ background: "rgba(99,102,241,0.15)", color: "#a5b4fc", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 8, padding: "7px 14px", cursor: "pointer", fontSize: 13, fontWeight: 600, opacity: sincronizando ? 0.6 : 1 }}>
+              {sincronizando ? "⏳ Sincronizando..." : "🔄 Sincronizar datos reales"}
+            </button>
+          )}
           <button onClick={abrirNuevo} style={{ background: "#6366f1", color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>
             + Nueva meta
           </button>
@@ -188,9 +274,26 @@ export default function MetasPage() {
                   </div>
                 </div>
 
+                {/* Datos reales calculados */}
+                {reales[m.id] !== undefined && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, padding: "7px 10px", background: reales[m.id] !== m.progreso ? "rgba(99,102,241,0.08)" : "rgba(34,197,94,0.06)", borderRadius: 8, border: `1px solid ${reales[m.id] !== m.progreso ? "rgba(99,102,241,0.2)" : "rgba(34,197,94,0.15)"}` }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8" }}>📊 Datos reales:</span>
+                    <strong style={{ fontSize: 13, color: reales[m.id] !== m.progreso ? "#a5b4fc" : "#4ade80" }}>
+                      {m.tipo === "honorarios" ? `${m.moneda ?? "USD"} ${reales[m.id].toLocaleString("es-AR")}` : `${reales[m.id]} ${info.unit}`}
+                    </strong>
+                    {reales[m.id] !== m.progreso && (
+                      <button
+                        onClick={() => actualizarProgreso(m.id, reales[m.id])}
+                        style={{ marginLeft: "auto", padding: "3px 10px", background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 6, color: "#a5b4fc", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
+                      >Aplicar →</button>
+                    )}
+                    {reales[m.id] === m.progreso && <span style={{ marginLeft: "auto", fontSize: 11, color: "#4ade80" }}>✓ Sincronizado</span>}
+                  </div>
+                )}
+
                 {/* Actualizar progreso inline */}
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <span style={{ color: "#64748b", fontSize: 12 }}>Actualizar:</span>
+                  <span style={{ color: "#64748b", fontSize: 12 }}>Manual:</span>
                   <input type="number" defaultValue={m.progreso} onBlur={e => {
                     const v = +e.target.value;
                     if (v !== m.progreso) actualizarProgreso(m.id, v);
