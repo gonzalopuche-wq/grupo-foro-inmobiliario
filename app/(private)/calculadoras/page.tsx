@@ -372,6 +372,7 @@ export default function CalculadorasPage() {
             { href: "/calculadoras/pnl-inmobiliaria", label: "P&L Inmobiliaria", icon: "📊", active: false },
             { href: "/calculadoras/proyeccion-uva", label: "Proyección UVA", icon: "📈", active: false },
             { href: "/calculadoras/valuacion-ingresos", label: "Valuación por Ingresos", icon: "💼", active: false },
+            { href: "/calculadoras/comparador", label: "Comparador de Propiedades", icon: "🏘️", active: false },
           ].map(({ href, label, icon, active }) => (
             <Link key={href} href={href} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, background: active ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${active ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, color: active ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}>
               <span style={{ fontSize: 13 }}>{icon}</span> {label}
