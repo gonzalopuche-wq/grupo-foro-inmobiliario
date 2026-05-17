@@ -142,6 +142,92 @@ export default function ReportesPage() {
 
   const cambiarPeriodo = (p: Periodo) => { setPeriodo(p); if(uid) cargar(uid, p) }
 
+  const exportarReportePDF = () => {
+    if (!kpis) return
+    const fecha = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' })
+    const periodoLabel = PERIODOS.find(p => p.key === periodo)?.label ?? periodo
+    const fmtARS = (n: number) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<title>Reporte GFI® — ${periodoLabel}</title>
+<style>
+  body { font-family: 'Georgia',serif; color: #111; margin: 0; padding: 32px 40px; font-size: 13px; line-height: 1.6; }
+  h1 { font-size: 22px; font-weight: 700; color: #cc0000; margin: 0 0 4px; }
+  .sub { color: #666; font-size: 12px; margin-bottom: 28px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
+  .kpi { background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px 16px; }
+  .kpi-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-family: sans-serif; margin-bottom: 4px; }
+  .kpi-val { font-size: 22px; font-weight: 700; color: #111; font-family: sans-serif; }
+  .kpi-sub { font-size: 10px; color: #888; font-family: sans-serif; margin-top: 2px; }
+  .section { margin-bottom: 22px; }
+  .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; font-family: sans-serif; border-bottom: 1px solid #e0e0e0; padding-bottom: 5px; margin-bottom: 10px; }
+  .com-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f0f0f0; }
+  .com-label { color: #333; }
+  .com-val { font-weight: 700; font-family: sans-serif; }
+  .com-cobrada { color: #166534; }
+  .com-pendiente { color: #854d0e; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; font-family: sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #888; padding: 6px 8px; border-bottom: 1px solid #e0e0e0; }
+  td { padding: 7px 8px; border-bottom: 1px solid #f5f5f5; }
+  .zona-bar { display: inline-block; height: 8px; background: #cc0000; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+  .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e0e0e0; font-size: 10px; color: #aaa; text-align: center; font-family: sans-serif; }
+  @media print { @page { margin: 1.5cm; } }
+</style>
+</head>
+<body>
+<h1>Reporte de Actividad — ${periodoLabel}</h1>
+<div class="sub">Generado el ${fecha} · Grupo Foro Inmobiliario GFI®</div>
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-label">Cartera total</div><div class="kpi-val">${kpis.propiedades}</div><div class="kpi-sub">${kpis.propiedades_activas} activas</div></div>
+  <div class="kpi"><div class="kpi-label">Contactos CRM</div><div class="kpi-val">${kpis.contactos}</div><div class="kpi-sub">+${kpis.contactos_nuevos} nuevos en el período</div></div>
+  <div class="kpi"><div class="kpi-label">Negocios</div><div class="kpi-val">${kpis.negocios}</div><div class="kpi-sub">${kpis.negocios_cerrados} cerrados</div></div>
+  <div class="kpi"><div class="kpi-label">Visitas</div><div class="kpi-val">${kpis.visitas}</div><div class="kpi-sub">en el período</div></div>
+  <div class="kpi"><div class="kpi-label">Interacciones</div><div class="kpi-val">${kpis.interacciones}</div><div class="kpi-sub">en el período</div></div>
+  <div class="kpi"><div class="kpi-label">Tasaciones IA</div><div class="kpi-val">${kpis.tasaciones}</div><div class="kpi-sub">en el período</div></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Comisiones</div>
+  <div class="com-row"><div class="com-label">Total facturado</div><div class="com-val">${fmtARS(comTotal)}</div></div>
+  <div class="com-row"><div class="com-label">Cobradas</div><div class="com-val com-cobrada">${fmtARS(comCobradas)}</div></div>
+  <div class="com-row"><div class="com-label">Pendientes de cobro</div><div class="com-val com-pendiente">${fmtARS(comPendientes)}</div></div>
+</div>
+
+${zonas.length > 0 ? `<div class="section">
+  <div class="section-title">Actividad por zona</div>
+  <table>
+    <tr><th>Zona</th><th>Propiedades</th></tr>
+    ${zonas.slice(0, 8).map(z => `<tr><td><span class="zona-bar" style="width:${Math.round(z.count/zonas[0].count*80)}px"></span>${z.zona}</td><td>${z.count}</td></tr>`).join('')}
+  </table>
+</div>` : ''}
+
+${comisiones.length > 0 ? `<div class="section">
+  <div class="section-title">Detalle de comisiones</div>
+  <table>
+    <tr><th>Operación</th><th>Monto</th><th>Estado</th><th>Fecha</th></tr>
+    ${comisiones.slice(0, 10).map(c => `<tr>
+      <td>${c.tipo_operacion ?? 'Operación'}</td>
+      <td>${fmtARS(c.monto_comision ?? 0)}</td>
+      <td style="color:${c.estado === 'cobrada' ? '#166534' : '#854d0e'}">${c.estado}</td>
+      <td>${c.fecha_operacion ? new Date(c.fecha_operacion).toLocaleDateString('es-AR') : '-'}</td>
+    </tr>`).join('')}
+  </table>
+</div>` : ''}
+
+<div class="footer">Reporte generado por GFI® · ${fecha}</div>
+</body>
+</html>`
+    const win = window.open('', '_blank')
+    if (!win) return
+    win.document.write(html)
+    win.document.close()
+    win.focus()
+    setTimeout(() => win.print(), 400)
+  }
+
   // Resumen comisiones
   const comTotal = comisiones.reduce((s,c) => s + (c.monto_comision||0), 0)
   const comCobradas = comisiones.filter(c=>c.estado==='cobrada').reduce((s,c)=>s+(c.monto_cobrado||0),0)
@@ -171,12 +257,17 @@ export default function ReportesPage() {
           <h1 style={{fontFamily:'Montserrat,sans-serif',fontSize:22,fontWeight:800,color:'#fff',margin:0}}>Tu actividad como corredor</h1>
           <p style={{fontSize:12,color:'rgba(255,255,255,0.35)',marginTop:4,margin:'4px 0 0'}}>Métricas clave · Comisiones · Pipeline · Actividad</p>
         </div>
-        <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center'}}>
           {PERIODOS.map(p => (
             <button key={p.key} onClick={()=>cambiarPeriodo(p.key)} style={{padding:'7px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:periodo===p.key?'rgba(204,0,0,0.15)':'rgba(255,255,255,0.04)',color:periodo===p.key?'#ff6666':'rgba(255,255,255,0.4)',outline:periodo===p.key?'1px solid rgba(204,0,0,0.35)':'none'}}>
               {p.label}
             </button>
           ))}
+          {kpis && (
+            <button onClick={exportarReportePDF} style={{padding:'7px 14px',borderRadius:20,border:'1px solid rgba(204,0,0,0.25)',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:'rgba(204,0,0,0.08)',color:'#f87171'}}>
+              📄 PDF
+            </button>
+          )}
         </div>
       </div>
 
