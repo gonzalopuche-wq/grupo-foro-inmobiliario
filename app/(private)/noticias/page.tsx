@@ -55,6 +55,8 @@ export default function NoticiasPage() {
   const [vista, setVista] = useState<"todas" | "pendientes">("todas");
   const [aprobando, setAprobando] = useState<string | null>(null);
   const [fetchandoLink, setFetchandoLink] = useState(false);
+  const [publicandoRedes, setPublicandoRedes] = useState<string | null>(null);
+  const [redesResultados, setRedesResultados] = useState<Record<string, { red: string; ok: boolean; error?: string }[]>>({});
 
   const fetchLinkPreview = async (url: string) => {
     if (!url.startsWith("http")) return;
@@ -140,6 +142,34 @@ export default function NoticiasPage() {
     }).eq("id", id);
     await cargarNoticias(esAdmin);
     setAprobando(null);
+    // Auto-publicar en redes al aprobar
+    const noticia = noticias.find(n => n.id === id);
+    if (noticia) publicarEnRedes({ ...noticia, estado: "aprobada" });
+  };
+
+  const publicarEnRedes = async (noticia: Noticia) => {
+    if (publicandoRedes === noticia.id) return;
+    setPublicandoRedes(noticia.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/social/publicar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({
+          tipo: "noticia",
+          id: noticia.id,
+          titulo: noticia.titulo,
+          descripcion: noticia.cuerpo,
+          imagen_url: noticia.imagen_url ?? null,
+          link: noticia.link ?? window.location.origin + "/noticias",
+        }),
+      });
+      const data = await res.json();
+      setRedesResultados(prev => ({ ...prev, [noticia.id]: data.results ?? [] }));
+    } catch {
+      setRedesResultados(prev => ({ ...prev, [noticia.id]: [{ red: "error", ok: false, error: "Error de conexión" }] }));
+    }
+    setPublicandoRedes(null);
   };
 
   const rechazar = async (id: string) => {
@@ -220,6 +250,11 @@ export default function NoticiasPage() {
         .not-btn-eliminar:hover { background: rgba(200,0,0,0.1); color: #ff4444; }
         .not-btn-dest { padding: 8px 16px; background: transparent; border: 1px solid rgba(234,179,8,0.2); border-radius: 3px; color: rgba(234,179,8,0.7); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .not-btn-dest:hover { background: rgba(234,179,8,0.1); color: #eab308; }
+        .not-btn-redes { padding: 8px 16px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 3px; color: #3b82f6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .not-btn-redes:hover { background: rgba(59,130,246,0.2); }
+        .not-btn-redes:disabled { opacity: 0.5; cursor: not-allowed; }
+        .not-redes-resultado { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .not-red-badge { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
 
         /* Modal form */
         .not-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: flex-start; justify-content: center; z-index: 200; padding: 24px; overflow-y: auto; }
@@ -352,23 +387,39 @@ export default function NoticiasPage() {
                   )}
 
                   {esAdmin && (
-                    <div className="not-detalle-actions">
-                      {noticiaActiva.estado === "pendiente" && (
-                        <>
-                          <button className="not-btn-aprobar" onClick={() => aprobar(noticiaActiva.id)} disabled={aprobando === noticiaActiva.id}>
-                            {aprobando === noticiaActiva.id ? "Aprobando..." : "✓ Aprobar"}
+                    <div>
+                      <div className="not-detalle-actions">
+                        {noticiaActiva.estado === "pendiente" && (
+                          <>
+                            <button className="not-btn-aprobar" onClick={() => aprobar(noticiaActiva.id)} disabled={aprobando === noticiaActiva.id}>
+                              {aprobando === noticiaActiva.id ? "Aprobando..." : "✓ Aprobar"}
+                            </button>
+                            <button className="not-btn-rechazar" onClick={() => rechazar(noticiaActiva.id)}>
+                              Rechazar
+                            </button>
+                          </>
+                        )}
+                        {noticiaActiva.estado === "aprobada" && (
+                          <button className="not-btn-redes" onClick={() => publicarEnRedes(noticiaActiva)} disabled={publicandoRedes === noticiaActiva.id}>
+                            {publicandoRedes === noticiaActiva.id ? "Publicando..." : "📤 Publicar en redes"}
                           </button>
-                          <button className="not-btn-rechazar" onClick={() => rechazar(noticiaActiva.id)}>
-                            Rechazar
-                          </button>
-                        </>
+                        )}
+                        <button className="not-btn-dest" onClick={() => toggleDestacado(noticiaActiva.id, noticiaActiva.destacado)}>
+                          {noticiaActiva.destacado ? "Quitar destacado" : "★ Destacar"}
+                        </button>
+                        <button className="not-btn-eliminar" onClick={() => eliminar(noticiaActiva.id)}>
+                          Eliminar
+                        </button>
+                      </div>
+                      {redesResultados[noticiaActiva.id] && (
+                        <div className="not-redes-resultado">
+                          {redesResultados[noticiaActiva.id].map(r => (
+                            <span key={r.red} className="not-red-badge" style={{ background: r.ok ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: r.ok ? "#22c55e" : "#ef4444", border: `1px solid ${r.ok ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}>
+                              {r.ok ? "✓" : "✗"} {r.red}{!r.ok && r.error ? ` · ${r.error}` : ""}
+                            </span>
+                          ))}
+                        </div>
                       )}
-                      <button className="not-btn-dest" onClick={() => toggleDestacado(noticiaActiva.id, noticiaActiva.destacado)}>
-                        {noticiaActiva.destacado ? "Quitar destacado" : "★ Destacar"}
-                      </button>
-                      <button className="not-btn-eliminar" onClick={() => eliminar(noticiaActiva.id)}>
-                        Eliminar
-                      </button>
                     </div>
                   )}
                 </div>

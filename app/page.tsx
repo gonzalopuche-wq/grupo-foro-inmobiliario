@@ -1,6 +1,11 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 
+interface NoticiaPublica {
+  id: string; titulo: string; cuerpo: string; link: string | null;
+  imagen_url: string | null; fuente: string | null; aprobado_at: string | null; destacado: boolean;
+}
+
 const HEATMAP_DOTS = [
   {x:52,y:44,r:22,op:0.55,c:"#cc0000"},{x:54,y:46,r:14,op:0.7,c:"#ff3333"},
   {x:50,y:43,r:8,op:0.9,c:"#fff"},{x:53,y:45,r:6,op:0.85,c:"#fff"},
@@ -91,6 +96,7 @@ function RevealSection({ children, className, id }: { children: React.ReactNode;
 }
 
 export default function LandingPage() {
+  const [novedades, setNovedades] = useState<NoticiaPublica[]>([]);
   const [scrolled, setScrolled] = useState(false);
   const [parallaxY, setParallaxY] = useState(0);
   const [cursorX, setCursorX] = useState(-100);
@@ -103,6 +109,10 @@ export default function LandingPage() {
   const rafRef = useRef<number>(0);
 
   const TYPING_TEXT = "en un solo lugar.";
+
+  useEffect(() => {
+    fetch("/api/noticias-publicas").then(r => r.json()).then(d => setNovedades(d.noticias ?? [])).catch(() => {});
+  }, []);
 
   // Parallax + scroll
   useEffect(() => {
@@ -316,6 +326,19 @@ export default function LandingPage() {
         .gi-lock{font-size:11px;color:var(--t4);flex-shrink:0;position:relative;z-index:1}
         .grupos-nota{margin-top:32px;padding:16px 20px;background:var(--red-glow);border:1px solid var(--red-bd);border-radius:2px;font-size:12px;color:rgba(255,138,128,.9);line-height:1.6}
         .grupos-nota strong{color:var(--red);font-weight:700}
+
+        /* NOVEDADES */
+        .novedades-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+        .novedad-card{background:var(--s2);border:1px solid var(--bd);border-radius:6px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s;display:flex;flex-direction:column}
+        .novedad-card:hover{border-color:var(--red-bd);transform:translateY(-2px)}
+        .novedad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:rgba(255,255,255,0.04)}
+        .novedad-img-placeholder{aspect-ratio:16/9;background:rgba(204,0,0,0.06);border-bottom:1px solid rgba(204,0,0,0.12);display:flex;align-items:center;justify-content:center;font-size:32px}
+        .novedad-body{padding:14px 16px;flex:1;display:flex;flex-direction:column}
+        .novedad-fuente{font-size:9px;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:6px}
+        .novedad-titulo{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--tx);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+        .novedad-fecha{font-size:10px;color:rgba(255,255,255,0.25);margin-top:auto}
+        @media(max-width:860px){.novedades-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:520px){.novedades-grid{grid-template-columns:1fr}}
 
         /* REDES */
         .redes-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:1100px;margin-top:48px}
@@ -662,6 +685,30 @@ export default function LandingPage() {
             Suscribirme y acceder →
           </a>
         </div>
+
+        {/* Novedades */}
+        {novedades.length > 0 && (
+          <div style={{marginTop:56}}>
+            <div className="sec-label" style={{marginBottom:16}}>Novedades del sector</div>
+            <div className="novedades-grid">
+              {novedades.map(n => (
+                <a key={n.id} href={n.link ?? "#"} target={n.link ? "_blank" : "_self"} rel="noopener noreferrer" className="novedad-card">
+                  {n.imagen_url
+                    ? <img src={n.imagen_url} alt={n.titulo} className="novedad-img" />
+                    : <div className="novedad-img-placeholder">📰</div>
+                  }
+                  <div className="novedad-body">
+                    {n.fuente && <div className="novedad-fuente">{n.fuente}</div>}
+                    <div className="novedad-titulo">{n.titulo}</div>
+                    <div className="novedad-fecha">
+                      {new Date(n.aprobado_at ?? "").toLocaleDateString("es-AR", { day:"2-digit", month:"long", year:"numeric" })}
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Redes */}
         <div>
