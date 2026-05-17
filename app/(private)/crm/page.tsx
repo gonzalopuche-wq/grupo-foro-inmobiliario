@@ -1206,6 +1206,7 @@ export default function CrmPage() {
           <Link href="/crm/cobranzas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💳 Cobranzas</Link>
           <Link href="/crm/duplicados" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Duplicados</Link>
           <Link href="/crm/campana-reactivacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📣 Reactivación</Link>
+          <Link href="/crm/match-clientes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Match Clientes</Link>
         </div>
 
         <div className="crm-tab-content">
