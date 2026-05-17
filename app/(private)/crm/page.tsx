@@ -1374,6 +1374,7 @@ export default function CrmPage() {
                       </div>
                       <div className="crm-detalle-acciones">
                         {contactoSeleccionado.estado === "archivado" && <span style={{fontSize:9,padding:"3px 7px",background:"rgba(255,165,0,0.08)",border:"1px solid rgba(255,165,0,0.25)",borderRadius:3,color:"rgba(255,165,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase"}}>Archivado</span>}
+                        <Link href={`/crm/contactos/${contactoSeleccionado.id}`} style={{fontSize:9,padding:"4px 10px",background:"rgba(204,0,0,0.1)",border:"1px solid rgba(204,0,0,0.3)",borderRadius:4,color:"#cc0000",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",textDecoration:"none",textTransform:"uppercase"}}>Ficha completa ↗</Link>
                         <button className="crm-btn-editar" onClick={() => archivarContacto(contactoSeleccionado)} title={contactoSeleccionado.estado === "archivado" ? "Quitar del archivo" : "Archivar contacto"}>{contactoSeleccionado.estado === "archivado" ? "↩ Restaurar" : "⊘ Archivar"}</button>
                         <button className="crm-btn-editar" onClick={() => abrirFormEditarContacto(contactoSeleccionado)}>Editar</button>
                         <button className="crm-btn-eliminar" onClick={() => eliminarContacto(contactoSeleccionado.id)}>Eliminar</button>
