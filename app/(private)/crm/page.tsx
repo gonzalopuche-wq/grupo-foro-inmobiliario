@@ -1198,6 +1198,7 @@ export default function CrmPage() {
           <Link href="/crm/alertas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🚨 Alertas</Link>
           <Link href="/crm/embudo" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔻 Embudo</Link>
           <Link href="/crm/historial" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Historial</Link>
+          <Link href="/crm/win-loss" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Win/Loss</Link>
         </div>
 
         <div className="crm-tab-content">
