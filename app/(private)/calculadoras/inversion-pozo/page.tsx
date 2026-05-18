@@ -2,487 +2,1471 @@
 
 import { useState, useMemo } from "react";
 
-// ── Tipos ──────────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────
 
-interface Config {
-  // Pozo
-  precioPozoUSD: number;
-  precioTerminadoUSD: number;
-  m2totales: number;
-  // Estructura de pagos
-  reservaUSD: number;
-  cuotasMonto: number;    // monto cuota en USD
-  cuotasTotal: number;    // cantidad de cuotas
-  saldoEntregaUSD: number;
-  // Tiempo
-  mesesObra: number;
-  // Inflacion/TC
-  tipoCambioHoy: number;
-  apreciacionAnualUSD: number; // % revalorizacion USD anual al entregar
-  // Alquiler post-entrega
-  alquilerMensualUSD: number;
-  vacanciaPct: number;
-  gastosOperativosPct: number;
-  // Alternativa: plazo fijo/bono
-  tasaAltAnualUSD: number;
-}
+const fmtUSD = (n: number, d = 2) =>
+  `USD ${Math.abs(n).toLocaleString("es-AR", {
+    minimumFractionDigits: d,
+    maximumFractionDigits: d,
+  })}`;
 
-function fmtUSD(v: number, decimals = 0) {
-  return "USD " + v.toLocaleString("es-AR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-}
+const fmtPct = (n: number, d = 2) =>
+  `${n.toLocaleString("es-AR", {
+    minimumFractionDigits: d,
+    maximumFractionDigits: d,
+  })}%`;
 
-function fmtPct(v: number) { return v.toFixed(2) + "%"; }
-
-// TIR simplificada con Newton-Raphson
-function calcTIR(flujos: number[], guess = 0.1): number {
-  let r = guess;
-  for (let iter = 0; iter < 200; iter++) {
-    let npv = 0;
-    let dnpv = 0;
-    for (let t = 0; t < flujos.length; t++) {
-      npv += flujos[t] / Math.pow(1 + r, t);
-      dnpv -= t * flujos[t] / Math.pow(1 + r, t + 1);
-    }
-    if (Math.abs(dnpv) < 1e-12) break;
-    const rNew = r - npv / dnpv;
-    if (Math.abs(rNew - r) < 1e-8) { r = rNew; break; }
-    r = rNew;
-  }
-  return r;
-}
-
-export default function InversionPozoPage() {
-  const [cfg, setCfg] = useState<Config>({
-    precioPozoUSD: 80000,
-    precioTerminadoUSD: 120000,
-    m2totales: 55,
-    reservaUSD: 5000,
-    cuotasMonto: 700,
-    cuotasTotal: 36,
-    saldoEntregaUSD: 35000,
-    mesesObra: 42,
-    tipoCambioHoy: 1000,
-    apreciacionAnualUSD: 5,
-    alquilerMensualUSD: 600,
-    vacanciaPct: 8,
-    gastosOperativosPct: 20,
-    tasaAltAnualUSD: 7,
+const fmtNum = (n: number, d = 0) =>
+  n.toLocaleString("es-AR", {
+    minimumFractionDigits: d,
+    maximumFractionDigits: d,
   });
 
-  const [tab, setTab] = useState<"resumen" | "flujos" | "comparacion">("resumen");
+function calcTIR(flujos: number[]): number {
+  // Newton-Raphson
+  let tasa = 0.01;
+  for (let iter = 0; iter < 200; iter++) {
+    let f = 0;
+    let df = 0;
+    for (let t = 0; t < flujos.length; t++) {
+      const v = Math.pow(1 + tasa, t);
+      f += flujos[t] / v;
+      df -= t * flujos[t] / (v * (1 + tasa));
+    }
+    if (Math.abs(df) < 1e-12) break;
+    const delta = f / df;
+    tasa -= delta;
+    if (Math.abs(delta) < 1e-10) break;
+  }
+  return tasa;
+}
 
-  // Calcular costo total de adquisición
-  const costoTotal = useMemo(() => {
-    const cuotas = cfg.cuotasMonto * cfg.cuotasTotal;
-    return cfg.reservaUSD + cuotas + cfg.saldoEntregaUSD;
-  }, [cfg]);
+// ── Types ──────────────────────────────────────────────────────────────────
 
-  // Precio m2 pozo vs terminado
-  const precioPozoM2 = cfg.m2totales > 0 ? cfg.precioPozoUSD / cfg.m2totales : 0;
-  const precioTerminadoM2 = cfg.m2totales > 0 ? cfg.precioTerminadoUSD / cfg.m2totales : 0;
+type MonedaCuotas = "usd" | "ars_ccl" | "mixto";
+type AjusteCuotas = "fijo_usd" | "ccl" | "cac";
+type TabId = "estructura" | "rentabilidad" | "escenarios";
+type AlternativaId = "reventa" | "alquiler";
 
-  // Valor al entregar con apreciación adicional
-  const apreciacionFactor = Math.pow(
-    1 + cfg.apreciacionAnualUSD / 100,
-    cfg.mesesObra / 12
+interface Etapa {
+  pct: number;
+  label: string;
+}
+
+interface CuotaRow {
+  mes: number;
+  concepto: string;
+  cuotaNominal: number;
+  cuotaAjustada: number;
+  acumulado: number;
+  pctTotal: number;
+}
+
+// ── Main ───────────────────────────────────────────────────────────────────
+
+export default function InversionPozo() {
+  // ── Estado: proyecto ─────────────────────────────────────────────────────
+  const [precioTotal, setPrecioTotal] = useState("100000");
+  const [monedaCuotas, setMonedaCuotas] = useState<MonedaCuotas>("ars_ccl");
+  const [plazoMeses, setPlazoMeses] = useState("30");
+  const [fechaInicioMes, setFechaInicioMes] = useState(
+    String(new Date().getMonth() + 1).padStart(2, "0")
   );
-  const valorAlEntregar = cfg.precioTerminadoUSD * apreciacionFactor;
+  const [fechaInicioAnio, setFechaInicioAnio] = useState(
+    String(new Date().getFullYear())
+  );
 
-  // Ganancia capital
-  const gananciaCapital = valorAlEntregar - costoTotal;
-  const gananciaCapitalPct = costoTotal > 0 ? (gananciaCapital / costoTotal) * 100 : 0;
+  // ── Estado: etapas ───────────────────────────────────────────────────────
+  const [etapaBoleto, setEtapaBoleto] = useState<Etapa>({
+    pct: 30,
+    label: "Boleto/Anticipo",
+  });
+  const [etapaCuotas, setEtapaCuotas] = useState<Etapa>({
+    pct: 50,
+    label: "Cuotas en obra",
+  });
+  const [etapaEntrega, setEtapaEntrega] = useState<Etapa>({
+    pct: 20,
+    label: "Entrega",
+  });
+  const [ajuste, setAjuste] = useState<AjusteCuotas>("cac");
+  const [tasaCAC, setTasaCAC] = useState("60");
+  const [apreciacionCCL, setApreciacionCCL] = useState("3");
 
-  // Renta anual neta post-entrega
-  const rentaBrutaAnual = cfg.alquilerMensualUSD * 12;
-  const rentaEfectiva = rentaBrutaAnual * (1 - cfg.vacanciaPct / 100);
-  const gastos = rentaEfectiva * (cfg.gastosOperativosPct / 100);
-  const rentaNetaAnual = rentaEfectiva - gastos;
-  const rentaNetaPct = valorAlEntregar > 0 ? (rentaNetaAnual / valorAlEntregar) * 100 : 0;
+  // ── Estado: rentabilidad ─────────────────────────────────────────────────
+  const [alternativa, setAlternativa] = useState<AlternativaId>("reventa");
+  const [precioReventa, setPrecioReventa] = useState("120000");
+  const [costosReventa, setCostosReventa] = useState("5");
+  const [alquilerMensual, setAlquilerMensual] = useState("600");
+  const [tasaPF, setTasaPF] = useState("8");
 
-  // Flujos mensuales para TIR (horizonte 5 años post-entrega = obra + 60 meses)
-  const flujosMensuales = useMemo(() => {
-    const horizon = cfg.mesesObra + 60;
-    const fl: number[] = new Array(horizon + 1).fill(0);
+  // ── Estado: tabs ─────────────────────────────────────────────────────────
+  const [tab, setTab] = useState<TabId>("estructura");
 
-    // Mes 0: reserva (egreso)
-    fl[0] -= cfg.reservaUSD;
+  // ── Cálculo central ──────────────────────────────────────────────────────
+  const calc = useMemo(() => {
+    const precio = parseFloat(precioTotal) || 0;
+    const plazo = Math.max(parseInt(plazoMeses) || 30, 1);
+    const pctBoleto = Math.max(0, Math.min(etapaBoleto.pct, 100)) / 100;
+    const pctCuotas = Math.max(0, Math.min(etapaCuotas.pct, 100)) / 100;
+    const pctEntrega = Math.max(0, 1 - pctBoleto - pctCuotas);
 
-    // Cuotas durante obra
-    for (let m = 1; m <= Math.min(cfg.cuotasTotal, cfg.mesesObra); m++) {
-      fl[m] -= cfg.cuotasMonto;
-    }
+    const montoBoleto = precio * pctBoleto;
+    const montoCuotasTotal = precio * pctCuotas;
+    const montoEntrega = precio * pctEntrega;
+    const cuotaNominal = plazo > 0 ? montoCuotasTotal / plazo : 0;
 
-    // Saldo contra entrega
-    fl[cfg.mesesObra] -= cfg.saldoEntregaUSD;
+    const tasaCACAnual = (parseFloat(tasaCAC) || 60) / 100;
+    const tasaCACMensual = Math.pow(1 + tasaCACAnual, 1 / 12) - 1;
+    const tasaCCLMensual = (parseFloat(apreciacionCCL) || 3) / 100;
 
-    // Ingresos por alquiler post-entrega (60 meses = 5 años)
-    const rentaMensualNeta = rentaNetaAnual / 12;
-    for (let m = cfg.mesesObra + 1; m <= horizon; m++) {
-      fl[m] += rentaMensualNeta;
-    }
+    // Flujo de pagos mes a mes (mes 0 = boleto, mes 1..plazo = cuotas, mes plazo = entrega)
+    const rows: CuotaRow[] = [];
+    let acumulado = 0;
 
-    // Venta al final del horizonte
-    fl[horizon] += valorAlEntregar;
+    // Mes 0: boleto
+    acumulado += montoBoleto;
+    rows.push({
+      mes: 0,
+      concepto: etapaBoleto.label,
+      cuotaNominal: montoBoleto,
+      cuotaAjustada: montoBoleto,
+      acumulado,
+      pctTotal: precio > 0 ? (acumulado / precio) * 100 : 0,
+    });
 
-    return fl;
-  }, [cfg, rentaNetaAnual, valorAlEntregar]);
-
-  const tirMensual = useMemo(() => {
-    try { return calcTIR(flujosMensuales); }
-    catch { return null; }
-  }, [flujosMensuales]);
-
-  const tirAnual = tirMensual != null ? (Math.pow(1 + tirMensual, 12) - 1) * 100 : null;
-
-  // Alternativa: invertir en renta fija USD
-  const inversionEquivalente = cfg.reservaUSD + cfg.cuotasMonto * Math.min(cfg.cuotasTotal, cfg.mesesObra);
-  const tasaAltMensual = cfg.tasaAltAnualUSD / 100 / 12;
-  const valorAltAlEntregar = inversionEquivalente * Math.pow(1 + tasaAltMensual, cfg.mesesObra);
-
-  // Ventaja vs alternativa
-  const ventajaVsAlt = gananciaCapital - (valorAltAlEntregar - inversionEquivalente);
-
-  // Tabla de flujos por año
-  const flujosAnuales = useMemo(() => {
-    const result: Array<{ anio: number; egreso: number; ingreso: number; neto: number; acum: number }> = [];
-    let acum = 0;
-    const totalAnios = Math.ceil((cfg.mesesObra + 60) / 12);
-    for (let a = 0; a < totalAnios; a++) {
-      let egreso = 0;
-      let ingreso = 0;
-      for (let m = a * 12; m < Math.min((a + 1) * 12, flujosMensuales.length); m++) {
-        const f = flujosMensuales[m] ?? 0;
-        if (f < 0) egreso += Math.abs(f);
-        else ingreso += f;
+    // Meses 1..plazo: cuotas
+    for (let m = 1; m <= plazo; m++) {
+      let ajustada = cuotaNominal;
+      if (ajuste === "cac") {
+        ajustada = cuotaNominal * Math.pow(1 + tasaCACMensual, m - 1);
+      } else if (ajuste === "ccl") {
+        ajustada = cuotaNominal * Math.pow(1 + tasaCCLMensual, m - 1);
       }
-      const neto = ingreso - egreso;
-      acum += neto;
-      result.push({ anio: a + 1, egreso, ingreso, neto, acum });
+      // Si fijo_usd: ajustada = nominal
+      acumulado += ajustada;
+      rows.push({
+        mes: m,
+        concepto: m === plazo ? "Cuota + Entrega" : `Cuota ${m}`,
+        cuotaNominal: cuotaNominal + (m === plazo ? montoEntrega : 0),
+        cuotaAjustada: ajustada + (m === plazo ? montoEntrega : 0),
+        acumulado: acumulado + (m === plazo ? montoEntrega : 0),
+        pctTotal:
+          precio > 0
+            ? ((acumulado + (m === plazo ? montoEntrega : 0)) / precio) * 100
+            : 0,
+      });
+      if (m === plazo) {
+        acumulado += montoEntrega;
+      }
     }
-    return result;
-  }, [flujosMensuales, cfg.mesesObra]);
 
-  const payback = useMemo(() => {
-    return flujosAnuales.find((a) => a.acum >= 0)?.anio ?? null;
-  }, [flujosAnuales]);
+    // Total real desembolsado (en USD equivalente)
+    const totalDesembolsado =
+      montoBoleto +
+      rows
+        .filter((r) => r.mes >= 1 && r.mes <= plazo)
+        .reduce(
+          (s, r) =>
+            s +
+            (r.mes === plazo
+              ? r.cuotaAjustada - montoEntrega
+              : r.cuotaAjustada),
+          0
+        ) +
+      montoEntrega;
 
-  const inp: React.CSSProperties = {
-    background: "#111", border: "1px solid #333", borderRadius: 6,
-    color: "#fff", padding: "8px 10px", fontSize: 13, width: "100%",
-    fontFamily: "Inter, sans-serif",
+    // Flujos para TIR (negativo = salida, positivo = entrada al revender)
+    const pr = parseFloat(precioReventa) || precio * 1.2;
+    const pctCostos = (parseFloat(costosReventa) || 5) / 100;
+    const precioNetoReventa = pr * (1 - pctCostos);
+
+    // Flujos mensuales: mes 0 boleto, mes 1..plazo cuotas ajustadas, mes plazo +entrega +reventa
+    const flujosTIR: number[] = [];
+    for (let m = 0; m <= plazo; m++) {
+      const row = rows.find((r) => r.mes === m);
+      if (!row) continue;
+      const salida = -(row.cuotaAjustada);
+      if (m === plazo) {
+        flujosTIR.push(salida + precioNetoReventa);
+      } else {
+        flujosTIR.push(salida);
+      }
+    }
+
+    const tirMensual = calcTIR(flujosTIR);
+    const tirAnual = Math.pow(1 + tirMensual, 12) - 1;
+
+    const gananciaBruta = precioNetoReventa - totalDesembolsado;
+    const roi = totalDesembolsado > 0 ? (gananciaBruta / totalDesembolsado) * 100 : 0;
+
+    // PF USD comparación
+    const tasaPFAnual = (parseFloat(tasaPF) || 8) / 100;
+    const tasaPFMensual = Math.pow(1 + tasaPFAnual, 1 / 12) - 1;
+    // Capital efectivo invertido ponderado por tiempo
+    let pfAcum = 0;
+    for (const row of rows) {
+      const mesesRestantes = plazo - row.mes;
+      pfAcum += row.cuotaAjustada * Math.pow(1 + tasaPFMensual, mesesRestantes);
+    }
+    const gananciaPF = pfAcum - totalDesembolsado;
+    const roiPF = totalDesembolsado > 0 ? (gananciaPF / totalDesembolsado) * 100 : 0;
+
+    // Alquiler
+    const alquiler = parseFloat(alquilerMensual) || 0;
+    const yieldBruto =
+      totalDesembolsado > 0 ? ((alquiler * 12) / totalDesembolsado) * 100 : 0;
+    const recuperoAnios =
+      alquiler > 0 ? totalDesembolsado / (alquiler * 12) : Infinity;
+
+    return {
+      precio,
+      plazo,
+      montoBoleto,
+      montoCuotasTotal,
+      montoEntrega,
+      cuotaNominal,
+      rows,
+      totalDesembolsado,
+      pr,
+      precioNetoReventa,
+      gananciaBruta,
+      roi,
+      tirMensual,
+      tirAnual,
+      gananciaPF,
+      roiPF,
+      pfAcum,
+      alquiler,
+      yieldBruto,
+      recuperoAnios,
+      pctEntrega: pctEntrega * 100,
+    };
+  }, [
+    precioTotal,
+    plazoMeses,
+    etapaBoleto,
+    etapaCuotas,
+    etapaEntrega,
+    ajuste,
+    tasaCAC,
+    apreciacionCCL,
+    precioReventa,
+    costosReventa,
+    alquilerMensual,
+    tasaPF,
+  ]);
+
+  // ── Estilos ───────────────────────────────────────────────────────────────
+  const S = {
+    page: {
+      background: "#0a0a0a",
+      color: "#e0e0e0",
+      minHeight: "100vh",
+      fontFamily: "'Inter', sans-serif",
+      padding: "0 0 60px",
+    } as React.CSSProperties,
+    header: {
+      background: "#111111",
+      borderBottom: "1px solid #222222",
+      padding: "28px 24px 20px",
+    } as React.CSSProperties,
+    title: {
+      fontFamily: "'Montserrat', sans-serif",
+      fontWeight: 800,
+      fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
+      color: "#cc0000",
+      margin: 0,
+    } as React.CSSProperties,
+    subtitle: {
+      color: "#999",
+      fontSize: "0.85rem",
+      marginTop: 4,
+    } as React.CSSProperties,
+    tabBar: {
+      display: "flex",
+      gap: 4,
+      padding: "16px 24px 0",
+      borderBottom: "1px solid #222222",
+      overflowX: "auto" as const,
+    } as React.CSSProperties,
+    tabBtn: (active: boolean): React.CSSProperties => ({
+      background: active ? "#cc0000" : "transparent",
+      color: active ? "#fff" : "#999",
+      border: active ? "none" : "1px solid #333",
+      borderBottom: active ? "1px solid #cc0000" : "1px solid #333",
+      borderRadius: "6px 6px 0 0",
+      padding: "8px 18px",
+      cursor: "pointer",
+      fontSize: "0.85rem",
+      fontWeight: active ? 700 : 400,
+      whiteSpace: "nowrap" as const,
+      fontFamily: "'Montserrat', sans-serif",
+    }),
+    body: {
+      padding: "24px 24px",
+      maxWidth: 900,
+      margin: "0 auto",
+    } as React.CSSProperties,
+    card: {
+      background: "#111111",
+      border: "1px solid #222222",
+      borderRadius: 10,
+      padding: "20px 22px",
+      marginBottom: 20,
+    } as React.CSSProperties,
+    cardTitle: {
+      fontFamily: "'Montserrat', sans-serif",
+      fontWeight: 700,
+      fontSize: "1rem",
+      color: "#e0e0e0",
+      marginBottom: 16,
+      marginTop: 0,
+    } as React.CSSProperties,
+    grid2: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+      gap: 16,
+    } as React.CSSProperties,
+    grid3: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+      gap: 16,
+    } as React.CSSProperties,
+    label: {
+      display: "block",
+      fontSize: "0.78rem",
+      color: "#999",
+      marginBottom: 5,
+    } as React.CSSProperties,
+    input: {
+      width: "100%",
+      background: "#0a0a0a",
+      border: "1px solid #333",
+      color: "#e0e0e0",
+      borderRadius: 6,
+      padding: "8px 10px",
+      fontSize: "0.9rem",
+      boxSizing: "border-box" as const,
+    } as React.CSSProperties,
+    select: {
+      width: "100%",
+      background: "#0a0a0a",
+      border: "1px solid #333",
+      color: "#e0e0e0",
+      borderRadius: 6,
+      padding: "8px 10px",
+      fontSize: "0.9rem",
+      boxSizing: "border-box" as const,
+    } as React.CSSProperties,
+    kpi: {
+      background: "#0a0a0a",
+      border: "1px solid #222",
+      borderRadius: 8,
+      padding: "14px 16px",
+      textAlign: "center" as const,
+    } as React.CSSProperties,
+    kpiLabel: {
+      fontSize: "0.74rem",
+      color: "#888",
+      marginBottom: 6,
+      textTransform: "uppercase" as const,
+      letterSpacing: "0.04em",
+    } as React.CSSProperties,
+    kpiValue: {
+      fontFamily: "'Montserrat', sans-serif",
+      fontWeight: 700,
+      fontSize: "1.15rem",
+      color: "#e0e0e0",
+    } as React.CSSProperties,
+    table: {
+      width: "100%",
+      borderCollapse: "collapse" as const,
+      fontSize: "0.8rem",
+    } as React.CSSProperties,
+    th: {
+      background: "#0a0a0a",
+      color: "#888",
+      padding: "7px 10px",
+      textAlign: "left" as const,
+      borderBottom: "1px solid #222",
+      fontWeight: 600,
+      whiteSpace: "nowrap" as const,
+    } as React.CSSProperties,
+    td: {
+      padding: "6px 10px",
+      borderBottom: "1px solid #1a1a1a",
+      color: "#d0d0d0",
+      whiteSpace: "nowrap" as const,
+    } as React.CSSProperties,
+    sectionTitle: {
+      fontFamily: "'Montserrat', sans-serif",
+      fontWeight: 700,
+      fontSize: "0.9rem",
+      color: "#cc0000",
+      marginBottom: 12,
+      marginTop: 0,
+      textTransform: "uppercase" as const,
+      letterSpacing: "0.05em",
+    } as React.CSSProperties,
+    divider: {
+      border: "none",
+      borderTop: "1px solid #222",
+      margin: "20px 0",
+    } as React.CSSProperties,
+    row: {
+      display: "flex",
+      gap: 12,
+      alignItems: "flex-end",
+      flexWrap: "wrap" as const,
+    } as React.CSSProperties,
+    toggleGroup: {
+      display: "flex",
+      gap: 4,
+    } as React.CSSProperties,
+    toggleBtn: (active: boolean): React.CSSProperties => ({
+      background: active ? "#cc0000" : "#1a1a1a",
+      color: active ? "#fff" : "#999",
+      border: "1px solid #333",
+      borderRadius: 5,
+      padding: "7px 14px",
+      cursor: "pointer",
+      fontSize: "0.82rem",
+      fontWeight: active ? 700 : 400,
+    }),
   };
 
-  const set = (k: keyof Config) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setCfg((c) => ({ ...c, [k]: parseFloat(e.target.value) || 0 }));
+  // ── Fechas de obra ────────────────────────────────────────────────────────
+  const mesNombres = [
+    "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+    "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
+  ];
+  const anioActual = new Date().getFullYear();
 
-  return (
-    <div style={{ background: "#0a0a0a", minHeight: "100vh", color: "#fff", fontFamily: "Inter, sans-serif", padding: "32px 24px" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        {/* Header */}
-        <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, margin: 0 }}>
-            Inversión en Pozo
-          </h1>
-          <p style={{ color: "#999", fontSize: 14, margin: "8px 0 0" }}>
-            Análisis de rentabilidad para compra en pre-construcción
-          </p>
+  // ── Gráfico Tab 1 ─────────────────────────────────────────────────────────
+  const Chart1 = () => {
+    const W = 720;
+    const H = 260;
+    const PL = 60;
+    const PR = 20;
+    const PT = 20;
+    const PB = 40;
+    const innerW = W - PL - PR;
+    const innerH = H - PT - PB;
+
+    const { rows, precio, totalDesembolsado } = calc;
+    const maxVal = Math.max(precio * 1.05, totalDesembolsado * 1.05, 1);
+    const maxAcum = Math.max(...rows.map((r) => r.acumulado), 1);
+    const scaleY = (v: number) => innerH - (v / Math.max(maxAcum, maxVal)) * innerH;
+
+    const barW = Math.max(2, Math.floor(innerW / (rows.length + 1)) - 2);
+
+    const acumPts = rows
+      .map((r, i) => {
+        const x = PL + (i / (rows.length - 1 || 1)) * innerW;
+        const y = PT + scaleY(r.acumulado);
+        return `${x},${y}`;
+      })
+      .join(" ");
+
+    return (
+      <div style={{ overflowX: "auto" }}>
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          width="100%"
+          style={{ display: "block", maxWidth: W }}
+        >
+          {/* Grid lines */}
+          {[0, 0.25, 0.5, 0.75, 1].map((frac) => {
+            const yv = PT + frac * innerH;
+            const val = (1 - frac) * Math.max(maxAcum, maxVal);
+            return (
+              <g key={frac}>
+                <line
+                  x1={PL}
+                  y1={yv}
+                  x2={PL + innerW}
+                  y2={yv}
+                  stroke="#222"
+                  strokeWidth={1}
+                />
+                <text
+                  x={PL - 5}
+                  y={yv + 4}
+                  textAnchor="end"
+                  fill="#555"
+                  fontSize={9}
+                >
+                  {fmtNum(val / 1000, 0)}k
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Bars */}
+          {rows.map((r, i) => {
+            const bH = (r.cuotaAjustada / Math.max(maxAcum, maxVal)) * innerH;
+            const x = PL + i * ((innerW - barW) / Math.max(rows.length - 1, 1));
+            const y = PT + innerH - bH;
+            return (
+              <rect
+                key={i}
+                x={x - barW / 2}
+                y={y}
+                width={barW}
+                height={Math.max(1, bH)}
+                fill="#880000"
+                opacity={0.85}
+              />
+            );
+          })}
+
+          {/* Línea precio total */}
+          <line
+            x1={PL}
+            y1={PT + scaleY(precio)}
+            x2={PL + innerW}
+            y2={PT + scaleY(precio)}
+            stroke="#555"
+            strokeWidth={1}
+            strokeDasharray="4,3"
+          />
+          <text
+            x={PL + innerW - 4}
+            y={PT + scaleY(precio) - 4}
+            fill="#666"
+            fontSize={9}
+            textAnchor="end"
+          >
+            Precio total
+          </text>
+
+          {/* Línea acumulado */}
+          {rows.length > 1 && (
+            <polyline
+              points={acumPts}
+              fill="none"
+              stroke="#ff8800"
+              strokeWidth={2}
+            />
+          )}
+
+          {/* Eje X: algunos labels */}
+          {rows
+            .filter((_, i) => i % Math.max(1, Math.floor(rows.length / 6)) === 0)
+            .map((r) => {
+              const i = rows.indexOf(r);
+              const x =
+                PL + i * ((innerW - barW) / Math.max(rows.length - 1, 1));
+              return (
+                <text
+                  key={i}
+                  x={x}
+                  y={H - PB + 14}
+                  textAnchor="middle"
+                  fill="#555"
+                  fontSize={9}
+                >
+                  M{r.mes}
+                </text>
+              );
+            })}
+
+          {/* Leyenda */}
+          <rect x={PL} y={H - 12} width={10} height={8} fill="#880000" opacity={0.85} />
+          <text x={PL + 14} y={H - 5} fill="#888" fontSize={9}>Cuota ajustada</text>
+          <line x1={PL + 95} y1={H - 8} x2={PL + 110} y2={H - 8} stroke="#ff8800" strokeWidth={2} />
+          <text x={PL + 114} y={H - 5} fill="#888" fontSize={9}>Acumulado</text>
+          <line x1={PL + 175} y1={H - 8} x2={PL + 190} y2={H - 8} stroke="#555" strokeWidth={1} strokeDasharray="4,3" />
+          <text x={PL + 194} y={H - 5} fill="#888" fontSize={9}>Precio total</text>
+        </svg>
+      </div>
+    );
+  };
+
+  // ── Gráfico Tab 2: barras horizontales ────────────────────────────────────
+  const Chart2 = () => {
+    const { gananciaBruta, gananciaPF, totalDesembolsado, alquiler, plazo } =
+      calc;
+    const gananciaAlquiler = alquiler * plazo;
+    const maxVal = Math.max(
+      Math.abs(gananciaBruta),
+      Math.abs(gananciaPF),
+      Math.abs(gananciaAlquiler),
+      1
+    );
+    const W = 500;
+    const rowH = 36;
+    const H = rowH * 3 + 20;
+    const LABEL = 80;
+    const BAR_MAX = W - LABEL - 40;
+
+    const escenarios = [
+      { label: "Reventa", val: gananciaBruta, color: "#cc0000" },
+      { label: "Alquiler", val: gananciaAlquiler, color: "#0077cc" },
+      { label: "PF USD", val: gananciaPF, color: "#336633" },
+    ];
+
+    return (
+      <div style={{ overflowX: "auto" }}>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: "block", maxWidth: W }}>
+          {escenarios.map((e, i) => {
+            const bW = Math.max(2, (Math.abs(e.val) / maxVal) * BAR_MAX);
+            const y = i * rowH + 10;
+            return (
+              <g key={i}>
+                <text x={LABEL - 6} y={y + 18} textAnchor="end" fill="#888" fontSize={11}>
+                  {e.label}
+                </text>
+                <rect
+                  x={LABEL}
+                  y={y + 4}
+                  width={bW}
+                  height={22}
+                  fill={e.color}
+                  opacity={0.85}
+                  rx={3}
+                />
+                <text x={LABEL + bW + 6} y={y + 18} fill="#ccc" fontSize={11}>
+                  {fmtUSD(e.val, 0)}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    );
+  };
+
+  // ── Helpers para escenarios (Tab 3) ─────────────────────────────────────
+  function calcEscenario(
+    precioBase: number,
+    pctReventa: number,
+    ajusteExtra: number,
+    plazo: number,
+    montoBoleto: number,
+    cuotaNominal: number,
+    montoEntrega: number,
+    ajusteBase: AjusteCuotas,
+    tasaCACAnual: number,
+    tasaCCLMensual: number,
+    pctCostosReventa: number
+  ): { totalPagado: number; precioVenta: number; ganancia: number; roi: number; tir: number } {
+    const tasaCACMensual = Math.pow(1 + tasaCACAnual, 1 / 12) - 1;
+    let totalPagado = montoBoleto;
+    const flujos: number[] = [-(montoBoleto)];
+    for (let m = 1; m <= plazo; m++) {
+      let ajustada = cuotaNominal;
+      if (ajusteBase === "cac") {
+        ajustada = cuotaNominal * Math.pow(1 + tasaCACMensual, m - 1) * (1 + ajusteExtra);
+      } else if (ajusteBase === "ccl") {
+        ajustada = cuotaNominal * Math.pow(1 + tasaCCLMensual, m - 1) * (1 + ajusteExtra);
+      } else {
+        ajustada = cuotaNominal * (1 + ajusteExtra);
+      }
+      totalPagado += ajustada + (m === plazo ? montoEntrega : 0);
+      if (m === plazo) {
+        const prVenta = precioBase * (1 + pctReventa);
+        const neto = prVenta * (1 - pctCostosReventa);
+        flujos.push(-(ajustada + montoEntrega) + neto);
+      } else {
+        flujos.push(-ajustada);
+      }
+    }
+    const precioVenta = precioBase * (1 + pctReventa) * (1 - pctCostosReventa);
+    const ganancia = precioVenta - totalPagado;
+    const roi = totalPagado > 0 ? (ganancia / totalPagado) * 100 : 0;
+    const tirMensual = calcTIR(flujos);
+    const tir = (Math.pow(1 + tirMensual, 12) - 1) * 100;
+    return { totalPagado, precioVenta, ganancia, roi, tir };
+  }
+
+  // ── Tabla sensibilidad ────────────────────────────────────────────────────
+  const SensibilidadTable = () => {
+    const pctReventa_cols = [0, 0.1, 0.2, 0.3];
+    const ajusteExtra_rows = [0, 0.3, 0.6, 0.9];
+    const labels_cols = ["Base", "+10%", "+20%", "+30%"];
+    const labels_rows = ["Sin ajuste", "+30%", "+60%", "+90%"];
+    const {
+      precio,
+      plazo,
+      montoBoleto,
+      cuotaNominal,
+      montoEntrega,
+    } = calc;
+    const tasaCACAnual = (parseFloat(tasaCAC) || 60) / 100;
+    const tasaCCLMensual = (parseFloat(apreciacionCCL) || 3) / 100;
+    const pctCostosReventa = (parseFloat(costosReventa) || 5) / 100;
+
+    const roiColor = (roi: number): string => {
+      if (roi > 20) return "#1a3a1a";
+      if (roi >= 10) return "#3a3a00";
+      return "#3a0000";
+    };
+    const roiTextColor = (roi: number): string => {
+      if (roi > 20) return "#55cc55";
+      if (roi >= 10) return "#cccc00";
+      return "#cc4444";
+    };
+
+    return (
+      <div style={{ overflowX: "auto" }}>
+        <table style={S.table}>
+          <thead>
+            <tr>
+              <th style={S.th}>Ajuste \ Reventa</th>
+              {labels_cols.map((l) => (
+                <th key={l} style={{ ...S.th, textAlign: "center" }}>
+                  {l}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {ajusteExtra_rows.map((ajusteExtra, ri) => (
+              <tr key={ri}>
+                <td style={S.td}>{labels_rows[ri]}</td>
+                {pctReventa_cols.map((pctRev, ci) => {
+                  const base = precioReventa ? parseFloat(precioReventa) : precio * 1.2;
+                  const basePrice = precio > 0 ? precio : 100000;
+                  const baseReventa = base > 0 ? base / (1 + 0.2) : basePrice;
+                  const esc = calcEscenario(
+                    baseReventa,
+                    pctRev,
+                    ajusteExtra,
+                    plazo,
+                    montoBoleto,
+                    cuotaNominal,
+                    montoEntrega,
+                    ajuste,
+                    tasaCACAnual,
+                    tasaCCLMensual,
+                    pctCostosReventa
+                  );
+                  return (
+                    <td
+                      key={ci}
+                      style={{
+                        ...S.td,
+                        background: roiColor(esc.roi),
+                        color: roiTextColor(esc.roi),
+                        textAlign: "center",
+                        fontWeight: 700,
+                        fontFamily: "'Montserrat', sans-serif",
+                      }}
+                    >
+                      {fmtPct(esc.roi, 1)}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  // ── Tab 1 ─────────────────────────────────────────────────────────────────
+  const Tab1 = () => {
+    const sumPct =
+      (etapaBoleto.pct || 0) + (etapaCuotas.pct || 0) + (etapaEntrega.pct || 0);
+
+    return (
+      <>
+        {/* Proyecto */}
+        <div style={S.card}>
+          <p style={S.cardTitle}>Proyecto</p>
+          <div style={S.grid2}>
+            <div>
+              <label style={S.label}>Precio total de la unidad (USD)</label>
+              <input
+                style={S.input}
+                type="number"
+                value={precioTotal}
+                onChange={(e) => setPrecioTotal(e.target.value)}
+              />
+            </div>
+            <div>
+              <label style={S.label}>Plazo total de obra (meses)</label>
+              <input
+                style={S.input}
+                type="number"
+                value={plazoMeses}
+                onChange={(e) => setPlazoMeses(e.target.value)}
+              />
+            </div>
+            <div>
+              <label style={S.label}>Fecha de inicio de obra</label>
+              <div style={{ display: "flex", gap: 8 }}>
+                <select
+                  style={{ ...S.select, flex: 1 }}
+                  value={fechaInicioMes}
+                  onChange={(e) => setFechaInicioMes(e.target.value)}
+                >
+                  {mesNombres.map((m, i) => (
+                    <option
+                      key={i}
+                      value={String(i + 1).padStart(2, "0")}
+                    >
+                      {m}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  style={{ ...S.select, flex: 1 }}
+                  value={fechaInicioAnio}
+                  onChange={(e) => setFechaInicioAnio(e.target.value)}
+                >
+                  {Array.from({ length: 6 }, (_, i) => anioActual + i).map(
+                    (y) => (
+                      <option key={y} value={String(y)}>
+                        {y}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style={S.label}>Moneda de cuotas</label>
+              <select
+                style={S.select}
+                value={monedaCuotas}
+                onChange={(e) =>
+                  setMonedaCuotas(e.target.value as MonedaCuotas)
+                }
+              >
+                <option value="usd">USD</option>
+                <option value="ars_ccl">ARS ajustado por CCL</option>
+                <option value="mixto">Mixto</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 24 }}>
-          {/* Config */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {/* Propiedad */}
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 18 }}>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: "#cc0000", marginBottom: 14, textTransform: "uppercase" }}>
-                Propiedad
-              </div>
-              {[
-                { label: "Precio pozo (USD)", key: "precioPozoUSD" as const, step: 1000 },
-                { label: "Precio terminado (USD)", key: "precioTerminadoUSD" as const, step: 1000 },
-                { label: "Superficie (m²)", key: "m2totales" as const, step: 1 },
-                { label: "Meses de obra", key: "mesesObra" as const, step: 1, min: 6 },
-              ].map((f) => (
-                <div key={f.key} style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3, fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
-                    {f.label}
-                  </div>
-                  <input type="number" value={cfg[f.key]} step={f.step} min={f.min ?? 0} onChange={set(f.key)} style={inp} />
-                </div>
-              ))}
-            </div>
+        {/* Estructura de pagos */}
+        <div style={S.card}>
+          <p style={S.cardTitle}>Estructura de pagos</p>
 
-            {/* Pagos */}
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 18 }}>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: "#3b82f6", marginBottom: 14, textTransform: "uppercase" }}>
-                Estructura de Pagos
-              </div>
-              {[
-                { label: "Reserva (USD)", key: "reservaUSD" as const, step: 500 },
-                { label: "Cuota mensual (USD)", key: "cuotasMonto" as const, step: 50 },
-                { label: "Cantidad de cuotas", key: "cuotasTotal" as const, step: 1 },
-                { label: "Saldo contra entrega (USD)", key: "saldoEntregaUSD" as const, step: 1000 },
-              ].map((f) => (
-                <div key={f.key} style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3, fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
-                    {f.label}
-                  </div>
-                  <input type="number" value={cfg[f.key]} step={f.step} min={0} onChange={set(f.key)} style={inp} />
-                </div>
-              ))}
+          {sumPct !== 100 && (
+            <div
+              style={{
+                background: "#3a1a00",
+                border: "1px solid #cc5500",
+                borderRadius: 6,
+                padding: "8px 12px",
+                marginBottom: 14,
+                fontSize: "0.82rem",
+                color: "#ffaa44",
+              }}
+            >
+              La suma de porcentajes es {fmtNum(sumPct, 1)}% (debe ser 100%)
             </div>
+          )}
 
-            {/* Post-entrega */}
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 18 }}>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: "#22c55e", marginBottom: 14, textTransform: "uppercase" }}>
-                Renta Post-Entrega
-              </div>
-              {[
-                { label: "Apreciación anual USD (%)", key: "apreciacionAnualUSD" as const, step: 0.5 },
-                { label: "Alquiler mensual (USD)", key: "alquilerMensualUSD" as const, step: 50 },
-                { label: "Vacancia (%)", key: "vacanciaPct" as const, step: 1, max: 50 },
-                { label: "Gastos operativos (%)", key: "gastosOperativosPct" as const, step: 1, max: 40 },
-                { label: "Tasa alternativa anual (%)", key: "tasaAltAnualUSD" as const, step: 0.5 },
-              ].map((f) => (
-                <div key={f.key} style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3, fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
-                    {f.label}
-                  </div>
-                  <input type="number" value={cfg[f.key]} step={f.step} min={0} max={(f as { max?: number }).max} onChange={set(f.key)} style={inp} />
-                </div>
-              ))}
+          {/* Boleto */}
+          <p style={S.sectionTitle}>Boleto / Anticipo</p>
+          <div style={S.grid3}>
+            <div>
+              <label style={S.label}>% del total (al inicio)</label>
+              <input
+                style={S.input}
+                type="number"
+                value={etapaBoleto.pct}
+                onChange={(e) =>
+                  setEtapaBoleto({
+                    ...etapaBoleto,
+                    pct: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label style={S.label}>Monto en USD</label>
+              <input
+                style={{ ...S.input, background: "#050505", color: "#888" }}
+                readOnly
+                value={fmtUSD(calc.montoBoleto)}
+              />
             </div>
           </div>
 
-          {/* Results */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {/* Tab selector */}
-            <div style={{ display: "flex", gap: 8 }}>
-              {(["resumen", "flujos", "comparacion"] as const).map((t) => (
-                <button key={t} onClick={() => setTab(t)} style={{
-                  padding: "8px 20px", borderRadius: 8,
-                  border: tab === t ? "1px solid #cc0000" : "1px solid #333",
-                  background: tab === t ? "rgba(204,0,0,0.15)" : "#111",
-                  color: tab === t ? "#cc0000" : "#888",
-                  fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 12,
-                  cursor: "pointer", textTransform: "capitalize",
-                }}>
-                  {t === "resumen" ? "Resumen" : t === "flujos" ? "Flujos" : "Comparación"}
+          <hr style={S.divider} />
+
+          {/* Cuotas en obra */}
+          <p style={S.sectionTitle}>Cuotas en obra</p>
+          <div style={S.grid3}>
+            <div>
+              <label style={S.label}>% del total</label>
+              <input
+                style={S.input}
+                type="number"
+                value={etapaCuotas.pct}
+                onChange={(e) =>
+                  setEtapaCuotas({
+                    ...etapaCuotas,
+                    pct: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label style={S.label}>Tipo de ajuste</label>
+              <select
+                style={S.select}
+                value={ajuste}
+                onChange={(e) => setAjuste(e.target.value as AjusteCuotas)}
+              >
+                <option value="fijo_usd">Fijo en USD</option>
+                <option value="ccl">Ajustado por CCL</option>
+                <option value="cac">Ajustado por CAC (construcción)</option>
+              </select>
+            </div>
+            {ajuste === "cac" && (
+              <div>
+                <label style={S.label}>Tasa CAC anual estimada (%)</label>
+                <input
+                  style={S.input}
+                  type="number"
+                  value={tasaCAC}
+                  onChange={(e) => setTasaCAC(e.target.value)}
+                />
+              </div>
+            )}
+            {ajuste === "ccl" && (
+              <div>
+                <label style={S.label}>Apreciación CCL mensual (%)</label>
+                <input
+                  style={S.input}
+                  type="number"
+                  value={apreciacionCCL}
+                  onChange={(e) => setApreciacionCCL(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+
+          <hr style={S.divider} />
+
+          {/* Entrega */}
+          <p style={S.sectionTitle}>Entrega final</p>
+          <div style={S.grid3}>
+            <div>
+              <label style={S.label}>% del total (al finalizar)</label>
+              <input
+                style={{ ...S.input, background: "#050505", color: "#888" }}
+                readOnly
+                value={fmtNum(calc.pctEntrega, 1)}
+              />
+            </div>
+            <div>
+              <label style={S.label}>Monto en USD</label>
+              <input
+                style={{ ...S.input, background: "#050505", color: "#888" }}
+                readOnly
+                value={fmtUSD(calc.montoEntrega)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* KPIs */}
+        <div style={S.card}>
+          <p style={S.cardTitle}>Resumen de pagos</p>
+          <div style={S.grid3}>
+            <div style={S.kpi}>
+              <p style={S.kpiLabel}>Cuota nominal</p>
+              <p style={S.kpiValue}>{fmtUSD(calc.cuotaNominal)}</p>
+            </div>
+            <div style={S.kpi}>
+              <p style={S.kpiLabel}>Total desembolsado</p>
+              <p style={S.kpiValue}>{fmtUSD(calc.totalDesembolsado)}</p>
+            </div>
+            <div style={S.kpi}>
+              <p style={S.kpiLabel}>Exceso por ajuste</p>
+              <p style={S.kpiValue}>
+                {fmtUSD(calc.totalDesembolsado - calc.precio)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Gráfico */}
+        <div style={S.card}>
+          <p style={S.cardTitle}>Flujo de pagos</p>
+          <Chart1 />
+        </div>
+
+        {/* Tabla */}
+        <div style={S.card}>
+          <p style={S.cardTitle}>Tabla de cuotas</p>
+          <div style={{ overflowX: "auto" }}>
+            <table style={S.table}>
+              <thead>
+                <tr>
+                  <th style={S.th}>Mes</th>
+                  <th style={S.th}>Concepto</th>
+                  <th style={{ ...S.th, textAlign: "right" }}>
+                    Cuota nominal
+                  </th>
+                  <th style={{ ...S.th, textAlign: "right" }}>
+                    Cuota ajustada
+                  </th>
+                  <th style={{ ...S.th, textAlign: "right" }}>
+                    Acumulado
+                  </th>
+                  <th style={{ ...S.th, textAlign: "right" }}>% total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {calc.rows.map((r, i) => (
+                  <tr
+                    key={i}
+                    style={{
+                      background: i % 2 === 0 ? "transparent" : "#0d0d0d",
+                    }}
+                  >
+                    <td style={S.td}>{r.mes}</td>
+                    <td style={S.td}>{r.concepto}</td>
+                    <td style={{ ...S.td, textAlign: "right" }}>
+                      {fmtUSD(r.cuotaNominal)}
+                    </td>
+                    <td style={{ ...S.td, textAlign: "right" }}>
+                      {fmtUSD(r.cuotaAjustada)}
+                    </td>
+                    <td style={{ ...S.td, textAlign: "right" }}>
+                      {fmtUSD(r.acumulado)}
+                    </td>
+                    <td
+                      style={{
+                        ...S.td,
+                        textAlign: "right",
+                        color: "#888",
+                      }}
+                    >
+                      {fmtPct(r.pctTotal, 1)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  // ── Tab 2 ─────────────────────────────────────────────────────────────────
+  const Tab2 = () => {
+    const {
+      totalDesembolsado,
+      precioNetoReventa,
+      gananciaBruta,
+      roi,
+      tirAnual,
+      roiPF,
+      gananciaPF,
+      yieldBruto,
+      recuperoAnios,
+      plazo,
+    } = calc;
+    const tasaPFAnual = (parseFloat(tasaPF) || 8) / 100;
+    const pfMeses = plazo;
+    const gananciaPFDisplay = gananciaPF;
+
+    return (
+      <>
+        {/* Hipótesis */}
+        <div style={S.card}>
+          <p style={S.cardTitle}>Hipótesis de reventa / alquiler</p>
+          <div style={{ marginBottom: 14 }}>
+            <label style={S.label}>Alternativa</label>
+            <div style={S.toggleGroup}>
+              {(["reventa", "alquiler"] as AlternativaId[]).map((a) => (
+                <button
+                  key={a}
+                  style={S.toggleBtn(alternativa === a)}
+                  onClick={() => setAlternativa(a)}
+                >
+                  {a === "reventa" ? "Reventa" : "Alquiler"}
                 </button>
               ))}
             </div>
+          </div>
 
-            {/* RESUMEN */}
-            {tab === "resumen" && (
-              <>
-                {/* KPIs principales */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
-                  {[
-                    { label: "Costo total inversión", value: fmtUSD(costoTotal), sub: `vs precio pozo ${fmtUSD(cfg.precioPozoUSD)}` },
-                    { label: "Valor al entregar", value: fmtUSD(Math.round(valorAlEntregar)), sub: `apreciación incluida` },
-                    {
-                      label: "Ganancia capital",
-                      value: fmtUSD(Math.round(gananciaCapital)),
-                      sub: fmtPct(gananciaCapitalPct) + " sobre inversión",
-                      highlight: gananciaCapital > 0,
-                    },
-                  ].map((k) => (
-                    <div key={k.label} style={{ background: "#111", border: k.highlight ? "1px solid rgba(34,197,94,0.4)" : "1px solid #222", borderRadius: 12, padding: "18px 16px" }}>
-                      <div style={{ fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>
-                        {k.label}
-                      </div>
-                      <div style={{ fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: k.highlight ? "#22c55e" : "#fff", marginBottom: 4 }}>
-                        {k.value}
-                      </div>
-                      <div style={{ fontSize: 11, color: "#666" }}>{k.sub}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
-                  {[
-                    { label: "TIR anual (5a post-entrega)", value: tirAnual != null ? fmtPct(tirAnual) : "—", color: tirAnual != null && tirAnual > 10 ? "#22c55e" : "#f97316" },
-                    { label: "Renta neta anual", value: fmtPct(rentaNetaPct), color: rentaNetaPct > 4 ? "#22c55e" : "#f97316" },
-                    { label: "Payback total", value: payback != null ? `Año ${payback}` : "No alcanzado", color: "#fff" },
-                  ].map((k) => (
-                    <div key={k.label} style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: "18px 16px" }}>
-                      <div style={{ fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>
-                        {k.label}
-                      </div>
-                      <div style={{ fontSize: 22, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: k.color }}>
-                        {k.value}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Desglose de inversión */}
-                <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
-                  <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: "#fff" }}>
-                    Desglose de Inversión
-                  </h3>
-                  {[
-                    { label: "Reserva", value: cfg.reservaUSD, color: "#cc0000" },
-                    { label: `${cfg.cuotasTotal} cuotas × ${fmtUSD(cfg.cuotasMonto)}`, value: cfg.cuotasMonto * cfg.cuotasTotal, color: "#3b82f6" },
-                    { label: "Saldo contra entrega", value: cfg.saldoEntregaUSD, color: "#f97316" },
-                  ].map((row) => {
-                    const pct = costoTotal > 0 ? (row.value / costoTotal) * 100 : 0;
-                    return (
-                      <div key={row.label} style={{ marginBottom: 12 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                          <span style={{ fontSize: 13, color: "#aaa" }}>{row.label}</span>
-                          <span style={{ fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: "#fff" }}>
-                            {fmtUSD(row.value)} ({pct.toFixed(0)}%)
-                          </span>
-                        </div>
-                        <div style={{ height: 6, background: "#1a1a1a", borderRadius: 3 }}>
-                          <div style={{ width: `${pct}%`, height: "100%", background: row.color, borderRadius: 3 }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #222", display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 14, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: "#fff" }}>Total</span>
-                    <span style={{ fontSize: 18, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#cc0000" }}>{fmtUSD(costoTotal)}</span>
-                  </div>
-                </div>
-
-                {/* Precio m2 */}
-                <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
-                  <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 14px", color: "#fff" }}>
-                    Precio por m²
-                  </h3>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
-                    {[
-                      { label: "Precio en pozo", value: `${fmtUSD(Math.round(precioPozoM2))}/m²`, color: "#3b82f6" },
-                      { label: "Precio terminado", value: `${fmtUSD(Math.round(precioTerminadoM2))}/m²`, color: "#f59e0b" },
-                      { label: "Precio al entregar", value: `${fmtUSD(Math.round(valorAlEntregar / cfg.m2totales))}/m²`, color: "#22c55e" },
-                    ].map((k) => (
-                      <div key={k.label} style={{ textAlign: "center" }}>
-                        <div style={{ fontSize: 11, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", marginBottom: 4 }}>
-                          {k.label}
-                        </div>
-                        <div style={{ fontSize: 16, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: k.color }}>
-                          {k.value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* FLUJOS */}
-            {tab === "flujos" && (
-              <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
-                <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: "#fff" }}>
-                  Flujos Anuales (obra + 5 años post-entrega)
-                </h3>
-                <div style={{ overflowX: "auto" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-                    <thead>
-                      <tr>
-                        {["Año", "Egresos", "Ingresos", "Neto", "Acumulado", "Estado"].map((h) => (
-                          <th key={h} style={{ textAlign: "right", padding: "8px 12px", color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 10, textTransform: "uppercase", borderBottom: "1px solid #222" }}>
-                            {h}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {flujosAnuales.map((a) => (
-                        <tr key={a.anio} style={{ borderBottom: "1px solid #1a1a1a" }}>
-                          <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: a.anio <= Math.ceil(cfg.mesesObra / 12) ? "#f97316" : "#22c55e" }}>
-                            {a.anio <= Math.ceil(cfg.mesesObra / 12) ? `Obra a${a.anio}` : `Post ${a.anio - Math.ceil(cfg.mesesObra / 12)}a`}
-                          </td>
-                          <td style={{ padding: "8px 12px", textAlign: "right", color: "#ef4444" }}>{a.egreso > 0 ? `-${fmtUSD(Math.round(a.egreso))}` : "—"}</td>
-                          <td style={{ padding: "8px 12px", textAlign: "right", color: "#22c55e" }}>{a.ingreso > 0 ? `+${fmtUSD(Math.round(a.ingreso))}` : "—"}</td>
-                          <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: a.neto >= 0 ? "#22c55e" : "#ef4444" }}>
-                            {a.neto >= 0 ? "+" : ""}{fmtUSD(Math.round(a.neto))}
-                          </td>
-                          <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: a.acum >= 0 ? "#22c55e" : "#ef4444" }}>
-                            {fmtUSD(Math.round(a.acum))}
-                          </td>
-                          <td style={{ padding: "8px 12px", textAlign: "right" }}>
-                            {a.acum >= 0 ? (
-                              <span style={{ fontSize: 11, color: "#22c55e", background: "rgba(34,197,94,0.15)", borderRadius: 4, padding: "2px 6px" }}>✓ Recuperado</span>
-                            ) : (
-                              <span style={{ fontSize: 11, color: "#666" }}>—</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+          {alternativa === "reventa" ? (
+            <div style={S.grid3}>
+              <div>
+                <label style={S.label}>Precio de reventa estimado (USD)</label>
+                <input
+                  style={S.input}
+                  type="number"
+                  value={precioReventa}
+                  onChange={(e) => setPrecioReventa(e.target.value)}
+                />
               </div>
-            )}
+              <div>
+                <label style={S.label}>
+                  Costos de escritura + comisiones (%)
+                </label>
+                <input
+                  style={S.input}
+                  type="number"
+                  value={costosReventa}
+                  onChange={(e) => setCostosReventa(e.target.value)}
+                />
+              </div>
+              <div>
+                <label style={S.label}>Tasa PF USD comparación (% anual)</label>
+                <input
+                  style={S.input}
+                  type="number"
+                  value={tasaPF}
+                  onChange={(e) => setTasaPF(e.target.value)}
+                />
+              </div>
+            </div>
+          ) : (
+            <div style={S.grid3}>
+              <div>
+                <label style={S.label}>Alquiler mensual esperado (USD)</label>
+                <input
+                  style={S.input}
+                  type="number"
+                  value={alquilerMensual}
+                  onChange={(e) => setAlquilerMensual(e.target.value)}
+                />
+              </div>
+              <div>
+                <label style={S.label}>Tasa PF USD comparación (% anual)</label>
+                <input
+                  style={S.input}
+                  type="number"
+                  value={tasaPF}
+                  onChange={(e) => setTasaPF(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+        </div>
 
-            {/* COMPARACIÓN */}
-            {tab === "comparacion" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
-                  <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: "#fff" }}>
-                    Pozo vs Renta Fija (USD {cfg.tasaAltAnualUSD}% anual)
-                  </h3>
-                  <p style={{ fontSize: 12, color: "#666", margin: "0 0 16px" }}>
-                    Comparación de invertir la reserva + cuotas en un instrumento de renta fija en dólares durante el período de obra ({cfg.mesesObra} meses)
+        {alternativa === "reventa" ? (
+          <>
+            {/* Resultados reventa */}
+            <div style={S.card}>
+              <p style={S.cardTitle}>Resultados — Reventa</p>
+              <div style={S.grid3}>
+                <div style={S.kpi}>
+                  <p style={S.kpiLabel}>Total desembolsado</p>
+                  <p style={S.kpiValue}>{fmtUSD(totalDesembolsado)}</p>
+                </div>
+                <div style={S.kpi}>
+                  <p style={S.kpiLabel}>Precio neto de venta</p>
+                  <p style={S.kpiValue}>{fmtUSD(precioNetoReventa)}</p>
+                </div>
+                <div style={S.kpi}>
+                  <p style={S.kpiLabel}>Ganancia bruta</p>
+                  <p
+                    style={{
+                      ...S.kpiValue,
+                      color: gananciaBruta >= 0 ? "#55cc55" : "#cc4444",
+                    }}
+                  >
+                    {gananciaBruta >= 0 ? "+" : ""}
+                    {fmtUSD(gananciaBruta)}
                   </p>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                    {[
-                      {
-                        label: "Inversión en Pozo",
-                        color: "#cc0000",
-                        rows: [
-                          ["Costo total adquisición", fmtUSD(costoTotal)],
-                          ["Valor al entregar", fmtUSD(Math.round(valorAlEntregar))],
-                          ["Ganancia capital", fmtUSD(Math.round(gananciaCapital))],
-                          ["Rentabilidad capital", fmtPct(gananciaCapitalPct)],
-                          ["TIR anual (5a)", tirAnual != null ? fmtPct(tirAnual) : "—"],
-                        ],
-                      },
-                      {
-                        label: `Renta Fija ${cfg.tasaAltAnualUSD}% USD`,
-                        color: "#3b82f6",
-                        rows: [
-                          ["Capital invertido equiv.", fmtUSD(Math.round(inversionEquivalente))],
-                          ["Valor al vencer (obra)", fmtUSD(Math.round(valorAltAlEntregar))],
-                          ["Ganancia", fmtUSD(Math.round(valorAltAlEntregar - inversionEquivalente))],
-                          ["Rentabilidad", fmtPct(inversionEquivalente > 0 ? ((valorAltAlEntregar - inversionEquivalente) / inversionEquivalente) * 100 : 0)],
-                          ["TIR anual", fmtPct(cfg.tasaAltAnualUSD)],
-                        ],
-                      },
-                    ].map((col) => (
-                      <div key={col.label} style={{ background: "#161616", borderRadius: 10, padding: 16, border: `1px solid ${col.color}33` }}>
-                        <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 13, color: col.color, marginBottom: 14 }}>
-                          {col.label}
-                        </div>
-                        {col.rows.map(([l, v]) => (
-                          <div key={l} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, borderBottom: "1px solid #222", paddingBottom: 8 }}>
-                            <span style={{ fontSize: 12, color: "#888" }}>{l}</span>
-                            <span style={{ fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: "#fff" }}>{v}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ marginTop: 16, background: ventajaVsAlt > 0 ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)", border: `1px solid ${ventajaVsAlt > 0 ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}`, borderRadius: 10, padding: 16, textAlign: "center" }}>
-                    <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>
-                      Ventaja del pozo sobre renta fija (ganancia capital)
-                    </div>
-                    <div style={{ fontSize: 26, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: ventajaVsAlt > 0 ? "#22c55e" : "#ef4444" }}>
-                      {ventajaVsAlt >= 0 ? "+" : ""}{fmtUSD(Math.round(ventajaVsAlt))}
-                    </div>
-                    <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
-                      {ventajaVsAlt > 0
-                        ? "El pozo supera a la renta fija en ganancia de capital"
-                        : "La renta fija supera la ganancia de capital del pozo"}
-                    </div>
-                  </div>
+                </div>
+                <div style={S.kpi}>
+                  <p style={S.kpiLabel}>ROI total</p>
+                  <p
+                    style={{
+                      ...S.kpiValue,
+                      color: roi >= 0 ? "#55cc55" : "#cc4444",
+                    }}
+                  >
+                    {fmtPct(roi)}
+                  </p>
+                </div>
+                <div style={S.kpi}>
+                  <p style={S.kpiLabel}>TIR anualizada</p>
+                  <p
+                    style={{
+                      ...S.kpiValue,
+                      color: tirAnual >= 0 ? "#55cc55" : "#cc4444",
+                    }}
+                  >
+                    {isFinite(tirAnual) ? fmtPct(tirAnual * 100) : "—"}
+                  </p>
+                </div>
+                <div style={S.kpi}>
+                  <p style={S.kpiLabel}>PF USD {pfMeses}m ({fmtPct(tasaPFAnual * 100, 0)} anual)</p>
+                  <p style={{ ...S.kpiValue, color: "#888" }}>
+                    {fmtUSD(gananciaPFDisplay)}
+                  </p>
                 </div>
               </div>
-            )}
+
+              <div
+                style={{
+                  marginTop: 16,
+                  padding: "12px 16px",
+                  background: "#0a0a0a",
+                  border: "1px solid #222",
+                  borderRadius: 8,
+                  fontSize: "0.82rem",
+                  color: "#aaa",
+                }}
+              >
+                {roi > roiPF
+                  ? `La inversión en pozo supera al PF USD por ${fmtPct(roi - roiPF)} de ROI.`
+                  : `El PF USD supera a esta inversión en pozo por ${fmtPct(roiPF - roi)} de ROI.`}
+              </div>
+            </div>
+
+            {/* Gráfico comparación */}
+            <div style={S.card}>
+              <p style={S.cardTitle}>Comparación de ganancia por escenario</p>
+              <Chart2 />
+            </div>
+          </>
+        ) : (
+          <div style={S.card}>
+            <p style={S.cardTitle}>Resultados — Alquiler</p>
+            <div style={S.grid3}>
+              <div style={S.kpi}>
+                <p style={S.kpiLabel}>Total desembolsado</p>
+                <p style={S.kpiValue}>{fmtUSD(totalDesembolsado)}</p>
+              </div>
+              <div style={S.kpi}>
+                <p style={S.kpiLabel}>Yield bruto anual</p>
+                <p
+                  style={{
+                    ...S.kpiValue,
+                    color: yieldBruto >= 5 ? "#55cc55" : "#cccc00",
+                  }}
+                >
+                  {fmtPct(yieldBruto)}
+                </p>
+              </div>
+              <div style={S.kpi}>
+                <p style={S.kpiLabel}>Recupero del capital</p>
+                <p style={S.kpiValue}>
+                  {isFinite(recuperoAnios)
+                    ? `${fmtNum(recuperoAnios, 1)} años`
+                    : "—"}
+                </p>
+              </div>
+              <div style={S.kpi}>
+                <p style={S.kpiLabel}>Alquiler mensual</p>
+                <p style={S.kpiValue}>{fmtUSD(calc.alquiler)}</p>
+              </div>
+              <div style={S.kpi}>
+                <p style={S.kpiLabel}>Alquiler anual</p>
+                <p style={S.kpiValue}>{fmtUSD(calc.alquiler * 12)}</p>
+              </div>
+              <div style={S.kpi}>
+                <p style={S.kpiLabel}>
+                  PF USD {calc.plazo}m ({fmtPct((parseFloat(tasaPF) || 8), 0)} anual)
+                </p>
+                <p style={{ ...S.kpiValue, color: "#888" }}>
+                  {fmtPct(roiPF)}
+                </p>
+              </div>
+            </div>
+            <div
+              style={{
+                marginTop: 16,
+                padding: "12px 16px",
+                background: "#0a0a0a",
+                border: "1px solid #222",
+                borderRadius: 8,
+                fontSize: "0.82rem",
+                color: "#aaa",
+              }}
+            >
+              {yieldBruto > (parseFloat(tasaPF) || 8)
+                ? `El yield de alquiler (${fmtPct(yieldBruto)}) supera al PF USD (${fmtPct(parseFloat(tasaPF) || 8)}% anual).`
+                : `El PF USD (${fmtPct(parseFloat(tasaPF) || 8)}% anual) supera al yield de alquiler (${fmtPct(yieldBruto)}).`}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  // ── Tab 3 ─────────────────────────────────────────────────────────────────
+  const Tab3 = () => {
+    const { precio, plazo, montoBoleto, cuotaNominal, montoEntrega } = calc;
+    const tasaCACAnual = (parseFloat(tasaCAC) || 60) / 100;
+    const tasaCCLMensual = (parseFloat(apreciacionCCL) || 3) / 100;
+    const pctCostosReventa = (parseFloat(costosReventa) || 5) / 100;
+
+    const escenarios = [
+      {
+        nombre: "Optimista",
+        pctReventa: 0.3,
+        ajusteExtra: 0,
+        color: "#1a3a1a",
+        textColor: "#55cc55",
+        desc: "Reventa +30%, cuotas en USD fijo",
+      },
+      {
+        nombre: "Base",
+        pctReventa: 0.2,
+        ajusteExtra: 0,
+        color: "#2a2a00",
+        textColor: "#cccc00",
+        desc: "Reventa +20%, ajuste moderado",
+      },
+      {
+        nombre: "Pesimista",
+        pctReventa: 0.05,
+        ajusteExtra: 0.3,
+        color: "#3a0a0a",
+        textColor: "#cc4444",
+        desc: "Reventa +5%, ajuste cuotas +30%",
+      },
+    ];
+
+    return (
+      <>
+        {/* Tarjetas escenarios */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 16, marginBottom: 20 }}>
+          {escenarios.map((esc) => {
+            const r = calcEscenario(
+              precio,
+              esc.pctReventa,
+              esc.ajusteExtra,
+              plazo,
+              montoBoleto,
+              cuotaNominal,
+              montoEntrega,
+              ajuste,
+              tasaCACAnual,
+              tasaCCLMensual,
+              pctCostosReventa
+            );
+            return (
+              <div
+                key={esc.nombre}
+                style={{
+                  background: esc.color,
+                  border: `1px solid ${esc.textColor}33`,
+                  borderRadius: 10,
+                  padding: "18px 20px",
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontWeight: 800,
+                    color: esc.textColor,
+                    marginTop: 0,
+                    marginBottom: 4,
+                  }}
+                >
+                  {esc.nombre}
+                </p>
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#888",
+                    marginTop: 0,
+                    marginBottom: 14,
+                  }}
+                >
+                  {esc.desc}
+                </p>
+                {[
+                  ["Total pagado", fmtUSD(r.totalPagado, 0)],
+                  ["Precio de venta", fmtUSD(r.precioVenta, 0)],
+                  ["Ganancia", fmtUSD(r.ganancia, 0)],
+                  ["ROI", fmtPct(r.roi)],
+                  ["TIR anual", isFinite(r.tir) ? fmtPct(r.tir) : "—"],
+                ].map(([label, val]) => (
+                  <div
+                    key={label}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      borderBottom: "1px solid #333",
+                      padding: "5px 0",
+                      fontSize: "0.82rem",
+                    }}
+                  >
+                    <span style={{ color: "#888" }}>{label}</span>
+                    <span
+                      style={{
+                        color: esc.textColor,
+                        fontWeight: 700,
+                        fontFamily: "'Montserrat', sans-serif",
+                      }}
+                    >
+                      {val}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Tabla sensibilidad */}
+        <div style={S.card}>
+          <p style={S.cardTitle}>Tabla de sensibilidad — ROI</p>
+          <p style={{ fontSize: "0.78rem", color: "#666", marginTop: -8, marginBottom: 14 }}>
+            Eje X: precio de reventa vs. base. Eje Y: ajuste adicional de cuotas.
+          </p>
+          <SensibilidadTable />
+          <div style={{ display: "flex", gap: 16, marginTop: 14, fontSize: "0.78rem" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ display: "inline-block", width: 12, height: 12, background: "#1a3a1a", borderRadius: 2 }} />
+              <span style={{ color: "#888" }}>ROI &gt; 20%</span>
+            </span>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ display: "inline-block", width: 12, height: 12, background: "#3a3a00", borderRadius: 2 }} />
+              <span style={{ color: "#888" }}>ROI 10–20%</span>
+            </span>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ display: "inline-block", width: 12, height: 12, background: "#3a0000", borderRadius: 2 }} />
+              <span style={{ color: "#888" }}>ROI &lt; 10%</span>
+            </span>
           </div>
         </div>
+      </>
+    );
+  };
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  return (
+    <div style={S.page}>
+      <div style={S.header}>
+        <h1 style={S.title}>Calculadora de Inversión en Pozo</h1>
+        <p style={S.subtitle}>
+          Análisis de rentabilidad para compra en construcción con cuotas
+          escalonadas
+        </p>
+      </div>
+
+      <div style={S.tabBar}>
+        {(
+          [
+            ["estructura", "1. Estructura de pago"],
+            ["rentabilidad", "2. Rentabilidad"],
+            ["escenarios", "3. Escenarios"],
+          ] as [TabId, string][]
+        ).map(([id, label]) => (
+          <button key={id} style={S.tabBtn(tab === id)} onClick={() => setTab(id)}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div style={S.body}>
+        {tab === "estructura" && <Tab1 />}
+        {tab === "rentabilidad" && <Tab2 />}
+        {tab === "escenarios" && <Tab3 />}
       </div>
     </div>
   );
