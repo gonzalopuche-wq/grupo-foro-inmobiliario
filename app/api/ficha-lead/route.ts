@@ -100,15 +100,19 @@ export async function POST(req: NextRequest) {
     // Sinergia: crear contacto en CRM
     try {
       if (email || telefono) {
-        const { data: existente } = await supabase
-          .from("crm_contactos")
-          .select("id")
-          .eq("perfil_id", prop.perfil_id)
-          .eq("email", email || "")
-          .maybeSingle();
+        let existente = null;
+        if (email?.trim()) {
+          const { data } = await supabase
+            .from("crm_contactos")
+            .select("id")
+            .eq("perfil_id", prop.perfil_id)
+            .eq("email", email.trim())
+            .maybeSingle();
+          existente = data;
+        }
 
         if (!existente) {
-          const [primerNombre, ...resto] = nombre.trim().split(" ");
+          const [primerNombre, ...resto] = nombre.trim().split(/\s+/);
           await supabase.from("crm_contactos").insert({
             perfil_id: prop.perfil_id,
             nombre: primerNombre,
