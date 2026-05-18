@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import GaleriaFotos from "./GaleriaFotos";
 import FichaAcciones from "./FichaAcciones";
+import FichaContacto from "./FichaContacto";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -53,7 +54,7 @@ async function getProp(id: string) {
       com_cancha_tenis, com_cancha_paddle, com_cancha_futbol, com_lavanderia,
       com_juegos_infantiles, com_estac_visitantes, com_quincho,
       tipo_piso, tipo_calefaccion, tipo_gas, tipo_vista, tipo_edificio, tipo_agua_caliente,
-      uso_profesional, financia_vendedor,
+      tipo_cochera, uso_profesional, financia_vendedor,
       fotos, video_url, tour_virtual_url, estado, codigo, created_at,
       perfil:perfiles(nombre, apellido, foto_url, matricula, telefono, email, instagram, inmobiliaria, whatsapp_negocio)
     `)
@@ -165,6 +166,7 @@ export default async function InmueblePage({ params }: Props) {
     p.tipo_gas && { label: "Gas", value: p.tipo_gas },
     p.tipo_vista && { label: "Vista", value: p.tipo_vista },
     p.tipo_edificio && { label: "Tipo edificio", value: p.tipo_edificio },
+    p.tipo_cochera && { label: "Cochera", value: p.tipo_cochera },
   ].filter(Boolean) as { label: string; value: string | number }[];
 
   const tags = [
@@ -448,8 +450,13 @@ export default async function InmueblePage({ params }: Props) {
           </div>
         </div>
 
+        {/* Formulario de contacto */}
+        <div style={{ marginTop: 20 }}>
+          <FichaContacto propiedadId={p.id} titulo={p.titulo} />
+        </div>
+
         {/* Compartir */}
-        <div style={{ marginTop: 20, padding: "16px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ marginTop: 16, padding: "16px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <FichaAcciones
             titulo={p.titulo}
             waLink={waLink}
