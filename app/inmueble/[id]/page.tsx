@@ -39,6 +39,7 @@ async function getProp(id: string) {
       ciudad, zona, direccion, direccion_orientativa,
       latitud, longitud, ocultar_precio, ocultar_ubicacion,
       dormitorios, banos, banos_servicio, ambientes, estacionamientos,
+      precio_anterior,
       superficie_cubierta, superficie_total, sup_semicubierta,
       sup_balcon, sup_patio_terraza, metros_frente, metros_fondo, sup_terreno,
       forma_terreno, acceso_calle,
@@ -284,6 +285,16 @@ export default async function InmueblePage({ params }: Props) {
                 {ubicacion && <div className="ficha-ubicacion">📍 {ubicacion}</div>}
               </div>
               <div style={{ textAlign: "right", flexShrink: 0 }}>
+                {p.precio_anterior && !p.ocultar_precio && p.precio && p.precio_anterior > p.precio && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginBottom: 2 }}>
+                    <span style={{ fontSize: 14, color: "rgba(255,255,255,0.35)", textDecoration: "line-through", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                      {fmtPrecio(p.precio_anterior, p.moneda, false)}
+                    </span>
+                    <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 800, letterSpacing: "0.08em", background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", color: "#22c55e", padding: "2px 7px", borderRadius: 4 }}>
+                      -{Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100)}%
+                    </span>
+                  </div>
+                )}
                 <div className="ficha-precio">{fmtPrecio(p.precio, p.moneda, p.ocultar_precio)}</div>
                 {p.expensas && !p.ocultar_precio && (
                   <div className="ficha-expensas">

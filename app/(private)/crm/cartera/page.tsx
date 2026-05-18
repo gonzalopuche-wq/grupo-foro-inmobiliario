@@ -17,6 +17,7 @@ interface Propiedad {
   operacion: string;
   tipo: string;
   precio: number | null;
+  precio_anterior: number | null;
   moneda: string;
   expensas: number | null;
   moneda_expensas: string | null;
@@ -193,7 +194,7 @@ const FORM_VACIO: any = {
   ci_numero: "", ci_observaciones: "", escritura_url: "", plano_url: "", reglamento_url: "",
   api_ninios: false, api_ninios_numero: "", url_portal_origen: "",
   // Paso 2
-  operacion: "Venta", precio: "", moneda: "USD",
+  operacion: "Venta", precio: "", precio_anterior: "", moneda: "USD",
   expensas: "", moneda_expensas: "ARS",
   ocultar_precio: false, ocultar_de_redes: false, ocultar_web: false,
   honorario_compartir: "No comparte", honorario_propietario: "", honorario_comprador: "",
@@ -694,7 +695,7 @@ export default function CarteraPage() {
       titulo: form.titulo, tipo: form.tipo, estado: form.estado,
       codigo: form.codigo || null,
       operacion: form.operacion,
-      precio: numOrNull(form.precio), moneda: form.moneda,
+      precio: numOrNull(form.precio), precio_anterior: numOrNull(form.precio_anterior), moneda: form.moneda,
       expensas: numOrNull(form.expensas), moneda_expensas: form.moneda_expensas || "ARS",
       ocultar_precio: form.ocultar_precio, ocultar_de_redes: form.ocultar_de_redes, ocultar_web: form.ocultar_web,
       honorario_compartir: form.honorario_compartir || null,
@@ -1730,6 +1731,10 @@ export default function CarteraPage() {
                       <div className="wiz-field">
                         <label className="wiz-label">Precio</label>
                         <input className="wiz-input" type="number" value={form.precio} onChange={e => setF("precio", e.target.value)} placeholder="180000" />
+                      </div>
+                      <div className="wiz-field">
+                        <label className="wiz-label">Precio anterior <span style={{fontWeight:400,opacity:0.5}}>(si bajó)</span></label>
+                        <input className="wiz-input" type="number" value={form.precio_anterior} onChange={e => setF("precio_anterior", e.target.value)} placeholder="195000" />
                       </div>
                       <div className="wiz-field">
                         <label className="wiz-label">Expensas</label>
