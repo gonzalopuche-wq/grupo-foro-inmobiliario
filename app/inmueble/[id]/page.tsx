@@ -54,8 +54,9 @@ async function getProp(id: string) {
       com_cancha_tenis, com_cancha_paddle, com_cancha_futbol, com_lavanderia,
       com_juegos_infantiles, com_estac_visitantes, com_quincho,
       tipo_piso, tipo_calefaccion, tipo_gas, tipo_vista, tipo_edificio, tipo_agua_caliente,
-      tipo_cochera, uso_profesional, financia_vendedor,
-      fotos, video_url, tour_virtual_url, estado, codigo, created_at,
+      tipo_cochera, situacion, tipo_cielorraso, tipo_acceso,
+      uso_profesional, financia_vendedor,
+      fotos, video_url, tour_virtual_url, planos, estado, codigo, created_at,
       perfil:perfiles(nombre, apellido, foto_url, matricula, telefono, email, instagram, inmobiliaria, whatsapp_negocio)
     `)
     .eq("id", id)
@@ -167,6 +168,9 @@ export default async function InmueblePage({ params }: Props) {
     p.tipo_vista && { label: "Vista", value: p.tipo_vista },
     p.tipo_edificio && { label: "Tipo edificio", value: p.tipo_edificio },
     p.tipo_cochera && { label: "Cochera", value: p.tipo_cochera },
+    p.situacion && { label: "Situación", value: p.situacion },
+    p.tipo_cielorraso && { label: "Cielorraso", value: p.tipo_cielorraso },
+    p.tipo_acceso && { label: "Acceso", value: p.tipo_acceso },
   ].filter(Boolean) as { label: string; value: string | number }[];
 
   const tags = [
@@ -365,6 +369,24 @@ export default async function InmueblePage({ params }: Props) {
                     ▶ Ver video
                   </a>
                 )}
+              </>
+            )}
+
+            {/* Planos */}
+            {p.planos && p.planos.length > 0 && (
+              <>
+                <div className="ficha-divider" />
+                <div className="section-title">Planos</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 10 }}>
+                  {(p.planos as string[]).map((url: string, i: number) => (
+                    <a key={i} href={url} target="_blank" rel="noopener noreferrer"
+                      style={{ display: "block", borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <img src={url} alt={`Plano ${i + 1}`}
+                        style={{ width: "100%", display: "block", background: "#1a1a1a" }}
+                        loading="lazy" />
+                    </a>
+                  ))}
+                </div>
               </>
             )}
 
