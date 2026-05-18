@@ -14,6 +14,7 @@ export default function FichaContacto({ propiedadId, titulo }: Props) {
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [tipoConsulta, setTipoConsulta] = useState("");
   const [estado, setEstado] = useState<Estado>("idle");
   const [errMsg, setErrMsg] = useState("");
 
@@ -26,7 +27,7 @@ export default function FichaContacto({ propiedadId, titulo }: Props) {
       const res = await fetch("/api/ficha-lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ propiedad_id: propiedadId, nombre, email, telefono, mensaje }),
+        body: JSON.stringify({ propiedad_id: propiedadId, nombre, email, telefono, mensaje, tipo_consulta: tipoConsulta }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -71,6 +72,19 @@ export default function FichaContacto({ propiedadId, titulo }: Props) {
       </div>
 
       <form onSubmit={enviar} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div>
+          <label style={{ display: "block", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)", marginBottom: 5, textTransform: "uppercase" as const }}>
+            Tipo de consulta
+          </label>
+          <select value={tipoConsulta} onChange={e => setTipoConsulta(e.target.value)} style={{ ...inp, color: tipoConsulta ? "#fff" : "rgba(255,255,255,0.35)" }}>
+            <option value="">Seleccioná una opción...</option>
+            <option value="Quiero más información">Quiero más información</option>
+            <option value="Quiero visitar la propiedad">Quiero visitar la propiedad</option>
+            <option value="Quiero hacer una oferta">Quiero hacer una oferta</option>
+            <option value="Me interesa alquilar">Me interesa alquilar</option>
+          </select>
+        </div>
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div>
             <label style={{ display: "block", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)", marginBottom: 5, textTransform: "uppercase" as const }}>

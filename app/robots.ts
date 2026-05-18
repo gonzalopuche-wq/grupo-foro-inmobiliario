@@ -5,10 +5,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/web/", "/b/"],
+        allow: ["/web/", "/b/", "/inmueble/", "/propiedades"],
         disallow: ["/dashboard", "/crm", "/cartera", "/comparables", "/mi-web", "/admin", "/api/"],
       },
     ],
-    sitemap: "https://foroinmobiliario.com.ar/sitemap.xml",
+    sitemap: "https://www.foroinmobiliario.com.ar/sitemap.xml",
   };
 }

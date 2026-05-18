@@ -30,7 +30,7 @@ async function buscar(sp: SearchParams) {
   let q = sb
     .from("cartera_propiedades")
     .select(
-      "id,titulo,operacion,tipo,precio,precio_anterior,moneda,ocultar_precio,ciudad,zona,dormitorios,superficie_cubierta,fotos,codigo,estado",
+      "id,titulo,operacion,tipo,precio,precio_anterior,moneda,ocultar_precio,ciudad,zona,dormitorios,superficie_cubierta,fotos,codigo,estado,destacada_web",
       { count: "exact" }
     )
     .in("estado", ["activa", "reservada"]);
@@ -45,6 +45,9 @@ async function buscar(sp: SearchParams) {
 
   const ordenCol = sp.orden === "precio_asc" || sp.orden === "precio_desc" ? "precio" : "created_at";
   const asc = sp.orden === "precio_asc";
+  if (!sp.orden || sp.orden === "recientes") {
+    q = q.order("destacada_web", { ascending: false });
+  }
   q = q.order(ordenCol, { ascending: asc, nullsFirst: false });
 
   q = q.range(from, from + PER_PAGE - 1);
@@ -57,6 +60,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Propiedades en venta y alquiler — Grupo Foro Inmobiliario",
     description: "Buscá tu próxima propiedad en Rosario y la región. Departamentos, casas, PH, locales y terrenos en venta y alquiler.",
+    openGraph: {
+      title: "Propiedades en venta y alquiler — GFI®",
+      description: "Buscá entre todas las propiedades publicadas por corredores matriculados del Grupo Foro Inmobiliario.",
+      type: "website",
+      locale: "es_AR",
+    },
   };
 }
 
@@ -240,6 +249,11 @@ export default async function PropiedadesPage({ searchParams }: Props) {
                       ? <img src={p.fotos[0]} alt="" loading="lazy" />
                       : <div className="card-img-placeholder">🏠</div>}
                     {p.estado === "reservada" && <span className="card-reservada">RESERVADA</span>}
+                    {p.destacada_web && p.estado !== "reservada" && (
+                      <span style={{ position: "absolute", top: 8, left: 8, background: "rgba(234,179,8,0.92)", color: "#000", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", padding: "3px 8px", borderRadius: 3 }}>
+                        ⭐ DESTACADA
+                      </span>
+                    )}
                   </div>
                   <div className="card-body">
                     <div className="card-badges">

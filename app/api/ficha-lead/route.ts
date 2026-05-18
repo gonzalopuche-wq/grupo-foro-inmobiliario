@@ -19,12 +19,13 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { propiedad_id, nombre, email, telefono, mensaje } = body as {
+    const { propiedad_id, nombre, email, telefono, mensaje, tipo_consulta } = body as {
       propiedad_id: string;
       nombre: string;
       email?: string;
       telefono?: string;
       mensaje?: string;
+      tipo_consulta?: string;
     };
 
     if (!propiedad_id || !nombre?.trim()) {
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
             <strong>Propiedad:</strong> ${esc(prop.titulo)}${prop.ciudad ? ` · ${esc(prop.ciudad)}` : ""}
           </div>
           <table style="width:100%;border-collapse:collapse;">
+            ${tipo_consulta ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;width:120px;">Tipo</td><td style="padding:8px 0;font-size:14px;font-weight:600;color:#cc0000;">${esc(tipo_consulta)}</td></tr>` : ""}
             <tr><td style="padding:8px 0;font-size:12px;color:#666;width:120px;">Nombre</td><td style="padding:8px 0;font-size:14px;font-weight:600;">${esc(nombre)}</td></tr>
             ${email ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Email</td><td style="padding:8px 0;font-size:14px;"><a href="mailto:${esc(email)}" style="color:#cc0000;">${esc(email)}</a></td></tr>` : ""}
             ${telefono ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Teléfono</td><td style="padding:8px 0;font-size:14px;"><a href="tel:${esc(telefono)}" style="color:#cc0000;">${esc(telefono)}</a></td></tr>` : ""}
@@ -120,7 +122,7 @@ export async function POST(req: NextRequest) {
             email: email || null,
             telefono: telefono || null,
             estado: "prospecto",
-            interes: `${prop.titulo}${prop.ciudad ? ` (${prop.ciudad})` : ""}`,
+            interes: tipo_consulta ?? `${prop.titulo}${prop.ciudad ? ` (${prop.ciudad})` : ""}`,
             notas: `Lead desde ficha pública (${new Date().toLocaleDateString("es-AR")}). Mensaje: ${mensaje || "Sin mensaje"}`,
             origen: "web_propia",
           });

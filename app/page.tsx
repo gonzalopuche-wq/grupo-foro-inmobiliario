@@ -619,6 +619,18 @@ export default function LandingPage() {
         </div>
       </RevealSection>
 
+      {/* PROPIEDADES PÚBLICAS */}
+      <div style={{background:"rgba(204,0,0,0.06)",border:"1px solid rgba(204,0,0,0.15)",borderRadius:12,margin:"0 auto 48px",maxWidth:1100,padding:"28px 36px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:24,flexWrap:"wrap"}}>
+        <div>
+          <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(204,0,0,0.8)",marginBottom:6}}>Portal de propiedades</div>
+          <div style={{fontFamily:"Montserrat,sans-serif",fontSize:20,fontWeight:800,color:"#fff",marginBottom:6}}>Departamentos, casas y más en venta y alquiler</div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,0.45)"}}>Buscá entre todas las propiedades publicadas por corredores matriculados en GFI®</div>
+        </div>
+        <a href="/propiedades" style={{padding:"12px 28px",background:"#cc0000",border:"none",borderRadius:7,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:12,fontWeight:700,letterSpacing:"0.1em",textDecoration:"none",whiteSpace:"nowrap",flexShrink:0}}>
+          Ver propiedades →
+        </a>
+      </div>
+
       {/* GRUPOS */}
       <RevealSection className="sec sec-alt" id="grupos">
         <div className="sec-label">Comunidad GFI®</div>

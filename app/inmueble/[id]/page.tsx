@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import GaleriaFotos from "./GaleriaFotos";
 import FichaAcciones from "./FichaAcciones";
 import FichaContacto from "./FichaContacto";
+import FichaCalculadora from "./FichaCalculadora";
+import FichaVistaTracker from "./FichaVistaTracker";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -77,7 +79,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: p.descripcion?.slice(0, 150) ?? `${p.tipo} en ${p.operacion} · ${p.ciudad}`,
     openGraph: {
       title: p.titulo,
-      description: p.descripcion?.slice(0, 150) ?? `${p.tipo} en ${p.operacion}`,
+      description: p.descripcion?.slice(0, 150) ?? `${p.tipo} en ${p.operacion} · ${p.ciudad}`,
+      images: p.fotos?.[0] ? [{ url: p.fotos[0], width: 1200, height: 630, alt: p.titulo }] : [],
+      type: "website",
+      locale: "es_AR",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: p.titulo,
+      description: p.descripcion?.slice(0, 150) ?? `${p.tipo} en ${p.operacion} · ${p.ciudad}`,
       images: p.fotos?.[0] ? [p.fotos[0]] : [],
     },
   };
@@ -173,6 +183,8 @@ export default async function InmueblePage({ params }: Props) {
     p.tipo_vista && { label: "Vista", value: p.tipo_vista },
     p.tipo_edificio && { label: "Tipo edificio", value: p.tipo_edificio },
     p.tipo_cochera && { label: "Cochera", value: p.tipo_cochera },
+    (!p.ocultar_precio && p.precio && p.moneda === "USD" && p.superficie_cubierta)
+      && { label: "Precio/m²", value: `USD ${fmtNum(Math.round(p.precio / p.superficie_cubierta))}` },
     p.situacion && { label: "Situación", value: p.situacion },
     p.tipo_cielorraso && { label: "Cielorraso", value: p.tipo_cielorraso },
     p.tipo_acceso && { label: "Acceso", value: p.tipo_acceso },
@@ -263,6 +275,7 @@ export default async function InmueblePage({ params }: Props) {
       </nav>
 
       <main className="page">
+        <FichaVistaTracker propiedadId={p.id} />
         <div className="ficha">
           <GaleriaFotos fotos={fotos} />
 
@@ -488,6 +501,13 @@ export default async function InmueblePage({ params }: Props) {
 
           </div>
         </div>
+
+        {/* Calculadora hipotecaria */}
+        {p.precio && p.moneda === "USD" && (
+          <div style={{ marginTop: 20 }}>
+            <FichaCalculadora precioUsd={p.precio} moneda={p.moneda} />
+          </div>
+        )}
 
         {/* Formulario de contacto */}
         <div style={{ marginTop: 20 }}>
