@@ -35,6 +35,7 @@ async function getProp(id: string) {
       com_internet, com_aire_acondicionado, com_calefaccion, com_cowork,
       com_cancha_tenis, com_cancha_paddle, com_cancha_futbol, com_lavanderia,
       com_juegos_infantiles, com_estac_visitantes, com_quincho,
+      tipo_piso, tipo_calefaccion, tipo_gas, tipo_vista, uso_profesional,
       fotos, video_url, tour_virtual_url, estado, codigo, created_at,
       perfil:perfiles(nombre, apellido, foto_url, matricula, telefono, email, instagram, inmobiliaria, whatsapp_negocio)
     `)
@@ -139,6 +140,10 @@ export default async function InmueblePage({ params }: Props) {
     p.condicion && { label: "Condición", value: p.condicion },
     p.antiguedad && { label: "Antigüedad", value: p.antiguedad.replace(/_/g, " ") },
     p.anio_construccion != null && { label: "Año", value: p.anio_construccion },
+    p.tipo_piso && { label: "Tipo de piso", value: p.tipo_piso },
+    p.tipo_calefaccion && { label: "Calefacción", value: p.tipo_calefaccion },
+    p.tipo_gas && { label: "Gas", value: p.tipo_gas },
+    p.tipo_vista && { label: "Vista", value: p.tipo_vista },
   ].filter(Boolean) as { label: string; value: string | number }[];
 
   const tags = [
@@ -148,6 +153,7 @@ export default async function InmueblePage({ params }: Props) {
     p.acepta_mascotas && "Acepta mascotas",
     p.barrio_cerrado && "Barrio cerrado",
     p.uso_comercial && "Uso comercial",
+    p.uso_profesional && "Uso profesional",
     p.acepta_permuta && "Acepta permuta",
   ].filter(Boolean) as string[];
 
