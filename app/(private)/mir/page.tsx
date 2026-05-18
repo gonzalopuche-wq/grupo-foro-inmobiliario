@@ -539,7 +539,9 @@ export default function MirPage() {
       barrio_cerrado: formO.barrio_cerrado, con_cochera: formO.con_cochera,
       acepta_mascotas: formO.acepta_mascotas, acepta_bitcoin: formO.acepta_bitcoin,
       urgente: formO.urgente,
-      urgente_expires_at: formO.urgente ? new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString() : null,
+      urgente_expires_at: formO.urgente
+        ? (editandoOfrecido?.urgente ? (editandoOfrecido.urgente_expires_at ?? null) : new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString())
+        : null,
       descripcion: formO.descripcion || null,
     };
 
@@ -562,7 +564,8 @@ export default function MirPage() {
     const { data: { session } } = await supabase.auth.getSession();
 
     if (editandoOfrecido) {
-      await supabase.from("mir_ofrecidos").update(mirPayload).eq("id", editandoOfrecido.id);
+      const { error: mirError } = await supabase.from("mir_ofrecidos").update(mirPayload).eq("id", editandoOfrecido.id);
+      if (mirError) { setGuardando(false); return; }
       if (editandoOfrecido.cartera_id && session) {
         await fetch("/api/cartera/guardar", {
           method: "POST",
@@ -581,9 +584,11 @@ export default function MirPage() {
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
             body: JSON.stringify({ datos: { ...carteraDatos, mir_ofrecido_id: nuevo.id } }),
           });
-          const result = await res.json();
-          if (result.propId) {
-            await supabase.from("mir_ofrecidos").update({ cartera_id: result.propId }).eq("id", nuevo.id);
+          if (res.ok) {
+            const result = await res.json();
+            if (result.propId) {
+              await supabase.from("mir_ofrecidos").update({ cartera_id: result.propId }).eq("id", nuevo.id);
+            }
           }
         }
       }
@@ -642,14 +647,16 @@ export default function MirPage() {
     if (tabla === "mir_ofrecidos") {
       const of = ofrecidos.find(o => o.id === id);
       if (of?.cartera_id) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          await fetch("/api/cartera/guardar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-            body: JSON.stringify({ editandoId: of.cartera_id, datos: { compartir_en_red: false } }),
-          });
-        }
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            await fetch("/api/cartera/guardar", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+              body: JSON.stringify({ editandoId: of.cartera_id, datos: { compartir_en_red: false } }),
+            });
+          }
+        } catch {}
       }
     }
     await supabase.from(tabla).update({ activo: false }).eq("id", id);
