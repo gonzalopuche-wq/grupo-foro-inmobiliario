@@ -58,6 +58,9 @@ interface Propiedad {
   sup_balcon: number | null;
   metros_frente: number | null;
   metros_fondo: number | null;
+  sup_terreno: number | null;
+  forma_terreno: string | null;
+  acceso_calle: string | null;
   apto_credito: boolean;
   con_cochera: boolean;
   amoblado: boolean;
@@ -141,7 +144,7 @@ interface Propiedad {
 
 // ── Constantes ─────────────────────────────────────────────────────────────
 const OPERACIONES = ["Venta", "Alquiler", "Alquiler temporal"];
-const TIPOS = ["Departamento", "Casa", "PH", "Local", "Oficina", "Terreno", "Cochera", "Galpon", "Otro"];
+const TIPOS = ["Departamento", "Casa", "PH", "Local", "Oficina", "Terreno", "Cochera", "Galpon", "Chalet", "Cabaña", "Otro"];
 const ESTADOS = [
   { value: "activa", label: "ACTIVA", color: "#22c55e" },
   { value: "reservada", label: "RESERVADA", color: "#f59e0b" },
@@ -210,7 +213,8 @@ const FORM_VACIO: any = {
   uso_profesional: false, financia_vendedor: false,
   superficie_cubierta: "", superficie_total: "", sup_semicubierta: "",
   sup_descubierta: "", sup_exclusiva: "", sup_espacios_comunes: "",
-  sup_patio_terraza: "", sup_balcon: "", metros_frente: "", metros_fondo: "",
+  sup_patio_terraza: "", sup_balcon: "", metros_frente: "", metros_fondo: "", sup_terreno: "",
+  forma_terreno: "", acceso_calle: "",
   apto_credito: false, con_cochera: false, amoblado: false, habitada: false,
   acepta_permuta: false, acepta_mascotas: false, barrio_cerrado: false,
   uso_comercial: false, energia_solar: false,
@@ -731,6 +735,9 @@ export default function CarteraPage() {
       sup_balcon: numOrNull(form.sup_balcon),
       metros_frente: numOrNull(form.metros_frente),
       metros_fondo: numOrNull(form.metros_fondo),
+      sup_terreno: numOrNull(form.sup_terreno),
+      forma_terreno: form.forma_terreno || null,
+      acceso_calle: form.acceso_calle || null,
       apto_credito: form.apto_credito, con_cochera: form.con_cochera,
       amoblado: form.amoblado, habitada: form.habitada,
       acepta_permuta: form.acepta_permuta, acepta_mascotas: form.acepta_mascotas,
@@ -1917,9 +1924,14 @@ export default function CarteraPage() {
                       <div className="wiz-field"><label className="wiz-label">Patio/terraza m²</label><input className="wiz-input" type="number" value={form.sup_patio_terraza} onChange={e => setF("sup_patio_terraza", e.target.value)} /></div>
                       <div className="wiz-field"><label className="wiz-label">Balcón m²</label><input className="wiz-input" type="number" value={form.sup_balcon} onChange={e => setF("sup_balcon", e.target.value)} /></div>
                     </div>
-                    <div className="wiz-row">
+                    <div className="wiz-row-4">
                       <div className="wiz-field"><label className="wiz-label">Metros de frente</label><input className="wiz-input" type="number" value={form.metros_frente} onChange={e => setF("metros_frente", e.target.value)} /></div>
                       <div className="wiz-field"><label className="wiz-label">Metros de fondo</label><input className="wiz-input" type="number" value={form.metros_fondo} onChange={e => setF("metros_fondo", e.target.value)} /></div>
+                      <div className="wiz-field"><label className="wiz-label">Terreno/lote m²</label><input className="wiz-input" type="number" value={form.sup_terreno} onChange={e => setF("sup_terreno", e.target.value)} placeholder="300" /></div>
+                      <div className="wiz-field"><label className="wiz-label">Forma del terreno</label><select className="wiz-select" value={form.forma_terreno} onChange={e => setF("forma_terreno", e.target.value)}><option value="">Sin especificar</option><option>Regular</option><option>Irregular</option><option>En L</option><option>Triangular</option></select></div>
+                    </div>
+                    <div className="wiz-row">
+                      <div className="wiz-field"><label className="wiz-label">Acceso a la calle</label><select className="wiz-select" value={form.acceso_calle} onChange={e => setF("acceso_calle", e.target.value)}><option value="">Sin especificar</option><option>Pavimento</option><option>Asfalto</option><option>Tierra</option><option>Ripio</option></select></div>
                     </div>
                   </div>
 
