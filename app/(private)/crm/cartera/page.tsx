@@ -17,6 +17,7 @@ interface Propiedad {
   operacion: string;
   tipo: string;
   precio: number | null;
+  precio_anterior: number | null;
   moneda: string;
   expensas: number | null;
   moneda_expensas: string | null;
@@ -58,6 +59,9 @@ interface Propiedad {
   sup_balcon: number | null;
   metros_frente: number | null;
   metros_fondo: number | null;
+  sup_terreno: number | null;
+  forma_terreno: string | null;
+  acceso_calle: string | null;
   apto_credito: boolean;
   con_cochera: boolean;
   amoblado: boolean;
@@ -76,6 +80,7 @@ interface Propiedad {
   video_url: string | null;
   tour_virtual_url: string | null;
   fotos: string[] | null;
+  planos: string[] | null;
   amenities: string[] | null;
   estado: string;
   tipo_piso: string | null;
@@ -84,6 +89,10 @@ interface Propiedad {
   tipo_vista: string | null;
   tipo_edificio: string | null;
   tipo_agua_caliente: string | null;
+  tipo_cochera: string | null;
+  situacion: string | null;
+  tipo_cielorraso: string | null;
+  tipo_acceso: string | null;
   uso_profesional: boolean;
   financia_vendedor: boolean;
   destacada_web: boolean;
@@ -136,7 +145,7 @@ interface Propiedad {
 
 // ── Constantes ─────────────────────────────────────────────────────────────
 const OPERACIONES = ["Venta", "Alquiler", "Alquiler temporal"];
-const TIPOS = ["Departamento", "Casa", "PH", "Local", "Oficina", "Terreno", "Cochera", "Galpon", "Otro"];
+const TIPOS = ["Departamento", "Casa", "PH", "Local", "Oficina", "Terreno", "Cochera", "Galpon", "Chalet", "Cabaña", "Otro"];
 const ESTADOS = [
   { value: "activa", label: "ACTIVA", color: "#22c55e" },
   { value: "reservada", label: "RESERVADA", color: "#f59e0b" },
@@ -149,6 +158,7 @@ const DISPOSICIONES = ["Frente", "Contrafrente", "Lateral", "Interno"];
 const TIPOS_DEPTO = ["Monoambiente", "1 ambiente", "2 ambientes", "3 ambientes", "4 ambientes", "5+ ambientes", "Duplex", "Triplex"];
 const HONORARIOS_COMPARTIR = ["No comparte", "50%", "40%", "30%"];
 const MAX_FOTOS = 40;
+const MAX_PLANOS = 10;
 
 const AMBIENTES_LIST = [
   { key: "amb_balcon", label: "Balcón" }, { key: "amb_terraza", label: "Terraza" },
@@ -184,7 +194,7 @@ const FORM_VACIO: any = {
   ci_numero: "", ci_observaciones: "", escritura_url: "", plano_url: "", reglamento_url: "",
   api_ninios: false, api_ninios_numero: "", url_portal_origen: "",
   // Paso 2
-  operacion: "Venta", precio: "", moneda: "USD",
+  operacion: "Venta", precio: "", precio_anterior: "", moneda: "USD",
   expensas: "", moneda_expensas: "ARS",
   ocultar_precio: false, ocultar_de_redes: false, ocultar_web: false,
   honorario_compartir: "No comparte", honorario_propietario: "", honorario_comprador: "",
@@ -199,11 +209,13 @@ const FORM_VACIO: any = {
   disposicion: "", orientacion: "", tipo_departamento: "", luminosidad: "",
   condicion: "", antiguedad: "",
   tipo_piso: "", tipo_calefaccion: "", tipo_gas: "", tipo_vista: "",
-  tipo_edificio: "", tipo_agua_caliente: "",
+  tipo_edificio: "", tipo_agua_caliente: "", tipo_cochera: "",
+  situacion: "", tipo_cielorraso: "", tipo_acceso: "",
   uso_profesional: false, financia_vendedor: false,
   superficie_cubierta: "", superficie_total: "", sup_semicubierta: "",
   sup_descubierta: "", sup_exclusiva: "", sup_espacios_comunes: "",
-  sup_patio_terraza: "", sup_balcon: "", metros_frente: "", metros_fondo: "",
+  sup_patio_terraza: "", sup_balcon: "", metros_frente: "", metros_fondo: "", sup_terreno: "",
+  forma_terreno: "", acceso_calle: "",
   apto_credito: false, con_cochera: false, amoblado: false, habitada: false,
   acepta_permuta: false, acepta_mascotas: false, barrio_cerrado: false,
   uso_comercial: false, energia_solar: false,
@@ -306,6 +318,12 @@ export default function CarteraPage() {
   const [fotosExistentes, setFotosExistentes] = useState<string[]>([]);
   const [subiendoFotos, setSubiendoFotos] = useState(false);
   const [progresoFotos, setProgresoFotos] = useState(0);
+
+  // Planos
+  const [planosNuevos, setPlanosNuevos] = useState<File[]>([]);
+  const [planosExistentes, setPlanosExistentes] = useState<string[]>([]);
+  const [subiendoPlanos, setSubiendoPlanos] = useState(false);
+  const [progresoPlanos, setProgresoPlanos] = useState(0);
 
   // Sync
   const [syncData, setSyncData] = useState<Record<string, any>>({});
@@ -413,6 +431,41 @@ export default function CarteraPage() {
     setProgresoFotos(0);
     if (errores > 0) {
       alert(`No se pudieron subir ${errores} foto(s). Verificá que el bucket "fotos_cartera" exista y tenga permisos en Supabase Storage.`);
+    }
+    return urls;
+  };
+
+  // ── Planos ────────────────────────────────────────────────────────────────
+  const handlePlanos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    const total = planosExistentes.length + planosNuevos.length + files.length;
+    if (total > MAX_PLANOS) { alert(`Máximo ${MAX_PLANOS} planos.`); return; }
+    setPlanosNuevos(prev => [...prev, ...files.filter(f => f.type.startsWith("image/") && f.size <= 10 * 1024 * 1024)]);
+  };
+
+  const subirPlanos = async (propId: string): Promise<string[]> => {
+    if (planosNuevos.length === 0) return planosExistentes;
+    setSubiendoPlanos(true);
+    const urls = [...planosExistentes];
+    let errores = 0;
+    for (let i = 0; i < planosNuevos.length; i++) {
+      const file = planosNuevos[i];
+      const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
+      const path = `${userId}/${propId}/planos/${Date.now()}_${i}.${ext}`;
+      const { data, error } = await supabase.storage.from("fotos_cartera").upload(path, file, { cacheControl: "3600", upsert: false });
+      if (!error && data) {
+        const { data: urlData } = supabase.storage.from("fotos_cartera").getPublicUrl(data.path);
+        urls.push(urlData.publicUrl);
+      } else {
+        errores++;
+        console.error("Error subiendo plano:", error?.message);
+      }
+      setProgresoPlanos(Math.round(((i + 1) / planosNuevos.length) * 100));
+    }
+    setSubiendoPlanos(false);
+    setProgresoPlanos(0);
+    if (errores > 0) {
+      alert(`No se pudieron subir ${errores} plano(s).`);
     }
     return urls;
   };
@@ -577,6 +630,7 @@ export default function CarteraPage() {
   const abrirNueva = async () => {
     setEditandoId(null);
     setFotosNuevas([]); setFotosExistentes([]);
+    setPlanosNuevos([]); setPlanosExistentes([]);
 
     // Cargar parámetros del corredor para pre-llenar defaults
     let base = { ...FORM_VACIO };
@@ -627,6 +681,7 @@ export default function CarteraPage() {
     f.descripcion = p.descripcion ?? "";
     setForm(f);
     setFotosNuevas([]); setFotosExistentes(p.fotos ?? []);
+    setPlanosNuevos([]); setPlanosExistentes(p.planos ?? []);
     setPaso(1); setMostrarWizard(true);
   };
 
@@ -640,7 +695,7 @@ export default function CarteraPage() {
       titulo: form.titulo, tipo: form.tipo, estado: form.estado,
       codigo: form.codigo || null,
       operacion: form.operacion,
-      precio: numOrNull(form.precio), moneda: form.moneda,
+      precio: numOrNull(form.precio), precio_anterior: numOrNull(form.precio_anterior), moneda: form.moneda,
       expensas: numOrNull(form.expensas), moneda_expensas: form.moneda_expensas || "ARS",
       ocultar_precio: form.ocultar_precio, ocultar_de_redes: form.ocultar_de_redes, ocultar_web: form.ocultar_web,
       honorario_compartir: form.honorario_compartir || null,
@@ -666,6 +721,10 @@ export default function CarteraPage() {
       tipo_piso: form.tipo_piso || null, tipo_calefaccion: form.tipo_calefaccion || null,
       tipo_gas: form.tipo_gas || null, tipo_vista: form.tipo_vista || null,
       tipo_edificio: form.tipo_edificio || null, tipo_agua_caliente: form.tipo_agua_caliente || null,
+      tipo_cochera: form.tipo_cochera || null,
+      situacion: form.situacion || null,
+      tipo_cielorraso: form.tipo_cielorraso || null,
+      tipo_acceso: form.tipo_acceso || null,
       uso_profesional: form.uso_profesional, financia_vendedor: form.financia_vendedor,
       superficie_cubierta: numOrNull(form.superficie_cubierta),
       superficie_total: numOrNull(form.superficie_total),
@@ -677,6 +736,9 @@ export default function CarteraPage() {
       sup_balcon: numOrNull(form.sup_balcon),
       metros_frente: numOrNull(form.metros_frente),
       metros_fondo: numOrNull(form.metros_fondo),
+      sup_terreno: numOrNull(form.sup_terreno),
+      forma_terreno: form.forma_terreno || null,
+      acceso_calle: form.acceso_calle || null,
       apto_credito: form.apto_credito, con_cochera: form.con_cochera,
       amoblado: form.amoblado, habitada: form.habitada,
       acepta_permuta: form.acepta_permuta, acepta_mascotas: form.acepta_mascotas,
@@ -721,8 +783,9 @@ export default function CarteraPage() {
     // Ambientes y comodidades
     [...AMBIENTES_LIST, ...COMODIDADES_LIST].forEach(({ key }) => { datos[key] = !!form[key]; });
 
-    // Incluir fotos existentes en el INSERT para que queden guardadas de entrada
+    // Incluir fotos y planos existentes en el INSERT
     datos.fotos = fotosExistentes;
+    datos.planos = planosExistentes.length > 0 ? planosExistentes : null;
 
     let propId = editandoId;
     let session: any;
@@ -765,7 +828,23 @@ export default function CarteraPage() {
       }
     }
 
+    if (propId && planosNuevos.length > 0) {
+      try {
+        const todosPlanos = await subirPlanos(propId);
+        if (todosPlanos.length > planosExistentes.length) {
+          await fetch("/api/cartera/guardar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+            body: JSON.stringify({ datos: { planos: todosPlanos, updated_at: new Date().toISOString() }, editandoId: propId }),
+          });
+        }
+      } catch (e: any) {
+        console.error("Error subiendo planos nuevos:", e);
+      }
+    }
+
     setGuardando(false); setMostrarWizard(false); setFotosNuevas([]);
+    setPlanosNuevos([]);
     setToastGuardado(editandoId ? "✓ Propiedad actualizada" : "✓ Propiedad guardada");
     setTimeout(() => setToastGuardado(""), 4000);
     if (userId) cargar(userId);
@@ -1654,6 +1733,10 @@ export default function CarteraPage() {
                         <input className="wiz-input" type="number" value={form.precio} onChange={e => setF("precio", e.target.value)} placeholder="180000" />
                       </div>
                       <div className="wiz-field">
+                        <label className="wiz-label">Precio anterior <span style={{fontWeight:400,opacity:0.5}}>(si bajó)</span></label>
+                        <input className="wiz-input" type="number" value={form.precio_anterior} onChange={e => setF("precio_anterior", e.target.value)} placeholder="195000" />
+                      </div>
+                      <div className="wiz-field">
                         <label className="wiz-label">Expensas</label>
                         <input className="wiz-input" type="number" value={form.expensas} onChange={e => setF("expensas", e.target.value)} placeholder="40000" />
                       </div>
@@ -1823,6 +1906,12 @@ export default function CarteraPage() {
                     <div className="wiz-row-4">
                       <div className="wiz-field"><label className="wiz-label">Tipo edificio</label><select className="wiz-select" value={form.tipo_edificio} onChange={e => setF("tipo_edificio", e.target.value)}><option value="">Sin especificar</option><option>Entre medianeras</option><option>En esquina</option><option>Exento</option><option>Torre</option><option>PH</option><option>Dúplex</option></select></div>
                       <div className="wiz-field"><label className="wiz-label">Vista</label><select className="wiz-select" value={form.tipo_vista} onChange={e => setF("tipo_vista", e.target.value)}><option value="">Sin especificar</option><option>Vista al frente</option><option>Vista al parque</option><option>Vista a la ciudad</option><option>Vista al río</option><option>Vista interna</option><option>Vista al jardín</option></select></div>
+                      <div className="wiz-field"><label className="wiz-label">Cochera</label><select className="wiz-select" value={form.tipo_cochera} onChange={e => setF("tipo_cochera", e.target.value)}><option value="">Sin especificar</option><option>Cubierta</option><option>Semicubierta</option><option>Descubierta</option><option>Fija</option><option>Rotativa</option></select></div>
+                    </div>
+                    <div className="wiz-row-4">
+                      <div className="wiz-field"><label className="wiz-label">Situación</label><select className="wiz-select" value={form.situacion} onChange={e => setF("situacion", e.target.value)}><option value="">Sin especificar</option><option>Vacía</option><option>Habitada</option><option>Alquilada</option><option>Inquilino vigente</option><option>Ocupada</option></select></div>
+                      <div className="wiz-field"><label className="wiz-label">Cielorraso</label><select className="wiz-select" value={form.tipo_cielorraso} onChange={e => setF("tipo_cielorraso", e.target.value)}><option value="">Sin especificar</option><option>Yeso</option><option>Durlock</option><option>Reticulado</option><option>Madera</option><option>Sin cielorraso</option></select></div>
+                      <div className="wiz-field"><label className="wiz-label">Acceso</label><select className="wiz-select" value={form.tipo_acceso} onChange={e => setF("tipo_acceso", e.target.value)}><option value="">Sin especificar</option><option>Hall de entrada</option><option>Palier</option><option>Pasillo</option><option>Directo a calle</option><option>Por cochera</option></select></div>
                     </div>
                   </div>
 
@@ -1840,9 +1929,14 @@ export default function CarteraPage() {
                       <div className="wiz-field"><label className="wiz-label">Patio/terraza m²</label><input className="wiz-input" type="number" value={form.sup_patio_terraza} onChange={e => setF("sup_patio_terraza", e.target.value)} /></div>
                       <div className="wiz-field"><label className="wiz-label">Balcón m²</label><input className="wiz-input" type="number" value={form.sup_balcon} onChange={e => setF("sup_balcon", e.target.value)} /></div>
                     </div>
-                    <div className="wiz-row">
+                    <div className="wiz-row-4">
                       <div className="wiz-field"><label className="wiz-label">Metros de frente</label><input className="wiz-input" type="number" value={form.metros_frente} onChange={e => setF("metros_frente", e.target.value)} /></div>
                       <div className="wiz-field"><label className="wiz-label">Metros de fondo</label><input className="wiz-input" type="number" value={form.metros_fondo} onChange={e => setF("metros_fondo", e.target.value)} /></div>
+                      <div className="wiz-field"><label className="wiz-label">Terreno/lote m²</label><input className="wiz-input" type="number" value={form.sup_terreno} onChange={e => setF("sup_terreno", e.target.value)} placeholder="300" /></div>
+                      <div className="wiz-field"><label className="wiz-label">Forma del terreno</label><select className="wiz-select" value={form.forma_terreno} onChange={e => setF("forma_terreno", e.target.value)}><option value="">Sin especificar</option><option>Regular</option><option>Irregular</option><option>En L</option><option>Triangular</option></select></div>
+                    </div>
+                    <div className="wiz-row">
+                      <div className="wiz-field"><label className="wiz-label">Acceso a la calle</label><select className="wiz-select" value={form.acceso_calle} onChange={e => setF("acceso_calle", e.target.value)}><option value="">Sin especificar</option><option>Pavimento</option><option>Asfalto</option><option>Tierra</option><option>Ripio</option></select></div>
                     </div>
                   </div>
 
@@ -1942,6 +2036,37 @@ export default function CarteraPage() {
                       </div>
                     )}
                     {subiendoFotos && <div className="foto-progress"><div className="foto-progress-bar" style={{width:`${progresoFotos}%`}} /></div>}
+                  </div>
+
+                  <div className="wiz-section">
+                    <div className="wiz-section-title"><span className="wiz-section-ico">📐</span>Planos ({planosExistentes.length + planosNuevos.length}/{MAX_PLANOS})</div>
+                    {(planosExistentes.length > 0 || planosNuevos.length > 0) && (
+                      <div className="fotos-grid">
+                        {planosExistentes.map((url, i) => (
+                          <div key={url} className="foto-thumb">
+                            <img src={url} alt="" />
+                            <div className="foto-thumb-overlay"><button className="foto-del-btn" onClick={() => setPlanosExistentes(p => p.filter(u => u !== url))}>×</button></div>
+                            <div className="foto-orden">{i+1}</div>
+                          </div>
+                        ))}
+                        {planosNuevos.map((file, i) => (
+                          <div key={i} className="foto-thumb">
+                            <img src={URL.createObjectURL(file)} alt="" />
+                            <div className="foto-thumb-overlay"><button className="foto-del-btn" onClick={() => setPlanosNuevos(p => p.filter((_,j) => j !== i))}>×</button></div>
+                            <div className="foto-orden">{planosExistentes.length + i + 1}</div>
+                            <div className="foto-nueva-badge">NUEVO</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {(planosExistentes.length + planosNuevos.length) < MAX_PLANOS && (
+                      <div className="foto-upload-area">
+                        <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" multiple onChange={handlePlanos} />
+                        <div className="foto-upload-txt">📐 Arrastrá planos o hacé clic para seleccionar</div>
+                        <div className="foto-upload-sub">JPG, PNG, WebP · Máx 10MB · Hasta {MAX_PLANOS} planos</div>
+                      </div>
+                    )}
+                    {subiendoPlanos && <div className="foto-progress"><div className="foto-progress-bar" style={{width:`${progresoPlanos}%`}} /></div>}
                   </div>
 
                   <div className="wiz-section">
@@ -2142,8 +2267,8 @@ export default function CarteraPage() {
               </div>
               {paso < 7
                 ? <button className="wiz-btn-next" onClick={() => setPaso(p => p + 1)} disabled={paso === 1 && !form.titulo}>Siguiente →</button>
-                : <button className="wiz-btn-next" onClick={guardar} disabled={guardando || subiendoFotos}>
-                    {guardando || subiendoFotos ? <><span className="cart-spinner"/>{subiendoFotos ? `Subiendo ${progresoFotos}%...` : "Guardando..."}</> : editandoId ? "Guardar cambios" : "Crear propiedad"}
+                : <button className="wiz-btn-next" onClick={guardar} disabled={guardando || subiendoFotos || subiendoPlanos}>
+                    {guardando || subiendoFotos || subiendoPlanos ? <><span className="cart-spinner"/>{subiendoFotos ? `Subiendo fotos ${progresoFotos}%...` : subiendoPlanos ? `Subiendo planos ${progresoPlanos}%...` : "Guardando..."}</> : editandoId ? "Guardar cambios" : "Crear propiedad"}
                   </button>
               }
             </div>

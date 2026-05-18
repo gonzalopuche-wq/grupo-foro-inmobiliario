@@ -2,6 +2,9 @@ import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import GaleriaFotos from "./GaleriaFotos";
 import FichaAcciones from "./FichaAcciones";
+import FichaContacto from "./FichaContacto";
+import FichaCalculadora from "./FichaCalculadora";
+import FichaVistaTracker from "./FichaVistaTracker";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -38,8 +41,10 @@ async function getProp(id: string) {
       ciudad, zona, direccion, direccion_orientativa,
       latitud, longitud, ocultar_precio, ocultar_ubicacion,
       dormitorios, banos, banos_servicio, ambientes, estacionamientos,
+      precio_anterior,
       superficie_cubierta, superficie_total, sup_semicubierta,
-      sup_balcon, sup_patio_terraza, metros_frente, metros_fondo,
+      sup_balcon, sup_patio_terraza, metros_frente, metros_fondo, sup_terreno,
+      forma_terreno, acceso_calle,
       antiguedad, condicion, disposicion, orientacion, luminosidad,
       piso, numero_unidad, pisos_edificio, anio_construccion,
       apto_credito, con_cochera, amoblado, acepta_mascotas,
@@ -53,8 +58,9 @@ async function getProp(id: string) {
       com_cancha_tenis, com_cancha_paddle, com_cancha_futbol, com_lavanderia,
       com_juegos_infantiles, com_estac_visitantes, com_quincho,
       tipo_piso, tipo_calefaccion, tipo_gas, tipo_vista, tipo_edificio, tipo_agua_caliente,
+      tipo_cochera, situacion, tipo_cielorraso, tipo_acceso,
       uso_profesional, financia_vendedor,
-      fotos, video_url, tour_virtual_url, estado, codigo, created_at,
+      fotos, video_url, tour_virtual_url, planos, estado, codigo, created_at,
       perfil:perfiles(nombre, apellido, foto_url, matricula, telefono, email, instagram, inmobiliaria, whatsapp_negocio)
     `)
     .eq("id", id)
@@ -73,7 +79,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: p.descripcion?.slice(0, 150) ?? `${p.tipo} en ${p.operacion} · ${p.ciudad}`,
     openGraph: {
       title: p.titulo,
-      description: p.descripcion?.slice(0, 150) ?? `${p.tipo} en ${p.operacion}`,
+      description: p.descripcion?.slice(0, 150) ?? `${p.tipo} en ${p.operacion} · ${p.ciudad}`,
+      images: p.fotos?.[0] ? [{ url: p.fotos[0], width: 1200, height: 630, alt: p.titulo }] : [],
+      type: "website",
+      locale: "es_AR",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: p.titulo,
+      description: p.descripcion?.slice(0, 150) ?? `${p.tipo} en ${p.operacion} · ${p.ciudad}`,
       images: p.fotos?.[0] ? [p.fotos[0]] : [],
     },
   };
@@ -151,6 +165,9 @@ export default async function InmueblePage({ params }: Props) {
     p.sup_patio_terraza != null && { label: "Patio/terraza", value: `${p.sup_patio_terraza} m²` },
     p.metros_frente != null && { label: "Frente", value: `${p.metros_frente} m` },
     p.metros_fondo != null && { label: "Fondo", value: `${p.metros_fondo} m` },
+    p.sup_terreno != null && { label: "Terreno", value: `${p.sup_terreno} m²` },
+    p.forma_terreno && { label: "Forma terreno", value: p.forma_terreno },
+    p.acceso_calle && { label: "Acceso", value: p.acceso_calle },
     p.piso && { label: "Piso", value: p.piso + (p.numero_unidad ? ` · Unidad ${p.numero_unidad}` : "") },
     p.pisos_edificio != null && { label: "Pisos en edificio", value: p.pisos_edificio },
     p.orientacion && { label: "Orientación", value: p.orientacion },
@@ -165,6 +182,12 @@ export default async function InmueblePage({ params }: Props) {
     p.tipo_gas && { label: "Gas", value: p.tipo_gas },
     p.tipo_vista && { label: "Vista", value: p.tipo_vista },
     p.tipo_edificio && { label: "Tipo edificio", value: p.tipo_edificio },
+    p.tipo_cochera && { label: "Cochera", value: p.tipo_cochera },
+    (!p.ocultar_precio && p.precio && p.moneda === "USD" && p.superficie_cubierta)
+      && { label: "Precio/m²", value: `USD ${fmtNum(Math.round(p.precio / p.superficie_cubierta))}` },
+    p.situacion && { label: "Situación", value: p.situacion },
+    p.tipo_cielorraso && { label: "Cielorraso", value: p.tipo_cielorraso },
+    p.tipo_acceso && { label: "Acceso", value: p.tipo_acceso },
   ].filter(Boolean) as { label: string; value: string | number }[];
 
   const tags = [
@@ -245,11 +268,14 @@ export default async function InmueblePage({ params }: Props) {
       <nav style={{ background: "#0a0a0a", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "sticky", top: 0, zIndex: 10 }}>
         <div className="navbar">
           <span className="nav-logo">Grupo Foro <span>Inmobiliario</span></span>
-          {p.codigo && <span className="codigo-badge">#{p.codigo}</span>}
+          <a href="/propiedades" style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", letterSpacing: "0.08em" }}>
+            ← Todas las propiedades
+          </a>
         </div>
       </nav>
 
       <main className="page">
+        <FichaVistaTracker propiedadId={p.id} />
         <div className="ficha">
           <GaleriaFotos fotos={fotos} />
 
@@ -274,6 +300,16 @@ export default async function InmueblePage({ params }: Props) {
                 {ubicacion && <div className="ficha-ubicacion">📍 {ubicacion}</div>}
               </div>
               <div style={{ textAlign: "right", flexShrink: 0 }}>
+                {p.precio_anterior && !p.ocultar_precio && p.precio && p.precio_anterior > p.precio && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginBottom: 2 }}>
+                    <span style={{ fontSize: 14, color: "rgba(255,255,255,0.35)", textDecoration: "line-through", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                      {fmtPrecio(p.precio_anterior, p.moneda, false)}
+                    </span>
+                    <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 800, letterSpacing: "0.08em", background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", color: "#22c55e", padding: "2px 7px", borderRadius: 4 }}>
+                      -{Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100)}%
+                    </span>
+                  </div>
+                )}
                 <div className="ficha-precio">{fmtPrecio(p.precio, p.moneda, p.ocultar_precio)}</div>
                 {p.expensas && !p.ocultar_precio && (
                   <div className="ficha-expensas">
@@ -366,6 +402,24 @@ export default async function InmueblePage({ params }: Props) {
               </>
             )}
 
+            {/* Planos */}
+            {p.planos && p.planos.length > 0 && (
+              <>
+                <div className="ficha-divider" />
+                <div className="section-title">Planos</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 10 }}>
+                  {(p.planos as string[]).map((url: string, i: number) => (
+                    <a key={i} href={url} target="_blank" rel="noopener noreferrer"
+                      style={{ display: "block", borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <img src={url} alt={`Plano ${i + 1}`}
+                        style={{ width: "100%", display: "block", background: "#1a1a1a" }}
+                        loading="lazy" />
+                    </a>
+                  ))}
+                </div>
+              </>
+            )}
+
             {/* Tour virtual */}
             {p.tour_virtual_url && (
               <>
@@ -448,8 +502,20 @@ export default async function InmueblePage({ params }: Props) {
           </div>
         </div>
 
+        {/* Calculadora hipotecaria */}
+        {p.precio && p.moneda === "USD" && (
+          <div style={{ marginTop: 20 }}>
+            <FichaCalculadora precioUsd={p.precio} moneda={p.moneda} />
+          </div>
+        )}
+
+        {/* Formulario de contacto */}
+        <div style={{ marginTop: 20 }}>
+          <FichaContacto propiedadId={p.id} titulo={p.titulo} />
+        </div>
+
         {/* Compartir */}
-        <div style={{ marginTop: 20, padding: "16px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ marginTop: 16, padding: "16px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <FichaAcciones
             titulo={p.titulo}
             waLink={waLink}
