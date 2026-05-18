@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import GaleriaFotos from "./GaleriaFotos";
 import FichaAcciones from "./FichaAcciones";
 import FichaContacto from "./FichaContacto";
-import FichaCalculadora from "./FichaCalculadora";
 import FichaVistaTracker from "./FichaVistaTracker";
 import type { Metadata } from "next";
 
@@ -502,12 +501,6 @@ export default async function InmueblePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Calculadora hipotecaria */}
-        {p.precio && p.moneda === "USD" && (
-          <div style={{ marginTop: 20 }}>
-            <FichaCalculadora precioUsd={p.precio} moneda={p.moneda} />
-          </div>
-        )}
 
         {/* Formulario de contacto */}
         <div style={{ marginTop: 20 }}>
