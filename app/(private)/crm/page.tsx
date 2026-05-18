@@ -1236,6 +1236,21 @@ export default function CrmPage() {
           <Link href="/crm/mapa-calor" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔥 Mapa de Actividad</Link>
           <Link href="/crm/buscador" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Buscador</Link>
           <Link href="/crm/configuracion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚙️ Configuración</Link>
+          <Link href="/crm/estadisticas-captacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎣 Estadísticas Captación</Link>
+          <Link href="/crm/agenda-visitas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Agenda Visitas</Link>
+          <Link href="/crm/seguimiento-ofertas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Seguimiento Ofertas</Link>
+          <Link href="/crm/objetivos-mensuales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Objetivos Mensuales</Link>
+          <Link href="/crm/historial-operaciones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Historial Operaciones</Link>
+          <Link href="/crm/gestion-documentos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📁 Gestión Documentos</Link>
+          <Link href="/crm/reportes-propietarios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📑 Reportes Propietarios</Link>
+          <Link href="/crm/red-contactos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🕸️ Red de Contactos</Link>
+          <Link href="/crm/campanas-marketing" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📣 Campañas Marketing</Link>
+          <Link href="/crm/comisiones-split" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones Split</Link>
+          <Link href="/crm/plantillas-mensajes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💬 Plantillas Mensajes</Link>
+          <Link href="/crm/gestion-tareas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Gestión Tareas</Link>
+          <Link href="/crm/presupuesto-anual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💸 Presupuesto Anual</Link>
+          <Link href="/crm/analisis-competencia" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔎 Análisis Competencia</Link>
+          <Link href="/crm/ficha-propiedad" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Ficha Propiedad</Link>
         </div>
 
         <div className="crm-tab-content">
