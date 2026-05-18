@@ -13,6 +13,23 @@ const sb = createClient(
 
 interface Props { params: Promise<{ id: string }> }
 
+async function getSimilares(id: string, tipo: string, operacion: string, ciudad: string | null, precio: number | null, moneda: string | null) {
+  let q = sb
+    .from("cartera_propiedades")
+    .select("id, titulo, tipo, operacion, precio, moneda, ocultar_precio, ciudad, zona, superficie_cubierta, dormitorios, fotos, codigo")
+    .neq("id", id)
+    .eq("tipo", tipo)
+    .eq("operacion", operacion)
+    .in("estado", ["activa", "reservada"])
+    .limit(4);
+  if (ciudad) q = q.eq("ciudad", ciudad);
+  if (precio && moneda) {
+    q = q.gte("precio", precio * 0.6).lte("precio", precio * 1.4).eq("moneda", moneda);
+  }
+  const { data } = await q.order("created_at", { ascending: false });
+  return data ?? [];
+}
+
 async function getProp(id: string) {
   const { data } = await sb
     .from("cartera_propiedades")
@@ -35,7 +52,8 @@ async function getProp(id: string) {
       com_internet, com_aire_acondicionado, com_calefaccion, com_cowork,
       com_cancha_tenis, com_cancha_paddle, com_cancha_futbol, com_lavanderia,
       com_juegos_infantiles, com_estac_visitantes, com_quincho,
-      tipo_piso, tipo_calefaccion, tipo_gas, tipo_vista, uso_profesional,
+      tipo_piso, tipo_calefaccion, tipo_gas, tipo_vista, tipo_edificio, tipo_agua_caliente,
+      uso_profesional, financia_vendedor,
       fotos, video_url, tour_virtual_url, estado, codigo, created_at,
       perfil:perfiles(nombre, apellido, foto_url, matricula, telefono, email, instagram, inmobiliaria, whatsapp_negocio)
     `)
@@ -102,8 +120,9 @@ export default async function InmueblePage({ params }: Props) {
   const { id } = await params;
   const prop = await getProp(id);
   if (!prop) return notFound();
-
   const p = prop as any;
+  const similares = await getSimilares(id, p.tipo, p.operacion, p.ciudad, p.precio, p.moneda);
+
   const fotos: string[] = p.fotos ?? [];
   const perfil = p.perfil ?? {};
 
@@ -142,8 +161,10 @@ export default async function InmueblePage({ params }: Props) {
     p.anio_construccion != null && { label: "Año", value: p.anio_construccion },
     p.tipo_piso && { label: "Tipo de piso", value: p.tipo_piso },
     p.tipo_calefaccion && { label: "Calefacción", value: p.tipo_calefaccion },
+    p.tipo_agua_caliente && { label: "Agua caliente", value: p.tipo_agua_caliente },
     p.tipo_gas && { label: "Gas", value: p.tipo_gas },
     p.tipo_vista && { label: "Vista", value: p.tipo_vista },
+    p.tipo_edificio && { label: "Tipo edificio", value: p.tipo_edificio },
   ].filter(Boolean) as { label: string; value: string | number }[];
 
   const tags = [
@@ -154,6 +175,7 @@ export default async function InmueblePage({ params }: Props) {
     p.barrio_cerrado && "Barrio cerrado",
     p.uso_comercial && "Uso comercial",
     p.uso_profesional && "Uso profesional",
+    p.financia_vendedor && "Financia el vendedor",
     p.acepta_permuta && "Acepta permuta",
   ].filter(Boolean) as string[];
 
@@ -436,7 +458,45 @@ export default async function InmueblePage({ params }: Props) {
           />
         </div>
 
-        <div style={{ marginTop: 8, textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif" }}>
+        {/* Propiedades similares */}
+        {similares.length > 0 && (
+          <div style={{ marginTop: 32 }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 16 }}>
+              Propiedades similares
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 12 }}>
+              {similares.map((s: any) => {
+                const sf = s as any;
+                const sprecio = sf.ocultar_precio || !sf.precio ? "A consultar"
+                  : sf.moneda === "USD" ? `USD ${sf.precio.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`
+                  : `$ ${sf.precio.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
+                return (
+                  <a key={sf.id} href={`/inmueble/${sf.id}`}
+                    style={{ display: "block", background: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, overflow: "hidden", textDecoration: "none", transition: "border-color 0.15s" }}>
+                    <div style={{ height: 120, background: "#1a1a1a", overflow: "hidden" }}>
+                      {sf.fotos?.[0]
+                        ? <img src={sf.fotos[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        : <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36 }}>🏠</div>}
+                    </div>
+                    <div style={{ padding: "10px 12px" }}>
+                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sf.titulo}</div>
+                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, color: "#22c55e" }}>{sprecio}</div>
+                      {(sf.superficie_cubierta || sf.dormitorios) && (
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
+                          {sf.dormitorios != null && `${sf.dormitorios} dorm.`}
+                          {sf.dormitorios != null && sf.superficie_cubierta != null && " · "}
+                          {sf.superficie_cubierta != null && `${sf.superficie_cubierta} m²`}
+                        </div>
+                      )}
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <div style={{ marginTop: 32, textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif" }}>
           Grupo Foro Inmobiliario · Rosario
         </div>
       </main>

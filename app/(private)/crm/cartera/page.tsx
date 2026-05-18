@@ -82,7 +82,10 @@ interface Propiedad {
   tipo_calefaccion: string | null;
   tipo_gas: string | null;
   tipo_vista: string | null;
+  tipo_edificio: string | null;
+  tipo_agua_caliente: string | null;
   uso_profesional: boolean;
+  financia_vendedor: boolean;
   destacada_web: boolean;
   publicada_web: boolean;
   compartir_en_red: boolean;
@@ -196,7 +199,8 @@ const FORM_VACIO: any = {
   disposicion: "", orientacion: "", tipo_departamento: "", luminosidad: "",
   condicion: "", antiguedad: "",
   tipo_piso: "", tipo_calefaccion: "", tipo_gas: "", tipo_vista: "",
-  uso_profesional: false,
+  tipo_edificio: "", tipo_agua_caliente: "",
+  uso_profesional: false, financia_vendedor: false,
   superficie_cubierta: "", superficie_total: "", sup_semicubierta: "",
   sup_descubierta: "", sup_exclusiva: "", sup_espacios_comunes: "",
   sup_patio_terraza: "", sup_balcon: "", metros_frente: "", metros_fondo: "",
@@ -661,7 +665,8 @@ export default function CarteraPage() {
       condicion: form.condicion || null, antiguedad: form.antiguedad || null,
       tipo_piso: form.tipo_piso || null, tipo_calefaccion: form.tipo_calefaccion || null,
       tipo_gas: form.tipo_gas || null, tipo_vista: form.tipo_vista || null,
-      uso_profesional: form.uso_profesional,
+      tipo_edificio: form.tipo_edificio || null, tipo_agua_caliente: form.tipo_agua_caliente || null,
+      uso_profesional: form.uso_profesional, financia_vendedor: form.financia_vendedor,
       superficie_cubierta: numOrNull(form.superficie_cubierta),
       superficie_total: numOrNull(form.superficie_total),
       sup_semicubierta: numOrNull(form.sup_semicubierta),
@@ -1812,7 +1817,11 @@ export default function CarteraPage() {
                     <div className="wiz-row-4">
                       <div className="wiz-field"><label className="wiz-label">Tipo de piso</label><select className="wiz-select" value={form.tipo_piso} onChange={e => setF("tipo_piso", e.target.value)}><option value="">Sin especificar</option><option>Porcelanato</option><option>Cerámica</option><option>Parquet</option><option>Madera</option><option>Flotante</option><option>Mármol</option><option>Cemento alisado</option><option>Mosaico</option><option>Mixto</option></select></div>
                       <div className="wiz-field"><label className="wiz-label">Calefacción</label><select className="wiz-select" value={form.tipo_calefaccion} onChange={e => setF("tipo_calefaccion", e.target.value)}><option value="">Sin especificar</option><option>Caldera individual</option><option>Calefacción central</option><option>Losa radiante</option><option>Tiro balanceado</option><option>Split</option><option>Eléctrica</option><option>Sin calefacción</option></select></div>
+                      <div className="wiz-field"><label className="wiz-label">Agua caliente</label><select className="wiz-select" value={form.tipo_agua_caliente} onChange={e => setF("tipo_agua_caliente", e.target.value)}><option value="">Sin especificar</option><option>Calefón individual</option><option>Termotanque individual</option><option>Termotanque central</option><option>Solar</option><option>Sin agua caliente</option></select></div>
                       <div className="wiz-field"><label className="wiz-label">Gas</label><select className="wiz-select" value={form.tipo_gas} onChange={e => setF("tipo_gas", e.target.value)}><option value="">Sin especificar</option><option>Gas natural</option><option>Gas propano</option><option>Sin gas</option></select></div>
+                    </div>
+                    <div className="wiz-row-4">
+                      <div className="wiz-field"><label className="wiz-label">Tipo edificio</label><select className="wiz-select" value={form.tipo_edificio} onChange={e => setF("tipo_edificio", e.target.value)}><option value="">Sin especificar</option><option>Entre medianeras</option><option>En esquina</option><option>Exento</option><option>Torre</option><option>PH</option><option>Dúplex</option></select></div>
                       <div className="wiz-field"><label className="wiz-label">Vista</label><select className="wiz-select" value={form.tipo_vista} onChange={e => setF("tipo_vista", e.target.value)}><option value="">Sin especificar</option><option>Vista al frente</option><option>Vista al parque</option><option>Vista a la ciudad</option><option>Vista al río</option><option>Vista interna</option><option>Vista al jardín</option></select></div>
                     </div>
                   </div>
@@ -1845,7 +1854,8 @@ export default function CarteraPage() {
                         { k: "amoblado", l: "Amoblado" }, { k: "habitada", l: "Habitada" },
                         { k: "acepta_permuta", l: "Acepta permuta" }, { k: "acepta_mascotas", l: "Acepta mascotas" },
                         { k: "barrio_cerrado", l: "Barrio cerrado" }, { k: "uso_comercial", l: "Uso comercial" },
-                        { k: "uso_profesional", l: "Uso profesional" }, { k: "energia_solar", l: "Energía solar" },
+                        { k: "uso_profesional", l: "Uso profesional" }, { k: "financia_vendedor", l: "Financia el vendedor" },
+                        { k: "energia_solar", l: "Energía solar" },
                       ].map(({ k, l }) => (
                         <div key={k} className={`wiz-check-item${form[k] ? " on" : ""}`} onClick={() => toggleF(k)}>
                           <div className={`wiz-check-box${form[k] ? " on" : ""}`}>{form[k] && <span style={{fontSize:8,color:"#fff"}}>✓</span>}</div>
