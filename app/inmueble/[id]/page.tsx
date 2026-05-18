@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import GaleriaFotos from "./GaleriaFotos";
+import FichaAcciones from "./FichaAcciones";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +58,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: p.fotos?.[0] ? [p.fotos[0]] : [],
     },
   };
+}
+
+function youtubeId(url: string): string | null {
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+  return m?.[1] ?? null;
+}
+
+function matterportId(url: string): string | null {
+  const m = url.match(/my\.matterport\.com\/show\/\?m=([A-Za-z0-9]+)/);
+  return m?.[1] ?? null;
 }
 
 const fmtNum = (n: number) => n.toLocaleString("es-AR", { maximumFractionDigits: 0 });
@@ -307,10 +318,23 @@ export default async function InmueblePage({ params }: Props) {
               <>
                 <div className="ficha-divider" />
                 <div className="section-title">Video</div>
-                <a href={p.video_url} target="_blank" rel="noopener noreferrer"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.7)", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
-                  ▶ Ver video
-                </a>
+                {youtubeId(p.video_url) ? (
+                  <div style={{ position: "relative", paddingBottom: "56.25%", borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <iframe
+                      src={`https://www.youtube.com/embed/${youtubeId(p.video_url)}`}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title="Video de la propiedad"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <a href={p.video_url} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.7)", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
+                    ▶ Ver video
+                  </a>
+                )}
               </>
             )}
 
@@ -318,10 +342,23 @@ export default async function InmueblePage({ params }: Props) {
             {p.tour_virtual_url && (
               <>
                 <div className="ficha-divider" />
-                <a href={p.tour_virtual_url} target="_blank" rel="noopener noreferrer"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)", borderRadius: 6, color: "#60a5fa", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
-                  🔭 Tour virtual 360°
-                </a>
+                <div className="section-title">Tour virtual 360°</div>
+                {matterportId(p.tour_virtual_url) ? (
+                  <div style={{ position: "relative", paddingBottom: "56.25%", borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <iframe
+                      src={`https://my.matterport.com/show/?m=${matterportId(p.tour_virtual_url)}`}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+                      allowFullScreen
+                      title="Tour virtual"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <a href={p.tour_virtual_url} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)", borderRadius: 6, color: "#60a5fa", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
+                    🔭 Ver tour virtual
+                  </a>
+                )}
               </>
             )}
 
@@ -357,7 +394,12 @@ export default async function InmueblePage({ params }: Props) {
                   <div className="agente-acciones">
                     {waLink && (
                       <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-wa">
-                        💬 WhatsApp
+                        💬 Consultar
+                      </a>
+                    )}
+                    {waFull && (
+                      <a href={`https://wa.me/${waFull}?text=${encodeURIComponent(`Hola, estoy interesado/a en la propiedad "${p.titulo}" y me gustaría agendar una visita. ¿Cuándo estaría disponible?`)}`} target="_blank" rel="noopener noreferrer" className="btn-tel">
+                        📅 Agendar visita
                       </a>
                     )}
                     {perfil.email && (
@@ -378,7 +420,17 @@ export default async function InmueblePage({ params }: Props) {
           </div>
         </div>
 
-        <div style={{ marginTop: 24, textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif" }}>
+        {/* Compartir */}
+        <div style={{ marginTop: 20, padding: "16px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <FichaAcciones
+            titulo={p.titulo}
+            waLink={waLink}
+            waNum={waFull}
+            waMsg={waMsg}
+          />
+        </div>
+
+        <div style={{ marginTop: 8, textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif" }}>
           Grupo Foro Inmobiliario · Rosario
         </div>
       </main>
