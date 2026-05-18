@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             perfil_id: prop.perfil_id,
             titulo: "🏠 Nueva consulta sobre una propiedad",
-            cuerpo: `${nombre}${telefono ? ` · ${telefono}` : ""}${email ? ` · ${email}` : ""} — ${prop.titulo}`,
+            body: `${nombre}${telefono ? ` · ${telefono}` : ""}${email ? ` · ${email}` : ""} — ${prop.titulo}`,
             url: "/mi-web/leads",
           }),
         }).catch(() => {});
