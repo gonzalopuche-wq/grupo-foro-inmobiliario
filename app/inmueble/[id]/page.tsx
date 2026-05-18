@@ -256,7 +256,9 @@ export default async function InmueblePage({ params }: Props) {
       <nav style={{ background: "#0a0a0a", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "sticky", top: 0, zIndex: 10 }}>
         <div className="navbar">
           <span className="nav-logo">Grupo Foro <span>Inmobiliario</span></span>
-          {p.codigo && <span className="codigo-badge">#{p.codigo}</span>}
+          <a href="/propiedades" style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", letterSpacing: "0.08em" }}>
+            ← Todas las propiedades
+          </a>
         </div>
       </nav>
 
