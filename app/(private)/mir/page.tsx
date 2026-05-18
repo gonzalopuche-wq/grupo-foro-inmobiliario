@@ -28,6 +28,11 @@ const MATCH_OP: Record<string, string> = {
   permuta: "permuta", comercial: "comercial", fondo_comercio: "fondo_comercio", campo: "campo",
 };
 
+const OP_TO_CARTERA: Record<string, string> = {
+  venta: "Venta", alquiler: "Alquiler", temporario: "Alquiler temporal",
+  permuta: "Venta", comercial: "Venta", fondo_comercio: "Venta", campo: "Venta",
+};
+
 const TIPOS_PROPIEDAD = [
   "Departamento", "Casa", "Terreno o Lote", "Departamento de Pasillo",
   "Cochera", "Oficina", "Local Comercial", "Galpón", "Campo",
@@ -78,6 +83,7 @@ interface Ofrecido {
   ci_responsable_id?: string | null;
   ci_responsable?: { nombre: string; apellido: string; matricula: string | null; } | null;
   perfiles?: { nombre: string; apellido: string; matricula: string | null; telefono: string | null; email: string | null; };
+  cartera_id?: string | null;
 }
 
 interface Busqueda {
@@ -207,6 +213,7 @@ export default function MirPage() {
   const [guardando, setGuardando] = useState(false);
   const [esColaborador, setEsColaborador] = useState(false);
   const [corredoresColegas, setCorredoresColegas] = useState<{id:string;nombre:string;apellido:string;matricula:string|null}[]>([]);
+  const [editandoOfrecido, setEditandoOfrecido] = useState<Ofrecido | null>(null);
   const [desbloqueando, setDesbloqueando] = useState<string | null>(null);
   const [interesando, setInteresando] = useState<string | null>(null);
   const [modalInteres, setModalInteres] = useState<{ pub: Ofrecido | Busqueda; tipo: "me_interesa" | "tengo"; pubTipo: "ofrecido" | "busqueda" } | null>(null);
@@ -518,8 +525,9 @@ export default function MirPage() {
   const guardarOfrecido = async () => {
     if (!userId || !formO.ciudad) return;
     setGuardando(true);
-    const { data: nuevo, error } = await supabase.from("mir_ofrecidos").insert({
-      perfil_id: userId, operacion: formO.operacion, tipo_propiedad: formO.tipo_propiedad,
+
+    const mirPayload = {
+      operacion: formO.operacion, tipo_propiedad: formO.tipo_propiedad,
       nombre_publicante: formO.nombre_publicante || null,
       ci_responsable_id: formO.ci_responsable_id || null,
       zona: formO.zona || null, ciudad: formO.ciudad,
@@ -531,11 +539,62 @@ export default function MirPage() {
       barrio_cerrado: formO.barrio_cerrado, con_cochera: formO.con_cochera,
       acepta_mascotas: formO.acepta_mascotas, acepta_bitcoin: formO.acepta_bitcoin,
       urgente: formO.urgente,
-      urgente_expires_at: formO.urgente ? new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString() : null,
+      urgente_expires_at: formO.urgente
+        ? (editandoOfrecido?.urgente ? (editandoOfrecido.urgente_expires_at ?? null) : new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString())
+        : null,
       descripcion: formO.descripcion || null,
-    }).select().single();
-    if (!error && nuevo) await matchearOfrecido(nuevo as Ofrecido);
-    setGuardando(false); setMostrarFormO(false); setFormO(FORM_O); cargarDatos();
+    };
+
+    const carteraDatos = {
+      titulo: `${formO.tipo_propiedad} en ${formO.ciudad}`,
+      operacion: OP_TO_CARTERA[formO.operacion] ?? "Venta",
+      tipo: formO.tipo_propiedad,
+      zona: formO.zona || null, ciudad: formO.ciudad,
+      precio: n(formO.precio), moneda: formO.moneda,
+      dormitorios: ni(formO.dormitorios), banos: ni(formO.banos),
+      superficie_cubierta: n(formO.superficie_cubierta), superficie_total: n(formO.superficie_total),
+      antiguedad: formO.antiguedad || null,
+      apto_credito: formO.apto_credito, uso_comercial: formO.uso_comercial,
+      barrio_cerrado: formO.barrio_cerrado, con_cochera: formO.con_cochera,
+      acepta_mascotas: formO.acepta_mascotas,
+      descripcion: formO.descripcion || null,
+      compartir_en_red: true,
+    };
+
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (editandoOfrecido) {
+      const { error: mirError } = await supabase.from("mir_ofrecidos").update(mirPayload).eq("id", editandoOfrecido.id);
+      if (mirError) { setGuardando(false); return; }
+      if (editandoOfrecido.cartera_id && session) {
+        await fetch("/api/cartera/guardar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ editandoId: editandoOfrecido.cartera_id, datos: carteraDatos }),
+        });
+      }
+    } else {
+      const { data: nuevo, error } = await supabase.from("mir_ofrecidos")
+        .insert({ perfil_id: userId, ...mirPayload }).select().single();
+      if (!error && nuevo) {
+        await matchearOfrecido(nuevo as Ofrecido);
+        if (session) {
+          const res = await fetch("/api/cartera/guardar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+            body: JSON.stringify({ datos: { ...carteraDatos, mir_ofrecido_id: nuevo.id } }),
+          });
+          if (res.ok) {
+            const result = await res.json();
+            if (result.propId) {
+              await supabase.from("mir_ofrecidos").update({ cartera_id: result.propId }).eq("id", nuevo.id);
+            }
+          }
+        }
+      }
+    }
+
+    setGuardando(false); setMostrarFormO(false); setFormO(FORM_O); setEditandoOfrecido(null); cargarDatos();
   };
 
   const guardarBusqueda = async () => {
@@ -562,7 +621,44 @@ export default function MirPage() {
     setGuardando(false); setMostrarFormB(false); setFormB(FORM_B); cargarDatos();
   };
 
+  const editarOfrecido = (o: Ofrecido) => {
+    setFormO({
+      operacion: o.operacion, tipo_propiedad: o.tipo_propiedad,
+      nombre_publicante: o.nombre_publicante ?? "",
+      ci_responsable_id: o.ci_responsable_id ?? "",
+      zona: o.zona ?? "", ciudad: o.ciudad,
+      precio: o.precio !== null ? String(o.precio) : "",
+      moneda: o.moneda,
+      dormitorios: o.dormitorios !== null ? String(o.dormitorios) : "",
+      banos: o.banos !== null ? String(o.banos) : "",
+      superficie_cubierta: o.superficie_cubierta !== null ? String(o.superficie_cubierta) : "",
+      superficie_total: o.superficie_total !== null ? String(o.superficie_total) : "",
+      antiguedad: o.antiguedad ?? "",
+      apto_credito: o.apto_credito, uso_comercial: o.uso_comercial,
+      barrio_cerrado: o.barrio_cerrado, con_cochera: o.con_cochera,
+      acepta_mascotas: o.acepta_mascotas, acepta_bitcoin: o.acepta_bitcoin,
+      urgente: o.urgente, descripcion: o.descripcion ?? "",
+    });
+    setEditandoOfrecido(o);
+    setMostrarFormO(true);
+  };
+
   const desactivar = async (tabla: string, id: string) => {
+    if (tabla === "mir_ofrecidos") {
+      const of = ofrecidos.find(o => o.id === id);
+      if (of?.cartera_id) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            await fetch("/api/cartera/guardar", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+              body: JSON.stringify({ editandoId: of.cartera_id, datos: { compartir_en_red: false } }),
+            });
+          }
+        } catch {}
+      }
+    }
     await supabase.from(tabla).update({ activo: false }).eq("id", id);
     cargarDatos();
   };
@@ -651,6 +747,8 @@ export default function MirPage() {
         .mir-fecha { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 2px; }
         .mir-btn-baja { padding: 4px 10px; background: transparent; border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: rgba(200,0,0,0.6); font-size: 9px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
         .mir-btn-baja:hover { background: rgba(200,0,0,0.1); color: #ff4444; }
+        .mir-btn-editar { padding: 4px 10px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: rgba(255,255,255,0.45); font-size: 9px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .mir-btn-editar:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
         .mir-empty { padding: 64px 32px; text-align: center; color: rgba(255,255,255,0.2); font-size: 14px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; }
         .mir-match-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(200,0,0,0.2); border-radius: 6px; padding: 16px 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
         .mir-match-lados { display: flex; gap: 16px; flex: 1; flex-wrap: wrap; }
@@ -847,7 +945,12 @@ export default function MirPage() {
                     )}
                     <div className="mir-fecha">{formatFecha(o.created_at)}</div>
                   </div>
-                  {esPropia && <button className="mir-btn-baja" onClick={() => desactivar("mir_ofrecidos", o.id)}>Dar de baja</button>}
+                  {esPropia && (
+                    <div style={{display:"flex",gap:6}}>
+                      <button className="mir-btn-editar" onClick={() => editarOfrecido(o)}>Editar</button>
+                      <button className="mir-btn-baja" onClick={() => desactivar("mir_ofrecidos", o.id)}>Dar de baja</button>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -1168,9 +1271,9 @@ export default function MirPage() {
 
       {/* MODAL OFRECIDO */}
       {mostrarFormO && (
-        <div className="fn-modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarFormO(false); }}>
+        <div className="fn-modal-bg" onClick={e => { if (e.target === e.currentTarget) { setMostrarFormO(false); setFormO(FORM_O); setEditandoOfrecido(null); } }}>
           <div className="fn-modal">
-            <h2>Publicar <span>ofrecido</span></h2>
+            <h2>{editandoOfrecido ? "Editar" : "Publicar"} <span>ofrecido</span></h2>
             <div className="fn-field">
               <label className="fn-label">Operacion *</label>
               {esColaborador && (
@@ -1260,9 +1363,10 @@ export default function MirPage() {
               {formO.urgente && <div style={{fontSize:10,color:"rgba(234,179,8,0.7)",marginTop:8,fontFamily:"Inter,sans-serif"}}>Tu publicación se destacará con badge dorado y aparecerá primero en la lista durante 48 horas.</div>}
             </div>
             <div className="fn-modal-actions">
-              <button className="fn-btn-cancelar" onClick={() => setMostrarFormO(false)}>Cancelar</button>
+              <button className="fn-btn-cancelar" onClick={() => { setMostrarFormO(false); setFormO(FORM_O); setEditandoOfrecido(null); }}>Cancelar</button>
               <button className="fn-btn-guardar" onClick={guardarOfrecido} disabled={guardando || !formO.ciudad}>
-                {guardando && <span className="fn-spinner"/>}{guardando ? "Publicando..." : "Publicar ofrecido"}
+                {guardando && <span className="fn-spinner"/>}
+                {guardando ? (editandoOfrecido ? "Guardando..." : "Publicando...") : (editandoOfrecido ? "Guardar cambios" : "Publicar ofrecido")}
               </button>
             </div>
           </div>

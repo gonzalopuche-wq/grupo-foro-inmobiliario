@@ -313,6 +313,7 @@ export default function CarteraPage() {
   const [smartPropTitulo, setSmartPropTitulo] = useState("");
   const [mostrarSmartMatch, setMostrarSmartMatch] = useState(false);
   const [toastGuardado, setToastGuardado] = useState("");
+  const [geocodificando, setGeocodificando] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -847,6 +848,25 @@ export default function CarteraPage() {
       }
     } catch (e: any) { alert("Error de red: " + (e as Error).message); }
     if (userId) cargar(userId);
+  };
+
+  const geocodificar = async () => {
+    const q = [form.direccion, form.ciudad, "Argentina"].filter(Boolean).join(", ");
+    if (!q.trim()) return;
+    setGeocodificando(true);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`, {
+        headers: { "Accept-Language": "es", "User-Agent": "GrupoForoInmobiliario/1.0" },
+      });
+      const data = await res.json();
+      if (data?.[0]) {
+        setF("latitud", parseFloat(data[0].lat).toFixed(6));
+        setF("longitud", parseFloat(data[0].lon).toFixed(6));
+      } else {
+        alert("No se encontró la dirección. Ingresá las coordenadas manualmente.");
+      }
+    } catch { alert("Error al geocodificar. Verificá tu conexión."); }
+    setGeocodificando(false);
   };
 
   const toggleDestacadaWeb = async (p: Propiedad) => {
@@ -1401,7 +1421,8 @@ export default function CarteraPage() {
                   </div>
                   <div className="cart-card-acciones">
                     <button className="cart-acc-btn cart-acc-editar" onClick={() => abrirEditar(p)}>Editar</button>
-                    <a href={`/cartera/ficha/${p.id}`} target="_blank" rel="noopener noreferrer" className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.45)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}}>📄 Ficha</a>
+                    <a href={`/crm/cartera/ficha/${p.id}`} target="_blank" rel="noopener noreferrer" className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.45)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}}>📄 Ficha</a>
+                    <button className="cart-acc-btn" title="Copiar link de ficha pública para compartir con clientes" style={{background:"rgba(234,179,8,0.07)",border:"1px solid rgba(234,179,8,0.2)",color:"#eab308"}} onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/inmueble/${p.id}`).catch(()=>{}); setToastGuardado("Link público copiado"); setTimeout(()=>setToastGuardado(""),2500); }}>🔗 Pública</button>
                     <button className="cart-acc-btn" onClick={() => compartirWhatsApp(p)} title="Compartir por WhatsApp" style={{background:"rgba(34,197,94,0.07)",border:"1px solid rgba(34,197,94,0.15)",color:"#22c55e"}}>📲 WA</button>
                     <button className="cart-acc-btn" onClick={() => generarPostRRSS(p)} disabled={generandoPost === p.id} title="Generar post para Instagram/Facebook con IA" style={{background:"rgba(168,85,247,0.07)",border:"1px solid rgba(168,85,247,0.15)",color:"#a855f7"}}>{generandoPost === p.id ? "..." : "🎯 Post"}</button>
                     <a href={`/crm/difusion?prop=${p.id}&titulo=${encodeURIComponent(p.titulo)}`} className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(59,130,246,0.9)",background:"rgba(59,130,246,0.07)",border:"1px solid rgba(59,130,246,0.15)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}} title="Difundir a contactos CRM">📢 Difundir</a>
@@ -1717,6 +1738,24 @@ export default function CarteraPage() {
                         <input className="wiz-input" type="number" step="0.000001" value={form.longitud} onChange={e => setF("longitud", e.target.value)} placeholder="-60.6505" />
                       </div>
                     </div>
+                    <button
+                      type="button"
+                      onClick={geocodificar}
+                      disabled={geocodificando || (!form.direccion && !form.ciudad)}
+                      style={{ padding: "8px 16px", background: geocodificando ? "rgba(255,255,255,0.05)" : "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 4, color: geocodificando ? "rgba(255,255,255,0.3)" : "#cc0000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: geocodificando ? "not-allowed" : "pointer", letterSpacing: "0.1em", textTransform: "uppercase" }}
+                    >
+                      {geocodificando ? "Buscando..." : "📍 Geocodificar desde dirección"}
+                    </button>
+                    {form.latitud && form.longitud && (
+                      <div style={{ marginTop: 10, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
+                        <iframe
+                          src={`https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(form.longitud) - 0.008},${parseFloat(form.latitud) - 0.005},${parseFloat(form.longitud) + 0.008},${parseFloat(form.latitud) + 0.005}&layer=mapnik&marker=${form.latitud},${form.longitud}`}
+                          style={{ width: "100%", height: 200, border: "none", display: "block", filter: "invert(0.88) hue-rotate(180deg)" }}
+                          loading="lazy"
+                          title="Vista previa del mapa"
+                        />
+                      </div>
+                    )}
                     <div className={`wiz-check-item${form.ocultar_ubicacion ? " on" : ""}`} style={{maxWidth:280}} onClick={() => toggleF("ocultar_ubicacion")}>
                       <div className={`wiz-check-box${form.ocultar_ubicacion ? " on" : ""}`}>{form.ocultar_ubicacion && <span style={{fontSize:8,color:"#fff"}}>✓</span>}</div>
                       <span className="wiz-check-label">Ocultar ubicación exacta y mostrar la orientativa</span>
