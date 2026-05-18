@@ -419,6 +419,19 @@ export default function CalculadorasPage() {
             { href: "/calculadoras/construccion-vs-compra", label: "Construir vs. Comprar", icon: "🏗️", active: false },
             { href: "/calculadoras/renta-vs-venta", label: "¿Alquilar o Vender?", icon: "🤔", active: false },
             { href: "/calculadoras/dolar-inmobiliario", label: "Monitor Dólar", icon: "💵", active: false },
+            { href: "/calculadoras/impuesto-ganancias", label: "ITI / Ganancias", icon: "🧾", active: false },
+            { href: "/calculadoras/simulador-expensas", label: "Simulador Expensas", icon: "🏢", active: false },
+            { href: "/calculadoras/hipoteca-compartida", label: "Hipoteca Compartida", icon: "👥", active: false },
+            { href: "/calculadoras/rentabilidad-desarrollo", label: "Rentabilidad Desarrollo", icon: "🏗️", active: false },
+            { href: "/calculadoras/permuta-inmobiliaria", label: "Permuta Inmobiliaria", icon: "⇄", active: false },
+            { href: "/calculadoras/costos-escritura", label: "Costos de Escritura", icon: "📜", active: false },
+            { href: "/calculadoras/indice-precios-inmobiliarios", label: "Índice USD/m²", icon: "📐", active: false },
+            { href: "/calculadoras/proyeccion-inflacion", label: "Proyección Inflación", icon: "📈", active: false },
+            { href: "/calculadoras/simulador-fci", label: "Simulador FCI", icon: "📊", active: false },
+            { href: "/calculadoras/locacion-temporaria", label: "Locación Temporaria", icon: "🏖️", active: false },
+            { href: "/calculadoras/valuacion-comercial", label: "Valuación Comercial", icon: "💼", active: false },
+            { href: "/calculadoras/refinanciacion-hipoteca", label: "Refinanciación Hipoteca", icon: "🏦", active: false },
+            { href: "/calculadoras/honorarios-inmobiliarios", label: "Honorarios Inmobiliarios", icon: "🤝", active: false },
           ].map(({ href, label, icon, active }) => (
             <Link key={href} href={href} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, background: active ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${active ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, color: active ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}>
               <span style={{ fontSize: 13 }}>{icon}</span> {label}
