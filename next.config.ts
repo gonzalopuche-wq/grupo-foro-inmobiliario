@@ -9,12 +9,16 @@ const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   // Controla info del referrer
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  // Deshabilita features innecesarias
-  { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(self), interest-cohort=()" },
+  // Deshabilita features innecesarias — incluye clipboard-read/write para terceros
+  { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(self), interest-cohort=(), clipboard-read=(), clipboard-write=(self), payment=()" },
   // XSS Protection (legacy browsers)
   { key: "X-XSS-Protection", value: "1; mode=block" },
   // DNS Prefetch Control
   { key: "X-DNS-Prefetch-Control", value: "on" },
+  // Evita que ventanas abiertas desde GFI puedan acceder a window.opener
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  // Evita que otros sitios carguen recursos de GFI (imágenes, scripts)
+  { key: "Cross-Origin-Resource-Policy", value: "same-site" },
   // Content Security Policy
   {
     key: "Content-Security-Policy",

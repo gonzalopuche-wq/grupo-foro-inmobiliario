@@ -7,6 +7,7 @@ import { supabase } from "../lib/supabase";
 import IAChatFlotante from "./components/IAChatFlotante";
 import AnuncioBanner from "../components/AnuncioBanner";
 import BusquedaGlobal from "./components/BusquedaGlobal";
+import SecurityGuard from "./components/SecurityGuard";
 
 // ── Nav corredor matriculado (acceso completo) ─────────────────────────────
 const NAV_CORREDOR = [
@@ -532,7 +533,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           )}
           <AnuncioBanner />
           <div className="page-content">
-            {children}
+            <SecurityGuard>{children}</SecurityGuard>
           </div>
         </main>
       </div>
