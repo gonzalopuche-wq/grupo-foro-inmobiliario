@@ -519,6 +519,100 @@ grupo-foro-inmobiliario/
   <tr><td>CRON_SECRET</td><td>CRON_SECRET</td><td>Protección de endpoints cron</td></tr>
 </table>
 
+<!-- IA -->
+<div class="page-break"></div>
+<h1 id="ia">11. Módulos de Inteligencia Artificial</h1>
+
+<p>GFI integra Claude (Anthropic) como motor de IA. Los modelos usados son <strong>Haiku 4.5</strong> (tareas rápidas) y <strong>Sonnet 4.6</strong> (análisis complejos).</p>
+
+<table>
+  <tr><th>Endpoint</th><th>Modelo</th><th>Descripción</th></tr>
+  <tr><td><code>/api/ia-descripcion</code></td><td>Haiku 4.5</td><td>Genera descripción de marketing para una propiedad a partir de sus specs</td></tr>
+  <tr><td><code>/api/ia-matching</code></td><td>Sonnet 4.6</td><td>Detecta coincidencias entre leads y propiedades de cartera</td></tr>
+  <tr><td><code>/api/ia-chat</code></td><td>Haiku 4.5</td><td>Chatbot en ficha pública: responde preguntas sobre la propiedad</td></tr>
+  <tr><td><code>/api/tasador-ia/tasar</code></td><td>Sonnet 4.6</td><td>Valúa una propiedad combinando comparables de mercado + IA</td></tr>
+  <tr><td><code>/api/tasador-ia/actualizar-mercado</code></td><td>—</td><td>Cron semanal (lunes 4am): actualiza tabla de precios de mercado</td></tr>
+  <tr><td><code>/api/ia-fotos</code></td><td>Replicate</td><td>Decoración virtual de ambientes (home staging IA)</td></tr>
+  <tr><td><code>/api/ia-contractual</code></td><td>Sonnet 4.6</td><td>Analiza contratos y detecta cláusulas problemáticas</td></tr>
+  <tr><td><code>/api/ia-leads</code></td><td>Haiku 4.5</td><td>Clasifica y prioriza leads según perfil e intención</td></tr>
+</table>
+
+<h2>11.1 Tasador IA — Flujo</h2>
+<ol>
+  <li>El corredor ingresa los datos de la propiedad a valuar</li>
+  <li>El sistema busca comparables en <code>mercado_referencias</code> (actualizada semanalmente)</li>
+  <li>Claude analiza los comparables + specs y devuelve precio estimado con rango y justificación</li>
+  <li>El resultado se guarda en <code>tasaciones</code> con fecha y firma del modelo</li>
+</ol>
+
+<!-- SEO -->
+<h1 id="seo">12. SEO y Posicionamiento</h1>
+
+<table>
+  <tr><th>Página</th><th>Implementación</th><th>Estado</th></tr>
+  <tr><td><code>/propiedades</code></td><td>Metadata dinámica según filtros (op/tipo/ciudad/zona), canonical dinámico, H1 dinámico</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td><code>/inmueble/[id]</code></td><td>JSON-LD <code>RealEstateListing</code>, OG image, Twitter Card, title y description por propiedad</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td><code>/web/[slug]</code></td><td>OG por corredor (nombre, foto, ciudad)</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td><code>/sitemap.xml</code></td><td>Sitemap dinámico: todas las propiedades visibles + páginas de corredores</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td><code>/robots.txt</code></td><td>Allow /propiedades, /inmueble, /web; Disallow /api, /crm, /admin</td><td><span class="badge badge-green">Activo</span></td></tr>
+</table>
+
+<h2>12.1 JSON-LD en fichas</h2>
+<p>Cada ficha de propiedad emite un bloque <code>&lt;script type="application/ld+json"&gt;</code> con schema.org <code>RealEstateListing</code>:</p>
+<ul>
+  <li><code>name</code>: título de la propiedad</li>
+  <li><code>description</code>: primeros 300 caracteres de la descripción</li>
+  <li><code>image</code>: hasta 5 fotos</li>
+  <li><code>offers</code>: precio + moneda + disponibilidad (InStock / LimitedAvailability si reservada)</li>
+  <li><code>address</code>: ciudad + "Santa Fe, AR"</li>
+  <li><code>floorSize</code>: superficie en MTK</li>
+  <li><code>numberOfRooms</code>: dormitorios</li>
+</ul>
+
+<h2>12.2 Canonical dinámico</h2>
+<p>La página <code>/propiedades</code> genera un canonical URL que incluye solo los filtros relevantes para indexación (op, tipo, ciudad, zona), excluyendo filtros de rango (precio, dorm, sup) que generarían demasiadas URLs.</p>
+
+<!-- DEPLOY -->
+<div class="page-break"></div>
+<h1 id="deploy">13. Deploy y Configuración</h1>
+
+<h2>13.1 Variables de entorno requeridas</h2>
+<table>
+  <tr><th>Variable</th><th>Descripción</th></tr>
+  <tr><td><code>NEXT_PUBLIC_SUPABASE_URL</code></td><td>URL del proyecto Supabase</td></tr>
+  <tr><td><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></td><td>Clave anon (segura para el cliente)</td></tr>
+  <tr><td><code>SUPABASE_SERVICE_ROLE_KEY</code></td><td>Service role — solo server-side, nunca al cliente</td></tr>
+  <tr><td><code>RESEND_API_KEY</code></td><td>Emails transaccionales (Resend)</td></tr>
+  <tr><td><code>ANTHROPIC_API_KEY</code></td><td>IA (Claude)</td></tr>
+  <tr><td><code>CRON_SECRET</code></td><td>Secreto compartido para proteger endpoints de cron</td></tr>
+  <tr><td><code>NEXT_PUBLIC_SITE_URL</code></td><td>URL base del sitio (para canonical, OG, emails)</td></tr>
+  <tr><td><code>NEXT_PUBLIC_VAPID_PUBLIC_KEY</code></td><td>VAPID público para push notifications</td></tr>
+  <tr><td><code>VAPID_PRIVATE_KEY</code></td><td>VAPID privado — solo server-side</td></tr>
+  <tr><td><code>ML_APP_ID</code> / <code>ML_APP_SECRET</code></td><td>OAuth MercadoLibre</td></tr>
+  <tr><td><code>REPLICATE_API_TOKEN</code></td><td>IA de imágenes (Replicate)</td></tr>
+</table>
+
+<h2>13.2 Comandos de deploy</h2>
+<pre style="background:#f8f8f8; padding:16px; border-radius:6px; font-size:0.85rem; overflow:auto;">
+# Instalar dependencias
+npm install
+
+# Verificar TypeScript (obligatorio antes de commit)
+npx tsc --noEmit
+
+# Build local
+npm run build
+
+# Deploy automático: push a main → Vercel lo detecta y despliega
+git push origin main
+</pre>
+
+<h2>13.3 Cron Jobs — Configuración en Vercel</h2>
+<p>Los cron jobs se definen en <code>vercel.json</code>. En producción, Vercel los ejecuta según el schedule y envía el request con el header <code>Authorization: Bearer CRON_SECRET</code>. Cada endpoint verifica ese header antes de procesar.</p>
+
+<h2>13.4 Migraciones de base de datos</h2>
+<p>Las migraciones se aplican manualmente via el SQL Editor de Supabase. El orden numérico es importante — nunca saltar números ni aplicar en orden distinto. Ver sección 9 para el listado completo.</p>
+
 <!-- PENDIENTES Y SUGERENCIAS -->
 <div class="page-break"></div>
 <h1 id="pendientes">14. Funcionalidades Sugeridas (roadmap)</h1>
