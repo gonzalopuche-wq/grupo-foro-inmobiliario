@@ -123,6 +123,59 @@ async function fetchPagina(url: string): Promise<string | null> {
   }
 }
 
+// Intenta obtener datos via DataTables AJAX (común en sitios institucionales argentinos)
+async function fetchDataTables(baseUrl: string, start: number, length: number): Promise<any[] | null> {
+  const dtHeaders = {
+    ...HEADERS,
+    "X-Requested-With": "XMLHttpRequest",
+    "Accept": "application/json, text/javascript, */*; q=0.01",
+  };
+  const candidatos = [
+    `${baseUrl}?draw=${Math.ceil(start/length)+1}&start=${start}&length=${length}&search%5Bvalue%5D=&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc`,
+    `${baseUrl}?draw=1&start=${start}&length=${length}`,
+  ];
+  for (const url of candidatos) {
+    try {
+      const res = await fetch(url, { headers: dtHeaders });
+      if (!res.ok) continue;
+      const ct = res.headers.get("content-type") ?? "";
+      if (!ct.includes("json") && !ct.includes("javascript")) continue;
+      const json = await res.json();
+      // DataTables response: { data: [...] }
+      if (Array.isArray(json?.data)) return json.data;
+      // Simple array
+      if (Array.isArray(json)) return json;
+    } catch { continue; }
+  }
+  return null;
+}
+
+function parsearFilasDT(filas: any[]): any[] {
+  return filas.map((fila: any) => {
+    if (Array.isArray(fila)) {
+      // Columnas posicionales: [matricula, apellido, nombre, estado, ...]
+      return {
+        matricula: fila[0] ?? null,
+        apellido: fila[1] ?? null,
+        nombre: fila[2] ?? null,
+        estado: fila[3] ?? null,
+        inmobiliaria: fila[4] ?? null,
+        direccion: fila[5] ?? null,
+        localidad: fila[6] ?? null,
+        telefono: fila[7] ?? null,
+        email: fila[8] ?? null,
+      };
+    }
+    // Object con claves como "matricula", "Matrícula", "MATRICULA", etc.
+    const r: Record<string, string | null> = {};
+    for (const [k, v] of Object.entries(fila)) {
+      const campo = detectarCampo(k);
+      if (campo) r[campo] = v ? String(v) : null;
+    }
+    return r;
+  }).filter((r: any) => r.matricula || r.apellido || r.nombre);
+}
+
 async function authorizado(req: NextRequest): Promise<boolean> {
   const auth = req.headers.get("authorization");
   if (auth === `Bearer ${process.env.CRON_SECRET}`) return true;
@@ -169,6 +222,73 @@ export async function GET(req: NextRequest) {
     const registrosPag1 = parsearTabla(html1, camposPorCol);
 
     if (registrosPag1.length === 0) {
+      // Intentar DataTables AJAX antes de fallar
+      const dtPage0 = await fetchDataTables(urlActiva, 0, 100);
+      if (dtPage0 && dtPage0.length > 0) {
+        // Scrapear via DataTables: paginar hasta vacío
+        const dtTodos = [...parsearFilasDT(dtPage0)];
+        const dtVistas = new Set<string>(dtTodos.map((r: any) => String(r.matricula ?? "").trim()).filter(Boolean));
+        let dtStart = 100;
+        const DT_LOTE = 100;
+        let dtVacios = 0;
+        while (dtStart < 10000 && dtVacios < 3) {
+          const chunk = await fetchDataTables(urlActiva, dtStart, DT_LOTE);
+          if (!chunk || chunk.length === 0) { dtVacios++; break; }
+          let nuevos = 0;
+          for (const r of parsearFilasDT(chunk)) {
+            const mat = String((r as any).matricula ?? "").trim();
+            if (mat && dtVistas.has(mat)) continue;
+            if (mat) dtVistas.add(mat);
+            dtTodos.push(r);
+            nuevos++;
+          }
+          if (nuevos === 0) dtVacios++;
+          else dtVacios = 0;
+          dtStart += DT_LOTE;
+        }
+        // Reemplazar registrosPag1 y continuar flujo normal con dtTodos
+        const ahora2 = new Date().toISOString();
+        const { data: existentes2 } = await sb.from("cocir_padron").select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email, apellido, nombre");
+        const mapa2 = new Map<string, any>();
+        (existentes2 ?? []).forEach((r: any) => { if (r.matricula) mapa2.set(String(r.matricula).trim(), r); });
+        const nuevosR: any[] = [];
+        const actualizacionesR: any[] = [];
+        let sinCambiosR = 0;
+        for (const reg of dtTodos) {
+          const mat = String((reg as any).matricula ?? "").trim();
+          const existente = mat ? mapa2.get(mat) : undefined;
+          if (existente) {
+            const upd: any = { actualizado_at: ahora2 };
+            let hay = false;
+            for (const campo of CAMPOS_CONOCIDOS) {
+              const nv = (reg as any)[campo];
+              if (!nv) continue;
+              if (existente[campo] !== nv) { upd[campo] = nv; hay = true; }
+            }
+            if (hay) actualizacionesR.push({ ...upd, id: existente.id });
+            else sinCambiosR++;
+          } else {
+            nuevosR.push({ ...reg, actualizado_at: ahora2 });
+          }
+        }
+        const LOTE2 = 500;
+        for (let i = 0; i < nuevosR.length; i += LOTE2) {
+          await sb.from("cocir_padron").insert(nuevosR.slice(i, i + LOTE2));
+        }
+        for (let i = 0; i < actualizacionesR.length; i += LOTE2) {
+          await sb.from("cocir_padron").upsert(actualizacionesR.slice(i, i + LOTE2));
+        }
+        let eliminadosR = 0;
+        if (dtVistas.size > 500) {
+          const paraElimR = (existentes2 ?? []).filter((r: any) => { const m = String(r.matricula ?? "").trim(); return m && !dtVistas.has(m); });
+          const idsR = paraElimR.map((r: any) => r.id);
+          for (let i = 0; i < idsR.length; i += LOTE2) { await sb.from("cocir_padron").delete().in("id", idsR.slice(i, i + LOTE2)); }
+          eliminadosR = paraElimR.length;
+        }
+        return NextResponse.json({ ok: true, metodo: "datatables", insertados: nuevosR.length, actualizados: actualizacionesR.length, eliminados: eliminadosR, sin_cambios: sinCambiosR, total_scrapeados: dtTodos.length, sincronizado_at: ahora2 });
+      }
+
+      // Sin datos ni por HTML ni por DataTables → devolver debug
       const filasTd = $1("table tr").filter((_, el) => $1(el).find("td").length >= 2).length;
       const primeraFila: string[] = [];
       $1("table tr").first().find("td,th").each((_, el) => { primeraFila.push($1(el).text().trim()); });
