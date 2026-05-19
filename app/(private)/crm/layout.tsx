@@ -142,8 +142,8 @@ function CrmLayoutInner({ children }: { children: React.ReactNode }) {
           padding: 0 10px 10px;
           font-family: 'Montserrat',sans-serif;
           font-size: 9px; font-weight: 700; letter-spacing: 0.2em;
-          text-transform: uppercase; color: rgba(255,255,255,0.18);
-          border-bottom: 1px solid rgba(255,255,255,0.04); margin-bottom: 8px;
+          text-transform: uppercase; color: rgba(255,255,255,0.4);
+          border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 8px;
         }
         .crm-layout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 8px; }
         .crm-layout-item {
@@ -151,15 +151,15 @@ function CrmLayoutInner({ children }: { children: React.ReactNode }) {
           justify-content: center; gap: 4px; padding: 9px 4px 8px;
           border-radius: 6px; text-decoration: none; text-align: center;
           min-height: 58px;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.07);
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
           transition: background 0.13s, border-color 0.13s;
         }
-        .crm-layout-item:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.15); }
-        .crm-layout-item.activo { background: rgba(204,0,0,0.13); border-color: rgba(204,0,0,0.28); }
-        .crm-layout-ico { font-size: 15px; line-height: 1; }
-        .crm-layout-lbl { font-family: 'Inter',sans-serif; font-size: 9.5px; font-weight: 500; color: rgba(255,255,255,0.72); line-height: 1.25; }
-        .crm-layout-item.activo .crm-layout-lbl { color: #fff; font-weight: 600; }
+        .crm-layout-item:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); }
+        .crm-layout-item.activo { background: rgba(204,0,0,0.16); border-color: rgba(204,0,0,0.35); }
+        .crm-layout-ico { font-size: 16px; line-height: 1; }
+        .crm-layout-lbl { font-family: 'Inter',sans-serif; font-size: 9.5px; font-weight: 600; color: rgba(255,255,255,0.88); line-height: 1.25; }
+        .crm-layout-item.activo .crm-layout-lbl { color: #fff; font-weight: 700; }
         .crm-layout-toggle {
           flex-shrink: 0; width: 22px; padding: 0; border: none;
           border-right: 1px solid rgba(255,255,255,0.07);
@@ -178,15 +178,15 @@ function CrmLayoutInner({ children }: { children: React.ReactNode }) {
         .crm-layout-content { flex: 1; min-width: 0; overflow: hidden; }
         .crm-layout-core { display: flex; flex-direction: column; gap: 2px; padding: 0 8px 8px; }
         .crm-layout-core-item {
-          display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+          display: flex; align-items: center; gap: 8px; padding: 9px 12px;
           border-radius: 6px; text-decoration: none;
-          background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+          background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
           transition: background 0.13s, border-color 0.13s;
         }
-        .crm-layout-core-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
-        .crm-layout-core-item.activo { background: rgba(204,0,0,0.12); border-color: rgba(204,0,0,0.28); }
-        .crm-layout-core-ico { font-size: 13px; line-height: 1; flex-shrink: 0; }
-        .crm-layout-core-lbl { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.72); }
+        .crm-layout-core-item:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.24); }
+        .crm-layout-core-item.activo { background: rgba(204,0,0,0.16); border-color: rgba(204,0,0,0.38); }
+        .crm-layout-core-ico { font-size: 14px; line-height: 1; flex-shrink: 0; }
+        .crm-layout-core-lbl { font-family: 'Montserrat',sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.92); }
         .crm-layout-core-item.activo .crm-layout-core-lbl { color: #fff; }
         .crm-layout-divider { margin: 4px 8px 8px; border: none; border-top: 1px solid rgba(255,255,255,0.06); }
         @media (max-width: 768px) {
