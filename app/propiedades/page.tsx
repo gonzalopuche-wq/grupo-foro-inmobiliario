@@ -16,8 +16,8 @@ const TIPOS_FILTER = [
 ];
 
 interface SearchParams {
-  op?: string; tipo?: string; ciudad?: string;
-  dorm?: string; min?: string; max?: string;
+  op?: string; tipo?: string; ciudad?: string; zona?: string;
+  dorm?: string; min?: string; max?: string; supmin?: string;
   orden?: string; moneda?: string; page?: string;
 }
 
@@ -38,7 +38,9 @@ async function buscar(sp: SearchParams) {
   if (sp.op && sp.op !== "todas") q = q.eq("operacion", sp.op);
   if (sp.tipo) q = q.eq("tipo", sp.tipo);
   if (sp.ciudad?.trim()) q = q.ilike("ciudad", `%${sp.ciudad.trim()}%`);
+  if (sp.zona?.trim()) q = q.ilike("zona", `%${sp.zona.trim()}%`);
   if (sp.dorm) q = q.gte("dormitorios", parseInt(sp.dorm));
+  if (sp.supmin) q = q.gte("superficie_cubierta", parseFloat(sp.supmin));
   const mon = sp.moneda ?? "USD";
   if (sp.min) q = q.gte("precio", parseInt(sp.min)).eq("moneda", mon);
   if (sp.max) q = q.lte("precio", parseInt(sp.max)).eq("moneda", mon);
@@ -183,6 +185,10 @@ export default async function PropiedadesPage({ searchParams }: Props) {
             <label className="f-label">Ciudad</label>
             <input name="ciudad" className="f-input" placeholder="Ej: Rosario" defaultValue={sp.ciudad ?? ""} style={{ width: "100%" }} />
           </div>
+          <div className="f-group">
+            <label className="f-label">Barrio / Zona</label>
+            <input name="zona" className="f-input" placeholder="Ej: Centro" defaultValue={sp.zona ?? ""} style={{ width: "100%" }} />
+          </div>
           <div className="f-group" style={{ minWidth: 90 }}>
             <label className="f-label">Dormitorios</label>
             <select name="dorm" className="f-select" defaultValue={sp.dorm ?? ""}>
@@ -207,6 +213,10 @@ export default async function PropiedadesPage({ searchParams }: Props) {
           <div className="f-group" style={{ minWidth: 110 }}>
             <label className="f-label">Precio máx</label>
             <input name="max" type="number" className="f-input" placeholder="200000" defaultValue={sp.max ?? ""} />
+          </div>
+          <div className="f-group" style={{ minWidth: 100 }}>
+            <label className="f-label">Sup. mín (m²)</label>
+            <input name="supmin" type="number" className="f-input" placeholder="50" defaultValue={sp.supmin ?? ""} />
           </div>
           <div className="f-group" style={{ minWidth: 130 }}>
             <label className="f-label">Ordenar</label>

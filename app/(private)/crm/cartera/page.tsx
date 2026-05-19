@@ -139,6 +139,7 @@ interface Propiedad {
   link_mercadolibre: string | null;
   link_tokko: string | null;
   vistas: number;
+  leads_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -392,10 +393,17 @@ export default function CarteraPage() {
     const props = (propsData as Propiedad[]) ?? [];
     setPropiedades(props);
     if (props.length > 0) {
-      const { data: syncs } = await supabase.from("cartera_sync_portales").select("*").in("propiedad_id", props.map(p => p.id));
+      const ids = props.map(p => p.id);
+      const [{ data: syncs }, { data: leadsRaw }] = await Promise.all([
+        supabase.from("cartera_sync_portales").select("*").in("propiedad_id", ids),
+        supabase.from("web_leads").select("propiedad_id").in("propiedad_id", ids).not("propiedad_id", "is", null),
+      ]);
       const m: Record<string, any> = {};
       (syncs ?? []).forEach((s: any) => { m[s.propiedad_id] = s; });
       setSyncData(m);
+      const lc: Record<string, number> = {};
+      (leadsRaw ?? []).forEach((l: any) => { lc[l.propiedad_id] = (lc[l.propiedad_id] ?? 0) + 1; });
+      setPropiedades(prev => prev.map(p => ({ ...p, leads_count: lc[p.id] ?? 0 })));
     }
     setLoading(false);
   };
@@ -1506,6 +1514,7 @@ export default function CarteraPage() {
                         {p.publicada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#60a5fa",letterSpacing:"0.06em"}}>🌐 WEB</span>}
                         {p.destacada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.3)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#eab308",letterSpacing:"0.06em"}}>⭐ DEST.</span>}
                         {(p.vistas ?? 0) > 0 && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.35)",letterSpacing:"0.04em"}} title="Vistas en el sitio web">👁 {p.vistas}</span>}
+                        {(p.leads_count ?? 0) > 0 && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(204,0,0,0.08)",border:"1px solid rgba(204,0,0,0.2)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#cc0000",letterSpacing:"0.04em"}} title="Leads recibidos">✉ {p.leads_count}</span>}
                       </div>
                       <div style={{display:"flex",gap:4}}>
                         {sync?.tokko_id && <span className="sync-badge sync-badge-tokko">Tokko ✓</span>}
