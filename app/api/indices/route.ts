@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // ── Variables BCRA v4.0 ─────────────────────────────────────────────────────
 // https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/{idVariable}?desde=...&hasta=...
 // idVariable:
