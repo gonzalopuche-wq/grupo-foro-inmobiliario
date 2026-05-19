@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState, Suspense } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 const CRM_LINKS: [string, string, string][] = [
@@ -101,9 +101,24 @@ const CRM_LINKS: [string, string, string][] = [
   ["/emprendimientos",            "🏗️", "Emprendim."],
 ];
 
-export default function CrmLayout({ children }: { children: React.ReactNode }) {
+const CRM_CORE: [string, string, string][] = [
+  ["dashboard",   "📊", "Dashboard"],
+  ["contactos",   "👥", "Contactos"],
+  ["negocios",    "💼", "Negocios"],
+  ["tareas",      "✅", "Tareas"],
+  ["notas",       "📝", "Notas"],
+];
+
+function CrmLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tabActivo = searchParams.get("s") ?? "dashboard";
   const [abierto, setAbierto] = useState(true);
+
+  function isCoreActivo(s: string) {
+    if (pathname !== "/crm") return false;
+    return s === "dashboard" ? tabActivo === "dashboard" : tabActivo === s;
+  }
 
   return (
     <>
@@ -161,6 +176,19 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         }
         .crm-layout-arrow { font-size: 8px; color: rgba(204,0,0,0.6); font-weight: 700; }
         .crm-layout-content { flex: 1; min-width: 0; overflow: hidden; }
+        .crm-layout-core { display: flex; flex-direction: column; gap: 2px; padding: 0 8px 8px; }
+        .crm-layout-core-item {
+          display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+          border-radius: 6px; text-decoration: none;
+          background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+          transition: background 0.13s, border-color 0.13s;
+        }
+        .crm-layout-core-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
+        .crm-layout-core-item.activo { background: rgba(204,0,0,0.12); border-color: rgba(204,0,0,0.28); }
+        .crm-layout-core-ico { font-size: 13px; line-height: 1; flex-shrink: 0; }
+        .crm-layout-core-lbl { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.72); }
+        .crm-layout-core-item.activo .crm-layout-core-lbl { color: #fff; }
+        .crm-layout-divider { margin: 4px 8px 8px; border: none; border-top: 1px solid rgba(255,255,255,0.06); }
         @media (max-width: 768px) {
           .crm-layout-sidebar { display: none; }
           .crm-layout-toggle { display: none; }
@@ -173,6 +201,23 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         <div className="crm-layout-sidebar" style={{ width: abierto ? 278 : 0 }}>
           <div className="crm-layout-inner">
             <div className="crm-layout-header">CRM GFI®</div>
+
+            {/* ── Secciones principales del CRM ── */}
+            <div className="crm-layout-core">
+              {CRM_CORE.map(([s, ico, lbl]) => (
+                <Link
+                  key={s}
+                  href={s === "dashboard" ? "/crm" : `/crm?s=${s}`}
+                  className={`crm-layout-core-item${isCoreActivo(s) ? " activo" : ""}`}
+                >
+                  <span className="crm-layout-core-ico">{ico}</span>
+                  <span className="crm-layout-core-lbl">{lbl}</span>
+                </Link>
+              ))}
+            </div>
+
+            <hr className="crm-layout-divider" />
+
             <div className="crm-layout-grid">
               {[...CRM_LINKS].sort(([,,a],[,,b]) => a.localeCompare(b, "es")).map(([href, ico, lbl]) => (
                 <Link
@@ -208,5 +253,13 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
 
       </div>
     </>
+  );
+}
+
+export default function CrmLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={null}>
+      <CrmLayoutInner>{children}</CrmLayoutInner>
+    </Suspense>
   );
 }

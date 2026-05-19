@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../../lib/supabase";
 import * as XLSX from "xlsx";
@@ -216,11 +217,15 @@ const formatFechaHora = (iso: string) =>
 
 // ── Componente principal ───────────────────────────────────────────────────
 
-export default function CrmPage() {
+function CrmPageInner() {
   const [userId, setUserId] = useState<string | null>(null);
 
   // Tab principal
-  const [tabPrincipal, setTabPrincipal] = useState<"dashboard" | "contactos" | "negocios" | "tareas" | "notas">("dashboard");
+  const _sp = useSearchParams();
+  const tabPrincipal = (_sp.get("s") ?? "dashboard") as "dashboard" | "contactos" | "negocios" | "tareas" | "notas";
+  function setTabPrincipal(tab: "dashboard" | "contactos" | "negocios" | "tareas" | "notas") {
+    window.history.replaceState({}, "", tab === "dashboard" ? "/crm" : `/crm?s=${tab}`);
+  }
 
   // ── Contactos ─────────────────────────────────────────────────────────────
   const [contactos, setContactos] = useState<Contacto[]>([]);
@@ -877,11 +882,6 @@ export default function CrmPage() {
         /* ── Layout principal ── */
         .crm-root { display: flex; flex-direction: column; height: calc(100vh - 70px); overflow: hidden; background: #080808; }
 
-        /* ── Tabs principales ── */
-        .crm-tabs-bar { display: flex; align-items: center; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.07); background: #0a0a0a; flex-shrink: 0; padding: 0 16px; }
-        .crm-tab-main { padding: 13px 18px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; white-space: nowrap; }
-        .crm-tab-main:hover { color: rgba(255,255,255,0.6); }
-        .crm-tab-main.activo { color: #fff; border-bottom-color: #cc0000; }
         .crm-tab-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; background: #cc0000; color: #fff; font-size: 8px; font-weight: 700; border-radius: 8px; margin-left: 6px; font-family: 'Montserrat',sans-serif; }
 
         /* ── Contenido tab ── */
@@ -1134,8 +1134,6 @@ export default function CrmPage() {
         .prop-card-meta { font-size: 10px; color: rgba(255,255,255,0.4); display: flex; gap: 8px; flex-wrap: wrap; }
 
         @media (max-width: 768px) {
-          .crm-tabs-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 8px; }
-          .crm-tab-main { padding: 12px 12px; font-size: 9px; letter-spacing: 0.08em; flex-shrink: 0; }
           .crm-split { flex-direction: column; }
           .crm-panel-izq { width: 100%; height: 300px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
           .not-grid { grid-template-columns: 1fr; }
@@ -1145,19 +1143,6 @@ export default function CrmPage() {
       `}</style>
 
       <div className="crm-root">
-
-        {/* ── Tabs internos (Dashboard / Contactos / Negocios / Tareas / Notas) ── */}
-        <div className="crm-tabs-bar">
-          <button className={`crm-tab-main${tabPrincipal === "dashboard" ? " activo" : ""}`} onClick={() => setTabPrincipal("dashboard")}>Dashboard</button>
-          {(["contactos", "negocios", "tareas", "notas"] as const).map(tab => (
-            <button key={tab} className={`crm-tab-main${tabPrincipal === tab ? " activo" : ""}`} onClick={() => setTabPrincipal(tab)}>
-              {tab === "contactos" && <>{mostrarArchivados ? "Archivados" : "Contactos"} {contactos.filter(c => c.estado !== "archivado").length > 0 && <span className="crm-tab-badge">{contactos.filter(c => c.estado !== "archivado").length}</span>}</>}
-              {tab === "negocios" && <>Negocios {negocios.length > 0 && <span className="crm-tab-badge">{negocios.length}</span>}</>}
-              {tab === "tareas" && <>Tareas {tareasVencidas > 0 && <span className="crm-tab-badge">{tareasVencidas}</span>}</>}
-              {tab === "notas" && <>Notas {notas.length > 0 && <span className="crm-tab-badge">{notas.length}</span>}</>}
-            </button>
-          ))}
-        </div>
 
         <div className="crm-tab-content">
 
@@ -2153,5 +2138,13 @@ export default function CrmPage() {
         );
       })()}
     </>
+  );
+}
+
+export default function CrmPage() {
+  return (
+    <Suspense fallback={null}>
+      <CrmPageInner />
+    </Suspense>
   );
 }

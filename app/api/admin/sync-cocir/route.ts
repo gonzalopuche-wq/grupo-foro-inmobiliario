@@ -304,6 +304,24 @@ export async function GET(req: NextRequest) {
       if (error) return NextResponse.json({ ok: false, error: error.message });
     }
 
+    // ── Limpiar registros que ya no están en COCIR ──
+    let eliminados = 0;
+    if (matriculasVistas.size > 500) {
+      const paraEliminar = (existentes ?? []).filter((r: any) => {
+        const mat = String(r.matricula ?? "").trim();
+        return mat && !matriculasVistas.has(mat);
+      });
+      if (paraEliminar.length > 0) {
+        const idsEliminar = paraEliminar.map((r: any) => r.id);
+        for (let i = 0; i < idsEliminar.length; i += LOTE) {
+          const { error } = await sb.from("cocir_padron").delete().in("id", idsEliminar.slice(i, i + LOTE));
+          if (error) return NextResponse.json({ ok: false, error: error.message });
+        }
+        eliminados = paraEliminar.length;
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     // ── Validar matrículas de perfiles GFI + sincronizar teléfono desde COCIR ──
     const { data: perfilesGfi } = await sb
       .from("perfiles")
@@ -368,6 +386,7 @@ export async function GET(req: NextRequest) {
       ok: true,
       insertados: nuevos.length,
       actualizados: actualizaciones.length,
+      eliminados,
       sin_cambios: sinCambios,
       total_scrapeados: todosRegistros.length,
       paginas_procesadas: ultimaPagina,
