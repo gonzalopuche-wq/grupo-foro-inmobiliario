@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GFI® — Manual Técnico del Sistema v18</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', Arial, sans-serif; color: #1a1a1a; background: #fff; font-size: 13px; line-height: 1.6; }
+
+  /* PRINT */
+  @media print {
+    .no-print { display: none; }
+    .page-break { page-break-before: always; }
+    body { font-size: 11px; }
+    h1 { font-size: 22px !important; }
+    h2 { font-size: 16px !important; }
+    h3 { font-size: 13px !important; }
+    .cover { min-height: auto; padding: 40px 0; }
+  }
+
+  /* COVER */
+  .cover {
+    background: #0a0a0a;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+  }
+  .cover-logo { font-family: 'Montserrat', sans-serif; font-size: 52px; font-weight: 800; letter-spacing: -2px; }
+  .cover-logo span { color: #cc0000; }
+  .cover-subtitle { font-size: 18px; color: rgba(255,255,255,0.5); margin-top: 12px; font-weight: 300; }
+  .cover-title { font-family: 'Montserrat', sans-serif; font-size: 30px; font-weight: 700; margin-top: 40px; color: #fff; }
+  .cover-version { font-size: 14px; color: rgba(255,255,255,0.35); margin-top: 12px; font-family: 'Montserrat', sans-serif; letter-spacing: 0.15em; text-transform: uppercase; }
+  .cover-date { font-size: 13px; color: rgba(255,255,255,0.25); margin-top: 8px; }
+  .cover-line { width: 60px; height: 3px; background: #cc0000; margin: 30px auto; }
+  .cover-info { max-width: 500px; text-align: left; margin-top: 30px; }
+  .cover-info-item { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .cover-info-dot { width: 6px; height: 6px; border-radius: 50%; background: #cc0000; margin-top: 6px; flex-shrink: 0; }
+  .cover-info-text { font-size: 13px; color: rgba(255,255,255,0.55); }
+
+  /* CONTENT */
+  .content { max-width: 860px; margin: 0 auto; padding: 60px 40px; }
+  h1 { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 800; color: #0a0a0a; border-bottom: 3px solid #cc0000; padding-bottom: 10px; margin-bottom: 24px; margin-top: 48px; }
+  h1:first-child { margin-top: 0; }
+  h2 { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; color: #0a0a0a; margin-top: 36px; margin-bottom: 14px; padding-left: 12px; border-left: 4px solid #cc0000; }
+  h3 { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; color: #333; margin-top: 24px; margin-bottom: 10px; }
+  p { margin-bottom: 12px; color: #444; }
+  ul, ol { padding-left: 20px; margin-bottom: 14px; }
+  li { margin-bottom: 5px; color: #444; }
+  strong { color: #1a1a1a; font-weight: 600; }
+  code { background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 3px; padding: 1px 5px; font-family: 'Courier New', monospace; font-size: 11px; color: #cc0000; }
+  pre { background: #f8f8f8; border: 1px solid #e5e5e5; border-radius: 6px; padding: 14px 18px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 11px; margin-bottom: 16px; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+  th { background: #0a0a0a; color: #fff; padding: 9px 12px; text-align: left; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: 'Montserrat', sans-serif; letter-spacing: 0.05em; }
+  .badge-green { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+  .badge-red { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+  .badge-yellow { background: #fef9c3; color: #ca8a04; border: 1px solid #fde68a; }
+  .badge-blue { background: #dbeafe; color: #2563eb; border: 1px solid #bfdbfe; }
+  .badge-gray { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+  .badge-new { background: #cc0000; color: #fff; font-size: 9px; padding: 1px 6px; border-radius: 8px; margin-left: 6px; vertical-align: middle; }
+
+  /* FEATURE CARD */
+  .feature-card { background: #f9f9f9; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; margin-bottom: 14px; }
+  .feature-title { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: #0a0a0a; margin-bottom: 6px; }
+  .feature-desc { font-size: 12px; color: #555; }
+  .feature-new { border-left: 4px solid #cc0000; }
+
+  /* TOC */
+  .toc { background: #f8f8f8; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px 24px; margin-bottom: 40px; }
+  .toc-title { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 800; color: #0a0a0a; margin-bottom: 14px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .toc ol { padding-left: 18px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: #cc0000; text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* CALLOUT */
+  .callout { border-radius: 6px; padding: 14px 18px; margin: 16px 0; font-size: 12px; }
+  .callout-info { background: #eff6ff; border-left: 4px solid #3b82f6; }
+  .callout-warn { background: #fffbeb; border-left: 4px solid #f59e0b; }
+  .callout-success { background: #f0fdf4; border-left: 4px solid #22c55e; }
+  .callout-error { background: #fff1f2; border-left: 4px solid #cc0000; }
+
+  /* NAV button */
+  .btn-print { position: fixed; bottom: 30px; right: 30px; background: #cc0000; color: #fff; border: none; border-radius: 6px; padding: 12px 22px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 0.08em; box-shadow: 0 4px 12px rgba(204,0,0,0.3); z-index: 999; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+  .stat-card { background: #0a0a0a; color: #fff; border-radius: 8px; padding: 16px; text-align: center; }
+  .stat-val { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 800; color: #cc0000; }
+  .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: 'Montserrat', sans-serif; }
+
+  @media (max-width: 600px) { .stat-grid { grid-template-columns: repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<button class="btn-print no-print" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+
+<!-- PORTADA -->
+<div class="cover">
+  <div class="cover-logo">Grupo Foro <span>Inmobiliario</span></div>
+  <div class="cover-subtitle">Sistema Integral de Gestión Inmobiliaria · GFI®</div>
+  <div class="cover-line"></div>
+  <div class="cover-title">Manual Técnico del Sistema</div>
+  <div class="cover-version">Versión 18 · Mayo 2026</div>
+  <div class="cover-date">Actualizado: 19 de mayo de 2026</div>
+  <div class="cover-line"></div>
+  <div class="cover-info">
+    <div class="cover-info-item"><div class="cover-info-dot"></div><div class="cover-info-text">108 módulos CRM completamente implementados</div></div>
+    <div class="cover-info-item"><div class="cover-info-dot"></div><div class="cover-info-text">85 migraciones de base de datos aplicadas</div></div>
+    <div class="cover-info-item"><div class="cover-info-dot"></div><div class="cover-info-text">11 cron jobs automatizados en Vercel</div></div>
+    <div class="cover-info-item"><div class="cover-info-dot"></div><div class="cover-info-text">8 endpoints de IA con Claude (Anthropic)</div></div>
+    <div class="cover-info-item"><div class="cover-info-dot"></div><div class="cover-info-text">Plataforma: Next.js 15 + Supabase + Vercel</div></div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">Índice de Contenidos</div>
+  <ol>
+    <li><a href="#resumen">Resumen Ejecutivo</a></li>
+    <li><a href="#novedades">Novedades v18 (esta versión)</a></li>
+    <li><a href="#arquitectura">Arquitectura del Sistema</a></li>
+    <li><a href="#paginas-publicas">Páginas Públicas</a></li>
+    <li><a href="#crm">Módulos CRM</a></li>
+    <li><a href="#mi-web">Módulo Mi Web</a></li>
+    <li><a href="#api">Endpoints API</a></li>
+    <li><a href="#cron">Cron Jobs Automatizados</a></li>
+    <li><a href="#migraciones">Migraciones de Base de Datos</a></li>
+    <li><a href="#integraciones">Integraciones Externas</a></li>
+    <li><a href="#ia">Módulos de Inteligencia Artificial</a></li>
+    <li><a href="#seo">SEO y Posicionamiento</a></li>
+    <li><a href="#deploy">Deploy y Configuración</a></li>
+    <li><a href="#pendientes">Funcionalidades Sugeridas</a></li>
+  </ol>
+</div>
+
+<!-- RESUMEN EJECUTIVO -->
+<h1 id="resumen">1. Resumen Ejecutivo</h1>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-val">108</div><div class="stat-label">Módulos CRM</div></div>
+  <div class="stat-card"><div class="stat-val">85</div><div class="stat-label">Migraciones DB</div></div>
+  <div class="stat-card"><div class="stat-val">32</div><div class="stat-label">Endpoints API</div></div>
+  <div class="stat-card"><div class="stat-val">11</div><div class="stat-label">Cron Jobs</div></div>
+</div>
+
+<p>GFI® es una plataforma SaaS inmobiliaria que centraliza la gestión completa de un corredor matriculado: cartera de propiedades, CRM de contactos, red de corredores (MIR), sitio web personal, publicación en portales y analítica de mercado.</p>
+
+<table>
+  <tr><th>Componente</th><th>Tecnología</th><th>Estado</th></tr>
+  <tr><td>Frontend + Backend</td><td>Next.js 15 (App Router)</td><td><span class="badge badge-green">Producción</span></td></tr>
+  <tr><td>Base de datos</td><td>Supabase (PostgreSQL + RLS)</td><td><span class="badge badge-green">Producción</span></td></tr>
+  <tr><td>Autenticación</td><td>Supabase Auth (email/password + 2FA TOTP)</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>Storage</td><td>Supabase Storage (fotos, planos, documentos)</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>Deploy</td><td>Vercel (edge functions + cron)</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>Email transaccional</td><td>Resend</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>IA / LLM</td><td>Anthropic Claude (Haiku 4.5 / Sonnet 4.6)</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>Push notifications</td><td>Web Push API (VAPID)</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>Dominio</td><td>foroinmobiliario.com.ar</td><td><span class="badge badge-green">Activo</span></td></tr>
+</table>
+
+<!-- NOVEDADES v18 -->
+<div class="page-break"></div>
+<h1 id="novedades">2. Novedades v18 — Mayo 2026</h1>
+
+<p>Las siguientes funcionalidades fueron implementadas en esta versión:</p>
+
+<h2>2.1 Ficha Pública de Propiedad (formulario de contacto)</h2>
+<div class="feature-card feature-new">
+  <div class="feature-title">Formulario de contacto inline <span class="badge-new">NUEVO</span></div>
+  <div class="feature-desc">
+    La ficha pública <code>/inmueble/[id]</code> ahora incluye un formulario de contacto directo. El lead llega al corredor por email (Resend), se guarda en <code>web_leads</code>, se crea el contacto en el CRM y se envía push notification. Ruta: <code>/api/ficha-lead</code>. Rate limit: 5 por IP por hora.<br><br>
+    El formulario incluye selector de tipo de consulta: "Quiero más información", "Quiero visitar la propiedad", "Quiero hacer una oferta", "Me interesa alquilar".
+  </div>
+</div>
+
+<h2>2.2 Campos de Portales Inmobiliarios</h2>
+<p>Se agregaron columnas a <code>cartera_propiedades</code> para compatibilidad con los principales portales:</p>
+<table>
+  <tr><th>Campo</th><th>Portal origen</th><th>Migration</th></tr>
+  <tr><td><code>tipo_cochera</code></td><td>Propia.com.ar</td><td>082</td></tr>
+  <tr><td><code>situacion</code> (Vacía / Habitada / Alquilada)</td><td>Propia.com.ar</td><td>083</td></tr>
+  <tr><td><code>tipo_cielorraso</code></td><td>Propia.com.ar</td><td>083</td></tr>
+  <tr><td><code>tipo_acceso</code></td><td>Propia.com.ar</td><td>083</td></tr>
+  <tr><td><code>planos</code> (array de URLs)</td><td>ZonaProp</td><td>083</td></tr>
+  <tr><td><code>sup_terreno</code></td><td>MercadoLibre</td><td>084</td></tr>
+  <tr><td><code>forma_terreno</code> (Regular/Irregular/En L)</td><td>MercadoLibre</td><td>084</td></tr>
+  <tr><td><code>acceso_calle</code> (Pavimento/Tierra/Ripio)</td><td>MercadoLibre</td><td>084</td></tr>
+  <tr><td><code>precio_anterior</code></td><td>Argenprop (badge de descuento)</td><td>085</td></tr>
+</table>
+
+<h2>2.3 Buscador Público /propiedades</h2>
+<div class="feature-card feature-new">
+  <div class="feature-title">Página pública de búsqueda <span class="badge-new">NUEVO</span></div>
+  <div class="feature-desc">
+    <strong>Ruta:</strong> <code>/propiedades</code><br>
+    <strong>Filtros:</strong> Operación, Tipo, Ciudad, Barrio/Zona, Dormitorios, Moneda, Precio mín/máx, Superficie mínima (m²), Ordenamiento.<br>
+    <strong>Características:</strong> 24 propiedades por página, paginación con ventana deslizante de 7 páginas, badge DESTACADA ⭐, precio anterior tachado + badge de descuento, formulario GET puro (sin JS) para SEO, H1 dinámico según filtros.<br>
+    <strong>Filtro superficie:</strong> Usa OR entre <code>superficie_cubierta</code> y <code>sup_terreno</code> para no excluir terrenos.<br>
+    <strong>SEO:</strong> Metadata dinámica, canonical URL con filtros relevantes incluidos.
+  </div>
+</div>
+
+<h2>2.4 SEO — Schema.org y Meta Tags</h2>
+<ul>
+  <li><strong>JSON-LD RealEstateListing</strong> en cada ficha pública: nombre, precio, superficie, dormitorios, imagen, dirección, disponibilidad.</li>
+  <li><strong>OpenGraph + Twitter Card</strong> con imagen, alt text, locale es_AR en todas las fichas.</li>
+  <li><strong>Sitemap dinámico</strong> en <code>/sitemap.xml</code> con hasta 5000 propiedades + todas las webs de corredores.</li>
+  <li><strong>robots.txt</strong> actualizado con rutas <code>/inmueble/</code> y <code>/propiedades</code> habilitadas.</li>
+  <li><strong>Canonical URL dinámica</strong> en /propiedades incluyendo op/tipo/ciudad/zona.</li>
+</ul>
+
+<h2>2.5 Alertas de Baja de Precio</h2>
+<div class="feature-card feature-new">
+  <div class="feature-title">Email automático a leads cuando baja el precio <span class="badge-new">NUEVO</span></div>
+  <div class="feature-desc">
+    Cuando el corredor actualiza el precio de una propiedad con una baja ≥3%, el sistema envía automáticamente emails a todos los leads (<code>web_leads</code>) que consultaron esa propiedad. El email muestra precio anterior tachado, precio nuevo, porcentaje de descuento y link directo a la ficha. Fire-and-forget (no bloquea el guardado). Implementado en <code>/api/cartera/guardar</code>.
+  </div>
+</div>
+
+<h2>2.6 Seguimiento de Leads en CRM Cartera</h2>
+<ul>
+  <li><strong>Badge ✉ N</strong> en cada tarjeta de propiedad mostrando cantidad de leads recibidos.</li>
+  <li><strong>Toggle "Con leads"</strong> para filtrar solo propiedades que recibieron consultas.</li>
+  <li><strong>Ordenamiento "Más leads"</strong> en el selector de orden del listado.</li>
+  <li><strong>Cálculo server-side</strong> vía <code>/api/cartera/listar</code> con service_role (funciona para colaboradores también).</li>
+</ul>
+
+<h2>2.7 Tracker de Vistas</h2>
+<p>El componente <code>FichaVistaTracker</code> registra cada visita a la ficha pública incrementando el contador <code>vistas</code> en <code>cartera_propiedades</code>. El CRM ya mostraba el badge 👁 N; ahora el dato se actualiza desde el sitio público.</p>
+
+<h2>2.8 Digest Semanal de Leads</h2>
+<div class="feature-card feature-new">
+  <div class="feature-title">Cron job: digest semanal por email <span class="badge-new">NUEVO</span></div>
+  <div class="feature-desc">
+    Cada <strong>lunes a las 9am</strong>, el cron <code>/api/cron/digest-leads</code> envía un email a cada corredor con el resumen de leads de los últimos 7 días: nombre, teléfono, email, propiedad consultada, fecha y link a <code>/mi-web/leads</code>.
+  </div>
+</div>
+
+<h2>2.9 Sincronización de Teléfonos COCIR</h2>
+<p>La página <code>/crm/cocir</code> incluye la pestaña "Sincronizar teléfonos" (solo admins). Cruza los perfiles de GFI con el padrón COCIR por número de matrícula y actualiza teléfono, email e inmobiliaria automáticamente. API: <code>/api/admin/sync-phones-cocir</code>.</p>
+
+<h2>2.10 Tipos de Propiedad nuevos</h2>
+<p>Se agregaron <strong>Chalet</strong> y <strong>Cabaña</strong> al selector de tipos en el wizard de carga de propiedades.</p>
+
+<h2>2.11 Planos en la Ficha Pública</h2>
+<p>Si la propiedad tiene URLs en el campo <code>planos</code>, se muestran como galería de imágenes en la ficha pública, entre el video y el tour virtual.</p>
+
+<!-- ARQUITECTURA -->
+<div class="page-break"></div>
+<h1 id="arquitectura">3. Arquitectura del Sistema</h1>
+
+<h2>3.1 Stack Tecnológico</h2>
+<table>
+  <tr><th>Capa</th><th>Tecnología</th><th>Versión</th></tr>
+  <tr><td>Framework</td><td>Next.js (App Router)</td><td>15.x</td></tr>
+  <tr><td>Lenguaje</td><td>TypeScript (strict mode)</td><td>5.x</td></tr>
+  <tr><td>Base de datos</td><td>PostgreSQL via Supabase</td><td>15</td></tr>
+  <tr><td>Auth</td><td>Supabase Auth</td><td>2.x</td></tr>
+  <tr><td>Storage</td><td>Supabase Storage</td><td>—</td></tr>
+  <tr><td>Deploy</td><td>Vercel</td><td>—</td></tr>
+  <tr><td>Email</td><td>Resend</td><td>4.x</td></tr>
+  <tr><td>IA</td><td>Anthropic SDK</td><td>0.x</td></tr>
+  <tr><td>Mapas</td><td>OpenStreetMap (embed)</td><td>—</td></tr>
+  <tr><td>Video embed</td><td>YouTube / Matterport</td><td>—</td></tr>
+</table>
+
+<h2>3.2 Estructura de Directorios</h2>
+<pre>
+grupo-foro-inmobiliario/
+├── app/
+│   ├── (private)/          # Rutas autenticadas
+│   │   ├── crm/            # 108 módulos CRM
+│   │   ├── mi-web/         # Web personal del corredor
+│   │   ├── dashboard/      # Panel principal
+│   │   ├── perfil/         # Perfil de usuario
+│   │   └── admin/          # Panel de administración
+│   ├── api/                # API Routes (server-side)
+│   │   ├── cartera/        # CRUD de propiedades
+│   │   ├── cron/           # Jobs automatizados
+│   │   ├── admin/          # APIs de administración
+│   │   ├── push/           # Push notifications
+│   │   └── ia-*/           # Endpoints de IA
+│   ├── inmueble/[id]/      # Ficha pública de propiedad
+│   ├── propiedades/        # Buscador público
+│   ├── web/[slug]/         # Web personal pública
+│   └── b/[slug]/           # Blog del corredor
+├── supabase/
+│   └── migrations/         # 85 migraciones SQL
+├── public/                 # Archivos estáticos
+└── vercel.json             # Config Vercel + cron jobs
+</pre>
+
+<h2>3.3 Seguridad</h2>
+<ul>
+  <li><strong>RLS (Row Level Security)</strong>: Todas las tablas tienen políticas de acceso. Los corredores solo ven sus propios datos.</li>
+  <li><strong>Service Role</strong>: Las API routes usan <code>SUPABASE_SERVICE_ROLE_KEY</code> para operaciones administrativas (no expuesto al cliente).</li>
+  <li><strong>Rate Limiting</strong>: Los endpoints públicos tienen rate limiting por IP (ficha-lead: 5/hora).</li>
+  <li><strong>CRON_SECRET</strong>: Los cron jobs se protegen con un header de autorización.</li>
+  <li><strong>XSS</strong>: Los emails HTML usan función <code>esc()</code> que sanitiza caracteres especiales.</li>
+  <li><strong>2FA</strong>: Disponible vía TOTP en <code>/configurar-2fa</code>.</li>
+</ul>
+
+<!-- PÁGINAS PÚBLICAS -->
+<div class="page-break"></div>
+<h1 id="paginas-publicas">4. Páginas Públicas</h1>
+
+<table>
+  <tr><th>Ruta</th><th>Descripción</th><th>SEO</th></tr>
+  <tr><td><code>/</code></td><td>Landing page con propiedades destacadas, banner, módulos y grupos</td><td><span class="badge badge-green">OG + Sitemap</span></td></tr>
+  <tr><td><code>/propiedades</code></td><td>Buscador público con 9 filtros, paginación y destacados</td><td><span class="badge badge-green">JSON-LD + Canonical</span></td></tr>
+  <tr><td><code>/inmueble/[id]</code></td><td>Ficha de propiedad: galería, specs, formulario, mapa, tour, similares</td><td><span class="badge badge-green">JSON-LD + OG + Twitter</span></td></tr>
+  <tr><td><code>/web/[slug]</code></td><td>Sitio web personal del corredor (dominio custom posible)</td><td><span class="badge badge-green">OG</span></td></tr>
+  <tr><td><code>/b/[slug]</code></td><td>Artículos/blog del corredor</td><td><span class="badge badge-yellow">Parcial</span></td></tr>
+  <tr><td><code>/p/[token]</code></td><td>Presentación comercial con link público por token</td><td><span class="badge badge-gray">No indexado</span></td></tr>
+  <tr><td><code>/vendor/[token]</code></td><td>Portal del vendedor privado (link seguro)</td><td><span class="badge badge-gray">No indexado</span></td></tr>
+  <tr><td><code>/login</code></td><td>Login de corredores</td><td>—</td></tr>
+  <tr><td><code>/registro</code></td><td>Registro de nuevos corredores</td><td>—</td></tr>
+  <tr><td><code>/suscripcion</code></td><td>Planes y precios de suscripción</td><td>—</td></tr>
+  <tr><td><code>/sitemap.xml</code></td><td>Sitemap dinámico (todas las propiedades + corredores)</td><td>—</td></tr>
+  <tr><td><code>/robots.txt</code></td><td>Directivas para bots</td><td>—</td></tr>
+</table>
+
+<h2>4.1 Ficha Pública — Contenido completo</h2>
+<ul>
+  <li>Galería de fotos (swipe/click)</li>
+  <li>Precio con badge de descuento si hay precio_anterior</li>
+  <li>Specs técnicos: dormitorios, baños, superficie, cochera, tipo, etc.</li>
+  <li>Descripción completa</li>
+  <li>Tags de características (amenities)</li>
+  <li>Comodidades del edificio</li>
+  <li>Planos (si los hay)</li>
+  <li>Video (YouTube embed)</li>
+  <li>Tour virtual (Matterport embed)</li>
+  <li>Mapa OpenStreetMap</li>
+  <li>Card del corredor con WhatsApp, email, matrícula</li>
+  <li>Formulario de contacto con tipo de consulta</li>
+  <li>Propiedades similares (4 cards)</li>
+</ul>
+
+<!-- CRM -->
+<div class="page-break"></div>
+<h1 id="crm">5. Módulos CRM</h1>
+
+<p>El CRM cuenta con <strong>108 módulos completamente implementados</strong>. Acceso: <code>/crm/[módulo]</code>.</p>
+
+<h2>5.1 Gestión de Cartera (<code>/crm/cartera</code>)</h2>
+<p>Módulo central. Wizard de 5 pasos para carga/edición de propiedades:</p>
+<ul>
+  <li><strong>Paso 1</strong>: Datos básicos (tipo, operación, título, descripción)</li>
+  <li><strong>Paso 2</strong>: Precio (USD/ARS, expensas, precio anterior, financiamiento)</li>
+  <li><strong>Paso 3</strong>: Ubicación (dirección, zona, ciudad, coordenadas GPS, mapa)</li>
+  <li><strong>Paso 4</strong>: Características (superficie, dormitorios, baños, cochera, amenities, portales)</li>
+  <li><strong>Paso 5</strong>: Fotos + Planos (hasta 30 fotos, hasta 10 planos, drag & drop)</li>
+</ul>
+<p>El listado muestra badges de estado, vistas (👁), leads (✉), publicación web (🌐), destacada (⭐) y sync con portales (Tokko ✓, KiteProp ✓).</p>
+
+<h2>5.2 Módulos de Análisis</h2>
+<table>
+  <tr><th>Módulo</th><th>Función</th></tr>
+  <tr><td>estadisticas</td><td>Dashboard de KPIs: cartera por estado, valor total, top vistas, web leads, visitas</td></tr>
+  <tr><td>kpi-diario</td><td>KPIs del día en tiempo real</td></tr>
+  <tr><td>analisis-zona</td><td>Datos de actividad por zona geográfica</td></tr>
+  <tr><td>tiempo-venta</td><td>Días promedio hasta venta por tipo y zona</td></tr>
+  <tr><td>win-loss</td><td>Análisis de operaciones ganadas vs perdidas</td></tr>
+  <tr><td>pipeline-velocity</td><td>Velocidad de avance en el pipeline</td></tr>
+  <tr><td>mapa-calor</td><td>Mapa de calor de actividad inmobiliaria</td></tr>
+</table>
+
+<h2>5.3 Módulos de Contactos</h2>
+<table>
+  <tr><th>Módulo</th><th>Función</th></tr>
+  <tr><td>contactos</td><td>CRM completo: compradores, vendedores, inversores. Estado, etiquetas, presupuesto, zona de interés</td></tr>
+  <tr><td>smart-match</td><td>IA para cruzar contactos con propiedades por compatibilidad (precio, zona, tipo)</td></tr>
+  <tr><td>match-clientes</td><td>Matching manual con sliders de compatibilidad</td></tr>
+  <tr><td>scoring</td><td>Sistema de puntuación de leads</td></tr>
+  <tr><td>seguimiento</td><td>Pipeline de seguimiento de contactos</td></tr>
+  <tr><td>embudo</td><td>Embudo de ventas visual</td></tr>
+  <tr><td>pipeline-kanban</td><td>Vista kanban de negocios</td></tr>
+</table>
+
+<h2>5.4 Integraciones con Portales</h2>
+<table>
+  <tr><th>Portal</th><th>Integración</th><th>Estado</th></tr>
+  <tr><td>Tokko</td><td>OAuth + sync bidireccional de cartera</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>KiteProp</td><td>API key + publicación de propiedades</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>MercadoLibre</td><td>OAuth 2.0 (Authorization Code) + campos específicos ML</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>ZonaProp</td><td>Campos de portales (planos, datos técnicos)</td><td><span class="badge badge-yellow">Parcial</span></td></tr>
+  <tr><td>Argenprop</td><td>Precio anterior con badge de descuento</td><td><span class="badge badge-green">Activo</span></td></tr>
+  <tr><td>Propia.com.ar</td><td>Campos tipo_cochera, situacion, planos, etc.</td><td><span class="badge badge-green">Activo</span></td></tr>
+</table>
+
+<!-- MI-WEB -->
+<h1 id="mi-web">6. Módulo Mi Web</h1>
+<p>Cada corredor tiene un sitio web personal en <code>/web/[slug]</code>. Gestión desde <code>/mi-web</code>.</p>
+
+<table>
+  <tr><th>Sub-módulo</th><th>Función</th></tr>
+  <tr><td>mi-web (raíz)</td><td>Configuración general: logo, banner, paleta, redes sociales, SEO</td></tr>
+  <tr><td>leads</td><td>Bandeja de leads con filtros, exportar CSV, convertir a contacto CRM, crear negocio</td></tr>
+  <tr><td>blog</td><td>Editor de posts con imagen destacada y categorías</td></tr>
+  <tr><td>instagram</td><td>Feed de Instagram embebido</td></tr>
+  <tr><td>testimonios</td><td>Gestión de testimonios de clientes con foto y rating</td></tr>
+</table>
+
+<!-- API -->
+<div class="page-break"></div>
+<h1 id="api">7. Endpoints API</h1>
+
+<h2>7.1 Cartera de Propiedades</h2>
+<table>
+  <tr><th>Endpoint</th><th>Método</th><th>Función</th><th>Auth</th></tr>
+  <tr><td><code>/api/cartera/listar</code></td><td>GET</td><td>Lista propiedades del corredor con leads_count incluido</td><td>Bearer</td></tr>
+  <tr><td><code>/api/cartera/guardar</code></td><td>POST</td><td>Crea/edita propiedad; detecta baja de precio y envía alertas</td><td>Bearer</td></tr>
+  <tr><td><code>/api/ficha-lead</code></td><td>POST</td><td>Recibe lead desde ficha pública, notifica corredor</td><td>Rate limit IP</td></tr>
+  <tr><td><code>/api/cartera/vista</code></td><td>POST</td><td>Incrementa contador de vistas de una propiedad</td><td>Público</td></tr>
+  <tr><td><code>/api/cartera/import-csv</code></td><td>POST</td><td>Importa propiedades desde CSV</td><td>Bearer</td></tr>
+  <tr><td><code>/api/cartera/import-tokko</code></td><td>GET</td><td>Importa propiedades desde Tokko</td><td>Bearer</td></tr>
+</table>
+
+<h2>7.2 IA — Inteligencia Artificial</h2>
+<table>
+  <tr><th>Endpoint</th><th>Función</th><th>Modelo</th></tr>
+  <tr><td><code>/api/ia-descripcion</code></td><td>Genera descripción de propiedad con tono configurable (profesional/premium/amigable/vendedor)</td><td>claude-haiku-4-5</td></tr>
+  <tr><td><code>/api/ia-post-rrss</code></td><td>Genera post para Instagram/WhatsApp/Facebook con emojis y hashtags</td><td>claude-haiku-4-5</td></tr>
+  <tr><td><code>/api/ia-matching</code></td><td>Matching inteligente contacto↔propiedades con score y justificación</td><td>claude-sonnet-4-6</td></tr>
+  <tr><td><code>/api/ia-chat</code></td><td>Chat flotante de asistencia inmobiliaria</td><td>claude-haiku-4-5</td></tr>
+  <tr><td><code>/api/ia-propuesta-captacion</code></td><td>Genera propuesta comercial de captación con IA</td><td>claude-sonnet-4-6</td></tr>
+  <tr><td><code>/api/ia-contrato</code></td><td>Analiza y genera contratos con IA</td><td>claude-sonnet-4-6</td></tr>
+  <tr><td><code>/api/ia-analisis-mercado</code></td><td>Análisis de datos de mercado anonimizados con IA</td><td>claude-sonnet-4-6</td></tr>
+  <tr><td><code>/api/ia-respuesta</code></td><td>Genera respuesta a mensajes de leads o clientes</td><td>claude-haiku-4-5</td></tr>
+  <tr><td><code>/api/tasador-ia</code></td><td>Tasación automática con comparables de mercado</td><td>claude-sonnet-4-6</td></tr>
+</table>
+
+<!-- CRON JOBS -->
+<h1 id="cron">8. Cron Jobs Automatizados</h1>
+
+<table>
+  <tr><th>Ruta</th><th>Schedule</th><th>Función</th></tr>
+  <tr><td><code>/api/cron/digest-leads</code> <span class="badge-new">NUEVO</span></td><td>Lunes 9am</td><td>Email semanal con resumen de leads por corredor</td></tr>
+  <tr><td><code>/api/cron/recordatorio-vencimiento</code></td><td>Diario 9am</td><td>Alertas de vencimiento de autorizaciones y contratos</td></tr>
+  <tr><td><code>/api/cron/autorizaciones-alert</code></td><td>Diario 8am</td><td>Alertas push de autorizaciones próximas a vencer</td></tr>
+  <tr><td><code>/api/cron/sync-cocir</code></td><td>Diario 4am</td><td>Sincronización del padrón COCIR de matriculados</td></tr>
+  <tr><td><code>/api/cron/sync-tokko</code></td><td>Diario 3am</td><td>Sincronización de cartera con portal Tokko</td></tr>
+  <tr><td><code>/api/cron/eventos-notif</code></td><td>Diario 10am</td><td>Notificaciones de eventos próximos del sector</td></tr>
+  <tr><td><code>/api/cron/networking-notif</code></td><td>Diario 9am</td><td>Notificaciones de actividad de networking</td></tr>
+  <tr><td><code>/api/cron/bloqueo-dia4</code></td><td>Diario 10am</td><td>Bloqueo de operaciones en día 4 del proceso</td></tr>
+  <tr><td><code>/api/cron/republica-beneficios</code></td><td>Diario 8am</td><td>Sync de beneficios de República</td></tr>
+  <tr><td><code>/api/admin/sync-jus</code></td><td>Diario 6am</td><td>Sincronización con registros de Justicia</td></tr>
+  <tr><td><code>/api/tasador-ia/actualizar-mercado</code></td><td>Lunes 4am</td><td>Actualiza datos de mercado para el tasador IA</td></tr>
+</table>
+
+<!-- MIGRACIONES -->
+<div class="page-break"></div>
+<h1 id="migraciones">9. Migraciones de Base de Datos</h1>
+
+<p>Estado: <span class="badge badge-green">85 migraciones aplicadas</span>. Todas son idempotentes (<code>ADD COLUMN IF NOT EXISTS</code>).</p>
+
+<h2>9.1 Tablas Principales</h2>
+<table>
+  <tr><th>Tabla</th><th>Descripción</th><th>Migration</th></tr>
+  <tr><td>perfiles</td><td>Datos del corredor (nombre, matrícula, teléfono, plan)</td><td>001</td></tr>
+  <tr><td>cartera_propiedades</td><td>Propiedades del corredor (70+ columnas)</td><td>003, 026-085</td></tr>
+  <tr><td>web_leads</td><td>Leads del sitio web público</td><td>001, 074, 081</td></tr>
+  <tr><td>crm_contactos</td><td>Contactos del CRM</td><td>062</td></tr>
+  <tr><td>crm_negocios</td><td>Negocios en proceso</td><td>062</td></tr>
+  <tr><td>crm_tareas</td><td>Tareas asignadas</td><td>062</td></tr>
+  <tr><td>cocir_padron</td><td>Padrón de matriculados COCIR</td><td>036</td></tr>
+  <tr><td>eventos_agenda</td><td>Eventos y citas agendadas</td><td>064</td></tr>
+  <tr><td>push_subscriptions</td><td>Suscripciones a push notifications</td><td>017</td></tr>
+  <tr><td>portal_credenciales</td><td>Credenciales OAuth de portales</td><td>050</td></tr>
+  <tr><td>cartera_sync_portales</td><td>Estado de sync por portal y propiedad</td><td>072</td></tr>
+  <tr><td>web_corredor_config</td><td>Configuración del sitio personal</td><td>069</td></tr>
+</table>
+
+<h2>9.2 Migraciones de esta versión (v18)</h2>
+<table>
+  <tr><th>Migration</th><th>Descripción</th></tr>
+  <tr><td>081_web_leads_slug_nullable</td><td>Permite <code>slug = NULL</code> en web_leads para leads desde ficha directa</td></tr>
+  <tr><td>082_cartera_tipo_cochera</td><td>Agrega <code>tipo_cochera</code> text</td></tr>
+  <tr><td>083_cartera_campos_propia_zonaprop</td><td>Agrega <code>situacion</code>, <code>tipo_cielorraso</code>, <code>tipo_acceso</code>, <code>planos text[]</code></td></tr>
+  <tr><td>084_cartera_campos_ml</td><td>Agrega <code>sup_terreno</code>, <code>forma_terreno</code>, <code>acceso_calle</code></td></tr>
+  <tr><td>085_cartera_precio_anterior</td><td>Agrega <code>precio_anterior numeric(15,2)</code></td></tr>
+</table>
+
+<!-- INTEGRACIONES -->
+<h1 id="integraciones">10. Integraciones Externas</h1>
+<table>
+  <tr><th>Servicio</th><th>Variable env</th><th>Uso</th></tr>
+  <tr><td>Supabase</td><td>NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_SUPABASE_ANON_KEY</td><td>DB, Auth, Storage</td></tr>
+  <tr><td>Resend</td><td>RESEND_API_KEY</td><td>Emails transaccionales, alertas, digest</td></tr>
+  <tr><td>Anthropic</td><td>ANTHROPIC_API_KEY</td><td>IA (descripciones, matching, tasación, chat)</td></tr>
+  <tr><td>Tokko</td><td>Almacenado en portal_credenciales</td><td>Sync de cartera</td></tr>
+  <tr><td>KiteProp</td><td>Almacenado en portal_credenciales</td><td>Publicación de propiedades</td></tr>
+  <tr><td>MercadoLibre</td><td>ML_APP_ID, ML_APP_SECRET (+ OAuth tokens en DB)</td><td>Publicación y sync</td></tr>
+  <tr><td>Google Calendar</td><td>OAuth tokens en perfiles</td><td>Sync de agenda</td></tr>
+  <tr><td>Replicate</td><td>REPLICATE_API_TOKEN</td><td>IA para decorar fotos de propiedades</td></tr>
+  <tr><td>VAPID Keys</td><td>NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY</td><td>Push notifications</td></tr>
+  <tr><td>Vercel</td><td>—</td><td>Deploy, Edge Functions, Cron Jobs</td></tr>
+  <tr><td>CRON_SECRET</td><td>CRON_SECRET</td><td>Protección de endpoints cron</td></tr>
+</table>
+
+<!-- PENDIENTES Y SUGERENCIAS -->
+<div class="page-break"></div>
+<h1 id="pendientes">14. Funcionalidades Sugeridas (roadmap)</h1>
+
+<p>El sistema está en estado producción. Las siguientes funcionalidades representan posibles mejoras futuras:</p>
+
+<div class="grid-2">
+  <div class="feature-card">
+    <div class="feature-title">📱 App móvil PWA mejorada</div>
+    <div class="feature-desc">Mejorar la experiencia PWA con instalación guiada, shortcuts de cámara para fotos de propiedades y notificaciones push en iOS.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-title">🗺 Vista de mapa en /propiedades</div>
+    <div class="feature-desc">Agregar toggle "Ver en mapa" en la búsqueda pública para mostrar las propiedades con pins sobre un mapa interactivo.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-title">📊 Alerta de nuevas propiedades</div>
+    <div class="feature-desc">Permitir a usuarios públicos suscribirse a alertas cuando se publique una propiedad que coincida con sus filtros (tipo, zona, precio).</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-title">📄 Exportar ficha a PDF</div>
+    <div class="feature-desc">Generar un PDF de la ficha de propiedad para enviar a clientes, con logo del corredor, fotos y especificaciones técnicas.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-title">💬 Integración WhatsApp Business API</div>
+    <div class="feature-desc">Enviar recordatorios de visita y confirmaciones directamente por WhatsApp Business de forma automática.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-title">🏘 Multi-sucursal</div>
+    <div class="feature-desc">Permitir que una inmobiliaria gestione múltiples sucursales con corredores agrupados bajo una cuenta master.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-title">📱 QR de propiedad</div>
+    <div class="feature-desc">Generar código QR con link a la ficha pública para usar en carteles, volantes y presentaciones.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-title">🔄 Publicación a ZonaProp</div>
+    <div class="feature-desc">API directa con ZonaProp para publicar propiedades sin necesidad de usar Tokko como intermediario.</div>
+  </div>
+</div>
+
+<div class="callout callout-info">
+  <strong>Nota:</strong> Este manual corresponde al estado del sistema al 19 de mayo de 2026. Para la versión más actualizada, consultar el repositorio en GitHub.
+</div>
+
+<br>
+<div style="text-align:center; padding: 30px 0; border-top: 2px solid #f0f0f0; margin-top: 40px;">
+  <div style="font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; color:#0a0a0a;">Grupo Foro <span style="color:#cc0000">Inmobiliario</span></div>
+  <div style="font-size:11px; color:#999; margin-top:6px;">Manual Técnico v18 · Mayo 2026 · Confidencial</div>
+</div>
+
+</div><!-- end content -->
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manual de Usuario — Grupo Foro Inmobiliario</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', Arial, sans-serif; background: #f5f5f5; color: #1a1a1a; font-size: 16px; line-height: 1.7; }
+
+  .portada {
+    background: #0a0a0a;
+    color: #fff;
+    padding: 80px 40px;
+    text-align: center;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .portada h1 { font-family: Montserrat, Arial, sans-serif; font-size: 2.4rem; font-weight: 800; color: #cc0000; margin-bottom: 12px; }
+  .portada p { font-size: 1.1rem; color: #aaa; max-width: 560px; }
+  .portada .version { margin-top: 20px; background: #cc0000; display: inline-block; padding: 4px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; }
+
+  .no-print { text-align: center; padding: 20px; background: #fff; border-bottom: 2px solid #eee; }
+  .no-print button {
+    background: #cc0000; color: #fff; border: none; padding: 12px 30px;
+    border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer;
+    font-family: inherit;
+  }
+  .no-print button:hover { background: #a80000; }
+
+  .contenido { max-width: 800px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  h2 {
+    font-family: Montserrat, Arial, sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0a0a0a;
+    margin: 48px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #cc0000;
+  }
+  h3 {
+    font-family: Montserrat, Arial, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #cc0000;
+    margin: 28px 0 10px;
+  }
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 22px; margin-bottom: 14px; }
+  li { margin-bottom: 6px; }
+
+  .paso {
+    background: #fff;
+    border-left: 4px solid #cc0000;
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .paso .num {
+    display: inline-block;
+    background: #cc0000;
+    color: #fff;
+    border-radius: 50%;
+    width: 28px; height: 28px;
+    line-height: 28px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .paso strong { font-size: 1rem; vertical-align: middle; }
+
+  .tip {
+    background: #fffbe6;
+    border: 1px solid #f0d000;
+    border-radius: 6px;
+    padding: 12px 18px;
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+  }
+  .tip::before { content: "💡 "; }
+
+  .alerta {
+    background: #fff0f0;
+    border: 1px solid #cc0000;
+    border-radius: 6px;
+    padding: 12px 18px;
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+  }
+  .alerta::before { content: "⚠️ "; }
+
+  .seccion-indice {
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 36px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .seccion-indice h2 { margin-top: 0; }
+  .seccion-indice ol { font-size: 1rem; }
+  .seccion-indice a { color: #cc0000; text-decoration: none; font-weight: 600; }
+  .seccion-indice a:hover { text-decoration: underline; }
+
+  .tarjeta {
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+
+  code {
+    background: #f0f0f0;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+
+  .pregunta {
+    background: #0a0a0a;
+    color: #fff;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin: 20px 0 8px;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .pregunta::before { content: "❓ "; }
+
+  .respuesta {
+    background: #fff;
+    border-left: 4px solid #0a0a0a;
+    border-radius: 0 6px 6px 0;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 0.97rem;
+  }
+
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #fff; }
+    .portada { min-height: auto; padding: 50px 20px; page-break-after: always; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    .tarjeta, .paso, .seccion-indice { box-shadow: none; border: 1px solid #e0e0e0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <h1>Manual de Usuario</h1>
+  <p>Grupo Foro Inmobiliario · Guía paso a paso para usar todas las funciones de la plataforma</p>
+  <div class="version">VERSIÓN 2025</div>
+</div>
+
+<div class="no-print">
+  <button onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+</div>
+
+<div class="contenido">
+
+  <div class="seccion-indice">
+    <h2>¿Qué encontrás en este manual?</h2>
+    <ol>
+      <li><a href="#login">Cómo entrar al sistema</a></li>
+      <li><a href="#cargar">Cómo cargar una propiedad</a></li>
+      <li><a href="#editar">Cómo editar o eliminar una propiedad</a></li>
+      <li><a href="#leads">Cómo ver los contactos / leads que llegaron</a></li>
+      <li><a href="#publicar-web">Cómo publicar en la web pública</a></li>
+      <li><a href="#buscador">Cómo usar el buscador de propiedades</a></li>
+      <li><a href="#miweb">Cómo configurar mi perfil web</a></li>
+      <li><a href="#colaboradores">Cómo agregar un colaborador</a></li>
+      <li><a href="#alertas">Alertas automáticas por email</a></li>
+      <li><a href="#preguntas">Preguntas frecuentes</a></li>
+    </ol>
+  </div>
+
+  <!-- ─── LOGIN ──────────────────────────────────────────────────── -->
+  <h2 id="login">1. Cómo entrar al sistema</h2>
+  <div class="tarjeta">
+    <div class="paso"><span class="num">1</span><strong>Abrí el navegador</strong> (Google Chrome, Firefox o Safari) y entrá a la dirección que te dieron.</div>
+    <div class="paso"><span class="num">2</span><strong>Hacé clic en "Ingresar"</strong> en la esquina superior derecha de la pantalla.</div>
+    <div class="paso"><span class="num">3</span><strong>Escribí tu email y contraseña</strong> y presioná "Entrar".</div>
+    <div class="paso"><span class="num">4</span>Si es tu primera vez, revisá tu correo electrónico: te llegó un mail con un enlace para confirmar tu cuenta. Hacé clic en ese enlace y después volvé a ingresar.</div>
+
+    <div class="tip">Si olvidás tu contraseña, hacé clic en "¿Olvidaste tu contraseña?" en la pantalla de login. Te vamos a mandar un correo para que la cambies.</div>
+    <div class="alerta">Si el link de confirmación ya venció (pasan más de 24 horas), pedile al administrador que te reenvíe la invitación.</div>
+  </div>
+
+  <!-- ─── CARGAR PROPIEDAD ───────────────────────────────────────── -->
+  <h2 id="cargar">2. Cómo cargar una propiedad</h2>
+  <div class="tarjeta">
+    <div class="paso"><span class="num">1</span>Una vez adentro, hacé clic en <strong>"CRM"</strong> en el menú superior.</div>
+    <div class="paso"><span class="num">2</span>Hacé clic en <strong>"Mi Cartera"</strong>.</div>
+    <div class="paso"><span class="num">3</span>Presioná el botón rojo <strong>"+ Nueva Propiedad"</strong>.</div>
+    <div class="paso"><span class="num">4</span>Completá los campos del formulario:
+      <ul>
+        <li><strong>Título:</strong> escribí algo descriptivo, ej: "Casa 3 dormitorios con pileta en Fisherton"</li>
+        <li><strong>Operación:</strong> elegí Venta, Alquiler o Alquiler Temporario</li>
+        <li><strong>Tipo:</strong> Casa, Departamento, Terreno, Local, etc.</li>
+        <li><strong>Precio:</strong> el número sin puntos ni comas. Elegí la moneda (ARS o USD).</li>
+        <li><strong>Ciudad y Barrio/Zona:</strong> escribí dónde está ubicada</li>
+        <li><strong>Superficie:</strong> en metros cuadrados</li>
+        <li><strong>Descripción:</strong> contá todo lo importante de la propiedad</li>
+      </ul>
+    </div>
+    <div class="paso"><span class="num">5</span>Para subir fotos, hacé clic en <strong>"Agregar fotos"</strong>. Podés subir varias a la vez.</div>
+    <div class="paso"><span class="num">6</span>Cuando terminés, presioná <strong>"Guardar"</strong>.</div>
+
+    <div class="tip">Cuantas más fotos subas (al menos 5-8 fotos de buena calidad), más consultas vas a recibir.</div>
+    <div class="tip">Si no querés que el precio aparezca en la web, tildá la opción "Ocultar precio".</div>
+  </div>
+
+  <!-- ─── EDITAR PROPIEDAD ──────────────────────────────────────── -->
+  <h2 id="editar">3. Cómo editar o eliminar una propiedad</h2>
+  <div class="tarjeta">
+    <h3>Para editar</h3>
+    <div class="paso"><span class="num">1</span>Andá a <strong>CRM → Mi Cartera</strong>.</div>
+    <div class="paso"><span class="num">2</span>Encontrá la propiedad que querés modificar.</div>
+    <div class="paso"><span class="num">3</span>Hacé clic en el botón <strong>"Editar"</strong> (ícono de lápiz o el texto "Editar").</div>
+    <div class="paso"><span class="num">4</span>Cambiá lo que necesitás y presioná <strong>"Guardar"</strong>.</div>
+
+    <div class="tip">Si bajás el precio más de un 3%, el sistema avisa automáticamente por email a todos los interesados que preguntaron por esa propiedad.</div>
+
+    <h3>Para cambiar el estado</h3>
+    <p>Podés marcar una propiedad como <strong>Reservada</strong> o <strong>Vendida/Alquilada</strong> desde el botón de estado en la tarjeta de la propiedad. Esto no la borra, solo cambia cómo aparece.</p>
+
+    <h3>Para eliminar</h3>
+    <div class="alerta">Eliminar una propiedad es permanente. Solo hacelo si estás seguro.</div>
+    <div class="paso"><span class="num">1</span>Hacé clic en los tres puntos (⋯) o en el botón "Eliminar".</div>
+    <div class="paso"><span class="num">2</span>Confirmá que querés eliminiarla.</div>
+  </div>
+
+  <!-- ─── LEADS ─────────────────────────────────────────────────── -->
+  <h2 id="leads">4. Cómo ver los contactos / leads que llegaron</h2>
+  <div class="tarjeta">
+    <p>Cuando alguien completa el formulario de contacto en la web para preguntar por una propiedad, eso se llama un <strong>"lead"</strong>. Podés ver todos los leads desde el CRM.</p>
+
+    <div class="paso"><span class="num">1</span>Andá a <strong>CRM → Leads</strong> (o "Contactos") en el menú.</div>
+    <div class="paso"><span class="num">2</span>Vas a ver una lista con: nombre, teléfono, email, propiedad por la que preguntó y fecha.</div>
+    <div class="paso"><span class="num">3</span>Podés filtrar por estado (Nuevo, En contacto, Cerrado) para organizarte mejor.</div>
+    <div class="paso"><span class="num">4</span>Hacé clic en un lead para ver el detalle y agregar notas.</div>
+
+    <div class="tip">
+      <strong>¿Cuántos leads tiene cada propiedad?</strong> En Mi Cartera, cada propiedad muestra un número rojo con el ícono ✉ que indica cuántos contactos recibió. Podés ordenar por "Más leads" para ver las propiedades más consultadas.
+    </div>
+
+    <h3>Resumen semanal por email</h3>
+    <p>Todos los lunes a las 9am recibís un email con un resumen de todos los leads de la semana anterior: nombre, teléfono, email y la propiedad por la que preguntaron.</p>
+  </div>
+
+  <!-- ─── PUBLICAR EN WEB ───────────────────────────────────────── -->
+  <h2 id="publicar-web">5. Cómo publicar en la web pública</h2>
+  <div class="tarjeta">
+    <p>Las propiedades que cargás en el CRM no aparecen automáticamente en la web pública. Tenés que activarlas.</p>
+
+    <div class="paso"><span class="num">1</span>Andá a <strong>CRM → Mi Cartera</strong>.</div>
+    <div class="paso"><span class="num">2</span>Encontrá la propiedad que querés publicar.</div>
+    <div class="paso"><span class="num">3</span>Buscá el switch o botón que dice <strong>"Publicar en web"</strong> (o "Visible en web") y activalo.</div>
+    <div class="paso"><span class="num">4</span>La propiedad ahora aparece en <code>/propiedades</code> en la web pública.</div>
+
+    <div class="tip">Si marcás una propiedad como <strong>"Destacada"</strong>, aparece primero en los resultados de búsqueda y con un badge especial.</div>
+
+    <h3>Sincronizar con portales (Tokko, Cocir)</h3>
+    <p>Si tu cuenta tiene integración con portales externos como Tokko Broker, las propiedades se sincronizan automáticamente cada noche. No tenés que hacer nada extra.</p>
+    <p>En cada propiedad de tu cartera podés ver el estado de sincronización (si se publicó bien o hubo algún error).</p>
+  </div>
+
+  <!-- ─── BUSCADOR ──────────────────────────────────────────────── -->
+  <h2 id="buscador">6. Cómo usar el buscador de propiedades</h2>
+  <div class="tarjeta">
+    <p>Cualquier visitante (sin necesidad de registrarse) puede buscar propiedades en <code>/propiedades</code>.</p>
+
+    <h3>Filtros disponibles</h3>
+    <ul>
+      <li><strong>Operación:</strong> Venta, Alquiler o Alquiler Temporario</li>
+      <li><strong>Tipo:</strong> Casa, Departamento, Terreno, Local, etc.</li>
+      <li><strong>Ciudad:</strong> escribí el nombre de la ciudad</li>
+      <li><strong>Barrio/Zona:</strong> para filtrar dentro de una ciudad</li>
+      <li><strong>Dormitorios:</strong> mínimo de habitaciones</li>
+      <li><strong>Precio desde/hasta:</strong> rango de precios</li>
+      <li><strong>Superficie mínima:</strong> metros cuadrados</li>
+    </ul>
+
+    <div class="paso"><span class="num">1</span>Elegí los filtros que querés y presioná <strong>"Buscar"</strong>.</div>
+    <div class="paso"><span class="num">2</span>Los resultados aparecen como tarjetas con foto, precio y datos principales.</div>
+    <div class="paso"><span class="num">3</span>Hacé clic en una propiedad para ver el detalle completo.</div>
+    <div class="paso"><span class="num">4</span>En la ficha de la propiedad podés completar el formulario de contacto para pedir más información.</div>
+
+    <div class="tip">Podés compartir el link del buscador con los filtros ya aplicados. La dirección cambia automáticamente según los filtros que elegiste.</div>
+  </div>
+
+  <!-- ─── MI WEB ─────────────────────────────────────────────────── -->
+  <h2 id="miweb">7. Cómo configurar mi perfil web</h2>
+  <div class="tarjeta">
+    <p>Cada corredor tiene una página personal pública donde aparecen sus propiedades y su información de contacto.</p>
+
+    <div class="paso"><span class="num">1</span>Andá a <strong>CRM → Mi Web</strong> en el menú.</div>
+    <div class="paso"><span class="num">2</span>Completá tu <strong>nombre profesional</strong>, <strong>teléfono</strong> y <strong>descripción</strong>.</div>
+    <div class="paso"><span class="num">3</span>Subí tu <strong>foto de perfil</strong> o logo.</div>
+    <div class="paso"><span class="num">4</span>Si tenés redes sociales, podés agregar los links.</div>
+    <div class="paso"><span class="num">5</span>Guardá los cambios.</div>
+
+    <div class="tip">Tu página pública está en <code>/corredor/tu-nombre</code>. Compartí ese link en tus redes y tarjetas de presentación.</div>
+  </div>
+
+  <!-- ─── COLABORADORES ─────────────────────────────────────────── -->
+  <h2 id="colaboradores">8. Cómo agregar un colaborador</h2>
+  <div class="tarjeta">
+    <p>Un colaborador es alguien que puede ver y gestionar tu cartera, pero no tiene acceso a tu cuenta personal.</p>
+
+    <div class="paso"><span class="num">1</span>Andá a <strong>CRM → Colaboradores</strong>.</div>
+    <div class="paso"><span class="num">2</span>Hacé clic en <strong>"Invitar colaborador"</strong>.</div>
+    <div class="paso"><span class="num">3</span>Escribí el <strong>email</strong> de la persona a invitar.</div>
+    <div class="paso"><span class="num">4</span>La persona va a recibir un email con un link para crear su cuenta y acceder a tu cartera.</div>
+
+    <div class="tip">El colaborador ve todas tus propiedades y leads, pero no puede cambiar tu contraseña ni tu información de pago.</div>
+  </div>
+
+  <!-- ─── ALERTAS ───────────────────────────────────────────────── -->
+  <h2 id="alertas">9. Alertas automáticas por email</h2>
+  <div class="tarjeta">
+    <p>El sistema envía emails automáticos en distintas situaciones. No tenés que hacer nada para activarlos, funcionan solos.</p>
+
+    <table style="width:100%; border-collapse: collapse; font-size: 0.95rem;">
+      <thead>
+        <tr style="background: #0a0a0a; color: #fff;">
+          <th style="padding: 10px 14px; text-align: left;">Situación</th>
+          <th style="padding: 10px 14px; text-align: left;">¿Quién recibe el email?</th>
+          <th style="padding: 10px 14px; text-align: left;">¿Cuándo?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background: #fff;">
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Nuevo lead / consulta</td>
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">El corredor dueño de la propiedad</td>
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Al instante</td>
+        </tr>
+        <tr style="background: #f9f9f9;">
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Baja de precio (&gt;3%)</td>
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Todos los que preguntaron por esa propiedad</td>
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Al guardar el cambio</td>
+        </tr>
+        <tr style="background: #fff;">
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Resumen semanal de leads</td>
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">El corredor</td>
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Todos los lunes 9am</td>
+        </tr>
+        <tr style="background: #f9f9f9;">
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Recordatorio matrícula por vencer</td>
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">El corredor</td>
+          <td style="padding: 10px 14px; border-bottom: 1px solid #eee;">Días antes del vencimiento</td>
+        </tr>
+        <tr style="background: #fff;">
+          <td style="padding: 10px 14px;">Eventos del Foro</td>
+          <td style="padding: 10px 14px;">Miembros inscritos</td>
+          <td style="padding: 10px 14px;">24-48h antes del evento</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── PREGUNTAS FRECUENTES ─────────────────────────────────── -->
+  <h2 id="preguntas">10. Preguntas frecuentes</h2>
+
+  <div class="tarjeta">
+
+    <div class="pregunta">¿Cómo cambio mi contraseña?</div>
+    <div class="respuesta">
+      Andá a la esquina superior derecha donde dice tu nombre → "Mi cuenta" → "Cambiar contraseña". Escribí tu contraseña actual y la nueva dos veces. Presioná "Guardar".
+    </div>
+
+    <div class="pregunta">No me llegan los emails de leads, ¿qué hago?</div>
+    <div class="respuesta">
+      <ol>
+        <li>Revisá la carpeta de <strong>spam o correo no deseado</strong>.</li>
+        <li>Asegurate de que el email con el que te registraste es correcto.</li>
+        <li>Si el problema sigue, avisale al administrador para que revise el sistema.</li>
+      </ol>
+    </div>
+
+    <div class="pregunta">¿Cómo hago para que una propiedad aparezca primero en los resultados?</div>
+    <div class="respuesta">
+      Editá la propiedad y marcá la opción <strong>"Destacada"</strong>. Las propiedades destacadas aparecen primero en la búsqueda y tienen un badge especial.
+    </div>
+
+    <div class="pregunta">Cargué una propiedad pero no aparece en la web, ¿por qué?</div>
+    <div class="respuesta">
+      Hay dos pasos: cargar la propiedad Y publicarla en la web. Son pasos separados. Andá a Mi Cartera, encontrá la propiedad y activá el switch <strong>"Publicar en web"</strong>.
+    </div>
+
+    <div class="pregunta">¿Puedo subir fotos desde el celular?</div>
+    <div class="respuesta">
+      Sí. La plataforma funciona desde el celular. Podés subir fotos directamente desde la cámara o galería de tu teléfono al editar una propiedad.
+    </div>
+
+    <div class="pregunta">¿Qué pasa con las propiedades que ya vendí o alquilé?</div>
+    <div class="respuesta">
+      Cambiá el estado a <strong>"Vendida"</strong> o <strong>"Alquilada"</strong> (o "Cerrada"). Eso las desactiva de la web pero las mantiene en el historial del CRM. Así podés consultarlas después.
+    </div>
+
+    <div class="pregunta">¿Cómo le comparto una propiedad a un cliente?</div>
+    <div class="respuesta">
+      Abrí la ficha de la propiedad en la web pública y copiá el link de la barra de direcciones. Ese link lo podés mandar por WhatsApp, email o cualquier canal.
+    </div>
+
+    <div class="pregunta">¿Cuántas propiedades puedo cargar?</div>
+    <div class="respuesta">
+      Depende del plan que tenga tu cuenta. Consultale al administrador si llegaste al límite.
+    </div>
+
+    <div class="pregunta">¿Cómo sé si alguien vio mi propiedad en la web?</div>
+    <div class="respuesta">
+      Por ahora el sistema registra las <strong>consultas (leads)</strong> que recibiste. El número de visitas generales lo podés ver si tu cuenta tiene Google Analytics integrado. Consultá al administrador.
+    </div>
+
+    <div class="pregunta">¿Cómo actualizo el precio de una propiedad?</div>
+    <div class="respuesta">
+      <ol>
+        <li>Andá a <strong>CRM → Mi Cartera</strong>.</li>
+        <li>Hacé clic en <strong>"Editar"</strong> en la propiedad.</li>
+        <li>Cambiá el número en el campo <strong>"Precio"</strong>.</li>
+        <li>Presioná <strong>"Guardar"</strong>.</li>
+      </ol>
+      Si el precio bajó más de un 3%, el sistema avisa automáticamente a todos los que preguntaron por esa propiedad.
+    </div>
+
+    <div class="pregunta">¿Cómo agrego más fotos a una propiedad que ya cargué?</div>
+    <div class="respuesta">
+      Editá la propiedad (botón "Editar"), bajá hasta la sección de fotos y hacé clic en "Agregar fotos". Podés subir más sin borrar las que ya están.
+    </div>
+
+    <div class="pregunta">Olvidé mi contraseña y no me llega el email para resetearla</div>
+    <div class="respuesta">
+      <ol>
+        <li>Revisá la carpeta de <strong>spam</strong>.</li>
+        <li>Esperá unos minutos y volvé a intentar.</li>
+        <li>Si sigue sin llegar, avisale al administrador: puede resetear la contraseña directamente desde el panel de administración.</li>
+      </ol>
+    </div>
+
+    <div class="pregunta">¿Cómo sé si mi matrícula está al día?</div>
+    <div class="respuesta">
+      Andá a <strong>CRM → Mi Perfil</strong> o a la sección de membresía. Ahí aparece la fecha de vencimiento. El sistema te manda un email de aviso antes de que venza.
+    </div>
+
+    <div class="pregunta">¿Puedo exportar mi lista de propiedades o leads?</div>
+    <div class="respuesta">
+      Por el momento no hay exportación directa en un botón. Si necesitás los datos para una planilla, consultale al administrador.
+    </div>
+
+    <div class="pregunta">¿Qué hago si encuentro un error o algo no funciona?</div>
+    <div class="respuesta">
+      <ol>
+        <li>Anotá qué estabas haciendo cuando pasó el error.</li>
+        <li>Sacá una captura de pantalla (foto del error) si podés.</li>
+        <li>Escribile al soporte técnico con esos datos. Cuanto más detalle des, más rápido se resuelve.</li>
+      </ol>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 60px; text-align: center; color: #888; font-size: 0.88rem; border-top: 1px solid #e0e0e0; padding-top: 30px;">
+    Grupo Foro Inmobiliario · Manual de Usuario · 2025<br>
+    Para soporte técnico contactá al administrador del sistema.
+  </div>
+
+</div>
+
+</body>
+</html>
