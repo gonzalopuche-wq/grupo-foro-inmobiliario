@@ -287,6 +287,7 @@ export default function CarteraPage() {
   const [filtroPrecioMin, setFiltroPrecioMin] = useState("");
   const [filtroPrecioMax, setFiltroPrecioMax] = useState("");
   const [filtroSoloWeb, setFiltroSoloWeb] = useState(false);
+  const [filtroConLeads, setFiltroConLeads] = useState(false);
   const [orden, setOrden] = useState("nuevas");
   const [duplicando, setDuplicando] = useState<string | null>(null);
 
@@ -1126,6 +1127,7 @@ export default function CarteraPage() {
       if (filtroTipo && p.tipo !== filtroTipo) return false;
       if (filtroEstado && p.estado !== filtroEstado) return false;
       if (filtroSoloWeb && !p.publicada_web) return false;
+      if (filtroConLeads && !(p.leads_count ?? 0)) return false;
       if (precioMin !== null && (p.precio ?? 0) < precioMin) return false;
       if (precioMax !== null && (p.precio ?? 0) > precioMax) return false;
       if (busqueda.trim()) { const q = busqueda.toLowerCase(); return p.titulo?.toLowerCase().includes(q) || p.direccion?.toLowerCase().includes(q) || p.zona?.toLowerCase().includes(q); }
@@ -1140,7 +1142,7 @@ export default function CarteraPage() {
     else if (orden === "leads") sorted.sort((a, b) => (b.leads_count ?? 0) - (a.leads_count ?? 0));
     else sorted.sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
     return sorted;
-  }, [propiedades, filtroOp, filtroTipo, filtroEstado, filtroSoloWeb, filtroPrecioMin, filtroPrecioMax, busqueda, orden]);
+  }, [propiedades, filtroOp, filtroTipo, filtroEstado, filtroSoloWeb, filtroConLeads, filtroPrecioMin, filtroPrecioMax, busqueda, orden]);
 
   const estadoInfo = (e: string) => ESTADOS.find(x => x.value === e) ?? { value: e, label: e.toUpperCase(), color: "#6b7280" };
   const pct = Math.round((paso / 7) * 100);
@@ -1404,8 +1406,13 @@ export default function CarteraPage() {
             style={{padding:"7px 10px",background:filtroSoloWeb?"rgba(59,130,246,0.12)":"rgba(255,255,255,0.04)",border:filtroSoloWeb?"1px solid rgba(59,130,246,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroSoloWeb?"#60a5fa":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
             title="Mostrar solo propiedades publicadas en el sitio web"
           >🌐 Web</button>
-          {(filtroOp || filtroTipo || filtroEstado || busqueda || filtroPrecioMin || filtroPrecioMax || filtroSoloWeb) && (
-            <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); setFiltroPrecioMin(""); setFiltroPrecioMax(""); setFiltroSoloWeb(false); }}>✕ Limpiar</button>
+          <button
+            onClick={() => setFiltroConLeads(v => !v)}
+            style={{padding:"7px 10px",background:filtroConLeads?"rgba(204,0,0,0.12)":"rgba(255,255,255,0.04)",border:filtroConLeads?"1px solid rgba(204,0,0,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroConLeads?"#cc0000":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
+            title="Mostrar solo propiedades que recibieron leads"
+          >✉ Con leads</button>
+          {(filtroOp || filtroTipo || filtroEstado || busqueda || filtroPrecioMin || filtroPrecioMax || filtroSoloWeb || filtroConLeads) && (
+            <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); setFiltroPrecioMin(""); setFiltroPrecioMax(""); setFiltroSoloWeb(false); setFiltroConLeads(false); }}>✕ Limpiar</button>
           )}
           <span className="cart-count">{filtradas.length} propiedades</span>
         </div>
