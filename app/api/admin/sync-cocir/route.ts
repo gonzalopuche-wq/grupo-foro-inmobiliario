@@ -130,20 +130,28 @@ async function fetchDataTables(baseUrl: string, start: number, length: number): 
     "X-Requested-With": "XMLHttpRequest",
     "Accept": "application/json, text/javascript, */*; q=0.01",
   };
-  const candidatos = [
-    `${baseUrl}?draw=${Math.ceil(start/length)+1}&start=${start}&length=${length}&search%5Bvalue%5D=&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc`,
-    `${baseUrl}?draw=1&start=${start}&length=${length}`,
+  const draw = Math.ceil(start / length) + 1;
+  const qsParams = `draw=${draw}&start=${start}&length=${length}&search%5Bvalue%5D=&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc`;
+
+  // Intentar GET y POST (algunos sitios usan POST para DataTables)
+  const intentos: { url: string; method: string; body?: string; ct?: string }[] = [
+    { url: `${baseUrl}?${qsParams}`, method: "GET" },
+    { url: `${baseUrl}?draw=${draw}&start=${start}&length=${length}`, method: "GET" },
+    { url: baseUrl, method: "POST", body: qsParams, ct: "application/x-www-form-urlencoded" },
   ];
-  for (const url of candidatos) {
+
+  for (const intento of intentos) {
     try {
-      const res = await fetch(url, { headers: dtHeaders });
+      const res = await fetch(intento.url, {
+        method: intento.method,
+        headers: { ...dtHeaders, ...(intento.ct ? { "Content-Type": intento.ct } : {}) },
+        ...(intento.body ? { body: intento.body } : {}),
+      });
       if (!res.ok) continue;
       const ct = res.headers.get("content-type") ?? "";
       if (!ct.includes("json") && !ct.includes("javascript")) continue;
       const json = await res.json();
-      // DataTables response: { data: [...] }
       if (Array.isArray(json?.data)) return json.data;
-      // Simple array
       if (Array.isArray(json)) return json;
     } catch { continue; }
   }

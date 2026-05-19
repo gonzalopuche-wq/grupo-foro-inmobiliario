@@ -210,6 +210,8 @@ export default function AdminPage() {
   // Sync / Import COCIR
   const [syncingCocir, setSyncingCocir] = useState(false);
   const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total?: number; error?: string; debug?: Record<string,unknown> } | null>(null);
+  const [debugCocir, setDebugCocir] = useState<Record<string,unknown> | null>(null);
+  const [debuggingCocir, setDebuggingCocir] = useState(false);
   const [importandoPadron, setImportandoPadron] = useState(false);
   const [importPadronRes, setImportPadronRes] = useState<{ ok: boolean; total?: number; error?: string; columnas_detectadas?: any } | null>(null);
   // MI ABONO INTELIGENTE config
@@ -675,6 +677,22 @@ export default function AdminPage() {
     });
     setNotificandoPromo(false);
     mostrarToast("Push enviado a todos los suscriptores");
+  };
+
+  const diagnosticarCocir = async () => {
+    setDebuggingCocir(true);
+    setDebugCocir(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/admin/debug-cocir", {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+      const json = await res.json();
+      setDebugCocir(json as Record<string,unknown>);
+    } catch (e) {
+      setDebugCocir({ error: String(e) });
+    }
+    setDebuggingCocir(false);
   };
 
   const sincronizarCocir = async () => {
@@ -2415,15 +2433,38 @@ A partir de esa fecha el costo mensual será de USD 15.
                   : "↺ Sincronizar desde cocir.org.ar"}
               </button>
               {syncCocirRes && (
-                <div style={{ marginTop: 8 }}>
+                <div style={{ marginTop: 8, width: "100%" }}>
                   <span style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: syncCocirRes.ok ? "#22c55e" : "#ff6666" }}>
                     {syncCocirRes.ok ? `✓ ${syncCocirRes.total} registros` : `✗ ${syncCocirRes.error}`}
                   </span>
                   {!syncCocirRes.ok && syncCocirRes.debug && (
-                    <pre style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 200, overflowY: "auto" }}>
+                    <pre style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 220, overflowY: "auto" }}>
                       {JSON.stringify(syncCocirRes.debug, null, 2)}
                     </pre>
                   )}
+                </div>
+              )}
+            </div>
+
+            {/* Diagnóstico COCIR */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap", paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+              <button
+                className="adm-ind-btn"
+                onClick={diagnosticarCocir}
+                disabled={debuggingCocir}
+                style={{ fontSize: 10, padding: "5px 12px", background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.5)" }}
+              >
+                {debuggingCocir ? "Diagnosticando..." : "🔍 Diagnosticar COCIR"}
+              </button>
+              {debugCocir && (
+                <div style={{ width: "100%", marginTop: 6 }}>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>Resultado diagnóstico — copialo y mandáselo a Claude:</span>
+                    <button onClick={() => navigator.clipboard.writeText(JSON.stringify(debugCocir, null, 2))} style={{ fontSize: 9, padding: "1px 7px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Copiar</button>
+                  </div>
+                  <pre style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 300, overflowY: "auto" }}>
+                    {JSON.stringify(debugCocir, null, 2)}
+                  </pre>
                 </div>
               )}
             </div>
