@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 import { useSearchParams } from "next/navigation";
 
-export default function PortalesPage() {
+function PortalesInner() {
   const searchParams = useSearchParams();
   const [userId, setUserId] = useState<string | null>(null);
   const [tokkoKey, setTokkoKey] = useState("");
@@ -278,5 +278,13 @@ export default function PortalesPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function PortalesPage() {
+  return (
+    <Suspense fallback={null}>
+      <PortalesInner />
+    </Suspense>
   );
 }
