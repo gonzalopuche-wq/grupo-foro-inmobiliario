@@ -13,6 +13,12 @@ const sb = createClient(
 const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
 const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
 const BASE_URL = "https://cocir.org.ar/paginas/matriculados";
+const BASE_URL_ALTERNATIVAS = [
+  "https://cocir.org.ar/paginas/matriculados",
+  "https://www.cocir.org.ar/paginas/matriculados",
+  "https://cocir.org.ar/matriculados",
+  "https://www.cocir.org.ar/matriculados",
+];
 const MAX_PAGINAS = 200;
 const BATCH_PARALELO = 5;
 
@@ -133,9 +139,24 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    // --- Fetch page 1 ---
-    const html1 = await fetchPagina(BASE_URL);
+    // --- Fetch page 1: probar URLs alternativas ---
+    let html1: string | null = null;
+    let urlActiva = BASE_URL;
+    for (const url of BASE_URL_ALTERNATIVAS) {
+      html1 = await fetchPagina(url);
+      if (html1 && html1.length > 500) { urlActiva = url; break; }
+    }
     if (!html1) return NextResponse.json({ ok: false, error: "No se pudo acceder a cocir.org.ar" });
+
+    // Detectar bloqueo Cloudflare o captcha
+    const htmlLow = html1.toLowerCase();
+    if (htmlLow.includes("checking your browser") || htmlLow.includes("cloudflare") || htmlLow.includes("just a moment") || htmlLow.includes("captcha")) {
+      return NextResponse.json({
+        ok: false,
+        error: "cocir.org.ar está bloqueando el acceso automático (Cloudflare/captcha). El padrón existente en la base de datos no fue modificado.",
+        debug: { urlActiva, htmlLen: html1.length, htmlInicio: html1.slice(0, 600) },
+      });
+    }
 
     const $1 = cheerio.load(html1);
 
@@ -155,6 +176,7 @@ export async function GET(req: NextRequest) {
         ok: false,
         error: "No se encontraron registros en la primera página",
         debug: {
+          urlActiva,
           htmlLen: html1.length,
           tables: $1("table").length,
           thead: $1("table thead").length,
@@ -170,7 +192,7 @@ export async function GET(req: NextRequest) {
     const ultimaPagina = detectarUltimaPagina($1);
 
     // Detect URL pattern for pagination
-    let patronPaginacion = `${BASE_URL}?page={n}`;
+    let patronPaginacion = `${urlActiva}?page={n}`;
     const linkPaginaEjemplo = $1("a[href]").filter((_, el) => {
       const href = $1(el).attr("href") ?? "";
       return /[?&](?:page|pagina)=\d+/i.test(href) || /matriculados[/?]\d+/.test(href);
@@ -182,9 +204,9 @@ export async function GET(req: NextRequest) {
       if (m) {
         const sep = m[1];
         const key = m[0].replace(m[1], "").replace(/=\d+$/, "");
-        patronPaginacion = `${BASE_URL}${sep}${key}={n}`;
+        patronPaginacion = `${urlActiva}${sep}${key}={n}`;
       } else if (/matriculados\/\d+/.test(linkPaginaEjemplo)) {
-        patronPaginacion = `${BASE_URL}/{n}`;
+        patronPaginacion = `${urlActiva}/{n}`;
       }
     }
 
@@ -201,9 +223,9 @@ export async function GET(req: NextRequest) {
     // También intentar patrón de ruta si el detectado falla en el primer lote
     const patronesAlternativos = [
       patronPaginacion,
-      `${BASE_URL}/{n}`,
-      `${BASE_URL}?page={n}`,
-      `${BASE_URL}?pagina={n}`,
+      `${urlActiva}/{n}`,
+      `${urlActiva}?page={n}`,
+      `${urlActiva}?pagina={n}`,
     ].filter((v, i, a) => a.indexOf(v) === i); // unique
 
     let patronActivo = patronPaginacion;
