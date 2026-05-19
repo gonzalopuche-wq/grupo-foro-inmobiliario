@@ -1,19 +1,59 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState, FormEvent, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../lib/supabase";
+
+const MAX_INTENTOS = 5;
+const BLOQUEO_MS = 60 * 1000; // 1 minuto de espera tras 5 intentos
 
 export default function LoginPage() {
   const router = useRouter();
+  const params = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [intentosFallidos, setIntentosFallidos] = useState(0);
+  const [bloqueadoHasta, setBloqueadoHasta] = useState<number | null>(null);
+  const [countdown, setCountdown] = useState(0);
+
+  // Recuperar estado de bloqueo de sessionStorage al montar
+  useEffect(() => {
+    const locked = sessionStorage.getItem("gfi_login_locked_until");
+    const attempts = sessionStorage.getItem("gfi_login_attempts");
+    if (locked) setBloqueadoHasta(Number(locked));
+    if (attempts) setIntentosFallidos(Number(attempts));
+  }, []);
+
+  // Countdown timer cuando está bloqueado
+  useEffect(() => {
+    if (!bloqueadoHasta) return;
+    const tick = setInterval(() => {
+      const remaining = Math.ceil((bloqueadoHasta - Date.now()) / 1000);
+      if (remaining <= 0) {
+        setBloqueadoHasta(null);
+        setCountdown(0);
+        sessionStorage.removeItem("gfi_login_locked_until");
+        clearInterval(tick);
+      } else {
+        setCountdown(remaining);
+      }
+    }, 500);
+    return () => clearInterval(tick);
+  }, [bloqueadoHasta]);
+
+  const motivoParam = params.get("motivo");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Verificar bloqueo activo
+    if (bloqueadoHasta && Date.now() < bloqueadoHasta) {
+      setError(`Demasiados intentos fallidos. Esperá ${countdown} segundos.`);
+      return;
+    }
 
     if (!email || !password) {
       setError("Completá email y contraseña.");
@@ -28,10 +68,27 @@ export default function LoginPage() {
     });
 
     if (authError || !data.user) {
-      setError("Email o contraseña incorrectos.");
+      const nuevosIntentos = intentosFallidos + 1;
+      setIntentosFallidos(nuevosIntentos);
+      sessionStorage.setItem("gfi_login_attempts", String(nuevosIntentos));
+
+      if (nuevosIntentos >= MAX_INTENTOS) {
+        const hasta = Date.now() + BLOQUEO_MS;
+        setBloqueadoHasta(hasta);
+        sessionStorage.setItem("gfi_login_locked_until", String(hasta));
+        setError(`Demasiados intentos fallidos. Cuenta bloqueada temporalmente por 60 segundos.`);
+      } else {
+        const restantes = MAX_INTENTOS - nuevosIntentos;
+        setError(`Email o contraseña incorrectos. ${restantes} intento${restantes !== 1 ? "s" : ""} restante${restantes !== 1 ? "s" : ""}.`);
+      }
       setLoading(false);
       return;
     }
+
+    // Login exitoso — limpiar contadores
+    sessionStorage.removeItem("gfi_login_attempts");
+    sessionStorage.removeItem("gfi_login_locked_until");
+    setIntentosFallidos(0);
 
     const { data: perfil } = await supabase
       .from("perfiles")
@@ -109,6 +166,12 @@ export default function LoginPage() {
 
           <p className="login-titulo">Acceso a la plataforma</p>
 
+          {motivoParam === "inactividad" && (
+            <div style={{ fontSize: 12, color: "#eab308", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: 3, padding: "10px 14px", marginBottom: 14 }}>
+              ⏱ Sesión cerrada por inactividad. Volvé a ingresar.
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} noValidate>
             <div className="login-field">
               <label className="login-label">Correo electrónico</label>
@@ -119,9 +182,13 @@ export default function LoginPage() {
               <input className="login-input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} disabled={loading} autoComplete="current-password" />
             </div>
             {error && <div className="login-error" role="alert">{error}</div>}
-            <button className="login-btn" type="submit" disabled={loading}>
+            <button
+              className="login-btn"
+              type="submit"
+              disabled={loading || (bloqueadoHasta != null && Date.now() < bloqueadoHasta)}
+            >
               {loading && <span className="login-spinner" />}
-              {loading ? "Ingresando..." : "Ingresar"}
+              {loading ? "Ingresando..." : bloqueadoHasta && countdown > 0 ? `Bloqueado (${countdown}s)` : "Ingresar"}
             </button>
           </form>
 
