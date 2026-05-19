@@ -394,17 +394,10 @@ export default function CarteraPage() {
     const props = (propsData as Propiedad[]) ?? [];
     setPropiedades(props);
     if (props.length > 0) {
-      const ids = props.map(p => p.id);
-      const [{ data: syncs }, { data: leadsRaw }] = await Promise.all([
-        supabase.from("cartera_sync_portales").select("*").in("propiedad_id", ids),
-        supabase.from("web_leads").select("propiedad_id").in("propiedad_id", ids).not("propiedad_id", "is", null),
-      ]);
+      const { data: syncs } = await supabase.from("cartera_sync_portales").select("*").in("propiedad_id", props.map(p => p.id));
       const m: Record<string, any> = {};
       (syncs ?? []).forEach((s: any) => { m[s.propiedad_id] = s; });
       setSyncData(m);
-      const lc: Record<string, number> = {};
-      (leadsRaw ?? []).forEach((l: any) => { lc[l.propiedad_id] = (lc[l.propiedad_id] ?? 0) + 1; });
-      setPropiedades(prev => prev.map(p => ({ ...p, leads_count: lc[p.id] ?? 0 })));
     }
     setLoading(false);
   };

@@ -39,11 +39,15 @@ async function buscar(sp: SearchParams) {
   if (sp.tipo) q = q.eq("tipo", sp.tipo);
   if (sp.ciudad?.trim()) q = q.ilike("ciudad", `%${sp.ciudad.trim()}%`);
   if (sp.zona?.trim()) q = q.ilike("zona", `%${sp.zona.trim()}%`);
-  if (sp.dorm) q = q.gte("dormitorios", parseInt(sp.dorm));
-  if (sp.supmin) q = q.gte("superficie_cubierta", parseFloat(sp.supmin));
+  const dormNum = parseInt(sp.dorm ?? "");
+  if (!isNaN(dormNum)) q = q.gte("dormitorios", dormNum);
+  const supMinNum = parseFloat(sp.supmin ?? "");
+  if (!isNaN(supMinNum)) q = q.or(`superficie_cubierta.gte.${supMinNum},sup_terreno.gte.${supMinNum}`);
   const mon = sp.moneda ?? "USD";
-  if (sp.min) q = q.gte("precio", parseInt(sp.min)).eq("moneda", mon);
-  if (sp.max) q = q.lte("precio", parseInt(sp.max)).eq("moneda", mon);
+  const minNum = parseInt(sp.min ?? "");
+  const maxNum = parseInt(sp.max ?? "");
+  if (!isNaN(minNum)) q = q.gte("precio", minNum).eq("moneda", mon);
+  if (!isNaN(maxNum)) q = q.lte("precio", maxNum).eq("moneda", mon);
 
   const ordenCol = sp.orden === "precio_asc" || sp.orden === "precio_desc" ? "precio" : "created_at";
   const asc = sp.orden === "precio_asc";
@@ -66,10 +70,14 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     : "Propiedades en venta y alquiler — Grupo Foro Inmobiliario";
   const desc = `Buscá ${partes.length > 0 ? partes.join(" ").toLowerCase() : "propiedades"} en ${sp.ciudad ?? "Rosario y la región"}${sp.zona ? `, ${sp.zona}` : ""}. Corredores matriculados del Grupo Foro Inmobiliario.`;
   const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
+  const canonicalParams = new URLSearchParams();
+  (["op", "tipo", "ciudad", "zona"] as const).forEach(k => { if (sp[k]) canonicalParams.set(k, sp[k]!); });
+  const canonicalStr = canonicalParams.toString();
+  const canonical = `${BASE}/propiedades${canonicalStr ? `?${canonicalStr}` : ""}`;
   return {
     title: titulo,
     description: desc,
-    alternates: { canonical: `${BASE}/propiedades` },
+    alternates: { canonical },
     openGraph: { title: titulo, description: desc, type: "website", locale: "es_AR" },
   };
 }
