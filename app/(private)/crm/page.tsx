@@ -221,6 +221,7 @@ export default function CrmPage() {
 
   // Tab principal
   const [tabPrincipal, setTabPrincipal] = useState<"dashboard" | "contactos" | "negocios" | "tareas" | "notas">("dashboard");
+  const [sidebarAbierto, setSidebarAbierto] = useState(true);
 
   // ── Contactos ─────────────────────────────────────────────────────────────
   const [contactos, setContactos] = useState<Contacto[]>([]);
@@ -875,7 +876,27 @@ export default function CrmPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
 
         /* ── Layout principal ── */
-        .crm-root { display: flex; flex-direction: column; height: calc(100vh - 70px); overflow: hidden; background: #080808; }
+        .crm-root { display: flex; flex-direction: row; height: calc(100vh - 70px); overflow: hidden; background: #080808; }
+
+        /* ── Sidebar lateral CRM ── */
+        .crm-sidebar { flex-shrink: 0; overflow: hidden; transition: width 0.22s cubic-bezier(0.4,0,0.2,1); background: #0a0a0a; border-right: 1px solid rgba(255,255,255,0.06); }
+        .crm-sidebar-inner { width: 278px; height: 100%; overflow-y: auto; overflow-x: hidden; padding: 12px 0 28px; }
+        .crm-sidebar-inner::-webkit-scrollbar { width: 3px; }
+        .crm-sidebar-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+        .crm-sidebar-header { padding: 0 10px 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.18); border-bottom: 1px solid rgba(255,255,255,0.04); margin-bottom: 8px; }
+        .crm-sidebar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 8px; }
+        .crm-sidebar-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 9px 4px 8px; border-radius: 6px; text-decoration: none; text-align: center; min-height: 58px; background: rgba(255,255,255,0.022); border: 1px solid rgba(255,255,255,0.04); transition: background 0.13s, border-color 0.13s; cursor: pointer; }
+        .crm-sidebar-item:hover { background: rgba(255,255,255,0.055); border-color: rgba(255,255,255,0.1); }
+        .crm-sidebar-item.activo { background: rgba(204,0,0,0.13); border-color: rgba(204,0,0,0.28); }
+        .crm-sidebar-ico { font-size: 15px; line-height: 1; }
+        .crm-sidebar-lbl { font-family: 'Inter',sans-serif; font-size: 9.5px; font-weight: 400; color: rgba(255,255,255,0.42); line-height: 1.25; }
+        .crm-sidebar-item.activo .crm-sidebar-lbl { color: #fff; font-weight: 600; }
+        .crm-toggle-tab { flex-shrink: 0; width: 22px; padding: 0; border: none; border-right: 1px solid rgba(255,255,255,0.07); background: rgba(7,7,7,0.98); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; transition: background 0.15s; }
+        .crm-toggle-tab:hover { background: rgba(18,18,18,0.98); }
+        .crm-toggle-dot { width: 4px; height: 4px; border-radius: 50%; background: #cc0000; opacity: 0.7; }
+        .crm-toggle-txt { writing-mode: vertical-lr; transform: rotate(180deg); font-family: 'Montserrat',sans-serif; font-size: 7px; font-weight: 700; letter-spacing: 0.18em; color: rgba(255,255,255,0.15); user-select: none; }
+        .crm-toggle-arrow { font-size: 8px; color: rgba(204,0,0,0.6); font-weight: 700; }
+        .crm-main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
 
         /* ── Tabs principales ── */
         .crm-tabs-bar { display: flex; align-items: center; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.07); background: #0a0a0a; flex-shrink: 0; padding: 0 16px; }
@@ -883,7 +904,6 @@ export default function CrmPage() {
         .crm-tab-main:hover { color: rgba(255,255,255,0.6); }
         .crm-tab-main.activo { color: #fff; border-bottom-color: #cc0000; }
         .crm-tab-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; background: #cc0000; color: #fff; font-size: 8px; font-weight: 700; border-radius: 8px; margin-left: 6px; font-family: 'Montserrat',sans-serif; }
-        .crm-tabs-spacer { flex: 1; }
 
         /* ── Contenido tab ── */
         .crm-tab-content { flex: 1; overflow: hidden; display: flex; }
@@ -1135,6 +1155,8 @@ export default function CrmPage() {
         .prop-card-meta { font-size: 10px; color: rgba(255,255,255,0.4); display: flex; gap: 8px; flex-wrap: wrap; }
 
         @media (max-width: 768px) {
+          .crm-sidebar { display: none; }
+          .crm-toggle-tab { display: none; }
           .crm-tabs-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 8px; }
           .crm-tab-main { padding: 12px 12px; font-size: 9px; letter-spacing: 0.08em; flex-shrink: 0; }
           .crm-split { flex-direction: column; }
@@ -1147,7 +1169,131 @@ export default function CrmPage() {
 
       <div className="crm-root">
 
-        {/* ── Tabs principales ── */}
+        {/* ── Sidebar CRM — panel izquierdo con 2 columnas ── */}
+        <div className="crm-sidebar" style={{ width: sidebarAbierto ? 278 : 0 }}>
+          <div className="crm-sidebar-inner">
+            <div className="crm-sidebar-header">CRM GFI®</div>
+            <div className="crm-sidebar-grid">
+              {([
+                ["/crm/cartera","🏠","Cartera"],
+                ["/crm/portales","🔗","Portales"],
+                ["/crm/hoy","🌅","Hoy"],
+                ["/crm/actividad","⚡","Actividad"],
+                ["/crm/llaves","🔑","Llaves"],
+                ["/crm/visitas","🗓","Visitas"],
+                ["/crm/metas","🎯","Metas"],
+                ["/crm/tasacion","🏠","Tasación"],
+                ["/crm/seguimiento","📡","Seguimiento"],
+                ["/crm/conversion","📊","Conversión"],
+                ["/crm/post-cierre","📋","Post-cierre"],
+                ["/crm/escrituras","⚖️","Escrituras"],
+                ["/crm/alianzas","🤝","Alianzas"],
+                ["/crm/firma","✍️","Firma"],
+                ["/crm/emails","✉️","Emails"],
+                ["/agenda","📆","Agenda"],
+                ["/crm/proyeccion-ingresos","💰","Proyección"],
+                ["/crm/smart-match","🎯","Smart Match"],
+                ["/crm/pipeline-velocity","⚡","Velocity"],
+                ["/crm/whatsapp-templates","💬","Templates WA"],
+                ["/crm/agenda-semanal","📅","Ag. Semanal"],
+                ["/crm/comparador","🔍","Comparador"],
+                ["/crm/comisiones","💰","Comisiones"],
+                ["/crm/zona","📍","Análisis Zona"],
+                ["/crm/documentos","📋","Documentos"],
+                ["/crm/performance","📈","Performance"],
+                ["/crm/scripts","📞","Scripts"],
+                ["/crm/analisis-captacion","🎣","Captación"],
+                ["/crm/mapa-calor","🗺️","Mapa Calor"],
+                ["/crm/forecast","📊","Forecast"],
+                ["/crm/retencion","🔄","Retención"],
+                ["/crm/onboarding","✅","Onboarding"],
+                ["/crm/negociacion","🤝","Negociación"],
+                ["/crm/clientes-vip","💎","VIP"],
+                ["/crm/competencia","🔎","Competencia"],
+                ["/crm/reporte-semanal","📋","Rep. Semanal"],
+                ["/crm/alertas","🚨","Alertas"],
+                ["/crm/embudo","🔻","Embudo"],
+                ["/crm/historial","📋","Historial"],
+                ["/crm/win-loss","📊","Win/Loss"],
+                ["/crm/referidos","🤝","Referidos"],
+                ["/crm/gastos","💸","Gastos"],
+                ["/crm/objetivos","🎯","Objetivos"],
+                ["/crm/scoring","⭐","Scoring"],
+                ["/crm/cobranzas","💳","Cobranzas"],
+                ["/crm/duplicados","🔍","Duplicados"],
+                ["/crm/campana-reactivacion","📣","Reactivación"],
+                ["/crm/match-clientes","🎯","Match"],
+                ["/crm/vencimientos","📅","Vencimientos"],
+                ["/crm/comisiones-pendientes","💰","Com. Pend."],
+                ["/crm/pipeline-visual","🗂️","Pipe. Visual"],
+                ["/crm/forecast-pipeline","📈","Fore. Pipe"],
+                ["/crm/checklist-cierre","✅","Checklist"],
+                ["/crm/revenue","💰","Revenue"],
+                ["/crm/descuentos","📉","Descuentos"],
+                ["/crm/produccion","🏆","Producción"],
+                ["/crm/agenda-tasaciones","📅","Ag. Tasaciones"],
+                ["/crm/expediente","📁","Expediente"],
+                ["/crm/metas-personales","🎯","Metas Pers."],
+                ["/crm/contratos-activos","📋","Contratos"],
+                ["/crm/kpi-diario","📊","KPI Diario"],
+                ["/crm/propuesta-comercial","📄","Propuesta"],
+                ["/crm/seguimiento-post-venta","🤝","Post-Venta"],
+                ["/crm/tiempo-venta","⏱️","T. Mercado"],
+                ["/crm/campana-cumpleanos","🎂","Cumpleaños"],
+                ["/crm/carga-masiva","📥","Carga Masiva"],
+                ["/crm/scorecard-semanal","🏆","Scorecard"],
+                ["/crm/pipeline-kanban","📋","Kanban"],
+                ["/crm/base-conocimiento","📚","Base Conoc."],
+                ["/crm/gestion-honorarios","💰","Honorarios"],
+                ["/crm/recordatorios","🔔","Recordatorios"],
+                ["/crm/analisis-zona","📍","An. Zona"],
+                ["/crm/reporte-mensual","📑","Rep. Mensual"],
+                ["/crm/simulador-negociacion","🤝","Simulador"],
+                ["/crm/buscador","🔍","Buscador"],
+                ["/crm/configuracion","⚙️","Config."],
+                ["/crm/estadisticas-captacion","🎣","Est. Captación"],
+                ["/crm/agenda-visitas","📅","Ag. Visitas"],
+                ["/crm/seguimiento-ofertas","🤝","Seg. Ofertas"],
+                ["/crm/objetivos-mensuales","🎯","Obj. Mens."],
+                ["/crm/historial-operaciones","📋","Hist. Oper."],
+                ["/crm/gestion-documentos","📁","Gest. Docs"],
+                ["/crm/reportes-propietarios","📑","Rep. Propiet."],
+                ["/crm/red-contactos","🕸️","Red Contactos"],
+                ["/crm/campanas-marketing","📣","Marketing"],
+                ["/crm/comisiones-split","💰","Com. Split"],
+                ["/crm/plantillas-mensajes","💬","Plantillas"],
+                ["/crm/gestion-tareas","✅","Gest. Tareas"],
+                ["/crm/presupuesto-anual","💸","Presupuesto"],
+                ["/crm/analisis-competencia","🔎","An. Compet."],
+                ["/crm/ficha-propiedad","🏠","Ficha Prop."],
+                ["/crm/captacion","📝","Captación"],
+                ["/crm/integraciones","🔗","Integraciones"],
+                ["/emprendimientos","🏗️","Emprendim."],
+              ] as [string, string, string][]).map(([href, ico, lbl]) => (
+                <Link key={href} href={href} className={`crm-sidebar-item`}>
+                  <span className="crm-sidebar-ico">{ico}</span>
+                  <span className="crm-sidebar-lbl">{lbl}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Pestaña toggle ── */}
+        <button
+          className="crm-toggle-tab"
+          onClick={() => setSidebarAbierto(v => !v)}
+          title={sidebarAbierto ? "Cerrar menú CRM" : "Abrir menú CRM"}
+        >
+          <div className="crm-toggle-dot" />
+          <span className="crm-toggle-txt">CRM</span>
+          <span className="crm-toggle-arrow">{sidebarAbierto ? "◀" : "▶"}</span>
+        </button>
+
+        {/* ── Contenido principal ── */}
+        <div className="crm-main">
+
+        {/* ── Tabs internos (Dashboard / Contactos / Negocios / Tareas / Notas) ── */}
         <div className="crm-tabs-bar">
           <button className={`crm-tab-main${tabPrincipal === "dashboard" ? " activo" : ""}`} onClick={() => setTabPrincipal("dashboard")}>Dashboard</button>
           {(["contactos", "negocios", "tareas", "notas"] as const).map(tab => (
@@ -1158,99 +1304,6 @@ export default function CrmPage() {
               {tab === "notas" && <>Notas {notas.length > 0 && <span className="crm-tab-badge">{notas.length}</span>}</>}
             </button>
           ))}
-          <div className="crm-tabs-spacer" />
-          <Link href="/crm/portales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔗 Portales</Link>
-          <Link href="/crm/cartera" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Cartera</Link>
-          <Link href="/crm/llaves" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔑 Llaves</Link>
-          <Link href="/crm/metas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Metas</Link>
-          <Link href="/crm/post-cierre" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Post-cierre</Link>
-          <Link href="/crm/escrituras" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚖️ Escrituras</Link>
-          <Link href="/crm/alianzas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Alianzas</Link>
-          <Link href="/crm/firma" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✍️ Firma</Link>
-          <Link href="/crm/emails" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✉️ Emails</Link>
-          <Link href="/agenda" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📆 Agenda</Link>
-          <Link href="/crm/hoy" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🌅 Hoy</Link>
-          <Link href="/crm/seguimiento" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📡 Seguimiento</Link>
-          <Link href="/crm/conversion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Conversión</Link>
-          <Link href="/crm/proyeccion-ingresos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Proyección</Link>
-          <Link href="/crm/reporte-mensual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Reporte</Link>
-          <Link href="/crm/smart-match" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Smart Match</Link>
-          <Link href="/crm/pipeline-velocity" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚡ Velocity</Link>
-          <Link href="/crm/whatsapp-templates" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💬 Templates WA</Link>
-          <Link href="/crm/agenda-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Agenda Semanal</Link>
-          <Link href="/crm/comparador" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Comparador</Link>
-          <Link href="/crm/comisiones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones</Link>
-          <Link href="/crm/tasacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Tasación</Link>
-          <Link href="/crm/zona" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📍 Análisis Zona</Link>
-          <Link href="/crm/documentos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Documentos</Link>
-          <Link href="/crm/actividad" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚡ Actividad</Link>
-          <Link href="/crm/performance" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📈 Performance</Link>
-          <Link href="/crm/scripts" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📞 Scripts</Link>
-          <Link href="/crm/analisis-captacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎣 Análisis Captación</Link>
-          <Link href="/crm/mapa-calor" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🗺️ Mapa de Calor</Link>
-          <Link href="/crm/forecast" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Forecast</Link>
-          <Link href="/crm/retencion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔄 Retención</Link>
-          <Link href="/crm/onboarding" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Onboarding</Link>
-          <Link href="/crm/negociacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Negociación</Link>
-          <Link href="/crm/clientes-vip" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💎 Clientes VIP</Link>
-          <Link href="/crm/competencia" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔎 Competencia</Link>
-          <Link href="/crm/reporte-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Reporte Semanal</Link>
-          <Link href="/crm/alertas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🚨 Alertas</Link>
-          <Link href="/crm/embudo" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔻 Embudo</Link>
-          <Link href="/crm/historial" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Historial</Link>
-          <Link href="/crm/win-loss" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Win/Loss</Link>
-          <Link href="/crm/referidos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Referidos</Link>
-          <Link href="/crm/gastos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💸 Gastos</Link>
-          <Link href="/crm/objetivos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Objetivos</Link>
-          <Link href="/crm/scoring" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⭐ Scoring</Link>
-          <Link href="/crm/cobranzas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💳 Cobranzas</Link>
-          <Link href="/crm/duplicados" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Duplicados</Link>
-          <Link href="/crm/campana-reactivacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📣 Reactivación</Link>
-          <Link href="/crm/match-clientes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Match Clientes</Link>
-          <Link href="/crm/vencimientos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Vencimientos</Link>
-          <Link href="/crm/comisiones-pendientes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones</Link>
-          <Link href="/crm/pipeline-visual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🗂️ Pipeline Visual</Link>
-          <Link href="/crm/forecast-pipeline" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📈 Forecast</Link>
-          <Link href="/crm/checklist-cierre" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Checklist Cierre</Link>
-          <Link href="/crm/revenue" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Revenue</Link>
-          <Link href="/crm/descuentos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📉 Descuentos</Link>
-          <Link href="/crm/produccion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏆 Producción</Link>
-          <Link href="/crm/agenda-tasaciones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Agenda Tasaciones</Link>
-          <Link href="/crm/expediente" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📁 Expediente</Link>
-          <Link href="/crm/metas-personales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Metas Personales</Link>
-          <Link href="/crm/contratos-activos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Contratos Activos</Link>
-          <Link href="/crm/kpi-diario" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 KPI Diario</Link>
-          <Link href="/crm/propuesta-comercial" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📄 Propuesta Comercial</Link>
-          <Link href="/crm/seguimiento-post-venta" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Post-Venta</Link>
-          <Link href="/crm/tiempo-venta" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⏱️ Tiempo en Mercado</Link>
-          <Link href="/crm/campana-cumpleanos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎂 Cumpleaños</Link>
-          <Link href="/crm/carga-masiva" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📥 Carga Masiva</Link>
-          <Link href="/crm/scorecard-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏆 Scorecard Semanal</Link>
-          <Link href="/crm/pipeline-kanban" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Pipeline Kanban</Link>
-          <Link href="/crm/base-conocimiento" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📚 Base de Conocimiento</Link>
-          <Link href="/crm/gestion-honorarios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Honorarios</Link>
-          <Link href="/crm/recordatorios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔔 Recordatorios</Link>
-          <Link href="/crm/analisis-zona" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📍 Análisis de Zona</Link>
-          <Link href="/crm/reporte-mensual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📑 Reporte Mensual</Link>
-          <Link href="/crm/simulador-negociacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Simulador Negociación</Link>
-          <Link href="/crm/mapa-calor" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔥 Mapa de Actividad</Link>
-          <Link href="/crm/buscador" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Buscador</Link>
-          <Link href="/crm/configuracion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚙️ Configuración</Link>
-          <Link href="/crm/estadisticas-captacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎣 Estadísticas Captación</Link>
-          <Link href="/crm/agenda-visitas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Agenda Visitas</Link>
-          <Link href="/crm/seguimiento-ofertas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Seguimiento Ofertas</Link>
-          <Link href="/crm/objetivos-mensuales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Objetivos Mensuales</Link>
-          <Link href="/crm/historial-operaciones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Historial Operaciones</Link>
-          <Link href="/crm/gestion-documentos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📁 Gestión Documentos</Link>
-          <Link href="/crm/reportes-propietarios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📑 Reportes Propietarios</Link>
-          <Link href="/crm/red-contactos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🕸️ Red de Contactos</Link>
-          <Link href="/crm/campanas-marketing" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📣 Campañas Marketing</Link>
-          <Link href="/crm/comisiones-split" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones Split</Link>
-          <Link href="/crm/plantillas-mensajes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💬 Plantillas Mensajes</Link>
-          <Link href="/crm/gestion-tareas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Gestión Tareas</Link>
-          <Link href="/crm/presupuesto-anual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💸 Presupuesto Anual</Link>
-          <Link href="/crm/analisis-competencia" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔎 Análisis Competencia</Link>
-          <Link href="/crm/ficha-propiedad" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Ficha Propiedad</Link>
         </div>
 
         <div className="crm-tab-content">
@@ -1919,7 +1972,8 @@ export default function CrmPage() {
           )}
 
         </div>
-      </div>
+        </div>{/* end crm-main */}
+      </div>{/* end crm-root */}
 
       {/* ══════════════════════════════════════════════════
           MODAL CONTACTO
