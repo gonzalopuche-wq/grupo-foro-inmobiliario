@@ -76,9 +76,6 @@ export default function CotizacionesPage() {
   const [mostrarForm, setMostrarForm] = useState(false);
   const [formPub, setFormPub] = useState(FORM_PUB_VACIO);
   const [guardando, setGuardando] = useState(false);
-  const [costoMatch, setCostoMatch] = useState(6000);
-  const [contactosVisibles, setContactosVisibles] = useState<Set<string>>(new Set());
-  const [contactando, setContactando] = useState<string | null>(null);
   const [filtroMoneda, setFiltroMoneda] = useState("todas");
   const [filtroTipo, setFiltroTipo] = useState("todos");
 
@@ -95,8 +92,6 @@ export default function CotizacionesPage() {
     cargarMercado();
     cargarProveedores();
     cargarPublicaciones();
-    supabase.from("indicadores").select("valor").eq("clave", "costo_match_divisas").single()
-      .then(({ data }) => { if (data?.valor) setCostoMatch(data.valor); });
     const interval = setInterval(cargarMercado, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
@@ -220,19 +215,6 @@ export default function CotizacionesPage() {
     cargarPublicaciones();
   };
 
-  const contactarPublicacion = async (pub: Publicacion) => {
-    if (contactosVisibles.has(pub.id)) return;
-    const costo = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(costoMatch);
-    if (!confirm(`Esta operación genera un cargo de ${costo} ARS que se abona por transferencia al administrador.\n\n¿Confirmar y ver los datos de contacto?`)) return;
-    setContactando(pub.id);
-    await supabase.from("divisas_accesos").insert({
-      publicacion_id: pub.id,
-      accedido_por: userId,
-      monto: costoMatch,
-    }).then(() => {});
-    setContactosVisibles(prev => new Set([...prev, pub.id]));
-    setContactando(null);
-  };
 
   const pubsFiltradas = publicaciones.filter(p => {
     if (filtroMoneda !== "todas" && p.moneda !== filtroMoneda) return false;
@@ -337,11 +319,8 @@ export default function CotizacionesPage() {
         .match-pub-meta { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; line-height: 1.5; }
         .match-pub-corredor { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; font-weight: 500; }
         .match-pub-precio { font-size: 11px; color: #eab308; margin-top: 2px; }
-        .match-btn-contactar { padding: 6px 14px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
-        .match-btn-contactar:hover { background: rgba(200,0,0,0.2); color: #fff; }
         .match-btn-eliminar { padding: 6px 10px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; }
         .match-btn-eliminar:hover { border-color: rgba(200,0,0,0.4); color: #ff4444; }
-        .match-costo { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 4px; text-align: right; }
         .match-nota { font-size: 11px; color: rgba(255,255,255,0.2); text-align: center; padding: 8px; background: rgba(200,0,0,0.05); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; }
         .match-empty { padding: 24px 16px; text-align: center; color: rgba(255,255,255,0.2); font-size: 12px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; margin-top: 8px; }
         .fn-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
@@ -536,7 +515,7 @@ export default function CotizacionesPage() {
             <div className="match-nota">
               💡 Referencia GFI: <strong style={{color:"#22c55e"}}>{dolarReferencia.valor ? formatARS(dolarReferencia.valor) : "cargando..."}</strong>
               {dolarReferencia.proveedor && <span style={{color:"rgba(255,255,255,0.3)"}}> · {dolarReferencia.proveedor}</span>}
-              {" · "}Ambos pagan {new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(costoMatch)} para revelar datos de contacto. Publicaciones vencen en 24hs.
+              {" · "}Publicaciones vencen en 24hs.
             </div>
             <div className="match-columnas">
               <div>
@@ -555,15 +534,10 @@ export default function CotizacionesPage() {
                     </div>
                     {p.perfil_id === userId
                       ? <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
-                      : contactosVisibles.has(p.id)
-                        ? <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
-                            {p.perfiles?.telefono && <a href={`https://wa.me/${p.perfiles.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{padding:"6px 12px",background:"#25d366",border:"none",borderRadius:4,color:"#fff",fontSize:11,fontWeight:700,textDecoration:"none"}}>📱 WhatsApp</a>}
-                            {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{p.perfiles.email}</a>}
-                          </div>
-                        : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
-                            <button className="match-btn-contactar" disabled={contactando === p.id} onClick={() => contactarPublicacion(p)}>{contactando === p.id ? "..." : "Contactar"}</button>
-                            <div className="match-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} ARS</div>
-                          </div>}
+                      : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                          {p.perfiles?.telefono && <a href={`https://wa.me/${p.perfiles.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{padding:"6px 12px",background:"#25d366",border:"none",borderRadius:4,color:"#fff",fontSize:11,fontWeight:700,textDecoration:"none"}}>📱 WhatsApp</a>}
+                          {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{p.perfiles.email}</a>}
+                        </div>}
                   </div>
                 ))}
               </div>
@@ -583,15 +557,10 @@ export default function CotizacionesPage() {
                     </div>
                     {p.perfil_id === userId
                       ? <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
-                      : contactosVisibles.has(p.id)
-                        ? <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
-                            {p.perfiles?.telefono && <a href={`https://wa.me/${p.perfiles.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{padding:"6px 12px",background:"#25d366",border:"none",borderRadius:4,color:"#fff",fontSize:11,fontWeight:700,textDecoration:"none"}}>📱 WhatsApp</a>}
-                            {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{p.perfiles.email}</a>}
-                          </div>
-                        : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
-                            <button className="match-btn-contactar" disabled={contactando === p.id} onClick={() => contactarPublicacion(p)}>{contactando === p.id ? "..." : "Contactar"}</button>
-                            <div className="match-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} ARS</div>
-                          </div>}
+                      : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                          {p.perfiles?.telefono && <a href={`https://wa.me/${p.perfiles.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{padding:"6px 12px",background:"#25d366",border:"none",borderRadius:4,color:"#fff",fontSize:11,fontWeight:700,textDecoration:"none"}}>📱 WhatsApp</a>}
+                          {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{p.perfiles.email}</a>}
+                        </div>}
                   </div>
                 ))}
               </div>

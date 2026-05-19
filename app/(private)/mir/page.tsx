@@ -201,7 +201,6 @@ export default function MirPage() {
   const [mensajes, setMensajes] = useState<MirMensaje[]>([]);
   const [textoMensaje, setTextoMensaje] = useState("");
   const [enviandoMsg, setEnviandoMsg] = useState(false);
-  const [costoMatch, setCostoMatch] = useState(5000);
   const [loading, setLoading] = useState(true);
   const [mostrarFormO, setMostrarFormO] = useState(false);
   const [mostrarFormB, setMostrarFormB] = useState(false);
@@ -214,7 +213,6 @@ export default function MirPage() {
   const [esColaborador, setEsColaborador] = useState(false);
   const [corredoresColegas, setCorredoresColegas] = useState<{id:string;nombre:string;apellido:string;matricula:string|null}[]>([]);
   const [editandoOfrecido, setEditandoOfrecido] = useState<Ofrecido | null>(null);
-  const [desbloqueando, setDesbloqueando] = useState<string | null>(null);
   const [interesando, setInteresando] = useState<string | null>(null);
   const [modalInteres, setModalInteres] = useState<{ pub: Ofrecido | Busqueda; tipo: "me_interesa" | "tengo"; pubTipo: "ofrecido" | "busqueda" } | null>(null);
   const [msgInteres, setMsgInteres] = useState("");
@@ -249,8 +247,6 @@ export default function MirPage() {
       else if (vistaParam === "matches") setVista("matches");
     };
     init();
-    supabase.from("indicadores").select("valor").eq("clave", "costo_match_mir").single()
-      .then(({ data }) => { if (data?.valor) setCostoMatch(data.valor); });
     cargarDatos();
 
     // ── Realtime: refrescar cuando el parser inserta desde el chat ───────────
@@ -445,22 +441,6 @@ export default function MirPage() {
   const cantIntereses = (pubId: string) =>
     intereses.filter(i => i.publicacion_id === pubId && i.destinatario_id === userId && !i.leido).length;
 
-  const desbloquear = async (match_id: string, es_duenio_ofrecido: boolean) => {
-    if (!userId || desbloqueando) return;
-    setDesbloqueando(match_id);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch("/api/mir/desbloquear", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ match_id, es_duenio_ofrecido }),
-      });
-      const data = await res.json();
-      if (data.ok) await cargarDatos();
-    } catch {}
-    setDesbloqueando(null);
-  };
-
   const aplicarFiltros = <T extends Ofrecido | Busqueda>(items: T[]): T[] => {
     return items.filter(item => {
       if (filtro.operaciones.length > 0 && !filtro.operaciones.includes(item.operacion)) return false;
@@ -484,7 +464,7 @@ export default function MirPage() {
     for (const b of (busqs as Busqueda[]) ?? []) {
       if (cumpleMatch(of, b)) {
         await supabase.from("mir_matches").upsert(
-          { ofrecido_id: of.id, busqueda_id: b.id, costo_desbloqueo: costoMatch },
+          { ofrecido_id: of.id, busqueda_id: b.id },
           { onConflict: "ofrecido_id,busqueda_id" }
         );
       }
@@ -499,7 +479,7 @@ export default function MirPage() {
     for (const o of (ofrs as Ofrecido[]) ?? []) {
       if (cumpleMatch(o, bu)) {
         await supabase.from("mir_matches").upsert(
-          { ofrecido_id: o.id, busqueda_id: bu.id, costo_desbloqueo: costoMatch },
+          { ofrecido_id: o.id, busqueda_id: bu.id },
           { onConflict: "ofrecido_id,busqueda_id" }
         );
       }
@@ -757,11 +737,6 @@ export default function MirPage() {
         .mir-match-info { font-size: 13px; color: #fff; font-weight: 600; }
         .mir-match-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 3px; }
         .mir-match-sep { width: 1px; background: rgba(255,255,255,0.07); align-self: stretch; }
-        .mir-btn-desbloquear { padding: 8px 14px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-        .mir-btn-desbloquear:hover { background: rgba(200,0,0,0.2); color: #fff; }
-        .mir-btn-desbloquear:disabled { opacity: 0.5; cursor: not-allowed; }
-        .mir-costo { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 4px; text-align: center; }
-        .mir-nota { font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; padding: 8px 16px; background: rgba(200,0,0,0.04); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; margin-bottom: 12px; }
         .mir-chats-layout { display: grid; grid-template-columns: 280px 1fr; gap: 16px; height: calc(100vh - 200px); min-height: 400px; }
         .mir-chats-lista { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow-y: auto; }
         .mir-chat-item { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 10px; }
@@ -1019,9 +994,6 @@ export default function MirPage() {
       {/* MATCHES */}
       {vista === "matches" && (
         <>
-          <div className="mir-nota">
-            Ambos pagan {new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)} para revelar los datos de contacto.
-          </div>
           {loading ? <div className="mir-empty">Cargando...</div> :
            matchesPropios.length === 0 ? <div className="mir-empty">No tenes matches todavia.</div> :
            <div style={{display:"flex",flexDirection:"column",gap:12}}>
@@ -1029,8 +1001,6 @@ export default function MirPage() {
               const of = ofrecidos.find(o => o.id === m.ofrecido_id);
               const bu = busquedas.find(b => b.id === m.busqueda_id);
               const esDuenioOf = of?.perfil_id === userId;
-              const yoPague = esDuenioOf ? m.desbloqueado_ofrecido : m.desbloqueado_busqueda;
-              const ambosDesbloquearon = m.desbloqueado_ofrecido && m.desbloqueado_busqueda;
               const otroId = esDuenioOf ? bu?.perfil_id : of?.perfil_id;
               return (
                 <div key={m.id} className="mir-match-card">
@@ -1050,29 +1020,18 @@ export default function MirPage() {
                     </div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0}}>
-                    {ambosDesbloquearon ? (
-                      <div style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:6,padding:"10px 14px",minWidth:160}}>
-                        <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#22c55e",marginBottom:6}}>CONTACTO DESBLOQUEADO</div>
-                        <div style={{fontSize:12,color:"#fff",fontWeight:600}}>{esDuenioOf ? bu?.perfiles?.nombre : of?.perfiles?.nombre} {esDuenioOf ? bu?.perfiles?.apellido : of?.perfiles?.apellido}</div>
-                        {(esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:3}}>📱 {esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono}</div>}
-                        {(esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>✉️ {esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email}</div>}
-                        {otroId && (
-                          <button onClick={() => abrirChat(m.ofrecido_id, "ofrecido", otroId)}
-                            style={{marginTop:8,padding:"5px 12px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:4,color:"#22c55e",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer",width:"100%"}}>
-                            Abrir chat
-                          </button>
-                        )}
-                      </div>
-                    ) : yoPague ? (
-                      <div style={{fontSize:11,color:"#eab308",textAlign:"center"}}>Pagaste · Esperando al otro corredor</div>
-                    ) : (
-                      <>
-                        <button className="mir-btn-desbloquear" disabled={desbloqueando === m.id} onClick={() => desbloquear(m.id, esDuenioOf)}>
-                          {desbloqueando === m.id ? "..." : "Desbloquear contacto"}
+                    <div style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:6,padding:"10px 14px",minWidth:160}}>
+                      <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#22c55e",marginBottom:6}}>CONTACTO</div>
+                      <div style={{fontSize:12,color:"#fff",fontWeight:600}}>{esDuenioOf ? bu?.perfiles?.nombre : of?.perfiles?.nombre} {esDuenioOf ? bu?.perfiles?.apellido : of?.perfiles?.apellido}</div>
+                      {(esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:3}}>📱 {esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono}</div>}
+                      {(esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>✉️ {esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email}</div>}
+                      {otroId && (
+                        <button onClick={() => abrirChat(m.ofrecido_id, "ofrecido", otroId)}
+                          style={{marginTop:8,padding:"5px 12px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:4,color:"#22c55e",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer",width:"100%"}}>
+                          Abrir chat
                         </button>
-                        <div className="mir-costo">{new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(costoMatch)}</div>
-                      </>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               );
