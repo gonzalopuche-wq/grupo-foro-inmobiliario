@@ -209,11 +209,11 @@ export default function AdminPage() {
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
   // Sync / Import COCIR
   const [syncingCocir, setSyncingCocir] = useState(false);
-  const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total?: number; error?: string; debug?: Record<string,unknown> } | null>(null);
+  const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total_scrapeados?: number; error?: string; debug?: Record<string,unknown> } | null>(null);
   const [debugCocir, setDebugCocir] = useState<Record<string,unknown> | null>(null);
   const [debuggingCocir, setDebuggingCocir] = useState(false);
   const [importandoPadron, setImportandoPadron] = useState(false);
-  const [importPadronRes, setImportPadronRes] = useState<{ ok: boolean; total?: number; error?: string; columnas_detectadas?: any } | null>(null);
+  const [importPadronRes, setImportPadronRes] = useState<{ ok: boolean; total?: number; error?: string } | null>(null);
   // MI ABONO INTELIGENTE config
   const [bonifConfig, setBonifConfig] = useState<{id:string;accion:string;descuento_usd:number;descripcion:string|null}[]>([]);
   const [editandoBonif, setEditandoBonif] = useState<Record<string,string>>({});
@@ -1652,6 +1652,99 @@ A partir de esa fecha el costo mensual será de USD 15.
 
         <main className="adm-content">
 
+          {/* ── PADRÓN COCIR ── */}
+          <div>
+            <div className="adm-ind-titulo">Padrón <span>COCIR</span></div>
+            <div className="adm-ind-subtitulo" style={{ marginBottom: 16 }}>
+              Importá el Excel/CSV del padrón COCIR para tenerlo disponible en el sistema. Cuando ingresen nuevos matriculados, importá el archivo actualizado y el sistema lo reemplaza automáticamente.
+            </div>
+
+            {/* Import desde archivo */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{
+                display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer",
+                padding: "10px 20px", borderRadius: 4, fontFamily: "Montserrat,sans-serif",
+                fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
+                background: importandoPadron ? "rgba(255,255,255,0.04)" : "rgba(200,0,0,0.12)",
+                border: "1px solid rgba(200,0,0,0.4)", color: importandoPadron ? "rgba(255,255,255,0.4)" : "#fff",
+                pointerEvents: importandoPadron ? "none" : "auto",
+              }}>
+                {importandoPadron
+                  ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Importando...</>
+                  : "📂 Importar Excel / CSV del padrón"}
+                <input type="file" accept=".xlsx,.xls,.csv,.ods" onChange={importarPadronArchivo} style={{ display: "none" }} />
+              </label>
+              <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
+                Formatos soportados: .xlsx · .xls · .csv — Columnas detectadas automáticamente por nombre (matrícula, apellido, nombre, estado, inmobiliaria, etc.)
+              </div>
+            </div>
+
+            {/* Resultado import */}
+            {importPadronRes && (
+              <div style={{
+                padding: "12px 16px", borderRadius: 4, marginBottom: 12,
+                background: importPadronRes.ok ? "rgba(34,197,94,0.06)" : "rgba(200,0,0,0.06)",
+                border: `1px solid ${importPadronRes.ok ? "rgba(34,197,94,0.2)" : "rgba(200,0,0,0.2)"}`,
+                fontSize: 12, fontFamily: "Inter,sans-serif",
+                color: importPadronRes.ok ? "#22c55e" : "#ff6666",
+              }}>
+                {importPadronRes.ok ? (
+                  <>✓ <strong>{(importPadronRes as any).insertados ?? 0} nuevos</strong> agregados · <strong>{(importPadronRes as any).actualizados ?? 0} actualizados</strong> ({importPadronRes.total} total).</>
+                ) : `✗ ${importPadronRes.error ?? "Error desconocido"}`}
+              </div>
+            )}
+
+            {/* Sync automático desde web (secundario) */}
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>Sync web (experimental):</span>
+              <button
+                className="adm-ind-btn"
+                onClick={sincronizarCocir}
+                disabled={syncingCocir}
+                style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 10, padding: "6px 14px" }}
+              >
+                {syncingCocir
+                  ? <><span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Sincronizando...</>
+                  : "↺ Sincronizar desde cocir.org.ar"}
+              </button>
+              {syncCocirRes && (
+                <div style={{ marginTop: 8, width: "100%" }}>
+                  <span style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: syncCocirRes.ok ? "#22c55e" : "#ff6666" }}>
+                    {syncCocirRes.ok ? `✓ ${syncCocirRes.total_scrapeados ?? 0} registros` : `✗ ${syncCocirRes.error ?? "Error desconocido"}`}
+                  </span>
+                  {!syncCocirRes.ok && syncCocirRes.debug && (
+                    <pre style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 220, overflowY: "auto" }}>
+                      {JSON.stringify(syncCocirRes.debug, null, 2)}
+                    </pre>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Diagnóstico COCIR */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap", paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+              <button
+                className="adm-ind-btn"
+                onClick={diagnosticarCocir}
+                disabled={debuggingCocir}
+                style={{ fontSize: 10, padding: "5px 12px", background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.5)" }}
+              >
+                {debuggingCocir ? "Diagnosticando..." : "🔍 Diagnosticar COCIR"}
+              </button>
+              {debugCocir && (
+                <div style={{ width: "100%", marginTop: 6 }}>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>Resultado diagnóstico — copialo y mandáselo a Claude:</span>
+                    <button onClick={() => navigator.clipboard.writeText(JSON.stringify(debugCocir, null, 2))} style={{ fontSize: 9, padding: "1px 7px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Copiar</button>
+                  </div>
+                  <pre style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 300, overflowY: "auto" }}>
+                    {JSON.stringify(debugCocir, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* ── EVENTOS PROPUESTOS ── */}
           <div>
             <div className="adm-header">
@@ -2368,107 +2461,6 @@ A partir de esa fecha el costo mensual será de USD 15.
               </div>
             </div>
           )}
-
-          {/* ── PADRÓN COCIR ── */}
-          <div>
-            <div className="adm-ind-titulo">Padrón <span>COCIR</span></div>
-            <div className="adm-ind-subtitulo" style={{ marginBottom: 16 }}>
-              Importá el Excel/CSV del padrón COCIR para tenerlo disponible en el sistema. Cuando ingresen nuevos matriculados, importá el archivo actualizado y el sistema lo reemplaza automáticamente.
-            </div>
-
-            {/* Import desde archivo */}
-            <div style={{ marginBottom: 16 }}>
-              <label style={{
-                display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer",
-                padding: "10px 20px", borderRadius: 4, fontFamily: "Montserrat,sans-serif",
-                fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
-                background: importandoPadron ? "rgba(255,255,255,0.04)" : "rgba(200,0,0,0.12)",
-                border: "1px solid rgba(200,0,0,0.4)", color: importandoPadron ? "rgba(255,255,255,0.4)" : "#fff",
-                pointerEvents: importandoPadron ? "none" : "auto",
-              }}>
-                {importandoPadron
-                  ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Importando...</>
-                  : "📂 Importar Excel / CSV del padrón"}
-                <input type="file" accept=".xlsx,.xls,.csv,.ods" onChange={importarPadronArchivo} style={{ display: "none" }} />
-              </label>
-              <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
-                Formatos soportados: .xlsx · .xls · .csv — Columnas detectadas automáticamente por nombre (matrícula, apellido, nombre, estado, inmobiliaria, etc.)
-              </div>
-            </div>
-
-            {/* Resultado import */}
-            {importPadronRes && (
-              <div style={{
-                padding: "12px 16px", borderRadius: 4, marginBottom: 12,
-                background: importPadronRes.ok ? "rgba(34,197,94,0.06)" : "rgba(200,0,0,0.06)",
-                border: `1px solid ${importPadronRes.ok ? "rgba(34,197,94,0.2)" : "rgba(200,0,0,0.2)"}`,
-                fontSize: 12, fontFamily: "Inter,sans-serif",
-                color: importPadronRes.ok ? "#22c55e" : "#ff6666",
-              }}>
-                {importPadronRes.ok ? (
-                  <>
-                    ✓ <strong>{(importPadronRes as any).insertados ?? 0} nuevos</strong> agregados · <strong>{(importPadronRes as any).actualizados ?? 0} actualizados</strong> ({importPadronRes.total} total).
-                    {importPadronRes.columnas_detectadas && (
-                      <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
-                        Columnas detectadas: matrícula={importPadronRes.columnas_detectadas.matricula} · apellido={importPadronRes.columnas_detectadas.apellido} · nombre={importPadronRes.columnas_detectadas.nombre}
-                        {importPadronRes.columnas_detectadas.estado && ` · estado=${importPadronRes.columnas_detectadas.estado}`}
-                      </div>
-                    )}
-                  </>
-                ) : `✗ ${importPadronRes.error}`}
-              </div>
-            )}
-
-            {/* Sync automático desde web (secundario) */}
-            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>Sync web (experimental):</span>
-              <button
-                className="adm-ind-btn"
-                onClick={sincronizarCocir}
-                disabled={syncingCocir}
-                style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 10, padding: "6px 14px" }}
-              >
-                {syncingCocir
-                  ? <><span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Sincronizando...</>
-                  : "↺ Sincronizar desde cocir.org.ar"}
-              </button>
-              {syncCocirRes && (
-                <div style={{ marginTop: 8, width: "100%" }}>
-                  <span style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: syncCocirRes.ok ? "#22c55e" : "#ff6666" }}>
-                    {syncCocirRes.ok ? `✓ ${syncCocirRes.total} registros` : `✗ ${syncCocirRes.error}`}
-                  </span>
-                  {!syncCocirRes.ok && syncCocirRes.debug && (
-                    <pre style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 220, overflowY: "auto" }}>
-                      {JSON.stringify(syncCocirRes.debug, null, 2)}
-                    </pre>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Diagnóstico COCIR */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap", paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-              <button
-                className="adm-ind-btn"
-                onClick={diagnosticarCocir}
-                disabled={debuggingCocir}
-                style={{ fontSize: 10, padding: "5px 12px", background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.5)" }}
-              >
-                {debuggingCocir ? "Diagnosticando..." : "🔍 Diagnosticar COCIR"}
-              </button>
-              {debugCocir && (
-                <div style={{ width: "100%", marginTop: 6 }}>
-                  <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>Resultado diagnóstico — copialo y mandáselo a Claude:</span>
-                    <button onClick={() => navigator.clipboard.writeText(JSON.stringify(debugCocir, null, 2))} style={{ fontSize: 9, padding: "1px 7px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Copiar</button>
-                  </div>
-                  <pre style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 300, overflowY: "auto" }}>
-                    {JSON.stringify(debugCocir, null, 2)}
-                  </pre>
-                </div>
-              )}
-            </div>
-          </div>
 
           {/* ── BENEFICIOS & DESCUENTOS ── */}
           {adminId && (

@@ -145,21 +145,19 @@ function CrmLayoutInner({ children }: { children: React.ReactNode }) {
           text-transform: uppercase; color: rgba(255,255,255,0.4);
           border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 8px;
         }
-        .crm-layout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 8px; }
+        .crm-layout-grid { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
         .crm-layout-item {
-          display: flex; flex-direction: column; align-items: center;
-          justify-content: center; gap: 4px; padding: 9px 4px 8px;
-          border-radius: 6px; text-decoration: none; text-align: center;
-          min-height: 58px;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.12);
+          display: flex; flex-direction: row; align-items: center; gap: 8px;
+          padding: 8px 12px; border-radius: 6px; text-decoration: none;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.10);
           transition: background 0.13s, border-color 0.13s;
         }
-        .crm-layout-item:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); }
+        .crm-layout-item:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
         .crm-layout-item.activo { background: rgba(204,0,0,0.16); border-color: rgba(204,0,0,0.35); }
-        .crm-layout-ico { font-size: 16px; line-height: 1; }
-        .crm-layout-lbl { font-family: 'Inter',sans-serif; font-size: 9.5px; font-weight: 600; color: rgba(255,255,255,0.88); line-height: 1.25; }
-        .crm-layout-item.activo .crm-layout-lbl { color: #fff; font-weight: 700; }
+        .crm-layout-ico { font-size: 13px; line-height: 1; flex-shrink: 0; }
+        .crm-layout-lbl { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; color: rgba(255,255,255,0.88); line-height: 1.2; text-transform: uppercase; }
+        .crm-layout-item.activo .crm-layout-lbl { color: #fff; }
         .crm-layout-toggle {
           flex-shrink: 0; width: 22px; padding: 0; border: none;
           border-right: 1px solid rgba(255,255,255,0.07);
