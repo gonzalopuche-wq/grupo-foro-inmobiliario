@@ -387,11 +387,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
         .sidebar-nav::-webkit-scrollbar { width: 2px; }
         .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
-        .sidebar-section-label { padding: 10px 20px 4px; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: rgba(255,255,255,0.72); font-size: 13px; font-family: 'Inter',sans-serif; font-weight: 400; text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
-        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
-        .nav-item.active { color: #fff; background: rgba(200,0,0,0.08); border-left-color: #cc0000; font-weight: 500; }
-        .nav-item-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+        .sidebar-section-label { padding: 10px 20px 4px; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.38); font-family: 'Montserrat',sans-serif; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: rgba(255,255,255,0.88); font-size: 13px; font-family: 'Inter',sans-serif; font-weight: 500; text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.07); border-left-color: rgba(255,255,255,0.15); }
+        .nav-item.active { color: #fff; background: rgba(200,0,0,0.10); border-left-color: #cc0000; font-weight: 600; }
+        .nav-item-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
         .sidebar-rol-badge { margin: 0 16px 8px; padding: 4px 10px; border-radius: 10px; font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.2); color: rgba(255,165,0,0.7); }
         .sidebar-perfil { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; }
         .sidebar-avatar { width: 32px; height: 32px; border-radius: 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; color: #cc0000; flex-shrink: 0; overflow: hidden; }
