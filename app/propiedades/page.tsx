@@ -156,10 +156,11 @@ export default async function PropiedadesPage({ searchParams }: Props) {
       <main className="page">
         <div style={{ paddingTop: 24 }}>
           <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, marginBottom: 4 }}>
-            Propiedades
+            {[sp.tipo, sp.op ? `en ${sp.op}` : null, sp.zona ? `· ${sp.zona}` : sp.ciudad ? `en ${sp.ciudad}` : null]
+              .filter(Boolean).join(" ") || "Propiedades"}
           </h1>
           <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 20 }}>
-            Venta y alquiler en Rosario y la región
+            {sp.ciudad ? `${sp.ciudad}${sp.zona ? ` · ${sp.zona}` : ""}` : "Rosario y la región"} · Grupo Foro Inmobiliario
           </p>
         </div>
 

@@ -208,8 +208,40 @@ export default async function InmueblePage({ params }: Props) {
     ? `https://www.openstreetmap.org/export/embed.html?bbox=${p.longitud - 0.008},${p.latitud - 0.005},${p.longitud + 0.008},${p.latitud + 0.005}&layer=mapnik&marker=${p.latitud},${p.longitud}`
     : null;
 
+  const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    "name": p.titulo,
+    "description": p.descripcion?.slice(0, 300) ?? undefined,
+    "url": `${BASE}/inmueble/${p.id}`,
+    ...(fotos.length > 0 && { "image": fotos.slice(0, 5) }),
+    ...(!p.ocultar_precio && p.precio && {
+      "offers": {
+        "@type": "Offer",
+        "price": p.precio,
+        "priceCurrency": p.moneda === "USD" ? "USD" : "ARS",
+        "availability": p.estado === "reservada" ? "https://schema.org/LimitedAvailability" : "https://schema.org/InStock",
+      },
+    }),
+    "address": {
+      "@type": "PostalAddress",
+      ...(p.ciudad && { "addressLocality": p.ciudad }),
+      "addressRegion": "Santa Fe",
+      "addressCountry": "AR",
+    },
+    ...(p.superficie_cubierta && {
+      "floorSize": { "@type": "QuantitativeValue", "value": p.superficie_cubierta, "unitCode": "MTK" },
+    }),
+    ...(p.dormitorios != null && { "numberOfRooms": p.dormitorios }),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

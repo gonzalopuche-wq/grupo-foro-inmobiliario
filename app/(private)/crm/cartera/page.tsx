@@ -1137,6 +1137,7 @@ export default function CarteraPage() {
     else if (orden === "precio_desc") sorted.sort((a, b) => (b.precio ?? 0) - (a.precio ?? 0));
     else if (orden === "alfa") sorted.sort((a, b) => (a.titulo ?? "").localeCompare(b.titulo ?? "", "es"));
     else if (orden === "vistas") sorted.sort((a, b) => (b.vistas ?? 0) - (a.vistas ?? 0));
+    else if (orden === "leads") sorted.sort((a, b) => (b.leads_count ?? 0) - (a.leads_count ?? 0));
     else sorted.sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
     return sorted;
   }, [propiedades, filtroOp, filtroTipo, filtroEstado, filtroSoloWeb, filtroPrecioMin, filtroPrecioMax, busqueda, orden]);
@@ -1384,6 +1385,7 @@ export default function CarteraPage() {
             <option value="precio_asc">Precio ↑</option>
             <option value="alfa">Alfabético</option>
             <option value="vistas">Más vistas</option>
+            <option value="leads">Más leads</option>
           </select>
           <input
             placeholder="Precio mín"
