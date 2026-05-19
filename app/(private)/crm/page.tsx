@@ -883,7 +883,6 @@ export default function CrmPage() {
         .crm-tab-main:hover { color: rgba(255,255,255,0.6); }
         .crm-tab-main.activo { color: #fff; border-bottom-color: #cc0000; }
         .crm-tab-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; background: #cc0000; color: #fff; font-size: 8px; font-weight: 700; border-radius: 8px; margin-left: 6px; font-family: 'Montserrat',sans-serif; }
-        .crm-tabs-spacer { flex: 1; }
 
         /* ── Contenido tab ── */
         .crm-tab-content { flex: 1; overflow: hidden; display: flex; }
@@ -1147,7 +1146,7 @@ export default function CrmPage() {
 
       <div className="crm-root">
 
-        {/* ── Tabs principales ── */}
+        {/* ── Tabs internos (Dashboard / Contactos / Negocios / Tareas / Notas) ── */}
         <div className="crm-tabs-bar">
           <button className={`crm-tab-main${tabPrincipal === "dashboard" ? " activo" : ""}`} onClick={() => setTabPrincipal("dashboard")}>Dashboard</button>
           {(["contactos", "negocios", "tareas", "notas"] as const).map(tab => (
@@ -1158,99 +1157,6 @@ export default function CrmPage() {
               {tab === "notas" && <>Notas {notas.length > 0 && <span className="crm-tab-badge">{notas.length}</span>}</>}
             </button>
           ))}
-          <div className="crm-tabs-spacer" />
-          <Link href="/crm/portales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔗 Portales</Link>
-          <Link href="/crm/cartera" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Cartera</Link>
-          <Link href="/crm/llaves" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔑 Llaves</Link>
-          <Link href="/crm/metas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Metas</Link>
-          <Link href="/crm/post-cierre" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Post-cierre</Link>
-          <Link href="/crm/escrituras" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚖️ Escrituras</Link>
-          <Link href="/crm/alianzas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Alianzas</Link>
-          <Link href="/crm/firma" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✍️ Firma</Link>
-          <Link href="/crm/emails" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✉️ Emails</Link>
-          <Link href="/agenda" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📆 Agenda</Link>
-          <Link href="/crm/hoy" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🌅 Hoy</Link>
-          <Link href="/crm/seguimiento" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📡 Seguimiento</Link>
-          <Link href="/crm/conversion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Conversión</Link>
-          <Link href="/crm/proyeccion-ingresos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Proyección</Link>
-          <Link href="/crm/reporte-mensual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Reporte</Link>
-          <Link href="/crm/smart-match" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Smart Match</Link>
-          <Link href="/crm/pipeline-velocity" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚡ Velocity</Link>
-          <Link href="/crm/whatsapp-templates" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💬 Templates WA</Link>
-          <Link href="/crm/agenda-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Agenda Semanal</Link>
-          <Link href="/crm/comparador" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Comparador</Link>
-          <Link href="/crm/comisiones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones</Link>
-          <Link href="/crm/tasacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Tasación</Link>
-          <Link href="/crm/zona" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📍 Análisis Zona</Link>
-          <Link href="/crm/documentos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Documentos</Link>
-          <Link href="/crm/actividad" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚡ Actividad</Link>
-          <Link href="/crm/performance" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📈 Performance</Link>
-          <Link href="/crm/scripts" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📞 Scripts</Link>
-          <Link href="/crm/analisis-captacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎣 Análisis Captación</Link>
-          <Link href="/crm/mapa-calor" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🗺️ Mapa de Calor</Link>
-          <Link href="/crm/forecast" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Forecast</Link>
-          <Link href="/crm/retencion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔄 Retención</Link>
-          <Link href="/crm/onboarding" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Onboarding</Link>
-          <Link href="/crm/negociacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Negociación</Link>
-          <Link href="/crm/clientes-vip" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💎 Clientes VIP</Link>
-          <Link href="/crm/competencia" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔎 Competencia</Link>
-          <Link href="/crm/reporte-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Reporte Semanal</Link>
-          <Link href="/crm/alertas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🚨 Alertas</Link>
-          <Link href="/crm/embudo" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔻 Embudo</Link>
-          <Link href="/crm/historial" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Historial</Link>
-          <Link href="/crm/win-loss" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 Win/Loss</Link>
-          <Link href="/crm/referidos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Referidos</Link>
-          <Link href="/crm/gastos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💸 Gastos</Link>
-          <Link href="/crm/objetivos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Objetivos</Link>
-          <Link href="/crm/scoring" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⭐ Scoring</Link>
-          <Link href="/crm/cobranzas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💳 Cobranzas</Link>
-          <Link href="/crm/duplicados" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Duplicados</Link>
-          <Link href="/crm/campana-reactivacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📣 Reactivación</Link>
-          <Link href="/crm/match-clientes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Match Clientes</Link>
-          <Link href="/crm/vencimientos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Vencimientos</Link>
-          <Link href="/crm/comisiones-pendientes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones</Link>
-          <Link href="/crm/pipeline-visual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🗂️ Pipeline Visual</Link>
-          <Link href="/crm/forecast-pipeline" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📈 Forecast</Link>
-          <Link href="/crm/checklist-cierre" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Checklist Cierre</Link>
-          <Link href="/crm/revenue" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Revenue</Link>
-          <Link href="/crm/descuentos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📉 Descuentos</Link>
-          <Link href="/crm/produccion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏆 Producción</Link>
-          <Link href="/crm/agenda-tasaciones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Agenda Tasaciones</Link>
-          <Link href="/crm/expediente" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📁 Expediente</Link>
-          <Link href="/crm/metas-personales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Metas Personales</Link>
-          <Link href="/crm/contratos-activos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Contratos Activos</Link>
-          <Link href="/crm/kpi-diario" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📊 KPI Diario</Link>
-          <Link href="/crm/propuesta-comercial" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📄 Propuesta Comercial</Link>
-          <Link href="/crm/seguimiento-post-venta" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Post-Venta</Link>
-          <Link href="/crm/tiempo-venta" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⏱️ Tiempo en Mercado</Link>
-          <Link href="/crm/campana-cumpleanos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎂 Cumpleaños</Link>
-          <Link href="/crm/carga-masiva" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📥 Carga Masiva</Link>
-          <Link href="/crm/scorecard-semanal" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏆 Scorecard Semanal</Link>
-          <Link href="/crm/pipeline-kanban" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Pipeline Kanban</Link>
-          <Link href="/crm/base-conocimiento" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📚 Base de Conocimiento</Link>
-          <Link href="/crm/gestion-honorarios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Honorarios</Link>
-          <Link href="/crm/recordatorios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔔 Recordatorios</Link>
-          <Link href="/crm/analisis-zona" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📍 Análisis de Zona</Link>
-          <Link href="/crm/reporte-mensual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📑 Reporte Mensual</Link>
-          <Link href="/crm/simulador-negociacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Simulador Negociación</Link>
-          <Link href="/crm/mapa-calor" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔥 Mapa de Actividad</Link>
-          <Link href="/crm/buscador" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔍 Buscador</Link>
-          <Link href="/crm/configuracion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>⚙️ Configuración</Link>
-          <Link href="/crm/estadisticas-captacion" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎣 Estadísticas Captación</Link>
-          <Link href="/crm/agenda-visitas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📅 Agenda Visitas</Link>
-          <Link href="/crm/seguimiento-ofertas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🤝 Seguimiento Ofertas</Link>
-          <Link href="/crm/objetivos-mensuales" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🎯 Objetivos Mensuales</Link>
-          <Link href="/crm/historial-operaciones" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📋 Historial Operaciones</Link>
-          <Link href="/crm/gestion-documentos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📁 Gestión Documentos</Link>
-          <Link href="/crm/reportes-propietarios" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📑 Reportes Propietarios</Link>
-          <Link href="/crm/red-contactos" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🕸️ Red de Contactos</Link>
-          <Link href="/crm/campanas-marketing" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>📣 Campañas Marketing</Link>
-          <Link href="/crm/comisiones-split" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💰 Comisiones Split</Link>
-          <Link href="/crm/plantillas-mensajes" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💬 Plantillas Mensajes</Link>
-          <Link href="/crm/gestion-tareas" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>✅ Gestión Tareas</Link>
-          <Link href="/crm/presupuesto-anual" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>💸 Presupuesto Anual</Link>
-          <Link href="/crm/analisis-competencia" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🔎 Análisis Competencia</Link>
-          <Link href="/crm/ficha-propiedad" className="crm-tab-main" style={{textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>🏠 Ficha Propiedad</Link>
         </div>
 
         <div className="crm-tab-content">
@@ -1919,7 +1825,7 @@ export default function CrmPage() {
           )}
 
         </div>
-      </div>
+      </div>{/* end crm-root */}
 
       {/* ══════════════════════════════════════════════════
           MODAL CONTACTO
