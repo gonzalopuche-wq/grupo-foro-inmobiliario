@@ -33,6 +33,28 @@ async function cargarTodo(tabla: string, columnas: string, orden: string) {
   return { data: todos, error: null }
 }
 
+async function cargarCorredoresGFI() {
+  const CHUNK = 1000
+  let todos: any[] = []
+  let desde = 0
+  while (true) {
+    const { data, error } = await supabaseAdmin
+      .from("perfiles")
+      .select("id,nombre,apellido,matricula,telefono,email,inmobiliaria,especialidades,foto_url,zona_trabajo,anos_experiencia,bio,socio_cir,tipo,estado,created_at")
+      .eq("tipo", "corredor")
+      .neq("estado", "pendiente")
+      .neq("estado", "rechazado")
+      .order("apellido", { ascending: true })
+      .range(desde, desde + CHUNK - 1)
+    if (error) return { data: [], error: error.message }
+    if (!data || data.length === 0) break
+    todos = todos.concat(data)
+    if (data.length < CHUNK) break
+    desde += CHUNK
+  }
+  return { data: todos, error: null }
+}
+
 export async function GET(req: NextRequest) {
   const user = await getAuthUser(req)
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
@@ -43,11 +65,7 @@ export async function GET(req: NextRequest) {
       "id,matricula,apellido,nombre,inmobiliaria,direccion,localidad,telefono,email,estado,actualizado_at",
       "apellido"
     ),
-    cargarTodo(
-      "perfiles",
-      "id,nombre,apellido,matricula,telefono,email,inmobiliaria,especialidades,foto_url,zona_trabajo,anos_experiencia,bio,socio_cir,tipo,estado,created_at",
-      "apellido"
-    ),
+    cargarCorredoresGFI(),
   ])
 
   return NextResponse.json({
