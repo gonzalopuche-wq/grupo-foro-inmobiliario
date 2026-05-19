@@ -209,7 +209,7 @@ export default function AdminPage() {
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
   // Sync / Import COCIR
   const [syncingCocir, setSyncingCocir] = useState(false);
-  const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total?: number; error?: string } | null>(null);
+  const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total?: number; error?: string; debug?: Record<string,unknown> } | null>(null);
   const [importandoPadron, setImportandoPadron] = useState(false);
   const [importPadronRes, setImportPadronRes] = useState<{ ok: boolean; total?: number; error?: string; columnas_detectadas?: any } | null>(null);
   // MI ABONO INTELIGENTE config
@@ -2415,12 +2415,16 @@ A partir de esa fecha el costo mensual será de USD 15.
                   : "↺ Sincronizar desde cocir.org.ar"}
               </button>
               {syncCocirRes && (
-                <span style={{
-                  fontSize: 11, fontFamily: "Inter,sans-serif",
-                  color: syncCocirRes.ok ? "#22c55e" : "#ff6666",
-                }}>
-                  {syncCocirRes.ok ? `✓ ${syncCocirRes.total} registros` : `✗ ${syncCocirRes.error}`}
-                </span>
+                <div style={{ marginTop: 8 }}>
+                  <span style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: syncCocirRes.ok ? "#22c55e" : "#ff6666" }}>
+                    {syncCocirRes.ok ? `✓ ${syncCocirRes.total} registros` : `✗ ${syncCocirRes.error}`}
+                  </span>
+                  {!syncCocirRes.ok && syncCocirRes.debug && (
+                    <pre style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 200, overflowY: "auto" }}>
+                      {JSON.stringify(syncCocirRes.debug, null, 2)}
+                    </pre>
+                  )}
+                </div>
               )}
             </div>
           </div>
