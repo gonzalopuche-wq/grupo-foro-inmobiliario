@@ -136,14 +136,14 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           justify-content: center; gap: 4px; padding: 9px 4px 8px;
           border-radius: 6px; text-decoration: none; text-align: center;
           min-height: 58px;
-          background: rgba(255,255,255,0.022);
-          border: 1px solid rgba(255,255,255,0.04);
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.07);
           transition: background 0.13s, border-color 0.13s;
         }
-        .crm-layout-item:hover { background: rgba(255,255,255,0.055); border-color: rgba(255,255,255,0.1); }
+        .crm-layout-item:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.15); }
         .crm-layout-item.activo { background: rgba(204,0,0,0.13); border-color: rgba(204,0,0,0.28); }
         .crm-layout-ico { font-size: 15px; line-height: 1; }
-        .crm-layout-lbl { font-family: 'Inter',sans-serif; font-size: 9.5px; font-weight: 400; color: rgba(255,255,255,0.42); line-height: 1.25; }
+        .crm-layout-lbl { font-family: 'Inter',sans-serif; font-size: 9.5px; font-weight: 500; color: rgba(255,255,255,0.72); line-height: 1.25; }
         .crm-layout-item.activo .crm-layout-lbl { color: #fff; font-weight: 600; }
         .crm-layout-toggle {
           flex-shrink: 0; width: 22px; padding: 0; border: none;
@@ -174,7 +174,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           <div className="crm-layout-inner">
             <div className="crm-layout-header">CRM GFI®</div>
             <div className="crm-layout-grid">
-              {CRM_LINKS.map(([href, ico, lbl]) => (
+              {[...CRM_LINKS].sort(([,,a],[,,b]) => a.localeCompare(b, "es")).map(([href, ico, lbl]) => (
                 <Link
                   key={href}
                   href={href}

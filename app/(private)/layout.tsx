@@ -388,8 +388,8 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         .sidebar-nav::-webkit-scrollbar { width: 2px; }
         .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
         .sidebar-section-label { padding: 10px 20px 4px; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: rgba(255,255,255,0.45); font-size: 13px; font-family: 'Inter',sans-serif; font-weight: 400; text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
-        .nav-item:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.03); }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: rgba(255,255,255,0.72); font-size: 13px; font-family: 'Inter',sans-serif; font-weight: 400; text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
         .nav-item.active { color: #fff; background: rgba(200,0,0,0.08); border-left-color: #cc0000; font-weight: 500; }
         .nav-item-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
         .sidebar-rol-badge { margin: 0 16px 8px; padding: 4px 10px; border-radius: 10px; font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.2); color: rgba(255,165,0,0.7); }
@@ -446,7 +446,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
               <div className="sidebar-rol-badge">Colaborador</div>
             )}
             <div className="sidebar-section-label">Plataforma</div>
-            {navItems.map(item => (
+            {[...navItems].sort((a,b) => a.label.localeCompare(b.label, "es")).map(item => (
               <Link
                 key={item.href}
                 href={item.href}
