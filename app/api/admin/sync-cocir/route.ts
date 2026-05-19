@@ -40,7 +40,8 @@ function detectarCampo(texto: string): string | null {
 
 function parsearTabla(html: string, camposPorCol: string[]): any[] {
   const $ = cheerio.load(html);
-  const usarFallback = camposPorCol.length === 0;
+  // Usar fallback si no hay columnas detectadas O si TODAS son desconocidas (_col*)
+  const usarFallback = camposPorCol.length === 0 || camposPorCol.every(c => c.startsWith("_"));
   const registros: any[] = [];
 
   $("table tr").each((_, el) => {
@@ -147,6 +148,9 @@ export async function GET(req: NextRequest) {
     const registrosPag1 = parsearTabla(html1, camposPorCol);
 
     if (registrosPag1.length === 0) {
+      const filasTd = $1("table tr").filter((_, el) => $1(el).find("td").length >= 2).length;
+      const primeraFila: string[] = [];
+      $1("table tr").first().find("td,th").each((_, el) => { primeraFila.push($1(el).text().trim()); });
       return NextResponse.json({
         ok: false,
         error: "No se encontraron registros en la primera página",
@@ -154,6 +158,10 @@ export async function GET(req: NextRequest) {
           htmlLen: html1.length,
           tables: $1("table").length,
           thead: $1("table thead").length,
+          filasTd,
+          columnasMapeadas: camposPorCol,
+          primeraFila,
+          htmlInicio: html1.slice(0, 800),
         },
       });
     }
