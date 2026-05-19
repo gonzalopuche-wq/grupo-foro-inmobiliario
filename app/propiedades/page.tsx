@@ -30,7 +30,7 @@ async function buscar(sp: SearchParams) {
   let q = sb
     .from("cartera_propiedades")
     .select(
-      "id,titulo,operacion,tipo,precio,precio_anterior,moneda,ocultar_precio,ciudad,zona,dormitorios,superficie_cubierta,fotos,codigo,estado,destacada_web",
+      "id,titulo,operacion,tipo,precio,precio_anterior,moneda,ocultar_precio,ciudad,zona,dormitorios,superficie_cubierta,sup_terreno,fotos,codigo,estado,destacada_web",
       { count: "exact" }
     )
     .in("estado", ["activa", "reservada"]);
@@ -58,16 +58,19 @@ async function buscar(sp: SearchParams) {
   return { props: (data ?? []) as any[], total: count ?? 0, page };
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const sp = await searchParams;
+  const partes = [sp.tipo, sp.op ? `en ${sp.op}` : null, sp.ciudad ?? null].filter(Boolean);
+  const titulo = partes.length > 0
+    ? `${partes.join(" ")} — Grupo Foro Inmobiliario`
+    : "Propiedades en venta y alquiler — Grupo Foro Inmobiliario";
+  const desc = `Buscá ${partes.length > 0 ? partes.join(" ").toLowerCase() : "propiedades"} en ${sp.ciudad ?? "Rosario y la región"}${sp.zona ? `, ${sp.zona}` : ""}. Corredores matriculados del Grupo Foro Inmobiliario.`;
+  const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
   return {
-    title: "Propiedades en venta y alquiler — Grupo Foro Inmobiliario",
-    description: "Buscá tu próxima propiedad en Rosario y la región. Departamentos, casas, PH, locales y terrenos en venta y alquiler.",
-    openGraph: {
-      title: "Propiedades en venta y alquiler — GFI®",
-      description: "Buscá entre todas las propiedades publicadas por corredores matriculados del Grupo Foro Inmobiliario.",
-      type: "website",
-      locale: "es_AR",
-    },
+    title: titulo,
+    description: desc,
+    alternates: { canonical: `${BASE}/propiedades` },
+    openGraph: { title: titulo, description: desc, type: "website", locale: "es_AR" },
   };
 }
 
@@ -283,10 +286,11 @@ export default async function PropiedadesPage({ searchParams }: Props) {
                       <div className="card-precio-ant">{fmtPrecio(p.precio_anterior, p.moneda, false)}</div>
                     )}
                     <div className="card-precio">{fmtPrecio(p.precio, p.moneda, p.ocultar_precio)}</div>
-                    {(p.dormitorios != null || p.superficie_cubierta != null) && (
+                    {(p.dormitorios != null || p.superficie_cubierta != null || p.sup_terreno != null) && (
                       <div className="card-specs">
                         {p.dormitorios != null && <span className="card-spec">🛏 {p.dormitorios} dorm.</span>}
                         {p.superficie_cubierta != null && <span className="card-spec">📐 {p.superficie_cubierta} m²</span>}
+                        {p.sup_terreno != null && p.superficie_cubierta == null && <span className="card-spec">📐 {p.sup_terreno} m² terreno</span>}
                       </div>
                     )}
                   </div>
