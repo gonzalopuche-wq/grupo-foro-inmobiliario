@@ -16,8 +16,8 @@ const TIPOS_FILTER = [
 ];
 
 interface SearchParams {
-  op?: string; tipo?: string; ciudad?: string;
-  dorm?: string; min?: string; max?: string;
+  op?: string; tipo?: string; ciudad?: string; zona?: string;
+  dorm?: string; min?: string; max?: string; supmin?: string;
   orden?: string; moneda?: string; page?: string;
 }
 
@@ -30,7 +30,7 @@ async function buscar(sp: SearchParams) {
   let q = sb
     .from("cartera_propiedades")
     .select(
-      "id,titulo,operacion,tipo,precio,precio_anterior,moneda,ocultar_precio,ciudad,zona,dormitorios,superficie_cubierta,fotos,codigo,estado,destacada_web",
+      "id,titulo,operacion,tipo,precio,precio_anterior,moneda,ocultar_precio,ciudad,zona,dormitorios,superficie_cubierta,sup_terreno,fotos,codigo,estado,destacada_web",
       { count: "exact" }
     )
     .in("estado", ["activa", "reservada"]);
@@ -38,10 +38,16 @@ async function buscar(sp: SearchParams) {
   if (sp.op && sp.op !== "todas") q = q.eq("operacion", sp.op);
   if (sp.tipo) q = q.eq("tipo", sp.tipo);
   if (sp.ciudad?.trim()) q = q.ilike("ciudad", `%${sp.ciudad.trim()}%`);
-  if (sp.dorm) q = q.gte("dormitorios", parseInt(sp.dorm));
+  if (sp.zona?.trim()) q = q.ilike("zona", `%${sp.zona.trim()}%`);
+  const dormNum = parseInt(sp.dorm ?? "");
+  if (!isNaN(dormNum)) q = q.gte("dormitorios", dormNum);
+  const supMinNum = parseFloat(sp.supmin ?? "");
+  if (!isNaN(supMinNum)) q = q.or(`superficie_cubierta.gte.${supMinNum},sup_terreno.gte.${supMinNum}`);
   const mon = sp.moneda ?? "USD";
-  if (sp.min) q = q.gte("precio", parseInt(sp.min)).eq("moneda", mon);
-  if (sp.max) q = q.lte("precio", parseInt(sp.max)).eq("moneda", mon);
+  const minNum = parseInt(sp.min ?? "");
+  const maxNum = parseInt(sp.max ?? "");
+  if (!isNaN(minNum)) q = q.gte("precio", minNum).eq("moneda", mon);
+  if (!isNaN(maxNum)) q = q.lte("precio", maxNum).eq("moneda", mon);
 
   const ordenCol = sp.orden === "precio_asc" || sp.orden === "precio_desc" ? "precio" : "created_at";
   const asc = sp.orden === "precio_asc";
@@ -56,16 +62,23 @@ async function buscar(sp: SearchParams) {
   return { props: (data ?? []) as any[], total: count ?? 0, page };
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const sp = await searchParams;
+  const partes = [sp.tipo, sp.op ? `en ${sp.op}` : null, sp.ciudad ?? null].filter(Boolean);
+  const titulo = partes.length > 0
+    ? `${partes.join(" ")} — Grupo Foro Inmobiliario`
+    : "Propiedades en venta y alquiler — Grupo Foro Inmobiliario";
+  const desc = `Buscá ${partes.length > 0 ? partes.join(" ").toLowerCase() : "propiedades"} en ${sp.ciudad ?? "Rosario y la región"}${sp.zona ? `, ${sp.zona}` : ""}. Corredores matriculados del Grupo Foro Inmobiliario.`;
+  const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.foroinmobiliario.com.ar";
+  const canonicalParams = new URLSearchParams();
+  (["op", "tipo", "ciudad", "zona"] as const).forEach(k => { if (sp[k]) canonicalParams.set(k, sp[k]!); });
+  const canonicalStr = canonicalParams.toString();
+  const canonical = `${BASE}/propiedades${canonicalStr ? `?${canonicalStr}` : ""}`;
   return {
-    title: "Propiedades en venta y alquiler — Grupo Foro Inmobiliario",
-    description: "Buscá tu próxima propiedad en Rosario y la región. Departamentos, casas, PH, locales y terrenos en venta y alquiler.",
-    openGraph: {
-      title: "Propiedades en venta y alquiler — GFI®",
-      description: "Buscá entre todas las propiedades publicadas por corredores matriculados del Grupo Foro Inmobiliario.",
-      type: "website",
-      locale: "es_AR",
-    },
+    title: titulo,
+    description: desc,
+    alternates: { canonical },
+    openGraph: { title: titulo, description: desc, type: "website", locale: "es_AR" },
   };
 }
 
@@ -154,10 +167,11 @@ export default async function PropiedadesPage({ searchParams }: Props) {
       <main className="page">
         <div style={{ paddingTop: 24 }}>
           <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, marginBottom: 4 }}>
-            Propiedades
+            {[(sp.tipo ?? (sp.op && !sp.tipo ? "Propiedades" : null)), sp.op ? `en ${sp.op}` : null, sp.zona ? `· ${sp.zona}` : sp.ciudad ? `en ${sp.ciudad}` : null]
+              .filter(Boolean).join(" ") || "Propiedades"}
           </h1>
           <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 20 }}>
-            Venta y alquiler en Rosario y la región
+            {sp.ciudad ? `${sp.ciudad}${sp.zona ? ` · ${sp.zona}` : ""}` : "Rosario y la región"} · Grupo Foro Inmobiliario
           </p>
         </div>
 
@@ -183,6 +197,10 @@ export default async function PropiedadesPage({ searchParams }: Props) {
             <label className="f-label">Ciudad</label>
             <input name="ciudad" className="f-input" placeholder="Ej: Rosario" defaultValue={sp.ciudad ?? ""} style={{ width: "100%" }} />
           </div>
+          <div className="f-group">
+            <label className="f-label">Barrio / Zona</label>
+            <input name="zona" className="f-input" placeholder="Ej: Centro" defaultValue={sp.zona ?? ""} style={{ width: "100%" }} />
+          </div>
           <div className="f-group" style={{ minWidth: 90 }}>
             <label className="f-label">Dormitorios</label>
             <select name="dorm" className="f-select" defaultValue={sp.dorm ?? ""}>
@@ -207,6 +225,10 @@ export default async function PropiedadesPage({ searchParams }: Props) {
           <div className="f-group" style={{ minWidth: 110 }}>
             <label className="f-label">Precio máx</label>
             <input name="max" type="number" className="f-input" placeholder="200000" defaultValue={sp.max ?? ""} />
+          </div>
+          <div className="f-group" style={{ minWidth: 100 }}>
+            <label className="f-label">Sup. mín (m²)</label>
+            <input name="supmin" type="number" className="f-input" placeholder="50" defaultValue={sp.supmin ?? ""} />
           </div>
           <div className="f-group" style={{ minWidth: 130 }}>
             <label className="f-label">Ordenar</label>
@@ -272,10 +294,11 @@ export default async function PropiedadesPage({ searchParams }: Props) {
                       <div className="card-precio-ant">{fmtPrecio(p.precio_anterior, p.moneda, false)}</div>
                     )}
                     <div className="card-precio">{fmtPrecio(p.precio, p.moneda, p.ocultar_precio)}</div>
-                    {(p.dormitorios != null || p.superficie_cubierta != null) && (
+                    {(p.dormitorios != null || p.superficie_cubierta != null || p.sup_terreno != null) && (
                       <div className="card-specs">
                         {p.dormitorios != null && <span className="card-spec">🛏 {p.dormitorios} dorm.</span>}
                         {p.superficie_cubierta != null && <span className="card-spec">📐 {p.superficie_cubierta} m²</span>}
+                        {p.sup_terreno != null && p.superficie_cubierta == null && <span className="card-spec">📐 {p.sup_terreno} m² terreno</span>}
                       </div>
                     )}
                   </div>

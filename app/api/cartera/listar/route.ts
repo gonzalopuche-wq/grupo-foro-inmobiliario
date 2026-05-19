@@ -32,5 +32,24 @@ export async function GET(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ ok: true, props: props ?? [] });
+  // Leads count per propiedad — done server-side with service_role so collaborators see correct counts
+  const ids = (props ?? []).map((p: { id: string }) => p.id);
+  let leadsCount: Record<string, number> = {};
+  if (ids.length > 0) {
+    const { data: leadsRaw } = await supabaseAdmin
+      .from("web_leads")
+      .select("propiedad_id")
+      .in("propiedad_id", ids)
+      .not("propiedad_id", "is", null);
+    (leadsRaw ?? []).forEach((l: { propiedad_id: string }) => {
+      leadsCount[l.propiedad_id] = (leadsCount[l.propiedad_id] ?? 0) + 1;
+    });
+  }
+
+  const propsConLeads = (props ?? []).map((p: { id: string }) => ({
+    ...p,
+    leads_count: leadsCount[p.id] ?? 0,
+  }));
+
+  return NextResponse.json({ ok: true, props: propsConLeads });
 }
