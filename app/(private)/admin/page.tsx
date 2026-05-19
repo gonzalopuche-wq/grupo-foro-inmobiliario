@@ -209,11 +209,11 @@ export default function AdminPage() {
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
   // Sync / Import COCIR
   const [syncingCocir, setSyncingCocir] = useState(false);
-  const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total?: number; error?: string; debug?: Record<string,unknown> } | null>(null);
+  const [syncCocirRes, setSyncCocirRes] = useState<{ ok: boolean; total_scrapeados?: number; error?: string; debug?: Record<string,unknown> } | null>(null);
   const [debugCocir, setDebugCocir] = useState<Record<string,unknown> | null>(null);
   const [debuggingCocir, setDebuggingCocir] = useState(false);
   const [importandoPadron, setImportandoPadron] = useState(false);
-  const [importPadronRes, setImportPadronRes] = useState<{ ok: boolean; total?: number; error?: string; columnas_detectadas?: any } | null>(null);
+  const [importPadronRes, setImportPadronRes] = useState<{ ok: boolean; total?: number; error?: string } | null>(null);
   // MI ABONO INTELIGENTE config
   const [bonifConfig, setBonifConfig] = useState<{id:string;accion:string;descuento_usd:number;descripcion:string|null}[]>([]);
   const [editandoBonif, setEditandoBonif] = useState<Record<string,string>>({});
@@ -1689,16 +1689,8 @@ A partir de esa fecha el costo mensual será de USD 15.
                 color: importPadronRes.ok ? "#22c55e" : "#ff6666",
               }}>
                 {importPadronRes.ok ? (
-                  <>
-                    ✓ <strong>{(importPadronRes as any).insertados ?? 0} nuevos</strong> agregados · <strong>{(importPadronRes as any).actualizados ?? 0} actualizados</strong> ({importPadronRes.total} total).
-                    {importPadronRes.columnas_detectadas && (
-                      <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
-                        Columnas detectadas: matrícula={importPadronRes.columnas_detectadas.matricula} · apellido={importPadronRes.columnas_detectadas.apellido} · nombre={importPadronRes.columnas_detectadas.nombre}
-                        {importPadronRes.columnas_detectadas.estado && ` · estado=${importPadronRes.columnas_detectadas.estado}`}
-                      </div>
-                    )}
-                  </>
-                ) : `✗ ${importPadronRes.error}`}
+                  <>✓ <strong>{(importPadronRes as any).insertados ?? 0} nuevos</strong> agregados · <strong>{(importPadronRes as any).actualizados ?? 0} actualizados</strong> ({importPadronRes.total} total).</>
+                ) : `✗ ${importPadronRes.error ?? "Error desconocido"}`}
               </div>
             )}
 
@@ -1718,7 +1710,7 @@ A partir de esa fecha el costo mensual será de USD 15.
               {syncCocirRes && (
                 <div style={{ marginTop: 8, width: "100%" }}>
                   <span style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: syncCocirRes.ok ? "#22c55e" : "#ff6666" }}>
-                    {syncCocirRes.ok ? `✓ ${syncCocirRes.total} registros` : `✗ ${syncCocirRes.error}`}
+                    {syncCocirRes.ok ? `✓ ${syncCocirRes.total_scrapeados ?? 0} registros` : `✗ ${syncCocirRes.error ?? "Error desconocido"}`}
                   </span>
                   {!syncCocirRes.ok && syncCocirRes.debug && (
                     <pre style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 220, overflowY: "auto" }}>
