@@ -181,31 +181,76 @@ export async function GET(req: NextRequest) {
     }
 
     // --- Fetch remaining pages in parallel batches ---
+    // Continúa aunque detectarUltimaPagina devuelva 1: se detiene solo cuando
+    // hay MAX_CONSECUTIVOS_VACIOS lotes consecutivos sin registros nuevos.
     const todosRegistros = [...registrosPag1];
     const matriculasVistas = new Set<string>(registrosPag1.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
 
-    if (ultimaPagina > 1) {
-      const paginas = Array.from({ length: ultimaPagina - 1 }, (_, i) => i + 2);
-      for (let i = 0; i < paginas.length; i += BATCH_PARALELO) {
-        const lote = paginas.slice(i, i + BATCH_PARALELO);
-        const resultados = await Promise.all(
-          lote.map(n => fetchPagina(urlPagina(n, patronPaginacion)))
-        );
-        let alguno = false;
-        for (const html of resultados) {
-          if (!html) continue;
-          const regs = parsearTabla(html, camposPorCol);
-          for (const r of regs) {
-            const mat = String(r.matricula ?? "").trim();
-            if (mat && matriculasVistas.has(mat)) continue; // skip duplicate
-            if (mat) matriculasVistas.add(mat);
-            todosRegistros.push(r);
-            alguno = true;
+    const MAX_CONSECUTIVOS_VACIOS = 3;
+    let consecutivosVacios = 0;
+    let siguiente = 2;
+
+    // También intentar patrón de ruta si el detectado falla en el primer lote
+    const patronesAlternativos = [
+      patronPaginacion,
+      `${BASE_URL}/{n}`,
+      `${BASE_URL}?page={n}`,
+      `${BASE_URL}?pagina={n}`,
+    ].filter((v, i, a) => a.indexOf(v) === i); // unique
+
+    let patronActivo = patronPaginacion;
+    let patronVerificado = false;
+
+    while (siguiente <= MAX_PAGINAS && consecutivosVacios < MAX_CONSECUTIVOS_VACIOS) {
+      const lote = Array.from({ length: BATCH_PARALELO }, (_, i) => siguiente + i)
+        .filter(n => n <= MAX_PAGINAS);
+      siguiente += BATCH_PARALELO;
+
+      const htmls = await Promise.all(lote.map(n => fetchPagina(urlPagina(n, patronActivo))));
+      let nuevosEnLote = 0;
+
+      for (const html of htmls) {
+        if (!html) continue;
+        const regs = parsearTabla(html, camposPorCol);
+        for (const r of regs) {
+          const mat = String(r.matricula ?? "").trim();
+          if (mat && matriculasVistas.has(mat)) continue;
+          if (mat) matriculasVistas.add(mat);
+          todosRegistros.push(r);
+          nuevosEnLote++;
+        }
+      }
+
+      // Si el primer lote no dio datos, probar patrones alternativos
+      if (!patronVerificado && nuevosEnLote === 0) {
+        let encontrado = false;
+        for (const pat of patronesAlternativos) {
+          if (pat === patronActivo) continue;
+          const htmlAlt = await fetchPagina(urlPagina(2, pat));
+          if (!htmlAlt) continue;
+          const regsAlt = parsearTabla(htmlAlt, camposPorCol);
+          if (regsAlt.length > 0) {
+            patronActivo = pat;
+            for (const r of regsAlt) {
+              const mat = String(r.matricula ?? "").trim();
+              if (mat && matriculasVistas.has(mat)) continue;
+              if (mat) matriculasVistas.add(mat);
+              todosRegistros.push(r);
+              nuevosEnLote++;
+            }
+            encontrado = true;
+            break;
           }
         }
-        // Stop early if no new records in this batch (last page reached)
-        if (!alguno) break;
+        if (!encontrado) consecutivosVacios++;
+        else consecutivosVacios = 0;
+        patronVerificado = true;
+        continue;
       }
+
+      patronVerificado = true;
+      if (nuevosEnLote === 0) consecutivosVacios++;
+      else consecutivosVacios = 0;
     }
 
     // --- UPSERT to DB ---

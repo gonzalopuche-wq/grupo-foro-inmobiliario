@@ -23,8 +23,9 @@ export async function POST(req: NextRequest) {
   if (!data) {
     return NextResponse.json({ error: "Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado." }, { status: 404 });
   }
+  const ESTADOS_ALERTA = ["suspendido", "suspension", "baja", "dado de baja", "inhabilitado", "inactivo"];
   const estado = (data.estado || "").toLowerCase();
-  if (estado && estado !== "activo" && estado !== "habilitado") return NextResponse.json({ error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.` }, { status: 403 });
+  if (estado && ESTADOS_ALERTA.some(s => estado.includes(s))) return NextResponse.json({ error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.` }, { status: 403 });
   const { data: perfilExistente } = await sbAdmin.from("perfiles").select("id").eq("matricula", String(data.matricula)).maybeSingle();
   if (perfilExistente) return NextResponse.json({ error: "Esta matrícula ya tiene una cuenta registrada." }, { status: 409 });
   return NextResponse.json({ ok: true, nombre: data.nombre, apellido: data.apellido, inmobiliaria: data.inmobiliaria ?? "", matricula: data.matricula });
