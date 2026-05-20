@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 const ETAPAS_EMP = [
   { value: "en_planos",       label: "En planos",       color: "#3b82f6" },
