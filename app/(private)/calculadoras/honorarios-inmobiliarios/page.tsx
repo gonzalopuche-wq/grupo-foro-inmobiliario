@@ -244,8 +244,6 @@ function TabVenta() {
   const [condTrib, setCondTrib] = useState<CondTrib>("monotributo");
   const [cobroking, setCobroking] = useState(false);
   const [cobrokingPct, setCobrokingPct] = useState(50);
-  const [diasTrabajados, setDiasTrabajados] = useState(5);
-  const [horasDia, setHorasDia] = useState(4);
 
   const calc = useMemo(() => {
     const propUSD = valorUSD;
@@ -291,11 +289,6 @@ function TabVenta() {
     const ingresoNetoUSD = miParteNetaCobUSD - costoImpUSD;
     const ingresoNetoARS = ingresoNetoUSD * tc;
 
-    // Por hora
-    const totalHoras = diasTrabajados * horasDia;
-    const porHoraUSD = totalHoras > 0 ? ingresoNetoUSD / totalHoras : 0;
-    const porHoraARS = totalHoras > 0 ? ingresoNetoARS / totalHoras : 0;
-
     return {
       propARS,
       comBrutaTotalUSD,
@@ -312,14 +305,10 @@ function TabVenta() {
       costoImpARS,
       ingresoNetoUSD,
       ingresoNetoARS,
-      porHoraUSD,
-      porHoraARS,
-      totalHoras,
     };
   }, [
     valorUSD, tc, compartida, rol, comisionMode, comisionTotal,
     comVendedor, comComprador, condTrib, cobroking, cobrokingPct,
-    diasTrabajados, horasDia,
   ]);
 
   return (
@@ -340,10 +329,10 @@ function TabVenta() {
           </div>
         </div>
 
-        {/* Comisión */}
+        {/* Honorarios */}
         <div style={cardStyle}>
-          <div style={sectionTitleStyle}>Comisión</div>
-          <Field label="Modo de comisión">
+          <div style={sectionTitleStyle}>Honorarios</div>
+          <Field label="Modo de honorarios">
             <Sel<ComisionMode>
               value={comisionMode}
               onChange={setComisionMode}
@@ -354,15 +343,15 @@ function TabVenta() {
             />
           </Field>
           {comisionMode === "total" ? (
-            <Field label={`Comisión total (${fmtPct(comisionTotal)}, ${fmtPct(comisionTotal / 2)} c/parte)`}>
+            <Field label={`Honorarios totales (${fmtPct(comisionTotal)}, ${fmtPct(comisionTotal / 2)} c/parte)`}>
               <NumInput value={comisionTotal} onChange={setComisionTotal} min={0} max={20} step={0.5} suffix="%" />
             </Field>
           ) : (
             <>
-              <Field label={`Comisión al vendedor (${fmtPct(comVendedor)})`}>
+              <Field label={`Honorarios al vendedor (${fmtPct(comVendedor)})`}>
                 <NumInput value={comVendedor} onChange={setComVendedor} min={0} max={20} step={0.5} suffix="%" />
               </Field>
-              <Field label={`Comisión al comprador (${fmtPct(comComprador)})`}>
+              <Field label={`Honorarios al comprador (${fmtPct(comComprador)})`}>
                 <NumInput value={comComprador} onChange={setComComprador} min={0} max={20} step={0.5} suffix="%" />
               </Field>
             </>
@@ -402,36 +391,23 @@ function TabVenta() {
             <Check checked={cobroking} onChange={setCobroking} label="¿Está en co-broking?" />
           </div>
           {cobroking && (
-            <Field label={`% de la comisión que va al otro corredor (${fmtPct(cobrokingPct)})`}>
+            <Field label={`% de los honorarios que van al otro corredor (${fmtPct(cobrokingPct)})`}>
               <NumInput value={cobrokingPct} onChange={setCobrokingPct} min={0} max={99} step={5} suffix="%" />
             </Field>
           )}
         </div>
 
-        {/* Tiempo invertido */}
-        <div style={cardStyle}>
-          <div style={sectionTitleStyle}>Tiempo invertido (opcional)</div>
-          <Field label="Días trabajados en la operación">
-            <NumInput value={diasTrabajados} onChange={setDiasTrabajados} min={0} step={1} suffix="días" />
-          </Field>
-          <Field label="Horas por día">
-            <NumInput value={horasDia} onChange={setHorasDia} min={0} max={24} step={0.5} suffix="hs" />
-          </Field>
-          <div style={{ fontSize: 12, color: C.muted, fontFamily: "Inter, sans-serif" }}>
-            Total: {calc.totalHoras} horas
-          </div>
-        </div>
       </div>
 
       {/* Desglose */}
       <div style={cardStyle}>
         <div style={sectionTitleStyle}>Desglose del cálculo</div>
-        <Row label="Comisión bruta total" value={fmtUSD(calc.comBrutaTotalUSD)} sub={fmtARS(calc.comBrutaTotalARS)} />
+        <Row label="Honorarios brutos totales" value={fmtUSD(calc.comBrutaTotalUSD)} sub={fmtARS(calc.comBrutaTotalARS)} />
         {condTrib === "ri" && (
           <Row label="IVA (21%)" value={fmtUSD(calc.ivaUSD)} sub={fmtARS(calc.ivaARS)} />
         )}
         <Row
-          label={condTrib === "ri" ? "Comisión con IVA (lo que cobra el cliente)" : "Comisión (sin IVA — Monotributo)"}
+          label={condTrib === "ri" ? "Honorarios con IVA (lo que cobra el cliente)" : "Honorarios (sin IVA — Monotributo)"}
           value={fmtUSD(calc.comConIvaUSD)}
           sub={fmtARS(calc.comConIvaARS)}
           bold
@@ -444,13 +420,6 @@ function TabVenta() {
         )}
         <Row label="Costo impositivo estimado" value={fmtUSD(calc.costoImpUSD)} sub={fmtARS(calc.costoImpARS)} />
         <Row label="Ingreso neto estimado" value={fmtUSD(calc.ingresoNetoUSD)} sub={fmtARS(calc.ingresoNetoARS)} bold />
-        {calc.totalHoras > 0 && (
-          <Row
-            label={`Ingreso neto por hora (${calc.totalHoras}hs)`}
-            value={fmtUSD(calc.porHoraUSD)}
-            sub={fmtARS(calc.porHoraARS)}
-          />
-        )}
       </div>
 
       {/* Summary cards */}
@@ -544,7 +513,7 @@ function TabAlquiler() {
           <Field label="Alquiler mensual (ARS)">
             <NumInput value={alquilerMensual} onChange={setAlquilerMensual} min={0} step={10000} prefix="$" />
           </Field>
-          <Field label={`Meses de comisión (${mesesComision})`}>
+          <Field label={`Meses de honorarios (${mesesComision})`}>
             <NumInput value={mesesComision} onChange={setMesesComision} min={0.5} max={2} step={0.5} suffix="mes/es" />
           </Field>
           <Field label="Tipo de cambio (ARS/USD)">
@@ -554,7 +523,7 @@ function TabAlquiler() {
 
         {/* Distribución */}
         <div style={cardStyle}>
-          <div style={sectionTitleStyle}>¿Quién paga la comisión?</div>
+          <div style={sectionTitleStyle}>¿Quién paga los honorarios?</div>
           <Field label="Distribución">
             <Sel<QuienPaga>
               value={quienPaga}
@@ -606,7 +575,7 @@ function TabAlquiler() {
       {/* Desglose */}
       <div style={cardStyle}>
         <div style={sectionTitleStyle}>Desglose</div>
-        <Row label="Comisión bruta" value={fmtARS(calc.comBrutaARS)} sub={fmtUSD(calc.comBrutaUSD)} />
+        <Row label="Honorarios brutos" value={fmtARS(calc.comBrutaARS)} sub={fmtUSD(calc.comBrutaUSD)} />
         {condTrib === "ri" && (
           <Row label="IVA (21%)" value={fmtARS(calc.ivaARS)} />
         )}
@@ -763,7 +732,7 @@ function TabEscenarios() {
           <Field label="Meta de ingresos mensuales (ARS)">
             <NumInput value={metaMensualARS} onChange={setMetaMensualARS} min={0} step={100000} prefix="$" />
           </Field>
-          <Field label={`Comisión promedio (${fmtPct(comisionPct)})`}>
+          <Field label={`Honorarios promedio (${fmtPct(comisionPct)})`}>
             <NumInput value={comisionPct} onChange={setComisionPct} min={0.5} max={20} step={0.5} suffix="%" />
           </Field>
         </div>
@@ -958,7 +927,7 @@ export default function HonorariosInmobiliariosPage() {
             <span style={{ color: C.red }}>Honorarios Inmobiliarios</span>
           </h1>
           <p style={{ margin: 0, fontSize: 14, color: C.muted }}>
-            Calculá tus comisiones, desglose impositivo y metas de producción
+            Calculá tus honorarios profesionales, desglose impositivo y metas de producción
           </p>
         </div>
 
