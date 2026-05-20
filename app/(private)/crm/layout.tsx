@@ -34,6 +34,7 @@ const CRM_GRUPOS: { titulo: string; items: [string, string, string][] }[] = [
     items: [
       ["/crm/cartera",          "🏠", "Cartera"],
       ["/crm/portales",         "🔗", "Portales"],
+      ["/crm/propia",           "🏛️", "Propia MLS"],
       ["/crm/llaves",           "🔑", "Llaves"],
       ["/crm/tasacion",         "🏠", "Tasación"],
       ["/crm/ficha-propiedad",  "🏠", "Ficha Propiedad"],
