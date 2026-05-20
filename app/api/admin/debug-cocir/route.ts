@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import * as cheerio from "cheerio";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -27,6 +28,25 @@ async function authorizado(req: NextRequest): Promise<boolean> {
   return p?.tipo === "admin";
 }
 
+function extraerArrayBalanceado(src: string, startIdx: number): string | null {
+  let depth = 0;
+  let inStr = false;
+  let esc = false;
+  for (let i = startIdx; i < Math.min(src.length, startIdx + 800_000); i++) {
+    const c = src[i];
+    if (esc) { esc = false; continue; }
+    if (c === "\\" && inStr) { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === "[" || c === "{") depth++;
+    else if (c === "]" || c === "}") {
+      depth--;
+      if (depth === 0) return src.slice(startIdx, i + 1);
+    }
+  }
+  return null;
+}
+
 export async function GET(req: NextRequest) {
   if (!(await authorizado(req))) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
@@ -38,50 +58,118 @@ export async function GET(req: NextRequest) {
     "https://cocir.org.ar/matriculados",
   ];
 
-  const resultados: Record<string, unknown>[] = [];
+  let html = "";
+  let fetchInfo: Record<string, unknown> = {};
 
   for (const url of urls) {
     try {
       const res = await fetch(url, { headers: HEADERS_HTML });
-      const html = await res.text();
-      resultados.push({
+      html = await res.text();
+      fetchInfo = {
         url,
         status: res.status,
         contentType: res.headers.get("content-type"),
         htmlLen: html.length,
-        htmlPrimeros1500: html.slice(0, 1500),
-      });
-      if (res.ok) break;
+      };
+      if (res.ok && html.length > 1000) break;
     } catch (e: unknown) {
-      resultados.push({ url, error: String(e) });
+      fetchInfo = { url, error: String(e) };
     }
   }
 
-  // También probar endpoint DataTables
-  const dtUrls = [
-    "https://cocir.org.ar/paginas/matriculados?draw=1&start=0&length=50",
-    "https://cocir.org.ar/api/matriculados",
-    "https://cocir.org.ar/paginas/matriculados/data",
-  ];
-
-  const dtResultados: Record<string, unknown>[] = [];
-  for (const url of dtUrls) {
-    try {
-      const res = await fetch(url, {
-        headers: { ...HEADERS_HTML, "X-Requested-With": "XMLHttpRequest", "Accept": "application/json, text/javascript, */*; q=0.01" },
-      });
-      const text = await res.text();
-      dtResultados.push({
-        url,
-        status: res.status,
-        contentType: res.headers.get("content-type"),
-        respLen: text.length,
-        respInicio: text.slice(0, 500),
-      });
-    } catch (e: unknown) {
-      dtResultados.push({ url, error: String(e) });
-    }
+  if (!html) {
+    return NextResponse.json({ ok: false, error: "No se pudo obtener HTML", fetchInfo });
   }
 
-  return NextResponse.json({ ok: true, html: resultados, datatables: dtResultados });
+  const $ = cheerio.load(html);
+
+  // Analizar tablas
+  const tablasInfo: Record<string, unknown>[] = [];
+  $("table").each((idx, tabla) => {
+    if (idx >= 5) return;
+    const $t = $(tabla);
+
+    const columnas: string[] = [];
+    $t.find("thead tr th, thead tr td").each((_, c) => { columnas.push($(c).text().trim()); });
+
+    const primeras5Filas: Array<{ tipo: string; celdas: string[] }> = [];
+    $t.find("tr").each((ri, tr) => {
+      if (ri >= 5) return;
+      const celdas: string[] = [];
+      $(tr).find("td, th").each((_, c) => { celdas.push($(c).text().trim().slice(0, 80)); });
+      primeras5Filas.push({ tipo: $(tr).find("th").length > 0 ? "th" : "td", celdas });
+    });
+
+    tablasInfo.push({
+      idx,
+      id: $t.attr("id") ?? null,
+      class: $t.attr("class") ?? null,
+      trs: $t.find("tr").length,
+      tds: $t.find("td").length,
+      ths: $t.find("th").length,
+      theads: $t.find("thead").length,
+      tbodies: $t.find("tbody").length,
+      columnas,
+      primeras5Filas,
+      htmlPrimeros2000: $.html($t).slice(0, 2000),
+    });
+  });
+
+  // Analizar script tags con datos
+  const scriptsConDatos: Array<{ len: number; tieneDataTable: boolean; tieneData: boolean; preview: string; datosExtraidos: unknown }> = [];
+  $("script").each((_, s) => {
+    const c = $(s).html() ?? "";
+    if (c.length < 100) return;
+
+    const tieneDataTable = c.includes("DataTable") || c.includes("dataTable");
+    const tieneData = /"data"\s*:\s*\[/.test(c) || /\bdata\s*:\s*\[/.test(c);
+    const tieneMatricula = c.toLowerCase().includes("matricul");
+
+    if (!tieneDataTable && !tieneData && !tieneMatricula && c.length < 2000) return;
+
+    let datosExtraidos: unknown = null;
+    const idxData = c.search(/"data"\s*:\s*\[|\bdata\s*:\s*\[/);
+    if (idxData !== -1) {
+      const arrStart = c.indexOf("[", idxData);
+      if (arrStart !== -1) {
+        const raw = extraerArrayBalanceado(c, arrStart);
+        if (raw) {
+          try {
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr)) {
+              datosExtraidos = { length: arr.length, primeros2: arr.slice(0, 2) };
+            }
+          } catch (e) {
+            datosExtraidos = { parseError: String(e), raw: raw.slice(0, 200) };
+          }
+        }
+      }
+    }
+
+    scriptsConDatos.push({
+      len: c.length,
+      tieneDataTable,
+      tieneData,
+      preview: c.slice(0, 1500),
+      datosExtraidos,
+    });
+  });
+
+  // HTML alrededor del cuerpo (saltando el head)
+  const bodyStart = html.indexOf("<body");
+  const htmlBody = bodyStart !== -1 ? html.slice(bodyStart, bodyStart + 6000) : html.slice(1500, 7500);
+
+  return NextResponse.json({
+    ok: true,
+    fetchInfo,
+    cheerio: {
+      totalTablas: $("table").length,
+      totalTrs: $("table tr").length,
+      totalTds: $("table td").length,
+      totalThs: $("table th").length,
+      tablasInfo,
+      scriptsConDatos,
+    },
+    htmlBody,
+  });
 }

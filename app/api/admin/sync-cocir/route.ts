@@ -12,7 +12,6 @@ const sb = createClient(
 
 const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
 const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
-const BASE_URL = "https://cocir.org.ar/paginas/matriculados";
 const BASE_URL_ALTERNATIVAS = [
   "https://cocir.org.ar/paginas/matriculados",
   "https://www.cocir.org.ar/paginas/matriculados",
@@ -44,13 +43,46 @@ function detectarCampo(texto: string): string | null {
   return null;
 }
 
-function parsearTabla(html: string, camposPorCol: string[]): any[] {
-  const $ = cheerio.load(html);
-  // Usar fallback si no hay columnas detectadas O si TODAS son desconocidas (_col*)
-  const usarFallback = camposPorCol.length === 0 || camposPorCol.every(c => c.startsWith("_"));
-  const registros: any[] = [];
+// Detecta columnas: primero busca thead, luego primer tr con th, luego primer tr con td
+function detectarColumnas($: cheerio.CheerioAPI): string[] {
+  const cols: string[] = [];
 
-  $("table tr").each((_, el) => {
+  // 1. thead th/td
+  $("table thead tr").first().find("th, td").each((i, el) => {
+    cols[i] = detectarCampo($(el).text()) ?? `_col${i}`;
+  });
+  if (cols.length > 0) return cols;
+
+  // 2. primer tr con th (sin thead wrapper)
+  $("table tr").each((_, tr) => {
+    const ths = $(tr).find("th");
+    if (ths.length >= 3) {
+      ths.each((i, el) => { cols[i] = detectarCampo($(el).text()) ?? `_col${i}`; });
+      return false; // break
+    }
+  });
+  if (cols.length > 0) return cols;
+
+  return cols; // vacío → usará fallback posicional
+}
+
+function parsearTabla(html: string, camposPorCol: string[]): Record<string, string | null>[] {
+  const $ = cheerio.load(html);
+  const usarFallback = camposPorCol.length === 0 || camposPorCol.every(c => c.startsWith("_"));
+  const registros: Record<string, string | null>[] = [];
+
+  // Encontrar la tabla con más filas de datos (td)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let mejorTabla: any = null;
+  let maxTds = 0;
+  $("table").each((_, tabla) => {
+    const cnt = $(tabla).find("td").length;
+    if (cnt > maxTds) { maxTds = cnt; mejorTabla = tabla; }
+  });
+
+  const scope = mejorTabla ? $(mejorTabla).find("tr") : $("table tr");
+
+  scope.each((_, el) => {
     const tds = $(el).find("td");
     if (tds.length < 2) return;
     const rec: Record<string, string | null> = {};
@@ -66,30 +98,145 @@ function parsearTabla(html: string, camposPorCol: string[]): any[] {
   return registros;
 }
 
+// Extrae el array JSON balanceado comenzando en startIdx
+function extraerArrayBalanceado(src: string, startIdx: number): string | null {
+  let depth = 0;
+  let inStr = false;
+  let esc = false;
+  for (let i = startIdx; i < Math.min(src.length, startIdx + 1_000_000); i++) {
+    const c = src[i];
+    if (esc) { esc = false; continue; }
+    if (c === "\\" && inStr) { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === "[" || c === "{") depth++;
+    else if (c === "]" || c === "}") {
+      depth--;
+      if (depth === 0) return src.slice(startIdx, i + 1);
+    }
+  }
+  return null;
+}
+
+// Extrae columnas del array "columns" de DataTables (si existe)
+function extraerColumnasDT(src: string): string[] | null {
+  const idx = src.search(/"columns"\s*:\s*\[|\bcolumns\s*:\s*\[/);
+  if (idx === -1) return null;
+  const arrStart = src.indexOf("[", idx);
+  if (arrStart === -1) return null;
+  const raw = extraerArrayBalanceado(src, arrStart);
+  if (!raw) return null;
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return null;
+    const cols: string[] = [];
+    for (const col of arr) {
+      const titulo = typeof col === "string" ? col : (col?.title ?? col?.data ?? col?.name ?? "");
+      cols.push(detectarCampo(String(titulo)) ?? "_");
+    }
+    return cols;
+  } catch {
+    return null;
+  }
+}
+
+// Busca datos en script tags (patrón DataTables inline)
+function extraerDatosDeScript(html: string): { datos: unknown[]; columnas: string[] | null } | null {
+  const $ = cheerio.load(html);
+
+  for (const script of $("script").toArray()) {
+    const src = $(script).html() ?? "";
+    if (src.length < 200) continue;
+
+    // Buscar "data": [ o data: [
+    const idxData = src.search(/"data"\s*:\s*\[|\bdata\s*:\s*\[/);
+    if (idxData === -1) continue;
+
+    const arrStart = src.indexOf("[", idxData);
+    if (arrStart === -1) continue;
+
+    const raw = extraerArrayBalanceado(src, arrStart);
+    if (!raw) continue;
+
+    try {
+      const arr = JSON.parse(raw);
+      if (!Array.isArray(arr) || arr.length < 2) continue;
+
+      const columnas = extraerColumnasDT(src);
+      return { datos: arr, columnas };
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+}
+
+// Normaliza un registro de script (array o object) a campos conocidos
+function normalizarFilaDT(fila: unknown, columnas: string[] | null): Record<string, string | null> {
+  if (Array.isArray(fila)) {
+    const mapa = columnas ?? FALLBACK_ORDEN;
+    const rec: Record<string, string | null> = {};
+    fila.forEach((v, i) => {
+      const campo = mapa[i];
+      if (campo && !campo.startsWith("_") && campo !== "_") {
+        rec[campo] = v != null ? String(v).trim() || null : null;
+      }
+    });
+    return rec;
+  }
+  if (fila && typeof fila === "object") {
+    const rec: Record<string, string | null> = {};
+    for (const [k, v] of Object.entries(fila as Record<string, unknown>)) {
+      const campo = detectarCampo(k);
+      if (campo) rec[campo] = v != null ? String(v).trim() || null : null;
+    }
+    return rec;
+  }
+  return {};
+}
+
+function parsearFilasDT(filas: unknown[]): Record<string, string | null>[] {
+  return filas.map((fila) => {
+    if (Array.isArray(fila)) {
+      return {
+        matricula: fila[0] != null ? String(fila[0]) : null,
+        apellido:  fila[1] != null ? String(fila[1]) : null,
+        nombre:    fila[2] != null ? String(fila[2]) : null,
+        estado:    fila[3] != null ? String(fila[3]) : null,
+        inmobiliaria: fila[4] != null ? String(fila[4]) : null,
+        direccion: fila[5] != null ? String(fila[5]) : null,
+        localidad: fila[6] != null ? String(fila[6]) : null,
+        telefono:  fila[7] != null ? String(fila[7]) : null,
+        email:     fila[8] != null ? String(fila[8]) : null,
+      };
+    }
+    const r: Record<string, string | null> = {};
+    for (const [k, v] of Object.entries(fila as Record<string, unknown>)) {
+      const campo = detectarCampo(k);
+      if (campo) r[campo] = v ? String(v) : null;
+    }
+    return r;
+  }).filter(r => r.matricula || r.apellido || r.nombre);
+}
+
 function detectarUltimaPagina($: cheerio.CheerioAPI): number {
   let maxPag = 1;
-
-  // Look for page number links
   $("a[href]").each((_, el) => {
-    const href = $( el).attr("href") ?? "";
-    // Match ?page=N, ?pagina=N, &page=N, /matriculados/N, /matriculados?page=N
+    const href = $(el).attr("href") ?? "";
     const m = href.match(/[?&/](?:page|pagina|p)=?(\d+)/i) ?? href.match(/matriculados[/?](\d+)/i);
     if (m) {
       const n = parseInt(m[1]);
       if (n > maxPag) maxPag = n;
     }
-    // Also check text content for page numbers
-    const txt = $( el).text().trim();
+    const txt = $(el).text().trim();
     if (/^\d+$/.test(txt)) {
       const n = parseInt(txt);
       if (n > maxPag && n < MAX_PAGINAS) maxPag = n;
     }
   });
-
-  // Check for aria-label="Next" or "Siguiente" text
-  const hayMasPag = $("a:contains('Siguiente'), a:contains('siguiente'), a[rel='next'], .pagination .next:not(.disabled)").length > 0;
-  if (hayMasPag && maxPag === 1) maxPag = 2; // At least 2 pages
-
+  const hayMas = $("a:contains('Siguiente'), a:contains('siguiente'), a[rel='next'], .pagination .next:not(.disabled)").length > 0;
+  if (hayMas && maxPag === 1) maxPag = 2;
   return maxPag;
 }
 
@@ -97,17 +244,13 @@ function urlPagina(n: number, patron: string): string {
   return patron.replace("{n}", String(n));
 }
 
-// Normalize Argentine phone numbers to +54 9 XXXXXXXXXX format
 function normalizarTelefono(raw: string): string | null {
   const digits = raw.replace(/[^\d+]/g, "");
   if (!digits) return null;
   const d = digits.replace(/^\+/, "");
-  // Already international
   if (d.startsWith("549") && d.length >= 12) return `+${d}`;
   if (d.startsWith("54") && d.length >= 11) return `+54 9 ${d.slice(2)}`;
-  // Local with 0: 011... or 0341...
   if (d.startsWith("0") && d.length >= 10) return `+54 9 ${d.slice(1)}`;
-  // 10-digit local
   if (d.length === 10) return `+54 9 ${d}`;
   if (d.length < 8) return null;
   return `+54 9 ${d}`;
@@ -123,23 +266,19 @@ async function fetchPagina(url: string): Promise<string | null> {
   }
 }
 
-// Intenta obtener datos via DataTables AJAX (común en sitios institucionales argentinos)
-async function fetchDataTables(baseUrl: string, start: number, length: number): Promise<any[] | null> {
+async function fetchDataTablesAjax(baseUrl: string, start: number, length: number): Promise<unknown[] | null> {
   const dtHeaders = {
     ...HEADERS,
     "X-Requested-With": "XMLHttpRequest",
     "Accept": "application/json, text/javascript, */*; q=0.01",
   };
   const draw = Math.ceil(start / length) + 1;
-  const qsParams = `draw=${draw}&start=${start}&length=${length}&search%5Bvalue%5D=&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc`;
-
-  // Intentar GET y POST (algunos sitios usan POST para DataTables)
-  const intentos: { url: string; method: string; body?: string; ct?: string }[] = [
-    { url: `${baseUrl}?${qsParams}`, method: "GET" },
+  const qs = `draw=${draw}&start=${start}&length=${length}&search%5Bvalue%5D=&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc`;
+  const intentos = [
+    { url: `${baseUrl}?${qs}`, method: "GET" },
     { url: `${baseUrl}?draw=${draw}&start=${start}&length=${length}`, method: "GET" },
-    { url: baseUrl, method: "POST", body: qsParams, ct: "application/x-www-form-urlencoded" },
+    { url: baseUrl, method: "POST", body: qs, ct: "application/x-www-form-urlencoded" },
   ];
-
   for (const intento of intentos) {
     try {
       const res = await fetch(intento.url, {
@@ -158,32 +297,6 @@ async function fetchDataTables(baseUrl: string, start: number, length: number): 
   return null;
 }
 
-function parsearFilasDT(filas: any[]): any[] {
-  return filas.map((fila: any) => {
-    if (Array.isArray(fila)) {
-      // Columnas posicionales: [matricula, apellido, nombre, estado, ...]
-      return {
-        matricula: fila[0] ?? null,
-        apellido: fila[1] ?? null,
-        nombre: fila[2] ?? null,
-        estado: fila[3] ?? null,
-        inmobiliaria: fila[4] ?? null,
-        direccion: fila[5] ?? null,
-        localidad: fila[6] ?? null,
-        telefono: fila[7] ?? null,
-        email: fila[8] ?? null,
-      };
-    }
-    // Object con claves como "matricula", "Matrícula", "MATRICULA", etc.
-    const r: Record<string, string | null> = {};
-    for (const [k, v] of Object.entries(fila)) {
-      const campo = detectarCampo(k);
-      if (campo) r[campo] = v ? String(v) : null;
-    }
-    return r;
-  }).filter((r: any) => r.matricula || r.apellido || r.nombre);
-}
-
 async function authorizado(req: NextRequest): Promise<boolean> {
   const auth = req.headers.get("authorization");
   if (auth === `Bearer ${process.env.CRON_SECRET}`) return true;
@@ -195,363 +308,296 @@ async function authorizado(req: NextRequest): Promise<boolean> {
   return p?.tipo === "admin";
 }
 
+async function guardarEnDB(
+  todos: Record<string, string | null>[],
+  matriculasVistas: Set<string>,
+  metodo: string,
+): Promise<NextResponse> {
+  const ahora = new Date().toISOString();
+  const { data: existentes } = await sb
+    .from("cocir_padron")
+    .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email, apellido, nombre");
+
+  const mapa = new Map<string, Record<string, unknown>>();
+  (existentes ?? []).forEach((r: Record<string, unknown>) => {
+    if (r.matricula) mapa.set(String(r.matricula).trim(), r);
+  });
+
+  const nuevos: Record<string, unknown>[] = [];
+  const actualizaciones: Record<string, unknown>[] = [];
+  let sinCambios = 0;
+
+  for (const reg of todos) {
+    const mat = String(reg.matricula ?? "").trim();
+    const existente = mat ? mapa.get(mat) : undefined;
+    if (existente) {
+      const upd: Record<string, unknown> = { actualizado_at: ahora };
+      let hay = false;
+      for (const campo of CAMPOS_CONOCIDOS) {
+        const nv = reg[campo];
+        if (!nv) continue;
+        if (existente[campo] !== nv) { upd[campo] = nv; hay = true; }
+      }
+      if (hay) actualizaciones.push({ ...upd, id: existente.id });
+      else sinCambios++;
+    } else {
+      nuevos.push({ ...reg, actualizado_at: ahora });
+    }
+  }
+
+  const LOTE = 500;
+  for (let i = 0; i < nuevos.length; i += LOTE) {
+    const { error } = await sb.from("cocir_padron").insert(nuevos.slice(i, i + LOTE));
+    if (error) return NextResponse.json({ ok: false, error: error.message });
+  }
+  for (let i = 0; i < actualizaciones.length; i += LOTE) {
+    const { error } = await sb.from("cocir_padron").upsert(actualizaciones.slice(i, i + LOTE));
+    if (error) return NextResponse.json({ ok: false, error: error.message });
+  }
+
+  let eliminados = 0;
+  if (matriculasVistas.size > 100) {
+    const paraElim = (existentes ?? []).filter((r: Record<string, unknown>) => {
+      const m = String(r.matricula ?? "").trim();
+      return m && !matriculasVistas.has(m);
+    });
+    if (paraElim.length > 0) {
+      const ids = paraElim.map((r: Record<string, unknown>) => r.id);
+      for (let i = 0; i < ids.length; i += LOTE) {
+        await sb.from("cocir_padron").delete().in("id", ids.slice(i, i + LOTE));
+      }
+      eliminados = paraElim.length;
+    }
+  }
+
+  // Validar matrículas de perfiles GFI
+  const { data: perfilesGfi } = await sb
+    .from("perfiles")
+    .select("id, matricula, telefono, whatsapp_negocio")
+    .not("matricula", "is", null)
+    .neq("matricula", "");
+
+  const { data: padronActual } = await sb
+    .from("cocir_padron")
+    .select("matricula, estado, telefono, email");
+
+  const padronMap = new Map<string, { estado: string; telefono: string | null; email: string | null }>();
+  for (const p of padronActual ?? []) {
+    if (p.matricula) {
+      padronMap.set(String(p.matricula).trim(), {
+        estado: p.estado ?? "activo",
+        telefono: p.telefono ?? null,
+        email: p.email ?? null,
+      });
+    }
+  }
+
+  let validados = 0, suspendidos = 0, noEncontrados = 0, telefonosSincronizados = 0;
+  for (const perfil of perfilesGfi ?? []) {
+    const mat = String(perfil.matricula ?? "").trim();
+    if (!mat) continue;
+    const entrada = padronMap.get(mat);
+    let nuevoEstado: string;
+    if (!entrada) { nuevoEstado = "no_encontrado"; noEncontrados++; }
+    else if (/suspendid|inhabilitad|baja/i.test(entrada.estado)) { nuevoEstado = "suspendido"; suspendidos++; }
+    else { nuevoEstado = "activo"; validados++; }
+
+    const upd: Record<string, unknown> = { cocir_estado: nuevoEstado, cocir_ultimo_control: ahora };
+    if (entrada?.telefono && !perfil.telefono && !perfil.whatsapp_negocio) {
+      const tel = normalizarTelefono(entrada.telefono);
+      if (tel) { upd.telefono = tel; upd.whatsapp_negocio = tel; telefonosSincronizados++; }
+    }
+    await sb.from("perfiles").update(upd).eq("id", perfil.id);
+  }
+
+  return NextResponse.json({
+    ok: true,
+    metodo,
+    insertados: nuevos.length,
+    actualizados: actualizaciones.length,
+    eliminados,
+    sin_cambios: sinCambios,
+    total_scrapeados: todos.length,
+    sincronizado_at: ahora,
+    validacion_gfi: { validados, suspendidos, no_encontrados: noEncontrados, telefonos_sincronizados: telefonosSincronizados },
+  });
+}
+
 export async function GET(req: NextRequest) {
   if (!(await authorizado(req))) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    // --- Fetch page 1: probar URLs alternativas ---
+    // ── 1. Obtener HTML de la primera página ──
     let html1: string | null = null;
-    let urlActiva = BASE_URL;
+    let urlActiva = BASE_URL_ALTERNATIVAS[0];
     for (const url of BASE_URL_ALTERNATIVAS) {
       html1 = await fetchPagina(url);
       if (html1 && html1.length > 500) { urlActiva = url; break; }
     }
     if (!html1) return NextResponse.json({ ok: false, error: "No se pudo acceder a cocir.org.ar" });
 
-    // Detectar bloqueo Cloudflare o captcha
     const htmlLow = html1.toLowerCase();
     if (htmlLow.includes("checking your browser") || htmlLow.includes("cloudflare") || htmlLow.includes("just a moment") || htmlLow.includes("captcha")) {
       return NextResponse.json({
         ok: false,
-        error: "cocir.org.ar está bloqueando el acceso automático (Cloudflare/captcha). El padrón existente en la base de datos no fue modificado.",
+        error: "cocir.org.ar está bloqueando el acceso automático (Cloudflare/captcha). El padrón existente no fue modificado.",
         debug: { urlActiva, htmlLen: html1.length, htmlInicio: html1.slice(0, 600) },
       });
     }
 
     const $1 = cheerio.load(html1);
+    const camposPorCol = detectarColumnas($1);
 
-    // Detect columns from thead
-    const camposPorCol: string[] = [];
-    $1("table thead tr th, table thead tr td").each((i, el) => {
-      camposPorCol[i] = detectarCampo($1(el).text()) ?? `_col${i}`;
-    });
-
+    // ── 2. Intentar parsear tabla HTML ──
     const registrosPag1 = parsearTabla(html1, camposPorCol);
 
-    if (registrosPag1.length === 0) {
-      // Intentar DataTables AJAX antes de fallar
-      const dtPage0 = await fetchDataTables(urlActiva, 0, 100);
-      if (dtPage0 && dtPage0.length > 0) {
-        // Scrapear via DataTables: paginar hasta vacío
-        const dtTodos = [...parsearFilasDT(dtPage0)];
-        const dtVistas = new Set<string>(dtTodos.map((r: any) => String(r.matricula ?? "").trim()).filter(Boolean));
-        let dtStart = 100;
-        const DT_LOTE = 100;
-        let dtVacios = 0;
-        while (dtStart < 10000 && dtVacios < 3) {
-          const chunk = await fetchDataTables(urlActiva, dtStart, DT_LOTE);
-          if (!chunk || chunk.length === 0) { dtVacios++; break; }
-          let nuevos = 0;
-          for (const r of parsearFilasDT(chunk)) {
-            const mat = String((r as any).matricula ?? "").trim();
-            if (mat && dtVistas.has(mat)) continue;
-            if (mat) dtVistas.add(mat);
-            dtTodos.push(r);
-            nuevos++;
-          }
-          if (nuevos === 0) dtVacios++;
-          else dtVacios = 0;
-          dtStart += DT_LOTE;
+    if (registrosPag1.length > 0) {
+      // Éxito con tabla HTML → paginar
+      let patronPaginacion = `${urlActiva}?page={n}`;
+      const linkEjemplo = $1("a[href]").filter((_, el) => {
+        const h = $1(el).attr("href") ?? "";
+        return /[?&](?:page|pagina)=\d+/i.test(h) || /matriculados[/?]\d+/.test(h);
+      }).first().attr("href") ?? "";
+      if (linkEjemplo) {
+        const m = linkEjemplo.match(/([?&])(?:page|pagina|p)=\d+/i);
+        if (m) {
+          const sep = m[1];
+          const key = m[0].replace(m[1], "").replace(/=\d+$/, "");
+          patronPaginacion = `${urlActiva}${sep}${key}={n}`;
+        } else if (/matriculados\/\d+/.test(linkEjemplo)) {
+          patronPaginacion = `${urlActiva}/{n}`;
         }
-        // Reemplazar registrosPag1 y continuar flujo normal con dtTodos
-        const ahora2 = new Date().toISOString();
-        const { data: existentes2 } = await sb.from("cocir_padron").select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email, apellido, nombre");
-        const mapa2 = new Map<string, any>();
-        (existentes2 ?? []).forEach((r: any) => { if (r.matricula) mapa2.set(String(r.matricula).trim(), r); });
-        const nuevosR: any[] = [];
-        const actualizacionesR: any[] = [];
-        let sinCambiosR = 0;
-        for (const reg of dtTodos) {
-          const mat = String((reg as any).matricula ?? "").trim();
-          const existente = mat ? mapa2.get(mat) : undefined;
-          if (existente) {
-            const upd: any = { actualizado_at: ahora2 };
-            let hay = false;
-            for (const campo of CAMPOS_CONOCIDOS) {
-              const nv = (reg as any)[campo];
-              if (!nv) continue;
-              if (existente[campo] !== nv) { upd[campo] = nv; hay = true; }
+      }
+
+      const todosRegistros = [...registrosPag1];
+      const matriculasVistas = new Set<string>(registrosPag1.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
+      const MAX_VACIOS = 3;
+      let vacios = 0;
+      let siguiente = 2;
+      const patronesAlt = [
+        patronPaginacion,
+        `${urlActiva}/{n}`,
+        `${urlActiva}?page={n}`,
+        `${urlActiva}?pagina={n}`,
+      ].filter((v, i, a) => a.indexOf(v) === i);
+      let patronActivo = patronPaginacion;
+      let verificado = false;
+
+      while (siguiente <= MAX_PAGINAS && vacios < MAX_VACIOS) {
+        const lote = Array.from({ length: BATCH_PARALELO }, (_, i) => siguiente + i).filter(n => n <= MAX_PAGINAS);
+        siguiente += BATCH_PARALELO;
+        const htmls = await Promise.all(lote.map(n => fetchPagina(urlPagina(n, patronActivo))));
+        let nuevosEnLote = 0;
+        for (const html of htmls) {
+          if (!html) continue;
+          for (const r of parsearTabla(html, camposPorCol)) {
+            const mat = String(r.matricula ?? "").trim();
+            if (mat && matriculasVistas.has(mat)) continue;
+            if (mat) matriculasVistas.add(mat);
+            todosRegistros.push(r);
+            nuevosEnLote++;
+          }
+        }
+        if (!verificado && nuevosEnLote === 0) {
+          let encontrado = false;
+          for (const pat of patronesAlt) {
+            if (pat === patronActivo) continue;
+            const h2 = await fetchPagina(urlPagina(2, pat));
+            if (!h2) continue;
+            const regsAlt = parsearTabla(h2, camposPorCol);
+            if (regsAlt.length > 0) {
+              patronActivo = pat;
+              for (const r of regsAlt) {
+                const mat = String(r.matricula ?? "").trim();
+                if (mat && matriculasVistas.has(mat)) continue;
+                if (mat) matriculasVistas.add(mat);
+                todosRegistros.push(r);
+                nuevosEnLote++;
+              }
+              encontrado = true;
+              break;
             }
-            if (hay) actualizacionesR.push({ ...upd, id: existente.id });
-            else sinCambiosR++;
-          } else {
-            nuevosR.push({ ...reg, actualizado_at: ahora2 });
           }
+          if (!encontrado) vacios++;
+          else vacios = 0;
+          verificado = true;
+          continue;
         }
-        const LOTE2 = 500;
-        for (let i = 0; i < nuevosR.length; i += LOTE2) {
-          await sb.from("cocir_padron").insert(nuevosR.slice(i, i + LOTE2));
-        }
-        for (let i = 0; i < actualizacionesR.length; i += LOTE2) {
-          await sb.from("cocir_padron").upsert(actualizacionesR.slice(i, i + LOTE2));
-        }
-        let eliminadosR = 0;
-        if (dtVistas.size > 500) {
-          const paraElimR = (existentes2 ?? []).filter((r: any) => { const m = String(r.matricula ?? "").trim(); return m && !dtVistas.has(m); });
-          const idsR = paraElimR.map((r: any) => r.id);
-          for (let i = 0; i < idsR.length; i += LOTE2) { await sb.from("cocir_padron").delete().in("id", idsR.slice(i, i + LOTE2)); }
-          eliminadosR = paraElimR.length;
-        }
-        return NextResponse.json({ ok: true, metodo: "datatables", insertados: nuevosR.length, actualizados: actualizacionesR.length, eliminados: eliminadosR, sin_cambios: sinCambiosR, total_scrapeados: dtTodos.length, sincronizado_at: ahora2 });
+        verificado = true;
+        if (nuevosEnLote === 0) vacios++;
+        else vacios = 0;
       }
-
-      // Sin datos ni por HTML ni por DataTables → devolver debug
-      const filasTd = $1("table tr").filter((_, el) => $1(el).find("td").length >= 2).length;
-      const primeraFila: string[] = [];
-      $1("table tr").first().find("td,th").each((_, el) => { primeraFila.push($1(el).text().trim()); });
-      return NextResponse.json({
-        ok: false,
-        error: "No se encontraron registros en la primera página",
-        debug: {
-          urlActiva,
-          htmlLen: html1.length,
-          tables: $1("table").length,
-          thead: $1("table thead").length,
-          filasTd,
-          columnasMapeadas: camposPorCol,
-          primeraFila,
-          htmlInicio: html1.slice(0, 800),
-        },
-      });
+      return guardarEnDB(todosRegistros, matriculasVistas, "html-table");
     }
 
-    // --- Detect pagination ---
-    const ultimaPagina = detectarUltimaPagina($1);
+    // ── 3. Intentar datos embebidos en <script> (DataTables inline) ──
+    const scriptResult = extraerDatosDeScript(html1);
+    if (scriptResult && scriptResult.datos.length >= 2) {
+      const { datos, columnas } = scriptResult;
+      const todos = datos
+        .map(f => normalizarFilaDT(f, columnas))
+        .filter(r => r.matricula || r.apellido || r.nombre);
 
-    // Detect URL pattern for pagination
-    let patronPaginacion = `${urlActiva}?page={n}`;
-    const linkPaginaEjemplo = $1("a[href]").filter((_, el) => {
-      const href = $1(el).attr("href") ?? "";
-      return /[?&](?:page|pagina)=\d+/i.test(href) || /matriculados[/?]\d+/.test(href);
-    }).first().attr("href") ?? "";
-
-    if (linkPaginaEjemplo) {
-      // Infer pattern from example link
-      const m = linkPaginaEjemplo.match(/([?&])(?:page|pagina|p)=\d+/i);
-      if (m) {
-        const sep = m[1];
-        const key = m[0].replace(m[1], "").replace(/=\d+$/, "");
-        patronPaginacion = `${urlActiva}${sep}${key}={n}`;
-      } else if (/matriculados\/\d+/.test(linkPaginaEjemplo)) {
-        patronPaginacion = `${urlActiva}/{n}`;
+      if (todos.length > 0) {
+        const matsVistas = new Set<string>(todos.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
+        return guardarEnDB(todos, matsVistas, "script-json");
       }
     }
 
-    // --- Fetch remaining pages in parallel batches ---
-    // Continúa aunque detectarUltimaPagina devuelva 1: se detiene solo cuando
-    // hay MAX_CONSECUTIVOS_VACIOS lotes consecutivos sin registros nuevos.
-    const todosRegistros = [...registrosPag1];
-    const matriculasVistas = new Set<string>(registrosPag1.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
-
-    const MAX_CONSECUTIVOS_VACIOS = 3;
-    let consecutivosVacios = 0;
-    let siguiente = 2;
-
-    // También intentar patrón de ruta si el detectado falla en el primer lote
-    const patronesAlternativos = [
-      patronPaginacion,
-      `${urlActiva}/{n}`,
-      `${urlActiva}?page={n}`,
-      `${urlActiva}?pagina={n}`,
-    ].filter((v, i, a) => a.indexOf(v) === i); // unique
-
-    let patronActivo = patronPaginacion;
-    let patronVerificado = false;
-
-    while (siguiente <= MAX_PAGINAS && consecutivosVacios < MAX_CONSECUTIVOS_VACIOS) {
-      const lote = Array.from({ length: BATCH_PARALELO }, (_, i) => siguiente + i)
-        .filter(n => n <= MAX_PAGINAS);
-      siguiente += BATCH_PARALELO;
-
-      const htmls = await Promise.all(lote.map(n => fetchPagina(urlPagina(n, patronActivo))));
-      let nuevosEnLote = 0;
-
-      for (const html of htmls) {
-        if (!html) continue;
-        const regs = parsearTabla(html, camposPorCol);
-        for (const r of regs) {
+    // ── 4. Intentar DataTables AJAX ──
+    const dtPage0 = await fetchDataTablesAjax(urlActiva, 0, 100);
+    if (dtPage0 && dtPage0.length > 0) {
+      const dtTodos = [...parsearFilasDT(dtPage0)];
+      const dtVistas = new Set<string>(dtTodos.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
+      let dtStart = 100;
+      let dtVacios = 0;
+      while (dtStart < 10000 && dtVacios < 3) {
+        const chunk = await fetchDataTablesAjax(urlActiva, dtStart, 100);
+        if (!chunk || chunk.length === 0) { dtVacios++; break; }
+        let nuevos = 0;
+        for (const r of parsearFilasDT(chunk)) {
           const mat = String(r.matricula ?? "").trim();
-          if (mat && matriculasVistas.has(mat)) continue;
-          if (mat) matriculasVistas.add(mat);
-          todosRegistros.push(r);
-          nuevosEnLote++;
+          if (mat && dtVistas.has(mat)) continue;
+          if (mat) dtVistas.add(mat);
+          dtTodos.push(r);
+          nuevos++;
         }
+        if (nuevos === 0) dtVacios++;
+        else dtVacios = 0;
+        dtStart += 100;
       }
-
-      // Si el primer lote no dio datos, probar patrones alternativos
-      if (!patronVerificado && nuevosEnLote === 0) {
-        let encontrado = false;
-        for (const pat of patronesAlternativos) {
-          if (pat === patronActivo) continue;
-          const htmlAlt = await fetchPagina(urlPagina(2, pat));
-          if (!htmlAlt) continue;
-          const regsAlt = parsearTabla(htmlAlt, camposPorCol);
-          if (regsAlt.length > 0) {
-            patronActivo = pat;
-            for (const r of regsAlt) {
-              const mat = String(r.matricula ?? "").trim();
-              if (mat && matriculasVistas.has(mat)) continue;
-              if (mat) matriculasVistas.add(mat);
-              todosRegistros.push(r);
-              nuevosEnLote++;
-            }
-            encontrado = true;
-            break;
-          }
-        }
-        if (!encontrado) consecutivosVacios++;
-        else consecutivosVacios = 0;
-        patronVerificado = true;
-        continue;
-      }
-
-      patronVerificado = true;
-      if (nuevosEnLote === 0) consecutivosVacios++;
-      else consecutivosVacios = 0;
+      return guardarEnDB(dtTodos, dtVistas, "datatables-ajax");
     }
 
-    // --- UPSERT to DB ---
-    const ahora = new Date().toISOString();
-    const { data: existentes } = await sb
-      .from("cocir_padron")
-      .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email, apellido, nombre");
-
-    const mapa = new Map<string, any>();
-    (existentes ?? []).forEach((r: any) => {
-      if (r.matricula) mapa.set(String(r.matricula).trim(), r);
-    });
-
-    const nuevos: any[] = [];
-    const actualizaciones: any[] = [];
-    let sinCambios = 0;
-
-    for (const reg of todosRegistros) {
-      const mat = String(reg.matricula ?? "").trim();
-      const existente = mat ? mapa.get(mat) : undefined;
-
-      if (existente) {
-        const update: any = { actualizado_at: ahora };
-        let hayCambios = false;
-        for (const campo of CAMPOS_CONOCIDOS) {
-          const newVal = reg[campo];
-          if (!newVal) continue;
-          if (existente[campo] !== newVal) {
-            update[campo] = newVal;
-            hayCambios = true;
-          }
-        }
-        if (hayCambios) {
-          actualizaciones.push({ ...update, id: existente.id });
-        } else {
-          sinCambios++;
-        }
-      } else {
-        nuevos.push({ ...reg, actualizado_at: ahora });
-      }
-    }
-
-    const LOTE = 500;
-    for (let i = 0; i < nuevos.length; i += LOTE) {
-      const { error } = await sb.from("cocir_padron").insert(nuevos.slice(i, i + LOTE));
-      if (error) return NextResponse.json({ ok: false, error: error.message });
-    }
-
-    for (let i = 0; i < actualizaciones.length; i += LOTE) {
-      const { error } = await sb.from("cocir_padron").upsert(actualizaciones.slice(i, i + LOTE));
-      if (error) return NextResponse.json({ ok: false, error: error.message });
-    }
-
-    // ── Limpiar registros que ya no están en COCIR ──
-    let eliminados = 0;
-    if (matriculasVistas.size > 500) {
-      const paraEliminar = (existentes ?? []).filter((r: any) => {
-        const mat = String(r.matricula ?? "").trim();
-        return mat && !matriculasVistas.has(mat);
-      });
-      if (paraEliminar.length > 0) {
-        const idsEliminar = paraEliminar.map((r: any) => r.id);
-        for (let i = 0; i < idsEliminar.length; i += LOTE) {
-          const { error } = await sb.from("cocir_padron").delete().in("id", idsEliminar.slice(i, i + LOTE));
-          if (error) return NextResponse.json({ ok: false, error: error.message });
-        }
-        eliminados = paraEliminar.length;
-      }
-    }
-    // ─────────────────────────────────────────────────────────────────────────
-
-    // ── Validar matrículas de perfiles GFI + sincronizar teléfono desde COCIR ──
-    const { data: perfilesGfi } = await sb
-      .from("perfiles")
-      .select("id, matricula, telefono, whatsapp_negocio")
-      .not("matricula", "is", null)
-      .neq("matricula", "");
-
-    const { data: padronActual } = await sb
-      .from("cocir_padron")
-      .select("matricula, estado, telefono, email");
-
-    interface PadronEntry { estado: string; telefono: string | null; email: string | null }
-    const padronMap = new Map<string, PadronEntry>();
-    for (const p of padronActual ?? []) {
-      if (p.matricula) {
-        padronMap.set(String(p.matricula).trim(), {
-          estado: p.estado ?? "activo",
-          telefono: p.telefono ?? null,
-          email: p.email ?? null,
-        });
-      }
-    }
-
-    let validados = 0;
-    let suspendidos = 0;
-    let noEncontrados = 0;
-    let telefonosSincronizados = 0;
-
-    for (const perfil of perfilesGfi ?? []) {
-      const mat = String(perfil.matricula ?? "").trim();
-      if (!mat) continue;
-      const entrada = padronMap.get(mat);
-      let nuevoEstado: string;
-      if (!entrada) {
-        nuevoEstado = "no_encontrado";
-        noEncontrados++;
-      } else if (/suspendid|inhabilitad|baja/i.test(entrada.estado)) {
-        nuevoEstado = "suspendido";
-        suspendidos++;
-      } else {
-        nuevoEstado = "activo";
-        validados++;
-      }
-
-      const upd: Record<string, any> = { cocir_estado: nuevoEstado, cocir_ultimo_control: ahora };
-
-      // Backfill phone from COCIR if the profile has none
-      if (entrada?.telefono && !perfil.telefono && !perfil.whatsapp_negocio) {
-        const tel = normalizarTelefono(entrada.telefono);
-        if (tel) {
-          upd.telefono = tel;
-          upd.whatsapp_negocio = tel;
-          telefonosSincronizados++;
-        }
-      }
-
-      await sb.from("perfiles").update(upd).eq("id", perfil.id);
-    }
-    // ─────────────────────────────────────────────────────────────────────────
-
+    // ── 5. Sin datos: devolver diagnóstico detallado ──
+    const filasTd = $1("table tr").filter((_, el) => $1(el).find("td").length >= 2).length;
+    const primeraFila: string[] = [];
+    $1("table tr").first().find("td,th").each((_, el) => { primeraFila.push($1(el).text().trim()); });
+    const tablaInfo = {
+      tables: $1("table").length,
+      trs: $1("table tr").length,
+      tds: $1("table td").length,
+      ths: $1("table th").length,
+      theads: $1("table thead").length,
+      filasTd,
+      columnasMapeadas: camposPorCol,
+      primeraFila,
+    };
     return NextResponse.json({
-      ok: true,
-      insertados: nuevos.length,
-      actualizados: actualizaciones.length,
-      eliminados,
-      sin_cambios: sinCambios,
-      total_scrapeados: todosRegistros.length,
-      paginas_procesadas: ultimaPagina,
-      sincronizado_at: ahora,
-      validacion_gfi: { validados, suspendidos, no_encontrados: noEncontrados, telefonos_sincronizados: telefonosSincronizados },
+      ok: false,
+      error: "No se encontraron registros (ni en tabla HTML, ni en scripts, ni en DataTables AJAX)",
+      debug: {
+        urlActiva,
+        htmlLen: html1.length,
+        tablaInfo,
+        tieneScriptConData: /"data"\s*:\s*\[/.test(html1) || /\bdata\s*:\s*\[/.test(html1),
+        htmlInicio: html1.slice(0, 1200),
+        htmlBody: html1.slice(html1.indexOf("<body") > -1 ? html1.indexOf("<body") : 1500, html1.indexOf("<body") > -1 ? html1.indexOf("<body") + 3000 : 4500),
+      },
     });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e.message });
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : String(e) });
   }
 }
+
