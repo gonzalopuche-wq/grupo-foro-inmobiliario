@@ -705,7 +705,7 @@ export default function AdminPage() {
       });
       const json = await res.json();
       setSyncCocirRes(json);
-      if (json.ok) mostrarToast(`Padrón sincronizado: ${json.total} registros`);
+      if (json.ok) mostrarToast(`Padrón sincronizado: ${json.total_scrapeados ?? json.insertados + json.actualizados + json.sin_cambios} registros`);
       else mostrarToast(json.error ?? "Error al sincronizar", "err");
     } catch {
       setSyncCocirRes({ ok: false, error: "Error de conexión" });
