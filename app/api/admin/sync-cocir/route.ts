@@ -13,8 +13,7 @@ const sb = createClient(
 const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
 const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
 
-// URL real de los datos — el JS hace POST a matriculados.php con buscar=LETRA
-// (sin parámetros devuelve solo la página de mapa Leaflet sin filas)
+// URL real de los datos — BuscarMatriculados() hace POST con {texto, filtro} y devuelve JSON {success, html}
 const AJAX_PHP_BASE = "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php";
 const AJAX_PHP_BASE_WWW = "https://www.cocir.org.ar/webfiles/cocir/actualizar/matriculados.php";
 
@@ -275,8 +274,10 @@ async function fetchPagina(url: string): Promise<string | null> {
   }
 }
 
-async function fetchBuscar(baseUrl: string, letra: string): Promise<string | null> {
-  const body = `buscar=${encodeURIComponent(letra)}`;
+// BuscarMatriculados() del PHP: POST texto+filtro → JSON {success, html}
+// El html son <tr> para insertar en la table vacía #matriculados-cocir
+async function fetchBuscarTexto(baseUrl: string, texto: string, filtro = "todos"): Promise<string | null> {
+  const body = `texto=${encodeURIComponent(texto)}&filtro=${encodeURIComponent(filtro)}`;
   try {
     const res = await fetch(baseUrl, {
       method: "POST",
@@ -284,12 +285,24 @@ async function fetchBuscar(baseUrl: string, letra: string): Promise<string | nul
         ...HEADERS,
         "Content-Type": "application/x-www-form-urlencoded",
         "X-Requested-With": "XMLHttpRequest",
+        "Accept": "application/json, text/javascript, */*; q=0.01",
       },
       body,
       signal: AbortSignal.timeout(15000),
     });
     if (!res.ok) return null;
-    return res.text();
+    const raw = await res.text();
+    // Intentar parsear como JSON {success, html}
+    try {
+      const json = JSON.parse(raw);
+      if (json?.success && typeof json?.html === "string" && json.html.length > 20) {
+        return json.html;
+      }
+      return null;
+    } catch {
+      // Si no es JSON pero tiene filas HTML, devolver tal cual
+      return raw.includes("<tr") ? raw : null;
+    }
   } catch {
     return null;
   }
@@ -472,71 +485,48 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    // ── 1. Endpoint AJAX real — POST buscar=LETRA ──
-    // Sin parámetros, matriculados.php devuelve solo la página de mapa (sin datos).
-    // La función BuscarMatriculados del JS hace POST con buscar=VALOR para obtener filas.
+    // ── 1. Endpoint AJAX real — POST texto=LETRA&filtro=todos → JSON {success, html} ──
+    // BuscarMatriculados() en matriculados.php usa {texto, filtro} (no "buscar").
+    // Devuelve JSON {success: true, html: "<tr>...</tr>"} con filas sin headers.
     {
-      // Intento 0: buscar vacío → podría devolver TODOS los registros en un solo request
-      const htmlVacio = await fetchBuscar(AJAX_PHP_BASE, "");
-      if (htmlVacio && htmlVacio.length > 500) {
-        const htmlT = htmlVacio.includes("<table") ? htmlVacio : `<table>${htmlVacio}</table>`;
-        const $v = cheerio.load(htmlT);
-        const camposV = detectarColumnas($v);
-        const regsV = parsearTabla(htmlT, camposV);
-        if (regsV.length > 10) {
-          const matsV = new Set<string>(regsV.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
-          return guardarEnDB(regsV, matsV, `ajax-buscar-vacio (${regsV.length})`);
-        }
-      }
-
       const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
       const LOTE = 6;
       const todosAjax: Record<string, string | null>[] = [];
       const matsAjax = new Set<string>();
-      const baseUrl = AJAX_PHP_BASE;
+
+      const procesarHtmlRows = (htmlRows: string) => {
+        // Los rows vienen sin <table> ni headers — usar FALLBACK_ORDEN posicional
+        const htmlTabla = `<table>${htmlRows}</table>`;
+        for (const r of parsearTabla(htmlTabla, [])) {
+          const mat = String(r.matricula ?? "").trim();
+          if (mat && matsAjax.has(mat)) continue;
+          if (mat) matsAjax.add(mat);
+          todosAjax.push(r);
+        }
+      };
 
       for (let i = 0; i < letras.length; i += LOTE) {
         const lote = letras.slice(i, i + LOTE);
-        const htmls = await Promise.all(lote.map(l => fetchBuscar(baseUrl, l)));
-        for (const html of htmls) {
-          if (!html || html.length < 200) continue;
-          const htmlTabla = html.includes("<table") ? html : `<table>${html}</table>`;
-          const $t = cheerio.load(htmlTabla);
-          const campos = detectarColumnas($t);
-          for (const r of parsearTabla(htmlTabla, campos)) {
-            const mat = String(r.matricula ?? "").trim();
-            if (mat && matsAjax.has(mat)) continue;
-            if (mat) matsAjax.add(mat);
-            todosAjax.push(r);
-          }
+        const rows = await Promise.all(lote.map(l => fetchBuscarTexto(AJAX_PHP_BASE, l)));
+        for (const html of rows) {
+          if (html) procesarHtmlRows(html);
         }
       }
 
       if (todosAjax.length > 0) {
-        return guardarEnDB(todosAjax, matsAjax, `ajax-buscar-letra (${todosAjax.length})`);
+        return guardarEnDB(todosAjax, matsAjax, `ajax-texto-letra (${todosAjax.length})`);
       }
 
-      // Si falló con la URL primaria, intentar con www
-      const todosAjaxWww: Record<string, string | null>[] = [];
-      const matsAjaxWww = new Set<string>();
+      // Reintentar con www
       for (let i = 0; i < letras.length; i += LOTE) {
         const lote = letras.slice(i, i + LOTE);
-        const htmls = await Promise.all(lote.map(l => fetchBuscar(AJAX_PHP_BASE_WWW, l)));
-        for (const html of htmls) {
-          if (!html || html.length < 200) continue;
-          const htmlTabla = html.includes("<table") ? html : `<table>${html}</table>`;
-          const $t = cheerio.load(htmlTabla);
-          const campos = detectarColumnas($t);
-          for (const r of parsearTabla(htmlTabla, campos)) {
-            const mat = String(r.matricula ?? "").trim();
-            if (mat && matsAjaxWww.has(mat)) continue;
-            if (mat) matsAjaxWww.add(mat);
-            todosAjaxWww.push(r);
-          }
+        const rows = await Promise.all(lote.map(l => fetchBuscarTexto(AJAX_PHP_BASE_WWW, l)));
+        for (const html of rows) {
+          if (html) procesarHtmlRows(html);
         }
       }
-      if (todosAjaxWww.length > 0) {
-        return guardarEnDB(todosAjaxWww, matsAjaxWww, `ajax-buscar-letra-www (${todosAjaxWww.length})`);
+      if (todosAjax.length > 0) {
+        return guardarEnDB(todosAjax, matsAjax, `ajax-texto-letra-www (${todosAjax.length})`);
       }
     }
 
