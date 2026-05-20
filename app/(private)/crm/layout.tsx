@@ -109,6 +109,8 @@ const CRM_CORE: [string, string, string][] = [
   ["notas",       "📝", "Notas"],
 ];
 
+const SORTED_LINKS = [...CRM_LINKS].sort(([,,a],[,,b]) => a.localeCompare(b, "es"));
+
 function CrmLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -120,132 +122,263 @@ function CrmLayoutInner({ children }: { children: React.ReactNode }) {
     return s === "dashboard" ? tabActivo === "dashboard" : tabActivo === s;
   }
 
+  function isLinkActivo(href: string) {
+    return pathname === href || (href !== "/crm" && pathname.startsWith(href));
+  }
+
   return (
     <>
       <style>{`
-        .crm-layout-root { display: flex; height: 100%; overflow: hidden; }
-        .crm-layout-sidebar {
+        .crm-root {
+          display: flex;
+          min-height: calc(100vh - 96px);
+          margin: -24px -28px;
+        }
+
+        /* ── Sidebar ── */
+        .crm-sb {
           flex-shrink: 0;
+          background: rgba(6,6,6,0.98);
+          border-right: 1px solid rgba(255,255,255,0.07);
+          display: flex;
+          flex-direction: column;
           overflow: hidden;
           transition: width 0.22s cubic-bezier(0.4,0,0.2,1);
-          background: #0a0a0a;
-          border-right: 1px solid rgba(255,255,255,0.06);
+          position: sticky;
+          top: 0;
+          height: calc(100vh - 0px);
+          max-height: 100vh;
         }
-        .crm-layout-inner {
-          width: 278px; height: 100%;
-          overflow-y: auto; overflow-x: hidden;
-          padding: 12px 0 28px;
+        .crm-sb.open  { width: 230px; }
+        .crm-sb.close { width: 48px; }
+
+        /* Header del sidebar */
+        .crm-sb-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 10px;
+          height: 44px;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          flex-shrink: 0;
         }
-        .crm-layout-inner::-webkit-scrollbar { width: 3px; }
-        .crm-layout-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
-        .crm-layout-header {
-          padding: 0 10px 10px;
+        .crm-sb-head-lbl {
           font-family: 'Montserrat',sans-serif;
-          font-size: 9px; font-weight: 700; letter-spacing: 0.2em;
-          text-transform: uppercase; color: rgba(255,255,255,0.4);
-          border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 8px;
+          font-size: 9px; font-weight: 800;
+          letter-spacing: 0.22em; text-transform: uppercase;
+          color: rgba(255,255,255,0.5);
+          white-space: nowrap; overflow: hidden;
+          transition: opacity 0.15s, width 0.15s;
         }
-        .crm-layout-grid { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
-        .crm-layout-item {
-          display: flex; flex-direction: row; align-items: center; gap: 8px;
-          padding: 8px 12px; border-radius: 6px; text-decoration: none;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.10);
-          transition: background 0.13s, border-color 0.13s;
+        .crm-sb.close .crm-sb-head-lbl { opacity: 0; width: 0; }
+
+        /* Toggle button */
+        .crm-toggle {
+          flex-shrink: 0;
+          width: 28px; height: 28px;
+          border-radius: 6px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.55);
+          font-size: 11px; line-height: 1;
+          cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: background 0.13s, color 0.13s;
+          flex-shrink: 0;
         }
-        .crm-layout-item:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
-        .crm-layout-item.activo { background: rgba(204,0,0,0.16); border-color: rgba(204,0,0,0.35); }
-        .crm-layout-ico { font-size: 13px; line-height: 1; flex-shrink: 0; }
-        .crm-layout-lbl { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; color: rgba(255,255,255,0.88); line-height: 1.2; text-transform: uppercase; }
-        .crm-layout-item.activo .crm-layout-lbl { color: #fff; }
-        .crm-layout-toggle {
-          flex-shrink: 0; width: 22px; padding: 0; border: none;
-          border-right: 1px solid rgba(255,255,255,0.07);
-          background: rgba(7,7,7,0.98); cursor: pointer;
-          display: flex; flex-direction: column; align-items: center;
-          justify-content: center; gap: 10px; transition: background 0.15s;
+        .crm-toggle:hover { background: rgba(204,0,0,0.15); color: #cc0000; border-color: rgba(204,0,0,0.3); }
+
+        /* Scroll area */
+        .crm-sb-scroll {
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
+          padding: 8px 0 16px;
         }
-        .crm-layout-toggle:hover { background: rgba(18,18,18,0.98); }
-        .crm-layout-dot { width: 4px; height: 4px; border-radius: 50%; background: #cc0000; opacity: 0.7; }
-        .crm-layout-txt {
-          writing-mode: vertical-lr; transform: rotate(180deg);
-          font-family: 'Montserrat',sans-serif; font-size: 7px; font-weight: 700;
-          letter-spacing: 0.18em; color: rgba(255,255,255,0.15); user-select: none;
+        .crm-sb-scroll::-webkit-scrollbar { width: 3px; }
+        .crm-sb-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+
+        /* Sección label */
+        .crm-section-lbl {
+          padding: 10px 12px 4px;
+          font-family: 'Montserrat',sans-serif;
+          font-size: 8px; font-weight: 700;
+          letter-spacing: 0.18em; text-transform: uppercase;
+          color: rgba(255,255,255,0.3);
+          white-space: nowrap; overflow: hidden;
+          transition: opacity 0.12s;
         }
-        .crm-layout-arrow { font-size: 8px; color: rgba(204,0,0,0.6); font-weight: 700; }
-        .crm-layout-content { flex: 1; min-width: 0; overflow: hidden; }
-        .crm-layout-core { display: flex; flex-direction: column; gap: 2px; padding: 0 8px 8px; }
-        .crm-layout-core-item {
-          display: flex; align-items: center; gap: 8px; padding: 9px 12px;
-          border-radius: 6px; text-decoration: none;
-          background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
-          transition: background 0.13s, border-color 0.13s;
+        .crm-sb.close .crm-section-lbl { opacity: 0; height: 0; padding: 0; }
+
+        /* Ítems del menú */
+        .crm-item {
+          display: flex; align-items: center; gap: 9px;
+          padding: 0 10px;
+          height: 34px;
+          text-decoration: none;
+          border-radius: 0;
+          border-left: 2px solid transparent;
+          transition: background 0.12s, border-color 0.12s;
+          white-space: nowrap; overflow: hidden;
+          position: relative;
         }
-        .crm-layout-core-item:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.24); }
-        .crm-layout-core-item.activo { background: rgba(204,0,0,0.16); border-color: rgba(204,0,0,0.38); }
-        .crm-layout-core-ico { font-size: 14px; line-height: 1; flex-shrink: 0; }
-        .crm-layout-core-lbl { font-family: 'Montserrat',sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.92); }
-        .crm-layout-core-item.activo .crm-layout-core-lbl { color: #fff; }
-        .crm-layout-divider { margin: 4px 8px 8px; border: none; border-top: 1px solid rgba(255,255,255,0.06); }
+        .crm-item:hover { background: rgba(255,255,255,0.07); border-left-color: rgba(255,255,255,0.2); }
+        .crm-item.act { background: rgba(204,0,0,0.12); border-left-color: #cc0000; }
+
+        .crm-item-ico {
+          font-size: 14px; flex-shrink: 0;
+          width: 24px; text-align: center; line-height: 1;
+        }
+        .crm-item-lbl {
+          font-family: 'Montserrat',sans-serif;
+          font-size: 10.5px; font-weight: 700;
+          letter-spacing: 0.04em;
+          color: rgba(255,255,255,0.82);
+          overflow: hidden; text-overflow: ellipsis;
+          transition: opacity 0.12s, width 0.12s;
+        }
+        .crm-item.act .crm-item-lbl { color: #fff; }
+
+        /* Ocultar labels cuando cerrado */
+        .crm-sb.close .crm-item { padding: 0; justify-content: center; }
+        .crm-sb.close .crm-item-lbl { opacity: 0; width: 0; }
+        .crm-sb.close .crm-item { border-left: 2px solid transparent; }
+        .crm-sb.close .crm-item:hover { background: rgba(255,255,255,0.07); border-left-color: transparent; }
+        .crm-sb.close .crm-item.act { border-left-color: transparent; }
+
+        /* Tooltip en estado cerrado */
+        .crm-sb.close .crm-item[title]:hover::after {
+          content: attr(title);
+          position: absolute;
+          left: 52px;
+          background: rgba(18,18,18,0.97);
+          border: 1px solid rgba(255,255,255,0.12);
+          color: #fff;
+          font-family: 'Montserrat',sans-serif;
+          font-size: 10px; font-weight: 700;
+          padding: 4px 10px; border-radius: 5px;
+          white-space: nowrap; pointer-events: none;
+          z-index: 100;
+        }
+
+        /* Divider */
+        .crm-div {
+          height: 1px;
+          background: rgba(255,255,255,0.06);
+          margin: 6px 10px;
+        }
+        .crm-sb.close .crm-div { margin: 6px 6px; }
+
+        /* Ítems core (más destacados) */
+        .crm-core-item {
+          display: flex; align-items: center; gap: 9px;
+          padding: 0 10px;
+          height: 38px;
+          text-decoration: none;
+          border-left: 2px solid transparent;
+          transition: background 0.12s, border-color 0.12s;
+          white-space: nowrap; overflow: hidden;
+          position: relative;
+        }
+        .crm-core-item:hover { background: rgba(255,255,255,0.08); border-left-color: rgba(255,255,255,0.25); }
+        .crm-core-item.act { background: rgba(204,0,0,0.15); border-left-color: #cc0000; }
+        .crm-core-ico { font-size: 16px; flex-shrink: 0; width: 24px; text-align: center; line-height: 1; }
+        .crm-core-lbl {
+          font-family: 'Montserrat',sans-serif;
+          font-size: 11px; font-weight: 800;
+          letter-spacing: 0.05em; text-transform: uppercase;
+          color: rgba(255,255,255,0.9);
+          transition: opacity 0.12s, width 0.12s;
+          overflow: hidden;
+        }
+        .crm-core-item.act .crm-core-lbl { color: #fff; }
+        .crm-sb.close .crm-core-item { padding: 0; justify-content: center; }
+        .crm-sb.close .crm-core-lbl { opacity: 0; width: 0; }
+        .crm-sb.close .crm-core-item[title]:hover::after {
+          content: attr(title);
+          position: absolute;
+          left: 52px;
+          background: rgba(18,18,18,0.97);
+          border: 1px solid rgba(255,255,255,0.12);
+          color: #fff;
+          font-family: 'Montserrat',sans-serif;
+          font-size: 10px; font-weight: 700;
+          padding: 4px 10px; border-radius: 5px;
+          white-space: nowrap; pointer-events: none;
+          z-index: 100;
+        }
+
+        /* Área de contenido */
+        .crm-content {
+          flex: 1;
+          min-width: 0;
+          padding: 24px 28px;
+          overflow-y: auto;
+        }
+
         @media (max-width: 768px) {
-          .crm-layout-sidebar { display: none; }
-          .crm-layout-toggle { display: none; }
+          .crm-root { margin: -16px; min-height: calc(100vh - 70px); }
+          .crm-sb.open { width: 200px; position: fixed; left: 220px; top: 54px; height: calc(100vh - 54px); z-index: 30; }
+          .crm-sb.close { width: 0; }
+          .crm-content { padding: 16px; }
         }
       `}</style>
 
-      <div className="crm-layout-root">
+      <div className="crm-root">
 
         {/* ── Sidebar ── */}
-        <div className="crm-layout-sidebar" style={{ width: abierto ? 278 : 0 }}>
-          <div className="crm-layout-inner">
-            <div className="crm-layout-header">CRM GFI®</div>
+        <nav className={`crm-sb ${abierto ? "open" : "close"}`} aria-label="Menú CRM">
 
-            {/* ── Secciones principales del CRM ── */}
-            <div className="crm-layout-core">
-              {CRM_CORE.map(([s, ico, lbl]) => (
-                <Link
-                  key={s}
-                  href={s === "dashboard" ? "/crm" : `/crm?s=${s}`}
-                  className={`crm-layout-core-item${isCoreActivo(s) ? " activo" : ""}`}
-                >
-                  <span className="crm-layout-core-ico">{ico}</span>
-                  <span className="crm-layout-core-lbl">{lbl}</span>
-                </Link>
-              ))}
-            </div>
-
-            <hr className="crm-layout-divider" />
-
-            <div className="crm-layout-grid">
-              {[...CRM_LINKS].sort(([,,a],[,,b]) => a.localeCompare(b, "es")).map(([href, ico, lbl]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`crm-layout-item${pathname === href || (href !== "/crm" && pathname.startsWith(href)) ? " activo" : ""}`}
-                >
-                  <span className="crm-layout-ico">{ico}</span>
-                  <span className="crm-layout-lbl">{lbl}</span>
-                </Link>
-              ))}
-            </div>
+          {/* Header con toggle */}
+          <div className="crm-sb-head">
+            <span className="crm-sb-head-lbl">CRM GFI®</span>
+            <button
+              className="crm-toggle"
+              onClick={() => setAbierto(v => !v)}
+              title={abierto ? "Colapsar menú" : "Expandir menú"}
+              aria-label={abierto ? "Colapsar menú CRM" : "Expandir menú CRM"}
+            >
+              {abierto ? "◀" : "▶"}
+            </button>
           </div>
-        </div>
 
-        {/* ── Pestaña toggle ── */}
-        <button
-          className="crm-layout-toggle"
-          onClick={() => setAbierto(v => !v)}
-          aria-expanded={abierto}
-          aria-label={abierto ? "Cerrar menú CRM" : "Abrir menú CRM"}
-          title={abierto ? "Cerrar menú CRM" : "Abrir menú CRM"}
-        >
-          <div className="crm-layout-dot" />
-          <span className="crm-layout-txt">CRM</span>
-          <span className="crm-layout-arrow">{abierto ? "◀" : "▶"}</span>
-        </button>
+          {/* Scroll con ítems */}
+          <div className="crm-sb-scroll">
 
-        {/* ── Contenido (page.tsx y sub-rutas) ── */}
-        <div className="crm-layout-content">
+            {/* Core items */}
+            <div className="crm-section-lbl">Principal</div>
+            {CRM_CORE.map(([s, ico, lbl]) => (
+              <Link
+                key={s}
+                href={s === "dashboard" ? "/crm" : `/crm?s=${s}`}
+                className={`crm-core-item${isCoreActivo(s) ? " act" : ""}`}
+                title={lbl}
+              >
+                <span className="crm-core-ico">{ico}</span>
+                <span className="crm-core-lbl">{lbl}</span>
+              </Link>
+            ))}
+
+            <div className="crm-div" />
+
+            {/* All CRM tools sorted alphabetically */}
+            <div className="crm-section-lbl">Herramientas</div>
+            {SORTED_LINKS.map(([href, ico, lbl]) => (
+              <Link
+                key={href}
+                href={href}
+                className={`crm-item${isLinkActivo(href) ? " act" : ""}`}
+                title={lbl}
+              >
+                <span className="crm-item-ico">{ico}</span>
+                <span className="crm-item-lbl">{lbl}</span>
+              </Link>
+            ))}
+          </div>
+        </nav>
+
+        {/* ── Contenido ── */}
+        <div className="crm-content">
           {children}
         </div>
 
