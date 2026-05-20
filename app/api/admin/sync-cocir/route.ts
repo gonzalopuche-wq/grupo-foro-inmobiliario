@@ -316,7 +316,8 @@ async function guardarEnDB(
   const ahora = new Date().toISOString();
   const { data: existentes } = await sb
     .from("cocir_padron")
-    .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email, apellido, nombre");
+    .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email, apellido, nombre")
+    .limit(10000);
 
   const mapa = new Map<string, Record<string, unknown>>();
   (existentes ?? []).forEach((r: Record<string, unknown>) => {
@@ -356,7 +357,7 @@ async function guardarEnDB(
   }
 
   let eliminados = 0;
-  if (matriculasVistas.size > 100) {
+  if (matriculasVistas.size > 1000) {
     const paraElim = (existentes ?? []).filter((r: Record<string, unknown>) => {
       const m = String(r.matricula ?? "").trim();
       return m && !matriculasVistas.has(m);
@@ -379,7 +380,8 @@ async function guardarEnDB(
 
   const { data: padronActual } = await sb
     .from("cocir_padron")
-    .select("matricula, estado, telefono, email");
+    .select("matricula, estado, telefono, email")
+    .limit(10000);
 
   const padronMap = new Map<string, { estado: string; telefono: string | null; email: string | null }>();
   for (const p of padronActual ?? []) {
@@ -393,6 +395,8 @@ async function guardarEnDB(
   }
 
   let validados = 0, suspendidos = 0, noEncontrados = 0, telefonosSincronizados = 0;
+
+  const updatesPerfiles: Array<{ id: string; upd: Record<string, unknown> }> = [];
   for (const perfil of perfilesGfi ?? []) {
     const mat = String(perfil.matricula ?? "").trim();
     if (!mat) continue;
@@ -407,7 +411,17 @@ async function guardarEnDB(
       const tel = normalizarTelefono(entrada.telefono);
       if (tel) { upd.telefono = tel; upd.whatsapp_negocio = tel; telefonosSincronizados++; }
     }
-    await sb.from("perfiles").update(upd).eq("id", perfil.id);
+    updatesPerfiles.push({ id: perfil.id, upd });
+  }
+
+  // Actualizar perfiles en paralelo (lotes de 20 para no saturar la conexión)
+  const LOTE_PERFILES = 20;
+  for (let i = 0; i < updatesPerfiles.length; i += LOTE_PERFILES) {
+    await Promise.all(
+      updatesPerfiles.slice(i, i + LOTE_PERFILES).map(({ id, upd }) =>
+        sb.from("perfiles").update(upd).eq("id", id)
+      )
+    );
   }
 
   return NextResponse.json({
