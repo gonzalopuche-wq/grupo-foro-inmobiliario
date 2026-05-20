@@ -50,7 +50,13 @@ function detectarCampo(texto: string): string | null {
 function detectarColumnas($: cheerio.CheerioAPI): string[] {
   const cols: string[] = [];
 
-  // 1. thead th/td
+  // 0. thead th directos (COCIR devuelve <thead><th>...</th></thead> sin <tr>)
+  $("table thead th").each((i, el) => {
+    cols[i] = detectarCampo($(el).text()) ?? `_col${i}`;
+  });
+  if (cols.length > 0) return cols;
+
+  // 1. thead th/td dentro de tr
   $("table thead tr").first().find("th, td").each((i, el) => {
     cols[i] = detectarCampo($(el).text()) ?? `_col${i}`;
   });
@@ -96,6 +102,13 @@ function parsearTabla(html: string, camposPorCol: string[]): Record<string, stri
     });
     if (!rec.matricula && !rec.apellido && !rec.nombre) return;
     if (!esNombreValido(rec.apellido) && !esNombreValido(rec.nombre)) return;
+    if (!rec.telefono) {
+      const telHref = $(el).find("a[href^='tel:']").first().attr("href");
+      if (telHref) {
+        const norm = normalizarTelefono(telHref.replace(/^tel:/, ""));
+        if (norm) rec.telefono = norm;
+      }
+    }
     registros.push(rec);
   });
 
@@ -495,9 +508,11 @@ export async function GET(req: NextRequest) {
       const matsAjax = new Set<string>();
 
       const procesarHtmlRows = (htmlRows: string) => {
-        // Los rows vienen sin <table> ni headers — usar FALLBACK_ORDEN posicional
+        // El PHP devuelve thead + tbody — detectar columnas desde los headers
         const htmlTabla = `<table>${htmlRows}</table>`;
-        for (const r of parsearTabla(htmlTabla, [])) {
+        const $temp = cheerio.load(htmlTabla);
+        const cols = detectarColumnas($temp);
+        for (const r of parsearTabla(htmlTabla, cols)) {
           const mat = String(r.matricula ?? "").trim();
           if (mat && matsAjax.has(mat)) continue;
           if (mat) matsAjax.add(mat);
