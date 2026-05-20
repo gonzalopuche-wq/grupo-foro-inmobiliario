@@ -13,13 +13,10 @@ const sb = createClient(
 const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
 const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
 
-// URL real de los datos — cargada vía AJAX desde la página de matriculados
-// (detectado via debug-cocir: el JS hace $.ajax({ url: "./webfiles/cocir/actualizar/matriculados.php" }))
-const AJAX_PHP_URLS = [
-  "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php",
-  "https://www.cocir.org.ar/webfiles/cocir/actualizar/matriculados.php",
-  "https://cocir.org.ar/paginas/webfiles/cocir/actualizar/matriculados.php",
-];
+// URL real de los datos — el JS hace POST a matriculados.php con buscar=LETRA
+// (sin parámetros devuelve solo la página de mapa Leaflet sin filas)
+const AJAX_PHP_BASE = "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php";
+const AJAX_PHP_BASE_WWW = "https://www.cocir.org.ar/webfiles/cocir/actualizar/matriculados.php";
 
 const BASE_URL_ALTERNATIVAS = [
   "https://cocir.org.ar/paginas/matriculados",
@@ -270,7 +267,27 @@ function normalizarTelefono(raw: string): string | null {
 
 async function fetchPagina(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, { headers: HEADERS });
+    const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(15000) });
+    if (!res.ok) return null;
+    return res.text();
+  } catch {
+    return null;
+  }
+}
+
+async function fetchBuscar(baseUrl: string, letra: string): Promise<string | null> {
+  const body = `buscar=${encodeURIComponent(letra)}`;
+  try {
+    const res = await fetch(baseUrl, {
+      method: "POST",
+      headers: {
+        ...HEADERS,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body,
+      signal: AbortSignal.timeout(15000),
+    });
     if (!res.ok) return null;
     return res.text();
   } catch {
@@ -455,51 +472,59 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    // ── 1. Endpoint AJAX real (detectado con debug-cocir) ──
-    // La página /paginas/matriculados tiene <base href="https://cocir.org.ar/"> y ejecuta:
-    //   $.ajax({ url: "./webfiles/cocir/actualizar/matriculados.php" })
-    // que con la base = / resuelve a /webfiles/cocir/actualizar/matriculados.php
-    for (const ajaxUrl of AJAX_PHP_URLS) {
-      const htmlAjax = await fetchPagina(ajaxUrl);
-      if (!htmlAjax || htmlAjax.length < 100) continue;
+    // ── 1. Endpoint AJAX real — iterar letras A-Z+0-9 via POST buscar=LETRA ──
+    // Sin parámetros, matriculados.php devuelve solo la página de mapa (sin datos).
+    // La función BuscarMatriculados del JS hace POST con buscar=VALOR para obtener filas.
+    {
+      const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+      const LOTE = 6;
+      const todosAjax: Record<string, string | null>[] = [];
+      const matsAjax = new Set<string>();
+      const baseUrl = AJAX_PHP_BASE;
 
-      // El PHP devuelve HTML que se inserta en #listado — puede ser <tr> sueltos o tabla completa
-      const htmlTabla = htmlAjax.includes("<table") ? htmlAjax : `<table>${htmlAjax}</table>`;
-      const $ajax = cheerio.load(htmlTabla);
-      const camposAjax = detectarColumnas($ajax);
-      const registrosAjax = parsearTabla(htmlTabla, camposAjax);
-
-      if (registrosAjax.length > 0) {
-        const matsVistas = new Set<string>(registrosAjax.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
-        return guardarEnDB(registrosAjax, matsVistas, `ajax-php (${ajaxUrl})`);
-      }
-
-      // Si el PHP devolvió HTML pero sin tabla reconocible, buscar en script tags
-      const scriptResult = extraerDatosDeScript(htmlAjax);
-      if (scriptResult && scriptResult.datos.length >= 2) {
-        const todos = scriptResult.datos
-          .map(f => normalizarFilaDT(f, scriptResult.columnas))
-          .filter(r => r.matricula || r.apellido || r.nombre);
-        if (todos.length > 0) {
-          const matsVistas = new Set<string>(todos.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
-          return guardarEnDB(todos, matsVistas, `ajax-php-script (${ajaxUrl})`);
+      for (let i = 0; i < letras.length; i += LOTE) {
+        const lote = letras.slice(i, i + LOTE);
+        const htmls = await Promise.all(lote.map(l => fetchBuscar(baseUrl, l)));
+        for (const html of htmls) {
+          if (!html || html.length < 200) continue;
+          const htmlTabla = html.includes("<table") ? html : `<table>${html}</table>`;
+          const $t = cheerio.load(htmlTabla);
+          const campos = detectarColumnas($t);
+          for (const r of parsearTabla(htmlTabla, campos)) {
+            const mat = String(r.matricula ?? "").trim();
+            if (mat && matsAjax.has(mat)) continue;
+            if (mat) matsAjax.add(mat);
+            todosAjax.push(r);
+          }
         }
       }
 
-      // Tenemos HTML pero sin registros reconocibles → devolver diagnóstico sin crashear
-      return NextResponse.json({
-        ok: false,
-        error: "El endpoint PHP respondió pero no se pudo parsear ningún registro",
-        debug: {
-          ajaxUrl,
-          htmlLen: htmlAjax.length,
-          htmlPreview: htmlAjax.slice(0, 2000),
-          tables: $ajax("table").length,
-          trs: $ajax("table tr").length,
-          tds: $ajax("table td").length,
-          camposMapeados: camposAjax,
-        },
-      });
+      if (todosAjax.length > 0) {
+        return guardarEnDB(todosAjax, matsAjax, `ajax-buscar-letra (${todosAjax.length})`);
+      }
+
+      // Si falló con la URL primaria, intentar con www
+      const todosAjaxWww: Record<string, string | null>[] = [];
+      const matsAjaxWww = new Set<string>();
+      for (let i = 0; i < letras.length; i += LOTE) {
+        const lote = letras.slice(i, i + LOTE);
+        const htmls = await Promise.all(lote.map(l => fetchBuscar(AJAX_PHP_BASE_WWW, l)));
+        for (const html of htmls) {
+          if (!html || html.length < 200) continue;
+          const htmlTabla = html.includes("<table") ? html : `<table>${html}</table>`;
+          const $t = cheerio.load(htmlTabla);
+          const campos = detectarColumnas($t);
+          for (const r of parsearTabla(htmlTabla, campos)) {
+            const mat = String(r.matricula ?? "").trim();
+            if (mat && matsAjaxWww.has(mat)) continue;
+            if (mat) matsAjaxWww.add(mat);
+            todosAjaxWww.push(r);
+          }
+        }
+      }
+      if (todosAjaxWww.length > 0) {
+        return guardarEnDB(todosAjaxWww, matsAjaxWww, `ajax-buscar-letra-www (${todosAjaxWww.length})`);
+      }
     }
 
     // ── 2. Fallback: obtener HTML de la página principal ──
