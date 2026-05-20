@@ -472,10 +472,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    // ── 1. Endpoint AJAX real — iterar letras A-Z+0-9 via POST buscar=LETRA ──
+    // ── 1. Endpoint AJAX real — POST buscar=LETRA ──
     // Sin parámetros, matriculados.php devuelve solo la página de mapa (sin datos).
     // La función BuscarMatriculados del JS hace POST con buscar=VALOR para obtener filas.
     {
+      // Intento 0: buscar vacío → podría devolver TODOS los registros en un solo request
+      const htmlVacio = await fetchBuscar(AJAX_PHP_BASE, "");
+      if (htmlVacio && htmlVacio.length > 500) {
+        const htmlT = htmlVacio.includes("<table") ? htmlVacio : `<table>${htmlVacio}</table>`;
+        const $v = cheerio.load(htmlT);
+        const camposV = detectarColumnas($v);
+        const regsV = parsearTabla(htmlT, camposV);
+        if (regsV.length > 10) {
+          const matsV = new Set<string>(regsV.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
+          return guardarEnDB(regsV, matsV, `ajax-buscar-vacio (${regsV.length})`);
+        }
+      }
+
       const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
       const LOTE = 6;
       const todosAjax: Record<string, string | null>[] = [];
