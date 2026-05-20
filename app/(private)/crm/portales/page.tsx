@@ -16,6 +16,8 @@ function PortalesInner() {
   const [mlExpiresAt, setMlExpiresAt] = useState<string | null>(null);
   const [googleConectado, setGoogleConectado] = useState(false);
   const [googleExpiresAt, setGoogleExpiresAt] = useState<string | null>(null);
+  const [propiaKey, setPropiaKey] = useState("");
+  const [propiaUsuario, setPropiaUsuario] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [msg, setMsg] = useState("");
   const [globalStatus, setGlobalStatus] = useState<any>(null);
@@ -39,7 +41,7 @@ function PortalesInner() {
 
       const { data: creds } = await supabase
         .from("portal_credenciales")
-        .select("tokko_key,kiteprop_key,ml_app_id,ml_app_secret,ml_access_token,ml_token_expires_at")
+        .select("tokko_key,kiteprop_key,ml_app_id,ml_app_secret,ml_access_token,ml_token_expires_at,propia_api_key,propia_usuario")
         .eq("perfil_id", data.user.id)
         .maybeSingle();
       if (creds) {
@@ -51,6 +53,8 @@ function PortalesInner() {
         setMlExpiresAt(creds.ml_token_expires_at ?? null);
         setGoogleConectado(!!(creds as any).google_access_token);
         setGoogleExpiresAt((creds as any).google_token_expires_at ?? null);
+        setPropiaKey((creds as any).propia_api_key ?? "");
+        setPropiaUsuario((creds as any).propia_usuario ?? "");
       }
 
       const res = await fetch("/api/cartera/sync");
@@ -71,6 +75,8 @@ function PortalesInner() {
         kiteprop_key: kitepropKey || null,
         ml_app_id: mlAppId || null,
         ml_app_secret: mlAppSecret || null,
+        propia_api_key: propiaKey || null,
+        propia_usuario: propiaUsuario || null,
         updated_at: new Date().toISOString(),
       }, { onConflict: "perfil_id" });
     setGuardando(false);
@@ -183,6 +189,51 @@ function PortalesInner() {
               Encontrala en tu panel de KiteProp → Configuración → Integraciones
             </div>
           </div>
+        </div>
+
+        {/* Propia MLS */}
+        <div className="port-card">
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+            <div className="port-card-title">🏛️ Propia MLS</div>
+            <span className={`port-status ${propiaKey ? "port-status-ok" : "port-status-pending"}`}>
+              {propiaKey ? "Configurado" : "Sin configurar"}
+            </span>
+          </div>
+          <div className="port-card-sub">
+            Red MLS del colegio de corredores inmobiliarios. Con la API key podés buscar en toda la red, ver tus publicaciones e importar propiedades a tu cartera.
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:12 }}>
+            <div>
+              <div className="port-label">API Key</div>
+              <input
+                className="port-input"
+                type="password"
+                placeholder="Tu API key de Propia MLS"
+                value={propiaKey}
+                onChange={e => setPropiaKey(e.target.value)}
+              />
+              <div className="port-hint">El colegio te la facilita al darte acceso a la API</div>
+            </div>
+            <div>
+              <div className="port-label">Usuario / Matrícula</div>
+              <input
+                className="port-input"
+                type="text"
+                placeholder="Tu usuario en Propia"
+                value={propiaUsuario}
+                onChange={e => setPropiaUsuario(e.target.value)}
+              />
+              <div className="port-hint">Opcional — para filtrar tus propias publicaciones</div>
+            </div>
+          </div>
+          {propiaKey && (
+            <Link
+              href="/crm/propia"
+              style={{ display:"inline-block", padding:"8px 16px", background:"rgba(200,0,0,0.1)", border:"1px solid rgba(200,0,0,0.2)", borderRadius:6, color:"#cc0000", fontFamily:"Montserrat,sans-serif", fontSize:11, fontWeight:800, letterSpacing:"0.04em", textDecoration:"none" }}
+            >
+              Abrir Propia MLS →
+            </Link>
+          )}
         </div>
 
         {/* MercadoLibre OAuth */}
