@@ -12,11 +12,18 @@ const sb = createClient(
 
 const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
 const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
+
+// URL real de los datos — cargada vía AJAX desde la página de matriculados
+// (detectado via debug-cocir: el JS hace $.ajax({ url: "./webfiles/cocir/actualizar/matriculados.php" }))
+const AJAX_PHP_URLS = [
+  "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php",
+  "https://www.cocir.org.ar/webfiles/cocir/actualizar/matriculados.php",
+  "https://cocir.org.ar/paginas/webfiles/cocir/actualizar/matriculados.php",
+];
+
 const BASE_URL_ALTERNATIVAS = [
   "https://cocir.org.ar/paginas/matriculados",
   "https://www.cocir.org.ar/paginas/matriculados",
-  "https://cocir.org.ar/matriculados",
-  "https://www.cocir.org.ar/matriculados",
 ];
 const MAX_PAGINAS = 200;
 const BATCH_PARALELO = 5;
@@ -442,14 +449,61 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    // ── 1. Obtener HTML de la primera página ──
+    // ── 1. Endpoint AJAX real (detectado con debug-cocir) ──
+    // La página /paginas/matriculados tiene <base href="https://cocir.org.ar/"> y ejecuta:
+    //   $.ajax({ url: "./webfiles/cocir/actualizar/matriculados.php" })
+    // que con la base = / resuelve a /webfiles/cocir/actualizar/matriculados.php
+    for (const ajaxUrl of AJAX_PHP_URLS) {
+      const htmlAjax = await fetchPagina(ajaxUrl);
+      if (!htmlAjax || htmlAjax.length < 100) continue;
+
+      // El PHP devuelve HTML que se inserta en #listado — puede ser <tr> sueltos o tabla completa
+      const htmlTabla = htmlAjax.includes("<table") ? htmlAjax : `<table>${htmlAjax}</table>`;
+      const $ajax = cheerio.load(htmlTabla);
+      const camposAjax = detectarColumnas($ajax);
+      const registrosAjax = parsearTabla(htmlTabla, camposAjax);
+
+      if (registrosAjax.length > 0) {
+        const matsVistas = new Set<string>(registrosAjax.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
+        return guardarEnDB(registrosAjax, matsVistas, `ajax-php (${ajaxUrl})`);
+      }
+
+      // Si el PHP devolvió HTML pero sin tabla reconocible, buscar en script tags
+      const scriptResult = extraerDatosDeScript(htmlAjax);
+      if (scriptResult && scriptResult.datos.length >= 2) {
+        const todos = scriptResult.datos
+          .map(f => normalizarFilaDT(f, scriptResult.columnas))
+          .filter(r => r.matricula || r.apellido || r.nombre);
+        if (todos.length > 0) {
+          const matsVistas = new Set<string>(todos.map(r => String(r.matricula ?? "").trim()).filter(Boolean));
+          return guardarEnDB(todos, matsVistas, `ajax-php-script (${ajaxUrl})`);
+        }
+      }
+
+      // Tenemos HTML pero sin registros reconocibles → devolver diagnóstico sin crashear
+      return NextResponse.json({
+        ok: false,
+        error: "El endpoint PHP respondió pero no se pudo parsear ningún registro",
+        debug: {
+          ajaxUrl,
+          htmlLen: htmlAjax.length,
+          htmlPreview: htmlAjax.slice(0, 2000),
+          tables: $ajax("table").length,
+          trs: $ajax("table tr").length,
+          tds: $ajax("table td").length,
+          camposMapeados: camposAjax,
+        },
+      });
+    }
+
+    // ── 2. Fallback: obtener HTML de la página principal ──
     let html1: string | null = null;
     let urlActiva = BASE_URL_ALTERNATIVAS[0];
     for (const url of BASE_URL_ALTERNATIVAS) {
       html1 = await fetchPagina(url);
       if (html1 && html1.length > 500) { urlActiva = url; break; }
     }
-    if (!html1) return NextResponse.json({ ok: false, error: "No se pudo acceder a cocir.org.ar" });
+    if (!html1) return NextResponse.json({ ok: false, error: "No se pudo acceder a cocir.org.ar ni al endpoint PHP" });
 
     const htmlLow = html1.toLowerCase();
     if (htmlLow.includes("checking your browser") || htmlLow.includes("cloudflare") || htmlLow.includes("just a moment") || htmlLow.includes("captcha")) {
@@ -463,7 +517,7 @@ export async function GET(req: NextRequest) {
     const $1 = cheerio.load(html1);
     const camposPorCol = detectarColumnas($1);
 
-    // ── 2. Intentar parsear tabla HTML ──
+    // ── 3. Intentar parsear tabla HTML de la página principal ──
     const registrosPag1 = parsearTabla(html1, camposPorCol);
 
     if (registrosPag1.length > 0) {
@@ -545,7 +599,7 @@ export async function GET(req: NextRequest) {
       return guardarEnDB(todosRegistros, matriculasVistas, "html-table");
     }
 
-    // ── 3. Intentar datos embebidos en <script> (DataTables inline) ──
+    // ── 4. Intentar datos embebidos en <script> (DataTables inline) ──
     const scriptResult = extraerDatosDeScript(html1);
     if (scriptResult && scriptResult.datos.length >= 2) {
       const { datos, columnas } = scriptResult;
@@ -559,7 +613,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // ── 4. Intentar DataTables AJAX ──
+    // ── 5. Intentar DataTables AJAX ──
     const dtPage0 = await fetchDataTablesAjax(urlActiva, 0, 100);
     if (dtPage0 && dtPage0.length > 0) {
       const dtTodos = [...parsearFilasDT(dtPage0)];
@@ -584,7 +638,7 @@ export async function GET(req: NextRequest) {
       return guardarEnDB(dtTodos, dtVistas, "datatables-ajax");
     }
 
-    // ── 5. Sin datos: devolver diagnóstico detallado ──
+    // ── 6. Sin datos: devolver diagnóstico detallado ──
     const filasTd = $1("table tr").filter((_, el) => $1(el).find("td").length >= 2).length;
     const primeraFila: string[] = [];
     $1("table tr").first().find("td,th").each((_, el) => { primeraFila.push($1(el).text().trim()); });
