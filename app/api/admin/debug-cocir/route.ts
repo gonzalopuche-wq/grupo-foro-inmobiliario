@@ -20,7 +20,7 @@ const HEADERS_AJAX = {
   ...HEADERS_HTML,
   "Content-Type": "application/x-www-form-urlencoded",
   "X-Requested-With": "XMLHttpRequest",
-  "Accept": "text/html,application/xhtml+xml,*/*;q=0.9",
+  "Accept": "application/json, text/javascript, */*; q=0.01",
 };
 
 async function authorizado(req: NextRequest): Promise<boolean> {
@@ -109,11 +109,45 @@ export async function GET(req: NextRequest) {
   const htmlMedio = html.slice(30000, 45000);
 
   // ── 5. PHP directo — respuesta COMPLETA (no truncada) ──
+  // Sin header AJAX (control): devuelve HTML página
+  // Con header AJAX + parámetros correctos {texto, filtro}: debe devolver JSON {success, html}
   const phpBase = "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php";
   const [phpGet, phpPostVacio, phpPostA] = await Promise.all([
     probeUrl(phpBase, "GET"),
-    probeUrl(phpBase, "POST", "buscar="),
-    probeUrl(phpBase, "POST", "buscar=A"),
+    probeUrl(phpBase, "POST", "texto=&filtro=todos"),       // sin AJAX header → debe devolver HTML (control)
+    probeUrl(phpBase, "POST", "texto=A&filtro=todos"),      // sin AJAX header → debe devolver HTML (control)
+  ]);
+
+  // Con header AJAX correcto (igual que sync-cocir)
+  async function probeAjax(body: string): Promise<Record<string, unknown>> {
+    try {
+      const res = await fetch(phpBase, {
+        method: "POST",
+        headers: HEADERS_AJAX,
+        body,
+        signal: AbortSignal.timeout(12000),
+      });
+      const text = await res.text();
+      let parsed: unknown = null;
+      try { parsed = JSON.parse(text); } catch { /* no es JSON */ }
+      return {
+        url: phpBase, method: "POST+AJAX", body, status: res.status,
+        contentType: res.headers.get("content-type"),
+        len: text.length,
+        esJSON: parsed !== null,
+        success: parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>).success : null,
+        htmlRowsLen: parsed && typeof parsed === "object" ? String((parsed as Record<string, unknown>).html ?? "").length : null,
+        rawStart: text.slice(0, 500),
+      };
+    } catch (e: unknown) {
+      return { url: phpBase, method: "POST+AJAX", body, error: String(e) };
+    }
+  }
+
+  const [ajaxTextoA, ajaxTextoVacio, ajaxInhab] = await Promise.all([
+    probeAjax("texto=A&filtro=todos"),
+    probeAjax("texto=&filtro=todos"),
+    probeAjax("texto=&filtro=inhabilitados"),
   ]);
 
   // ── 6. Probar URLs alternativas del CMS COCIR ──
@@ -135,9 +169,14 @@ export async function GET(req: NextRequest) {
     scriptsSospechosos: scriptsSospechosos.map(s => ({ ...s, preview: s.preview })),
     htmlListado,
     htmlMedio,
-    phpGet: { ...phpGet, fullBody: String(phpGet.fullBody ?? "") },
-    phpPostVacio: { ...phpPostVacio, fullBody: String(phpPostVacio.fullBody ?? "") },
-    phpPostA: { ...phpPostA, fullBody: String(phpPostA.fullBody ?? "") },
+    // Tests SIN header AJAX (control — deben devolver HTML de 3974 bytes)
+    phpGet: { ...phpGet, fullBody: String(phpGet.fullBody ?? "").slice(0, 500) },
+    phpPostSinAjaxVacio: { ...phpPostVacio, fullBody: String(phpPostVacio.fullBody ?? "").slice(0, 300) },
+    phpPostSinAjaxA: { ...phpPostA, fullBody: String(phpPostA.fullBody ?? "").slice(0, 300) },
+    // Tests CON header AJAX correcto (igual que sync-cocir usa)
+    ajaxTextoA,
+    ajaxTextoVacio,
+    ajaxInhab,
     urlsAlternativas: altResults,
   });
 }
