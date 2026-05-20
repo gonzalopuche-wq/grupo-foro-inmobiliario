@@ -42,7 +42,7 @@ const CRM_GRUPOS: { titulo: string; items: [string, string, string][] }[] = [
       ["/crm/analisis-captacion","🎣","Análisis Captación"],
       ["/crm/carga-masiva",     "📥", "Carga Masiva"],
       ["/crm/duplicados",       "🔍", "Duplicados"],
-      ["/emprendimientos",      "🏗️", "Emprendimientos"],
+      ["/crm/emprendimientos",  "🏗️", "Emprendimientos"],
     ],
   },
   {
