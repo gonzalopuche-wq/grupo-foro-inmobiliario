@@ -159,9 +159,34 @@ export async function GET(req: NextRequest) {
   const bodyStart = html.indexOf("<body");
   const htmlBody = bodyStart !== -1 ? html.slice(bodyStart, bodyStart + 6000) : html.slice(1500, 7500);
 
+  // Probar el PHP AJAX endpoint directamente (es la fuente real de datos)
+  const AJAX_PHP_URLS = [
+    "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php",
+    "https://www.cocir.org.ar/webfiles/cocir/actualizar/matriculados.php",
+  ];
+  const phpResults: Array<{ url: string; status?: number; len?: number; tables?: number; trs?: number; preview?: string; error?: string }> = [];
+  for (const ajaxUrl of AJAX_PHP_URLS) {
+    try {
+      const res = await fetch(ajaxUrl, { headers: HEADERS_HTML, signal: AbortSignal.timeout(15000) });
+      const body = await res.text();
+      const $p = cheerio.load(body.includes("<table") ? body : `<table>${body}</table>`);
+      phpResults.push({
+        url: ajaxUrl,
+        status: res.status,
+        len: body.length,
+        tables: $p("table").length,
+        trs: $p("table tr").length,
+        preview: body.slice(0, 1000),
+      });
+    } catch (e: unknown) {
+      phpResults.push({ url: ajaxUrl, error: String(e) });
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     fetchInfo,
+    phpAjax: phpResults,
     cheerio: {
       totalTablas: $("table").length,
       totalTrs: $("table tr").length,

@@ -99,6 +99,7 @@ function parsearTabla(html: string, camposPorCol: string[]): Record<string, stri
       if (campo && !campo.startsWith("_")) rec[campo] = val;
     });
     if (!rec.matricula && !rec.apellido && !rec.nombre) return;
+    if (!esNombreValido(rec.apellido) && !esNombreValido(rec.nombre)) return;
     registros.push(rec);
   });
 
@@ -224,7 +225,7 @@ function parsearFilasDT(filas: unknown[]): Record<string, string | null>[] {
       if (campo) r[campo] = v ? String(v) : null;
     }
     return r;
-  }).filter(r => r.matricula || r.apellido || r.nombre);
+  }).filter(r => (r.matricula || r.apellido || r.nombre) && (esNombreValido(r.apellido) || esNombreValido(r.nombre)));
 }
 
 function detectarUltimaPagina($: cheerio.CheerioAPI): number {
@@ -249,6 +250,10 @@ function detectarUltimaPagina($: cheerio.CheerioAPI): number {
 
 function urlPagina(n: number, patron: string): string {
   return patron.replace("{n}", String(n));
+}
+
+function esNombreValido(s: string | null | undefined): boolean {
+  return /[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]/.test(s ?? "");
 }
 
 function normalizarTelefono(raw: string): string | null {
@@ -336,6 +341,7 @@ async function guardarEnDB(
   let sinCambios = 0;
 
   for (const reg of todos) {
+    if (!esNombreValido(reg.apellido) && !esNombreValido(reg.nombre)) continue;
     const mat = String(reg.matricula ?? "").trim();
     const existente = mat ? mapa.get(mat) : undefined;
     if (existente) {
