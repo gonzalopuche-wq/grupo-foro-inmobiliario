@@ -164,22 +164,49 @@ export async function GET(req: NextRequest) {
     "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php",
     "https://www.cocir.org.ar/webfiles/cocir/actualizar/matriculados.php",
   ];
-  const phpResults: Array<{ url: string; status?: number; len?: number; tables?: number; trs?: number; preview?: string; error?: string }> = [];
-  for (const ajaxUrl of AJAX_PHP_URLS) {
+  const HEADERS_AJAX = {
+    ...HEADERS_HTML,
+    "Content-Type": "application/x-www-form-urlencoded",
+    "X-Requested-With": "XMLHttpRequest",
+    "Accept": "text/html,application/xhtml+xml,*/*;q=0.9",
+  };
+
+  type PhpResult = { url: string; method: string; buscar?: string; status?: number; len?: number; tables?: number; trs?: number; tds?: number; preview?: string; error?: string };
+  const phpResults: PhpResult[] = [];
+
+  // GET sin params (igual que antes)
+  for (const ajaxUrl of AJAX_PHP_URLS.slice(0, 1)) {
     try {
       const res = await fetch(ajaxUrl, { headers: HEADERS_HTML, signal: AbortSignal.timeout(15000) });
       const body = await res.text();
       const $p = cheerio.load(body.includes("<table") ? body : `<table>${body}</table>`);
-      phpResults.push({
-        url: ajaxUrl,
-        status: res.status,
-        len: body.length,
-        tables: $p("table").length,
-        trs: $p("table tr").length,
-        preview: body.slice(0, 1000),
-      });
+      phpResults.push({ url: ajaxUrl, method: "GET", status: res.status, len: body.length, tables: $p("table").length, trs: $p("table tr").length, tds: $p("table td").length, preview: body.slice(0, 800) });
     } catch (e: unknown) {
-      phpResults.push({ url: ajaxUrl, error: String(e) });
+      phpResults.push({ url: ajaxUrl, method: "GET", error: String(e) });
+    }
+  }
+
+  // POST buscar= (vacío) — podría devolver todos los registros
+  for (const ajaxUrl of AJAX_PHP_URLS.slice(0, 1)) {
+    try {
+      const res = await fetch(ajaxUrl, { method: "POST", headers: HEADERS_AJAX, body: "buscar=", signal: AbortSignal.timeout(15000) });
+      const body = await res.text();
+      const $p = cheerio.load(body.includes("<table") ? body : `<table>${body}</table>`);
+      phpResults.push({ url: ajaxUrl, method: "POST", buscar: "(vacío)", status: res.status, len: body.length, tables: $p("table").length, trs: $p("table tr").length, tds: $p("table td").length, preview: body.slice(0, 800) });
+    } catch (e: unknown) {
+      phpResults.push({ url: ajaxUrl, method: "POST", buscar: "(vacío)", error: String(e) });
+    }
+  }
+
+  // POST buscar=A — debería devolver filas con apellido A
+  for (const ajaxUrl of AJAX_PHP_URLS.slice(0, 1)) {
+    try {
+      const res = await fetch(ajaxUrl, { method: "POST", headers: HEADERS_AJAX, body: "buscar=A", signal: AbortSignal.timeout(15000) });
+      const body = await res.text();
+      const $p = cheerio.load(body.includes("<table") ? body : `<table>${body}</table>`);
+      phpResults.push({ url: ajaxUrl, method: "POST", buscar: "A", status: res.status, len: body.length, tables: $p("table").length, trs: $p("table tr").length, tds: $p("table td").length, preview: body.slice(0, 800) });
+    } catch (e: unknown) {
+      phpResults.push({ url: ajaxUrl, method: "POST", buscar: "A", error: String(e) });
     }
   }
 
