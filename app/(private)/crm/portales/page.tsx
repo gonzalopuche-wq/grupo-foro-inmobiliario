@@ -31,6 +31,7 @@ function PortalesInner() {
   const [msg, setMsg] = useState("");
   const [globalStatus, setGlobalStatus] = useState<{ tokko: { configurado: boolean }; kiteprop: { configurado: boolean } } | null>(null);
   const [syncKP, setSyncKP] = useState<SyncState>(syncInicio);
+  const [syncTK, setSyncTK] = useState<SyncState>(syncInicio);
   const [syncAll, setSyncAll] = useState<SyncState>(syncInicio);
 
   useEffect(() => {
@@ -70,14 +71,19 @@ function PortalesInner() {
         setPropiaUsuario((creds as Record<string, string>).propia_usuario ?? "");
       }
 
-      // Estado de sync de KiteProp
+      // Estado de sync de portales
       if (sessionData.session?.access_token) {
-        const kpRes = await fetch("/api/crm/kiteprop/sync-leads", {
-          headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
-        });
+        const [kpRes, tkRes] = await Promise.all([
+          fetch("/api/crm/kiteprop/sync-leads", { headers: { Authorization: `Bearer ${sessionData.session.access_token}` } }),
+          fetch("/api/crm/tokko/sync-leads", { headers: { Authorization: `Bearer ${sessionData.session.access_token}` } }),
+        ]);
         if (kpRes.ok) {
           const kpData = await kpRes.json();
           setSyncKP(prev => ({ ...prev, ultimaSync: kpData.ultima_sincronizacion ?? null }));
+        }
+        if (tkRes.ok) {
+          const tkData = await tkRes.json();
+          setSyncTK(prev => ({ ...prev, ultimaSync: tkData.ultima_sincronizacion ?? null }));
         }
       }
 
@@ -139,10 +145,33 @@ function PortalesInner() {
     }
   };
 
+  const sincronizarTK = async () => {
+    if (!token) return;
+    setSyncTK({ cargando: true, resultado: "", ultimaSync: syncTK.ultimaSync });
+    try {
+      const res = await fetch("/api/crm/tokko/sync-leads", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      if (!res.ok || json.error) {
+        setSyncTK({ cargando: false, resultado: `Error: ${json.error}`, ultimaSync: syncTK.ultimaSync });
+        return;
+      }
+      const ahora = new Date().toISOString();
+      const msg = json.total === 0
+        ? "Sin contactos en Tokko"
+        : `${json.importados} nuevos · ${json.actualizados} actualizados${json.errores ? ` · ${json.errores} errores` : ""}`;
+      setSyncTK({ cargando: false, resultado: msg, ultimaSync: ahora });
+    } catch {
+      setSyncTK(prev => ({ ...prev, cargando: false, resultado: "Error de red" }));
+    }
+  };
+
   const sincronizarTodo = async () => {
     if (!token) return;
     setSyncAll({ cargando: true, resultado: "", ultimaSync: null });
-    await sincronizarKP();
+    await Promise.all([sincronizarKP(), sincronizarTK()]);
     setSyncAll({ cargando: false, resultado: "Sincronización completa", ultimaSync: new Date().toISOString() });
   };
 
@@ -230,10 +259,19 @@ function PortalesInner() {
             <div className="port-hint">Encontrala en Tokko Broker → Configuración → Acceso a APIs</div>
           </div>
           <div className="port-sync-bar">
-            <button className="port-sync-btn" disabled title="Próximamente">
-              ↻ Sincronizar interesados TK
+            <button
+              className="port-sync-btn"
+              onClick={sincronizarTK}
+              disabled={syncTK.cargando || (!tokkoKey && !!globalStatus && !globalStatus.tokko.configurado)}
+            >
+              {syncTK.cargando ? "Sincronizando..." : "↻ Sincronizar contactos TK"}
             </button>
-            <span className="port-sync-info">Próximamente</span>
+            {syncTK.resultado
+              ? <span className={syncTK.resultado.startsWith("Error") ? "port-sync-err" : "port-sync-ok"}>
+                  {syncTK.resultado}
+                </span>
+              : <span className="port-sync-info">{fmtSync(syncTK.ultimaSync)}</span>
+            }
           </div>
         </div>
 
@@ -368,10 +406,12 @@ function PortalesInner() {
             )}
           </div>
           <div className="port-sync-bar">
-            <button className="port-sync-btn" disabled title="Próximamente">
-              ↻ Sincronizar preguntas ML
-            </button>
-            <span className="port-sync-info">Próximamente</span>
+            {mlConectado
+              ? <Link href="/crm/mercadolibre" style={{ padding:"7px 16px", background:"rgba(96,165,250,0.1)", border:"1px solid rgba(96,165,250,0.2)", borderRadius:6, color:"#60a5fa", fontFamily:"Montserrat,sans-serif", fontSize:10, fontWeight:800, letterSpacing:"0.06em", textDecoration:"none", whiteSpace:"nowrap" }}>
+                  → Gestionar publicaciones ML
+                </Link>
+              : <span className="port-sync-info">Conectá ML para gestionar publicaciones</span>
+            }
           </div>
         </div>
 

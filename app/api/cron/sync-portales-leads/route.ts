@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { sincronizarParaUsuario } from "../../crm/kiteprop/sync-leads/route";
+import { sincronizarParaUsuario as syncKP } from "../../crm/kiteprop/sync-leads/route";
+import { sincronizarParaUsuario as syncTK } from "../../crm/tokko/sync-leads/route";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -10,38 +11,43 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Cron diario: sincroniza leads de KiteProp para todos los usuarios configurados
-// Llamar con Authorization: Bearer {CRON_SECRET}
+// Cron diario: sincroniza leads/contactos de KiteProp y Tokko para todos los usuarios configurados
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Todos los usuarios con KiteProp configurado
-  const { data: configs } = await sb
-    .from("crm_integraciones_config")
-    .select("perfil_id")
-    .eq("tipo", "kiteprop");
+  // Usuarios con KiteProp configurado
+  const [kpConfigs, kpCreds, tkConfigs, tkCreds] = await Promise.all([
+    sb.from("crm_integraciones_config").select("perfil_id").eq("tipo", "kiteprop"),
+    sb.from("portal_credenciales").select("perfil_id").not("kiteprop_key", "is", null),
+    sb.from("crm_integraciones_config").select("perfil_id").eq("tipo", "tokko"),
+    sb.from("portal_credenciales").select("perfil_id").not("tokko_key", "is", null).neq("tokko_key", ""),
+  ]);
 
-  // También usuarios con kiteprop_key en portal_credenciales (sin crm_integraciones_config)
-  const { data: creds } = await sb
-    .from("portal_credenciales")
-    .select("perfil_id")
-    .not("kiteprop_key", "is", null);
+  const kpIds = new Set([
+    ...(kpConfigs.data ?? []).map((r: { perfil_id: string }) => r.perfil_id),
+    ...(kpCreds.data ?? []).map((r: { perfil_id: string }) => r.perfil_id),
+  ]);
+  const tkIds = new Set([
+    ...(tkConfigs.data ?? []).map((r: { perfil_id: string }) => r.perfil_id),
+    ...(tkCreds.data ?? []).map((r: { perfil_id: string }) => r.perfil_id),
+  ]);
 
-  const configIds = new Set((configs ?? []).map((r: { perfil_id: string }) => r.perfil_id));
-  const credIds = (creds ?? []).map((r: { perfil_id: string }) => r.perfil_id).filter(id => !configIds.has(id));
-  const allIds = [...configIds, ...credIds];
+  const resumen: Array<{ userId: string; portal: string; ok: boolean; resultado?: object; error?: string }> = [];
 
-  const resumen: Array<{ userId: string; ok: boolean; resultado?: object; error?: string }> = [];
+  const tareas: Array<{ userId: string; portal: string; fn: () => Promise<object> }> = [
+    ...[...kpIds].map(id => ({ userId: id, portal: "kiteprop", fn: () => syncKP(id) })),
+    ...[...tkIds].map(id => ({ userId: id, portal: "tokko", fn: () => syncTK(id) })),
+  ];
 
-  for (const userId of allIds) {
+  for (const tarea of tareas) {
     try {
-      const resultado = await sincronizarParaUsuario(userId);
-      resumen.push({ userId, ok: true, resultado });
+      const resultado = await tarea.fn();
+      resumen.push({ userId: tarea.userId, portal: tarea.portal, ok: true, resultado });
     } catch (e: unknown) {
-      resumen.push({ userId, ok: false, error: e instanceof Error ? e.message : "Error" });
+      resumen.push({ userId: tarea.userId, portal: tarea.portal, ok: false, error: e instanceof Error ? e.message : "Error" });
     }
   }
 
