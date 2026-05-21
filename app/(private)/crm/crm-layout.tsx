@@ -37,6 +37,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         borderRight: "1px solid rgba(255,255,255,0.06)",
         display: "flex", flexDirection: "column",
         padding: "16px 0",
+        overflowY: "auto",
       }}>
         <div style={{
           padding: "0 16px 14px",
