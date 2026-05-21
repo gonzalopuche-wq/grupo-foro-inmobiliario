@@ -282,8 +282,9 @@ export default function PadronGFIPage() {
         .pad-contact-btn { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; transition: opacity 0.15s; }
         .pad-contact-btn:hover { opacity: 0.8; }
         @media (max-width: 700px) {
+          .pad-tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .pad-tabla { min-width: 700px; }
           .pad-tabla th:nth-child(4), .pad-tabla td:nth-child(4) { display: none; }
-          .pad-tabla th:nth-child(5), .pad-tabla td:nth-child(5) { display: none; }
         }
       `}</style>
 
