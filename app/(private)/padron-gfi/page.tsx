@@ -473,26 +473,24 @@ export default function PadronGFIPage() {
                             <div className="pad-nombre">{[r.apellido, r.nombre].filter(Boolean).join(", ") || "—"}</div>
                             {r.zona_trabajo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>📍 {r.zona_trabajo}</div>}
                             {(r.telefono || r.email) && (
-                              <div style={{display:"flex",gap:5,marginTop:5,flexWrap:"wrap"}}>
+                              <div style={{display:"flex",flexDirection:"column",gap:3,marginTop:5}}>
                                 {r.telefono && (
                                   <a
                                     href={`https://wa.me/${r.telefono.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`}
                                     target="_blank" rel="noopener noreferrer"
                                     onClick={e => e.stopPropagation()}
-                                    className="pad-contact-btn"
-                                    style={{background:"rgba(37,211,102,0.12)",border:"1px solid rgba(37,211,102,0.3)",color:"#25d366"}}
+                                    style={{color:"#25d366",textDecoration:"none",fontSize:11,fontFamily:"Inter,sans-serif"}}
                                   >
-                                    💬 WhatsApp
+                                    {r.telefono}
                                   </a>
                                 )}
                                 {r.email && (
                                   <a
                                     href={`mailto:${r.email}`}
                                     onClick={e => e.stopPropagation()}
-                                    className="pad-contact-btn"
-                                    style={{background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.3)",color:"#f87171"}}
+                                    style={{color:"#f87171",textDecoration:"none",fontSize:11,fontFamily:"Inter,sans-serif",wordBreak:"break-all"}}
                                   >
-                                    ✉ Mail
+                                    {r.email}
                                   </a>
                                 )}
                               </div>
