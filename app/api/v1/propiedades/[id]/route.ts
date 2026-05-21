@@ -36,10 +36,10 @@ async function logear(params: {
   ]);
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const t0 = Date.now();
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const propId = params.id;
+  const { id: propId } = await params;
 
   const auth = await autenticar(req);
   if ("error" in auth) return NextResponse.json({ error: auth.error }, { status: auth.status });
@@ -91,10 +91,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(resBody);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const t0 = Date.now();
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const propId = params.id;
+  const { id: propId } = await params;
 
   const auth = await autenticar(req);
   if ("error" in auth) return NextResponse.json({ error: auth.error }, { status: auth.status });
