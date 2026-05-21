@@ -161,7 +161,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await sb
     .from("cartera_propiedades")
-    .select("id, external_id, titulo, tipo, operacion, direccion, precio, moneda, estado, origen, kiteprop_id, kiteprop_sync_at, updated_at")
+    .select("id, external_id, titulo, tipo, operacion, direccion, precio, moneda, ambientes, dormitorios, banos, superficie_total, superficie_cubierta, estado, origen, kiteprop_id, kiteprop_sync_at, updated_at")
     .eq("perfil_id", perfilId)
     .order("updated_at", { ascending: false })
     .limit(limite);
