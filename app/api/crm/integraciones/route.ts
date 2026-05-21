@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
         descripcion:         p.descripcion || null,
         estado:              "activa",
         codigo:              p.codigo || null,
-        url_portal_origen:   fuente === "tokko" ? `tokko:${p.codigo || ""}` : null,
+        url_portal_origen:   fuente === "tokko" ? `tokko:${p.codigo || ""}` : fuente === "kiteprop" ? `kiteprop:${p.codigo || ""}` : null,
       });
       if (error) err++; else ok++;
     }
