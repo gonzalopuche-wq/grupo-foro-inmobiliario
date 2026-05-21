@@ -16,15 +16,14 @@ export async function GET(req: NextRequest) {
 
   const action = req.nextUrl.searchParams.get("action") ?? "propiedades";
 
-  const { data: configRow } = await sb
-    .from("crm_integraciones_config")
-    .select("config")
-    .eq("perfil_id", user.id)
-    .eq("tipo", "kiteprop")
-    .single();
+  // Leer key desde portal_credenciales (Portales) o crm_integraciones_config (Integraciones)
+  const [{ data: credsRow }, { data: configRow }] = await Promise.all([
+    sb.from("portal_credenciales").select("kiteprop_key").eq("perfil_id", user.id).maybeSingle(),
+    sb.from("crm_integraciones_config").select("config").eq("perfil_id", user.id).eq("tipo", "kiteprop").maybeSingle(),
+  ]);
 
   const config = configRow?.config as Record<string, string> | null;
-  const apiKey = config?.api_key;
+  const apiKey = (credsRow as Record<string, string> | null)?.kiteprop_key ?? config?.api_key;
   if (!apiKey) return NextResponse.json({ error: "No hay API key configurada para Kiteprop" }, { status: 400 });
 
   // Kiteprop base URL — configurable para instancias custom
@@ -34,15 +33,15 @@ export async function GET(req: NextRequest) {
   try {
     let url = "";
     if (action === "propiedades") {
-      url = `${baseUrl}/properties/?api_key=${apiKey}&limit=100&format=json`;
+      url = `${baseUrl}/properties/?limit=100&format=json`;
     } else if (action === "contactos") {
-      url = `${baseUrl}/contacts/?api_key=${apiKey}&limit=100&format=json`;
+      url = `${baseUrl}/contacts/?limit=100&format=json`;
     } else {
       return NextResponse.json({ error: "Acción inválida" }, { status: 400 });
     }
 
     const res = await fetch(url, {
-      headers: { Accept: "application/json", "X-Api-Key": apiKey },
+      headers: { Accept: "application/json", "X-API-Key": apiKey },
     });
 
     if (!res.ok) {
