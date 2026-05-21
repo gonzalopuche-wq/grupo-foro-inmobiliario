@@ -88,6 +88,7 @@ export async function POST(req: NextRequest) {
 
   const payload: Record<string, unknown> = {
     perfil_id: perfilId,
+    titulo:              body.titulo ?? body.direccion ?? null,
     tipo:                body.tipo,
     operacion:           body.operacion,
     direccion:           body.direccion,
@@ -160,7 +161,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await sb
     .from("cartera_propiedades")
-    .select("id, external_id, tipo, operacion, direccion, precio, moneda, estado, origen, kiteprop_id, kiteprop_sync_at, updated_at")
+    .select("id, external_id, titulo, tipo, operacion, direccion, precio, moneda, estado, origen, kiteprop_id, kiteprop_sync_at, updated_at")
     .eq("perfil_id", perfilId)
     .order("updated_at", { ascending: false })
     .limit(limite);
