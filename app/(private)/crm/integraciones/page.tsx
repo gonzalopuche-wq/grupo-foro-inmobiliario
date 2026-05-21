@@ -22,7 +22,7 @@ interface ConfigEntry {
   created_at: string;
 }
 
-type Tab = "tokko" | "kiteprop" | "importar" | "exportar" | "historial";
+type Tab = "tokko" | "kiteprop" | "propia" | "importar" | "exportar" | "historial";
 type ImportTipo = "contactos" | "propiedades";
 
 // Mapeo automático de columnas CSV → campo interno
@@ -81,10 +81,23 @@ export default function IntegracionesPage() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       setToken(data.session?.access_token ?? null);
       setKitepropUserId(data.session?.user?.id ?? "");
       setKitepropOrigin(typeof window !== "undefined" ? window.location.origin : "");
+      if (data.session?.user?.id) {
+        const { data: creds } = await supabase
+          .from("portal_credenciales")
+          .select("propia_api_key,propia_usuario,propia_company_id,propia_provider")
+          .eq("perfil_id", data.session.user.id)
+          .maybeSingle();
+        if (creds) {
+          setPropiaKey((creds as Record<string, string>).propia_api_key ?? "");
+          setPropiaUsuario((creds as Record<string, string>).propia_usuario ?? "");
+          setPropiaCompanyId((creds as Record<string, string>).propia_company_id ?? "");
+          setPropiaProvider((creds as Record<string, string>).propia_provider ?? "");
+        }
+      }
     });
   }, []);
 
@@ -107,6 +120,16 @@ export default function IntegracionesPage() {
   const [kitepropSecretSaved, setKitepropSecretSaved] = useState(false);
   const [kitepropUserId, setKitepropUserId] = useState("");
   const [kitepropOrigin, setKitepropOrigin] = useState("");
+
+  // Propia MLS
+  const [propiaKey, setPropiaKey] = useState("");
+  const [propiaUsuario, setPropiaUsuario] = useState("");
+  const [propiaCompanyId, setPropiaCompanyId] = useState("");
+  const [propiaProvider, setPropiaProvider] = useState("");
+  const [propiaSaving, setPropiaSaving] = useState(false);
+  const [propiaSaved, setPropiaSaved] = useState(false);
+  const [propiaSyncing, setPropiaSyncing] = useState(false);
+  const [propiaMsg, setPropiaMsg] = useState<{ tipo: "ok" | "err"; texto: string } | null>(null);
 
   // Import
   const [importTipo, setImportTipo] = useState<ImportTipo>("contactos");
@@ -300,6 +323,68 @@ export default function IntegracionesPage() {
 
   const kitepropConfig = configs.find(c => c.tipo === "kiteprop");
 
+  // ── Propia MLS ────────────────────────────────────────────────────────────
+
+  async function guardarPropia() {
+    const { data: session } = await supabase.auth.getSession();
+    const uid = session.session?.user?.id;
+    if (!uid || !propiaKey.trim()) return;
+    setPropiaSaving(true);
+    const { error } = await supabase.from("portal_credenciales").upsert({
+      perfil_id: uid,
+      propia_api_key: propiaKey.trim() || null,
+      propia_usuario: propiaUsuario.trim() || null,
+      propia_company_id: propiaCompanyId.trim() || null,
+      propia_provider: propiaProvider.trim() || null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "perfil_id" });
+    setPropiaSaving(false);
+    if (!error) { setPropiaSaved(true); setTimeout(() => setPropiaSaved(false), 2500); }
+    else setPropiaMsg({ tipo: "err", texto: error.message });
+  }
+
+  async function syncPropia() {
+    setPropiaSyncing(true);
+    setPropiaMsg(null);
+    try {
+      const res = await fetch("/api/crm/propia?action=feed&limit=200", { headers: authHeader() });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error ?? "Error al obtener feed de Propia");
+      const items: Record<string, unknown>[] = json.properties ?? json.data ?? [];
+      if (items.length === 0) {
+        setPropiaMsg({ tipo: "err", texto: "No se encontraron propiedades publicadas en Propia" });
+        setPropiaSyncing(false);
+        return;
+      }
+      const mapped = items.map((p) => ({
+        codigo: String(p.external_identifier ?? p.id ?? ""),
+        titulo: String(p.title ?? p.address ?? ""),
+        tipo: String(p.property_type ?? p.type ?? "Otro"),
+        operacion: String(p.operation_type ?? p.operation ?? "Venta"),
+        precio: String(p.price ?? ""),
+        moneda: String(p.currency ?? "USD"),
+        direccion: String(p.address ?? p.street ?? ""),
+        zona: String(p.neighborhood ?? p.location ?? p.zone ?? ""),
+        dormitorios: String(p.bedrooms ?? p.rooms ?? ""),
+        banos: String(p.bathrooms ?? ""),
+        superficie_cubierta: String(p.covered_surface ?? p.roofed_surface ?? ""),
+        superficie_total: String(p.total_surface ?? ""),
+        descripcion: String(p.description ?? ""),
+      }));
+      const impRes = await fetch("/api/crm/integraciones", {
+        method: "POST",
+        headers: { ...authHeader(), "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: "importar_propiedades", propiedades: mapped, fuente: "propia" }),
+      });
+      const impJson = await impRes.json();
+      setPropiaMsg({ tipo: "ok", texto: `Propiedades sincronizadas: ${impJson.importados} importadas${impJson.errores > 0 ? `, ${impJson.errores} con error` : ""}` });
+      cargarDatos();
+    } catch (e: unknown) {
+      setPropiaMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error al conectar con Propia" });
+    }
+    setPropiaSyncing(false);
+  }
+
   // ── Import CSV/Excel ──────────────────────────────────────────────────────
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -389,6 +474,7 @@ export default function IntegracionesPage() {
   const TABS: { id: Tab; label: string; icon: string }[] = [
     { id: "tokko", label: "Tokko Broker", icon: "🏢" },
     { id: "kiteprop", label: "Kiteprop", icon: "🔗" },
+    { id: "propia", label: "Propia MLS", icon: "🏛️" },
     { id: "importar", label: "Importar", icon: "📥" },
     { id: "exportar", label: "Exportar", icon: "📤" },
     { id: "historial", label: "Historial", icon: "📋" },
@@ -636,6 +722,70 @@ export default function IntegracionesPage() {
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", marginBottom: 10 }}>ACERCA DE KITEPROP</div>
               Kiteprop es un software de gestión inmobiliaria argentino. La integración sincroniza tu cartera y contactos de Kiteprop directamente al CRM de GFI®.<br /><br />
               Si usás una instancia propia (self-hosted), modificá la Base URL para apuntar a tu servidor. La API Key se envía tanto por header <code style={{ background: "rgba(255,255,255,0.06)", padding: "1px 5px", borderRadius: 3 }}>X-Api-Key</code> como por parámetro de query para máxima compatibilidad.
+            </div>
+          </div>
+        )}
+
+        {/* ── Tab: Propia MLS ───────────────────────────────────────────── */}
+        {tab === "propia" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="int-card">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(204,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🏛️</div>
+                <div>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>Propia MLS</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Red MLS del colegio de corredores. Importá el feed de propiedades publicadas.</div>
+                </div>
+                {propiaKey && (
+                  <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                )}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>API KEY</div>
+                  <input className="int-input" type="password" placeholder="Bearer token de Propia" value={propiaKey} onChange={e => setPropiaKey(e.target.value)} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>SELLER ID</div>
+                  <input className="int-input" type="text" placeholder="Tu ID de vendedor" value={propiaUsuario} onChange={e => setPropiaUsuario(e.target.value)} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>COMPANY ID</div>
+                  <input className="int-input" type="text" placeholder="ID de tu inmobiliaria" value={propiaCompanyId} onChange={e => setPropiaCompanyId(e.target.value)} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>PROVIDER</div>
+                  <input className="int-input" type="text" placeholder="Nombre de proveedor (ej: gfi)" value={propiaProvider} onChange={e => setPropiaProvider(e.target.value)} />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+                <button className="int-btn int-btn-red" onClick={guardarPropia} disabled={propiaSaving || !propiaKey.trim()}>
+                  {propiaSaving ? "Guardando…" : propiaSaved ? "✓ Guardado" : "Guardar credenciales"}
+                </button>
+                <button className="int-btn int-btn-outline" onClick={syncPropia} disabled={propiaSyncing || !propiaKey}>
+                  {propiaSyncing ? "Sincronizando…" : "🏠 Importar feed de propiedades"}
+                </button>
+              </div>
+
+              {!propiaKey && (
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                  ℹ️ Solicitá tu API key a soporte@propia.com.ar. El Provider te lo asigna el equipo de Propia.
+                </div>
+              )}
+
+              {propiaMsg && (
+                <div className={propiaMsg.tipo === "ok" ? "int-msg-ok" : "int-msg-err"}>
+                  {propiaMsg.tipo === "ok" ? "✓ " : "✕ "}{propiaMsg.texto}
+                </div>
+              )}
+            </div>
+
+            <div className="int-card" style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, fontFamily: "Inter,sans-serif" }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", marginBottom: 10 }}>ACERCA DE PROPIA MLS</div>
+              Propia es la red MLS del Colegio de Corredores Inmobiliarios de Buenos Aires (CUCICBA). La integración importa las propiedades publicadas en Propia a tu cartera GFI®.<br /><br />
+              La configuración completa (API Key, Seller ID, Company ID, Provider) también está disponible en <strong style={{ color: "rgba(255,255,255,0.6)" }}>CRM → Portales → Propia MLS</strong>.
             </div>
           </div>
         )}
