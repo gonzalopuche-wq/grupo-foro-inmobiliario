@@ -469,7 +469,7 @@ export default function PadronGFIPage() {
                             </div>
                           )}
                           <div>
-                            <div className="pad-nombre">{r.apellido}, {r.nombre}</div>
+                            <div className="pad-nombre">{[r.apellido, r.nombre].filter(Boolean).join(", ") || "—"}</div>
                             {r.zona_trabajo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>📍 {r.zona_trabajo}</div>}
                           </div>
                         </div>

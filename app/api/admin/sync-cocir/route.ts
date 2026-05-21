@@ -86,7 +86,7 @@ function detectarColumnas($: cheerio.CheerioAPI): string[] {
   return cols; // vacío → usará fallback posicional
 }
 
-const PALABRAS_ESTADO = /\b(habilitado|inhabilitado|suspendido|baja)\b/gi;
+const PALABRAS_ESTADO = /\b(?:suspenso\s+voluntario|habilitado|inhabilitado|suspendido|suspenso|baja)\b/gi;
 
 function limpiarNombre(s: string | null | undefined): string | null {
   if (!s) return null;
