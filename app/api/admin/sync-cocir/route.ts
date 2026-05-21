@@ -109,6 +109,19 @@ function parsearTabla(html: string, camposPorCol: string[]): Record<string, stri
         if (norm) rec.telefono = norm;
       }
     }
+    // Fallback: buscar número de teléfono como texto en cualquier celda
+    // (patrón Argentina interior: 10 dígitos empezando en 3, ej: 3416174141)
+    if (!rec.telefono) {
+      tds.each((_, td) => {
+        if (rec.telefono) return false;
+        const raw = $(td).text().replace(/[\s.()\-]/g, "");
+        const m = raw.match(/\b(3\d{9})\b/);
+        if (m) {
+          const norm = normalizarTelefono(m[1]);
+          if (norm) rec.telefono = norm;
+        }
+      });
+    }
     registros.push(rec);
   });
 
@@ -513,6 +526,7 @@ export async function GET(req: NextRequest) {
         const $temp = cheerio.load(htmlTabla);
         const cols = detectarColumnas($temp);
         for (const r of parsearTabla(htmlTabla, cols)) {
+          r.estado = r.estado ?? "habilitado"; // filtro=habilitados → todos habilitados
           const mat = String(r.matricula ?? "").trim();
           if (mat && matsAjax.has(mat)) continue;
           if (mat) matsAjax.add(mat);
