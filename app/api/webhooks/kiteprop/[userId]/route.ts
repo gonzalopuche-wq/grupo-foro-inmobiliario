@@ -157,15 +157,14 @@ export async function POST(
     .select("config")
     .eq("perfil_id", userId)
     .eq("tipo", "kiteprop")
-    .single();
+    .maybeSingle();
 
-  const config = configRow?.config as Record<string, string> | null;
-  if (!config) return NextResponse.json({ error: "No configurado" }, { status: 404 });
+  const webhookSecret = (configRow?.config as Record<string, string> | null)?.webhook_secret ?? null;
 
-  // Verificación HMAC si el secret está guardado
-  if (config.webhook_secret) {
+  // Verificación HMAC solo si el secret está guardado
+  if (webhookSecret) {
     const sig = req.headers.get("x-kiteprop-signature") ?? "";
-    if (!sig || !checkHmac(rawBody, config.webhook_secret, sig)) {
+    if (!sig || !checkHmac(rawBody, webhookSecret, sig)) {
       return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
     }
   }
