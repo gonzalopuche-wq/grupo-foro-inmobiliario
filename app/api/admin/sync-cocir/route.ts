@@ -522,7 +522,7 @@ export async function GET(req: NextRequest) {
 
       for (let i = 0; i < letras.length; i += LOTE) {
         const lote = letras.slice(i, i + LOTE);
-        const rows = await Promise.all(lote.map(l => fetchBuscarTexto(AJAX_PHP_BASE, l)));
+        const rows = await Promise.all(lote.map(l => fetchBuscarTexto(AJAX_PHP_BASE, l, "habilitados")));
         for (const html of rows) {
           if (html) procesarHtmlRows(html);
         }
@@ -535,7 +535,7 @@ export async function GET(req: NextRequest) {
       // Reintentar con www
       for (let i = 0; i < letras.length; i += LOTE) {
         const lote = letras.slice(i, i + LOTE);
-        const rows = await Promise.all(lote.map(l => fetchBuscarTexto(AJAX_PHP_BASE_WWW, l)));
+        const rows = await Promise.all(lote.map(l => fetchBuscarTexto(AJAX_PHP_BASE_WWW, l, "habilitados")));
         for (const html of rows) {
           if (html) procesarHtmlRows(html);
         }
