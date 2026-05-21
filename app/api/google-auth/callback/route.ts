@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const code      = req.nextUrl.searchParams.get("code");
   const perfil_id = req.nextUrl.searchParams.get("state");
   const baseUrl   = process.env.NEXT_PUBLIC_APP_URL ?? req.nextUrl.origin;
-  const portalesUrl = `${baseUrl}/crm/portales`;
+  const portalesUrl = `${baseUrl}/crm/integraciones`;
 
   if (!code || !perfil_id) return NextResponse.redirect(`${portalesUrl}?google_error=missing_params`);
 
