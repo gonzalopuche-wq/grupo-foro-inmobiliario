@@ -137,6 +137,8 @@ function IntegracionesInner() {
   const [kitepropSaved, setKitepropSaved] = useState(false);
   const [kitepropSyncing, setKitepropSyncing] = useState<string | null>(null);
   const [kitepropMsg, setKitepropMsg] = useState<{ tipo: "ok" | "err"; texto: string } | null>(null);
+  const [kitepropSyncFromRes, setKitepropSyncFromRes] = useState<{ importados: number; actualizados: number; errores: number } | null>(null);
+  const [kitepropSyncToRes, setKitepropSyncToRes] = useState<{ publicadas: number; actualizadas: number; errores: number } | null>(null);
   const [kitepropSecret, setKitepropSecret] = useState("");
   const [kitepropSecretSaving, setKitepropSecretSaving] = useState(false);
   const [kitepropSecretSaved, setKitepropSecretSaved] = useState(false);
@@ -338,6 +340,50 @@ function IntegracionesInner() {
       cargarDatos();
     } catch (e: unknown) {
       setKitepropMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error al conectar con Kiteprop" });
+    }
+    setKitepropSyncing(null);
+  }
+
+  // KiteProp → GFI (importar todo de KiteProp a cartera_propiedades)
+  async function syncFromKite() {
+    setKitepropSyncing("from-kite");
+    setKitepropMsg(null);
+    setKitepropSyncFromRes(null);
+    try {
+      const res = await fetch("/api/crm/kiteprop", {
+        method: "POST",
+        headers: { ...authHeader(), "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "sync-from-kite" }),
+      });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error);
+      setKitepropSyncFromRes({ importados: json.importados, actualizados: json.actualizados, errores: json.errores });
+      setKitepropMsg({ tipo: "ok", texto: `KiteProp → GFI: ${json.importados} nuevas, ${json.actualizados} actualizadas${json.errores > 0 ? `, ${json.errores} errores` : ""}` });
+      cargarDatos();
+    } catch (e: unknown) {
+      setKitepropMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error" });
+    }
+    setKitepropSyncing(null);
+  }
+
+  // GFI → KiteProp (publicar toda la cartera GFI en KiteProp)
+  async function syncToKite() {
+    setKitepropSyncing("to-kite");
+    setKitepropMsg(null);
+    setKitepropSyncToRes(null);
+    try {
+      const res = await fetch("/api/crm/kiteprop", {
+        method: "POST",
+        headers: { ...authHeader(), "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "sync-to-kite" }),
+      });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error);
+      setKitepropSyncToRes({ publicadas: json.publicadas, actualizadas: json.actualizadas, errores: json.errores });
+      setKitepropMsg({ tipo: "ok", texto: `GFI → KiteProp: ${json.publicadas} publicadas, ${json.actualizadas} actualizadas${json.errores > 0 ? `, ${json.errores} errores` : ""}` });
+      cargarDatos();
+    } catch (e: unknown) {
+      setKitepropMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error" });
     }
     setKitepropSyncing(null);
   }
@@ -717,13 +763,41 @@ function IntegracionesInner() {
                 </div>
               )}
 
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <button className="int-btn int-btn-red" onClick={() => syncKiteprop("propiedades")} disabled={!kitepropConfig || kitepropSyncing !== null}>
-                  {kitepropSyncing === "propiedades" ? "Sincronizando…" : "🏠 Sincronizar Propiedades"}
-                </button>
-                <button className="int-btn int-btn-outline" onClick={() => syncKiteprop("contactos")} disabled={!kitepropConfig || kitepropSyncing !== null}>
-                  {kitepropSyncing === "contactos" ? "Sincronizando…" : "👥 Sincronizar Contactos"}
-                </button>
+              {/* Sync bidireccional */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", textTransform: "uppercase" }}>Sincronización bidireccional</div>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <button className="int-btn int-btn-outline" onClick={syncFromKite} disabled={!kitepropConfig || kitepropSyncing !== null}
+                    title="Trae todas las propiedades de KiteProp → cartera GFI" style={{ flex: 1, minWidth: 200 }}>
+                    {kitepropSyncing === "from-kite" ? "⏳ Importando…" : "⬇️ KiteProp → GFI"}
+                  </button>
+                  <button className="int-btn int-btn-red" onClick={syncToKite} disabled={!kitepropConfig || kitepropSyncing !== null}
+                    title="Publica la cartera GFI → KiteProp" style={{ flex: 1, minWidth: 200 }}>
+                    {kitepropSyncing === "to-kite" ? "⏳ Publicando…" : "⬆️ GFI → KiteProp"}
+                  </button>
+                </div>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <button className="int-btn int-btn-outline" onClick={() => syncKiteprop("propiedades")} disabled={!kitepropConfig || kitepropSyncing !== null} style={{ fontSize: 11 }}>
+                    {kitepropSyncing === "propiedades" ? "…" : "🏠 Propiedades (import legacy)"}
+                  </button>
+                  <button className="int-btn int-btn-outline" onClick={() => syncKiteprop("contactos")} disabled={!kitepropConfig || kitepropSyncing !== null} style={{ fontSize: 11 }}>
+                    {kitepropSyncing === "contactos" ? "…" : "👥 Contactos"}
+                  </button>
+                </div>
+                {kitepropSyncFromRes && (
+                  <div style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.5)" }}>
+                    Última importación KP→GFI: <strong style={{ color: "#22c55e" }}>{kitepropSyncFromRes.importados}</strong> nuevas ·{" "}
+                    <strong style={{ color: "#60a5fa" }}>{kitepropSyncFromRes.actualizados}</strong> actualizadas ·{" "}
+                    <strong style={{ color: kitepropSyncFromRes.errores > 0 ? "#f87171" : "rgba(255,255,255,0.3)" }}>{kitepropSyncFromRes.errores}</strong> errores
+                  </div>
+                )}
+                {kitepropSyncToRes && (
+                  <div style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.5)" }}>
+                    Última exportación GFI→KP: <strong style={{ color: "#22c55e" }}>{kitepropSyncToRes.publicadas}</strong> publicadas ·{" "}
+                    <strong style={{ color: "#60a5fa" }}>{kitepropSyncToRes.actualizadas}</strong> actualizadas ·{" "}
+                    <strong style={{ color: kitepropSyncToRes.errores > 0 ? "#f87171" : "rgba(255,255,255,0.3)" }}>{kitepropSyncToRes.errores}</strong> errores
+                  </div>
+                )}
               </div>
 
               {!kitepropConfig && (
