@@ -22,6 +22,7 @@ const CRM_NAV = [
   { href: "/crm/honorarios", label: "Honorarios", icon: "💰", exact: false },
   { href: "/crm/captacion", label: "Prop. Captación", icon: "📝", exact: false },
   { href: "/crm/integraciones", label: "Integraciones", icon: "🔗", exact: false },
+  { href: "/crm/webhooks", label: "Webhooks", icon: "⚡", exact: false },
   { href: "/crm/emprendimientos", label: "Emprendimientos", icon: "🏗️", exact: false },
 ];
 
