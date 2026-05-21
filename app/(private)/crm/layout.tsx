@@ -60,6 +60,7 @@ const CRM_MENU: { section?: string; href: string; icon: string; label: string }[
 
   // ── Herramientas ──
   { section: "Herramientas", href: "/crm/integraciones",icon: "🛠️", label: "Herramientas" },
+  { href: "/crm/api-accesos",                           icon: "🔑", label: "API Accesos" },
   { href: "/crm/smart-prospecting",                     icon: "🎯", label: "Prospectos" },
   { href: "/crm/webhooks",                              icon: "⚡", label: "Webhooks" },
   { href: "/crm/configuracion",                         icon: "⚙️", label: "Config." },
