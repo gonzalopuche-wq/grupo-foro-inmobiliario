@@ -562,22 +562,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    // ── 1. Endpoint AJAX real — POST texto=LETRA&filtro=todos → JSON {success, html} ──
-    // BuscarMatriculados() en matriculados.php usa {texto, filtro} (no "buscar").
-    // Devuelve JSON {success: true, html: "<tr>...</tr>"} con filas sin headers.
+    // ── 1. Endpoint AJAX real — POST texto=&filtro=habilitados → devuelve TODOS en 1 consulta ──
+    // El PHP hace LIKE '%texto%', con texto vacío devuelve todo el padrón habilitado.
+    // Esto evita el problema de búsqueda por letras (substring match → misma persona
+    // aparece en múltiples consultas → duplicados si el mapeo de columnas falla en alguna).
     {
-      const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
-      const LOTE = 6;
       const todosAjax: Record<string, string | null>[] = [];
       const matsAjax = new Set<string>();
 
       const procesarHtmlRows = (htmlRows: string) => {
-        // El PHP devuelve thead + tbody — detectar columnas desde los headers
         const htmlTabla = `<table>${htmlRows}</table>`;
         const $temp = cheerio.load(htmlTabla);
         const cols = detectarColumnas($temp);
         for (const r of parsearTabla(htmlTabla, cols)) {
-          r.estado = r.estado ?? "habilitado"; // filtro=habilitados → todos habilitados
+          r.estado = r.estado ?? "habilitado";
           const mat = String(r.matricula ?? "").trim();
           if (mat && matsAjax.has(mat)) continue;
           if (mat) matsAjax.add(mat);
@@ -585,28 +583,35 @@ export async function GET(req: NextRequest) {
         }
       };
 
-      for (let i = 0; i < letras.length; i += LOTE) {
-        const lote = letras.slice(i, i + LOTE);
-        const rows = await Promise.all(lote.map(l => fetchBuscarTexto(AJAX_PHP_BASE, l, "habilitados")));
-        for (const html of rows) {
-          if (html) procesarHtmlRows(html);
+      // Intento 1: texto vacío → todos los habilitados en una sola respuesta
+      for (const base of [AJAX_PHP_BASE, AJAX_PHP_BASE_WWW]) {
+        const html = await fetchBuscarTexto(base, "", "habilitados");
+        if (html) procesarHtmlRows(html);
+        if (todosAjax.length > 100) break;
+      }
+
+      if (todosAjax.length > 100) {
+        return guardarEnDB(todosAjax, matsAjax, `ajax-texto-vacio (${todosAjax.length})`);
+      }
+
+      // Intento 2 (fallback): letra por letra — solo si texto vacío no devolvió datos
+      // Riesgo conocido: COCIR hace substring match, cada persona puede aparecer en
+      // múltiples búsquedas. El dedup por matrícula mitiga esto pero no es perfecto.
+      const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+      const LOTE = 6;
+      for (const base of [AJAX_PHP_BASE, AJAX_PHP_BASE_WWW]) {
+        for (let i = 0; i < letras.length; i += LOTE) {
+          const lote = letras.slice(i, i + LOTE);
+          const rows = await Promise.all(lote.map(l => fetchBuscarTexto(base, l, "habilitados")));
+          for (const html of rows) {
+            if (html) procesarHtmlRows(html);
+          }
         }
+        if (todosAjax.length > 0) break;
       }
 
       if (todosAjax.length > 0) {
         return guardarEnDB(todosAjax, matsAjax, `ajax-texto-letra (${todosAjax.length})`);
-      }
-
-      // Reintentar con www
-      for (let i = 0; i < letras.length; i += LOTE) {
-        const lote = letras.slice(i, i + LOTE);
-        const rows = await Promise.all(lote.map(l => fetchBuscarTexto(AJAX_PHP_BASE_WWW, l, "habilitados")));
-        for (const html of rows) {
-          if (html) procesarHtmlRows(html);
-        }
-      }
-      if (todosAjax.length > 0) {
-        return guardarEnDB(todosAjax, matsAjax, `ajax-texto-letra-www (${todosAjax.length})`);
       }
     }
 
