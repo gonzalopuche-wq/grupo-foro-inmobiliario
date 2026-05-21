@@ -407,98 +407,73 @@ async function guardarEnDB(
   metodo: string,
 ): Promise<NextResponse> {
   const ahora = new Date().toISOString();
-  const { data: existentes } = await sb
-    .from("cocir_padron")
-    .select("id, matricula, estado, inmobiliaria, direccion, localidad, telefono, email, apellido, nombre")
-    .limit(10000);
-
-  const mapa = new Map<string, Record<string, unknown>>();
-  (existentes ?? []).forEach((r: Record<string, unknown>) => {
-    if (r.matricula) mapa.set(String(r.matricula).trim(), r);
-  });
-
-  // Limpiar duplicados existentes en la DB (conservar el primero por matrícula)
   let eliminados = 0;
-  const matGroups = new Map<string, string[]>();
-  (existentes ?? []).forEach((r: Record<string, unknown>) => {
-    const m = String(r.matricula ?? "").trim();
-    if (!m) return;
-    if (!matGroups.has(m)) matGroups.set(m, []);
-    matGroups.get(m)!.push(String(r.id));
-  });
-  const dupIds: string[] = [];
-  for (const [, ids] of matGroups) {
-    if (ids.length > 1) ids.slice(1).forEach(id => dupIds.push(id));
-  }
-  if (dupIds.length > 0) {
+  let insertados = 0;
+  let actualizados = 0;
+  const sinCambios = 0;
+
+  if (matriculasVistas.size > 100) {
+    // Sync confiable: borrar todo y re-insertar desde cero.
+    // Esto evita la acumulación de registros corruptos de syncs anteriores donde
+    // el mapeo de columnas falló y se guardaron nombres como matrículas.
+    const { count } = await sb
+      .from("cocir_padron")
+      .select("*", { count: "exact", head: true });
+    eliminados = count ?? 0;
+
+    const { error: delErr } = await sb
+      .from("cocir_padron")
+      .delete()
+      .not("id", "is", null);
+    if (delErr) console.error("Error limpiando cocir_padron:", delErr.message);
+
     const LOTE = 500;
-    for (let i = 0; i < dupIds.length; i += LOTE) {
-      await sb.from("cocir_padron").delete().in("id", dupIds.slice(i, i + LOTE));
+    for (let i = 0; i < todos.length; i += LOTE) {
+      const lote = todos.slice(i, i + LOTE).map(r => ({ ...r, actualizado_at: ahora }));
+      const { error } = await sb.from("cocir_padron").insert(lote);
+      if (error) return NextResponse.json({ ok: false, error: error.message });
+      insertados += lote.length;
     }
-    eliminados += dupIds.length;
-    // Reconstruir mapa sin los duplicados eliminados
-    const dupSet = new Set(dupIds);
-    mapa.clear();
-    (existentes ?? []).filter((r: Record<string, unknown>) => !dupSet.has(String(r.id))).forEach((r: Record<string, unknown>) => {
-      if (r.matricula) mapa.set(String(r.matricula).trim(), r);
+  } else {
+    // Sync parcial: upsert suave sin borrar registros anteriores
+    const { data: existentes } = await sb
+      .from("cocir_padron")
+      .select("id, matricula")
+      .limit(10000);
+
+    const mapa = new Map<string, string>();
+    (existentes ?? []).forEach((r: Record<string, unknown>) => {
+      if (r.matricula) mapa.set(String(r.matricula).trim(), String(r.id));
     });
-  }
 
-  const nuevos: Record<string, unknown>[] = [];
-  const actualizaciones: Record<string, unknown>[] = [];
-  let sinCambios = 0;
-  const matsInsertadas = new Set<string>();
+    const nuevos: Record<string, unknown>[] = [];
+    const actualizaciones: Record<string, unknown>[] = [];
+    const matsInsertadas = new Set<string>();
 
-  for (const reg of todos) {
-    if (!esNombreValido(reg.apellido) && !esNombreValido(reg.nombre)) continue;
-    const mat = String(reg.matricula ?? "").trim();
-    // Deduplicar registros entrantes con la misma matrícula
-    if (mat && matsInsertadas.has(mat)) { sinCambios++; continue; }
-    if (mat) matsInsertadas.add(mat);
-    const existente = mat ? mapa.get(mat) : undefined;
-    if (existente) {
-      const upd: Record<string, unknown> = { actualizado_at: ahora };
-      let hay = false;
-      for (const campo of CAMPOS_CONOCIDOS) {
-        const nv = reg[campo];
-        if (!nv) continue;
-        if (existente[campo] !== nv) { upd[campo] = nv; hay = true; }
-      }
-      if (hay) actualizaciones.push({ ...upd, id: existente.id });
-      else sinCambios++;
-    } else {
-      nuevos.push({ ...reg, actualizado_at: ahora });
-    }
-  }
-
-  const LOTE = 500;
-  for (let i = 0; i < nuevos.length; i += LOTE) {
-    const { error } = await sb.from("cocir_padron").insert(nuevos.slice(i, i + LOTE));
-    if (error) return NextResponse.json({ ok: false, error: error.message });
-  }
-  for (let i = 0; i < actualizaciones.length; i += LOTE) {
-    const { error } = await sb.from("cocir_padron").upsert(actualizaciones.slice(i, i + LOTE));
-    if (error) return NextResponse.json({ ok: false, error: error.message });
-  }
-
-  if (matriculasVistas.size > 1000) {
-    // Eliminar registros cuya matrícula no apareció en el sync actual.
-    // Incluye registros con matrícula no numérica (de syncs anteriores con mapeo incorrecto).
-    const paraElim = (existentes ?? []).filter((r: Record<string, unknown>) => {
-      const m = String(r.matricula ?? "").trim();
-      // Eliminar si: matrícula vacía, matrícula no numérica, o matrícula no vista en este sync
-      if (!m) return true;
-      if (!/^\d{1,6}$/.test(m)) return true;
-      return !matriculasVistas.has(m);
-    });
-    if (paraElim.length > 0) {
-      const ids = paraElim.map((r: Record<string, unknown>) => r.id);
-      for (let i = 0; i < ids.length; i += LOTE) {
-        const { error } = await sb.from("cocir_padron").delete().in("id", ids.slice(i, i + LOTE));
-        if (error) console.error("Error eliminando registros cocir_padron:", error.message);
-        else eliminados += LOTE < ids.length - i ? LOTE : ids.length - i;
+    for (const reg of todos) {
+      if (!esNombreValido(reg.apellido) && !esNombreValido(reg.nombre)) continue;
+      const mat = String(reg.matricula ?? "").trim();
+      if (mat && matsInsertadas.has(mat)) continue;
+      if (mat) matsInsertadas.add(mat);
+      const existId = mat ? mapa.get(mat) : undefined;
+      if (existId) {
+        actualizaciones.push({ ...reg, id: existId, actualizado_at: ahora });
+      } else {
+        nuevos.push({ ...reg, actualizado_at: ahora });
       }
     }
+
+    const LOTE = 500;
+    for (let i = 0; i < nuevos.length; i += LOTE) {
+      const { error } = await sb.from("cocir_padron").insert(nuevos.slice(i, i + LOTE));
+      if (error) return NextResponse.json({ ok: false, error: error.message });
+    }
+    for (let i = 0; i < actualizaciones.length; i += LOTE) {
+      const { error } = await sb.from("cocir_padron").upsert(actualizaciones.slice(i, i + LOTE));
+      if (error) return NextResponse.json({ ok: false, error: error.message });
+    }
+    insertados = nuevos.length;
+    actualizados = actualizaciones.length;
   }
 
   // Validar matrículas de perfiles GFI
@@ -557,8 +532,8 @@ async function guardarEnDB(
   return NextResponse.json({
     ok: true,
     metodo,
-    insertados: nuevos.length,
-    actualizados: actualizaciones.length,
+    insertados,
+    actualizados,
     eliminados,
     sin_cambios: sinCambios,
     total_scrapeados: todos.length,
