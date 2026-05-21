@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const forzar = req.nextUrl.searchParams.get("forzar") === "true";
   const body = await req.json().catch(() => ({}));
   const campos: string[] = (body.campos ?? ["telefono"]).filter((c: string) =>
-    ["telefono", "email", "inmobiliaria"].includes(c)
+    ["telefono", "celular", "email", "inmobiliaria"].includes(c)
   );
 
   if (campos.length === 0) {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   // Cargar todos los perfiles con matrícula
   const { data: perfiles, error: ep } = await sb
     .from("perfiles")
-    .select(`id, matricula, telefono, email, inmobiliaria`)
+    .select(`id, matricula, telefono, celular_oficina, email, inmobiliaria`)
     .not("matricula", "is", null);
 
   if (ep) return NextResponse.json({ error: ep.message }, { status: 500 });
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   while (true) {
     const { data, error } = await sb
       .from("cocir_padron")
-      .select("matricula, telefono, email, inmobiliaria")
+      .select("matricula, telefono, celular, email, inmobiliaria")
       .range(desde, desde + 999);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     if (!data || data.length === 0) break;
@@ -87,12 +87,14 @@ export async function POST(req: NextRequest) {
     const cambios: Record<string, string> = {};
 
     for (const campo of campos) {
+      // celular en cocir_padron → celular_oficina en perfiles
+      const campoPerfil = campo === "celular" ? "celular_oficina" : campo;
       const valorCocir: string | null = cocir[campo] ?? null;
-      const valorPerfil: string | null = (perfil as any)[campo] ?? null;
+      const valorPerfil: string | null = (perfil as any)[campoPerfil] ?? null;
       if (!valorCocir) continue;
-      if (!forzar && valorPerfil) continue; // ya tiene dato, no sobreescribir
+      if (!forzar && valorPerfil) continue;
       if (valorCocir === valorPerfil) continue;
-      update[campo] = valorCocir;
+      update[campoPerfil] = valorCocir;
       cambios[campo] = valorCocir;
     }
 
