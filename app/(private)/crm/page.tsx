@@ -304,6 +304,16 @@ function CrmPageInner() {
   const [guardandoNota, setGuardandoNota] = useState(false);
   const [busquedaNota, setBusquedaNota] = useState("");
 
+  // ── Redes externas ────────────────────────────────────────────────────────
+  const [filtroRed, setFiltroRed] = useState<"todas" | "kiteprop" | "tokko" | "cocir" | "aliadas" | "propia" | null>(null);
+  const [busquedaRed, setBusquedaRed] = useState("");
+  const [resultadosRed, setResultadosRed] = useState<Record<string, unknown>[]>([]);
+  const [tipoRed, setTipoRed] = useState<"propiedades" | "matriculados" | "corredores">("propiedades");
+  const [loadingRed, setLoadingRed] = useState(false);
+  const [totalRed, setTotalRed] = useState(0);
+  const [paginaRed, setPaginaRed] = useState(1);
+  const [paginasRed, setPaginasRed] = useState(1);
+
   // ── Init ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     const init = async () => {
@@ -345,6 +355,29 @@ function CrmPageInner() {
     const { data } = await supabase.from("crm_notas").select("*").eq("perfil_id", uid).order("fijada", { ascending: false });
     setNotas((data as NotaCRM[]) ?? []);
     setLoadingNotas(false);
+  };
+
+  const buscarEnRed = async (red: "todas" | "kiteprop" | "tokko" | "cocir" | "aliadas" | "propia", q: string, pagina: number) => {
+    if (red === "propia") return;
+    setLoadingRed(true);
+    setFiltroRed(red);
+    setPaginaRed(pagina);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token ?? "";
+      const params = new URLSearchParams({ red, q, pagina: String(pagina) });
+      const res = await fetch(`/api/crm/redes?${params}`, { headers: { Authorization: `Bearer ${token}` } });
+      const json = await res.json();
+      if (json.ok) {
+        setResultadosRed(json.data as Record<string, unknown>[]);
+        setTipoRed(json.tipo as "propiedades" | "matriculados" | "corredores");
+        setTotalRed(json.total as number);
+        setPaginaRed(json.pagina as number);
+        setPaginasRed(json.paginas as number);
+      }
+    } catch { /* ignore */ } finally {
+      setLoadingRed(false);
+    }
   };
 
   const cargarDetalle = async (contacto: Contacto) => {
@@ -1247,22 +1280,145 @@ function CrmPageInner() {
                 {/* Coincidencias en redes */}
                 <div style={{background:"#0d0d0d",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 18px"}}>
                   <div style={{fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:14}}>Coincidencias en redes</div>
-                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10}}>
-                    {[
-                      { red:"Red KiteProp",     total:21643, color:"#a855f7", icon:"🔗" },
-                      { red:"Red COCIR",         total:65139, color:"#3b82f6", icon:"🏛️" },
-                      { red:"Red Propia MLS",    total:16095, color:"#f97316", icon:"🏠" },
-                      { red:"Empresas aliadas",  total:1681,  color:"#22c55e", icon:"🤝" },
-                    ].map(r => (
-                      <div key={r.red} style={{background:"rgba(255,255,255,0.025)",border:`1px solid ${r.color}22`,borderRadius:7,padding:"12px 14px",display:"flex",alignItems:"flex-start",gap:10}}>
-                        <div style={{fontSize:18,lineHeight:1,marginTop:1,flexShrink:0}}>{r.icon}</div>
-                        <div>
-                          <div style={{fontFamily:"Montserrat,sans-serif",fontSize:16,fontWeight:800,color:r.color,lineHeight:1,letterSpacing:"-0.02em"}}>{r.total.toLocaleString("es-AR")}</div>
-                          <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginTop:4}}>{r.red}</div>
-                        </div>
-                      </div>
-                    ))}
+                  {/* Stat cards — clickables como filtro */}
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:10,marginBottom:14}}>
+                    {([
+                      { key:"kiteprop" as const, red:"Red KiteProp",    total:21643, color:"#a855f7", icon:"🔗" },
+                      { key:"cocir"    as const, red:"Red COCIR",        total:65139, color:"#3b82f6", icon:"🏛️" },
+                      { key:"propia"   as const, red:"Red Propia MLS",   total:16095, color:"#f97316", icon:"🏠" },
+                      { key:"aliadas"  as const, red:"Empresas aliadas", total:1681,  color:"#22c55e", icon:"🤝" },
+                    ] as { key:"kiteprop"|"cocir"|"propia"|"aliadas"; red:string; total:number; color:string; icon:string }[]).map(r => {
+                      const activo = filtroRed === r.key;
+                      return (
+                        <button key={r.key} onClick={() => {
+                          if (activo) { setFiltroRed(null); setResultadosRed([]); }
+                          else { setBusquedaRed(""); buscarEnRed(r.key, "", 1); }
+                        }} style={{background: activo ? `${r.color}18` : "rgba(255,255,255,0.025)", border:`1px solid ${activo ? r.color : r.color+"22"}`,borderRadius:7,padding:"12px 14px",display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",textAlign:"left",transition:"all 0.15s",width:"100%"}}>
+                          <div style={{fontSize:18,lineHeight:1,marginTop:1,flexShrink:0}}>{r.icon}</div>
+                          <div>
+                            <div style={{fontFamily:"Montserrat,sans-serif",fontSize:16,fontWeight:800,color:r.color,lineHeight:1,letterSpacing:"-0.02em"}}>{r.total.toLocaleString("es-AR")}</div>
+                            <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color: activo ? r.color : "rgba(255,255,255,0.35)",marginTop:4}}>{r.red}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
+
+                  {/* Panel de búsqueda expandido */}
+                  {filtroRed !== null && (
+                    <div style={{marginTop:4}}>
+                      {/* Pills de red + "Todas" */}
+                      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
+                        {([
+                          { key:"todas"    as const, label:"Todas (prop.)", color:"#e5e7eb" },
+                          { key:"kiteprop" as const, label:"KiteProp",      color:"#a855f7" },
+                          { key:"tokko"    as const, label:"Tokko",          color:"#06b6d4" },
+                          { key:"cocir"    as const, label:"COCIR",          color:"#3b82f6" },
+                          { key:"aliadas"  as const, label:"GFI Aliadas",    color:"#22c55e" },
+                          { key:"propia"   as const, label:"Propia MLS",     color:"#f97316" },
+                        ] as { key:"todas"|"kiteprop"|"tokko"|"cocir"|"aliadas"|"propia"; label:string; color:string }[]).map(p => {
+                          const activo = filtroRed === p.key;
+                          return (
+                            <button key={p.key} onClick={() => {
+                              if (p.key === "propia") { window.open("/crm/portales", "_self"); return; }
+                              setBusquedaRed(""); buscarEnRed(p.key, "", 1);
+                            }} style={{padding:"3px 10px",borderRadius:12,border:`1px solid ${activo?p.color:p.color+"50"}`,background:activo?`${p.color}20`:"transparent",color:activo?p.color:`${p.color}cc`,fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",transition:"all 0.12s"}}>
+                              {p.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Buscador */}
+                      <div style={{position:"relative",marginBottom:10}}>
+                        <span style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",fontSize:13,color:"rgba(255,255,255,0.3)"}}>🔍</span>
+                        <input
+                          value={busquedaRed}
+                          onChange={e => setBusquedaRed(e.target.value)}
+                          onKeyDown={e => { if (e.key === "Enter" && filtroRed && filtroRed !== "propia") buscarEnRed(filtroRed, busquedaRed, 1); }}
+                          placeholder={filtroRed === "cocir" ? "Buscar por apellido, nombre, inmobiliaria..." : filtroRed === "aliadas" ? "Buscar corredor, inmobiliaria, zona..." : "Buscar por título, zona, ciudad..."}
+                          style={{width:"100%",boxSizing:"border-box",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:7,padding:"8px 10px 8px 32px",color:"#fff",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none"}}
+                        />
+                        {busquedaRed && (
+                          <button onClick={() => { setBusquedaRed(""); if (filtroRed && filtroRed !== "propia") buscarEnRed(filtroRed, "", 1); }} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:14,lineHeight:1}}>✕</button>
+                        )}
+                      </div>
+
+                      {/* Resultados */}
+                      {loadingRed && <div style={{padding:"20px 0",textAlign:"center",color:"rgba(255,255,255,0.3)",fontSize:12,fontFamily:"Inter,sans-serif"}}>Buscando...</div>}
+
+                      {!loadingRed && resultadosRed.length === 0 && (
+                        <div style={{padding:"16px 0",textAlign:"center",color:"rgba(255,255,255,0.25)",fontSize:12,fontFamily:"Inter,sans-serif"}}>Sin resultados{busquedaRed ? ` para "${busquedaRed}"` : ""}</div>
+                      )}
+
+                      {!loadingRed && resultadosRed.length > 0 && (
+                        <>
+                          <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",fontFamily:"Montserrat,sans-serif",fontWeight:700,marginBottom:8,textTransform:"uppercase",letterSpacing:"0.08em"}}>
+                            {totalRed.toLocaleString("es-AR")} resultado{totalRed !== 1 ? "s" : ""}{busquedaRed ? ` para "${busquedaRed}"` : ""}
+                          </div>
+                          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                            {resultadosRed.map((item, i) => {
+                              if (tipoRed === "propiedades") {
+                                const origen = item.url_portal_origen as string | null;
+                                const redLabel = origen?.startsWith("kiteprop:") ? { label:"KiteProp", color:"#a855f7" }
+                                  : origen?.startsWith("tokko:") ? { label:"Tokko", color:"#06b6d4" }
+                                  : null;
+                                return (
+                                  <div key={i} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,padding:"9px 12px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+                                    <div style={{minWidth:0}}>
+                                      <div style={{fontSize:12,fontFamily:"Inter,sans-serif",color:"rgba(255,255,255,0.85)",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.titulo as string || "—"}</div>
+                                      <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"Inter,sans-serif",marginTop:2}}>{[item.zona as string, item.ciudad as string].filter(Boolean).join(", ") || "—"}</div>
+                                    </div>
+                                    <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                                      {!!item.precio && <span style={{fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.7)"}}>{(item.moneda as string)||"USD"} {Number(item.precio).toLocaleString("es-AR")}</span>}
+                                      {redLabel && <span style={{padding:"1px 5px",borderRadius:8,border:`1px solid ${redLabel.color}40`,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:redLabel.color,background:`${redLabel.color}12`}}>{redLabel.label}</span>}
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              if (tipoRed === "matriculados") {
+                                const estadoColor = (item.estado as string) === "habilitado" ? "#22c55e" : (item.estado as string) === "suspendido" || (item.estado as string) === "suspenso" ? "#f97316" : "rgba(255,255,255,0.3)";
+                                return (
+                                  <div key={i} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,padding:"9px 12px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+                                    <div style={{minWidth:0}}>
+                                      <div style={{fontSize:12,fontFamily:"Inter,sans-serif",color:"rgba(255,255,255,0.85)",fontWeight:500}}>{[item.apellido as string, item.nombre as string].filter(Boolean).join(", ") || "—"}</div>
+                                      <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"Inter,sans-serif",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.inmobiliaria as string || item.localidad as string || "—"}</div>
+                                    </div>
+                                    <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                                      <span style={{padding:"1px 5px",borderRadius:8,border:`1px solid ${estadoColor}40`,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:estadoColor,background:`${estadoColor}12`,textTransform:"capitalize"}}>{item.estado as string || "—"}</span>
+                                      {!!item.matricula && <span style={{fontSize:9,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif"}}>Mat. {item.matricula as string}</span>}
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              // corredores (aliadas)
+                              return (
+                                <div key={i} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,padding:"9px 12px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+                                  <div style={{minWidth:0}}>
+                                    <div style={{fontSize:12,fontFamily:"Inter,sans-serif",color:"rgba(255,255,255,0.85)",fontWeight:500}}>{[item.apellido as string, item.nombre as string].filter(Boolean).join(", ") || "—"}</div>
+                                    <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"Inter,sans-serif",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.inmobiliaria as string || item.zona_trabajo as string || "—"}</div>
+                                  </div>
+                                  <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                                    <span style={{padding:"1px 5px",borderRadius:8,border:"1px solid #22c55e40",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#22c55e",background:"#22c55e12"}}>GFI</span>
+                                    {!!item.matricula && <span style={{fontSize:9,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif"}}>Mat. {item.matricula as string}</span>}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Paginación */}
+                          {paginasRed > 1 && (
+                            <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:12}}>
+                              <button disabled={paginaRed <= 1} onClick={() => filtroRed && filtroRed !== "propia" && buscarEnRed(filtroRed, busquedaRed, paginaRed - 1)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:paginaRed <= 1 ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.7)",cursor:paginaRed <= 1 ? "default" : "pointer",fontSize:11,fontFamily:"Montserrat,sans-serif"}}>‹ Ant.</button>
+                              <span style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"Montserrat,sans-serif"}}>Pág. {paginaRed} / {paginasRed}</span>
+                              <button disabled={paginaRed >= paginasRed} onClick={() => filtroRed && filtroRed !== "propia" && buscarEnRed(filtroRed, busquedaRed, paginaRed + 1)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:paginaRed >= paginasRed ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.7)",cursor:paginaRed >= paginasRed ? "default" : "pointer",fontSize:11,fontFamily:"Montserrat,sans-serif"}}>Sig. ›</button>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {interaccRecientes.length > 0 && null}
