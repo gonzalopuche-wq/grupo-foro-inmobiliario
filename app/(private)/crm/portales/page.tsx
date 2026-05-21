@@ -27,6 +27,8 @@ function PortalesInner() {
   const [googleExpiresAt, setGoogleExpiresAt] = useState<string | null>(null);
   const [propiaKey, setPropiaKey] = useState("");
   const [propiaUsuario, setPropiaUsuario] = useState("");
+  const [propiaCompanyId, setPropiaCompanyId] = useState("");
+  const [propiaProvider, setPropiaProvider] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [msg, setMsg] = useState("");
   const [globalStatus, setGlobalStatus] = useState<{ tokko: { configurado: boolean }; kiteprop: { configurado: boolean } } | null>(null);
@@ -55,7 +57,7 @@ function PortalesInner() {
 
       const { data: creds } = await supabase
         .from("portal_credenciales")
-        .select("tokko_key,kiteprop_key,ml_app_id,ml_app_secret,ml_access_token,ml_token_expires_at,propia_api_key,propia_usuario")
+        .select("tokko_key,kiteprop_key,ml_app_id,ml_app_secret,ml_access_token,ml_token_expires_at,propia_api_key,propia_usuario,propia_company_id,propia_provider")
         .eq("perfil_id", data.user.id)
         .maybeSingle();
       if (creds) {
@@ -69,6 +71,8 @@ function PortalesInner() {
         setGoogleExpiresAt((creds as Record<string, string | null>).google_token_expires_at ?? null);
         setPropiaKey((creds as Record<string, string>).propia_api_key ?? "");
         setPropiaUsuario((creds as Record<string, string>).propia_usuario ?? "");
+        setPropiaCompanyId((creds as Record<string, string>).propia_company_id ?? "");
+        setPropiaProvider((creds as Record<string, string>).propia_provider ?? "");
       }
 
       // Estado de sync de portales
@@ -107,6 +111,8 @@ function PortalesInner() {
         ml_app_secret: mlAppSecret || null,
         propia_api_key: propiaKey || null,
         propia_usuario: propiaUsuario || null,
+        propia_company_id: propiaCompanyId || null,
+        propia_provider: propiaProvider || null,
         updated_at: new Date().toISOString(),
       }, { onConflict: "perfil_id" });
     setGuardando(false);
@@ -330,28 +336,50 @@ function PortalesInner() {
           <div className="port-card-sub">
             Red MLS del colegio de corredores inmobiliarios. Con la API key podés buscar en toda la red, ver tus publicaciones e importar propiedades a tu cartera.
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:0 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
             <div>
               <div className="port-label">API Key</div>
               <input
                 className="port-input"
                 type="password"
-                placeholder="Tu API key de Propia MLS"
+                placeholder="Bearer token de Propia"
                 value={propiaKey}
                 onChange={e => setPropiaKey(e.target.value)}
               />
-              <div className="port-hint">El colegio te la facilita al darte acceso a la API</div>
+              <div className="port-hint">Authorization: Bearer &lt;API_KEY&gt;</div>
             </div>
             <div>
-              <div className="port-label">Usuario / Matrícula</div>
+              <div className="port-label">Seller ID</div>
               <input
                 className="port-input"
                 type="text"
-                placeholder="Tu usuario en Propia"
+                placeholder="Tu ID de vendedor en Propia"
                 value={propiaUsuario}
                 onChange={e => setPropiaUsuario(e.target.value)}
               />
-              <div className="port-hint">Opcional — para filtrar tus propias publicaciones</div>
+              <div className="port-hint">Necesario para publicar propiedades</div>
+            </div>
+            <div>
+              <div className="port-label">Company ID</div>
+              <input
+                className="port-input"
+                type="text"
+                placeholder="ID de tu inmobiliaria en Propia"
+                value={propiaCompanyId}
+                onChange={e => setPropiaCompanyId(e.target.value)}
+              />
+              <div className="port-hint">Para filtrar el feed a tu inmobiliaria</div>
+            </div>
+            <div>
+              <div className="port-label">Provider</div>
+              <input
+                className="port-input"
+                type="text"
+                placeholder="Nombre de proveedor (soporte Propia)"
+                value={propiaProvider}
+                onChange={e => setPropiaProvider(e.target.value)}
+              />
+              <div className="port-hint">Ej: "gfi" — solicitarlo a soporte@propia.com</div>
             </div>
           </div>
           {propiaKey && (
