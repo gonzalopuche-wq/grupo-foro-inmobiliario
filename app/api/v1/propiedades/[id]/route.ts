@@ -64,7 +64,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
   const MAP: Record<string, string> = {
-    tipo: "tipo", operacion: "operacion", direccion: "direccion",
+    titulo: "titulo", tipo: "tipo", operacion: "operacion", direccion: "direccion",
     precio: "precio", moneda: "moneda", ambientes: "ambientes",
     dormitorios: "dormitorios", banos: "banos",
     superficie_total: "superficie_total", superficie_cubierta: "superficie_cubierta",
