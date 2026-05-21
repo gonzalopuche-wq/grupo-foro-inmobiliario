@@ -90,7 +90,11 @@ const PALABRAS_ESTADO = /\b(habilitado|inhabilitado|suspendido|baja)\b/gi;
 
 function limpiarNombre(s: string | null | undefined): string | null {
   if (!s) return null;
-  return s.replace(PALABRAS_ESTADO, "").replace(/^[\s,]+|[\s,]+$/g, "").trim() || null;
+  return s
+    .replace(PALABRAS_ESTADO, "")       // quitar HABILITADO, etc.
+    .replace(/^\d+[\s,]+/, "")           // quitar contador de fila "1, " al inicio
+    .replace(/^[\s,]+|[\s,]+$/g, "")     // quitar comas/espacios sueltos
+    .trim() || null;
 }
 
 function parsearTabla(html: string, camposPorCol: string[]): Record<string, string | null>[] {
@@ -478,16 +482,22 @@ async function guardarEnDB(
   }
 
   if (matriculasVistas.size > 1000) {
+    // Eliminar registros cuya matrícula no apareció en el sync actual.
+    // Incluye registros con matrícula no numérica (de syncs anteriores con mapeo incorrecto).
     const paraElim = (existentes ?? []).filter((r: Record<string, unknown>) => {
       const m = String(r.matricula ?? "").trim();
-      return m && !matriculasVistas.has(m);
+      // Eliminar si: matrícula vacía, matrícula no numérica, o matrícula no vista en este sync
+      if (!m) return true;
+      if (!/^\d{1,6}$/.test(m)) return true;
+      return !matriculasVistas.has(m);
     });
     if (paraElim.length > 0) {
       const ids = paraElim.map((r: Record<string, unknown>) => r.id);
       for (let i = 0; i < ids.length; i += LOTE) {
-        await sb.from("cocir_padron").delete().in("id", ids.slice(i, i + LOTE));
+        const { error } = await sb.from("cocir_padron").delete().in("id", ids.slice(i, i + LOTE));
+        if (error) console.error("Error eliminando registros cocir_padron:", error.message);
+        else eliminados += LOTE < ids.length - i ? LOTE : ids.length - i;
       }
-      eliminados = paraElim.length;
     }
   }
 
@@ -562,10 +572,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    // ── 1. Endpoint AJAX real — POST texto=&filtro=habilitados → devuelve TODOS en 1 consulta ──
-    // El PHP hace LIKE '%texto%', con texto vacío devuelve todo el padrón habilitado.
-    // Esto evita el problema de búsqueda por letras (substring match → misma persona
-    // aparece en múltiples consultas → duplicados si el mapeo de columnas falla en alguna).
+    // ── 1. Endpoint AJAX real ──
+    // Estrategia combinada:
+    // a) texto="" → devuelve todos en una sola respuesta (pero COCIR puede paginar/truncar)
+    // b) letra por letra → cubre los que "texto vacío" no devolvió
+    // Clave: solo se aceptan registros con MATRÍCULA NUMÉRICA para evitar duplicados por
+    // mapeo incorrecto de columnas (si el mapeo falla, la matrícula queda como texto y
+    // se rechaza aquí antes de llegar al dedup o a la DB).
     {
       const todosAjax: Record<string, string | null>[] = [];
       const matsAjax = new Set<string>();
@@ -577,26 +590,23 @@ export async function GET(req: NextRequest) {
         for (const r of parsearTabla(htmlTabla, cols)) {
           r.estado = r.estado ?? "habilitado";
           const mat = String(r.matricula ?? "").trim();
-          if (mat && matsAjax.has(mat)) continue;
-          if (mat) matsAjax.add(mat);
+          // Rechazar registros con matrícula no numérica: el mapeo de columnas falló
+          if (!mat || !/^\d{1,6}$/.test(mat)) continue;
+          if (matsAjax.has(mat)) continue;
+          matsAjax.add(mat);
           todosAjax.push(r);
         }
       };
 
-      // Intento 1: texto vacío → todos los habilitados en una sola respuesta
+      // a) texto vacío → todos los habilitados en una sola respuesta
       for (const base of [AJAX_PHP_BASE, AJAX_PHP_BASE_WWW]) {
         const html = await fetchBuscarTexto(base, "", "habilitados");
         if (html) procesarHtmlRows(html);
         if (todosAjax.length > 100) break;
       }
 
-      if (todosAjax.length > 100) {
-        return guardarEnDB(todosAjax, matsAjax, `ajax-texto-vacio (${todosAjax.length})`);
-      }
-
-      // Intento 2 (fallback): letra por letra — solo si texto vacío no devolvió datos
-      // Riesgo conocido: COCIR hace substring match, cada persona puede aparecer en
-      // múltiples búsquedas. El dedup por matrícula mitiga esto pero no es perfecto.
+      // b) letra por letra → captura los que texto="" omitió (COCIR puede paginar)
+      // Con validación numérica de matrícula el substring-match no genera duplicados
       const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
       const LOTE = 6;
       for (const base of [AJAX_PHP_BASE, AJAX_PHP_BASE_WWW]) {
@@ -611,7 +621,7 @@ export async function GET(req: NextRequest) {
       }
 
       if (todosAjax.length > 0) {
-        return guardarEnDB(todosAjax, matsAjax, `ajax-texto-letra (${todosAjax.length})`);
+        return guardarEnDB(todosAjax, matsAjax, `ajax-combinado (${todosAjax.length})`);
       }
     }
 
