@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
   if (accion === "guardar_webhook_secret") {
     const { tipo, secret } = body as { tipo: string; secret: string };
     const { data: existing } = await sb.from("crm_integraciones_config")
-      .select("config").eq("perfil_id", user.id).eq("tipo", tipo).single();
+      .select("config").eq("perfil_id", user.id).eq("tipo", tipo).maybeSingle();
     if (!existing) return NextResponse.json({ error: "Configurá primero la API key" }, { status: 404 });
     const newConfig = { ...(existing.config as Record<string, unknown>), webhook_secret: secret };
     const { error } = await sb.from("crm_integraciones_config").update({ config: newConfig })
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
         banos:               p.banos ? parseInt(p.banos) : null,
         superficie_cubierta: p.superficie_cubierta ? parseFloat(p.superficie_cubierta) : null,
         superficie_total:    p.superficie_total ? parseFloat(p.superficie_total) : null,
-        descripcion:         p.descripcion || null,
+        descripcion_privada: p.descripcion || null,
         estado:              "activa",
         codigo:              p.codigo || null,
         url_portal_origen:   fuente === "tokko" ? `tokko:${p.codigo || ""}` : fuente === "kiteprop" ? `kiteprop:${p.codigo || ""}` : null,
