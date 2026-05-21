@@ -12,6 +12,7 @@ interface PadronEntry {
   estado: string | null;
   inmobiliaria: string | null;
   telefono: string | null;
+  celular: string | null;
   email: string | null;
   localidad: string | null;
 }
@@ -29,6 +30,7 @@ interface PadronStats {
   total: number;
   activos: number;
   conTelefono: number;
+  conCelular: number;
   conEmail: number;
   ultimaSync: string | null;
 }
@@ -93,6 +95,12 @@ export default function COCIRPage() {
         .select("*", { count: "exact", head: true })
         .not("telefono", "is", null);
 
+      // Con celular
+      const { count: conCelular } = await supabase
+        .from("cocir_padron")
+        .select("*", { count: "exact", head: true })
+        .not("celular", "is", null);
+
       // Con email
       const { count: conEmail } = await supabase
         .from("cocir_padron")
@@ -110,6 +118,7 @@ export default function COCIRPage() {
         total: total ?? 0,
         activos: activos ?? 0,
         conTelefono: conTelefono ?? 0,
+        conCelular: conCelular ?? 0,
         conEmail: conEmail ?? 0,
         ultimaSync: ultima?.[0]?.updated_at ?? null,
       });
@@ -130,7 +139,7 @@ export default function COCIRPage() {
       const isNumero = /^\d+$/.test(q.trim());
       let query = supabase
         .from("cocir_padron")
-        .select("matricula, apellido, nombre, estado, inmobiliaria, telefono, email, localidad")
+        .select("matricula, apellido, nombre, estado, inmobiliaria, telefono, celular, email, localidad")
         .limit(30);
 
       if (isNumero) {
@@ -200,7 +209,7 @@ export default function COCIRPage() {
         .cc-titulo span { color: #cc0000; }
         .cc-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
         /* KPIs */
-        .cc-kpis { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
+        .cc-kpis { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; }
         .cc-kpi { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 13px 15px; }
         .cc-kpi-val { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
         .cc-kpi-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-top: 3px; font-family: 'Montserrat',sans-serif; }
@@ -266,6 +275,10 @@ export default function COCIRPage() {
             <div className="cc-kpi">
               <div className="cc-kpi-val" style={{ color: "#3b82f6" }}>{stats.conTelefono.toLocaleString("es-AR")}</div>
               <div className="cc-kpi-label">Con teléfono</div>
+            </div>
+            <div className="cc-kpi">
+              <div className="cc-kpi-val" style={{ color: "#06b6d4" }}>{stats.conCelular.toLocaleString("es-AR")}</div>
+              <div className="cc-kpi-label">Con celular</div>
             </div>
             <div className="cc-kpi">
               <div className="cc-kpi-val" style={{ color: "#a78bfa" }}>{stats.conEmail.toLocaleString("es-AR")}</div>
@@ -348,6 +361,7 @@ export default function COCIRPage() {
                       <th>Estado</th>
                       <th>Inmobiliaria</th>
                       <th>Teléfono</th>
+                      <th>Celular</th>
                       <th>Email</th>
                       <th>Localidad</th>
                     </tr>
@@ -367,7 +381,12 @@ export default function COCIRPage() {
                         <td style={{ color: "rgba(255,255,255,0.55)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
                         <td>
                           {r.telefono
-                            ? <a href={`https://wa.me/${r.telefono.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:12}}>{r.telefono}</a>
+                            ? <span style={{color:"rgba(255,255,255,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:600,fontSize:11}}>{r.telefono}</span>
+                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                        </td>
+                        <td>
+                          {r.celular
+                            ? <a href={`https://wa.me/${r.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:12}}>{r.celular}</a>
                             : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                         </td>
                         <td>
@@ -409,9 +428,10 @@ export default function COCIRPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
                 {[
-                  { id: "telefono", label: "Teléfono", desc: "Número de teléfono del padrón COCIR" },
-                  { id: "email", label: "Email", desc: "Dirección de email del padrón" },
-                  { id: "inmobiliaria", label: "Inmobiliaria", desc: "Razón social de la inmobiliaria" },
+                  { id: "telefono", label: "Teléfono fijo", desc: "Teléfono fijo del padrón COCIR → perfil.telefono" },
+                  { id: "celular", label: "Celular", desc: "Celular del padrón COCIR → perfil.celular_oficina" },
+                  { id: "email", label: "Email", desc: "Dirección de email del padrón → perfil.email" },
+                  { id: "inmobiliaria", label: "Inmobiliaria", desc: "Razón social de la inmobiliaria → perfil.inmobiliaria" },
                 ].map(campo => (
                   <label key={campo.id} className="cc-cb-row">
                     <input
@@ -519,7 +539,7 @@ function PadronMuestra() {
     const cargar = async () => {
       const { data } = await supabase
         .from("cocir_padron")
-        .select("matricula, apellido, nombre, estado, inmobiliaria, telefono, email, localidad")
+        .select("matricula, apellido, nombre, estado, inmobiliaria, telefono, celular, email, localidad")
         .order("matricula", { ascending: false })
         .limit(20);
       setFilas((data ?? []) as PadronEntry[]);
@@ -536,7 +556,7 @@ function PadronMuestra() {
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
         <thead>
           <tr>
-            {["Matrícula", "Apellido y Nombre", "Estado", "Inmobiliaria", "Teléfono", "Localidad"].map(h => (
+            {["Matrícula", "Apellido y Nombre", "Estado", "Inmobiliaria", "Teléfono", "Celular", "Email", "Localidad"].map(h => (
               <th key={h} style={{ padding: "7px 10px", textAlign: "left", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>{h}</th>
             ))}
           </tr>
@@ -556,7 +576,17 @@ function PadronMuestra() {
               <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
               <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                 {r.telefono
-                  ? <a href={`https://wa.me/${r.telefono.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:11}}>{r.telefono}</a>
+                  ? <span style={{color:"rgba(255,255,255,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:600,fontSize:11}}>{r.telefono}</span>
+                  : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+              </td>
+              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                {r.celular
+                  ? <a href={`https://wa.me/${r.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:11}}>{r.celular}</a>
+                  : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+              </td>
+              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                {r.email
+                  ? <a href={`mailto:${r.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:11,wordBreak:"break-all"}}>{r.email}</a>
                   : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
               </td>
               <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{r.localidad || "—"}</td>

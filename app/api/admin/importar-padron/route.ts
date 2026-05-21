@@ -126,8 +126,11 @@ export async function POST(req: NextRequest) {
       const colInmob      = detectarColumna(headers, ["inmobiliaria", "empresa", "razon", "agencia"]);
       const colDireccion  = detectarColumna(headers, ["direccion", "domicilio", "calle"]);
       const colLocalidad  = detectarColumna(headers, ["localidad", "ciudad", "partido"]);
-      const colTelefono   = detectarColumna(headers, ["telefono", "tel", "celular", "whatsapp"]);
+      const colTelefono   = detectarColumna(headers, ["telefono", "tel fijo", "fijo"]);
+      const colCelular    = detectarColumna(headers, ["celular", "cel", "movil", "whatsapp", "telefono"]);
       const colEmail      = detectarColumna(headers, ["email", "mail", "correo"]);
+      // Si solo hay una columna que coincide con ambos, separar: celular tiene prioridad sobre 'telefono' genérico
+      const celularEsTelefono = colCelular === colTelefono;
 
       if (colMatricula >= 0 && colApellido >= 0 && colNombre >= 0) {
         modoDetectado = "con-encabezados";
@@ -137,6 +140,8 @@ export async function POST(req: NextRequest) {
           const ape = String(fila[colApellido] ?? "").trim();
           const nom = String(fila[colNombre]   ?? "").trim();
           if (!mat && !ape && !nom) continue;
+          const telVal = colTelefono >= 0 && !celularEsTelefono ? String(fila[colTelefono] ?? "").trim() || null : null;
+          const celVal = colCelular  >= 0 ? String(fila[colCelular]  ?? "").trim() || null : null;
           registros.push({
             matricula:    mat || null,
             apellido:     ape,
@@ -145,8 +150,9 @@ export async function POST(req: NextRequest) {
             inmobiliaria: colInmob     >= 0 ? String(fila[colInmob]     ?? "").trim() || null : null,
             direccion:    colDireccion >= 0 ? String(fila[colDireccion] ?? "").trim() || null : null,
             localidad:    colLocalidad >= 0 ? String(fila[colLocalidad] ?? "").trim() || null : null,
-            telefono:     colTelefono  >= 0 ? String(fila[colTelefono]  ?? "").trim() || null : null,
-            email:        colEmail     >= 0 ? String(fila[colEmail]     ?? "").trim() || null : null,
+            telefono:     telVal,
+            celular:      celVal,
+            email:        colEmail >= 0 ? String(fila[colEmail] ?? "").trim() || null : null,
             actualizado_at: ahora,
           });
         }
@@ -180,6 +186,7 @@ export async function POST(req: NextRequest) {
             direccion:    null,
             localidad:    null,
             telefono:     inferido.colTelefono >= 0 ? String(fila[inferido.colTelefono] ?? "").trim() || null : null,
+            celular:      null,
             email:        inferido.colEmail    >= 0 ? String(fila[inferido.colEmail]    ?? "").trim() || null : null,
             actualizado_at: ahora,
           });
