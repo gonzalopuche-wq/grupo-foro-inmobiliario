@@ -97,7 +97,7 @@ export default function IntegracionesPage() {
 
   // Kiteprop
   const [kitepropKey, setKitepropKey] = useState("");
-  const [kitepropBaseUrl, setKitepropBaseUrl] = useState("https://api.kiteprop.com/api/v1");
+  const [kitepropBaseUrl, setKitepropBaseUrl] = useState("https://www.kiteprop.com/api/v1");
   const [kitepropSaving, setKitepropSaving] = useState(false);
   const [kitepropSaved, setKitepropSaved] = useState(false);
   const [kitepropSyncing, setKitepropSyncing] = useState<string | null>(null);
