@@ -72,7 +72,25 @@ function detectarColumnas($: cheerio.CheerioAPI): string[] {
   });
   if (cols.length > 0) return cols;
 
+  // 3. Heurística COCIR: col0=texto(nombre), col1=dígitos(matrícula) → orden fijo COCIR
+  const firstDataTr = $("table tbody tr").first();
+  if (firstDataTr.length) {
+    const cells = firstDataTr.find("td");
+    const col0 = cells.eq(0).text().replace(/\s+/g, " ").trim();
+    const col1 = cells.eq(1).text().trim();
+    if (/[a-zA-ZÑñáéíóú]{3,}/.test(col0) && /^\d{1,6}$/.test(col1) && cells.length >= 4) {
+      return ["nombre", "matricula", "_col2", "inmobiliaria", "direccion", "email"];
+    }
+  }
+
   return cols; // vacío → usará fallback posicional
+}
+
+const PALABRAS_ESTADO = /\b(habilitado|inhabilitado|suspendido|baja)\b/gi;
+
+function limpiarNombre(s: string | null | undefined): string | null {
+  if (!s) return null;
+  return s.replace(PALABRAS_ESTADO, "").replace(/^[\s,]+|[\s,]+$/g, "").trim() || null;
 }
 
 function parsearTabla(html: string, camposPorCol: string[]): Record<string, string | null>[] {
@@ -100,6 +118,9 @@ function parsearTabla(html: string, camposPorCol: string[]): Record<string, stri
       const campo = usarFallback ? (FALLBACK_ORDEN[i] ?? null) : (camposPorCol[i] ?? null);
       if (campo && !campo.startsWith("_")) rec[campo] = val;
     });
+    // Limpiar palabras de estado embebidas en nombre/apellido
+    rec.nombre = limpiarNombre(rec.nombre);
+    rec.apellido = limpiarNombre(rec.apellido);
     if (!rec.matricula && !rec.apellido && !rec.nombre) return;
     if (!esNombreValido(rec.apellido) && !esNombreValido(rec.nombre)) return;
     if (!rec.telefono) {
@@ -392,13 +413,44 @@ async function guardarEnDB(
     if (r.matricula) mapa.set(String(r.matricula).trim(), r);
   });
 
+  // Limpiar duplicados existentes en la DB (conservar el primero por matrícula)
+  let eliminados = 0;
+  const matGroups = new Map<string, string[]>();
+  (existentes ?? []).forEach((r: Record<string, unknown>) => {
+    const m = String(r.matricula ?? "").trim();
+    if (!m) return;
+    if (!matGroups.has(m)) matGroups.set(m, []);
+    matGroups.get(m)!.push(String(r.id));
+  });
+  const dupIds: string[] = [];
+  for (const [, ids] of matGroups) {
+    if (ids.length > 1) ids.slice(1).forEach(id => dupIds.push(id));
+  }
+  if (dupIds.length > 0) {
+    const LOTE = 500;
+    for (let i = 0; i < dupIds.length; i += LOTE) {
+      await sb.from("cocir_padron").delete().in("id", dupIds.slice(i, i + LOTE));
+    }
+    eliminados += dupIds.length;
+    // Reconstruir mapa sin los duplicados eliminados
+    const dupSet = new Set(dupIds);
+    mapa.clear();
+    (existentes ?? []).filter((r: Record<string, unknown>) => !dupSet.has(String(r.id))).forEach((r: Record<string, unknown>) => {
+      if (r.matricula) mapa.set(String(r.matricula).trim(), r);
+    });
+  }
+
   const nuevos: Record<string, unknown>[] = [];
   const actualizaciones: Record<string, unknown>[] = [];
   let sinCambios = 0;
+  const matsInsertadas = new Set<string>();
 
   for (const reg of todos) {
     if (!esNombreValido(reg.apellido) && !esNombreValido(reg.nombre)) continue;
     const mat = String(reg.matricula ?? "").trim();
+    // Deduplicar registros entrantes con la misma matrícula
+    if (mat && matsInsertadas.has(mat)) { sinCambios++; continue; }
+    if (mat) matsInsertadas.add(mat);
     const existente = mat ? mapa.get(mat) : undefined;
     if (existente) {
       const upd: Record<string, unknown> = { actualizado_at: ahora };
@@ -425,7 +477,6 @@ async function guardarEnDB(
     if (error) return NextResponse.json({ ok: false, error: error.message });
   }
 
-  let eliminados = 0;
   if (matriculasVistas.size > 1000) {
     const paraElim = (existentes ?? []).filter((r: Record<string, unknown>) => {
       const m = String(r.matricula ?? "").trim();
