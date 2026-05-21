@@ -133,7 +133,7 @@ export default function PadronGFIPage() {
         direccion: c.direccion, localidad: c.localidad, estadoCOCIR: c.estado,
         perfilId: null, foto_url: null, zona_trabajo: null,
         especialidades: null, socio_cir: false, tipo: null,
-      }));
+      })).sort((a, b) => (a.apellido ?? "").localeCompare(b.apellido ?? "", "es-AR") || (a.nombre ?? "").localeCompare(b.nombre ?? "", "es-AR"));
     }
 
     if (fuente === "gfi") {
@@ -145,7 +145,7 @@ export default function PadronGFIPage() {
         direccion: null, localidad: null, estadoCOCIR: null,
         perfilId: g.id, foto_url: g.foto_url, zona_trabajo: g.zona_trabajo,
         especialidades: g.especialidades, socio_cir: g.socio_cir, tipo: g.tipo,
-      }));
+      })).sort((a, b) => (a.apellido ?? "").localeCompare(b.apellido ?? "", "es-AR") || (a.nombre ?? "").localeCompare(b.nombre ?? "", "es-AR"));
     }
 
     // ambos: cruzar por matrícula
@@ -279,9 +279,10 @@ export default function PadronGFIPage() {
         .pad-pag-btn:hover:not(:disabled) { border-color: rgba(200,0,0,0.4); color: #fff; }
         .pad-pag-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .pad-pag-info { font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
+        .pad-contact-btn { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; transition: opacity 0.15s; }
+        .pad-contact-btn:hover { opacity: 0.8; }
         @media (max-width: 700px) {
-          .pad-tabla th:nth-child(4), .pad-tabla td:nth-child(4),
-          .pad-tabla th:nth-child(5), .pad-tabla td:nth-child(5) { display: none; }
+          .pad-tabla th:nth-child(4), .pad-tabla td:nth-child(4) { display: none; }
         }
       `}</style>
 
@@ -471,6 +472,31 @@ export default function PadronGFIPage() {
                           <div>
                             <div className="pad-nombre">{[r.apellido, r.nombre].filter(Boolean).join(", ") || "—"}</div>
                             {r.zona_trabajo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>📍 {r.zona_trabajo}</div>}
+                            {(r.telefono || r.email) && (
+                              <div style={{display:"flex",gap:5,marginTop:5,flexWrap:"wrap"}}>
+                                {r.telefono && (
+                                  <a
+                                    href={`https://wa.me/${r.telefono.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`}
+                                    target="_blank" rel="noopener noreferrer"
+                                    onClick={e => e.stopPropagation()}
+                                    className="pad-contact-btn"
+                                    style={{background:"rgba(37,211,102,0.12)",border:"1px solid rgba(37,211,102,0.3)",color:"#25d366"}}
+                                  >
+                                    💬 WhatsApp
+                                  </a>
+                                )}
+                                {r.email && (
+                                  <a
+                                    href={`mailto:${r.email}`}
+                                    onClick={e => e.stopPropagation()}
+                                    className="pad-contact-btn"
+                                    style={{background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.3)",color:"#f87171"}}
+                                  >
+                                    ✉ Mail
+                                  </a>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -489,16 +515,16 @@ export default function PadronGFIPage() {
                       </td>
                       <td style={{fontSize:11}}>
                         {r.telefono && (
-                          <div>
-                            <a href={`https://wa.me/${(r.telefono as string).replace(/\D/g,"").replace(/^0+/,"549").replace(/^5499/,"549")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"rgba(37,211,102,0.8)",textDecoration:"none",fontSize:11}}>
-                              💬 {r.telefono}
+                          <div style={{marginBottom:r.email?4:0}}>
+                            <a href={`https://wa.me/${r.telefono.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"rgba(37,211,102,0.8)",textDecoration:"none"}}>
+                              {r.telefono}
                             </a>
                           </div>
                         )}
                         {r.email && (
-                          <div>
-                            <a href={`mailto:${r.email}`} style={{color:"rgba(200,0,0,0.7)",textDecoration:"none"}} onClick={e => e.stopPropagation()}>
-                              ✉ {r.email}
+                          <div style={{wordBreak:"break-all"}}>
+                            <a href={`mailto:${r.email}`} style={{color:"rgba(200,100,100,0.8)",textDecoration:"none"}} onClick={e => e.stopPropagation()}>
+                              {r.email}
                             </a>
                           </div>
                         )}
