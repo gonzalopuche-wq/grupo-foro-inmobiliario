@@ -83,6 +83,8 @@ export default function IntegracionesPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setToken(data.session?.access_token ?? null);
+      setKitepropUserId(data.session?.user?.id ?? "");
+      setKitepropOrigin(typeof window !== "undefined" ? window.location.origin : "");
     });
   }, []);
 
@@ -100,6 +102,11 @@ export default function IntegracionesPage() {
   const [kitepropSaved, setKitepropSaved] = useState(false);
   const [kitepropSyncing, setKitepropSyncing] = useState<string | null>(null);
   const [kitepropMsg, setKitepropMsg] = useState<{ tipo: "ok" | "err"; texto: string } | null>(null);
+  const [kitepropSecret, setKitepropSecret] = useState("");
+  const [kitepropSecretSaving, setKitepropSecretSaving] = useState(false);
+  const [kitepropSecretSaved, setKitepropSecretSaved] = useState(false);
+  const [kitepropUserId, setKitepropUserId] = useState("");
+  const [kitepropOrigin, setKitepropOrigin] = useState("");
 
   // Import
   const [importTipo, setImportTipo] = useState<ImportTipo>("contactos");
@@ -275,6 +282,20 @@ export default function IntegracionesPage() {
       setKitepropMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error al conectar con Kiteprop" });
     }
     setKitepropSyncing(null);
+  }
+
+  async function guardarKitepropSecret() {
+    if (!kitepropSecret.trim()) return;
+    setKitepropSecretSaving(true);
+    const res = await fetch("/api/crm/integraciones", {
+      method: "POST",
+      headers: { ...authHeader(), "Content-Type": "application/json" },
+      body: JSON.stringify({ accion: "guardar_webhook_secret", tipo: "kiteprop", secret: kitepropSecret.trim() }),
+    });
+    const json = await res.json();
+    setKitepropSecretSaving(false);
+    if (json.ok) { setKitepropSecretSaved(true); setKitepropSecret(""); setTimeout(() => setKitepropSecretSaved(false), 2500); }
+    else setKitepropMsg({ tipo: "err", texto: json.error });
   }
 
   const kitepropConfig = configs.find(c => c.tipo === "kiteprop");
@@ -565,6 +586,50 @@ export default function IntegracionesPage() {
                   {kitepropMsg.tipo === "ok" ? "✓ " : "✕ "}{kitepropMsg.texto}
                 </div>
               )}
+            </div>
+
+            <div className="int-card">
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", marginBottom: 14 }}>
+                WEBHOOK ENTRANTE (KITEPROP → GFI)
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 6, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>
+                  URL DEL ENDPOINT <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.2)" }}>(configurar en Kiteprop)</span>
+                </div>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, padding: "9px 12px", fontFamily: "monospace", fontSize: 11, color: "rgba(255,255,255,0.55)", wordBreak: "break-all" }}>
+                    {kitepropUserId ? `${kitepropOrigin}/api/webhooks/kiteprop/${kitepropUserId}` : "Cargando…"}
+                  </div>
+                  <button className="int-btn int-btn-outline" style={{ flexShrink: 0 }} onClick={() => {
+                    if (kitepropUserId) navigator.clipboard.writeText(`${kitepropOrigin}/api/webhooks/kiteprop/${kitepropUserId}`);
+                  }}>
+                    Copiar
+                  </button>
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 6, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>
+                  WEBHOOK SECRET <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.2)" }}>(se muestra 1 sola vez en Kiteprop)</span>
+                </div>
+                <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
+                  <input
+                    className="int-input"
+                    type="password"
+                    placeholder="Pegá el secret HMAC de Kiteprop"
+                    value={kitepropSecret}
+                    onChange={e => setKitepropSecret(e.target.value)}
+                    style={{ flex: 1 }}
+                  />
+                  <button className="int-btn int-btn-red" onClick={guardarKitepropSecret} disabled={kitepropSecretSaving || !kitepropSecret.trim() || !kitepropConfig} style={{ flexShrink: 0 }}>
+                    {kitepropSecretSaving ? "Guardando…" : kitepropSecretSaved ? "✓ Guardado" : "Guardar secret"}
+                  </button>
+                </div>
+                {!kitepropConfig && (
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 5, fontFamily: "Inter,sans-serif" }}>
+                    Primero guardá la API key para poder guardar el secret.
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="int-card" style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, fontFamily: "Inter,sans-serif" }}>

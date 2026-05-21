@@ -75,6 +75,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
+  if (accion === "guardar_webhook_secret") {
+    const { tipo, secret } = body as { tipo: string; secret: string };
+    const { data: existing } = await sb.from("crm_integraciones_config")
+      .select("config").eq("perfil_id", user.id).eq("tipo", tipo).single();
+    if (!existing) return NextResponse.json({ error: "Configurá primero la API key" }, { status: 404 });
+    const newConfig = { ...(existing.config as Record<string, unknown>), webhook_secret: secret };
+    const { error } = await sb.from("crm_integraciones_config").update({ config: newConfig })
+      .eq("perfil_id", user.id).eq("tipo", tipo);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
+
   if (accion === "update_sync") {
     const { tipo } = body as { tipo: string };
     await sb.from("crm_integraciones_config").update({ ultima_sincronizacion: new Date().toISOString() })
