@@ -1,12 +1,11 @@
 /**
- * API pública GFI — /api/v1/propiedades
- * Autenticación: X-GFI-Key: <api_key>
- *
- * GET  → lista propiedades del usuario dueño de la key
- * POST → crea o actualiza una propiedad (upsert por "codigo_externo")
+ * POST /api/v1/propiedades
+ * Endpoint público para UrbixPro → GFI.
+ * Autenticación: X-GFI-Key (SHA-256 hash comparado contra api_keys).
  */
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { createHash } from "crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -15,139 +14,157 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function resolverPerfil(req: NextRequest): Promise<{ perfil_id: string } | null> {
-  const key = req.headers.get("x-gfi-key") ?? req.headers.get("authorization")?.replace("Bearer ", "");
-  if (!key) return null;
+interface ApiKeyRow {
+  id: string;
+  perfil_id: string;
+  scopes: string[];
+  activa: boolean;
+}
+
+async function autenticar(req: NextRequest): Promise<{ perfilId: string; keyId: string; scopes: string[] } | { error: string; status: number }> {
+  const rawKey = req.headers.get("x-gfi-key");
+  if (!rawKey) return { error: "X-GFI-Key requerida", status: 401 };
+
+  const hash = createHash("sha256").update(rawKey).digest("hex");
 
   const { data } = await sb
-    .from("gfi_api_suscripciones")
-    .select("perfil_id, habilitada")
-    .eq("api_key", key)
-    .single();
+    .from("api_keys")
+    .select("id, perfil_id, scopes, activa")
+    .eq("key_hash", hash)
+    .maybeSingle();
 
-  if (!data || !data.habilitada) return null;
-  return { perfil_id: data.perfil_id };
+  if (!data) return { error: "X-GFI-Key inválida o revocada", status: 401 };
+  if (!data.activa) return { error: "X-GFI-Key inválida o revocada", status: 401 };
+
+  return { perfilId: (data as ApiKeyRow).perfil_id, keyId: (data as ApiKeyRow).id, scopes: (data as ApiKeyRow).scopes };
 }
 
-export async function GET(req: NextRequest) {
-  const perfil = await resolverPerfil(req);
-  if (!perfil) {
-    return NextResponse.json({ error: "API key inválida o sin acceso habilitado" }, { status: 401 });
-  }
-
-  const params = req.nextUrl.searchParams;
-  const limite = Math.min(parseInt(params.get("limit") ?? "200"), 500);
-  const operacion = params.get("operacion");
-  const tipo = params.get("tipo");
-
-  let query = sb
-    .from("cartera_propiedades")
-    .select(
-      "id, codigo, titulo, tipo, operacion, precio, moneda, descripcion_privada, " +
-      "direccion, zona, ciudad, codigo_postal, latitud, longitud, " +
-      "dormitorios, banos, ambientes, superficie_cubierta, superficie_total, sup_terreno, " +
-      "estado, fotos, video_url, tour_virtual_url, " +
-      "apto_credito, con_cochera, amoblado, acepta_permuta, acepta_mascotas, " +
-      "expensas, moneda_expensas, ocultar_precio, " +
-      "link_zonaprop, link_argenprop, link_mercadolibre, link_tokko, " +
-      "created_at, updated_at"
-    )
-    .eq("perfil_id", perfil.perfil_id)
-    .order("updated_at", { ascending: false })
-    .limit(limite);
-
-  if (operacion) query = query.eq("operacion", operacion);
-  if (tipo) query = query.eq("tipo", tipo);
-
-  const { data, error } = await query;
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
-  return NextResponse.json({
-    ok: true,
-    total: data?.length ?? 0,
-    propiedades: data ?? [],
-  });
+async function logear(params: {
+  keyId: string; perfilId: string; metodo: string; ruta: string;
+  status: number; req: Record<string, unknown>; res: Record<string, unknown>;
+  ip: string; ms: number;
+}) {
+  await Promise.all([
+    sb.from("api_logs").insert({
+      api_key_id: params.keyId, perfil_id: params.perfilId,
+      metodo: params.metodo, ruta: params.ruta, http_status: params.status,
+      body_req: params.req, body_res: params.res, ip: params.ip, duracion_ms: params.ms,
+    }),
+    sb.rpc("incrementar_uso_api_key", { p_key_id: params.keyId }),
+  ]);
 }
+
+const CAMPOS_REQUERIDOS = ["tipo", "operacion", "direccion", "precio", "moneda"] as const;
 
 export async function POST(req: NextRequest) {
-  const perfil = await resolverPerfil(req);
-  if (!perfil) {
-    return NextResponse.json({ error: "API key inválida o sin acceso habilitado" }, { status: 401 });
+  const t0 = Date.now();
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+
+  const auth = await autenticar(req);
+  if ("error" in auth) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
+  const { perfilId, keyId, scopes } = auth;
+
+  if (!scopes.includes("propiedades:write")) {
+    return NextResponse.json({ error: "key sin scope propiedades:write" }, { status: 403 });
   }
 
   let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON inválido" }, { status: 400 }); }
+
+  for (const campo of CAMPOS_REQUERIDOS) {
+    if (body[campo] === undefined || body[campo] === null || body[campo] === "") {
+      const res = { error: "campo requerido faltante", campo };
+      return NextResponse.json(res, { status: 400 });
+    }
   }
 
-  if (!body.titulo || !body.tipo || !body.operacion) {
-    return NextResponse.json(
-      { error: "Campos obligatorios: titulo, tipo, operacion" },
-      { status: 400 }
-    );
+  // Validar inmobiliariaId si viene (debe coincidir con el dueño de la key)
+  if (body.inmobiliariaId && body.inmobiliariaId !== perfilId) {
+    return NextResponse.json({ error: "inmobiliariaId no coincide con la key" }, { status: 403 });
   }
 
-  const codigoExterno = typeof body.codigo === "string" ? body.codigo.trim() : null;
+  const externalId = typeof body.externalId === "string" ? body.externalId : null;
 
-  // Buscar propiedad existente por codigo + perfil para hacer upsert
-  let propiedadId: string | null = null;
-  if (codigoExterno) {
-    const { data: existente } = await sb
+  const payload: Record<string, unknown> = {
+    perfil_id: perfilId,
+    tipo:                body.tipo,
+    operacion:           body.operacion,
+    direccion:           body.direccion,
+    precio:              body.precio,
+    moneda:              body.moneda,
+    ambientes:           body.ambientes ?? null,
+    dormitorios:         body.dormitorios ?? null,
+    banos:               body.banos ?? null,
+    superficie_total:    body.superficie_total ?? null,
+    superficie_cubierta: body.superficie_cubierta ?? null,
+    descripcion_privada: body.descripcion ?? null,
+    fotos:               body.fotos ?? [],
+    estado:              body.estado ?? "disponible",
+    latitud:             body.lat ?? null,
+    longitud:            body.lng ?? null,
+    origen:              "urbix",
+    updated_at:          new Date().toISOString(),
+  };
+  if (externalId) payload.external_id = externalId;
+
+  // Buscar existente por external_id + perfil_id
+  let existenteId: string | null = null;
+  if (externalId) {
+    const { data: ex } = await sb
       .from("cartera_propiedades")
       .select("id")
-      .eq("perfil_id", perfil.perfil_id)
-      .eq("codigo", codigoExterno)
+      .eq("perfil_id", perfilId)
+      .eq("external_id", externalId)
       .maybeSingle();
-    propiedadId = existente?.id ?? null;
+    existenteId = ex?.id ?? null;
   }
 
-  const camposPermitidos = [
-    "codigo", "titulo", "tipo", "operacion", "precio", "moneda",
-    "descripcion_privada", "direccion", "zona", "ciudad", "codigo_postal",
-    "latitud", "longitud", "dormitorios", "banos", "ambientes",
-    "superficie_cubierta", "superficie_total", "sup_terreno", "sup_semicubierta",
-    "sup_descubierta", "sup_balcon", "sup_patio_terraza",
-    "estado", "fotos", "video_url", "tour_virtual_url", "tour_virtual_url",
-    "apto_credito", "con_cochera", "amoblado", "acepta_permuta", "acepta_mascotas",
-    "barrio_cerrado", "uso_comercial", "uso_profesional",
-    "expensas", "moneda_expensas", "ocultar_precio",
-    "anio_construccion", "piso", "numero_unidad", "disposicion", "orientacion",
-    "tipo_departamento", "antiguedad", "condicion",
-    "amb_balcon", "amb_terraza", "amb_patio", "amb_jardin", "amb_parrilla",
-    "amb_living", "amb_comedor", "amb_comedor_diario", "amb_cocina",
-    "amb_estudio", "amb_vestidor", "amb_lavadero",
-    "com_pileta", "com_gimnasio", "com_sum", "com_salon_fiestas",
-    "com_seguridad", "com_internet", "com_aire_acondicionado", "com_calefaccion",
-    "com_ascensor", "com_quincho", "com_juegos_infantiles",
-  ] as const;
-
-  const payload: Record<string, unknown> = { perfil_id: perfil.perfil_id, updated_at: new Date().toISOString() };
-  for (const campo of camposPermitidos) {
-    if (campo in body) payload[campo] = body[campo];
-  }
-
-  let result: Record<string, unknown>;
-  if (propiedadId) {
-    const { data, error } = await sb
+  let propId: string;
+  if (existenteId) {
+    const { error } = await sb
       .from("cartera_propiedades")
       .update(payload)
-      .eq("id", propiedadId)
-      .eq("perfil_id", perfil.perfil_id)
-      .select("id, codigo, titulo")
-      .single();
+      .eq("id", existenteId)
+      .eq("perfil_id", perfilId);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    result = { accion: "actualizada", ...data };
+    propId = existenteId;
   } else {
     const { data, error } = await sb
       .from("cartera_propiedades")
       .insert(payload)
-      .select("id, codigo, titulo")
+      .select("id")
       .single();
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    result = { accion: "creada", ...data };
+    propId = data.id;
   }
 
-  return NextResponse.json({ ok: true, ...result });
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const resBody = { id: propId, url: `${baseUrl}/propiedad/${propId}` };
+
+  await logear({
+    keyId, perfilId, metodo: "POST", ruta: "/api/v1/propiedades",
+    status: 200, req: body, res: resBody, ip, ms: Date.now() - t0,
+  });
+
+  return NextResponse.json(resBody, { status: existenteId ? 200 : 201 });
+}
+
+export async function GET(req: NextRequest) {
+  const auth = await autenticar(req);
+  if ("error" in auth) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
+  const { perfilId } = auth;
+  const params = req.nextUrl.searchParams;
+  const limite = Math.min(parseInt(params.get("limit") ?? "200"), 500);
+
+  const { data, error } = await sb
+    .from("cartera_propiedades")
+    .select("id, external_id, tipo, operacion, direccion, precio, moneda, estado, origen, kiteprop_id, kiteprop_sync_at, updated_at")
+    .eq("perfil_id", perfilId)
+    .order("updated_at", { ascending: false })
+    .limit(limite);
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true, total: data?.length ?? 0, propiedades: data ?? [] });
 }

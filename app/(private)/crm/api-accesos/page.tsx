@@ -1,376 +1,303 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
-interface Suscripcion {
-  perfil_id: string;
-  api_key: string;
-  habilitada: boolean;
-  habilitada_at: string | null;
-  precio_mensual: number;
-  notas: string | null;
-}
-
-interface Perfil {
+interface ApiKey {
   id: string;
   nombre: string;
-  apellido: string;
-  email: string;
-  tipo: string;
-  matricula: string | null;
-  inmobiliaria: string | null;
-  suscripcion: Suscripcion | null;
+  prefijo: string;
+  scopes: string[];
+  activa: boolean;
+  ultimo_uso: string | null;
+  cant_usos: number;
+  created_at: string;
 }
 
-export default function ApiAccesosPage() {
-  const [perfiles, setPerfiles] = useState<Perfil[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [busqueda, setBusqueda] = useState("");
-  const [guardando, setGuardando] = useState<Record<string, boolean>>({});
-  const [keyVisible, setKeyVisible] = useState<Record<string, boolean>>({});
-  const [msg, setMsg] = useState<Record<string, string>>({});
-  const [notas, setNotas] = useState<Record<string, string>>({});
-  const [precio, setPrecio] = useState<Record<string, string>>({});
+const BASE_URL = typeof window !== "undefined" ? window.location.origin : "";
 
-  const API_DOCS_URL = typeof window !== "undefined"
-    ? `${window.location.origin}/api/v1/propiedades`
-    : "/api/v1/propiedades";
+export default function ApiAccesosPage() {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [keys, setKeys] = useState<ApiKey[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [nuevaKey, setNuevaKey] = useState<string | null>(null);
+  const [nombreInput, setNombreInput] = useState("");
+  const [creando, setCreando] = useState(false);
+  const [revocando, setRevocando] = useState<string | null>(null);
+  const [copiado, setCopiado] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.href = "/login"; return; }
-      const { data: p } = await supabase.from("perfiles").select("tipo").eq("id", session.user.id).single();
-      if (!p || !["admin", "master"].includes(p.tipo)) {
-        setError("Sin acceso — solo administradores");
-        setLoading(false);
-        return;
-      }
-      setIsAdmin(true);
+      setUserId(session.user.id);
       setToken(session.access_token);
-      await cargarPerfiles(session.access_token);
+      await cargarKeys(session.access_token);
     };
     init();
   }, []);
 
-  async function cargarPerfiles(tk: string) {
+  async function cargarKeys(tk: string) {
     setLoading(true);
-    try {
-      const res = await fetch("/api/admin/api-suscripciones", {
-        headers: { Authorization: `Bearer ${tk}` },
-      });
-      const json = await res.json();
-      if (!json.ok) throw new Error(json.error);
-      const data: Perfil[] = json.perfiles;
-      setPerfiles(data);
-      // Inicializar estados locales
-      const notasInit: Record<string, string> = {};
-      const precioInit: Record<string, string> = {};
-      data.forEach(p => {
-        notasInit[p.id] = p.suscripcion?.notas ?? "";
-        precioInit[p.id] = String(p.suscripcion?.precio_mensual ?? 50000);
-      });
-      setNotas(notasInit);
-      setPrecio(precioInit);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Error al cargar");
-    }
+    const res = await fetch("/api/admin/api-keys", { headers: { Authorization: `Bearer ${tk}` } });
+    const json = await res.json();
+    if (json.ok) setKeys(json.keys);
     setLoading(false);
   }
 
-  async function toggleHabilitar(perfil: Perfil, habilitar: boolean) {
-    if (!token) return;
-    setGuardando(g => ({ ...g, [perfil.id]: true }));
-    try {
-      const res = await fetch("/api/admin/api-suscripciones", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          perfil_id: perfil.id,
-          habilitada: habilitar,
-          notas: notas[perfil.id] ?? "",
-          precio_mensual: parseInt(precio[perfil.id] ?? "50000", 10) || 50000,
-        }),
-      });
-      const json = await res.json();
-      if (!json.ok) throw new Error(json.error);
-      setPerfiles(prev => prev.map(p =>
-        p.id === perfil.id ? { ...p, suscripcion: json.suscripcion } : p
-      ));
-      setMsg(m => ({ ...m, [perfil.id]: habilitar ? "✓ API habilitada" : "✓ API deshabilitada" }));
-      setTimeout(() => setMsg(m => ({ ...m, [perfil.id]: "" })), 3000);
-    } catch (e: unknown) {
-      setMsg(m => ({ ...m, [perfil.id]: `Error: ${e instanceof Error ? e.message : "desconocido"}` }));
+  async function crearKey() {
+    if (!token || !nombreInput.trim()) return;
+    setCreando(true);
+    setError(null);
+    const res = await fetch("/api/admin/api-keys", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre: nombreInput.trim() }),
+    });
+    const json = await res.json();
+    if (json.ok) {
+      setNuevaKey(json.key);
+      setNombreInput("");
+      await cargarKeys(token);
+    } else {
+      setError(json.error ?? "Error al crear key");
     }
-    setGuardando(g => ({ ...g, [perfil.id]: false }));
+    setCreando(false);
   }
 
-  async function regenerarKey(perfilId: string) {
-    if (!token || !confirm("¿Regenerar la API key? El usuario deberá actualizar UrbixPro con la nueva key.")) return;
-    setGuardando(g => ({ ...g, [perfilId]: true }));
-    try {
-      const res = await fetch("/api/admin/api-suscripciones", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ perfil_id: perfilId, habilitada: true, regenerar_key: true }),
-      });
-      const json = await res.json();
-      if (!json.ok) throw new Error(json.error);
-      setPerfiles(prev => prev.map(p =>
-        p.id === perfilId ? { ...p, suscripcion: json.suscripcion } : p
-      ));
-      setMsg(m => ({ ...m, [perfilId]: "✓ Key regenerada" }));
-      setTimeout(() => setMsg(m => ({ ...m, [perfilId]: "" })), 3000);
-    } catch (e: unknown) {
-      setMsg(m => ({ ...m, [perfilId]: `Error: ${e instanceof Error ? e.message : "desconocido"}` }));
-    }
-    setGuardando(g => ({ ...g, [perfilId]: false }));
+  async function revocarKey(keyId: string) {
+    if (!token || !confirm("¿Revocar esta key? UrbixPro dejará de poder sincronizar con este token.")) return;
+    setRevocando(keyId);
+    await fetch(`/api/admin/api-keys?key_id=${keyId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setRevocando(null);
+    await cargarKeys(token!);
   }
 
-  function copiar(texto: string, perfilId: string) {
-    navigator.clipboard.writeText(texto);
-    setMsg(m => ({ ...m, [perfilId]: "✓ Copiado" }));
-    setTimeout(() => setMsg(m => ({ ...m, [perfilId]: "" })), 2000);
+  function copiarKey() {
+    if (!nuevaKey) return;
+    navigator.clipboard.writeText(nuevaKey);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
   }
 
-  const filtrados = useMemo(() => {
-    const q = busqueda.toLowerCase();
-    if (!q) return perfiles;
-    return perfiles.filter(p =>
-      p.apellido?.toLowerCase().includes(q) ||
-      p.nombre?.toLowerCase().includes(q) ||
-      p.email?.toLowerCase().includes(q) ||
-      p.inmobiliaria?.toLowerCase().includes(q) ||
-      p.matricula?.toLowerCase().includes(q)
-    );
-  }, [perfiles, busqueda]);
-
-  const habilitados = perfiles.filter(p => p.suscripcion?.habilitada).length;
+  const activas = keys.filter(k => k.activa);
+  const revocadas = keys.filter(k => !k.activa);
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
-        .apiac-wrap { display: flex; flex-direction: column; gap: 20px; }
-        .apiac-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .apiac-titulo span { color: #cc0000; }
-        .apiac-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
-        .apiac-stats { display: flex; gap: 16px; flex-wrap: wrap; }
-        .apiac-stat { padding: 14px 20px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; }
-        .apiac-stat-val { font-family: 'Montserrat',sans-serif; font-size: 24px; font-weight: 800; color: #fff; }
-        .apiac-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; margin-top: 2px; }
-        .apiac-docs { padding: 14px 18px; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); border-radius: 6px; font-size: 12px; color: rgba(255,255,255,0.7); font-family: 'Inter',sans-serif; }
-        .apiac-docs code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 3px; font-size: 11px; color: #818cf8; }
-        .apiac-input { padding: 10px 14px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; color: #fff; font-size: 14px; outline: none; font-family: 'Inter',sans-serif; width: 100%; transition: border-color 0.2s; }
-        .apiac-input:focus { border-color: rgba(200,0,0,0.5); }
-        .apiac-tabla-wrap { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow-x: auto; }
-        .apiac-tabla { width: 100%; border-collapse: collapse; min-width: 900px; }
-        .apiac-tabla thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .apiac-tabla th { padding: 10px 14px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
-        .apiac-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .apiac-tabla tbody tr:last-child { border-bottom: none; }
-        .apiac-tabla tbody tr:hover { background: rgba(255,255,255,0.015); }
-        .apiac-tabla td { padding: 12px 14px; font-size: 12px; color: rgba(255,255,255,0.7); vertical-align: middle; }
-        .apiac-nombre { font-weight: 600; color: #fff; font-size: 13px; }
-        .apiac-mat { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; }
-        .apiac-toggle { position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; }
-        .apiac-toggle input { opacity: 0; width: 0; height: 0; }
-        .apiac-slider { position: absolute; inset: 0; background: rgba(255,255,255,0.1); border-radius: 24px; transition: 0.2s; border: 1px solid rgba(255,255,255,0.15); }
-        .apiac-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background: rgba(255,255,255,0.6); border-radius: 50%; transition: 0.2s; }
-        input:checked + .apiac-slider { background: rgba(34,197,94,0.25); border-color: rgba(34,197,94,0.5); }
-        input:checked + .apiac-slider:before { transform: translateX(20px); background: #22c55e; }
-        .apiac-key-wrap { display: flex; align-items: center; gap: 6px; }
-        .apiac-key { font-family: monospace; font-size: 11px; color: #818cf8; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); padding: 4px 10px; border-radius: 4px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .apiac-btn { padding: 5px 12px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); }
-        .apiac-btn:hover { border-color: rgba(200,0,0,0.4); color: #fff; }
-        .apiac-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .apiac-msg { font-size: 11px; color: #22c55e; font-family: 'Inter',sans-serif; }
-        .apiac-msg.err { color: #f87171; }
-        .apiac-nokey { font-size: 11px; color: rgba(255,255,255,0.2); font-style: italic; }
-        .apiac-inp-sm { padding: 5px 10px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.7); font-size: 11px; font-family: 'Inter',sans-serif; outline: none; width: 90px; }
-        .apiac-inp-sm:focus { border-color: rgba(200,0,0,0.4); }
+        .ak-wrap { display: flex; flex-direction: column; gap: 24px; max-width: 820px; }
+        .ak-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+        .ak-titulo span { color: #cc0000; }
+        .ak-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+        .ak-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px; }
+        .ak-card-titulo { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
+        .ak-endpoint { font-family: monospace; font-size: 12px; color: #818cf8; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); padding: 10px 14px; border-radius: 6px; word-break: break-all; }
+        .ak-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .ak-input { flex: 1; min-width: 200px; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; transition: border-color 0.2s; }
+        .ak-input:focus { border-color: rgba(204,0,0,0.5); }
+        .ak-input::placeholder { color: rgba(255,255,255,0.2); }
+        .ak-btn { padding: 10px 18px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(204,0,0,0.5); background: rgba(204,0,0,0.12); color: #fff; transition: all 0.15s; white-space: nowrap; }
+        .ak-btn:hover:not(:disabled) { background: rgba(204,0,0,0.22); }
+        .ak-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .ak-btn-sm { padding: 5px 12px; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); transition: all 0.15s; }
+        .ak-btn-sm:hover:not(:disabled) { border-color: rgba(239,68,68,0.5); color: #ef4444; }
+        .ak-btn-sm:disabled { opacity: 0.4; cursor: not-allowed; }
+        .ak-nueva-key { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+        .ak-nueva-key-titulo { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #22c55e; }
+        .ak-nueva-key-aviso { font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'Inter',sans-serif; }
+        .ak-key-display { display: flex; align-items: center; gap: 10px; }
+        .ak-key-value { font-family: monospace; font-size: 13px; color: #22c55e; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); padding: 10px 14px; border-radius: 4px; flex: 1; word-break: break-all; }
+        .ak-btn-copy { padding: 10px 16px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(34,197,94,0.4); background: rgba(34,197,94,0.1); color: #22c55e; transition: all 0.15s; white-space: nowrap; }
+        .ak-btn-copy:hover { background: rgba(34,197,94,0.18); }
+        .ak-tabla { width: 100%; border-collapse: collapse; }
+        .ak-tabla th { padding: 8px 12px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .ak-tabla td { padding: 11px 12px; font-size: 12px; color: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+        .ak-tabla tbody tr:last-child td { border-bottom: none; }
+        .ak-tabla tbody tr:hover td { background: rgba(255,255,255,0.015); }
+        .ak-prefijo { font-family: monospace; font-size: 12px; color: #818cf8; }
+        .ak-scope { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 10px; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); color: #818cf8; }
+        .ak-pill-activa { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 10px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }
+        .ak-pill-revocada { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 10px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #f87171; }
+        .ak-empty { padding: 32px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
+        .ak-error { padding: 10px 14px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 6px; font-size: 12px; color: #f87171; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
-      <div className="apiac-wrap">
+      <div className="ak-wrap">
         <div>
-          <div className="apiac-titulo">API <span>GFI®</span> — Accesos</div>
-          <div className="apiac-sub">Habilitá la API pública por usuario · $50.000/mes adicionales · Solo propiedades propias</div>
+          <div className="ak-titulo"><span>GFI®</span> API Keys</div>
+          <div className="ak-sub">Conectá UrbixPro u otros sistemas externos. La key se muestra una sola vez al crearla.</div>
         </div>
 
-        {error && (
-          <div style={{ padding: "14px 18px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 8, fontSize: 13, color: "#ef4444" }}>
-            {error}
+        {/* Endpoint info */}
+        <div className="ak-card">
+          <div className="ak-card-titulo">Endpoint de integración</div>
+          <div className="ak-endpoint">{BASE_URL}/api/v1/propiedades</div>
+          <div style={{ marginTop: 10, fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", lineHeight: 1.6 }}>
+            Header: <code style={{ background: "rgba(255,255,255,0.06)", padding: "1px 5px", borderRadius: 3, color: "#a5b4fc" }}>X-GFI-Key: &lt;tu key&gt;</code>
+            &nbsp;·&nbsp; POST crea/actualiza · PUT actualiza por id · DELETE retira (soft)
+          </div>
+        </div>
+
+        {/* Crear nueva key */}
+        <div className="ak-card">
+          <div className="ak-card-titulo">Nueva API Key</div>
+          <div className="ak-row">
+            <input
+              className="ak-input"
+              placeholder="Nombre · ej: URBIX PRO, Script propio..."
+              value={nombreInput}
+              onChange={e => setNombreInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") crearKey(); }}
+              disabled={creando}
+            />
+            <button className="ak-btn" onClick={crearKey} disabled={creando || !nombreInput.trim()}>
+              {creando ? "Generando…" : "Generar key"}
+            </button>
+          </div>
+          {error && <div className="ak-error" style={{ marginTop: 10 }}>{error}</div>}
+        </div>
+
+        {/* Mostrar key recién generada */}
+        {nuevaKey && (
+          <div className="ak-nueva-key">
+            <div className="ak-nueva-key-titulo">⚠️ Copiá esta key ahora — no se mostrará de nuevo</div>
+            <div className="ak-key-display">
+              <div className="ak-key-value">{nuevaKey}</div>
+              <button className="ak-btn-copy" onClick={copiarKey}>
+                {copiado ? "✓ Copiado" : "📋 Copiar"}
+              </button>
+            </div>
+            <div className="ak-nueva-key-aviso">
+              Pegá este valor como <strong>X-GFI-Key</strong> en la configuración de UrbixPro. Una vez cerrado este mensaje no hay forma de recuperarla.
+            </div>
+            <button
+              className="ak-btn-sm"
+              onClick={() => setNuevaKey(null)}
+              style={{ alignSelf: "flex-start", borderColor: "rgba(34,197,94,0.3)", color: "#22c55e" }}
+            >
+              ✓ Ya la guardé, cerrar
+            </button>
           </div>
         )}
 
-        {isAdmin && !loading && (
-          <>
-            <div className="apiac-stats">
-              <div className="apiac-stat">
-                <div className="apiac-stat-val">{habilitados}</div>
-                <div className="apiac-stat-label">Con API activa</div>
-              </div>
-              <div className="apiac-stat">
-                <div className="apiac-stat-val" style={{ color: "#22c55e" }}>
-                  ${(habilitados * 50000).toLocaleString("es-AR")}
-                </div>
-                <div className="apiac-stat-label">Facturación mensual</div>
-              </div>
-              <div className="apiac-stat">
-                <div className="apiac-stat-val" style={{ color: "rgba(255,255,255,0.4)" }}>{perfiles.length}</div>
-                <div className="apiac-stat-label">Total usuarios</div>
-              </div>
+        {/* Lista de keys activas */}
+        <div className="ak-card">
+          <div className="ak-card-titulo">Keys activas ({activas.length})</div>
+          {loading ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 0", color: "rgba(255,255,255,0.3)", fontSize: 12 }}>
+              <div style={{ width: 16, height: 16, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+              Cargando…
             </div>
-
-            <div className="apiac-docs">
-              <strong style={{ color: "#818cf8" }}>Endpoint API:</strong>{" "}
-              <code>{API_DOCS_URL}</code>
-              <br /><br />
-              <strong>Header de autenticación:</strong> <code>X-GFI-Key: &lt;api_key&gt;</code>
-              <br />
-              <strong>GET</strong> → lista propiedades del usuario &nbsp;|&nbsp;
-              <strong>POST</strong> → crea/actualiza propiedad (upsert por <code>codigo</code>)<br /><br />
-              <strong>Flujo UrbixPro:</strong>{" "}
-              UrbixPro <strong>→</strong> POST <code>/api/v1/propiedades</code> (con X-GFI-Key){" "}
-              <strong>→</strong> GFI almacena en cartera{" "}
-              <strong>→</strong> sync a KiteProp{" "}
-              <strong>→</strong> web
-            </div>
-
-            <input
-              className="apiac-input"
-              placeholder="Buscar por nombre, apellido, email, inmobiliaria o matrícula..."
-              value={busqueda}
-              onChange={e => setBusqueda(e.target.value)}
-            />
-
-            <div className="apiac-tabla-wrap">
-              <table className="apiac-tabla">
-                <thead>
-                  <tr>
-                    <th>Usuario</th>
-                    <th>Matrícula / Inmobiliaria</th>
-                    <th>Precio/mes</th>
-                    <th>API habilitada</th>
-                    <th>API Key</th>
-                    <th>Habilitada desde</th>
-                    <th>Acciones</th>
+          ) : activas.length === 0 ? (
+            <div className="ak-empty">Sin keys activas — generá una arriba</div>
+          ) : (
+            <table className="ak-tabla">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Prefijo</th>
+                  <th>Scopes</th>
+                  <th>Último uso</th>
+                  <th>Usos</th>
+                  <th>Creada</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {activas.map(k => (
+                  <tr key={k.id}>
+                    <td style={{ fontWeight: 600, color: "#fff" }}>{k.nombre}</td>
+                    <td><span className="ak-prefijo">{k.prefijo}••••</span></td>
+                    <td>{k.scopes.map(s => <span key={s} className="ak-scope">{s}</span>)}</td>
+                    <td style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+                      {k.ultimo_uso
+                        ? new Date(k.ultimo_uso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+                        : "Nunca"}
+                    </td>
+                    <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13 }}>
+                      {k.cant_usos.toLocaleString("es-AR")}
+                    </td>
+                    <td style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+                      {new Date(k.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                    </td>
+                    <td>
+                      <button
+                        className="ak-btn-sm"
+                        onClick={() => revocarKey(k.id)}
+                        disabled={revocando === k.id}
+                      >
+                        {revocando === k.id ? "…" : "Revocar"}
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filtrados.map(p => {
-                    const sus = p.suscripcion;
-                    const isGuardando = guardando[p.id];
-                    const mensajeActual = msg[p.id] ?? "";
-                    const esError = mensajeActual.startsWith("Error");
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
 
-                    return (
-                      <tr key={p.id}>
-                        <td>
-                          <div className="apiac-nombre">{[p.apellido, p.nombre].filter(Boolean).join(", ") || "—"}</div>
-                          <div className="apiac-mat" style={{ color: "rgba(255,255,255,0.3)" }}>{p.email}</div>
-                        </td>
-                        <td>
-                          <div style={{ fontSize: 12 }}>{p.matricula || <span style={{ color: "rgba(255,255,255,0.2)" }}>—</span>}</div>
-                          <div className="apiac-mat">{p.inmobiliaria}</div>
-                        </td>
-                        <td>
-                          <input
-                            className="apiac-inp-sm"
-                            type="number"
-                            value={precio[p.id] ?? "50000"}
-                            onChange={e => setPrecio(pr => ({ ...pr, [p.id]: e.target.value }))}
-                            min={0}
-                          />
-                        </td>
-                        <td>
-                          <label className="apiac-toggle">
-                            <input
-                              type="checkbox"
-                              checked={sus?.habilitada ?? false}
-                              disabled={isGuardando}
-                              onChange={e => toggleHabilitar(p, e.target.checked)}
-                            />
-                            <span className="apiac-slider" />
-                          </label>
-                        </td>
-                        <td>
-                          {sus?.api_key ? (
-                            <div className="apiac-key-wrap">
-                              <div className="apiac-key" title={sus.api_key}>
-                                {keyVisible[p.id] ? sus.api_key : `${sus.api_key.slice(0, 8)}••••••••`}
-                              </div>
-                              <button
-                                className="apiac-btn"
-                                onClick={() => setKeyVisible(v => ({ ...v, [p.id]: !v[p.id] }))}
-                                title="Mostrar/ocultar"
-                              >
-                                {keyVisible[p.id] ? "🙈" : "👁"}
-                              </button>
-                              <button
-                                className="apiac-btn"
-                                onClick={() => copiar(sus.api_key, p.id)}
-                                title="Copiar key"
-                              >
-                                📋
-                              </button>
-                            </div>
-                          ) : (
-                            <span className="apiac-nokey">Sin key — habilitá para generar</span>
-                          )}
-                        </td>
-                        <td style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
-                          {sus?.habilitada_at
-                            ? new Date(sus.habilitada_at).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" })
-                            : "—"}
-                        </td>
-                        <td>
-                          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            {sus?.api_key && (
-                              <button
-                                className="apiac-btn"
-                                onClick={() => regenerarKey(p.id)}
-                                disabled={isGuardando}
-                                style={{ borderColor: "rgba(234,179,8,0.3)", color: "#eab308" }}
-                              >
-                                🔄 Nueva key
-                              </button>
-                            )}
-                            {mensajeActual && (
-                              <span className={`apiac-msg${esError ? " err" : ""}`}>
-                                {mensajeActual}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {filtrados.length === 0 && (
-                    <tr>
-                      <td colSpan={7} style={{ textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>
-                        {busqueda ? `Sin resultados para "${busqueda}"` : "Sin usuarios"}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
+        {/* Keys revocadas */}
+        {revocadas.length > 0 && (
+          <div className="ak-card">
+            <div className="ak-card-titulo">Keys revocadas ({revocadas.length})</div>
+            <table className="ak-tabla">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Prefijo</th>
+                  <th>Estado</th>
+                  <th>Creada</th>
+                </tr>
+              </thead>
+              <tbody>
+                {revocadas.map(k => (
+                  <tr key={k.id} style={{ opacity: 0.5 }}>
+                    <td>{k.nombre}</td>
+                    <td><span className="ak-prefijo">{k.prefijo}••••</span></td>
+                    <td><span className="ak-pill-revocada">Revocada</span></td>
+                    <td style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+                      {new Date(k.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
-        {loading && (
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "40px 0", color: "rgba(255,255,255,0.3)", fontSize: 14 }}>
-            <div style={{ width: 20, height: 20, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-            Cargando usuarios…
+        {/* Datos para UrbixPro */}
+        {userId && (
+          <div className="ak-card" style={{ borderColor: "rgba(99,102,241,0.2)", background: "rgba(99,102,241,0.04)" }}>
+            <div className="ak-card-titulo" style={{ color: "#818cf8" }}>Datos para configurar en UrbixPro</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 12, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.6)" }}>
+              <div>
+                <span style={{ color: "rgba(255,255,255,0.3)" }}>URL base GFI → </span>
+                <code style={{ color: "#818cf8", background: "rgba(99,102,241,0.1)", padding: "2px 6px", borderRadius: 3 }}>{BASE_URL}</code>
+              </div>
+              <div>
+                <span style={{ color: "rgba(255,255,255,0.3)" }}>inmobiliaria_id → </span>
+                <code
+                  style={{ color: "#a5b4fc", background: "rgba(99,102,241,0.1)", padding: "2px 6px", borderRadius: 3, cursor: "pointer" }}
+                  onClick={() => { navigator.clipboard.writeText(userId); }}
+                  title="Click para copiar"
+                >{userId}</code>
+              </div>
+              <div>
+                <span style={{ color: "rgba(255,255,255,0.3)" }}>X-GFI-Key → </span>
+                <span style={{ color: "rgba(255,255,255,0.4)", fontStyle: "italic" }}>generá una key arriba y copiala</span>
+              </div>
+            </div>
           </div>
         )}
       </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </>
   );
 }
