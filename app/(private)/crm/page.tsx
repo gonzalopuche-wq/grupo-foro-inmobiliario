@@ -552,7 +552,7 @@ function CrmPageInner() {
         }
       }
       // Fallback: query simple por operación y presupuesto
-      let query = supabase.from("cartera_propiedades").select("id, titulo, precio, moneda, operacion, zona, ciudad").eq("perfil_id", userId).eq("estado", "activa");
+      let query = supabase.from("cartera_propiedades").select("id, titulo, precio, moneda, operacion, zona, ciudad, url_portal_origen").eq("perfil_id", userId).eq("estado", "activa");
       if (contacto.interes === "Comprar") query = query.eq("operacion", "Venta");
       else if (contacto.interes === "Alquilar") query = query.eq("operacion", "Alquiler");
       const { data } = await query.limit(20);
@@ -1244,6 +1244,27 @@ function CrmPageInner() {
                     </div>
                   </div>
                 </div>
+                {/* Coincidencias en redes */}
+                <div style={{background:"#0d0d0d",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"16px 18px"}}>
+                  <div style={{fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:14}}>Coincidencias en redes</div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10}}>
+                    {[
+                      { red:"Red KiteProp",     total:21643, color:"#a855f7", icon:"🔗" },
+                      { red:"Red COCIR",         total:65139, color:"#3b82f6", icon:"🏛️" },
+                      { red:"Red Propia MLS",    total:16095, color:"#f97316", icon:"🏠" },
+                      { red:"Empresas aliadas",  total:1681,  color:"#22c55e", icon:"🤝" },
+                    ].map(r => (
+                      <div key={r.red} style={{background:"rgba(255,255,255,0.025)",border:`1px solid ${r.color}22`,borderRadius:7,padding:"12px 14px",display:"flex",alignItems:"flex-start",gap:10}}>
+                        <div style={{fontSize:18,lineHeight:1,marginTop:1,flexShrink:0}}>{r.icon}</div>
+                        <div>
+                          <div style={{fontFamily:"Montserrat,sans-serif",fontSize:16,fontWeight:800,color:r.color,lineHeight:1,letterSpacing:"-0.02em"}}>{r.total.toLocaleString("es-AR")}</div>
+                          <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginTop:4}}>{r.red}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {interaccRecientes.length > 0 && null}
               </div>
             );
@@ -1534,7 +1555,12 @@ function CrmPageInner() {
                             ) : (
                               <>
                                 <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>{propiedadesSugeridas.length} propiedad{propiedadesSugeridas.length !== 1 ? "es" : ""} sugerida{propiedadesSugeridas.length !== 1 ? "s" : ""}</div>
-                                {propiedadesSugeridas.map((prop: any) => (
+                                {propiedadesSugeridas.map((prop: any) => {
+                                  const origen = prop.url_portal_origen as string | null;
+                                  const redInfo = origen?.startsWith("kiteprop:") ? { label:"KiteProp", color:"#a855f7" }
+                                    : origen?.startsWith("tokko:")    ? { label:"Tokko",    color:"#3b82f6" }
+                                    : null;
+                                  return (
                                   <div key={prop.id} className="prop-card">
                                     <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:6}}>
                                       <div className="prop-card-dir" style={{flex:1}}>{prop.titulo ?? prop.direccion ?? "Sin título"}</div>
@@ -1548,9 +1574,11 @@ function CrmPageInner() {
                                       {prop.precio && <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#fff"}}>{prop.moneda ?? "USD"} {prop.precio.toLocaleString("es-AR")}</span>}
                                       {prop.operacion && <span style={{padding:"1px 6px",borderRadius:8,border:"1px solid rgba(255,255,255,0.1)",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.4)"}}>{prop.operacion}</span>}
                                       {prop.zona && !prop.titulo && <span>{prop.zona}</span>}
+                                      {redInfo && <span style={{padding:"1px 6px",borderRadius:8,border:`1px solid ${redInfo.color}40`,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:redInfo.color,background:`${redInfo.color}12`}}>🔗 {redInfo.label}</span>}
                                     </div>
                                   </div>
-                                ))}
+                                  );
+                                })}
                               </>
                             )}
                           </>
