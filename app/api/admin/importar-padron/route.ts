@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
       const colDireccion  = detectarColumna(headers, ["direccion", "domicilio", "calle"]);
       const colLocalidad  = detectarColumna(headers, ["localidad", "ciudad", "partido"]);
       const colTelefono   = detectarColumna(headers, ["telefono", "tel fijo", "fijo"]);
-      const colCelular    = detectarColumna(headers, ["celular", "cel", "movil", "whatsapp", "telefono"]);
+      const colCelular    = detectarColumna(headers, ["celular", "cel", "movil", "whatsapp"]);
       const colEmail      = detectarColumna(headers, ["email", "mail", "correo"]);
       // Si solo hay una columna que coincide con ambos, separar: celular tiene prioridad sobre 'telefono' genérico
       const celularEsTelefono = colCelular === colTelefono;
