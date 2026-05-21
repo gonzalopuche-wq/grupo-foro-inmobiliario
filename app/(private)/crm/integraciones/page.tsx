@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
 // ── Tipos ───────────────────────────────────────────────────────────────────
@@ -22,7 +23,7 @@ interface ConfigEntry {
   created_at: string;
 }
 
-type Tab = "tokko" | "kiteprop" | "propia" | "importar" | "exportar" | "historial";
+type Tab = "tokko" | "kiteprop" | "propia" | "ml" | "google" | "importar" | "exportar" | "historial";
 type ImportTipo = "contactos" | "propiedades";
 
 // Mapeo automático de columnas CSV → campo interno
@@ -73,7 +74,8 @@ const TIPO_LABEL: Record<string, string> = {
 
 // ── Componente ───────────────────────────────────────────────────────────────
 
-export default function IntegracionesPage() {
+function IntegracionesInner() {
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState<Tab>("tokko");
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [configs, setConfigs] = useState<ConfigEntry[]>([]);
@@ -81,21 +83,41 @@ export default function IntegracionesPage() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
+    const mlOk  = searchParams.get("ml_ok");
+    const mlErr = searchParams.get("ml_error");
+    const gOk   = searchParams.get("google_ok");
+    const gErr  = searchParams.get("google_error");
+    if (mlOk)  { setTab("ml");     setMlMsg({ tipo: "ok",  texto: "MercadoLibre conectado correctamente." }); }
+    if (mlErr) { setTab("ml");     setMlMsg({ tipo: "err", texto: `Error ML: ${mlErr.replace(/_/g, " ")}` }); }
+    if (gOk)   { setTab("google"); }
+    if (gErr)  { setTab("google"); }
+  }, [searchParams]);
+
+  useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       setToken(data.session?.access_token ?? null);
-      setKitepropUserId(data.session?.user?.id ?? "");
+      const uid = data.session?.user?.id ?? "";
+      setKitepropUserId(uid);
+      setUserId(uid || null);
       setKitepropOrigin(typeof window !== "undefined" ? window.location.origin : "");
-      if (data.session?.user?.id) {
+      if (uid) {
         const { data: creds } = await supabase
           .from("portal_credenciales")
-          .select("propia_api_key,propia_usuario,propia_company_id,propia_provider")
-          .eq("perfil_id", data.session.user.id)
+          .select("propia_api_key,propia_usuario,propia_company_id,propia_provider,ml_app_id,ml_app_secret,ml_access_token,ml_token_expires_at,google_access_token,google_token_expires_at")
+          .eq("perfil_id", uid)
           .maybeSingle();
         if (creds) {
-          setPropiaKey((creds as Record<string, string>).propia_api_key ?? "");
-          setPropiaUsuario((creds as Record<string, string>).propia_usuario ?? "");
-          setPropiaCompanyId((creds as Record<string, string>).propia_company_id ?? "");
-          setPropiaProvider((creds as Record<string, string>).propia_provider ?? "");
+          const c = creds as Record<string, string | null>;
+          setPropiaKey(c.propia_api_key ?? "");
+          setPropiaUsuario(c.propia_usuario ?? "");
+          setPropiaCompanyId(c.propia_company_id ?? "");
+          setPropiaProvider(c.propia_provider ?? "");
+          setMlAppId(c.ml_app_id ?? "");
+          setMlAppSecret(c.ml_app_secret ?? "");
+          setMlConectado(!!c.ml_access_token);
+          setMlExpiresAt(c.ml_token_expires_at ?? null);
+          setGoogleConectado(!!c.google_access_token);
+          setGoogleExpiresAt(c.google_token_expires_at ?? null);
         }
       }
     });
@@ -120,6 +142,19 @@ export default function IntegracionesPage() {
   const [kitepropSecretSaved, setKitepropSecretSaved] = useState(false);
   const [kitepropUserId, setKitepropUserId] = useState("");
   const [kitepropOrigin, setKitepropOrigin] = useState("");
+
+  // MercadoLibre
+  const [userId, setUserId] = useState<string | null>(null);
+  const [mlAppId, setMlAppId] = useState("");
+  const [mlAppSecret, setMlAppSecret] = useState("");
+  const [mlConectado, setMlConectado] = useState(false);
+  const [mlExpiresAt, setMlExpiresAt] = useState<string | null>(null);
+  const [mlGuardando, setMlGuardando] = useState(false);
+  const [mlMsg, setMlMsg] = useState<{ tipo: "ok" | "err"; texto: string } | null>(null);
+
+  // Google Calendar
+  const [googleConectado, setGoogleConectado] = useState(false);
+  const [googleExpiresAt, setGoogleExpiresAt] = useState<string | null>(null);
 
   // Propia MLS
   const [propiaKey, setPropiaKey] = useState("");
@@ -323,6 +358,34 @@ export default function IntegracionesPage() {
 
   const kitepropConfig = configs.find(c => c.tipo === "kiteprop");
 
+  // ── MercadoLibre ─────────────────────────────────────────────────────────
+
+  async function guardarML() {
+    if (!userId || (!mlAppId.trim() && !mlAppSecret.trim())) return;
+    setMlGuardando(true);
+    const { error } = await supabase.from("portal_credenciales").upsert({
+      perfil_id: userId,
+      ml_app_id: mlAppId.trim() || null,
+      ml_app_secret: mlAppSecret.trim() || null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "perfil_id" });
+    setMlGuardando(false);
+    if (!error) {
+      setMlMsg({ tipo: "ok", texto: "Credenciales guardadas. Ahora podés conectar con ML." });
+    } else {
+      setMlMsg({ tipo: "err", texto: error.message });
+    }
+  }
+
+  async function conectarML() {
+    if (!userId || !mlAppId || !mlAppSecret) {
+      setMlMsg({ tipo: "err", texto: "Guardá el App ID y App Secret antes de conectar." });
+      return;
+    }
+    await guardarML();
+    window.location.href = `/api/ml-auth?perfil_id=${userId}`;
+  }
+
   // ── Propia MLS ────────────────────────────────────────────────────────────
 
   async function guardarPropia() {
@@ -472,12 +535,14 @@ export default function IntegracionesPage() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   const TABS: { id: Tab; label: string; icon: string }[] = [
-    { id: "tokko", label: "Tokko Broker", icon: "🏢" },
-    { id: "kiteprop", label: "Kiteprop", icon: "🔗" },
-    { id: "propia", label: "Propia MLS", icon: "🏛️" },
-    { id: "importar", label: "Importar", icon: "📥" },
-    { id: "exportar", label: "Exportar", icon: "📤" },
-    { id: "historial", label: "Historial", icon: "📋" },
+    { id: "tokko",   label: "Tokko Broker", icon: "🏢" },
+    { id: "kiteprop",label: "Kiteprop",     icon: "🔗" },
+    { id: "propia",  label: "Propia MLS",   icon: "🏛️" },
+    { id: "ml",      label: "MercadoLibre", icon: "🛒" },
+    { id: "google",  label: "Google Cal.",  icon: "📅" },
+    { id: "importar",label: "Importar",     icon: "📥" },
+    { id: "exportar",label: "Exportar",     icon: "📤" },
+    { id: "historial",label: "Historial",   icon: "📋" },
   ];
 
   return (
@@ -790,6 +855,91 @@ export default function IntegracionesPage() {
           </div>
         )}
 
+        {/* ── Tab: MercadoLibre ─────────────────────────────────────────── */}
+        {tab === "ml" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="int-card">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,230,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🛒</div>
+                <div>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>MercadoLibre Inmuebles</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Publicá propiedades en ML Inmuebles con OAuth</div>
+                </div>
+                {mlConectado
+                  ? <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                  : <span className="int-badge" style={{ background: "rgba(234,179,8,0.1)", color: "#fde047", marginLeft: "auto" }}>SIN CONECTAR</span>
+                }
+              </div>
+
+              {mlConectado && mlExpiresAt && (
+                <div style={{ marginBottom: 12, fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                  Token vigente hasta: {new Date(mlExpiresAt).toLocaleString("es-AR")} · Se renueva automáticamente
+                </div>
+              )}
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>APP ID</div>
+                  <input className="int-input" type="text" placeholder="1234567" value={mlAppId} onChange={e => setMlAppId(e.target.value)} />
+                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", marginTop: 3, fontFamily: "Inter,sans-serif" }}>Desde developers.mercadolibre.com.ar</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>APP SECRET</div>
+                  <input className="int-input" type="password" placeholder="tu-client-secret" value={mlAppSecret} onChange={e => setMlAppSecret(e.target.value)} />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button className="int-btn int-btn-red" onClick={guardarML} disabled={mlGuardando || (!mlAppId.trim() && !mlAppSecret.trim())}>
+                  {mlGuardando ? "Guardando…" : "Guardar"}
+                </button>
+                <button className="int-btn" onClick={conectarML} disabled={!mlAppId || !mlAppSecret} style={{ background: "rgba(255,230,0,0.1)", border: "1px solid rgba(255,230,0,0.25)", color: "#fde047" }}>
+                  {mlConectado ? "Reconectar MercadoLibre →" : "Conectar con MercadoLibre →"}
+                </button>
+              </div>
+
+              {mlMsg && (
+                <div className={mlMsg.tipo === "ok" ? "int-msg-ok" : "int-msg-err"} style={{ marginTop: 14 }}>
+                  {mlMsg.tipo === "ok" ? "✓ " : "✕ "}{mlMsg.texto}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Tab: Google Calendar ───────────────────────────────────────── */}
+        {tab === "google" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="int-card">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(66,133,244,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>📅</div>
+                <div>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>Google Calendar</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Sincronizá visitas con Google Calendar automáticamente</div>
+                </div>
+                {googleConectado
+                  ? <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                  : <span className="int-badge" style={{ background: "rgba(234,179,8,0.1)", color: "#fde047", marginLeft: "auto" }}>SIN CONECTAR</span>
+                }
+              </div>
+
+              {googleConectado && googleExpiresAt && (
+                <div style={{ marginBottom: 14, fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                  Token vigente hasta: {new Date(googleExpiresAt).toLocaleString("es-AR")} · Se renueva automáticamente
+                </div>
+              )}
+
+              <div style={{ marginBottom: 14, fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, fontFamily: "Inter,sans-serif" }}>
+                Necesitás habilitar la API de Google Calendar en <strong style={{ color: "rgba(255,255,255,0.6)" }}>console.cloud.google.com</strong> y configurar <code style={{ background: "rgba(255,255,255,0.06)", padding: "1px 5px", borderRadius: 3 }}>GOOGLE_CLIENT_ID</code> + <code style={{ background: "rgba(255,255,255,0.06)", padding: "1px 5px", borderRadius: 3 }}>GOOGLE_CLIENT_SECRET</code> en las variables de Vercel.
+              </div>
+
+              <button className="int-btn" onClick={() => { if (userId) window.location.href = `/api/google-auth?perfil_id=${userId}`; }} disabled={!userId} style={{ background: "rgba(66,133,244,0.12)", border: "1px solid rgba(66,133,244,0.25)", color: "#60a5fa" }}>
+                {googleConectado ? "Reconectar Google Calendar →" : "Conectar con Google Calendar →"}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ── Tab: Importar ─────────────────────────────────────────────── */}
         {tab === "importar" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -976,5 +1126,13 @@ export default function IntegracionesPage() {
         )}
       </div>
     </>
+  );
+}
+
+export default function IntegracionesPage() {
+  return (
+    <Suspense fallback={null}>
+      <IntegracionesInner />
+    </Suspense>
   );
 }
