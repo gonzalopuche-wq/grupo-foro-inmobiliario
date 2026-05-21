@@ -144,10 +144,11 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const [ajaxTextoA, ajaxTextoVacio, ajaxInhab] = await Promise.all([
+  const [ajaxTextoA, ajaxTextoVacio, ajaxInhab, ajaxTextoAHab] = await Promise.all([
     probeAjax("texto=A&filtro=todos"),
     probeAjax("texto=&filtro=todos"),
     probeAjax("texto=&filtro=inhabilitados"),
+    probeAjax("texto=A&filtro=habilitados"),
   ]);
 
   // ── 6. Probar URLs alternativas del CMS COCIR ──
@@ -177,6 +178,7 @@ export async function GET(req: NextRequest) {
     ajaxTextoA,
     ajaxTextoVacio,
     ajaxInhab,
+    ajaxTextoAHab,
     urlsAlternativas: altResults,
   });
 }
