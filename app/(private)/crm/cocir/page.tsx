@@ -365,10 +365,16 @@ export default function COCIRPage() {
                           </span>
                         </td>
                         <td style={{ color: "rgba(255,255,255,0.55)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
-                        <td style={{ color: r.telefono ? "#22c55e" : "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif", fontWeight: r.telefono ? 700 : 400 }}>
-                          {r.telefono || "—"}
+                        <td>
+                          {r.telefono
+                            ? <a href={`https://wa.me/${r.telefono.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:12}}>{r.telefono}</a>
+                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                         </td>
-                        <td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{r.email || "—"}</td>
+                        <td>
+                          {r.email
+                            ? <a href={`mailto:${r.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:11,wordBreak:"break-all"}}>{r.email}</a>
+                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                        </td>
                         <td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{r.localidad || "—"}</td>
                       </tr>
                     ))}
@@ -548,8 +554,10 @@ function PadronMuestra() {
                 </span>
               </td>
               <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: r.telefono ? "#22c55e" : "rgba(255,255,255,0.25)", fontFamily: r.telefono ? "Montserrat,sans-serif" : "inherit", fontWeight: r.telefono ? 700 : 400, fontSize: 11 }}>
-                {r.telefono || "—"}
+              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                {r.telefono
+                  ? <a href={`https://wa.me/${r.telefono.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:11}}>{r.telefono}</a>
+                  : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
               </td>
               <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{r.localidad || "—"}</td>
             </tr>

@@ -254,8 +254,8 @@ export default function PadronGFIPage() {
         .pad-input:focus { border-color: rgba(200,0,0,0.5); }
         .pad-input::placeholder { color: rgba(255,255,255,0.18); }
         .pad-count { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; }
-        .pad-tabla-wrap { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; }
-        .pad-tabla { width: 100%; border-collapse: collapse; }
+        .pad-tabla-wrap { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+        .pad-tabla { width: 100%; border-collapse: collapse; min-width: 680px; }
         .pad-tabla thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
         .pad-tabla th { padding: 11px 14px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
         .pad-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
