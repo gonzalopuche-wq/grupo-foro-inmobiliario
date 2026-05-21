@@ -130,14 +130,26 @@ export async function GET(req: NextRequest) {
       const text = await res.text();
       let parsed: unknown = null;
       try { parsed = JSON.parse(text); } catch { /* no es JSON */ }
+      const htmlRows = parsed && typeof parsed === "object" ? String((parsed as Record<string, unknown>).html ?? "") : "";
+      // Extraer primeras 3 filas <tr> del tbody para inspeccion de estructura
+      const $r = cheerio.load(`<table>${htmlRows}</table>`);
+      const sampleRows: string[] = [];
+      $r("tbody tr").each((i, el) => {
+        if (i < 3) sampleRows.push($r.html(el) ?? "");
+      });
+      const theadHtml = $r("thead").html() ?? "";
+      const filasTotales = $r("tbody tr").length;
       return {
         url: phpBase, method: "POST+AJAX", body, status: res.status,
         contentType: res.headers.get("content-type"),
         len: text.length,
         esJSON: parsed !== null,
         success: parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>).success : null,
-        htmlRowsLen: parsed && typeof parsed === "object" ? String((parsed as Record<string, unknown>).html ?? "").length : null,
-        rawStart: text.slice(0, 500),
+        htmlRowsLen: htmlRows.length,
+        filasTotales,
+        theadHtml,
+        sampleRows,
+        rawStart: text.slice(0, 300),
       };
     } catch (e: unknown) {
       return { url: phpBase, method: "POST+AJAX", body, error: String(e) };
