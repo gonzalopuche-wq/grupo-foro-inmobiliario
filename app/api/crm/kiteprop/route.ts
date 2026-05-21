@@ -112,8 +112,11 @@ function gfiToKp(prop: Record<string, unknown>): Record<string, unknown> {
     bathrooms: prop.banos ?? null,
     total_meters: prop.superficie_total ?? null,
     covered_meters: prop.superficie_cubierta ?? null,
-    internal_id: String(prop.id), // GFI id guardado en KiteProp para rastreo
+    internal_id: String(prop.id),
     status: GFI_ESTADO[estado] ?? "active",
+    images_list: Array.isArray(prop.fotos)
+      ? (prop.fotos as string[]).map(url => ({ lg: url, md: url, sm: url }))
+      : [],
   };
 }
 
@@ -253,7 +256,7 @@ export async function POST(req: NextRequest) {
       let kpRes: Response;
       let accion: string;
 
-      if (prop.kiteprop_id) {
+      if (prop.kiteprop_id?.trim()) {
         // Ya existe en KiteProp → PATCH
         kpRes = await kpFetch("PATCH", `${baseUrl}/properties/${prop.kiteprop_id}/`, apiKey!, kpPayload);
         accion = "actualizada";
