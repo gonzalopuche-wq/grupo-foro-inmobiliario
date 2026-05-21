@@ -70,12 +70,20 @@ export default function ApiAccesosPage() {
   async function revocarKey(keyId: string) {
     if (!token || !confirm("¿Revocar esta key? UrbixPro dejará de poder sincronizar con este token.")) return;
     setRevocando(keyId);
-    await fetch(`/api/admin/api-keys?key_id=${keyId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setRevocando(null);
-    await cargarKeys(token!);
+    try {
+      const res = await fetch(`/api/admin/api-keys?key_id=${keyId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        setError((j as { error?: string }).error ?? "Error al revocar");
+        return;
+      }
+      await cargarKeys(token!);
+    } finally {
+      setRevocando(null);
+    }
   }
 
   function copiarKey() {

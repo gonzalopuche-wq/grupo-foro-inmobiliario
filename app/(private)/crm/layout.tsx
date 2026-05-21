@@ -98,7 +98,7 @@ function CrmLayoutInner({ children }: { children: React.ReactNode }) {
   function isActivo(href: string) {
     if (href === "/crm") return pathname === "/crm" && tabActivo === "dashboard";
     if (href.startsWith("/crm?s=")) {
-      const s = href.split("s=")[1];
+      const s = href.match(/[?&]s=([^&]+)/)?.[1] ?? "";
       return pathname === "/crm" && tabActivo === s;
     }
     return pathname === href || (href !== "/crm" && (pathname.startsWith(href + "/") || pathname.startsWith(href)));
