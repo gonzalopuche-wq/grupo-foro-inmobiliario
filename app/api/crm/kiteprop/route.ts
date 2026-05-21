@@ -28,7 +28,8 @@ export async function GET(req: NextRequest) {
   if (!apiKey) return NextResponse.json({ error: "No hay API key configurada para Kiteprop" }, { status: 400 });
 
   // Kiteprop base URL — configurable para instancias custom
-  const baseUrl = (config?.base_url ?? "https://api.kiteprop.com/api/v1").replace(/\/$/, "");
+  const rawBase = config?.base_url ?? "https://www.kiteprop.com/api/v1";
+  const baseUrl = rawBase.replace("api.kiteprop.com", "www.kiteprop.com").replace(/\/$/, "");
 
   try {
     let url = "";
