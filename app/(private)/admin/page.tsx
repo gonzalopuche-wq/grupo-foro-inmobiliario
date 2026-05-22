@@ -8,7 +8,7 @@ interface Perfil { id: string; tipo: string; rubro: string | null; estado: strin
 interface Indicador { clave: string; valor: number | string; label: string; tipo: "number" | "text"; actualizado_at?: string | null; }
 interface Pago { id: string; perfil_id: string; tipo: string; monto_usd: number; monto_ars: number | null; monto_declarado_ars: number | null; dolar_ref: number | null; estado: string; fecha_pago_declarado: string | null; fecha_confirmacion: string | null; fecha_vencimiento: string | null; periodo: string | null; comprobante: string | null; cbu_origen: string | null; nota_admin: string | null; creado_at: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; email: string | null; }; }
 interface Proveedor { id: string; nombre: string; contacto_whatsapp: string | null; contacto_email: string | null; monedas: string[] | null; servicios: string[] | null; activo: boolean; orden: number; compra_usd: number | null; venta_usd: number | null; actualizado_cot: string | null; }
-interface Documento { id: string; nombre: string; descripcion: string; nivel: string; categoria: string; archivo_url: string; estado: string; created_at: string; user_id: string; perfiles: { nombre: string; apellido: string; matricula: string; }; }
+interface Documento { id: string; perfil_id: string; titulo: string; descripcion: string; nivel: string; categoria: string; archivo_url: string; estado: string; created_at: string; perfiles: { nombre: string; apellido: string; matricula: string; }; }
 interface Noticia { id: string; titulo: string; cuerpo: string; link: string | null; imagen_url: string | null; fuente: string | null; destacado: boolean; estado: string; created_at: string; autor_id: string; perfiles?: { nombre: string; apellido: string; matricula: string | null; }; }
 interface EventoPropuesto {
   id: string;
@@ -184,7 +184,7 @@ export default function AdminPage() {
   const [procesandoDoc, setProcesandoDoc] = useState<string | null>(null);
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [loadingNot, setLoadingNot] = useState(true);
-  const [filtroNot, setFiltroNot] = useState<"pendiente"|"aprobado"|"rechazado">("pendiente");
+  const [filtroNot, setFiltroNot] = useState<"pendiente"|"aprobada"|"rechazada">("pendiente");
   const [procesandoNot, setProcesandoNot] = useState<string | null>(null);
   // Eventos propuestos
   const [eventosPropuestos, setEventosPropuestos] = useState<EventoPropuesto[]>([]);
@@ -771,20 +771,20 @@ export default function AdminPage() {
   const aprobarDoc = async (doc: Documento) => {
     setProcesandoDoc(doc.id);
     await supabase.from("biblioteca").update({ estado: "aprobado" }).eq("id", doc.id);
-    await supabase.from("notificaciones").insert({ user_id: doc.user_id, titulo: "Documento aprobado ✓", mensaje: `Tu documento "${doc.nombre}" fue aprobado y ya está disponible en la Biblioteca.`, tipo: "biblioteca", url: "/biblioteca" });
+    await supabase.from("notificaciones").insert({ user_id: doc.perfil_id, titulo: "Documento aprobado ✓", mensaje: `Tu documento "${doc.titulo}" fue aprobado y ya está disponible en la Biblioteca.`, tipo: "biblioteca", url: "/biblioteca" });
     await cargarDocumentos(filtroDocs); setProcesandoDoc(null);
   };
 
   const rechazarDoc = async (doc: Documento) => {
     setProcesandoDoc(doc.id);
     await supabase.from("biblioteca").update({ estado: "rechazado" }).eq("id", doc.id);
-    await supabase.from("notificaciones").insert({ user_id: doc.user_id, titulo: "Documento no aprobado", mensaje: `Tu documento "${doc.nombre}" no fue aprobado.`, tipo: "biblioteca", url: "/biblioteca" });
+    await supabase.from("notificaciones").insert({ user_id: doc.perfil_id, titulo: "Documento no aprobado", mensaje: `Tu documento "${doc.titulo}" no fue aprobado.`, tipo: "biblioteca", url: "/biblioteca" });
     await cargarDocumentos(filtroDocs); setProcesandoDoc(null);
   };
 
   const aprobarNoticia = async (n: Noticia) => {
     setProcesandoNot(n.id);
-    await supabase.from("noticias").update({ estado: "aprobado", aprobado_at: new Date().toISOString(), aprobado_por: adminId }).eq("id", n.id);
+    await supabase.from("noticias").update({ estado: "aprobada", aprobado_at: new Date().toISOString(), aprobado_por: adminId }).eq("id", n.id);
     const { data: destinatarios } = await supabase.from("perfiles").select("id").eq("notif_foro", true).neq("id", n.autor_id);
     if (destinatarios && destinatarios.length > 0) {
       await supabase.from("notificaciones").insert(destinatarios.map((p: any) => ({ user_id: p.id, titulo: "📰 Nueva noticia publicada", mensaje: n.titulo, tipo: "noticias", url: "/dashboard" })));
@@ -795,7 +795,7 @@ export default function AdminPage() {
 
   const rechazarNoticia = async (id: string) => {
     setProcesandoNot(id);
-    await supabase.from("noticias").update({ estado: "rechazado" }).eq("id", id);
+    await supabase.from("noticias").update({ estado: "rechazada" }).eq("id", id);
     await cargarNoticias(filtroNot); setProcesandoNot(null);
   };
 
@@ -1945,14 +1945,14 @@ A partir de esa fecha el costo mensual será de USD 15.
               <p>Noticias publicadas por los corredores. Al aprobar se envía notificación a todos los que tienen alertas de foro activas.</p>
             </div>
             <div className="adm-filtros">
-              {(["pendiente","aprobado","rechazado"] as const).map(f => (
+              {(["pendiente","aprobada","rechazada"] as const).map(f => (
                 <button key={f} className={`adm-filtro-btn${filtroNot === f ? " activo" : ""}`} onClick={() => setFiltroNot(f)}>
-                  {f === "pendiente" ? "⏳ Pendientes" : f === "aprobado" ? "✓ Aprobadas" : "✗ Rechazadas"}
+                  {f === "pendiente" ? "⏳ Pendientes" : f === "aprobada" ? "✓ Aprobadas" : "✗ Rechazadas"}
                 </button>
               ))}
             </div>
             {loadingNot ? <div className="adm-loading">Cargando...</div>
-             : noticias.length === 0 ? <div className="adm-empty">{filtroNot === "pendiente" ? "No hay noticias pendientes ✓" : filtroNot === "aprobado" ? "No hay noticias aprobadas" : "No hay noticias rechazadas"}</div>
+             : noticias.length === 0 ? <div className="adm-empty">{filtroNot === "pendiente" ? "No hay noticias pendientes ✓" : filtroNot === "aprobada" ? "No hay noticias aprobadas" : "No hay noticias rechazadas"}</div>
              : noticias.map(n => (
               <div key={n.id} className={`not-row${n.destacado ? " dest" : ""}`}>
                 {n.imagen_url ? <img className="not-img-thumb" src={n.imagen_url} alt={n.titulo} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} /> : <div className="not-img-ph">📰</div>}
@@ -2232,7 +2232,7 @@ A partir de esa fecha el costo mensual será de USD 15.
               <div key={doc.id} className="doc-row">
                 <div className="doc-icono">{doc.archivo_url?.includes(".pdf") ? "📄" : doc.archivo_url?.includes(".doc") ? "📝" : "📊"}</div>
                 <div className="doc-info">
-                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}><span className="doc-nombre">{doc.nombre}</span>{doc.nivel && <span style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",padding:"2px 6px",borderRadius:3}}>{doc.nivel}</span>}</div>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}><span className="doc-nombre">{doc.titulo}</span>{doc.nivel && <span style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",padding:"2px 6px",borderRadius:3}}>{doc.nivel}</span>}</div>
                   {doc.descripcion && <div className="doc-desc">{doc.descripcion}</div>}
                   <div className="doc-meta" style={{marginTop:6}}>Por: {doc.perfiles?.nombre} {doc.perfiles?.apellido}{doc.perfiles?.matricula && ` · Mat. ${doc.perfiles.matricula}`} · {new Date(doc.created_at).toLocaleDateString("es-AR",{day:"numeric",month:"short",year:"numeric"})}{doc.archivo_url && <a href={doc.archivo_url} target="_blank" rel="noopener noreferrer" style={{marginLeft:10,color:"#cc0000",textDecoration:"none",fontSize:10}}>Ver archivo →</a>}</div>
                 </div>
