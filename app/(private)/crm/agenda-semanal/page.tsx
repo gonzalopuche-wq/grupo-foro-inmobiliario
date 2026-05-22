@@ -26,7 +26,7 @@ interface Recordatorio {
 
 interface Hito {
   id: string;
-  descripcion: string;
+  tipo: string;
   fecha: string | null;
   completado: boolean;
   negocio_id: string | null;
@@ -91,7 +91,7 @@ export default function AgendaSemanal() {
           .not("estado", "eq", "completada").not("fecha_vencimiento", "is", null),
         supabase.from("crm_recordatorios").select("id,descripcion,fecha_recordatorio,completado,contacto_id")
           .eq("completado", false).not("fecha_recordatorio", "is", null),
-        supabase.from("crm_escritura_hitos").select("id,descripcion,fecha,completado,negocio_id,crm_negocios(titulo)")
+        supabase.from("crm_escritura_hitos").select("id,tipo,fecha,completado,negocio_id,crm_negocios(titulo)")
           .eq("completado", false).not("fecha", "is", null),
       ]);
       setTareas((t ?? []) as Tarea[]);
@@ -151,7 +151,7 @@ export default function AgendaSemanal() {
         ev.push({
           id: h.id,
           tipo: "hito",
-          titulo: `${h.descripcion}${(h as any).crm_negocios?.titulo ? ` (${(h as any).crm_negocios.titulo})` : ""}`,
+          titulo: `${h.tipo}${(h as any).crm_negocios?.titulo ? ` (${(h as any).crm_negocios.titulo})` : ""}`,
           fecha: h.fecha,
           completado: h.completado,
           link: h.negocio_id ? `/crm/negocios/${h.negocio_id}` : undefined,
