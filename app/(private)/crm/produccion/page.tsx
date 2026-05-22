@@ -7,14 +7,13 @@ import { supabase } from "../../../lib/supabase";
 
 interface Negocio {
   id: string;
-  tipo: string | null;
-  estado: string | null;
-  precio_cierre: number | null;
+  tipo_operacion: string | null;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
   split_pct: number | null;
   fecha_cierre: string | null;
-  corredor_id: string | null;
+  colega_id: string | null;
   etapa: string | null;
 }
 
@@ -41,7 +40,7 @@ interface CorredorMetricas {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function calcHonorariosNetaUSD(n: Negocio, tc: number): number {
-  const precio = n.precio_cierre ?? 0;
+  const precio = n.valor_operacion ?? 0;
   const honPct = n.honorarios_pct ?? 0;
   const splitPct = n.split_pct ?? 0;
   const raw = precio * (honPct / 100) * (1 - splitPct / 100);
@@ -96,15 +95,15 @@ export default function ProduccionPage() {
         supabase
           .from("crm_negocios")
           .select(
-            "id,tipo,estado,precio_cierre,moneda,honorarios_pct,split_pct,fecha_cierre,corredor_id,etapa"
+            "id,tipo_operacion,valor_operacion,moneda,honorarios_pct,split_pct,fecha_cierre,colega_id,etapa"
           )
-          .eq("estado", "cerrado"),
+          .eq("etapa", "cerrado"),
         supabase
           .from("crm_negocios")
           .select(
-            "id,tipo,estado,precio_cierre,moneda,honorarios_pct,split_pct,corredor_id,etapa"
+            "id,tipo_operacion,valor_operacion,moneda,honorarios_pct,split_pct,colega_id,etapa"
           )
-          .not("estado", "in", '("cerrado","perdido")'),
+          .not("etapa", "in", '("cerrado","perdido")'),
         supabase.from("perfiles").select("id,nombre,apellido,email"),
       ]);
 
@@ -127,8 +126,8 @@ export default function ProduccionPage() {
     });
 
     const lista: CorredorMetricas[] = corredores.map((c) => {
-      const misNegocios = negAnio.filter((n) => n.corredor_id === c.id);
-      const misPipeline = pipeline.filter((n) => n.corredor_id === c.id);
+      const misNegocios = negAnio.filter((n) => n.colega_id === c.id);
+      const misPipeline = pipeline.filter((n) => n.colega_id === c.id);
 
       const honorariosNetaTotal = misNegocios.reduce(
         (sum, n) => sum + calcHonorariosNetaUSD(n, tipoCambio),
@@ -181,7 +180,7 @@ export default function ProduccionPage() {
     return negocios
       .filter(
         (n) =>
-          n.corredor_id === corredor_id &&
+          n.colega_id === corredor_id &&
           n.fecha_cierre &&
           new Date(n.fecha_cierre).getFullYear() === anio
       )
@@ -751,14 +750,14 @@ export default function ProduccionPage() {
                                 padding: "2px 7px",
                                 flexShrink: 0,
                               }}>
-                                {op.tipo ?? "—"}
+                                {op.tipo_operacion ?? "—"}
                               </span>
                               <span style={{ color: "rgba(255,255,255,0.4)" }}>
                                 {fmtFecha(op.fecha_cierre)}
                               </span>
                               <span style={{ color: "rgba(255,255,255,0.55)" }}>
-                                {op.precio_cierre != null
-                                  ? `${op.moneda ?? ""} ${op.precio_cierre.toLocaleString("es-AR")}`
+                                {op.valor_operacion != null
+                                  ? `${op.moneda ?? ""} ${op.valor_operacion.toLocaleString("es-AR")}`
                                   : "—"}
                               </span>
                               <span>
