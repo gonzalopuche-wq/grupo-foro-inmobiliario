@@ -53,13 +53,13 @@ export default function BusquedaGlobal() {
       const [props, contactos, foro, negocios] = await Promise.all([
         supabase.from("cartera_propiedades").select("id,titulo,direccion,tipo").or(`titulo.ilike.%${term}%,direccion.ilike.%${term}%`).eq("perfil_id", uid).limit(4),
         supabase.from("crm_contactos").select("id,nombre,apellido,email").or(`nombre.ilike.%${term}%,apellido.ilike.%${term}%,email.ilike.%${term}%`).eq("perfil_id", uid).limit(4),
-        supabase.from("foro_topics").select("id,titulo,slug").ilike("titulo", `%${term}%`).limit(4),
+        supabase.from("forum_topics").select("id,title").ilike("title", `%${term}%`).limit(4),
         supabase.from("crm_negocios").select("id,titulo,etapa").ilike("titulo", `%${term}%`).eq("perfil_id", uid).limit(4),
       ]);
       const res: Resultado[] = [];
       for (const p of props.data ?? []) res.push({ tipo: "propiedad", id: p.id, titulo: p.titulo ?? "Sin título", subtitulo: `${p.tipo ?? ""}${p.direccion ? " — " + p.direccion : ""}`, href: `/crm/cartera/ficha/${p.id}` });
       for (const c of contactos.data ?? []) res.push({ tipo: "contacto", id: c.id, titulo: `${c.nombre ?? ""} ${c.apellido ?? ""}`.trim() || "Sin nombre", subtitulo: c.email ?? "", href: `/crm` });
-      for (const f of foro.data ?? []) res.push({ tipo: "foro", id: f.id, titulo: f.titulo ?? "", subtitulo: "Tema del Foro GFI®", href: `/foro/${f.slug ?? f.id}` });
+      for (const f of foro.data ?? []) res.push({ tipo: "foro", id: f.id, titulo: f.title ?? "", subtitulo: "Tema del Foro GFI®", href: `/foro/${f.id}` });
       for (const n of negocios.data ?? []) res.push({ tipo: "negocio", id: n.id, titulo: n.titulo ?? "", subtitulo: `Etapa: ${n.etapa ?? "—"}`, href: `/crm/negocios` });
       setResultados(res);
       setSelIdx(0);

@@ -84,7 +84,7 @@ export default function SuscripcionPage() {
           supabase.from("bonificaciones_config").select("accion,descuento_usd,descripcion,activo").eq("activo", true).order("accion"),
           supabase.from("biblioteca").select("id", { count: "exact", head: true }).eq("perfil_id", uid).eq("estado", "aprobado"),
           supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", uid),
-          supabase.from("foro_posts").select("id", { count: "exact", head: true }).eq("perfil_id", uid).gte("created_at", `${mesActual}-01`),
+          supabase.from("forum_replies").select("id", { count: "exact", head: true }).eq("author_id", uid).gte("created_at", `${mesActual}-01`),
           supabase.from("referidos").select("id", { count: "exact", head: true }).eq("referidor_id", uid).eq("estado", "activo"),
         ]);
         if (bonifCfg) setBonifConfig(bonifCfg as any[]);

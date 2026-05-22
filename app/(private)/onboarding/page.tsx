@@ -87,7 +87,7 @@ export default function OnboardingPage() {
       verificar: async () => {
         const { data: uid } = await supabase.auth.getUser();
         if (!uid.user) return false;
-        const { count } = await supabase.from("foro_posts").select("id", { count: "exact", head: true }).eq("user_id", uid.user.id);
+        const { count } = await supabase.from("forum_replies").select("id", { count: "exact", head: true }).eq("author_id", uid.user.id);
         return (count ?? 0) > 0;
       },
     },
