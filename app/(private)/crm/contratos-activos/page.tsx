@@ -280,19 +280,24 @@ export default function ContratosActivosPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<Contrato, "id" | "created_at">>(contratoVacio());
+  const [userId, setUserId] = useState<string | null>(null);
 
   // ── Carga ─────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     async function cargar() {
       setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      setUserId(user.id);
+
       const { data, error } = await supabase
         .from("crm_contratos")
         .select("*")
+        .eq("perfil_id", user.id)
         .order("fecha_fin", { ascending: true });
 
       if (error || !data) {
-        // fallback localStorage
         const raw = localStorage.getItem(STORAGE_KEY);
         setContratos(raw ? (JSON.parse(raw) as Contrato[]) : CONTRATOS_DEMO);
       } else {
@@ -305,23 +310,32 @@ export default function ContratosActivosPage() {
 
   // ── Persistencia ──────────────────────────────────────────────────────────
 
-  function guardarEnStorage(lista: Contrato[]) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
-  }
-
-  function guardar(item: Contrato) {
+  async function guardar(item: Contrato) {
     const ya = contratos.find(c => c.id === item.id);
+    if (userId) {
+      const payload = { ...item, perfil_id: userId, updated_at: new Date().toISOString() };
+      if (ya) {
+        await supabase.from("crm_contratos").update(payload).eq("id", item.id);
+      } else {
+        const { id: _id, ...rest } = payload;
+        const { data } = await supabase.from("crm_contratos").insert({ ...rest }).select("id").single();
+        if (data) item = { ...item, id: data.id };
+      }
+    }
     const nueva = ya
       ? contratos.map(c => c.id === item.id ? item : c)
       : [...contratos, item];
     setContratos(nueva);
-    guardarEnStorage(nueva);
+    if (!userId) localStorage.setItem(STORAGE_KEY, JSON.stringify(nueva));
   }
 
-  function eliminar(id: string) {
+  async function eliminar(id: string) {
+    if (userId) {
+      await supabase.from("crm_contratos").delete().eq("id", id);
+    }
     const nueva = contratos.filter(c => c.id !== id);
     setContratos(nueva);
-    guardarEnStorage(nueva);
+    if (!userId) localStorage.setItem(STORAGE_KEY, JSON.stringify(nueva));
     setSelectedId(null);
   }
 
