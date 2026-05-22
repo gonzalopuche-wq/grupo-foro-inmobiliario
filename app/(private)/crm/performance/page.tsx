@@ -9,16 +9,16 @@ import { supabase } from "../../../lib/supabase";
 interface PropCartera {
   id: string;
   direccion: string;
-  barrio: string | null;
+  zona: string | null;
   tipo: string | null;
   operacion: string | null;
   precio: number | null;
-  precio_original: number | null;
+  precio_anterior: number | null;
   moneda: string | null;
   superficie_cubierta: number | null;
   estado: string | null;
-  fecha_creacion: string | null;
-  fecha_actualizacion: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -50,14 +50,17 @@ export default function PerformanceCartera() {
   const [orden, setOrden] = useState<"dias" | "reduccion" | "precio">("dias");
 
   useEffect(() => {
-    supabase
-      .from("crm_cartera")
-      .select("id,direccion,barrio,tipo,operacion,precio,precio_original,moneda,superficie_cubierta,estado,fecha_creacion,fecha_actualizacion")
-      .order("fecha_creacion", { ascending: false })
-      .then(({ data }) => {
-        setPropiedades((data ?? []) as PropCartera[]);
-        setLoading(false);
-      });
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const { data } = await supabase
+        .from("cartera_propiedades")
+        .select("id,direccion,zona,tipo,operacion,precio,precio_anterior,moneda,superficie_cubierta,estado,created_at,updated_at")
+        .eq("perfil_id", user.id)
+        .order("created_at", { ascending: false });
+      setPropiedades((data ?? []) as PropCartera[]);
+      setLoading(false);
+    })();
   }, []);
 
   const tiposDisponibles = useMemo(() => {
@@ -74,10 +77,10 @@ export default function PerformanceCartera() {
 
   const ordenadas = useMemo(() => {
     return [...filtradas].sort((a, b) => {
-      if (orden === "dias") return diasEnCartera(b.fecha_creacion) - diasEnCartera(a.fecha_creacion);
+      if (orden === "dias") return diasEnCartera(b.created_at) - diasEnCartera(a.created_at);
       if (orden === "reduccion") {
-        const va = variacionPrecio(a.precio, a.precio_original) ?? 0;
-        const vb = variacionPrecio(b.precio, b.precio_original) ?? 0;
+        const va = variacionPrecio(a.precio, a.precio_anterior) ?? 0;
+        const vb = variacionPrecio(b.precio, b.precio_anterior) ?? 0;
         return va - vb; // más negativo = mayor reducción primero
       }
       return (b.precio ?? 0) - (a.precio ?? 0);
@@ -86,14 +89,14 @@ export default function PerformanceCartera() {
 
   const kpis = useMemo(() => {
     const activas = propiedades.filter(p => p.estado === "activa");
-    const dias = activas.map(p => diasEnCartera(p.fecha_creacion));
+    const dias = activas.map(p => diasEnCartera(p.created_at));
     const promDias = dias.length > 0 ? dias.reduce((s, d) => s + d, 0) / dias.length : 0;
     const mediaDias = dias.length > 0 ? [...dias].sort((a, b) => a - b)[Math.floor(dias.length / 2)] : 0;
-    const conReduccion = activas.filter(p => p.precio_original && p.precio && p.precio < p.precio_original);
+    const conReduccion = activas.filter(p => p.precio_anterior && p.precio && p.precio < p.precio_anterior);
     const pctReduccion = activas.length > 0 ? (conReduccion.length / activas.length) * 100 : 0;
-    const estancadas = activas.filter(p => diasEnCartera(p.fecha_creacion) > 90);
+    const estancadas = activas.filter(p => diasEnCartera(p.created_at) > 90);
     const reduccionPromedio = conReduccion.length > 0
-      ? conReduccion.reduce((s, p) => s + Math.abs(variacionPrecio(p.precio, p.precio_original) ?? 0), 0) / conReduccion.length
+      ? conReduccion.reduce((s, p) => s + Math.abs(variacionPrecio(p.precio, p.precio_anterior) ?? 0), 0) / conReduccion.length
       : 0;
     return { total: activas.length, promDias, mediaDias, conReduccion: conReduccion.length, pctReduccion, estancadas: estancadas.length, reduccionPromedio };
   }, [propiedades]);
@@ -102,7 +105,7 @@ export default function PerformanceCartera() {
   const buckets = useMemo(() => {
     const b: Record<string, number> = { "0-30d": 0, "31-60d": 0, "61-90d": 0, "+90d": 0 };
     propiedades.filter(p => p.estado === "activa").forEach(p => {
-      const d = diasEnCartera(p.fecha_creacion);
+      const d = diasEnCartera(p.created_at);
       if (d <= 30) b["0-30d"]++;
       else if (d <= 60) b["31-60d"]++;
       else if (d <= 90) b["61-90d"]++;
@@ -201,9 +204,9 @@ export default function PerformanceCartera() {
                 {ordenadas.length === 0 ? (
                   <tr><td colSpan={6} style={{ padding: 32, textAlign: "center", color: "#555" }}>Sin propiedades</td></tr>
                 ) : ordenadas.map((p, i) => {
-                  const dias = diasEnCartera(p.fecha_creacion);
+                  const dias = diasEnCartera(p.created_at);
                   const sem = semaforo(dias);
-                  const variacion = variacionPrecio(p.precio, p.precio_original);
+                  const variacion = variacionPrecio(p.precio, p.precio_anterior);
                   const sym = p.moneda === "ARS" ? "$" : "USD";
                   return (
                     <tr key={p.id} style={{ borderBottom: "1px solid #111", background: i % 2 === 0 ? "#0d0d0d" : "transparent" }}>
@@ -213,12 +216,12 @@ export default function PerformanceCartera() {
                       </td>
                       <td style={{ padding: "10px 16px" }}>
                         <div style={{ fontSize: 12, color: "#ccc" }}>{p.tipo ?? "—"}</div>
-                        <div style={{ fontSize: 11, color: "#666" }}>{p.barrio ?? "—"}{p.superficie_cubierta ? ` · ${p.superficie_cubierta}m²` : ""}</div>
+                        <div style={{ fontSize: 11, color: "#666" }}>{p.zona ?? "—"}{p.superficie_cubierta ? ` · ${p.superficie_cubierta}m²` : ""}</div>
                       </td>
                       <td style={{ padding: "10px 16px" }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{p.precio ? `${sym} ${fmt(p.precio)}` : "—"}</div>
-                        {p.precio_original && p.precio_original !== p.precio && (
-                          <div style={{ fontSize: 11, color: "#555", textDecoration: "line-through" }}>{sym} {fmt(p.precio_original)}</div>
+                        {p.precio_anterior && p.precio_anterior !== p.precio && (
+                          <div style={{ fontSize: 11, color: "#555", textDecoration: "line-through" }}>{sym} {fmt(p.precio_anterior)}</div>
                         )}
                       </td>
                       <td style={{ padding: "10px 16px" }}>

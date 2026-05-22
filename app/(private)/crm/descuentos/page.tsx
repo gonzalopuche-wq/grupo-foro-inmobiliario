@@ -8,14 +8,13 @@ import { supabase } from "../../../lib/supabase";
 
 interface Negocio {
   id: string;
-  tipo: string | null;
-  precio_publicado: number | null;
-  precio_cierre: number | null;
+  operacion: string | null;
+  precio_anterior: number | null;
+  precio: number | null;
   moneda: string | null;
-  barrio: string | null;
-  tipo_propiedad: string | null;
-  corredor_id: string | null;
-  fecha_cierre: string | null;
+  zona: string | null;
+  tipo: string | null;
+  updated_at: string | null;
   estado: string | null;
   ambientes: number | null;
 }
@@ -32,18 +31,18 @@ interface Estadisticas {
 type Tab = "distribucion" | "por_zona" | "por_tipo";
 type SortDir = "asc" | "desc";
 type SortCol =
-  | "tipo_propiedad"
-  | "barrio"
+  | "tipo"
+  | "zona"
   | "precio_publicado_usd"
   | "precio_cierre_usd"
   | "descuento_pct"
-  | "fecha_cierre";
+  | "updated_at";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function descuentoPct(n: Negocio): number {
-  const pub = n.precio_publicado ?? 0;
-  const cierre = n.precio_cierre ?? 0;
+  const pub = n.precio_anterior ?? 0;
+  const cierre = n.precio ?? 0;
   if (pub === 0) return 0;
   return (1 - cierre / pub) * 100;
 }
@@ -130,22 +129,23 @@ export default function DescuentosPage() {
 
   useEffect(() => {
     setLoading(true);
-    supabase
-      .from("crm_negocios")
-      .select(
-        "id,tipo,precio_publicado,precio_cierre,moneda,barrio,tipo_propiedad,corredor_id,fecha_cierre,estado,ambientes"
-      )
-      .eq("estado", "cerrado")
-      .not("precio_publicado", "is", null)
-      .not("precio_cierre", "is", null)
-      .then(({ data: rows, error: err }) => {
-        if (err) {
-          setError(err.message);
-        } else {
-          setData((rows ?? []) as Negocio[]);
-        }
-        setLoading(false);
-      });
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const { data: rows, error: err } = await supabase
+        .from("cartera_propiedades")
+        .select("id,operacion,precio_anterior,precio,moneda,zona,tipo,updated_at,estado,ambientes")
+        .eq("perfil_id", user.id)
+        .in("estado", ["vendida", "alquilada"])
+        .not("precio_anterior", "is", null)
+        .not("precio", "is", null);
+      if (err) {
+        setError(err.message);
+      } else {
+        setData((rows ?? []) as Negocio[]);
+      }
+      setLoading(false);
+    })();
   }, []);
 
   // ── Años disponibles ───────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ export default function DescuentosPage() {
   const aniosDisponibles = useMemo(() => {
     const set = new Set<string>();
     data.forEach((n) => {
-      if (n.fecha_cierre) set.add(n.fecha_cierre.substring(0, 4));
+      if (n.updated_at) set.add(n.updated_at.substring(0, 4));
     });
     return Array.from(set).sort().reverse();
   }, [data]);
@@ -164,7 +164,7 @@ export default function DescuentosPage() {
     return data.filter((n) => {
       if (filtroTipo !== "todos" && n.tipo !== filtroTipo) return false;
       if (filtroAnio !== "todos") {
-        if (!n.fecha_cierre || !n.fecha_cierre.startsWith(filtroAnio)) return false;
+        if (!n.updated_at || !n.updated_at.startsWith(filtroAnio)) return false;
       }
       return true;
     });
@@ -214,12 +214,12 @@ export default function DescuentosPage() {
       { descuentos: number[]; pubUSDs: number[]; cierreUSDs: number[] }
     >();
     filtrados.forEach((n) => {
-      const key = n.barrio ?? "Sin barrio";
+      const key = n.zona ?? "Sin barrio";
       if (!mapa.has(key)) mapa.set(key, { descuentos: [], pubUSDs: [], cierreUSDs: [] });
       const entry = mapa.get(key)!;
       entry.descuentos.push(descuentoPct(n));
-      entry.pubUSDs.push(toUSD(n.precio_publicado, n.moneda, tipoCambio));
-      entry.cierreUSDs.push(toUSD(n.precio_cierre, n.moneda, tipoCambio));
+      entry.pubUSDs.push(toUSD(n.precio_anterior, n.moneda, tipoCambio));
+      entry.cierreUSDs.push(toUSD(n.precio, n.moneda, tipoCambio));
     });
     return Array.from(mapa.entries())
       .map(([barrio, v]) => {
@@ -253,12 +253,12 @@ export default function DescuentosPage() {
       { descuentos: number[]; pubUSDs: number[]; cierreUSDs: number[] }
     >();
     filtrados.forEach((n) => {
-      const key = n.tipo_propiedad ?? "Sin tipo";
+      const key = n.tipo ?? "Sin tipo";
       if (!mapa.has(key)) mapa.set(key, { descuentos: [], pubUSDs: [], cierreUSDs: [] });
       const entry = mapa.get(key)!;
       entry.descuentos.push(descuentoPct(n));
-      entry.pubUSDs.push(toUSD(n.precio_publicado, n.moneda, tipoCambio));
-      entry.cierreUSDs.push(toUSD(n.precio_cierre, n.moneda, tipoCambio));
+      entry.pubUSDs.push(toUSD(n.precio_anterior, n.moneda, tipoCambio));
+      entry.cierreUSDs.push(toUSD(n.precio, n.moneda, tipoCambio));
     });
     return Array.from(mapa.entries())
       .map(([tipo, v]) => {
@@ -301,12 +301,12 @@ export default function DescuentosPage() {
   const tablaDetalle = useMemo(() => {
     const rows = filtrados.map((n) => ({
       id: n.id,
-      tipo_propiedad: n.tipo_propiedad ?? "—",
-      barrio: n.barrio ?? "—",
-      precio_publicado_usd: toUSD(n.precio_publicado, n.moneda, tipoCambio),
-      precio_cierre_usd: toUSD(n.precio_cierre, n.moneda, tipoCambio),
+      tipo: n.tipo ?? "—",
+      zona: n.zona ?? "—",
+      precio_publicado_usd: toUSD(n.precio_anterior, n.moneda, tipoCambio),
+      precio_cierre_usd: toUSD(n.precio, n.moneda, tipoCambio),
       descuento_pct: descuentoPct(n),
-      fecha_cierre: n.fecha_cierre ?? "",
+      updated_at: n.updated_at ?? "",
     }));
 
     return [...rows].sort((a, b) => {
@@ -717,7 +717,7 @@ export default function DescuentosPage() {
                 </div>
                 <div style={{ fontSize: 10, color: "#555", marginTop: 4 }}>
                   {mayorDescuentoNegocio
-                    ? `${fmtUSD(toUSD(mayorDescuentoNegocio.precio_publicado, mayorDescuentoNegocio.moneda, tipoCambio))} → ${fmtUSD(toUSD(mayorDescuentoNegocio.precio_cierre, mayorDescuentoNegocio.moneda, tipoCambio))}`
+                    ? `${fmtUSD(toUSD(mayorDescuentoNegocio.precio_anterior, mayorDescuentoNegocio.moneda, tipoCambio))} → ${fmtUSD(toUSD(mayorDescuentoNegocio.precio, mayorDescuentoNegocio.moneda, tipoCambio))}`
                     : "—"}
                 </div>
               </div>
@@ -934,7 +934,7 @@ export default function DescuentosPage() {
                   </h2>
                   <TabGroupRow
                     rows={porZona}
-                    keyField="barrio"
+                    keyField="zona"
                     maxDesc={maxZonaDesc}
                   />
                 </div>
@@ -982,12 +982,12 @@ export default function DescuentosPage() {
                     <tr>
                       <th
                         style={thStyle}
-                        onClick={() => handleSort("tipo_propiedad")}
+                        onClick={() => handleSort("tipo")}
                       >
-                        Tipo <SortIndicator col="tipo_propiedad" />
+                        Tipo <SortIndicator col="tipo" />
                       </th>
-                      <th style={thStyle} onClick={() => handleSort("barrio")}>
-                        Barrio <SortIndicator col="barrio" />
+                      <th style={thStyle} onClick={() => handleSort("zona")}>
+                        Zona <SortIndicator col="zona" />
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
@@ -1009,9 +1009,9 @@ export default function DescuentosPage() {
                       </th>
                       <th
                         style={thStyle}
-                        onClick={() => handleSort("fecha_cierre")}
+                        onClick={() => handleSort("updated_at")}
                       >
-                        Fecha <SortIndicator col="fecha_cierre" />
+                        Fecha <SortIndicator col="updated_at" />
                       </th>
                     </tr>
                   </thead>
@@ -1030,8 +1030,8 @@ export default function DescuentosPage() {
                               : "transparent",
                           }}
                         >
-                          <td style={tdStyle}>{row.tipo_propiedad}</td>
-                          <td style={tdStyle}>{row.barrio}</td>
+                          <td style={tdStyle}>{row.tipo}</td>
+                          <td style={tdStyle}>{row.zona}</td>
                           <td style={{ ...tdStyle, textAlign: "right", color: "#888" }}>
                             {fmtUSD(row.precio_publicado_usd)}
                           </td>
@@ -1058,7 +1058,7 @@ export default function DescuentosPage() {
                               : `${row.descuento_pct.toFixed(1)}%`}
                           </td>
                           <td style={{ ...tdStyle, color: "#666" }}>
-                            {fmtFecha(row.fecha_cierre)}
+                            {fmtFecha(row.updated_at)}
                           </td>
                         </tr>
                       );
