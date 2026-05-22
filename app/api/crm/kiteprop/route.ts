@@ -89,7 +89,7 @@ function kpToGfi(kp: Record<string, unknown>, perfilId: string): Record<string, 
 // Convierte una propiedad GFI → payload para KiteProp API
 function gfiToKp(prop: Record<string, unknown>): Record<string, unknown> {
   const tipo = ((prop.tipo as string) ?? "").toLowerCase();
-  const estado = ((prop.estado as string) ?? "disponible").toLowerCase();
+  const estado = ((prop.estado as string) ?? "activa").toLowerCase();
   const operacion = ((prop.operacion as string) ?? "venta").toLowerCase();
   const forSale = operacion === "venta" || operacion === "ambas";
   const forRent = operacion === "alquiler" || operacion === "ambas";

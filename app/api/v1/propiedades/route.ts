@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
     superficie_cubierta: body.superficie_cubierta ?? null,
     descripcion_privada: body.descripcion ?? null,
     fotos:               body.fotos ?? [],
-    estado:              body.estado ?? "disponible",
+    estado:              body.estado ?? "activa",
     zona:                body.zona ?? body.barrio ?? body.neighborhood ?? null,
     ciudad:              body.ciudad ?? body.city ?? null,
     latitud:             body.lat ?? null,

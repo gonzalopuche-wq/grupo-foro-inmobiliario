@@ -135,7 +135,7 @@ export default function PerformanceCartera() {
             <option value="activa">Activa</option>
             <option value="reservada">Reservada</option>
             <option value="vendida">Vendida</option>
-            <option value="suspendida">Suspendida</option>
+            <option value="pausada">Pausada</option>
           </select>
           <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)} style={inputStyle}>
             <option value="todos">Todos los tipos</option>
