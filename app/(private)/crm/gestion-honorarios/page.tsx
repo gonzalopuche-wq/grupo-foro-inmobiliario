@@ -25,12 +25,12 @@ interface HonorarioExtra {
 interface NegocioRaw {
   id: string;
   titulo: string;
-  tipo: string | null;
-  precio_cierre: number | null;
+  tipo_operacion: string | null;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
   split_pct: number | null;
-  fecha_cierre_estimada: string | null;
+  fecha_cierre: string | null;
   updated_at: string;
   crm_contactos: { nombre: string; apellido: string }[] | { nombre: string; apellido: string } | null;
 }
@@ -127,13 +127,13 @@ function calcularResumen(
   extra: HonorarioExtra | undefined,
   tipoCambio: number
 ): ResumenHonorario {
-  const precio = neg.precio_cierre ?? 0;
+  const precio = neg.valor_operacion ?? 0;
   const honPct = neg.honorarios_pct ?? 3;
   const splitPct = neg.split_pct ?? 0;
   const totalUSD = precio * (honPct / 100) * (1 - splitPct / 100);
   const honorariosTotal = neg.moneda === "USD" ? totalUSD * tipoCambio : totalUSD;
 
-  const fechaBase = neg.fecha_cierre_estimada ?? hoy();
+  const fechaBase = neg.fecha_cierre ?? hoy();
   const cuotas = extra?.cuotas ?? cuotasDefault(honorariosTotal, fechaBase);
   const isIncobrable = extra?.estado === "incobrable";
 
@@ -194,7 +194,7 @@ export default function GestionHonorariosPage() {
       setUid(data.user.id);
       supabase
         .from("crm_negocios")
-        .select("id, titulo, tipo, precio_cierre, moneda, honorarios_pct, split_pct, fecha_cierre_estimada, updated_at, crm_contactos(nombre, apellido)")
+        .select("id, titulo, tipo_operacion, valor_operacion, moneda, honorarios_pct, split_pct, fecha_cierre, updated_at, crm_contactos(nombre, apellido)")
         .eq("estado", "cerrado")
         .eq("perfil_id", data.user.id)
         .order("updated_at", { ascending: false })
@@ -249,8 +249,8 @@ export default function GestionHonorariosPage() {
   // Cuotas del negocio seleccionado (con default si no hay)
   const cuotasSel = useMemo<CuotaHonorario[]>(() => {
     if (!negSel) return [];
-    const fechaBase = negSel.fecha_cierre_estimada ?? hoy();
-    const precio = negSel.precio_cierre ?? 0;
+    const fechaBase = negSel.fecha_cierre ?? hoy();
+    const precio = negSel.valor_operacion ?? 0;
     const honPct = negSel.honorarios_pct ?? 3;
     const splitPct = negSel.split_pct ?? 0;
     const totalUSD = precio * (honPct / 100) * (1 - splitPct / 100);
@@ -267,8 +267,8 @@ export default function GestionHonorariosPage() {
     }> = [];
     negocios.forEach(neg => {
       const extra = extras[neg.id];
-      const fechaBase = neg.fecha_cierre_estimada ?? hoy();
-      const precio = neg.precio_cierre ?? 0;
+      const fechaBase = neg.fecha_cierre ?? hoy();
+      const precio = neg.valor_operacion ?? 0;
       const honPct = neg.honorarios_pct ?? 3;
       const splitPct = neg.split_pct ?? 0;
       const totalUSD = precio * (honPct / 100) * (1 - splitPct / 100);

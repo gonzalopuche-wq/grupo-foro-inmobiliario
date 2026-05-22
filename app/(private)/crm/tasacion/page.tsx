@@ -9,7 +9,7 @@ import { supabase } from "../../../lib/supabase";
 interface PropComp {
   id: string;
   direccion: string;
-  barrio: string | null;
+  zona: string | null;
   tipo: string | null;
   operacion: string | null;
   precio: number | null;
@@ -19,7 +19,7 @@ interface PropComp {
   ambientes: number | null;
   dormitorios: number | null;
   estado: string | null;
-  fecha_creacion: string | null;
+  created_at: string | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -54,8 +54,8 @@ export default function TasacionRapida() {
 
   useEffect(() => {
     supabase
-      .from("crm_cartera")
-      .select("id,direccion,barrio,tipo,operacion,precio,moneda,superficie_cubierta,superficie_total,ambientes,dormitorios,estado,fecha_creacion")
+      .from("cartera_propiedades")
+      .select("id,direccion,zona,tipo,operacion,precio,moneda,superficie_cubierta,superficie_total,ambientes,dormitorios,estado,created_at")
       .eq("estado", "activa")
       .then(({ data }) => {
         setComps((data ?? []) as PropComp[]);
@@ -75,9 +75,9 @@ export default function TasacionRapida() {
         if (p.tipo?.toLowerCase() !== tipo.toLowerCase()) score -= 30;
 
         // Penalizar diferencia de zona (si hay zona definida)
-        if (zona && p.barrio) {
+        if (zona && p.zona) {
           const zonaLow = zona.toLowerCase();
-          const barrioLow = p.barrio.toLowerCase();
+          const barrioLow = p.zona.toLowerCase();
           if (!barrioLow.includes(zonaLow) && !zonaLow.includes(barrioLow)) score -= 25;
         }
 
@@ -342,7 +342,7 @@ export default function TasacionRapida() {
                     <tr key={c.id} style={{ borderBottom: "1px solid #111", background: i % 2 === 0 ? "#0d0d0d" : "transparent" }}>
                       <td style={{ padding: "10px 16px" }}>
                         <div style={{ fontSize: 13, color: "#fff" }}>{c.direccion}</div>
-                        <div style={{ fontSize: 11, color: "#666" }}>{c.barrio ?? "—"}</div>
+                        <div style={{ fontSize: 11, color: "#666" }}>{c.zona ?? "—"}</div>
                       </td>
                       <td style={{ padding: "10px 16px", fontSize: 12, color: "#888" }}>{c.tipo ?? "—"}</td>
                       <td style={{ padding: "10px 16px", fontSize: 12, color: "#ccc" }}>{c.superficie_cubierta ? `${c.superficie_cubierta} m²` : "—"}</td>

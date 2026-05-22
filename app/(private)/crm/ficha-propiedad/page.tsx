@@ -7,9 +7,9 @@ import { supabase } from "../../../lib/supabase";
 interface PropiedadCartera {
   id: string;
   descripcion: string | null;
-  tipo_operacion: string | null;
-  tipo_propiedad: string | null;
-  barrio: string | null;
+  operacion: string | null;
+  tipo: string | null;
+  zona: string | null;
   precio: number | null;
   moneda: string | null;
   estado: string | null;
@@ -21,9 +21,9 @@ interface FichaPropiedad {
   propiedad_supabase_id: string | null;
   titulo: string;
   subtitulo: string;
-  tipo_operacion: string;
-  tipo_propiedad: string;
-  barrio: string;
+  operacion: string;
+  tipo: string;
+  zona: string;
   ciudad: string;
   precio: number;
   moneda: string;
@@ -83,9 +83,9 @@ function fichaVacia(base?: Partial<FichaPropiedad>): FichaPropiedad {
     propiedad_supabase_id: null,
     titulo: "",
     subtitulo: "",
-    tipo_operacion: "",
-    tipo_propiedad: "",
-    barrio: "",
+    operacion: "",
+    tipo: "",
+    zona: "",
     ciudad: "",
     precio: 0,
     moneda: "USD",
@@ -335,7 +335,7 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
     <div style="background:${ficha.color_primario};padding:28px 36px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
       <div>
         <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:26px;color:#fff;letter-spacing:0.08em;">${ficha.logo_agencia}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:3px;font-family:'Montserrat',sans-serif;letter-spacing:0.08em;text-transform:uppercase;">${ficha.tipo_operacion} · ${ficha.tipo_propiedad}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:3px;font-family:'Montserrat',sans-serif;letter-spacing:0.08em;text-transform:uppercase;">${ficha.operacion} · ${ficha.tipo}</div>
       </div>
       <div style="text-align:right;">
         <div style="font-size:12px;color:rgba(255,255,255,0.9);font-family:'Inter',sans-serif;">${ficha.telefono_corredor}</div>
@@ -349,7 +349,7 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
       <div style="font-size:13px;color:#666;font-family:'Inter',sans-serif;margin-bottom:14px;">${ficha.subtitulo}</div>
       <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
         <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:24px;color:${ficha.color_primario};">${formatPrecio(ficha.precio, ficha.moneda)}</div>
-        ${ficha.barrio ? `<div style="font-size:13px;color:#555;font-family:'Inter',sans-serif;">📍 ${ficha.barrio}${ficha.ciudad ? `, ${ficha.ciudad}` : ""}</div>` : ""}
+        ${ficha.zona ? `<div style="font-size:13px;color:#555;font-family:'Inter',sans-serif;">📍 ${ficha.zona}${ficha.ciudad ? `, ${ficha.ciudad}` : ""}</div>` : ""}
       </div>
     </div>
 
@@ -448,7 +448,7 @@ export default function FichaPropiedadPage() {
     if (!auth.user) { setLoadingProps(false); return; }
     const { data } = await supabase
       .from("cartera_propiedades")
-      .select("id, descripcion, tipo_operacion, tipo_propiedad, barrio, precio, moneda, estado, perfil_id")
+      .select("id, descripcion, operacion, tipo, zona, precio, moneda, estado, perfil_id")
       .eq("perfil_id", auth.user.id)
       .order("id", { ascending: false });
     if (data) setPropiedades(data as PropiedadCartera[]);
@@ -460,10 +460,10 @@ export default function FichaPropiedadPage() {
     const f = fichaVacia({
       propiedad_supabase_id: prop.id,
       titulo: prop.descripcion ?? "",
-      subtitulo: `${prop.tipo_propiedad ?? ""} ${prop.tipo_operacion ? "en " + prop.tipo_operacion.toLowerCase() : ""} - ${prop.barrio ?? ""}`.trim(),
-      tipo_operacion: prop.tipo_operacion ?? "",
-      tipo_propiedad: prop.tipo_propiedad ?? "",
-      barrio: prop.barrio ?? "",
+      subtitulo: `${prop.tipo ?? ""} ${prop.operacion ? "en " + prop.operacion.toLowerCase() : ""} - ${prop.zona ?? ""}`.trim(),
+      operacion: prop.operacion ?? "",
+      tipo: prop.tipo ?? "",
+      zona: prop.zona ?? "",
       precio: prop.precio ?? 0,
       moneda: prop.moneda ?? "USD",
     });
@@ -821,14 +821,14 @@ export default function FichaPropiedadPage() {
                           {formatPrecio(f.precio, f.moneda)}
                         </span>
                       )}
-                      {f.barrio && (
+                      {f.zona && (
                         <span
                           style={{
                             fontSize: 11,
                             color: "rgba(224,224,224,0.4)",
                           }}
                         >
-                          📍 {f.barrio}
+                          📍 {f.zona}
                         </span>
                       )}
                     </div>
@@ -1039,9 +1039,9 @@ export default function FichaPropiedadPage() {
                         <input
                           style={S.input}
                           placeholder="Venta / Alquiler"
-                          value={fichaActual.tipo_operacion}
+                          value={fichaActual.operacion}
                           onChange={(e) =>
-                            setField("tipo_operacion", e.target.value)
+                            setField("operacion", e.target.value)
                           }
                         />
                       </Campo>
@@ -1049,9 +1049,9 @@ export default function FichaPropiedadPage() {
                         <input
                           style={S.input}
                           placeholder="Departamento / Casa / Local"
-                          value={fichaActual.tipo_propiedad}
+                          value={fichaActual.tipo}
                           onChange={(e) =>
-                            setField("tipo_propiedad", e.target.value)
+                            setField("tipo", e.target.value)
                           }
                         />
                       </Campo>
@@ -1059,8 +1059,8 @@ export default function FichaPropiedadPage() {
                         <input
                           style={S.input}
                           placeholder="Ej: Palermo"
-                          value={fichaActual.barrio}
-                          onChange={(e) => setField("barrio", e.target.value)}
+                          value={fichaActual.zona}
+                          onChange={(e) => setField("zona", e.target.value)}
                         />
                       </Campo>
                       <Campo label="Ciudad">
@@ -1682,9 +1682,9 @@ export default function FichaPropiedadPage() {
                           textTransform: "uppercase",
                         }}
                       >
-                        {fichaActual.tipo_operacion}
-                        {fichaActual.tipo_propiedad
-                          ? ` · ${fichaActual.tipo_propiedad}`
+                        {fichaActual.operacion}
+                        {fichaActual.tipo
+                          ? ` · ${fichaActual.tipo}`
                           : ""}
                       </div>
                     </div>
@@ -1763,9 +1763,9 @@ export default function FichaPropiedadPage() {
                           {formatPrecio(fichaActual.precio, fichaActual.moneda)}
                         </div>
                       )}
-                      {fichaActual.barrio && (
+                      {fichaActual.zona && (
                         <div style={{ fontSize: 13, color: "#555" }}>
-                          📍 {fichaActual.barrio}
+                          📍 {fichaActual.zona}
                           {fichaActual.ciudad ? `, ${fichaActual.ciudad}` : ""}
                         </div>
                       )}
@@ -2249,7 +2249,7 @@ export default function FichaPropiedadPage() {
                         alignItems: "center",
                       }}
                     >
-                      {p.tipo_propiedad && (
+                      {p.tipo && (
                         <span
                           style={{
                             fontSize: 10,
@@ -2258,27 +2258,27 @@ export default function FichaPropiedadPage() {
                             fontWeight: 700,
                           }}
                         >
-                          {p.tipo_propiedad}
+                          {p.tipo}
                         </span>
                       )}
-                      {p.tipo_operacion && (
+                      {p.operacion && (
                         <span
                           style={{
                             fontSize: 10,
                             color: "rgba(224,224,224,0.4)",
                           }}
                         >
-                          {p.tipo_operacion}
+                          {p.operacion}
                         </span>
                       )}
-                      {p.barrio && (
+                      {p.zona && (
                         <span
                           style={{
                             fontSize: 10,
                             color: "rgba(224,224,224,0.35)",
                           }}
                         >
-                          📍 {p.barrio}
+                          📍 {p.zona}
                         </span>
                       )}
                       {p.precio && p.moneda && (
