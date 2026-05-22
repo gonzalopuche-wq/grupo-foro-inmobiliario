@@ -8,9 +8,9 @@ import { supabase } from "../../../lib/supabase";
 
 interface Propiedad {
   id: string;
-  tipo_propiedad: string | null;
+  tipo: string | null;
   operacion: string | null;
-  barrio: string | null;
+  zona: string | null;
   precio: number | null;
   moneda: string | null;
   superficie_cubierta: number | null;
@@ -23,10 +23,10 @@ interface Propiedad {
 
 interface Negocio {
   id: string;
-  tipo: string | null;
-  precio_cierre: number | null;
+  tipo_operacion: string | null;
+  valor_operacion: number | null;
   moneda: string | null;
-  fecha_cierre_estimada: string | null;
+  fecha_cierre: string | null;
   updated_at: string | null;
   honorarios_pct: number | null;
 }
@@ -150,11 +150,11 @@ export default function AnalisisZona() {
       const [{ data: props }, { data: negs }] = await Promise.all([
         supabase
           .from("cartera_propiedades")
-          .select("id, tipo_propiedad, operacion, barrio, precio, moneda, superficie_cubierta, superficie_total, ambientes, estado, created_at, updated_at")
+          .select("id, tipo, operacion, zona, precio, moneda, superficie_cubierta, superficie_total, ambientes, estado, created_at, updated_at")
           .eq("perfil_id", user.id),
         supabase
           .from("crm_negocios")
-          .select("id, tipo, precio_cierre, moneda, fecha_cierre_estimada, updated_at, honorarios_pct")
+          .select("id, tipo_operacion, valor_operacion, moneda, fecha_cierre, updated_at, honorarios_pct")
           .eq("perfil_id", user.id)
           .eq("estado", "cerrado"),
       ]);
@@ -169,12 +169,12 @@ export default function AnalisisZona() {
   // ── Barrios únicos ─────────────────────────────────────────────────────────
 
   const barriosUnicos = useMemo(() => {
-    const set = new Set(propiedades.map((p) => p.barrio?.trim() || "Sin barrio"));
+    const set = new Set(propiedades.map((p) => p.zona?.trim() || "Sin barrio"));
     return Array.from(set).sort();
   }, [propiedades]);
 
   const tiposUnicos = useMemo(() => {
-    const set = new Set(propiedades.map((p) => p.tipo_propiedad).filter(Boolean) as string[]);
+    const set = new Set(propiedades.map((p) => p.tipo).filter(Boolean) as string[]);
     return Array.from(set).sort();
   }, [propiedades]);
 
@@ -183,7 +183,7 @@ export default function AnalisisZona() {
   const estadisticasPorZona = useMemo<EstadisticasZona[]>(() => {
     const mapa: Record<string, Propiedad[]> = {};
     propiedades.forEach((p) => {
-      const b = p.barrio?.trim() || "Sin barrio";
+      const b = p.zona?.trim() || "Sin barrio";
       if (!mapa[b]) mapa[b] = [];
       mapa[b].push(p);
     });
@@ -257,9 +257,9 @@ export default function AnalisisZona() {
 
   const propFiltradas = useMemo(() => {
     return propiedades.filter((p) => {
-      if (filtroBarrio !== "todos" && (p.barrio?.trim() || "Sin barrio") !== filtroBarrio)
+      if (filtroBarrio !== "todos" && (p.zona?.trim() || "Sin barrio") !== filtroBarrio)
         return false;
-      if (filtroTipo !== "todos" && p.tipo_propiedad !== filtroTipo) return false;
+      if (filtroTipo !== "todos" && p.tipo !== filtroTipo) return false;
       if (filtroOperacion !== "todos" && p.operacion !== filtroOperacion) return false;
       if (filtroEstado !== "todos" && p.estado !== filtroEstado) return false;
       return true;
@@ -302,13 +302,13 @@ export default function AnalisisZona() {
 
     return meses.map((key) => {
       const delMes = negocios.filter(
-        (n) => mesKey(n.fecha_cierre_estimada || n.updated_at) === key
+        (n) => mesKey(n.fecha_cierre || n.updated_at) === key
       );
       const precios = delMes
-        .map((n) => calcPrecioUSD(n.precio_cierre, n.moneda, tipoCambio))
+        .map((n) => calcPrecioUSD(n.valor_operacion, n.moneda, tipoCambio))
         .filter((v): v is number => v !== null);
       const honorarios = delMes.reduce((sum, n) => {
-        const p = calcPrecioUSD(n.precio_cierre, n.moneda, tipoCambio);
+        const p = calcPrecioUSD(n.valor_operacion, n.moneda, tipoCambio);
         if (!p || !n.honorarios_pct) return sum;
         return sum + p * (n.honorarios_pct / 100);
       }, 0);
@@ -996,7 +996,7 @@ export default function AnalisisZona() {
                                 <td style={{ ...tdStyle, fontFamily: "monospace", fontSize: 11, color: "#666" }}>
                                   {p.id.substring(0, 8)}…
                                 </td>
-                                <td style={tdStyle}>{p.tipo_propiedad ?? "—"}</td>
+                                <td style={tdStyle}>{p.tipo ?? "—"}</td>
                                 <td style={tdStyle}>{p.operacion ?? "—"}</td>
                                 <td style={{ ...tdStyle, color: "#fff" }}>
                                   {precioUSD !== null ? fmtUSD(precioUSD) : "—"}

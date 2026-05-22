@@ -47,11 +47,10 @@ interface Expediente {
 
 interface NegocioDB {
   id: string;
-  tipo: string | null;
-  estado: string | null;
-  barrio: string | null;
-  tipo_propiedad: string | null;
-  precio_cierre: number | null;
+  titulo: string;
+  tipo_operacion: string | null;
+  etapa: string | null;
+  valor_operacion: number | null;
   moneda: string | null;
   fecha_cierre: string | null;
 }
@@ -311,7 +310,7 @@ export default function ExpedientePage() {
       setLoading(true);
       const { data } = await supabase
         .from("crm_negocios")
-        .select("id,tipo,estado,barrio,tipo_propiedad,precio_cierre,moneda,fecha_cierre")
+        .select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,fecha_cierre")
         .not("estado", "in", '("perdido")')
         .order("created_at", { ascending: false })
         .limit(50);
@@ -389,11 +388,10 @@ export default function ExpedientePage() {
               {negocios.map((n) => (
                 <option key={n.id} value={n.id}>
                   {[
-                    n.tipo?.toUpperCase(),
-                    n.tipo_propiedad,
-                    n.barrio && `· ${n.barrio}`,
-                    n.precio_cierre && `· ${formatPrecio(n.precio_cierre, n.moneda)}`,
-                    n.estado && `[${n.estado}]`,
+                    n.titulo,
+                    n.tipo_operacion && `(${n.tipo_operacion})`,
+                    n.valor_operacion && `· ${formatPrecio(n.valor_operacion, n.moneda)}`,
+                    n.etapa && `[${n.etapa}]`,
                   ]
                     .filter(Boolean)
                     .join(" ")}
@@ -452,7 +450,7 @@ export default function ExpedientePage() {
             </div>
 
             {tab === "documentos" && (
-              <TabDocumentos exp={exp} updateExp={updateExp} negocioTipo={negocioActivo.tipo} />
+              <TabDocumentos exp={exp} updateExp={updateExp} negocioTipo={negocioActivo.tipo_operacion} />
             )}
             {tab === "partes" && <TabPartes exp={exp} updateExp={updateExp} />}
             {tab === "timeline" && <TabTimeline exp={exp} updateExp={updateExp} />}
@@ -480,10 +478,8 @@ function ResumenNegocio({ negocio, exp }: { negocio: NegocioDB; exp: Expediente 
       <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", marginBottom: "16px" }}>
         {(
           [
-            ["Tipo", negocio.tipo?.toUpperCase() ?? "—"],
-            ["Barrio", negocio.barrio ?? "—"],
-            ["Propiedad", negocio.tipo_propiedad ?? "—"],
-            ["Precio cierre", formatPrecio(negocio.precio_cierre, negocio.moneda)],
+            ["Tipo operación", negocio.tipo_operacion?.toUpperCase() ?? "—"],
+            ["Valor cierre", formatPrecio(negocio.valor_operacion, negocio.moneda)],
           ] as Array<[string, string]>
         ).map(([k, v]) => (
           <div key={k}>
@@ -492,9 +488,9 @@ function ResumenNegocio({ negocio, exp }: { negocio: NegocioDB; exp: Expediente 
           </div>
         ))}
         <div>
-          <span style={ST.label}>Estado</span>
+          <span style={ST.label}>Etapa</span>
           <span style={{ fontWeight: 600, fontSize: "0.95rem", color: "#34d399" }}>
-            {negocio.estado ?? "—"}
+            {negocio.etapa ?? "—"}
           </span>
         </div>
         {negocio.fecha_cierre && (
