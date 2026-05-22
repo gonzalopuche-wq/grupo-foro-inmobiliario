@@ -409,13 +409,22 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         .topbar-menu-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
         .page-content { flex: 1; padding: 24px 28px; }
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 45; }
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,5,5,0.98); border-top: 1px solid rgba(255,255,255,0.07); z-index: 50; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+        .bottom-nav-inner { display: flex; height: 62px; align-items: stretch; padding-bottom: env(safe-area-inset-bottom, 0px); }
+        .bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: none; color: rgba(255,255,255,0.32); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.03em; cursor: pointer; text-decoration: none; transition: color 0.15s; position: relative; -webkit-tap-highlight-color: transparent; padding: 0; min-height: 44px; }
+        .bnav-item.active { color: #cc0000; }
+        .bnav-icon { font-size: 22px; line-height: 1; display: block; }
+        .bnav-badge { position: absolute; top: 6px; right: calc(50% - 20px); background: #ef4444; color: #fff; font-size: 8px; font-weight: 800; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; font-family: 'Inter',sans-serif; }
+        .topbar-bell { position: relative; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.65); font-size: 18px; text-decoration: none; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+        .topbar-bell-badge { position: absolute; top: 3px; right: 3px; background: #ef4444; color: #fff; font-size: 7px; font-weight: 800; min-width: 13px; height: 13px; border-radius: 7px; display: flex; align-items: center; justify-content: center; padding: 0 2px; font-family: 'Inter',sans-serif; }
         @media (max-width: 900px) {
           .sidebar { transform: translateX(-100%); }
           .sidebar.abierto { transform: translateX(0); }
           .main-content { margin-left: 0; }
           .topbar { display: flex; }
           .sidebar-overlay.visible { display: block; }
-          .page-content { padding: 16px; }
+          .page-content { padding: 14px 14px calc(74px + env(safe-area-inset-bottom, 0px)); }
+          .bottom-nav { display: block; }
         }
       `}</style>
 
@@ -514,7 +523,12 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           <div className="topbar">
             <button className="topbar-menu-btn" onClick={() => setMenuAbierto(true)}>☰</button>
             <div className="topbar-logo">GFI<span>®</span></div>
-            <div style={{width:40,flexShrink:0}} />
+            <Link href="/notificaciones" className="topbar-bell">
+              🔔
+              {notifsNoLeidas > 0 && (
+                <span className="topbar-bell-badge">{notifsNoLeidas > 9 ? "9+" : notifsNoLeidas}</span>
+              )}
+            </Link>
           </div>
           {suscripcionWarning === "gracia" && (
             <div style={{ background: "rgba(234,179,8,0.1)", borderBottom: "1px solid rgba(234,179,8,0.25)", padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
@@ -537,6 +551,39 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           </div>
         </main>
       </div>
+
+      {/* ── Bottom navigation (mobile only) ───────────────────────────────── */}
+      <nav className="bottom-nav" role="navigation" aria-label="Navegación principal">
+        <div className="bottom-nav-inner">
+          <Link href="/dashboard" className={`bnav-item${isActive("/dashboard") ? " active" : ""}`}>
+            <span className="bnav-icon">🏠</span>
+            <span>Inicio</span>
+          </Link>
+          <Link href="/crm" className={`bnav-item${isActive("/crm") ? " active" : ""}`}>
+            <span className="bnav-icon">👥</span>
+            <span>CRM</span>
+            {crmPendientes > 0 && (
+              <span className="bnav-badge">{crmPendientes > 9 ? "9+" : crmPendientes}</span>
+            )}
+          </Link>
+          <Link href="/mir" className={`bnav-item${isActive("/mir") ? " active" : ""}`}>
+            <span className="bnav-icon">🔄</span>
+            <span>MIR</span>
+          </Link>
+          <Link href="/comunidad" className={`bnav-item${isActive("/comunidad") ? " active" : ""}`}>
+            <span className="bnav-icon">💬</span>
+            <span>Comunidad</span>
+            {leadsNoLeidos > 0 && (
+              <span className="bnav-badge">{leadsNoLeidos > 9 ? "9+" : leadsNoLeidos}</span>
+            )}
+          </Link>
+          <button className="bnav-item" onClick={() => setMenuAbierto(true)}>
+            <span className="bnav-icon">☰</span>
+            <span>Más</span>
+          </button>
+        </div>
+      </nav>
+
       <IAChatFlotante />
     </>
   );
