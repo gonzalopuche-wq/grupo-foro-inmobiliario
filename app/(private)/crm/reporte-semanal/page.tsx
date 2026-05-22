@@ -35,7 +35,7 @@ interface Interaccion {
 interface Tarea {
   id: string;
   titulo: string;
-  completada: boolean;
+  estado: string;
   fecha_vencimiento: string | null;
   created_at: string;
 }
@@ -88,7 +88,7 @@ export default function ReporteSemanal() {
         supabase.from("crm_negocios").select("id,titulo,etapa,valor_operacion,moneda,tipo_operacion,created_at,updated_at").eq("perfil_id", user.id).gte("updated_at", hace90),
         supabase.from("crm_contactos").select("id,nombre,apellido,created_at").eq("perfil_id", user.id).gte("created_at", hace90),
         supabase.from("crm_interacciones").select("id,contacto_id,tipo,descripcion,created_at").eq("perfil_id", user.id).gte("created_at", hace90),
-        supabase.from("crm_tareas").select("id,titulo,completada,fecha_vencimiento,created_at").eq("perfil_id", user.id),
+        supabase.from("crm_tareas").select("id,titulo,estado,fecha_vencimiento,created_at").eq("perfil_id", user.id),
       ]);
       setNegocios((n ?? []) as Negocio[]);
       setContactos((c ?? []) as Contacto[]);
@@ -111,8 +111,8 @@ export default function ReporteSemanal() {
     const negociosActualizados = negocios.filter(n => enRango(n.updated_at, inicio, fin));
     const negociosCerrados = negociosActualizados.filter(n => n.etapa === "cerrado");
     const negociosNuevos = negocios.filter(n => enRango(n.created_at, inicio, fin));
-    const tareasCompletadas = tareas.filter(t => t.completada && t.fecha_vencimiento && enRango(t.fecha_vencimiento, inicio, fin));
-    const tareasPendientes = tareas.filter(t => !t.completada);
+    const tareasCompletadas = tareas.filter(t => t.estado === "completada" && t.fecha_vencimiento && enRango(t.fecha_vencimiento, inicio, fin));
+    const tareasPendientes = tareas.filter(t => t.estado !== "completada");
 
     // Semana anterior
     const contactosAnt = contactos.filter(c => enRango(c.created_at, inicioAnterior, finAnterior)).length;
