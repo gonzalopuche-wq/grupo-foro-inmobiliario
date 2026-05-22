@@ -9,7 +9,7 @@ import { supabase } from "../../../lib/supabase";
 interface Propiedad {
   id: string;
   direccion: string;
-  barrio: string | null;
+  zona: string | null;
   ciudad: string | null;
   tipo: string | null;
   operacion: string | null;
@@ -52,8 +52,8 @@ export default function ComparadorPropiedades() {
 
   useEffect(() => {
     supabase
-      .from("crm_cartera")
-      .select("id,direccion,barrio,ciudad,tipo,operacion,precio,moneda,superficie_total,superficie_cubierta,ambientes,dormitorios,banos,cochera,pileta,amenities,estado,antiguedad,expensas,descripcion")
+      .from("cartera_propiedades")
+      .select("id,direccion,zona,ciudad,tipo,operacion,precio,moneda,superficie_total,superficie_cubierta,ambientes,dormitorios,banos,cochera,pileta,amenities,estado,antiguedad,expensas,descripcion")
       .eq("estado", "activa")
       .order("precio", { ascending: false })
       .then(({ data }) => {
@@ -66,7 +66,7 @@ export default function ComparadorPropiedades() {
     propiedades.filter(p =>
       busqueda === "" ||
       p.direccion?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      p.barrio?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      p.zona?.toLowerCase().includes(busqueda.toLowerCase()) ||
       p.tipo?.toLowerCase().includes(busqueda.toLowerCase())
     ), [propiedades, busqueda]);
 
@@ -101,7 +101,7 @@ export default function ComparadorPropiedades() {
   const FILAS: { label: string; key: keyof Propiedad | "precio_m2"; format: (p: Propiedad) => string; mejor?: "max" | "min" }[] = [
     { label: "Tipo", key: "tipo", format: p => p.tipo ?? "—" },
     { label: "Operación", key: "operacion", format: p => p.operacion ?? "—" },
-    { label: "Barrio / Ciudad", key: "barrio", format: p => [p.barrio, p.ciudad].filter(Boolean).join(", ") || "—" },
+    { label: "Zona / Ciudad", key: "zona", format: p => [p.zona, p.ciudad].filter(Boolean).join(", ") || "—" },
     { label: "Precio", key: "precio", format: fmtMoneda, mejor: "min" },
     { label: "Precio/m²", key: "precio_m2", format: p => { const v = precioM2(p); return v !== null ? `USD ${v.toFixed(0)}/m²` : "—"; }, mejor: "min" },
     { label: "Sup. total", key: "superficie_total", format: p => fmt(p.superficie_total, "") + (p.superficie_total ? " m²" : ""), mejor: "max" },
@@ -172,7 +172,7 @@ export default function ComparadorPropiedades() {
                 >
                   <div style={{ fontSize: 13, fontWeight: 600, color: sel ? "#fff" : "#ccc" }}>{p.direccion}</div>
                   <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
-                    {[p.tipo, p.barrio, fmtMoneda(p)].filter(Boolean).join(" · ")}
+                    {[p.tipo, p.zona, fmtMoneda(p)].filter(Boolean).join(" · ")}
                   </div>
                   {precioM2(p) !== null && (
                     <div style={{ fontSize: 11, color: "#666" }}>USD {precioM2(p)!.toFixed(0)}/m²</div>
@@ -200,7 +200,7 @@ export default function ComparadorPropiedades() {
                   {comparadas.map(p => (
                     <th key={p.id} style={{ padding: "12px 16px", textAlign: "center", minWidth: 200 }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{p.direccion}</div>
-                      <div style={{ fontSize: 11, color: "#888", marginTop: 2, fontWeight: 400 }}>{[p.tipo, p.barrio].filter(Boolean).join(" · ")}</div>
+                      <div style={{ fontSize: 11, color: "#888", marginTop: 2, fontWeight: 400 }}>{[p.tipo, p.zona].filter(Boolean).join(" · ")}</div>
                       <button
                         onClick={() => toggleSeleccion(p.id)}
                         style={{ marginTop: 6, background: "none", border: "1px solid #333", borderRadius: 4, color: "#888", fontSize: 11, padding: "2px 8px", cursor: "pointer" }}

@@ -6,16 +6,14 @@ import { supabase } from "../../../lib/supabase";
 // ── tipos ─────────────────────────────────────────────────────────────────────
 interface Operacion {
   id: string;
-  tipo: string | null;
-  estado: string | null;
-  precio_cierre: number | null;
+  tipo_operacion: string | null;
+  etapa: string | null;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
   split_pct: number | null;
   fecha_cierre: string | null;
-  corredor_id: string | null;
-  barrio: string | null;
-  tipo_propiedad: string | null;
+  colega_id: string | null;
 }
 
 type Tab = "mensual" | "por_tipo" | "proyeccion";
@@ -44,7 +42,7 @@ const TIPO_COLOR_FILL: Record<string, string> = {
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 function honorariosBrutoUSD(op: Operacion, tc: number): number {
-  const precio = op.precio_cierre ?? 0;
+  const precio = op.valor_operacion ?? 0;
   const pct = op.honorarios_pct ?? 0;
   const raw = precio * (pct / 100);
   return op.moneda === "ARS" ? raw / tc : raw;
@@ -89,8 +87,8 @@ export default function RevenuePage() {
       try {
         const { data, error: sbError } = await supabase
           .from("crm_negocios")
-          .select("id,tipo,estado,precio_cierre,moneda,honorarios_pct,split_pct,fecha_cierre,corredor_id,barrio,tipo_propiedad")
-          .eq("estado", "cerrado");
+          .select("id,tipo_operacion,etapa,valor_operacion,moneda,honorarios_pct,split_pct,fecha_cierre,colega_id")
+          .eq("etapa", "cerrado");
 
         if (sbError) throw sbError;
         setOperaciones((data ?? []) as Operacion[]);
@@ -143,7 +141,7 @@ export default function RevenuePage() {
 
     const mapa: Record<string, { count: number; total: number }> = {};
     opsAnio.forEach(op => {
-      const tipo = op.tipo ?? "otro";
+      const tipo = op.tipo_operacion ?? "otro";
       if (!mapa[tipo]) mapa[tipo] = { count: 0, total: 0 };
       mapa[tipo].count++;
       mapa[tipo].total += honorariosNetaUSD(op, tc);

@@ -179,7 +179,7 @@ export default function SmartMatch() {
     async function load() {
       const [{ data: c }, { data: p }] = await Promise.all([
         supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,interes,presupuesto_min,presupuesto_max,moneda,zona_interes,estado,etiquetas").eq("estado", "activo"),
-        supabase.from("crm_cartera").select("id,titulo,operacion,tipo,precio,moneda,zona,ciudad,dormitorios,ambientes,superficie_cubierta,estado,apto_credito,con_cochera").eq("estado", "activa"),
+        supabase.from("cartera_propiedades").select("id,titulo,operacion,tipo,precio,moneda,zona,ciudad,dormitorios,ambientes,superficie_cubierta,estado,apto_credito,con_cochera").eq("estado", "activa"),
       ]);
       setContactos((c ?? []) as Contacto[]);
       setPropiedades((p ?? []) as Propiedad[]);

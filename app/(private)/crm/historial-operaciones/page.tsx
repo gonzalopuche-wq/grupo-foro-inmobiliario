@@ -8,14 +8,14 @@ import { supabase } from "../../../lib/supabase";
 interface Negocio {
   id: string;
   created_at: string;
-  tipo: string;
-  estado: string;
-  valor: number | null;
+  tipo_operacion: string;
+  etapa: string;
+  valor_operacion: number | null;
   moneda: string | null;
-  honorarios_estimados: number | null;
+  honorarios_pct: number | null;
   perfil_id: string;
   descripcion: string | null;
-  nombre_contacto: string | null;
+  crm_contactos: { nombre: string; apellido: string }[] | null;
 }
 
 type Tab = "timeline" | "resumen" | "historico";
@@ -333,13 +333,13 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
 
   const filtrados = useMemo(() => {
     return negocios.filter(n => {
-      if (filtroTipo !== "todos" && n.tipo !== filtroTipo) return false;
+      if (filtroTipo !== "todos" && n.tipo_operacion !== filtroTipo) return false;
       if (filtroAnio !== "todos" && anioDeIso(n.created_at) !== Number(filtroAnio)) return false;
       if (filtroMoneda !== "todas" && n.moneda !== filtroMoneda) return false;
       if (busquedaDelay) {
         const q = busquedaDelay.toLowerCase();
         const desc = (n.descripcion ?? "").toLowerCase();
-        const cont = (n.nombre_contacto ?? "").toLowerCase();
+        const cont = (n.crm_contactos?.[0]?.nombre ?? "").toLowerCase();
         if (!desc.includes(q) && !cont.includes(q)) return false;
       }
       return true;
@@ -426,7 +426,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
               const anio = anioDeIso(n.created_at);
               const prevAnio = idx > 0 ? anioDeIso(filtrados[idx - 1].created_at) : null;
               const showAnio = prevAnio !== anio;
-              const esVenta = n.tipo === "venta";
+              const esVenta = n.tipo_operacion === "venta";
 
               return (
                 <div key={n.id}>
@@ -462,7 +462,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
                           border: `1px solid ${esVenta ? "rgba(204,0,0,0.4)" : "rgba(59,130,246,0.4)"}`,
                           textTransform: "uppercase", letterSpacing: "0.08em",
                         }}>
-                          {n.tipo}
+                          {n.tipo_operacion}
                         </span>
                         <span style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#e0e0e0", fontWeight: 500 }}>
                           {n.descripcion ?? "Sin descripción"}
@@ -470,19 +470,19 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
                       </div>
 
                       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                        {n.nombre_contacto && (
+                        {n.crm_contactos?.[0]?.nombre && (
                           <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>
-                            👤 {n.nombre_contacto}
+                            👤 {n.crm_contactos?.[0]?.nombre}
                           </span>
                         )}
-                        {n.valor != null && n.moneda && (
+                        {n.valor_operacion != null && n.moneda && (
                           <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>
-                            💰 {fmtNum(n.valor, n.moneda)}
+                            💰 {fmtNum(n.valor_operacion, n.moneda)}
                           </span>
                         )}
-                        {n.honorarios_estimados != null && n.moneda && (
+                        {((n.valor_operacion ?? 0) * (n.honorarios_pct ?? 3) / 100) != null && n.moneda && (
                           <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>
-                            📊 Hon. {fmtNum(n.honorarios_estimados, n.moneda)}
+                            📊 Hon. {fmtNum(((n.valor_operacion ?? 0) * (n.honorarios_pct ?? 3) / 100), n.moneda)}
                           </span>
                         )}
                         <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginLeft: "auto" }}>
@@ -551,13 +551,13 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
     delAnio.forEach(n => {
       const mon = n.moneda ?? "USD";
       if (!porMoneda[mon]) porMoneda[mon] = { volumen: 0, honorarios: 0, count: 0 };
-      porMoneda[mon].volumen += n.valor ?? 0;
-      porMoneda[mon].honorarios += n.honorarios_estimados ?? 0;
+      porMoneda[mon].volumen += n.valor_operacion ?? 0;
+      porMoneda[mon].honorarios += (n.valor_operacion ?? 0) * (n.honorarios_pct ?? 3) / 100;
       porMoneda[mon].count++;
     });
 
     const masGrande: Negocio | null = delAnio.reduce<Negocio | null>((best, n) => {
-      if (!best || (n.valor ?? 0) > (best.valor ?? 0)) return n;
+      if (!best || (n.valor_operacion ?? 0) > (best.valor_operacion ?? 0)) return n;
       return best;
     }, null);
 
@@ -575,8 +575,8 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
       const delMes = delAnio.filter(n => mesDeIso(n.created_at) === mes);
       return {
         mes,
-        ventas: delMes.filter(n => n.tipo === "venta").length,
-        alquileres: delMes.filter(n => n.tipo === "alquiler").length,
+        ventas: delMes.filter(n => n.tipo_operacion === "venta").length,
+        alquileres: delMes.filter(n => n.tipo_operacion === "alquiler").length,
       };
     });
   }, [delAnio]);
@@ -585,9 +585,9 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
   const tablaMensual = useMemo(() => {
     return Array.from({ length: 12 }, (_, mes) => {
       const delMes = delAnio.filter(n => mesDeIso(n.created_at) === mes);
-      const ventas = delMes.filter(n => n.tipo === "venta").length;
-      const alquileres = delMes.filter(n => n.tipo === "alquiler").length;
-      const honorarios = delMes.reduce((s, n) => s + (n.honorarios_estimados ?? 0), 0);
+      const ventas = delMes.filter(n => n.tipo_operacion === "venta").length;
+      const alquileres = delMes.filter(n => n.tipo_operacion === "alquiler").length;
+      const honorarios = delMes.reduce((s, n) => s + (n.valor_operacion ?? 0) * (n.honorarios_pct ?? 3) / 100, 0);
       const moneda = delMes[0]?.moneda ?? "USD";
       return { mes, ventas, alquileres, total: ventas + alquileres, honorarios, moneda };
     });
@@ -697,14 +697,14 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
             <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#e0e0e0" }}>
               {masGrande.descripcion ?? "Sin descripción"}
             </div>
-            {masGrande.valor != null && masGrande.moneda && (
+            {masGrande.valor_operacion != null && masGrande.moneda && (
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", marginTop: 6 }}>
-                {fmtNum(masGrande.valor, masGrande.moneda)}
+                {fmtNum(masGrande.valor_operacion, masGrande.moneda)}
               </div>
             )}
-            {masGrande.nombre_contacto && (
+            {masGrande.crm_contactos?.[0]?.nombre && (
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>
-                👤 {masGrande.nombre_contacto}
+                👤 {masGrande.crm_contactos?.[0]?.nombre}
               </div>
             )}
           </div>
@@ -786,8 +786,8 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
     return cinco.map((anio, idx) => {
       const del = negocios.filter(n => anioDeIso(n.created_at) === anio);
       const ops = del.length;
-      const honorarios = del.reduce((s, n) => s + (n.honorarios_estimados ?? 0), 0);
-      const volumen = del.reduce((s, n) => s + (n.valor ?? 0), 0);
+      const honorarios = del.reduce((s, n) => s + (n.valor_operacion ?? 0) * (n.honorarios_pct ?? 3) / 100, 0);
+      const volumen = del.reduce((s, n) => s + (n.valor_operacion ?? 0), 0);
 
       // Crecimiento vs. año anterior
       const anioAnt = cinco[idx + 1];
@@ -795,7 +795,7 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
         ? negocios.filter(n => anioDeIso(n.created_at) === anioAnt)
         : null;
       const honorariosAnt = delAnt
-        ? delAnt.reduce((s, n) => s + (n.honorarios_estimados ?? 0), 0)
+        ? delAnt.reduce((s, n) => s + (n.valor_operacion ?? 0) * (n.honorarios_pct ?? 3) / 100, 0)
         : null;
       let crecimiento: number | null = null;
       if (honorariosAnt !== null && honorariosAnt > 0) {
@@ -816,8 +816,8 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
 
   // Donut: total ventas vs alquileres
   const totales = useMemo(() => ({
-    ventas: negocios.filter(n => n.tipo === "venta").length,
-    alquileres: negocios.filter(n => n.tipo === "alquiler").length,
+    ventas: negocios.filter(n => n.tipo_operacion === "venta").length,
+    alquileres: negocios.filter(n => n.tipo_operacion === "alquiler").length,
   }), [negocios]);
 
   // Top zonas / palabras clave
@@ -963,12 +963,12 @@ export default function HistorialOperacionesPage() {
   const cargar = useCallback(async (userId: string) => {
     setLoading(true);
     const { data } = await supabase
-      .from("negocios")
-      .select("id, created_at, tipo, estado, valor, moneda, honorarios_estimados, perfil_id, descripcion, nombre_contacto")
-      .eq("estado", "cerrado")
+      .from("crm_negocios")
+      .select("id, created_at, tipo_operacion, etapa, valor_operacion, moneda, honorarios_pct, perfil_id, descripcion, crm_contactos(nombre, apellido)")
+      .eq("etapa", "cerrado")
       .eq("perfil_id", userId)
       .order("created_at", { ascending: false });
-    setNegocios((data as Negocio[]) ?? []);
+    setNegocios((data as unknown as Negocio[]) ?? []);
     setLoading(false);
   }, []);
 

@@ -8,7 +8,7 @@ import { supabase } from "../../../lib/supabase";
 
 interface PropCartera {
   id: string;
-  barrio: string | null;
+  zona: string | null;
   tipo: string | null;
   operacion: string | null;
   precio: number | null;
@@ -19,7 +19,7 @@ interface PropCartera {
 }
 
 interface ZonaStats {
-  barrio: string;
+  zona: string;
   count: number;
   pm2Promedio: number;
   pm2Min: number;
@@ -57,8 +57,8 @@ export default function AnalisisZona() {
 
   useEffect(() => {
     supabase
-      .from("crm_cartera")
-      .select("id,barrio,tipo,operacion,precio,moneda,superficie_cubierta,ambientes,estado")
+      .from("cartera_propiedades")
+      .select("id,zona,tipo,operacion,precio,moneda,superficie_cubierta,ambientes,estado")
       .eq("estado", "activa")
       .then(({ data }) => {
         setPropiedades((data ?? []) as PropCartera[]);
@@ -82,14 +82,14 @@ export default function AnalisisZona() {
   const zonaStats = useMemo<ZonaStats[]>(() => {
     const mapa: Record<string, PropCartera[]> = {};
     propFiltradas.forEach(p => {
-      const barrio = p.barrio?.trim() || "Sin barrio";
-      if (!mapa[barrio]) mapa[barrio] = [];
-      mapa[barrio].push(p);
+      const zona = p.zona?.trim() || "Sin zona";
+      if (!mapa[zona]) mapa[zona] = [];
+      mapa[zona].push(p);
     });
 
     return Object.entries(mapa)
       .filter(([, props]) => props.length >= 1)
-      .map(([barrio, props]) => {
+      .map(([zona, props]) => {
         const pm2s = props.map(p => precioM2USD(p, tcDolar)!).filter(Boolean);
         const precios = props.map(p => (p.moneda === "ARS" ? (p.precio ?? 0) / tcDolar : p.precio ?? 0));
         const sups = props.map(p => p.superficie_cubierta ?? 0).filter(Boolean);
@@ -102,7 +102,7 @@ export default function AnalisisZona() {
         const tipoMasFrecuente = Object.entries(distribTipo).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";
 
         return {
-          barrio,
+          zona,
           count: props.length,
           pm2Promedio: pm2s.reduce((s, v) => s + v, 0) / pm2s.length,
           pm2Min: Math.min(...pm2s),
@@ -139,7 +139,7 @@ export default function AnalisisZona() {
     color: "#fff", padding: "6px 10px", fontSize: 12, fontFamily: "Inter, sans-serif",
   };
 
-  const zonaDetalle = zonaSeleccionada ? zonaStats.find(z => z.barrio === zonaSeleccionada) : null;
+  const zonaDetalle = zonaSeleccionada ? zonaStats.find(z => z.zona === zonaSeleccionada) : null;
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
@@ -203,11 +203,11 @@ export default function AnalisisZona() {
                   </h2>
                   {zonaStats.map((zona, i) => {
                     const pct = (zona.pm2Mediana / maxPm2) * 100;
-                    const isSelected = zonaSeleccionada === zona.barrio;
+                    const isSelected = zonaSeleccionada === zona.zona;
                     return (
                       <div
-                        key={zona.barrio}
-                        onClick={() => setZonaSeleccionada(isSelected ? null : zona.barrio)}
+                        key={zona.zona}
+                        onClick={() => setZonaSeleccionada(isSelected ? null : zona.zona)}
                         style={{
                           marginBottom: 10, cursor: "pointer", padding: "8px 10px", borderRadius: 6,
                           background: isSelected ? "#cc000015" : "transparent",
@@ -218,7 +218,7 @@ export default function AnalisisZona() {
                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, alignItems: "center" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <span style={{ fontSize: 11, color: "#555", minWidth: 20 }}>#{i + 1}</span>
-                            <span style={{ fontSize: 13, color: isSelected ? "#fff" : "#ccc", fontWeight: isSelected ? 700 : 400 }}>{zona.barrio}</span>
+                            <span style={{ fontSize: 13, color: isSelected ? "#fff" : "#ccc", fontWeight: isSelected ? 700 : 400 }}>{zona.zona}</span>
                             <span style={{ fontSize: 10, color: "#555" }}>({zona.count} prop.)</span>
                           </div>
                           <div style={{ textAlign: "right" }}>
@@ -247,7 +247,7 @@ export default function AnalisisZona() {
                   <div style={{ background: "#111", border: "1px solid #cc0000", borderRadius: 10, padding: "20px", alignSelf: "start", position: "sticky", top: 16 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                       <h2 style={{ margin: 0, fontSize: 14, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#cc0000" }}>
-                        📍 {zonaDetalle.barrio}
+                        📍 {zonaDetalle.zona}
                       </h2>
                       <button onClick={() => setZonaSeleccionada(null)} style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: 18 }}>×</button>
                     </div>
