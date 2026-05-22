@@ -225,7 +225,7 @@ export default function CrmHoyPage() {
 
   const completarRecordatorio = async (id: string) => {
     if (!uid) return;
-    await supabase.from("crm_recordatorios").update({ completado: true }).eq("id", id);
+    await supabase.from("crm_recordatorios").update({ completado: true, estado: "completado" }).eq("id", id);
     setRecordatorios(prev => prev.filter(r => r.id !== id));
     showToast("Recordatorio completado ✓");
   };
