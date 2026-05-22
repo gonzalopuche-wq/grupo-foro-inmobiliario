@@ -124,7 +124,7 @@ export default function PerfilPage() {
           sc(supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
           sc(supabase.from("tasaciones").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
           sc(supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
-          sc(supabase.from("crm_negocios").select("id", { count: "exact", head: true }).eq("user_id", data.user.id).eq("estado", "cerrado") as any),
+          sc(supabase.from("crm_negocios").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).eq("etapa", "cerrado") as any),
           sc(supabase.from("networking_posts").select("id", { count: "exact", head: true }).eq("user_id", data.user.id) as any),
           sc(supabase.from("foro_posts").select("id", { count: "exact", head: true }).eq("user_id", data.user.id) as any),
           sc(supabase.from("referidos").select("id", { count: "exact", head: true }).eq("referidor_id", data.user.id) as any),
