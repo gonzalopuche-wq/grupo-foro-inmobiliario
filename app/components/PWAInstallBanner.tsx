@@ -61,7 +61,7 @@ export default function PWAInstallBanner() {
   if (!visible) return null;
 
   return (
-    <div style={{
+    <div id="pwa-install-banner" style={{
       position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
       background: "#141414", border: "1px solid rgba(200,0,0,0.3)",
       borderRadius: 12, padding: "14px 16px",
@@ -70,7 +70,10 @@ export default function PWAInstallBanner() {
       zIndex: 9999, maxWidth: 440, width: "calc(100vw - 40px)",
       animation: "slideUp 0.25s ease",
     }}>
-      <style>{`@keyframes slideUp{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}`}</style>
+      <style>{`
+        @keyframes slideUp{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+        @media (max-width: 900px) { #pwa-install-banner { bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important; } }
+      `}</style>
       <img
         src="/logo_gfi.png"
         alt="GFI"
