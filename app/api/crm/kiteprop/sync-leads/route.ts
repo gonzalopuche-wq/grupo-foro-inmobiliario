@@ -28,7 +28,12 @@ async function obtenerApiKey(userId: string): Promise<{ apiKey: string | null; b
   if (cfg?.config) {
     const c = cfg.config as Record<string, string>;
     if (c.api_key) {
-      return { apiKey: c.api_key, baseUrl: (c.base_url ?? "https://api.kiteprop.com/api/v1").replace(/\/$/, "") };
+      return {
+        apiKey: c.api_key,
+        baseUrl: (c.base_url ?? "https://www.kiteprop.com/api/v1")
+          .replace("api.kiteprop.com", "www.kiteprop.com")
+          .replace(/\/$/, ""),
+      };
     }
   }
 
@@ -40,7 +45,7 @@ async function obtenerApiKey(userId: string): Promise<{ apiKey: string | null; b
     .maybeSingle();
 
   const key = (creds as Record<string, string | null> | null)?.kiteprop_key ?? process.env.KITEPROP_API_KEY ?? null;
-  return { apiKey: key, baseUrl: "https://api.kiteprop.com/api/v1" };
+  return { apiKey: key, baseUrl: "https://www.kiteprop.com/api/v1" };
 }
 
 interface KpLead {
@@ -102,7 +107,7 @@ export async function sincronizarParaUsuario(userId: string): Promise<{ total: n
   const { apiKey, baseUrl } = await obtenerApiKey(userId);
   if (!apiKey) throw new Error("Sin API key de KiteProp");
 
-  const headers = { Accept: "application/json", "X-Api-Key": apiKey };
+  const headers = { Accept: "application/json", "X-API-Key": apiKey };
   let leads: KpLead[] = [];
 
   // Intentar /leads/ primero (interesados específicos), luego /contacts/
