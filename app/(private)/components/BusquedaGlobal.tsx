@@ -54,7 +54,7 @@ export default function BusquedaGlobal() {
         supabase.from("cartera_propiedades").select("id,titulo,direccion,tipo").or(`titulo.ilike.%${term}%,direccion.ilike.%${term}%`).eq("perfil_id", uid).limit(4),
         supabase.from("crm_contactos").select("id,nombre,apellido,email").or(`nombre.ilike.%${term}%,apellido.ilike.%${term}%,email.ilike.%${term}%`).eq("perfil_id", uid).limit(4),
         supabase.from("foro_topics").select("id,titulo,slug").ilike("titulo", `%${term}%`).limit(4),
-        supabase.from("crm_negocios").select("id,titulo,etapa").ilike("titulo", `%${term}%`).eq("user_id", uid).limit(4),
+        supabase.from("crm_negocios").select("id,titulo,etapa").ilike("titulo", `%${term}%`).eq("perfil_id", uid).limit(4),
       ]);
       const res: Resultado[] = [];
       for (const p of props.data ?? []) res.push({ tipo: "propiedad", id: p.id, titulo: p.titulo ?? "Sin título", subtitulo: `${p.tipo ?? ""}${p.direccion ? " — " + p.direccion : ""}`, href: `/crm/cartera/ficha/${p.id}` });
