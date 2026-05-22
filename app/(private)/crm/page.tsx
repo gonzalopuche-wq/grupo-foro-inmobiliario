@@ -913,7 +913,7 @@ function CrmPageInner() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
 
         /* ── Layout principal ── */
-        .crm-root { display: flex; flex-direction: column; height: calc(100vh - 70px); overflow: hidden; background: #080808; }
+        .crm-page-root { display: flex; flex-direction: column; height: calc(100vh - 70px); overflow: hidden; background: #080808; }
 
         .crm-tab-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; background: #cc0000; color: #fff; font-size: 8px; font-weight: 700; border-radius: 8px; margin-left: 6px; font-family: 'Montserrat',sans-serif; }
 
@@ -1175,7 +1175,7 @@ function CrmPageInner() {
         }
       `}</style>
 
-      <div className="crm-root">
+      <div className="crm-page-root">
 
         <div className="crm-tab-content">
 
