@@ -441,7 +441,7 @@ DO $$ BEGIN
   END IF;
 END $$;
 CREATE INDEX IF NOT EXISTS idx_mensajes_chat_grupo  ON mensajes_chat(grupo_id, created_at ASC);
-CREATE INDEX IF NOT EXISTS idx_mensajes_chat_perfil ON mensajes_chat(perfil_id);
+CREATE INDEX IF NOT EXISTS idx_mensajes_chat_user   ON mensajes_chat(user_id);
 CREATE INDEX IF NOT EXISTS idx_mensajes_chat_reply  ON mensajes_chat(reply_id) WHERE reply_id IS NOT NULL;
 
 
@@ -596,7 +596,7 @@ DO $$ BEGIN
     CREATE POLICY "forum_notif_own_all" ON forum_notifications FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
   END IF;
 END $$;
-CREATE INDEX IF NOT EXISTS idx_forum_notif_user ON forum_notifications(user_id, leido, created_at DESC);
+-- índice omitido: forum_notifications pre-existe sin columna leido
 
 -- ----
 
@@ -698,6 +698,19 @@ CREATE TABLE IF NOT EXISTS listas_distribucion (
   created_at  timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE listas_distribucion ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS idx_listas_dist_creador ON listas_distribucion(creador_id);
+
+-- ----
+
+CREATE TABLE IF NOT EXISTS listas_distribucion_miembros (
+  lista_id    uuid NOT NULL REFERENCES listas_distribucion(id) ON DELETE CASCADE,
+  perfil_id   uuid NOT NULL REFERENCES perfiles(id) ON DELETE CASCADE,
+  PRIMARY KEY (lista_id, perfil_id)
+);
+ALTER TABLE listas_distribucion_miembros ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS idx_listas_dist_miembros_perfil ON listas_distribucion_miembros(perfil_id);
+
+-- policies de listas (van al final porque listas_dist_select referencia listas_distribucion_miembros)
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='listas_distribucion' AND policyname='listas_dist_select') THEN
     CREATE POLICY "listas_dist_select" ON listas_distribucion FOR SELECT
@@ -709,16 +722,7 @@ DO $$ BEGIN
     CREATE POLICY "listas_dist_all" ON listas_distribucion FOR ALL USING (creador_id = auth.uid());
   END IF;
 END $$;
-CREATE INDEX IF NOT EXISTS idx_listas_dist_creador ON listas_distribucion(creador_id);
 
--- ----
-
-CREATE TABLE IF NOT EXISTS listas_distribucion_miembros (
-  lista_id    uuid NOT NULL REFERENCES listas_distribucion(id) ON DELETE CASCADE,
-  perfil_id   uuid NOT NULL REFERENCES perfiles(id) ON DELETE CASCADE,
-  PRIMARY KEY (lista_id, perfil_id)
-);
-ALTER TABLE listas_distribucion_miembros ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='listas_distribucion_miembros' AND policyname='listas_dist_miembros_select') THEN
     CREATE POLICY "listas_dist_miembros_select" ON listas_distribucion_miembros FOR SELECT
@@ -731,7 +735,6 @@ DO $$ BEGIN
       USING (EXISTS (SELECT 1 FROM listas_distribucion l WHERE l.id = lista_id AND l.creador_id = auth.uid()));
   END IF;
 END $$;
-CREATE INDEX IF NOT EXISTS idx_listas_dist_miembros_perfil ON listas_distribucion_miembros(perfil_id);
 
 -- ============================================================
 -- FIN — todas las tablas creadas con IF NOT EXISTS

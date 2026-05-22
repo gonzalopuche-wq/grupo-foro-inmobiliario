@@ -60,16 +60,9 @@ CREATE TABLE IF NOT EXISTS listas_distribucion (
 );
 
 CREATE INDEX IF NOT EXISTS idx_listas_dist_creador ON listas_distribucion(creador_id);
-
 ALTER TABLE listas_distribucion ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "listas_dist_select" ON listas_distribucion FOR SELECT
-  USING (creador_id = auth.uid() OR EXISTS (
-    SELECT 1 FROM listas_distribucion_miembros m WHERE m.lista_id = id AND m.perfil_id = auth.uid()
-  ));
-CREATE POLICY "listas_dist_all" ON listas_distribucion FOR ALL
-  USING (creador_id = auth.uid());
 
--- Miembros de listas de distribución
+-- Miembros de listas de distribución (crear antes de las policies que lo referencian)
 CREATE TABLE IF NOT EXISTS listas_distribucion_miembros (
   lista_id    uuid NOT NULL REFERENCES listas_distribucion(id) ON DELETE CASCADE,
   perfil_id   uuid NOT NULL REFERENCES perfiles(id) ON DELETE CASCADE,
@@ -77,8 +70,16 @@ CREATE TABLE IF NOT EXISTS listas_distribucion_miembros (
 );
 
 CREATE INDEX IF NOT EXISTS idx_listas_dist_miembros_perfil ON listas_distribucion_miembros(perfil_id);
-
 ALTER TABLE listas_distribucion_miembros ENABLE ROW LEVEL SECURITY;
+
+-- Policies de listas (van después de crear listas_distribucion_miembros)
+CREATE POLICY "listas_dist_select" ON listas_distribucion FOR SELECT
+  USING (creador_id = auth.uid() OR EXISTS (
+    SELECT 1 FROM listas_distribucion_miembros m WHERE m.lista_id = id AND m.perfil_id = auth.uid()
+  ));
+CREATE POLICY "listas_dist_all" ON listas_distribucion FOR ALL
+  USING (creador_id = auth.uid());
+
 CREATE POLICY "listas_dist_miembros_select" ON listas_distribucion_miembros FOR SELECT
   USING (perfil_id = auth.uid() OR EXISTS (
     SELECT 1 FROM listas_distribucion l WHERE l.id = lista_id AND l.creador_id = auth.uid()
