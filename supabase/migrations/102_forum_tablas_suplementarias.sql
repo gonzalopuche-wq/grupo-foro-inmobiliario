@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS forum_notifications (
   type        text NOT NULL CHECK (type IN ('reply','accepted_reply','mention','vote')),
   topic_id    uuid REFERENCES forum_topics(id) ON DELETE CASCADE,
   reply_id    uuid REFERENCES forum_replies(id) ON DELETE CASCADE,
-  read        boolean NOT NULL DEFAULT false,
+  leido       boolean NOT NULL DEFAULT false,
   created_at  timestamptz NOT NULL DEFAULT now()
 );
 
@@ -152,7 +152,7 @@ ALTER TABLE forum_notifications ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "forum_notif_own_all" ON forum_notifications
   FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE INDEX IF NOT EXISTS idx_forum_notif_user ON forum_notifications(user_id, read, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_forum_notif_user ON forum_notifications(user_id, leido, created_at DESC);
 
 -- ── red_proveedores_resenas: reseñas de proveedores ──────────────────────────
 
