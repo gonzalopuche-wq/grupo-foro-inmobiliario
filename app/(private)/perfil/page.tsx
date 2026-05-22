@@ -94,6 +94,7 @@ function urlBase64ToUint8Array(base64String: string) {
 export default function PerfilPage() {
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [seccion, setSeccion] = useState("personal");
@@ -114,6 +115,7 @@ export default function PerfilPage() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/login"; return; }
       setUserId(data.user.id);
+      setUserEmail(data.user.email ?? null);
       const { data: p } = await supabase.from("perfiles").select("*").eq("id", data.user.id).single();
       if (p) {
         setPerfil(p as Perfil);
@@ -296,13 +298,22 @@ export default function PerfilPage() {
   };
 
   const cambiarContrasena = async () => {
+    if (!cambioPassword.actual) {
+      mostrarToast("Ingresá tu contraseña actual", "err"); return;
+    }
     if (!cambioPassword.nueva || cambioPassword.nueva !== cambioPassword.confirmar) {
       mostrarToast("Las contraseñas no coinciden", "err"); return;
     }
     if (cambioPassword.nueva.length < 8) {
       mostrarToast("La contraseña debe tener al menos 8 caracteres", "err"); return;
     }
+    if (!userEmail) { mostrarToast("Error de sesión, volvé a iniciar", "err"); return; }
     setCambiandoPassword(true);
+    const { error: authError } = await supabase.auth.signInWithPassword({ email: userEmail, password: cambioPassword.actual });
+    if (authError) {
+      setCambiandoPassword(false);
+      mostrarToast("La contraseña actual es incorrecta", "err"); return;
+    }
     const { error } = await supabase.auth.updateUser({ password: cambioPassword.nueva });
     setCambiandoPassword(false);
     if (error) { mostrarToast("Error al cambiar contraseña", "err"); return; }
@@ -877,6 +888,10 @@ export default function PerfilPage() {
               </div>
               <div className="pf-grid">
                 <div className="pf-field span2">
+                  <label className="pf-label">Contraseña actual</label>
+                  <input className="pf-input" type="password" placeholder="Tu contraseña actual" value={cambioPassword.actual} onChange={e => setCambioPassword(p => ({ ...p, actual: e.target.value }))} />
+                </div>
+                <div className="pf-field span2">
                   <label className="pf-label">Nueva contraseña</label>
                   <input className="pf-input" type="password" placeholder="Mínimo 8 caracteres" value={cambioPassword.nueva} onChange={e => setCambioPassword(p => ({ ...p, nueva: e.target.value }))} />
                 </div>
@@ -886,7 +901,7 @@ export default function PerfilPage() {
                 </div>
               </div>
               <div style={{ marginTop: 16 }}>
-                <button className="btn-save" onClick={cambiarContrasena} disabled={cambiandoPassword || !cambioPassword.nueva || !cambioPassword.confirmar}>
+                <button className="btn-save" onClick={cambiarContrasena} disabled={cambiandoPassword || !cambioPassword.actual || !cambioPassword.nueva || !cambioPassword.confirmar}>
                   {cambiandoPassword ? "Cambiando..." : "Cambiar contraseña"}
                 </button>
               </div>

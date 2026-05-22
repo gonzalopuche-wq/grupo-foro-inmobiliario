@@ -36,8 +36,8 @@ export default function NuevaContrasenaPage() {
     e.preventDefault();
     setError("");
 
-    if (!password || password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+    if (!password || password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.");
       return;
     }
     if (password !== confirmar) {
@@ -134,7 +134,7 @@ export default function NuevaContrasenaPage() {
                   <input
                     className="nc-input"
                     type="password"
-                    placeholder="Mínimo 6 caracteres"
+                    placeholder="Mínimo 8 caracteres"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     disabled={loading}
@@ -143,13 +143,13 @@ export default function NuevaContrasenaPage() {
                   {password.length > 0 && (
                     <>
                       <div className="nc-strength" style={{
-                        width: password.length < 6 ? "30%" : password.length < 10 ? "60%" : "100%",
-                        background: password.length < 6 ? "#cc0000" : password.length < 10 ? "#eab308" : "#22c55e",
+                        width: password.length < 8 ? "30%" : password.length < 12 ? "60%" : "100%",
+                        background: password.length < 8 ? "#cc0000" : password.length < 12 ? "#eab308" : "#22c55e",
                       }} />
                       <div className="nc-strength-txt" style={{
-                        color: password.length < 6 ? "#cc0000" : password.length < 10 ? "#eab308" : "#22c55e"
+                        color: password.length < 8 ? "#cc0000" : password.length < 12 ? "#eab308" : "#22c55e"
                       }}>
-                        {password.length < 6 ? "Muy corta" : password.length < 10 ? "Regular" : "Segura"}
+                        {password.length < 8 ? "Muy corta" : password.length < 12 ? "Regular" : "Segura"}
                       </div>
                     </>
                   )}
