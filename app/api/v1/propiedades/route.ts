@@ -102,6 +102,8 @@ export async function POST(req: NextRequest) {
     descripcion_privada: body.descripcion ?? null,
     fotos:               body.fotos ?? [],
     estado:              body.estado ?? "disponible",
+    zona:                body.zona ?? body.barrio ?? body.neighborhood ?? null,
+    ciudad:              body.ciudad ?? body.city ?? null,
     latitud:             body.lat ?? null,
     longitud:            body.lng ?? null,
     origen:              "urbix",
