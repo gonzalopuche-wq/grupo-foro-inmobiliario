@@ -9,7 +9,7 @@ interface Negocio {
   titulo: string;
   etapa: string;
   tipo_operacion: string;
-  valor_estimado: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
   created_at: string;
@@ -44,7 +44,7 @@ export default function WinLossPage() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_estimado,moneda,honorarios_pct,created_at,updated_at,fecha_cierre"),
+      supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,created_at,updated_at,fecha_cierre"),
       supabase.from("crm_interacciones").select("id,negocio_id,tipo,created_at"),
     ]).then(([{ data: n }, { data: i }]) => {
       setNegocios((n ?? []) as Negocio[]);
@@ -62,7 +62,7 @@ export default function WinLossPage() {
   const filtrados = useMemo(() => negocios.filter(n => n.created_at.slice(0, 10) >= desde), [negocios, desde]);
 
   const valorUSD = (n: Negocio) => {
-    const v = n.valor_estimado ?? 0;
+    const v = n.valor_operacion ?? 0;
     return n.moneda === "ARS" ? v / tc : v;
   };
 

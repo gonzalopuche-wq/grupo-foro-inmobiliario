@@ -12,7 +12,7 @@ interface Contacto {
   apellido: string | null;
   tipo: string | null;
   estado: string | null;
-  fecha_creacion: string | null;
+  created_at: string | null;
   origen: string | null;
 }
 
@@ -20,7 +20,7 @@ interface Negocio {
   id: string;
   etapa: string;
   contacto_id: string | null;
-  fecha_creacion: string | null;
+  created_at: string | null;
   valor_operacion: number | null;
   honorarios_pct: number | null;
 }
@@ -70,8 +70,8 @@ export default function AnalisisCaptacion() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from("crm_contactos").select("id,nombre,apellido,tipo,estado,fecha_creacion,origen").order("fecha_creacion", { ascending: false }),
-      supabase.from("crm_negocios").select("id,etapa,contacto_id,fecha_creacion,valor_operacion,honorarios_pct"),
+      supabase.from("crm_contactos").select("id,nombre,apellido,tipo,estado,created_at,origen").order("created_at", { ascending: false }),
+      supabase.from("crm_negocios").select("id,etapa,contacto_id,created_at,valor_operacion,honorarios_pct"),
     ]).then(([{ data: c }, { data: n }]) => {
       setContactos((c ?? []) as Contacto[]);
       setNegocios((n ?? []) as Negocio[]);
@@ -87,7 +87,7 @@ export default function AnalisisCaptacion() {
   const contactosFiltrados = useMemo(() => {
     return contactos.filter(c => {
       if (filtroTipo !== "todos" && c.tipo !== filtroTipo) return false;
-      if (c.fecha_creacion && mesAnioKey(c.fecha_creacion) < limitKey) return false;
+      if (c.created_at && mesAnioKey(c.created_at) < limitKey) return false;
       return true;
     });
   }, [contactos, filtroTipo, limitKey]);
@@ -95,7 +95,7 @@ export default function AnalisisCaptacion() {
   const porMes = useMemo(() => {
     const mapa: Record<string, number> = {};
     contactosFiltrados.forEach(c => {
-      const key = mesAnioKey(c.fecha_creacion);
+      const key = mesAnioKey(c.created_at);
       mapa[key] = (mapa[key] ?? 0) + 1;
     });
     return Object.entries(mapa).sort((a, b) => a[0].localeCompare(b[0])).slice(-mesesVer);
@@ -125,11 +125,11 @@ export default function AnalisisCaptacion() {
   }, [contactosFiltrados, negocios]);
 
   const tiempoCaptNeg = useMemo(() => {
-    const pares = negocios.filter(n => n.contacto_id && n.fecha_creacion)
+    const pares = negocios.filter(n => n.contacto_id && n.created_at)
       .map(n => {
         const c = contactos.find(x => x.id === n.contacto_id);
-        if (!c?.fecha_creacion) return null;
-        const dias = (new Date(n.fecha_creacion!).getTime() - new Date(c.fecha_creacion).getTime()) / 86400000;
+        if (!c?.created_at) return null;
+        const dias = (new Date(n.created_at!).getTime() - new Date(c.created_at).getTime()) / 86400000;
         return dias >= 0 ? dias : null;
       }).filter((d): d is number => d !== null);
     return pares.length > 0 ? pares.reduce((s, d) => s + d, 0) / pares.length : null;

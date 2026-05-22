@@ -14,7 +14,7 @@ interface Negocio {
   honorarios_pct: number | null;
   moneda: string | null;
   fecha_cierre: string | null;
-  fecha_creacion: string | null;
+  created_at: string | null;
   tipo_operacion: string | null;
   contacto_id: string | null;
 }
@@ -68,7 +68,7 @@ export default function PanelComisiones() {
   useEffect(() => {
     supabase
       .from("crm_negocios")
-      .select("id,titulo,etapa,valor_operacion,honorarios_pct,moneda,fecha_cierre,fecha_creacion,tipo_operacion,contacto_id")
+      .select("id,titulo,etapa,valor_operacion,honorarios_pct,moneda,fecha_cierre,created_at,tipo_operacion,contacto_id")
       .order("fecha_cierre", { ascending: false })
       .then(({ data }) => {
         setNegocios((data ?? []) as Negocio[]);
@@ -98,7 +98,7 @@ export default function PanelComisiones() {
           fecha,
           tipo: n.tipo_operacion,
           realizada,
-          mesAnio: mesAnioKey(fecha ?? n.fecha_creacion),
+          mesAnio: mesAnioKey(fecha ?? n.created_at),
         };
       });
   }, [negocios]);

@@ -8,7 +8,7 @@ interface Negocio {
   id: string;
   etapa: string;
   tipo_operacion: string;
-  valor_estimado: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
   fecha_cierre: string | null;
@@ -62,7 +62,7 @@ export default function ObjetivosPage() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from("crm_negocios").select("id,etapa,tipo_operacion,valor_estimado,moneda,honorarios_pct,fecha_cierre,created_at"),
+      supabase.from("crm_negocios").select("id,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,fecha_cierre,created_at"),
       supabase.from("crm_interacciones").select("created_at,tipo"),
     ]).then(([{ data: n }, { data: i }]) => {
       setNegocios((n ?? []) as Negocio[]);
@@ -79,7 +79,7 @@ export default function ObjetivosPage() {
   };
 
   const valorUSD = (n: Negocio) => {
-    const v = n.valor_estimado ?? 0;
+    const v = n.valor_operacion ?? 0;
     return n.moneda === "ARS" ? v / tc : v;
   };
   const honUSD = (n: Negocio) => valorUSD(n) * (n.honorarios_pct ?? honPct) / 100;

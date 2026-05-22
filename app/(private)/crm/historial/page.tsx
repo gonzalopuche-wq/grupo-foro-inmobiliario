@@ -28,7 +28,7 @@ interface Negocio {
   titulo: string;
   etapa: string;
   tipo_operacion: string;
-  valor_estimado: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   created_at: string;
   updated_at: string;
@@ -113,7 +113,7 @@ export default function HistorialPage() {
     setLoading(true);
     Promise.all([
       supabase.from("crm_interacciones").select("*").eq("contacto_id", selectedId).order("created_at", { ascending: false }),
-      supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_estimado,moneda,created_at,updated_at").eq("contacto_id", selectedId),
+      supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_operacion,moneda,created_at,updated_at").eq("contacto_id", selectedId),
       supabase.from("crm_tareas").select("id,titulo,estado,prioridad,fecha_vencimiento,created_at").eq("contacto_id", selectedId),
       supabase.from("crm_recordatorios").select("*").eq("contacto_id", selectedId),
     ]).then(([{ data: i }, { data: n }, { data: t }, { data: r }]) => {
@@ -171,7 +171,7 @@ export default function HistorialPage() {
         tipo: "negocio_creado",
         fecha: n.created_at,
         titulo: `🏢 Negocio: ${n.titulo}`,
-        subtitulo: `${n.tipo_operacion} · Etapa inicial${n.valor_estimado ? ` · ${n.moneda} ${fmt(n.valor_estimado)}` : ""}`,
+        subtitulo: `${n.tipo_operacion} · Etapa inicial${n.valor_operacion ? ` · ${n.moneda} ${fmt(n.valor_operacion)}` : ""}`,
         color: ETAPA_COLOR[n.etapa] ?? "#6b7280",
         icon: "🏢",
         raw: n,
