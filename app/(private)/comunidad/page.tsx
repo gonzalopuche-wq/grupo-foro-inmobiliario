@@ -5,39 +5,55 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 interface Grupo {
-  id: string;
-  nombre: string;
-  icono: string;
-  tipo: string;
-  va_al_mir: boolean;
-  solo_matriculado: boolean;
-  orden: number;
-  ultimo_mensaje?: string;
-  ultimo_autor?: string;
-  ultimo_at?: string;
+  id: string; nombre: string; icono: string; tipo: string;
+  va_al_mir: boolean; solo_matriculado: boolean; orden: number;
+  ultimo_mensaje?: string; ultimo_autor?: string; ultimo_at?: string;
 }
+
+interface DMChat {
+  id: string; user_a: string; user_b: string;
+  no_leido_a: number; no_leido_b: number;
+  ultimo_mensaje_at: string | null;
+  otro: { id: string; nombre: string; apellido: string; foto_url: string | null; matricula: string | null };
+  ultimo_texto?: string | null;
+  no_leido: number;
+}
+
+interface Lista {
+  id: string; nombre: string; descripcion: string | null;
+  activa: boolean; created_at: string;
+  _miembros?: number;
+}
+
+type Tab = "grupos" | "mensajes" | "listas";
 
 export default function ComunidadPage() {
   const router = useRouter();
+  const [tab, setTab] = useState<Tab>("grupos");
+  const [userId, setUserId] = useState<string | null>(null);
   const [grupos, setGrupos] = useState<Grupo[]>([]);
+  const [dms, setDms] = useState<DMChat[]>([]);
+  const [listas, setListas] = useState<Lista[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingDms, setLoadingDms] = useState(false);
+  const [loadingListas, setLoadingListas] = useState(false);
+  const [totalNoLeidos, setTotalNoLeidos] = useState(0);
 
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { router.push("/login"); return; }
+      setUserId(session.user.id);
 
       const { data: perfil } = await supabase
         .from("perfiles").select("tipo").eq("id", session.user.id).single();
       const tipo = perfil?.tipo ?? "corredor";
 
-      // 1. Cargar grupos
       let query = supabase.from("grupos_chat").select("*").eq("activo", true).order("orden");
       if (tipo === "colaborador") query = query.eq("solo_matriculado", false);
       const { data: gruposRaw } = await query;
       if (!gruposRaw) { setLoading(false); return; }
 
-      // Filtrar por sector si el usuario es colaborador
       let gruposData = gruposRaw;
       if (tipo === "colaborador") {
         const { data: colab } = await supabase
@@ -50,23 +66,20 @@ export default function ComunidadPage() {
         }
       }
 
-      // 2. Un solo query para el último mensaje de cada grupo usando window function
-      // Traer el último mensaje de cada grupo en una sola query
-      const grupoIds = gruposData.map(g => g.id);
+      const grupoIds = gruposData.map((g: any) => g.id);
       const { data: ultimos } = await supabase
         .from("mensajes_chat")
         .select("grupo_id, texto, created_at, perfiles(nombre, apellido)")
         .in("grupo_id", grupoIds)
         .order("created_at", { ascending: false })
-        .limit(grupoIds.length * 3); // traer algunos por grupo para asegurar
+        .limit(grupoIds.length * 3);
 
-      // Agrupar: tomar el más reciente de cada grupo
       const ultimosPorGrupo: Record<string, any> = {};
-      (ultimos ?? []).forEach(m => {
+      (ultimos ?? []).forEach((m: any) => {
         if (!ultimosPorGrupo[m.grupo_id]) ultimosPorGrupo[m.grupo_id] = m;
       });
 
-      const gruposConMensajes = gruposData.map(g => {
+      setGrupos(gruposData.map((g: any) => {
         const u = ultimosPorGrupo[g.id];
         return {
           ...g,
@@ -74,13 +87,91 @@ export default function ComunidadPage() {
           ultimo_autor: u?.perfiles ? `${(u.perfiles as any).nombre} ${(u.perfiles as any).apellido}` : null,
           ultimo_at: u?.created_at ?? null,
         };
-      });
-
-      setGrupos(gruposConMensajes);
+      }));
       setLoading(false);
+
+      // Cargar DMs en paralelo
+      cargarDMs(session.user.id);
     };
     init();
   }, []);
+
+  const cargarDMs = async (uid: string) => {
+    setLoadingDms(true);
+    const { data: chats } = await supabase
+      .from("dm_chats")
+      .select("*, ua:user_a(id,nombre,apellido,foto_url,matricula), ub:user_b(id,nombre,apellido,foto_url,matricula)")
+      .or(`user_a.eq.${uid},user_b.eq.${uid}`)
+      .order("ultimo_mensaje_at", { ascending: false, nullsFirst: false });
+
+    if (!chats) { setLoadingDms(false); return; }
+
+    // Traer el último mensaje de cada chat
+    const chatIds = chats.map((c: any) => c.id);
+    let ultimosPorChat: Record<string, string | null> = {};
+    if (chatIds.length > 0) {
+      const { data: ultMsgs } = await supabase
+        .from("dm_mensajes")
+        .select("chat_id, texto, created_at")
+        .in("chat_id", chatIds)
+        .order("created_at", { ascending: false })
+        .limit(chatIds.length * 2);
+      (ultMsgs ?? []).forEach((m: any) => {
+        if (!ultimosPorChat[m.chat_id]) ultimosPorChat[m.chat_id] = m.texto;
+      });
+    }
+
+    let total = 0;
+    const dmList: DMChat[] = chats.map((c: any) => {
+      const esA = c.user_a === uid;
+      const otro = esA ? c.ub : c.ua;
+      const noLeido = esA ? c.no_leido_a : c.no_leido_b;
+      total += noLeido;
+      return {
+        id: c.id,
+        user_a: c.user_a, user_b: c.user_b,
+        no_leido_a: c.no_leido_a, no_leido_b: c.no_leido_b,
+        ultimo_mensaje_at: c.ultimo_mensaje_at,
+        otro: Array.isArray(otro) ? otro[0] : otro,
+        ultimo_texto: ultimosPorChat[c.id] ?? null,
+        no_leido: noLeido,
+      };
+    });
+    setDms(dmList);
+    setTotalNoLeidos(total);
+    setLoadingDms(false);
+  };
+
+  const cargarListas = async (uid: string) => {
+    setLoadingListas(true);
+    const { data } = await supabase
+      .from("listas_distribucion")
+      .select("*")
+      .eq("creador_id", uid)
+      .order("created_at", { ascending: false });
+    if (!data) { setLoadingListas(false); return; }
+
+    // Contar miembros por lista
+    const ids = data.map((l: any) => l.id);
+    let cuentas: Record<string, number> = {};
+    if (ids.length > 0) {
+      const { data: miembros } = await supabase
+        .from("listas_distribucion_miembros")
+        .select("lista_id")
+        .in("lista_id", ids);
+      (miembros ?? []).forEach((m: any) => {
+        cuentas[m.lista_id] = (cuentas[m.lista_id] ?? 0) + 1;
+      });
+    }
+    setListas(data.map((l: any) => ({ ...l, _miembros: cuentas[l.id] ?? 0 })));
+    setLoadingListas(false);
+  };
+
+  useEffect(() => {
+    if (tab === "listas" && userId && listas.length === 0) {
+      cargarListas(userId);
+    }
+  }, [tab, userId]);
 
   const tiempoRelativo = (fecha: string) => {
     if (!fecha) return "";
@@ -95,8 +186,11 @@ export default function ComunidadPage() {
     return `${dias}d`;
   };
 
+  const initials = (nombre: string, apellido: string) =>
+    `${nombre?.charAt(0) ?? ""}${apellido?.charAt(0) ?? ""}`.toUpperCase();
+
   const gruposOperaciones = grupos.filter(g => g.tipo === "operaciones");
-  const gruposComunidad = grupos.filter(g => g.tipo === "comunidad");
+  const gruposComunidad = grupos.filter(g => g.tipo !== "operaciones");
 
   const GrupoItem = ({ g }: { g: Grupo }) => (
     <div
@@ -131,6 +225,70 @@ export default function ComunidadPage() {
     </div>
   );
 
+  const DMItem = ({ dm }: { dm: DMChat }) => {
+    const otro = dm.otro;
+    const nombre = otro ? `${otro.apellido ?? ""}, ${otro.nombre ?? ""}`.replace(/^, /, "") : "—";
+    return (
+      <div
+        onClick={() => router.push(`/comunidad/dm/${otro?.id}`)}
+        style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.15s" }}
+        onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+        onMouseOut={e => (e.currentTarget.style.background = "transparent")}
+      >
+        <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#cc0000", flexShrink: 0, overflow: "hidden", position: "relative" }}>
+          {otro?.foto_url
+            ? <img src={otro.foto_url} alt={nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            : initials(otro?.nombre ?? "", otro?.apellido ?? "")}
+          {dm.no_leido > 0 && (
+            <div style={{ position: "absolute", top: 0, right: 0, width: 16, height: 16, borderRadius: "50%", background: "#cc0000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff", border: "2px solid #0a0a0a" }}>
+              {dm.no_leido > 9 ? "9+" : dm.no_leido}
+            </div>
+          )}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <span style={{ fontFamily: "Inter,sans-serif", fontSize: 13, fontWeight: dm.no_leido > 0 ? 700 : 600, color: dm.no_leido > 0 ? "#fff" : "rgba(255,255,255,0.85)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {nombre}
+            </span>
+            {dm.ultimo_mensaje_at && (
+              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", flexShrink: 0 }}>{tiempoRelativo(dm.ultimo_mensaje_at)}</span>
+            )}
+          </div>
+          <p style={{ fontSize: 11, color: dm.no_leido > 0 ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: dm.no_leido > 0 ? 600 : 400 }}>
+            {dm.ultimo_texto ?? "Iniciar conversación"}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const ListaItem = ({ l }: { l: Lista }) => (
+    <div
+      onClick={() => router.push(`/comunidad/listas/${l.id}`)}
+      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.15s" }}
+      onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+      onMouseOut={e => (e.currentTarget.style.background = "transparent")}
+    >
+      <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
+        📢
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+          <span style={{ fontFamily: "Inter,sans-serif", fontSize: 13, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {l.nombre}
+          </span>
+          {!l.activa && (
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: 3, flexShrink: 0 }}>Pausada</span>
+          )}
+        </div>
+        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>
+          {l._miembros ?? 0} {l._miembros === 1 ? "destinatario" : "destinatarios"}
+          {l.descripcion ? ` · ${l.descripcion}` : ""}
+        </p>
+      </div>
+    </div>
+  );
+
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
       <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
@@ -140,32 +298,143 @@ export default function ComunidadPage() {
 
   return (
     <div style={{ maxWidth: 720, margin: "0 auto" }}>
-      <div style={{ marginBottom: 20 }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+
+      <div style={{ marginBottom: 16 }}>
         <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff", marginBottom: 4 }}>
           Comunidad GFI®
         </h1>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
-          {grupos.length} grupos · Los grupos MIR cargan automáticamente al Motor de Match
-        </p>
       </div>
 
-      {gruposOperaciones.length > 0 && (
-        <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden", marginBottom: 20 }}>
-          <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Operaciones</span>
-            <span style={{ fontSize: 9, color: "#cc0000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "1px 6px", borderRadius: 3, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>→ MIR automático</span>
-          </div>
-          {gruposOperaciones.map(g => <GrupoItem key={g.id} g={g} />)}
-        </div>
+      {/* Tabs */}
+      <div style={{ display: "flex", gap: 0, marginBottom: 20, background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+        {([
+          { key: "grupos", label: "Grupos", badge: 0 },
+          { key: "mensajes", label: "Mensajes", badge: totalNoLeidos },
+          { key: "listas", label: "Listas", badge: 0 },
+        ] as { key: Tab; label: string; badge: number }[]).map(t => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            style={{
+              flex: 1, padding: "12px 8px", background: tab === t.key ? "rgba(200,0,0,0.1)" : "transparent",
+              border: "none", borderBottom: tab === t.key ? "2px solid #cc0000" : "2px solid transparent",
+              color: tab === t.key ? "#fff" : "rgba(255,255,255,0.4)",
+              fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
+              textTransform: "uppercase", cursor: "pointer", transition: "all 0.15s", display: "flex",
+              alignItems: "center", justifyContent: "center", gap: 6,
+            }}
+          >
+            {t.label}
+            {t.badge > 0 && (
+              <span style={{ background: "#cc0000", color: "#fff", borderRadius: "50%", width: 16, height: 16, fontSize: 9, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {t.badge > 9 ? "9+" : t.badge}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab: Grupos */}
+      {tab === "grupos" && (
+        <>
+          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginBottom: 14 }}>
+            {grupos.length} grupos · Los grupos MIR cargan al Motor de Match automáticamente
+          </p>
+          {gruposOperaciones.length > 0 && (
+            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden", marginBottom: 20 }}>
+              <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Operaciones</span>
+                <span style={{ fontSize: 9, color: "#cc0000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "1px 6px", borderRadius: 3, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>→ MIR automático</span>
+              </div>
+              {gruposOperaciones.map(g => <GrupoItem key={g.id} g={g} />)}
+            </div>
+          )}
+          {gruposComunidad.length > 0 && (
+            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+              <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Comunidad</span>
+              </div>
+              {gruposComunidad.map(g => <GrupoItem key={g.id} g={g} />)}
+            </div>
+          )}
+        </>
       )}
 
-      {gruposComunidad.length > 0 && (
-        <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
-          <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-            <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Comunidad</span>
+      {/* Tab: Mensajes (DMs) */}
+      {tab === "mensajes" && (
+        <>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+              Chat privado con colegas
+            </p>
+            <button
+              onClick={() => router.push("/comunidad/dm/nuevo")}
+              style={{ padding: "7px 14px", background: "#cc0000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}
+            >
+              + Nuevo mensaje
+            </button>
           </div>
-          {gruposComunidad.map(g => <GrupoItem key={g.id} g={g} />)}
-        </div>
+          {loadingDms ? (
+            <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
+              <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+            </div>
+          ) : dms.length === 0 ? (
+            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "40px 20px", textAlign: "center" }}>
+              <div style={{ fontSize: 32, marginBottom: 10 }}>💬</div>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>Sin conversaciones</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", marginBottom: 20 }}>Iniciá un chat privado con algún colega</div>
+              <button
+                onClick={() => router.push("/comunidad/dm/nuevo")}
+                style={{ padding: "9px 20px", background: "#cc0000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
+              >
+                Nuevo mensaje
+              </button>
+            </div>
+          ) : (
+            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+              {dms.map(dm => <DMItem key={dm.id} dm={dm} />)}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Tab: Listas de distribución */}
+      {tab === "listas" && (
+        <>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+              Enviá un mensaje a varios colegas a la vez
+            </p>
+            <button
+              onClick={() => router.push("/comunidad/listas/nueva")}
+              style={{ padding: "7px 14px", background: "#cc0000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}
+            >
+              + Nueva lista
+            </button>
+          </div>
+          {loadingListas ? (
+            <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
+              <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+            </div>
+          ) : listas.length === 0 ? (
+            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "40px 20px", textAlign: "center" }}>
+              <div style={{ fontSize: 32, marginBottom: 10 }}>📢</div>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>Sin listas de distribución</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", marginBottom: 20 }}>Creá una lista para enviar mensajes masivos a colegas</div>
+              <button
+                onClick={() => router.push("/comunidad/listas/nueva")}
+                style={{ padding: "9px 20px", background: "#cc0000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
+              >
+                Crear lista
+              </button>
+            </div>
+          ) : (
+            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+              {listas.map(l => <ListaItem key={l.id} l={l} />)}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
