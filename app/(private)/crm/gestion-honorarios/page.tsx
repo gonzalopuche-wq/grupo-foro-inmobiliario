@@ -195,7 +195,7 @@ export default function GestionHonorariosPage() {
       supabase
         .from("crm_negocios")
         .select("id, titulo, tipo_operacion, valor_operacion, moneda, honorarios_pct, split_pct, fecha_cierre, updated_at, crm_contactos(nombre, apellido)")
-        .eq("estado", "cerrado")
+        .eq("etapa", "cerrado")
         .eq("perfil_id", data.user.id)
         .order("updated_at", { ascending: false })
         .then(({ data: rows }) => {

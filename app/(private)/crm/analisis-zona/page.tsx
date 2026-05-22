@@ -156,7 +156,7 @@ export default function AnalisisZona() {
           .from("crm_negocios")
           .select("id, tipo_operacion, valor_operacion, moneda, fecha_cierre, updated_at, honorarios_pct")
           .eq("perfil_id", user.id)
-          .eq("estado", "cerrado"),
+          .eq("etapa", "cerrado"),
       ]);
 
       setPropiedades((props ?? []) as Propiedad[]);

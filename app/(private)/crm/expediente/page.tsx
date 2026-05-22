@@ -311,7 +311,7 @@ export default function ExpedientePage() {
       const { data } = await supabase
         .from("crm_negocios")
         .select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,fecha_cierre")
-        .not("estado", "in", '("perdido")')
+        .not("etapa", "in", '("perdido")')
         .order("created_at", { ascending: false })
         .limit(50);
       setNegocios((data as NegocioDB[]) ?? []);

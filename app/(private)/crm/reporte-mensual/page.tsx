@@ -219,7 +219,7 @@ export default function ReporteMensualPage() {
         .from("crm_negocios")
         .select("id,titulo,tipo_operacion,valor_operacion,honorarios_pct,split_pct,moneda,updated_at")
         .eq("perfil_id", uid)
-        .eq("estado", "cerrado")
+        .eq("etapa", "cerrado")
         .gte("updated_at", r.inicio)
         .lte("updated_at", r.fin),
 
@@ -234,7 +234,7 @@ export default function ReporteMensualPage() {
         .from("crm_negocios")
         .select("id,etapa,valor_operacion,moneda,honorarios_pct")
         .eq("perfil_id", uid)
-        .not("estado", "in", '("cerrado","perdido")'),
+        .not("etapa", "in", '("cerrado","perdido")'),
 
       supabase
         .from("crm_negocios")
@@ -247,7 +247,7 @@ export default function ReporteMensualPage() {
         .from("crm_negocios")
         .select("id,titulo,tipo_operacion,valor_operacion,honorarios_pct,split_pct,moneda,updated_at")
         .eq("perfil_id", uid)
-        .eq("estado", "cerrado")
+        .eq("etapa", "cerrado")
         .gte("updated_at", rA.inicio)
         .lte("updated_at", rA.fin),
 
