@@ -136,7 +136,7 @@ export default function DescuentosPage() {
         .from("cartera_propiedades")
         .select("id,operacion,precio_anterior,precio,moneda,zona,tipo,updated_at,estado,ambientes")
         .eq("perfil_id", user.id)
-        .in("estado", ["vendida", "alquilada"])
+        .in("estado", ["vendida", "retirada"])
         .not("precio_anterior", "is", null)
         .not("precio", "is", null);
       if (err) {

@@ -15,7 +15,7 @@ const KP_TIPO: Record<string, string> = {
   warehouses: "galpón", buildings: "edificio", field: "campo", shop: "local",
 };
 const KP_ESTADO: Record<string, string> = {
-  active: "disponible", inactive: "suspendida", sold: "vendida", rented: "alquilada",
+  active: "activa", inactive: "pausada", sold: "vendida", rented: "activa",
 };
 
 function checkHmac(body: string, secret: string, sigHeader: string): boolean {
@@ -33,7 +33,7 @@ async function syncProperty(userId: string, kp: Record<string, unknown>) {
 
   const imgs = (kp.images_list as { lg?: string }[] | null) ?? [];
   const fotos = imgs.map(i => i.lg).filter(Boolean);
-  const operacion = kp.for_sale && kp.for_rent ? "ambas" : kp.for_sale ? "venta" : "alquiler";
+  const operacion = kp.for_sale && kp.for_rent ? "Ambas" : kp.for_sale ? "Venta" : "Alquiler";
   const precio = (kp.for_sale_price ?? kp.for_rent_price ?? null) as number | null;
   const geo = kp.geo as { lat?: number; lon?: number } | null;
 
@@ -58,7 +58,7 @@ async function syncProperty(userId: string, kp: Record<string, unknown>) {
     superficie_total: kp.total_meters ?? null,
     superficie_cubierta: kp.covered_meters ?? null,
     fotos,
-    estado: KP_ESTADO[(kp.status as string) ?? "active"] ?? "disponible",
+    estado: KP_ESTADO[(kp.status as string) ?? "active"] ?? "activa",
     origen: "kiteprop",
     updated_at: new Date().toISOString(),
   };

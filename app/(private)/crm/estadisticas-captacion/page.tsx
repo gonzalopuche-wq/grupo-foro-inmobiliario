@@ -380,7 +380,7 @@ export default function EstadisticasCaptacionPage() {
   const captacionesMes    = porMes[hoyKey] ?? 0;
   const promedioUlt6      = last6Keys.reduce((s, k) => s + (porMes[k] ?? 0), 0) / 6;
   const totalCaptadas      = propiedades.length;
-  const convertidas        = propiedades.filter(p => p.estado === "vendida" || p.estado === "alquilada").length;
+  const convertidas        = propiedades.filter(p => p.estado === "vendida" || p.estado === "retirada").length;
   const tasaConversion     = totalCaptadas > 0 ? (convertidas / totalCaptadas) * 100 : 0;
   const activas            = propiedades.filter(p => p.estado === "activa");
   const diasPromedioCartera = activas.length > 0
@@ -614,7 +614,7 @@ export default function EstadisticasCaptacionPage() {
             <KpiCard
               label="Tasa de conversión"
               value={`${tasaConversion.toFixed(0)}%`}
-              sub={`${convertidas} vendidas / alquiladas`}
+              sub={`${convertidas} vendidas / retiradas`}
             />
             <KpiCard
               label="Días promedio en cartera"
