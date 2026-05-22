@@ -125,7 +125,7 @@ export default function VisitasPage() {
     if (editandoId) {
       await supabase.from("cartera_visitas").update(payload).eq("id", editandoId);
     } else {
-      await supabase.from("cartera_visitas").insert({ ...payload, created_by: userId });
+      await supabase.from("cartera_visitas").insert({ ...payload, perfil_id: userId, created_by: userId });
     }
     await cargarVisitas(userId);
     setMostrarForm(false);
