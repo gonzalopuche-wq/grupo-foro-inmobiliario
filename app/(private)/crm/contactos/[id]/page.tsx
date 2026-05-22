@@ -181,7 +181,7 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
   };
 
   const marcarRecordatorio = async (recId: string, completado: boolean) => {
-    await supabase.from("crm_recordatorios").update({ completado }).eq("id", recId);
+    await supabase.from("crm_recordatorios").update({ completado, estado: completado ? "completado" : "pendiente" }).eq("id", recId);
     setRecordatorios(r => r.map(x => x.id === recId ? { ...x, completado } : x));
   };
 

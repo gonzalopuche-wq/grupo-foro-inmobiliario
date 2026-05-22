@@ -122,11 +122,11 @@ export default function PerfilPage() {
         const [docs, comparables, tasaciones, propiedades, negocios, networking, foro, referidos] = await Promise.all([
           sc(supabase.from("biblioteca").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).eq("estado", "aprobado") as any),
           sc(supabase.from("comparables").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
-          sc(supabase.from("tasaciones").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
+          sc(supabase.from("tasaciones_historial").select("id", { count: "exact", head: true }).eq("usuario_id", data.user.id) as any),
           sc(supabase.from("cartera_propiedades").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id) as any),
           sc(supabase.from("crm_negocios").select("id", { count: "exact", head: true }).eq("perfil_id", data.user.id).eq("etapa", "cerrado") as any),
           sc(supabase.from("networking_posts").select("id", { count: "exact", head: true }).eq("user_id", data.user.id) as any),
-          sc(supabase.from("foro_posts").select("id", { count: "exact", head: true }).eq("user_id", data.user.id) as any),
+          sc(supabase.from("forum_replies").select("id", { count: "exact", head: true }).eq("author_id", data.user.id) as any),
           sc(supabase.from("referidos").select("id", { count: "exact", head: true }).eq("referidor_id", data.user.id) as any),
         ]);
         setRepStats({ docs, comparables, meses, tasaciones, propiedades, negocios, networking, foro, referidos });

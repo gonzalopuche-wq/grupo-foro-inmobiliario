@@ -505,7 +505,8 @@ function CrmPageInner() {
   };
 
   const toggleRecordatorio = async (r: Recordatorio) => {
-    await supabase.from("crm_recordatorios").update({ completado: !r.completado }).eq("id", r.id);
+    const nuevoCompletado = !r.completado;
+    await supabase.from("crm_recordatorios").update({ completado: nuevoCompletado, estado: nuevoCompletado ? "completado" : "pendiente" }).eq("id", r.id);
     if (contactoSeleccionado) cargarDetalle(contactoSeleccionado);
   };
 
