@@ -25,7 +25,7 @@ interface Contacto {
 interface Negocio {
   id: string;
   contacto_id: string | null;
-  valor_estimado: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   etapa: string;
   tipo_operacion: string | null;
@@ -82,7 +82,7 @@ export default function ClientesVIP() {
       if (!user) return;
       const [{ data: c }, { data: n }, { data: i }] = await Promise.all([
         supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,presupuesto_max,moneda,zona_interes,notas,etiquetas,created_at").eq("perfil_id", user.id).neq("estado", "archivado"),
-        supabase.from("crm_negocios").select("id,contacto_id,valor_estimado,moneda,etapa,tipo_operacion,created_at").eq("perfil_id", user.id),
+        supabase.from("crm_negocios").select("id,contacto_id,valor_operacion,moneda,etapa,tipo_operacion,created_at").eq("perfil_id", user.id),
         supabase.from("crm_interacciones").select("id,contacto_id,created_at").eq("perfil_id", user.id),
       ]);
       setContactos((c ?? []) as Contacto[]);
@@ -111,7 +111,7 @@ export default function ClientesVIP() {
       const negs = negociosPorContacto.get(c.id) ?? [];
       const cerrados = negs.filter(n => n.etapa === "cerrado");
       const totalUSD = cerrados.reduce((acc, n) => {
-        const usd = n.moneda === "ARS" ? (n.valor_estimado ?? 0) / tcDolar : (n.valor_estimado ?? 0);
+        const usd = n.moneda === "ARS" ? (n.valor_operacion ?? 0) / tcDolar : (n.valor_operacion ?? 0);
         return acc + usd;
       }, 0);
       const honorarios = totalUSD * honorariosPct / 100;

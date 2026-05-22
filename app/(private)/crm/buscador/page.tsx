@@ -36,9 +36,9 @@ interface ContactoRow {
 interface NegocioRow {
   id: string;
   titulo: string;
-  tipo: string | null;
+  tipo_operacion: string | null;
   etapa: string | null;
-  precio_cierre: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   notas: string | null;
   updated_at: string;
@@ -372,7 +372,7 @@ export default function BuscadorCRMPage() {
             .limit(10),
           supabase
             .from("crm_negocios")
-            .select("id, titulo, tipo, etapa, precio_cierre, moneda, notas, updated_at")
+            .select("id, titulo, tipo_operacion, etapa, valor_operacion, moneda, notas, updated_at")
             .eq("perfil_id", uid)
             .or(`titulo.ilike.%${term}%,notas.ilike.%${term}%`)
             .limit(10),
@@ -407,7 +407,7 @@ export default function BuscadorCRMPage() {
         }
 
         for (const n of (resNegocios.data ?? []) as NegocioRow[]) {
-          const precio = fmtMoneda(n.precio_cierre, n.moneda);
+          const precio = fmtMoneda(n.valor_operacion, n.moneda);
           const subtitulo = [n.etapa, precio].filter(Boolean).join(" · ");
           const highlight = extraerHighlight(n.notas, term);
           lista.push({

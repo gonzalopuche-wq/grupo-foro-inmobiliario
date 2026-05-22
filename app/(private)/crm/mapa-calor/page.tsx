@@ -15,7 +15,7 @@ interface NegocioRaw {
   id: string;
   created_at: string;
   updated_at: string;
-  estado: string | null;
+  etapa: string | null;
 }
 
 interface DiaDetalle {
@@ -161,7 +161,7 @@ export default function MapaActividadCorredor() {
           .gte("created_at", hace365),
         supabase
           .from("crm_negocios")
-          .select("id, created_at, updated_at, estado")
+          .select("id, created_at, updated_at, etapa")
           .eq("perfil_id", user.id)
           .gte("updated_at", hace365),
       ]);
@@ -190,8 +190,8 @@ export default function MapaActividadCorredor() {
       // Negocios actualizados/cerrados
       negocios.forEach((n) => {
         const fechaUpdate = toLocalDateStr(n.updated_at);
-        const esCierre = n.estado
-          ? ESTADOS_CIERRE.some((e) => n.estado!.toLowerCase().includes(e))
+        const esCierre = n.etapa
+          ? ESTADOS_CIERRE.some((e) => n.etapa!.toLowerCase().includes(e))
           : false;
 
         const diaUpdate = ensureDia(fechaUpdate);

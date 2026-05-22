@@ -88,7 +88,7 @@ export default function GestionDocumentos() {
       .from("crm_negocios")
       .select("id,titulo,etapa,tipo_operacion")
       .not("etapa", "in", "(perdido)")
-      .order("fecha_creacion", { ascending: false })
+      .order("created_at", { ascending: false })
       .then(({ data }) => {
         setNegocios((data ?? []) as Negocio[]);
         setLoading(false);

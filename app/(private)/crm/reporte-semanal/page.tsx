@@ -10,7 +10,7 @@ interface Negocio {
   id: string;
   titulo: string;
   etapa: string;
-  valor_estimado: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   tipo_operacion: string | null;
   created_at: string;
@@ -85,7 +85,7 @@ export default function ReporteSemanal() {
       if (!user) return;
       const hace90 = new Date(Date.now() - 90 * 86400000).toISOString();
       const [{ data: n }, { data: c }, { data: i }, { data: t }] = await Promise.all([
-        supabase.from("crm_negocios").select("id,titulo,etapa,valor_estimado,moneda,tipo_operacion,created_at,updated_at").eq("perfil_id", user.id).gte("updated_at", hace90),
+        supabase.from("crm_negocios").select("id,titulo,etapa,valor_operacion,moneda,tipo_operacion,created_at,updated_at").eq("perfil_id", user.id).gte("updated_at", hace90),
         supabase.from("crm_contactos").select("id,nombre,apellido,created_at").eq("perfil_id", user.id).gte("created_at", hace90),
         supabase.from("crm_interacciones").select("id,contacto_id,tipo,descripcion,created_at").eq("perfil_id", user.id).gte("created_at", hace90),
         supabase.from("crm_tareas").select("id,titulo,completada,fecha_vencimiento,created_at").eq("perfil_id", user.id),
@@ -120,7 +120,7 @@ export default function ReporteSemanal() {
 
     // Valor cerrado
     const valorCerradoUSD = negociosCerrados.reduce((acc, n) => {
-      const usd = n.moneda === "ARS" ? (n.valor_estimado ?? 0) / tcDolar : (n.valor_estimado ?? 0);
+      const usd = n.moneda === "ARS" ? (n.valor_operacion ?? 0) / tcDolar : (n.valor_operacion ?? 0);
       return acc + usd;
     }, 0);
     const honorariosEstimados = valorCerradoUSD * honorariosPct / 100;
@@ -129,7 +129,7 @@ export default function ReporteSemanal() {
     const pipelineUSD = negocios
       .filter(n => !["cerrado","perdido"].includes(n.etapa))
       .reduce((acc, n) => {
-        const usd = n.moneda === "ARS" ? (n.valor_estimado ?? 0) / tcDolar : (n.valor_estimado ?? 0);
+        const usd = n.moneda === "ARS" ? (n.valor_operacion ?? 0) / tcDolar : (n.valor_operacion ?? 0);
         return acc + usd;
       }, 0);
 
@@ -179,7 +179,7 @@ export default function ReporteSemanal() {
       <span class="kpi"><b>${reporte.negociosCerrados}</b><br><small>Operaciones cerradas</small></span>
       <span class="kpi"><b>USD ${fmt(reporte.honorariosEstimados)}</b><br><small>Honorarios est.</small></span>
     </div>
-    ${reporte.negociosCerradosLista.length > 0 ? `<h3>Operaciones Cerradas</h3><table><tr><th>Negocio</th><th>Tipo</th><th>Valor</th></tr>${reporte.negociosCerradosLista.map(n => `<tr><td>${n.titulo}</td><td>${n.tipo_operacion ?? "—"}</td><td>${n.moneda} ${fmt(n.valor_estimado ?? 0)}</td></tr>`).join("")}</table>` : ""}
+    ${reporte.negociosCerradosLista.length > 0 ? `<h3>Operaciones Cerradas</h3><table><tr><th>Negocio</th><th>Tipo</th><th>Valor</th></tr>${reporte.negociosCerradosLista.map(n => `<tr><td>${n.titulo}</td><td>${n.tipo_operacion ?? "—"}</td><td>${n.moneda} ${fmt(n.valor_operacion ?? 0)}</td></tr>`).join("")}</table>` : ""}
     <h3>Actividad por tipo</h3>
     <table><tr><th>Tipo</th><th>Cantidad</th></tr>${reporte.interaccionesPorTipo.map(([tipo, cant]) => `<tr><td>${tipo}</td><td>${cant}</td></tr>`).join("")}</table>
     <p style="font-size:10px;color:#999;margin-top:20px">Generado ${new Date().toLocaleDateString("es-AR")}</p>
@@ -249,7 +249,7 @@ export default function ReporteSemanal() {
                   <div style={{ fontSize: 12, fontWeight: 600 }}>{n.titulo}</div>
                   <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{n.tipo_operacion ?? "—"}</div>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#22c55e" }}>{n.moneda} {fmt(n.valor_estimado ?? 0)}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#22c55e" }}>{n.moneda} {fmt(n.valor_operacion ?? 0)}</span>
               </div>
             ))}
           </div>

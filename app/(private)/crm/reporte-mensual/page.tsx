@@ -8,8 +8,8 @@ interface NegocioNuevo {
   id: string;
   titulo: string;
   etapa: string | null;
-  tipo: string | null;
-  precio_cierre: number | null;
+  tipo_operacion: string | null;
+  valor_operacion: number | null;
   honorarios_pct: number | null;
   moneda: string | null;
   created_at: string;
@@ -18,8 +18,8 @@ interface NegocioNuevo {
 interface NegocioCerrado {
   id: string;
   titulo: string;
-  tipo: string | null;
-  precio_cierre: number | null;
+  tipo_operacion: string | null;
+  valor_operacion: number | null;
   honorarios_pct: number | null;
   split_pct: number | null;
   moneda: string | null;
@@ -38,7 +38,7 @@ interface ContactoNuevo {
 interface PipelineItem {
   id: string;
   etapa: string | null;
-  precio_cierre: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
 }
@@ -210,16 +210,16 @@ export default function ReporteMensualPage() {
     ] = await Promise.all([
       supabase
         .from("crm_negocios")
-        .select("id,titulo,etapa,tipo,precio_cierre,honorarios_pct,moneda,created_at")
+        .select("id,titulo,etapa,tipo_operacion,valor_operacion,honorarios_pct,moneda,created_at")
         .eq("perfil_id", uid)
         .gte("created_at", r.inicio)
         .lte("created_at", r.fin),
 
       supabase
         .from("crm_negocios")
-        .select("id,titulo,tipo,precio_cierre,honorarios_pct,split_pct,moneda,updated_at")
+        .select("id,titulo,tipo_operacion,valor_operacion,honorarios_pct,split_pct,moneda,updated_at")
         .eq("perfil_id", uid)
-        .eq("estado", "cerrado")
+        .eq("etapa", "cerrado")
         .gte("updated_at", r.inicio)
         .lte("updated_at", r.fin),
 
@@ -232,22 +232,22 @@ export default function ReporteMensualPage() {
 
       supabase
         .from("crm_negocios")
-        .select("id,etapa,precio_cierre,moneda,honorarios_pct")
+        .select("id,etapa,valor_operacion,moneda,honorarios_pct")
         .eq("perfil_id", uid)
-        .not("estado", "in", '("cerrado","perdido")'),
+        .not("etapa", "in", '("cerrado","perdido")'),
 
       supabase
         .from("crm_negocios")
-        .select("id,titulo,etapa,tipo,precio_cierre,honorarios_pct,moneda,created_at")
+        .select("id,titulo,etapa,tipo_operacion,valor_operacion,honorarios_pct,moneda,created_at")
         .eq("perfil_id", uid)
         .gte("created_at", rA.inicio)
         .lte("created_at", rA.fin),
 
       supabase
         .from("crm_negocios")
-        .select("id,titulo,tipo,precio_cierre,honorarios_pct,split_pct,moneda,updated_at")
+        .select("id,titulo,tipo_operacion,valor_operacion,honorarios_pct,split_pct,moneda,updated_at")
         .eq("perfil_id", uid)
-        .eq("estado", "cerrado")
+        .eq("etapa", "cerrado")
         .gte("updated_at", rA.inicio)
         .lte("updated_at", rA.fin),
 
@@ -274,7 +274,7 @@ export default function ReporteMensualPage() {
   const tc = tipoCambio;
 
   function honorariosNegCerradoARS(negocio: NegocioCerrado): number {
-    const precio = negocio.precio_cierre ?? 0;
+    const precio = negocio.valor_operacion ?? 0;
     const pct    = negocio.honorarios_pct ?? 3;
     const split  = negocio.split_pct ?? 0;
     const base   = negocio.moneda === "USD" ? precio * tc : precio;
@@ -282,14 +282,14 @@ export default function ReporteMensualPage() {
   }
 
   function honorariosNegNuevoARS(negocio: NegocioNuevo): number {
-    const precio = negocio.precio_cierre ?? 0;
+    const precio = negocio.valor_operacion ?? 0;
     const pct    = negocio.honorarios_pct ?? 3;
     const base   = negocio.moneda === "USD" ? precio * tc : precio;
     return base * pct / 100;
   }
 
   function honorariosPipelineARS(item: PipelineItem): number {
-    const precio = item.precio_cierre ?? 0;
+    const precio = item.valor_operacion ?? 0;
     const pct    = item.honorarios_pct ?? 3;
     const base   = item.moneda === "USD" ? precio * tc : precio;
     return base * pct / 100;
@@ -401,7 +401,7 @@ export default function ReporteMensualPage() {
     const rowsCerrados = negociosCerrados.map(n => `
       <tr style="background:#f9fafb">
         <td><span style="font-size:10px;padding:2px 6px;border-radius:4px;background:#dcfce7;color:#15803d;font-weight:700">Cerrado</span></td>
-        <td>${n.tipo ?? "—"}</td>
+        <td>${n.tipo_operacion ?? "—"}</td>
         <td>${n.titulo}</td>
         <td>Cierre</td>
         <td style="text-align:right;font-weight:700;color:#15803d">${fmtARS(honorariosNegCerradoARS(n))}</td>
@@ -411,7 +411,7 @@ export default function ReporteMensualPage() {
     const rowsNuevos = negociosNuevos.map(n => `
       <tr>
         <td><span style="font-size:10px;padding:2px 6px;border-radius:4px;background:#dbeafe;color:#1d4ed8;font-weight:700">Nuevo</span></td>
-        <td>${n.tipo ?? "—"}</td>
+        <td>${n.tipo_operacion ?? "—"}</td>
         <td>${n.titulo}</td>
         <td>${n.etapa ?? "—"}</td>
         <td style="text-align:right;font-weight:700;color:#1d4ed8">${fmtARS(honorariosNegNuevoARS(n))}</td>
@@ -802,7 +802,7 @@ export default function ReporteMensualPage() {
                                 Cerrado
                               </span>
                             </td>
-                            <td style={{ color: "rgba(255,255,255,0.5)" }}>{n.tipo ?? "—"}</td>
+                            <td style={{ color: "rgba(255,255,255,0.5)" }}>{n.tipo_operacion ?? "—"}</td>
                             <td style={{ color: "#fff", fontWeight: 500 }}>{n.titulo}</td>
                             <td style={{ color: "rgba(255,255,255,0.4)" }}>Cierre</td>
                             <td
@@ -840,7 +840,7 @@ export default function ReporteMensualPage() {
                                 Nuevo
                               </span>
                             </td>
-                            <td style={{ color: "rgba(255,255,255,0.5)" }}>{n.tipo ?? "—"}</td>
+                            <td style={{ color: "rgba(255,255,255,0.5)" }}>{n.tipo_operacion ?? "—"}</td>
                             <td style={{ color: "#fff", fontWeight: 500 }}>{n.titulo}</td>
                             <td style={{ color: "rgba(255,255,255,0.4)" }}>{n.etapa ?? "—"}</td>
                             <td
@@ -1281,7 +1281,7 @@ export default function ReporteMensualPage() {
                           Cerrado
                         </span>
                       </td>
-                      <td style={{ padding: "8px 10px", color: "#6b7280" }}>{n.tipo ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "#6b7280" }}>{n.tipo_operacion ?? "—"}</td>
                       <td style={{ padding: "8px 10px", color: "#111", fontWeight: 600 }}>{n.titulo}</td>
                       <td style={{ padding: "8px 10px", color: "#6b7280" }}>Cierre</td>
                       <td style={{ padding: "8px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#15803d" }}>
@@ -1297,7 +1297,7 @@ export default function ReporteMensualPage() {
                           Nuevo
                         </span>
                       </td>
-                      <td style={{ padding: "8px 10px", color: "#6b7280" }}>{n.tipo ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "#6b7280" }}>{n.tipo_operacion ?? "—"}</td>
                       <td style={{ padding: "8px 10px", color: "#111", fontWeight: 600 }}>{n.titulo}</td>
                       <td style={{ padding: "8px 10px", color: "#6b7280" }}>{n.etapa ?? "—"}</td>
                       <td style={{ padding: "8px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#1d4ed8" }}>

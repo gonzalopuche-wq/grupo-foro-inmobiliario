@@ -10,11 +10,10 @@ interface Negocio {
   id: string;
   titulo: string;
   etapa: string;
-  valor_estimado: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   tipo_operacion: string | null;
-  fecha_estimada_cierre: string | null;
-  probabilidad: number | null;
+  fecha_cierre: string | null;
   created_at: string;
 }
 
@@ -70,10 +69,10 @@ export default function Forecast() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data } = await supabase.from("crm_negocios")
-        .select("id,titulo,etapa,valor_estimado,moneda,tipo_operacion,fecha_estimada_cierre,probabilidad,created_at")
+        .select("id,titulo,etapa,valor_operacion,moneda,tipo_operacion,fecha_cierre,created_at")
         .eq("perfil_id", user.id)
         .not("etapa", "in", "(perdido)")
-        .order("fecha_estimada_cierre", { ascending: true });
+        .order("fecha_cierre", { ascending: true });
       setNegocios((data ?? []) as Negocio[]);
       setLoading(false);
     }
@@ -89,17 +88,17 @@ export default function Forecast() {
 
     // Negocios dentro del horizonte
     const enHorizonte = negocios.filter(n => {
-      if (!n.fecha_estimada_cierre) return false;
-      const fecha = new Date(n.fecha_estimada_cierre);
+      if (!n.fecha_cierre) return false;
+      const fecha = new Date(n.fecha_cierre);
       return fecha >= hoy && fecha <= fin;
     });
 
     // Para cada negocio, calcular valor ponderado
     const procesados = enHorizonte.map(n => {
       const valorUSD = n.moneda === "ARS" && tcDolar > 0
-        ? (n.valor_estimado ?? 0) / tcDolar
-        : (n.valor_estimado ?? 0);
-      const prob = n.probabilidad ?? PROB_ETAPA[n.etapa] ?? 10;
+        ? (n.valor_operacion ?? 0) / tcDolar
+        : (n.valor_operacion ?? 0);
+      const prob = PROB_ETAPA[n.etapa] ?? 10;
       const probEfectiva = Math.min(100, prob * factorConfianza) / 100;
       const honorarios = valorUSD * honorariosPct / 100;
       const honorariosPonderado = honorarios * probEfectiva;
@@ -109,8 +108,8 @@ export default function Forecast() {
     // Agrupar por mes
     const porMes = new Map<string, { label: string; bruto: number; ponderado: number; cantidad: number }>();
     procesados.forEach(n => {
-      const key = n.fecha_estimada_cierre!.substring(0, 7);
-      const label = mesLabel(n.fecha_estimada_cierre!);
+      const key = n.fecha_cierre!.substring(0, 7);
+      const label = mesLabel(n.fecha_cierre!);
       if (!porMes.has(key)) porMes.set(key, { label, bruto: 0, ponderado: 0, cantidad: 0 });
       const m = porMes.get(key)!;
       m.bruto += n.honorarios;
@@ -286,7 +285,7 @@ export default function Forecast() {
                   <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>USD {fmt(n.honorarios)}</td>
                   <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 13, fontWeight: 700, color: "#cc0000" }}>USD {fmt(n.honorariosPonderado)}</td>
                   <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
-                    {n.fecha_estimada_cierre ? mesLabel(n.fecha_estimada_cierre) : "—"}
+                    {n.fecha_cierre ? mesLabel(n.fecha_cierre) : "—"}
                   </td>
                 </tr>
               ))}

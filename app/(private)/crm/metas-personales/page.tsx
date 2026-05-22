@@ -17,13 +17,13 @@ interface MetaPersonal {
 
 interface Negocio {
   id: string;
-  estado: string;
-  precio_cierre: number | null;
+  etapa: string;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
   split_pct: number | null;
   fecha_cierre: string | null;
-  tipo: string | null;
+  tipo_operacion: string | null;
 }
 
 interface Contacto {
@@ -50,7 +50,7 @@ const DEFAULT_META: MetaPersonal = {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function honorariosNetaUSD(n: Negocio, tc: number): number {
-  const precio = n.precio_cierre ?? 0;
+  const precio = n.valor_operacion ?? 0;
   const hPct = n.honorarios_pct ?? 0;
   const splitPct = n.split_pct ?? 0;
   const bruto = precio * (hPct / 100) * (1 - splitPct / 100);
@@ -431,8 +431,8 @@ export default function MetasPersonalesPage() {
       const [negRes, contRes] = await Promise.all([
         supabase
           .from("crm_negocios")
-          .select("id,estado,precio_cierre,moneda,honorarios_pct,split_pct,fecha_cierre,tipo")
-          .eq("estado", "cerrado"),
+          .select("id,etapa,valor_operacion,moneda,honorarios_pct,split_pct,fecha_cierre,tipo_operacion")
+          .eq("etapa", "cerrado"),
         supabase
           .from("crm_contactos")
           .select("id,created_at,tipo")

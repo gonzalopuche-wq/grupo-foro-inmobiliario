@@ -36,11 +36,11 @@ interface NegocioRaw {
   id: string;
   titulo: string;
   etapa: string;
-  tipo: string;
-  precio_cierre: number | null;
+  tipo_operacion: string;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
-  fecha_cierre_estimada: string | null;
+  fecha_cierre: string | null;
   updated_at: string;
   crm_contactos: CrmContactoRow | CrmContactoRow[] | null;
 }
@@ -53,7 +53,7 @@ interface NegocioKanban {
   precio_cierre: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
-  fecha_cierre_estimada: string | null;
+  fecha_cierre: string | null;
   contacto_nombre: string | null;
   dias_en_etapa: number;
   updated_at: string;
@@ -147,8 +147,8 @@ export default function PipelineKanbanPage() {
     let q = supabase
       .from("crm_negocios")
       .select(
-        `id, titulo, etapa, tipo, precio_cierre, moneda, honorarios_pct,
-         fecha_cierre_estimada, updated_at,
+        `id, titulo, etapa, tipo_operacion, valor_operacion, moneda, honorarios_pct,
+         fecha_cierre, updated_at,
          crm_contactos ( nombre, apellido )`
       )
       .eq("perfil_id", userId);
@@ -163,11 +163,11 @@ export default function PipelineKanbanPage() {
       id: r.id,
       titulo: r.titulo,
       etapa: toEtapa(r.etapa),
-      tipo: r.tipo ?? "otro",
-      precio_cierre: r.precio_cierre,
+      tipo: r.tipo_operacion ?? "otro",
+      precio_cierre: r.valor_operacion,
       moneda: r.moneda,
       honorarios_pct: r.honorarios_pct,
-      fecha_cierre_estimada: r.fecha_cierre_estimada,
+      fecha_cierre: r.fecha_cierre,
       contacto_nombre: normalizeContacto(r.crm_contactos),
       dias_en_etapa: calcDias(r.updated_at),
       updated_at: r.updated_at,
@@ -575,9 +575,9 @@ function NegocioCard({ negocio, prevEtapa, nextEtapa, onMover, moviendo }: CardP
       )}
 
       {/* Fecha cierre estimada */}
-      {negocio.fecha_cierre_estimada && (
+      {negocio.fecha_cierre && (
         <div style={{ fontSize: 11, color: "#666", marginBottom: 4, fontFamily: "Inter, sans-serif" }}>
-          Cierre: {new Date(negocio.fecha_cierre_estimada).toLocaleDateString("es-AR")}
+          Cierre: {new Date(negocio.fecha_cierre).toLocaleDateString("es-AR")}
         </div>
       )}
 

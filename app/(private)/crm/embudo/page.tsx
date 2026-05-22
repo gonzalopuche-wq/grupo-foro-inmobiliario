@@ -9,7 +9,7 @@ interface Negocio {
   titulo: string;
   etapa: string;
   tipo_operacion: string;
-  valor_estimado: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   honorarios_pct: number | null;
   created_at: string;
@@ -46,7 +46,7 @@ export default function EmbudoPage() {
   useEffect(() => {
     supabase
       .from("crm_negocios")
-      .select("id,titulo,etapa,tipo_operacion,valor_estimado,moneda,honorarios_pct,created_at,archivado")
+      .select("id,titulo,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,created_at,archivado")
       .eq("archivado", false)
       .then(({ data }) => {
         setNegocios((data ?? []) as Negocio[]);
@@ -82,7 +82,7 @@ export default function EmbudoPage() {
   }, [porEtapa]);
 
   const valorUSD = (n: Negocio) => {
-    const v = n.valor_estimado ?? 0;
+    const v = n.valor_operacion ?? 0;
     return n.moneda === "ARS" ? v / tc : v;
   };
 

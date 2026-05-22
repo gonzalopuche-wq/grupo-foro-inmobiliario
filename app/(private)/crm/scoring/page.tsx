@@ -30,7 +30,6 @@ interface Interaccion {
 interface Negocio {
   contacto_id: string | null;
   etapa: string;
-  valor_estimado?: number | null;
   valor_operacion?: number | null;
 }
 

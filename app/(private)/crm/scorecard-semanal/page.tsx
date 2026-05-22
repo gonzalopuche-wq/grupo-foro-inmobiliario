@@ -332,8 +332,8 @@ export default function ScorecardSemanal() {
       const [negResult, conResult] = await Promise.all([
         supabase
           .from("crm_negocios")
-          .select("id, honorarios_pct, precio_cierre, estado, updated_at")
-          .eq("estado", "cerrado")
+          .select("id, honorarios_pct, valor_operacion, etapa, updated_at")
+          .eq("etapa", "cerrado")
           .gte("updated_at", inicio)
           .lte("updated_at", fin + "T23:59:59"),
         supabase
@@ -349,8 +349,8 @@ export default function ScorecardSemanal() {
       const negociosCerrados = negocios.length;
       const honorariosGenerados = negocios.reduce((acc, neg) => {
         const honorarios_pct = typeof neg.honorarios_pct === "number" ? neg.honorarios_pct : 0;
-        const precio_cierre = typeof neg.precio_cierre === "number" ? neg.precio_cierre : 0;
-        return acc + precio_cierre * (honorarios_pct / 100);
+        const valor_operacion = typeof neg.valor_operacion === "number" ? neg.valor_operacion : 0;
+        return acc + valor_operacion * (honorarios_pct / 100);
       }, 0);
       const contactosNuevos = contactos.length;
 

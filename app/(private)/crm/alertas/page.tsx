@@ -35,7 +35,7 @@ interface Negocio {
   id: string;
   titulo: string;
   etapa: string;
-  valor_estimado: number | null;
+  valor_operacion: number | null;
   moneda: string | null;
   updated_at: string;
 }
@@ -96,7 +96,7 @@ export default function AlertasPage() {
         supabase.from("crm_tareas").select("*").neq("estado", "completada"),
         supabase.from("crm_contactos").select("id,nombre,apellido,telefono,updated_at"),
         supabase.from("crm_interacciones").select("id,contacto_id,tipo,created_at").order("created_at", { ascending: false }),
-        supabase.from("crm_negocios").select("id,titulo,etapa,valor_estimado,moneda,updated_at").not("etapa", "in", '("cerrado","perdido","archivado")'),
+        supabase.from("crm_negocios").select("id,titulo,etapa,valor_operacion,moneda,updated_at").not("etapa", "in", '("cerrado","perdido","archivado")'),
         supabase.from("crm_recordatorios").select("*").eq("completado", false).lte("fecha_recordatorio", HOY),
       ]);
       setTareas((t ?? []) as Tarea[]);

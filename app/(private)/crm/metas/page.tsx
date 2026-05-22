@@ -88,12 +88,12 @@ export default function MetasPage() {
       } else if (m.tipo === "honorarios") {
         const { data: comisiones } = await supabase
           .from("crm_honorarios")
-          .select("monto_cobrado")
+          .select("honorarios_monto")
           .eq("perfil_id", uid)
-          .eq("estado", "cobrada")
+          .eq("estado", "cobrado")
           .gte("created_at", start)
           .lte("created_at", end + "T23:59:59");
-        resultados[m.id] = Math.round((comisiones ?? []).reduce((s, c) => s + (c.monto_cobrado ?? 0), 0));
+        resultados[m.id] = Math.round((comisiones ?? []).reduce((s, c) => s + (c.honorarios_monto ?? 0), 0));
 
       } else if (m.tipo === "contactos") {
         const { count } = await supabase
