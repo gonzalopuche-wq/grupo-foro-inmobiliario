@@ -7,7 +7,7 @@ import { supabase } from "../../../lib/supabase";
 interface Perfil { id: string; nombre: string; apellido: string; matricula: string | null; foto_url: string | null; }
 interface Adjunto { url: string; nombre: string; tipo: "imagen" | "video" | "documento" | "audio"; tamano?: number; }
 interface Mensaje {
-  id: string; grupo_id: string; perfil_id: string; user_id?: string;
+  id: string; grupo_id: string; user_id: string; perfil_id?: string;
   texto: string | null; tipo?: string; mir_id?: string; mir_tipo?: string;
   adjuntos: Adjunto[] | null; reply_id: string | null;
   editado: boolean; eliminado?: boolean; reacciones?: Record<string, string[]>;
@@ -210,7 +210,7 @@ export default function GrupoChatPage() {
     const { error: upErr } = await supabase.storage.from("adjuntos_chat").upload(path, file, { contentType: mime, cacheControl:"3600", upsert:false });
     if (upErr) { showToast(`Error al subir: ${upErr.message}`); setSubiendoAudio(false); return; }
     const { data: u } = supabase.storage.from("adjuntos_chat").getPublicUrl(path);
-    const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: "", adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
+    const ins: any = { grupo_id: grupoId, user_id: userId, texto: "", adjuntos: [{ url: u.publicUrl, nombre, tipo: "audio", tamano: audioBlob.size }] };
     if (replyMsg?.id) ins.reply_id = replyMsg.id;
     const { error: insErr } = await supabase.from("mensajes_chat").insert(ins);
     if (insErr) { showToast(`Error al enviar: ${insErr.message}`); setSubiendoAudio(false); return; }
@@ -223,9 +223,9 @@ export default function GrupoChatPage() {
     if ((!input.trim() && adjuntos.length === 0) || !userId || !grupo) return;
     setEnviando(true);
     const txt = input.trim(); const adjs = [...adjuntos]; const rid = replyMsg?.id ?? null;
-    const temp: Mensaje = { id:`temp-${Date.now()}`, grupo_id: grupoId, perfil_id: userId, texto: txt||null, adjuntos: adjs, reply_id: rid, editado:false, eliminado:false, reacciones:{}, created_at: new Date().toISOString(), perfiles: userPerfil ?? undefined, _reply: replyMsg ?? undefined };
+    const temp: Mensaje = { id:`temp-${Date.now()}`, grupo_id: grupoId, user_id: userId, texto: txt||null, adjuntos: adjs, reply_id: rid, editado:false, eliminado:false, reacciones:{}, created_at: new Date().toISOString(), perfiles: userPerfil ?? undefined, _reply: replyMsg ?? undefined };
     setMensajes(prev => [...prev, temp]); setInput(""); setAdjuntos([]); setReplyMsg(null); setInputPreview(null);
-    const ins: any = { grupo_id: grupoId, perfil_id: userId, texto: txt||null, adjuntos: adjs.length > 0 ? adjs : null };
+    const ins: any = { grupo_id: grupoId, user_id: userId, texto: txt||null, adjuntos: adjs.length > 0 ? adjs : null };
     if (rid) ins.reply_id = rid;
     const { data: msg } = await supabase.from("mensajes_chat").insert(ins).select("*, perfiles(id,nombre,apellido,matricula,foto_url)").single();
     if (msg) setMensajes(prev => prev.map(m => m.id === temp.id ? {...msg as Mensaje, _reply: temp._reply} : m));
@@ -245,7 +245,7 @@ export default function GrupoChatPage() {
     setMensajes(prev => prev.map(m => m.id === msgId ? {...m,reacciones:r} : m)); setMenuId(null);
     await supabase.from("mensajes_chat").update({reacciones:r}).eq("id",msgId);
   };
-  const esMio = (m: Mensaje) => (m.perfil_id??m.user_id) === userId;
+  const esMio = (m: Mensaje) => (m.user_id??m.perfil_id) === userId;
 
   const filtrados = busqueda.trim() ? mensajes.filter(m => m.texto?.toLowerCase().includes(busqueda.toLowerCase())) : mensajes;
   const porFecha: {fecha:string;msgs:Mensaje[]}[] = [];
