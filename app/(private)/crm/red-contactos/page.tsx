@@ -1072,7 +1072,7 @@ export default function RedContactosPage() {
       if (!user) { setCargando(false); return; }
 
       const { data, error } = await supabase
-        .from("contactos")
+        .from("crm_contactos")
         .select("id, nombre, email, telefono, tipo, created_at, perfil_id")
         .eq("perfil_id", user.id)
         .order("nombre");

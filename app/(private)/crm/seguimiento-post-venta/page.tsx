@@ -40,11 +40,10 @@ interface SeguimientoPost {
 
 interface NegocioCerrado {
   id: string;
-  tipo: string;
-  barrio: string | null;
-  tipo_propiedad: string | null;
+  titulo: string;
+  tipo_operacion: string;
   fecha_cierre: string | null;
-  estado: string;
+  etapa: string;
 }
 
 // ── constantes ────────────────────────────────────────────────────────────────
@@ -221,8 +220,8 @@ export default function SeguimientoPostVentaPage() {
     (async () => {
       const { data } = await supabase
         .from("crm_negocios")
-        .select("id,tipo,barrio,tipo_propiedad,fecha_cierre,estado")
-        .eq("estado", "cerrado")
+        .select("id,titulo,tipo_operacion,fecha_cierre,etapa")
+        .eq("etapa", "cerrado")
         .order("fecha_cierre", { ascending: false })
         .limit(100);
       setNegocios((data ?? []) as NegocioCerrado[]);
@@ -1034,9 +1033,9 @@ export default function SeguimientoPostVentaPage() {
                     setDraftSeg(d => ({
                       ...d,
                       negocioId: e.target.value,
-                      tipoOperacion: neg?.tipo ?? d.tipoOperacion,
+                      tipoOperacion: neg?.tipo_operacion ?? d.tipoOperacion,
                       direccionInmueble: neg
-                        ? [neg.tipo_propiedad, neg.barrio].filter(Boolean).join(" - ")
+                        ? (neg.titulo ?? "")
                         : d.direccionInmueble,
                       fechaCierre: neg?.fecha_cierre ?? d.fechaCierre,
                     }));
@@ -1045,7 +1044,7 @@ export default function SeguimientoPostVentaPage() {
                   <option value="">— Seleccionar negocio (opcional) —</option>
                   {negocios.map(n => (
                     <option key={n.id} value={n.id}>
-                      {n.tipo} · {n.tipo_propiedad ?? ""} {n.barrio ?? ""} · {n.fecha_cierre ? fmtFechaMes(n.fecha_cierre) : "sin fecha"}
+                      {n.titulo} · {n.tipo_operacion ?? ""} · {n.fecha_cierre ? fmtFechaMes(n.fecha_cierre) : "sin fecha"}
                     </option>
                   ))}
                 </select>

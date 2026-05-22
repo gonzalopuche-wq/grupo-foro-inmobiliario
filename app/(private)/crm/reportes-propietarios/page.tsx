@@ -6,9 +6,9 @@ import { supabase } from "../../../lib/supabase";
 // ── tipos ──────────────────────────────────────────────────────────────────────
 interface PropiedadCartera {
   id: string;
-  tipo_operacion: string | null;
-  tipo_propiedad: string | null;
-  barrio: string | null;
+  operacion: string | null;
+  tipo: string | null;
+  zona: string | null;
   precio: number | null;
   moneda: string | null;
   estado: string | null;
@@ -173,11 +173,11 @@ export default function ReportesPropietariosPage() {
     const [resProp, resCont] = await Promise.all([
       supabase
         .from("cartera_propiedades")
-        .select("id,created_at,tipo_operacion,tipo_propiedad,barrio,precio,moneda,estado,descripcion,perfil_id")
+        .select("id,created_at,operacion,tipo,zona,precio,moneda,estado,descripcion,perfil_id")
         .eq("perfil_id", uid)
         .order("created_at", { ascending: false }),
       supabase
-        .from("contactos")
+        .from("crm_contactos")
         .select("id,nombre,email,telefono,perfil_id")
         .eq("perfil_id", uid)
         .order("nombre", { ascending: true }),
@@ -424,9 +424,9 @@ export default function ReportesPropietariosPage() {
 
       <h2>Datos de la propiedad</h2>
       <div class="prop-grid">
-        <div class="prop-card"><div class="prop-label">Tipo</div><div class="prop-value">${propiedad?.tipo_propiedad ?? "—"}</div></div>
-        <div class="prop-card"><div class="prop-label">Operación</div><div class="prop-value">${propiedad?.tipo_operacion ?? "—"}</div></div>
-        <div class="prop-card"><div class="prop-label">Barrio</div><div class="prop-value">${propiedad?.barrio ?? "—"}</div></div>
+        <div class="prop-card"><div class="prop-label">Tipo</div><div class="prop-value">${propiedad?.tipo ?? "—"}</div></div>
+        <div class="prop-card"><div class="prop-label">Operación</div><div class="prop-value">${propiedad?.operacion ?? "—"}</div></div>
+        <div class="prop-card"><div class="prop-label">Barrio</div><div class="prop-value">${propiedad?.zona ?? "—"}</div></div>
         <div class="prop-card"><div class="prop-label">Precio publicado</div><div class="prop-value">${fmtPrecio(propiedad?.precio ?? null, propiedad?.moneda ?? null)}</div></div>
         <div class="prop-card"><div class="prop-label">Estado</div><div class="prop-value">${propiedad?.estado ?? "—"}</div></div>
         ${reporte.precio_sugerido !== null ? `<div class="prop-card" style="border-color:#cc0000"><div class="prop-label" style="color:#cc0000">Precio sugerido</div><div class="prop-value" style="color:#cc0000">${fmtPrecio(reporte.precio_sugerido, reporte.moneda_sugerida)}</div></div>` : ""}
@@ -621,10 +621,10 @@ export default function ReportesPropietariosPage() {
                                 marginBottom: 3,
                               }}
                             >
-                              {prop.tipo_propiedad ?? "Propiedad"}{prop.barrio ? ` · ${prop.barrio}` : ""}
+                              {prop.tipo ?? "Propiedad"}{prop.zona ? ` · ${prop.zona}` : ""}
                             </div>
                             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
-                              {prop.tipo_operacion ?? "—"} · {fmtPrecio(prop.precio, prop.moneda)}
+                              {prop.operacion ?? "—"} · {fmtPrecio(prop.precio, prop.moneda)}
                             </div>
                           </div>
                           <span
@@ -742,7 +742,7 @@ export default function ReportesPropietariosPage() {
                     <option value="">— Seleccioná una propiedad —</option>
                     {propiedades.map(p => (
                       <option key={p.id} value={p.id}>
-                        {p.tipo_propiedad ?? "Propiedad"}{p.barrio ? ` · ${p.barrio}` : ""} — {fmtPrecio(p.precio, p.moneda)}
+                        {p.tipo ?? "Propiedad"}{p.zona ? ` · ${p.zona}` : ""} — {fmtPrecio(p.precio, p.moneda)}
                       </option>
                     ))}
                   </select>
@@ -776,8 +776,8 @@ export default function ReportesPropietariosPage() {
                     color: "rgba(255,255,255,0.55)",
                   }}
                 >
-                  <span><strong style={{ color: "#e0e0e0" }}>Propiedad:</strong> {propiedadEditando.tipo_propiedad ?? "—"}</span>
-                  <span><strong style={{ color: "#e0e0e0" }}>Barrio:</strong> {propiedadEditando.barrio ?? "—"}</span>
+                  <span><strong style={{ color: "#e0e0e0" }}>Propiedad:</strong> {propiedadEditando.tipo ?? "—"}</span>
+                  <span><strong style={{ color: "#e0e0e0" }}>Barrio:</strong> {propiedadEditando.zona ?? "—"}</span>
                   <span><strong style={{ color: "#e0e0e0" }}>Precio:</strong> {fmtPrecio(propiedadEditando.precio, propiedadEditando.moneda)}</span>
                   <span><strong style={{ color: "#e0e0e0" }}>Propietario:</strong> {propietarioEditando?.nombre ?? <span style={{ color: "rgba(255,255,255,0.25)" }}>Sin asignar</span>}</span>
                 </div>
@@ -1001,9 +1001,9 @@ export default function ReportesPropietariosPage() {
                     {/* datos propiedad */}
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 22 }}>
                       {[
-                        { label: "Tipo", valor: propiedadEditando.tipo_propiedad ?? "—" },
-                        { label: "Operación", valor: propiedadEditando.tipo_operacion ?? "—" },
-                        { label: "Barrio", valor: propiedadEditando.barrio ?? "—" },
+                        { label: "Tipo", valor: propiedadEditando.tipo ?? "—" },
+                        { label: "Operación", valor: propiedadEditando.operacion ?? "—" },
+                        { label: "Barrio", valor: propiedadEditando.zona ?? "—" },
                         { label: "Precio publicado", valor: fmtPrecio(propiedadEditando.precio, propiedadEditando.moneda) },
                         { label: "Estado", valor: propiedadEditando.estado ?? "—" },
                         ...(editorPrecioSugerido
@@ -1165,12 +1165,12 @@ export default function ReportesPropietariosPage() {
                         }}
                       >
                         {propiedad
-                          ? `${propiedad.tipo_propiedad ?? "Propiedad"}${propiedad.barrio ? ` · ${propiedad.barrio}` : ""}`
+                          ? `${propiedad.tipo ?? "Propiedad"}${propiedad.zona ? ` · ${propiedad.zona}` : ""}`
                           : "Propiedad eliminada"}
                       </div>
                       {propiedad && (
                         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>
-                          {propiedad.tipo_operacion ?? "—"} · {fmtPrecio(propiedad.precio, propiedad.moneda)}
+                          {propiedad.operacion ?? "—"} · {fmtPrecio(propiedad.precio, propiedad.moneda)}
                         </div>
                       )}
 
