@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sincronizarParaUsuario as syncKP } from "../../crm/kiteprop/sync-leads/route";
 import { sincronizarParaUsuario as syncTK } from "../../crm/tokko/sync-leads/route";
+import { sincronizarParaUsuario as syncPR } from "../../crm/propia/sync-leads/route";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -19,11 +20,12 @@ export async function GET(req: NextRequest) {
   }
 
   // Usuarios con KiteProp configurado
-  const [kpConfigs, kpCreds, tkConfigs, tkCreds] = await Promise.all([
+  const [kpConfigs, kpCreds, tkConfigs, tkCreds, prCreds] = await Promise.all([
     sb.from("crm_integraciones_config").select("perfil_id").eq("tipo", "kiteprop"),
     sb.from("portal_credenciales").select("perfil_id").not("kiteprop_key", "is", null),
     sb.from("crm_integraciones_config").select("perfil_id").eq("tipo", "tokko"),
     sb.from("portal_credenciales").select("perfil_id").not("tokko_key", "is", null).neq("tokko_key", ""),
+    sb.from("portal_credenciales").select("perfil_id").not("propia_api_key", "is", null).neq("propia_api_key", ""),
   ]);
 
   const kpIds = new Set([
@@ -34,12 +36,16 @@ export async function GET(req: NextRequest) {
     ...(tkConfigs.data ?? []).map((r: { perfil_id: string }) => r.perfil_id),
     ...(tkCreds.data ?? []).map((r: { perfil_id: string }) => r.perfil_id),
   ]);
+  const prIds = new Set([
+    ...(prCreds.data ?? []).map((r: { perfil_id: string }) => r.perfil_id),
+  ]);
 
   const resumen: Array<{ userId: string; portal: string; ok: boolean; resultado?: object; error?: string }> = [];
 
   const tareas: Array<{ userId: string; portal: string; fn: () => Promise<object> }> = [
     ...[...kpIds].map(id => ({ userId: id, portal: "kiteprop", fn: () => syncKP(id) })),
-    ...[...tkIds].map(id => ({ userId: id, portal: "tokko", fn: () => syncTK(id) })),
+    ...[...tkIds].map(id => ({ userId: id, portal: "tokko",    fn: () => syncTK(id) })),
+    ...[...prIds].map(id => ({ userId: id, portal: "propia",   fn: () => syncPR(id) })),
   ];
 
   for (const tarea of tareas) {
