@@ -107,11 +107,11 @@ export default function COCIRPage() {
         .select("*", { count: "exact", head: true })
         .not("email", "is", null);
 
-      // Última sync — buscamos el updated_at más reciente
+      // Última sync — buscamos el actualizado_at más reciente
       const { data: ultima } = await supabase
         .from("cocir_padron")
-        .select("updated_at")
-        .order("updated_at", { ascending: false })
+        .select("actualizado_at")
+        .order("actualizado_at", { ascending: false })
         .limit(1);
 
       setStats({
@@ -120,7 +120,7 @@ export default function COCIRPage() {
         conTelefono: conTelefono ?? 0,
         conCelular: conCelular ?? 0,
         conEmail: conEmail ?? 0,
-        ultimaSync: ultima?.[0]?.updated_at ?? null,
+        ultimaSync: ultima?.[0]?.actualizado_at ?? null,
       });
     } catch {
       setStats(null);
