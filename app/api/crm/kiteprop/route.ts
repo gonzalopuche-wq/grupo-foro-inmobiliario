@@ -21,11 +21,11 @@ const GFI_TIPO: Record<string, string> = {
   "galpón": "warehouses", galpon: "warehouses", edificio: "buildings", campo: "field",
 };
 const KP_ESTADO: Record<string, string> = {
-  active: "disponible", inactive: "suspendida", sold: "vendida", rented: "alquilada",
+  active: "activa", inactive: "pausada", sold: "vendida", rented: "activa",
 };
 const GFI_ESTADO: Record<string, string> = {
-  disponible: "active", suspendida: "inactive", vendida: "sold",
-  reservada: "active", retirada: "inactive",
+  activa: "active", pausada: "inactive", vendida: "sold",
+  reservada: "active", retirada: "inactive", disponible: "active",
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ function kpToGfi(kp: Record<string, unknown>, perfilId: string): Record<string, 
   const imgs = (kp.images_list as { lg?: string }[] | null) ?? [];
   const fotos = imgs.map(i => i.lg).filter(Boolean);
   const operacion =
-    kp.for_sale && kp.for_rent ? "ambas" : kp.for_sale ? "venta" : "alquiler";
+    kp.for_sale && kp.for_rent ? "Ambas" : kp.for_sale ? "Venta" : "Alquiler";
   const precio = (kp.for_sale_price ?? kp.for_rent_price ?? null) as number | null;
   const geo = kp.geo as { lat?: number; lon?: number } | null;
   return {
@@ -80,7 +80,7 @@ function kpToGfi(kp: Record<string, unknown>, perfilId: string): Record<string, 
     superficie_total: kp.total_meters ?? null,
     superficie_cubierta: kp.covered_meters ?? null,
     fotos,
-    estado: KP_ESTADO[(kp.status as string) ?? "active"] ?? "disponible",
+    estado: KP_ESTADO[(kp.status as string) ?? "active"] ?? "activa",
     origen: "kiteprop",
     updated_at: new Date().toISOString(),
   };
