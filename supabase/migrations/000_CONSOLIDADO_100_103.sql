@@ -429,10 +429,11 @@ DO $$ BEGIN
     CREATE POLICY "mensajes_chat_auth_select" ON mensajes_chat FOR SELECT USING (auth.uid() IS NOT NULL);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='mensajes_chat' AND policyname='mensajes_chat_own_insert') THEN
-    CREATE POLICY "mensajes_chat_own_insert" ON mensajes_chat FOR INSERT WITH CHECK (auth.uid() = perfil_id);
+    -- mensajes_chat usa user_id (no perfil_id) — respetar columna existente
+    CREATE POLICY "mensajes_chat_own_insert" ON mensajes_chat FOR INSERT WITH CHECK (auth.uid() = user_id);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='mensajes_chat' AND policyname='mensajes_chat_own_update') THEN
-    CREATE POLICY "mensajes_chat_own_update" ON mensajes_chat FOR UPDATE USING (auth.uid() = perfil_id);
+    CREATE POLICY "mensajes_chat_own_update" ON mensajes_chat FOR UPDATE USING (auth.uid() = user_id);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='mensajes_chat' AND policyname='mensajes_chat_admin_all') THEN
     CREATE POLICY "mensajes_chat_admin_all" ON mensajes_chat FOR ALL
