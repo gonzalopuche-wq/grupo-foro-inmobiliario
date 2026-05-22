@@ -10,7 +10,7 @@ interface Interaccion {
   id: string;
   tipo: string;
   descripcion: string | null;
-  fecha: string;
+  created_at: string;
   contacto_id: string | null;
   negocio_id: string | null;
   crm_contactos?: { nombre: string; apellido: string | null } | null;
@@ -69,9 +69,9 @@ export default function ActividadCRM() {
     desde.setDate(desde.getDate() - 180);
     supabase
       .from("crm_interacciones")
-      .select("id,tipo,descripcion,fecha,contacto_id,negocio_id,crm_contactos(nombre,apellido),crm_negocios(titulo)")
-      .gte("fecha", desde.toISOString())
-      .order("fecha", { ascending: false })
+      .select("id,tipo,descripcion,created_at,contacto_id,negocio_id,crm_contactos(nombre,apellido),crm_negocios(titulo)")
+      .gte("created_at", desde.toISOString())
+      .order("created_at", { ascending: false })
       .limit(500)
       .then(({ data }) => {
         setInteracciones((data ?? []) as unknown as Interaccion[]);
@@ -87,7 +87,7 @@ export default function ActividadCRM() {
 
   const filtradas = useMemo(() => {
     return interacciones.filter(i => {
-      if (i.fecha < limiteDesde) return false;
+      if (i.created_at < limiteDesde) return false;
       if (filtroTipo !== "todos" && i.tipo?.toLowerCase() !== filtroTipo) return false;
       if (busqueda) {
         const q = busqueda.toLowerCase();
@@ -104,7 +104,7 @@ export default function ActividadCRM() {
   const porDia = useMemo(() => {
     const mapa: Record<string, Interaccion[]> = {};
     filtradas.forEach(i => {
-      const dia = i.fecha.substring(0, 10);
+      const dia = i.created_at.substring(0, 10);
       if (!mapa[dia]) mapa[dia] = [];
       mapa[dia].push(i);
     });
@@ -122,7 +122,7 @@ export default function ActividadCRM() {
     // Por semana (últimas 8 semanas)
     const porSemana: Record<string, number> = {};
     filtradas.forEach(i => {
-      const d = new Date(i.fecha);
+      const d = new Date(i.created_at);
       const weekStart = new Date(d);
       weekStart.setDate(d.getDate() - d.getDay());
       const key = weekStart.toISOString().substring(0, 10);
@@ -276,7 +276,7 @@ export default function ActividadCRM() {
                               )}
                             </div>
                             <span style={{ fontSize: 11, color: "#555", flexShrink: 0 }}>
-                              {formatFechaCorta(item.fecha)}
+                              {formatFechaCorta(item.created_at)}
                             </span>
                           </div>
                           {item.descripcion && (
@@ -286,7 +286,7 @@ export default function ActividadCRM() {
                           )}
                         </div>
                         <div style={{ fontSize: 11, color: "#444", flexShrink: 0, alignSelf: "flex-start", paddingTop: 2 }}>
-                          {formatFechaRelativa(item.fecha)}
+                          {formatFechaRelativa(item.created_at)}
                         </div>
                       </div>
                     );
