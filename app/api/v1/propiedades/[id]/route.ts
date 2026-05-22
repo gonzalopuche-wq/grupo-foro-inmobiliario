@@ -69,6 +69,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     dormitorios: "dormitorios", banos: "banos",
     superficie_total: "superficie_total", superficie_cubierta: "superficie_cubierta",
     descripcion: "descripcion_privada", fotos: "fotos", estado: "estado",
+    zona: "zona", barrio: "zona", ciudad: "ciudad",
   };
   for (const [src, dst] of Object.entries(MAP)) {
     if (src in body) payload[dst] = body[src];
