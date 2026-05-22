@@ -166,6 +166,9 @@ function IntegracionesInner() {
   const [propiaSaving, setPropiaSaving] = useState(false);
   const [propiaSaved, setPropiaSaved] = useState(false);
   const [propiaSyncing, setPropiaSyncing] = useState(false);
+  const [propiaSyncingLeads, setPropiaSyncingLeads] = useState(false);
+  const [propiaSyncingCartera, setPropiaSyncingCartera] = useState(false);
+  const [propiaUltimaSync, setPropiaUltimaSync] = useState<string | null>(null);
   const [propiaMsg, setPropiaMsg] = useState<{ tipo: "ok" | "err"; texto: string } | null>(null);
 
   // Import
@@ -492,6 +495,39 @@ function IntegracionesInner() {
       setPropiaMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error al conectar con Propia" });
     }
     setPropiaSyncing(false);
+  }
+
+  async function syncPropiaLeads() {
+    setPropiaSyncingLeads(true);
+    setPropiaMsg(null);
+    try {
+      const res = await fetch("/api/crm/propia/sync-leads", { method: "POST", headers: authHeader() });
+      const json = await res.json();
+      if (!json.ok && json.error) throw new Error(json.error);
+      setPropiaMsg({ tipo: "ok", texto: `Leads sincronizados: ${json.importados ?? 0} nuevos, ${json.actualizados ?? 0} actualizados${json.errores > 0 ? `, ${json.errores} con error` : ""}` });
+      setPropiaUltimaSync(new Date().toLocaleString("es-AR"));
+    } catch (e: unknown) {
+      setPropiaMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error al sincronizar leads de Propia" });
+    }
+    setPropiaSyncingLeads(false);
+  }
+
+  async function syncCarteraAPropia() {
+    setPropiaSyncingCartera(true);
+    setPropiaMsg(null);
+    try {
+      const res = await fetch("/api/crm/propia", {
+        method: "POST",
+        headers: { ...authHeader(), "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: "sync-to-propia" }),
+      });
+      const json = await res.json();
+      if (!json.ok && json.error) throw new Error(json.error);
+      setPropiaMsg({ tipo: "ok", texto: `Cartera publicada en Propia: ${json.publicadas ?? 0} nuevas, ${json.actualizadas ?? 0} actualizadas${json.errores > 0 ? `, ${json.errores} con error` : ""}` });
+    } catch (e: unknown) {
+      setPropiaMsg({ tipo: "err", texto: e instanceof Error ? e.message : "Error al publicar en Propia" });
+    }
+    setPropiaSyncingCartera(false);
   }
 
   // ── Import CSV/Excel ──────────────────────────────────────────────────────
@@ -904,9 +940,42 @@ function IntegracionesInner() {
                   {propiaSaving ? "Guardando…" : propiaSaved ? "✓ Guardado" : "Guardar credenciales"}
                 </button>
                 <button className="int-btn int-btn-outline" onClick={syncPropia} disabled={propiaSyncing || !propiaKey}>
-                  {propiaSyncing ? "Sincronizando…" : "🏠 Importar feed de propiedades"}
+                  {propiaSyncing ? "Sincronizando…" : "⬇️ Propia → GFI (propiedades)"}
+                </button>
+                <button className="int-btn int-btn-outline" onClick={syncCarteraAPropia} disabled={propiaSyncingCartera || !propiaKey || !propiaProvider}>
+                  {propiaSyncingCartera ? "Publicando…" : "⬆️ GFI → Propia (cartera)"}
+                </button>
+                <button className="int-btn int-btn-outline" onClick={syncPropiaLeads} disabled={propiaSyncingLeads || !propiaKey}>
+                  {propiaSyncingLeads ? "Sincronizando…" : "👥 Importar leads de Propia"}
                 </button>
               </div>
+
+              {propiaUltimaSync && (
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>
+                  Última sync de leads: {propiaUltimaSync}
+                </div>
+              )}
+
+              {propiaKey && userId && (
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}>URL WEBHOOK (para configurar en Propia)</div>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <input
+                      className="int-input"
+                      readOnly
+                      value={`${typeof window !== "undefined" ? window.location.origin : ""}/api/webhooks/propia/${userId}`}
+                      style={{ fontFamily: "monospace", fontSize: 11, cursor: "text" }}
+                    />
+                    <button
+                      className="int-btn int-btn-outline"
+                      style={{ whiteSpace: "nowrap", padding: "8px 12px" }}
+                      onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/api/webhooks/propia/${userId}`); }}
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {!propiaKey && (
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
@@ -923,8 +992,8 @@ function IntegracionesInner() {
 
             <div className="int-card" style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, fontFamily: "Inter,sans-serif" }}>
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", marginBottom: 10 }}>ACERCA DE PROPIA MLS</div>
-              Propia es la red MLS del Colegio de Corredores Inmobiliarios de Buenos Aires (CUCICBA). La integración importa las propiedades publicadas en Propia a tu cartera GFI®.<br /><br />
-              La configuración completa (API Key, Seller ID, Company ID, Provider) también está disponible en <strong style={{ color: "rgba(255,255,255,0.6)" }}>CRM → Portales → Propia MLS</strong>.
+              Propia es la red MLS del Colegio de Corredores Inmobiliarios de Buenos Aires (CUCICBA). La integración sincroniza la cartera en ambas direcciones y recibe leads automáticamente.<br /><br />
+              <strong style={{ color: "rgba(255,255,255,0.6)" }}>Flujo completo:</strong> Las propiedades de tu cartera GFI® se publican en Propia (⬆️), las propiedades de Propia se importan a GFI® (⬇️), y los leads que lleguen desde Propia se crean como contactos en el CRM. Configurá la URL de webhook en el panel de Propia para recibirlos en tiempo real.
             </div>
           </div>
         )}

@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
   if (!provider) return NextResponse.json({ error: "Configurá el nombre de proveedor (provider) en CRM → Portales" }, { status: 400 });
 
   const body = await req.json();
-  const { accion, ...payload } = body as { accion: "publicar" | "despublicar"; [key: string]: unknown };
+  const { accion, ...payload } = body as { accion: "publicar" | "despublicar" | "sync-to-propia"; [key: string]: unknown };
 
   try {
     if (accion === "publicar") {
@@ -174,6 +174,82 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({ provider, seller, ...payload }),
       });
       return NextResponse.json({ ok: true, ...data });
+    }
+
+    // ── Sincronizar toda la cartera GFI → Propia ────────────────────────────
+    if (accion === "sync-to-propia") {
+      const { data: propiedades } = await sb
+        .from("cartera_propiedades")
+        .select("id, titulo, tipo, operacion, precio, moneda, descripcion_privada, direccion, zona, ciudad, ambientes, dormitorios, banos, superficie_total, superficie_cubierta, fotos, estado, propia_id")
+        .eq("perfil_id", user.id)
+        .neq("estado", "retirada")
+        .limit(500);
+
+      if (!propiedades?.length) return NextResponse.json({ ok: true, publicadas: 0, actualizadas: 0, errores: 0 });
+
+      let publicadas = 0, actualizadas = 0, errores = 0;
+
+      for (const prop of propiedades as Record<string, unknown>[]) {
+        try {
+          const operacion = ((prop.operacion as string) ?? "venta").toLowerCase();
+          const forSale = operacion === "venta" || operacion === "ambas";
+          const forRent = operacion === "alquiler" || operacion === "ambas";
+
+          const propiaProp = {
+            provider, seller,
+            external_identifier: String(prop.id),
+            title: prop.titulo ?? "",
+            description: prop.descripcion_privada ?? null,
+            for_sale: forSale,
+            for_rent: forRent,
+            for_sale_price: forSale ? (prop.precio ?? null) : null,
+            for_rent_price: forRent ? (prop.precio ?? null) : null,
+            currency: ((prop.moneda as string) ?? "USD").toLowerCase(),
+            address: prop.direccion ?? "",
+            city: prop.ciudad ?? "",
+            state: prop.zona ?? "",
+            country: "Argentina",
+            rooms: prop.ambientes ?? null,
+            bedrooms: prop.dormitorios ?? null,
+            bathrooms: prop.banos ?? null,
+            total_meters: prop.superficie_total ?? null,
+            covered_meters: prop.superficie_cubierta ?? null,
+            images: Array.isArray(prop.fotos)
+              ? (prop.fotos as string[]).map(url => ({ lg: url, md: url, sm: url }))
+              : [],
+          };
+
+          let result: Record<string, unknown>;
+          if (prop.propia_id) {
+            // Ya existe en Propia → actualizar
+            result = await propiaFetch(`${PROPIA_BASE}/properties/publish`, apiKey, {
+              method: "POST",
+              body: JSON.stringify({ ...propiaProp, property_id: prop.propia_id }),
+            });
+            actualizadas++;
+          } else {
+            // Nueva → publicar y guardar propia_id
+            result = await propiaFetch(`${PROPIA_BASE}/properties/publish`, apiKey, {
+              method: "POST",
+              body: JSON.stringify(propiaProp),
+            });
+            publicadas++;
+          }
+
+          // Guardar propia_id retornado
+          const propiaId = (result.id ?? result.property_id ?? result.propia_id) as string | undefined;
+          if (propiaId) {
+            await sb.from("cartera_propiedades").update({
+              propia_id: String(propiaId),
+              propia_sync_at: new Date().toISOString(),
+            }).eq("id", prop.id as string);
+          }
+        } catch {
+          errores++;
+        }
+      }
+
+      return NextResponse.json({ ok: true, publicadas, actualizadas, errores, total: propiedades.length });
     }
 
     return NextResponse.json({ error: "Acción inválida" }, { status: 400 });
