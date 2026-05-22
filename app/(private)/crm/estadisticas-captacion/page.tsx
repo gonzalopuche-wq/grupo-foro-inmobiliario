@@ -8,9 +8,9 @@ import { supabase } from "../../../lib/supabase";
 interface PropiedadRaw {
   id: string;
   created_at: string;
-  tipo_operacion: string | null;
-  tipo_propiedad: string | null;
-  barrio: string | null;
+  operacion: string | null;
+  tipo: string | null;
+  zona: string | null;
   precio: number | null;
   moneda: string | null;
   estado: string | null;
@@ -23,7 +23,7 @@ interface MesData {
 }
 
 interface BarrioRow {
-  barrio: string;
+  zona: string;
   cantidad: number;
   precioPromedio: number | null;
   diasPromedio: number;
@@ -348,7 +348,7 @@ export default function EstadisticasCaptacionPage() {
 
       const { data } = await supabase
         .from("cartera_propiedades")
-        .select("id, created_at, tipo_operacion, tipo_propiedad, barrio, precio, moneda, estado")
+        .select("id, created_at, operacion, tipo, zona, precio, moneda, estado")
         .eq("perfil_id", uid);
 
       setPropiedades((data as PropiedadRaw[]) ?? []);
@@ -380,9 +380,9 @@ export default function EstadisticasCaptacionPage() {
   const captacionesMes    = porMes[hoyKey] ?? 0;
   const promedioUlt6      = last6Keys.reduce((s, k) => s + (porMes[k] ?? 0), 0) / 6;
   const totalCaptadas      = propiedades.length;
-  const convertidas        = propiedades.filter(p => p.estado === "vendido" || p.estado === "alquilado").length;
+  const convertidas        = propiedades.filter(p => p.estado === "vendida" || p.estado === "alquilada").length;
   const tasaConversion     = totalCaptadas > 0 ? (convertidas / totalCaptadas) * 100 : 0;
-  const activas            = propiedades.filter(p => p.estado === "disponible");
+  const activas            = propiedades.filter(p => p.estado === "activa");
   const diasPromedioCartera = activas.length > 0
     ? activas.reduce((s, p) => s + diasDesde(p.created_at), 0) / activas.length
     : 0;
@@ -391,7 +391,7 @@ export default function EstadisticasCaptacionPage() {
   const tiposPropSlices = useMemo<DonutSlice[]>(() => {
     const acc: Record<string, number> = {};
     for (const p of propiedades) {
-      const t = (p.tipo_propiedad ?? "otro").toLowerCase();
+      const t = (p.tipo ?? "otro").toLowerCase();
       acc[t] = (acc[t] ?? 0) + 1;
     }
     return Object.entries(acc)
@@ -406,7 +406,7 @@ export default function EstadisticasCaptacionPage() {
   const tiposOpSlices = useMemo<DonutSlice[]>(() => {
     const acc: Record<string, number> = {};
     for (const p of propiedades) {
-      const t = (p.tipo_operacion ?? "otro").toLowerCase();
+      const t = (p.operacion ?? "otro").toLowerCase();
       acc[t] = (acc[t] ?? 0) + 1;
     }
     return Object.entries(acc)
@@ -422,7 +422,7 @@ export default function EstadisticasCaptacionPage() {
   const barrioRows = useMemo<BarrioRow[]>(() => {
     const acc: Record<string, { count: number; precioSum: number; precioN: number; diasSum: number }> = {};
     for (const p of propiedades) {
-      const b = p.barrio ?? "Sin especificar";
+      const b = p.zona ?? "Sin especificar";
       if (!acc[b]) acc[b] = { count: 0, precioSum: 0, precioN: 0, diasSum: 0 };
       acc[b].count++;
       if (p.precio !== null && p.precio > 0) {
@@ -432,8 +432,8 @@ export default function EstadisticasCaptacionPage() {
       acc[b].diasSum += diasDesde(p.created_at);
     }
     return Object.entries(acc)
-      .map(([barrio, v]) => ({
-        barrio,
+      .map(([zona, v]) => ({
+        zona,
         cantidad: v.count,
         precioPromedio: v.precioN > 0 ? v.precioSum / v.precioN : null,
         diasPromedio: Math.round(v.diasSum / v.count),
@@ -473,7 +473,7 @@ export default function EstadisticasCaptacionPage() {
         // Captada en o antes de este mes
         if (captadaEn > k) return false;
         // Aún disponible (no tiene estado final)
-        return p.estado === "disponible" || p.estado === null;
+        return p.estado === "activa" || p.estado === null;
       }).length;
       return { key: k, label: mesLabel(k), count };
     });
@@ -656,7 +656,7 @@ export default function EstadisticasCaptacionPage() {
                 <tbody>
                   {barrioRows.map((row, i) => (
                     <tr key={i}>
-                      <td style={tdStyle}>{row.barrio}</td>
+                      <td style={tdStyle}>{row.zona}</td>
                       <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600, color: "#cc0000" }}>{row.cantidad}</td>
                       <td style={{ ...tdStyle, textAlign: "right" }}>{formatPrecio(row.precioPromedio)}</td>
                       <td style={{ ...tdStyle, textAlign: "right" }}>{row.diasPromedio} d</td>
