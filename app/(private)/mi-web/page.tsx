@@ -235,14 +235,16 @@ export default function MiWebPage() {
       updated_at: new Date().toISOString(),
     };
 
-    if (tieneConfig) {
-      await supabase.from("web_corredor_config").update(datos).eq("perfil_id", userId);
-    } else {
-      await supabase.from("web_corredor_config").insert(datos);
-      setTieneConfig(true);
-    }
+    const { error: saveError } = tieneConfig
+      ? await supabase.from("web_corredor_config").update(datos).eq("perfil_id", userId)
+      : await supabase.from("web_corredor_config").insert(datos);
 
     setGuardando(false);
+    if (saveError) {
+      alert("Error al guardar. Intentá de nuevo.");
+      return;
+    }
+    if (!tieneConfig) setTieneConfig(true);
     setGuardadoOk(true);
     setTimeout(() => setGuardadoOk(false), 2500);
   };
