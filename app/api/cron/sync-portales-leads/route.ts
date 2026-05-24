@@ -48,12 +48,14 @@ export async function GET(req: NextRequest) {
     ...[...prIds].map(id => ({ userId: id, portal: "propia",   fn: () => syncPR(id) })),
   ];
 
-  for (const tarea of tareas) {
-    try {
-      const resultado = await tarea.fn();
-      resumen.push({ userId: tarea.userId, portal: tarea.portal, ok: true, resultado });
-    } catch (e: unknown) {
-      resumen.push({ userId: tarea.userId, portal: tarea.portal, ok: false, error: e instanceof Error ? e.message : "Error" });
+  const resultados = await Promise.allSettled(tareas.map(t => t.fn()));
+  for (let i = 0; i < tareas.length; i++) {
+    const r = resultados[i];
+    if (r.status === "fulfilled") {
+      resumen.push({ userId: tareas[i].userId, portal: tareas[i].portal, ok: true, resultado: r.value });
+    } else {
+      const err = r.reason;
+      resumen.push({ userId: tareas[i].userId, portal: tareas[i].portal, ok: false, error: err instanceof Error ? err.message : "Error" });
     }
   }
 
