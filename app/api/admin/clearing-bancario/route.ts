@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Solo admins" }, { status: 403 });
   }
 
-  const formData = await req.formData();
+  const formData = await req.formData() as unknown as { get(name: string): FormDataEntryValue | null };
   const file = formData.get("file") as File | null;
   if (!file) return NextResponse.json({ ok: false, error: "No se recibió archivo" }, { status: 400 });
 

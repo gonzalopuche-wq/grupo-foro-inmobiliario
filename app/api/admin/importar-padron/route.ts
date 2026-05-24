@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {
-    const formData = await req.formData();
+    const formData = await req.formData() as unknown as { get(name: string): FormDataEntryValue | null };
     const archivo = formData.get("archivo") as File | null;
     if (!archivo) {
       return NextResponse.json({ error: "No se recibió ningún archivo." }, { status: 400 });
