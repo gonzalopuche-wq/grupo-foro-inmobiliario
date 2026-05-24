@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/scraper/actualizar",
-      "schedule": "0 */6 * * *"
-    }
-  ]
-}

@@ -47,6 +47,10 @@
     {
       "path": "/api/cron/sync-portales-leads",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/scraper/actualizar",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

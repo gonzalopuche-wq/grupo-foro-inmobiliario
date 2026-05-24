@@ -39,12 +39,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/feedback/visita/${visita_id}`, 302);
     }
 
-    await sb.from("cartera_visitas").update({
+    const { error: updateErr } = await sb.from("cartera_visitas").update({
       feedback_puntaje:    puntaje ? Number(puntaje) : null,
       feedback_interes:    interes ?? null,
       feedback_comentario: comentario || null,
       feedback_at:         new Date().toISOString(),
     }).eq("id", visita_id);
+    if (updateErr) return NextResponse.json({ error: "Error al guardar el feedback." }, { status: 500 });
 
     return NextResponse.redirect(`${baseUrl}/feedback/visita/${visita_id}`, 302);
   } catch (e: any) {
