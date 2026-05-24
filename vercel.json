@@ -50,7 +50,7 @@
     },
     {
       "path": "/api/scraper/actualizar",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 5 * * *"
     }
   ]
 }
