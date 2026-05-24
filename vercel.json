@@ -43,6 +43,10 @@
     {
       "path": "/api/cron/digest-leads",
       "schedule": "0 9 * * 1"
+    },
+    {
+      "path": "/api/cron/sync-portales-leads",
+      "schedule": "0 6 * * *"
     }
   ]
 }
