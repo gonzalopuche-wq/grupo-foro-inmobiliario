@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const form = await req.formData();
+    const form = await req.formData() as unknown as { get(name: string): FormDataEntryValue | null };
     const archivo = form.get("archivo") as File | null;
     const modo = (form.get("modo") as string) ?? "preview";
     const constructoraId = (form.get("constructora_id") as string) ?? "";

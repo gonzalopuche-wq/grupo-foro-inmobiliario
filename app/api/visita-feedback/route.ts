@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       const body = await req.json();
       ({ visita_id, puntaje, interes, comentario } = body);
     } else {
-      const fd = await req.formData();
+      const fd = await req.formData() as unknown as { get(name: string): FormDataEntryValue | null };
       visita_id = fd.get("visita_id") as string;
       puntaje   = fd.get("puntaje")   as string;
       interes   = fd.get("interes")   as string;
