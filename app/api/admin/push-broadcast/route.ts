@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  await supabaseAdmin.from("push_broadcasts").insert({
+  const { error: logErr } = await supabaseAdmin.from("push_broadcasts").insert({
     admin_id: admin.id,
     titulo,
     cuerpo,
@@ -82,6 +82,7 @@ export async function POST(req: NextRequest) {
     filtro: filtro || "todos",
     enviados,
   });
+  if (logErr) console.error("push_broadcasts insert error:", logErr.message);
 
   return NextResponse.json({ ok: true, enviados, fallidos: fallidos.length });
 }
