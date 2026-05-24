@@ -50,6 +50,12 @@ export default function IAChatFlotante() {
         body: JSON.stringify({ mensaje: texto, historial }),
       })
 
+      if (!res.ok) {
+        const msg = res.status === 429 ? 'Demasiadas consultas, esperá un momento.' : 'Error al conectar con la IA.'
+        setMensajes(prev => [...prev, { rol: 'ia', texto: msg, ts: Date.now() }])
+        setCargando(false)
+        return
+      }
       if (!res.body) throw new Error('No stream')
 
       const reader = res.body.getReader()
