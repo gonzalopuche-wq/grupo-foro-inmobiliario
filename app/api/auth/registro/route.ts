@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
   if (tipo === "colaborador" && !corredor_matricula) {
     return NextResponse.json({ error: "La matrícula del corredor es obligatoria para colaboradores." }, { status: 400 });
   }
-  if (password.length < 6) {
-    return NextResponse.json({ error: "La contraseña debe tener al menos 6 caracteres." }, { status: 400 });
+  if (password.length < 8) {
+    return NextResponse.json({ error: "La contraseña debe tener al menos 8 caracteres." }, { status: 400 });
   }
 
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);

@@ -149,8 +149,8 @@ export default function RegistroPage() {
         return;
       }
     }
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.");
       return;
     }
 
