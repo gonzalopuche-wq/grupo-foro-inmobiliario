@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   const usuario = ticket.perfiles as unknown as { nombre: string; apellido: string; matricula: string | null } | null;
 
   const response = await anthropic.messages.create({
-    model: "claude-haiku-4-5",
+    model: "claude-haiku-4-5-20251001",
     max_tokens: 800,
     system: `Sos el asistente de soporte técnico de GFI® (Grupo Foro Inmobiliario), plataforma privada para corredores inmobiliarios matriculados en COCIR (Rosario, Argentina).
 La plataforma incluye: Dashboard, MIR, Red GFI, CRM, Comunidad, Foro, Eventos, Networking, Canal del Foro, Noticias, Emprendimientos, Calculadoras, Comparables, Padrón GFI, Biblioteca, Cotizaciones, Proveedores, Beneficios, Mi Perfil, Mi Web, Tasaciones IA, Contratos IA, Agenda, Referidos, Notificaciones.
