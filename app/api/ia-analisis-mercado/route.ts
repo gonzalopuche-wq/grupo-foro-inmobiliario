@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "../../lib/ratelimit";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 
@@ -22,6 +23,9 @@ export async function POST(req: NextRequest) {
 
   const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
   if (authError || !user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  if (!rateLimit(`ia-analisis-mercado:${user.id}`, 10, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Demasiadas consultas. Esperá un momento." }, { status: 429 });
+  }
 
   const { barrioStats, tipoStats, mirStats, comunidadStat, periodo } = await req.json();
 

@@ -51,6 +51,10 @@
     {
       "path": "/api/scraper/actualizar",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/sync-phones-cocir",
+      "schedule": "0 5 * * 1"
     }
   ]
 }

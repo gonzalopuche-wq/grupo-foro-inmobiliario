@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const securityHeaders = [
   // Evita clickjacking — no permite embeber en iframes externos
@@ -34,7 +35,7 @@ const securityHeaders = [
       // Imágenes: propio + data URIs + servicios externos usados en GFI
       "img-src 'self' data: blob: https: http:",
       // Conexiones fetch/XHR/WebSocket
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://dolarapi.com https://argentinadatos.com https://api.openweathermap.org https://api.mercadolibre.com https://api.bcra.gob.ar https://apis.datos.gob.ar https://api.anthropic.com https://vercel.live https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://nominatim.openstreetmap.org",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://dolarapi.com https://argentinadatos.com https://api.openweathermap.org https://api.mercadolibre.com https://api.bcra.gob.ar https://apis.datos.gob.ar https://api.anthropic.com https://vercel.live https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://nominatim.openstreetmap.org https://*.ingest.sentry.io",
       // Frames: Vercel preview + Google Calendar embed
       "frame-src 'self' https://vercel.live https://calendar.google.com",
       // Audio y video (blob: para preview local, supabase para reproducción post-envío)
@@ -74,4 +75,12 @@ const nextConfig: NextConfig = {
   poweredByHeader: false, // Oculta X-Powered-By: Next.js
 };
 
-export default nextConfig;
+export default process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      silent: true,
+      disableLogger: true,
+      automaticVercelMonitors: false,
+    })
+  : nextConfig;
