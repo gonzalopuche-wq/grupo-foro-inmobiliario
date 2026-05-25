@@ -573,23 +573,27 @@ export async function GET(req: NextRequest) {
         }
       };
 
-      // a) texto vacío → todos los habilitados en una sola respuesta
+      // a) texto vacío, todos los filtros → padrón completo en una sola respuesta
       for (const base of [AJAX_PHP_BASE, AJAX_PHP_BASE_WWW]) {
-        const html = await fetchBuscarTexto(base, "", "habilitados");
-        if (html) procesarHtmlRows(html);
+        for (const filtro of ["todos", "habilitados", "suspendidos"]) {
+          const html = await fetchBuscarTexto(base, "", filtro);
+          if (html) procesarHtmlRows(html);
+        }
         if (todosAjax.length > 100) break;
       }
 
-      // b) letra por letra → captura los que texto="" omitió (COCIR puede paginar)
+      // b) letra por letra con todos los filtros → captura los que texto="" omitió
       // Con validación numérica de matrícula el substring-match no genera duplicados
       const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
       const LOTE = 6;
       for (const base of [AJAX_PHP_BASE, AJAX_PHP_BASE_WWW]) {
-        for (let i = 0; i < letras.length; i += LOTE) {
-          const lote = letras.slice(i, i + LOTE);
-          const rows = await Promise.all(lote.map(l => fetchBuscarTexto(base, l, "habilitados")));
-          for (const html of rows) {
-            if (html) procesarHtmlRows(html);
+        for (const filtro of ["todos", "habilitados", "suspendidos"]) {
+          for (let i = 0; i < letras.length; i += LOTE) {
+            const lote = letras.slice(i, i + LOTE);
+            const rows = await Promise.all(lote.map(l => fetchBuscarTexto(base, l, filtro)));
+            for (const html of rows) {
+              if (html) procesarHtmlRows(html);
+            }
           }
         }
         if (todosAjax.length > 0) break;
