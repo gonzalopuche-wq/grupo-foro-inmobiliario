@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "../../lib/ratelimit";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 
@@ -13,6 +14,9 @@ export async function POST(req: NextRequest) {
 
     const { data: { user } } = await sb.auth.getUser(token);
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    if (!rateLimit(`ia-post-rrss:${user.id}`, 20, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Demasiadas consultas. Esperá un momento." }, { status: 429 });
+    }
 
     let efectivoId = user.id;
     const { data: perfil } = await sb.from("perfiles").select("tipo").eq("id", user.id).single();
