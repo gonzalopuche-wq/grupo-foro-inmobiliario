@@ -226,7 +226,7 @@ export default function MirPage() {
       setUserId(data.user.id);
 
       // Detectar si es colaborador y cargar CI colegas
-      const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
+      const { data: perfil } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).maybeSingle();
       if (perfil?.tipo === "colaborador") {
         setEsColaborador(true);
         // Cargar el CI titular y sus colegas matriculados
@@ -357,7 +357,10 @@ export default function MirPage() {
       .select("*, autor:perfiles!autor_id(nombre,apellido,foto_url)")
       .eq("chat_id", chatId)
       .order("created_at", { ascending: true });
-    setMensajes((data as unknown as MirMensaje[]) ?? []);
+    // Guard against stale fetch: only overwrite state if still on the same chat
+    if (chatActivoIdRef.current === chatId) {
+      setMensajes((data as unknown as MirMensaje[]) ?? []);
+    }
     if (userId) {
       await supabase.from("mir_mensajes").update({ leido: true })
         .eq("chat_id", chatId).eq("leido", false).neq("autor_id", userId);
@@ -370,7 +373,7 @@ export default function MirPage() {
       .select("*")
       .eq("publicacion_id", pubId)
       .or(`and(corredor_a.eq.${userId},corredor_b.eq.${destinatarioId}),and(corredor_a.eq.${destinatarioId},corredor_b.eq.${userId})`)
-      .single();
+      .maybeSingle();
 
     if (existente) {
       setChatActivo(existente as MirChat);
@@ -487,7 +490,7 @@ export default function MirPage() {
   };
 
   const cumpleMatch = (of: Ofrecido, bu: Busqueda): boolean => {
-    const ciudadOk = bu.ciudad.toLowerCase() === of.ciudad.toLowerCase();
+    const ciudadOk = (bu.ciudad ?? "").toLowerCase() === (of.ciudad ?? "").toLowerCase();
     const zonaOk = !bu.zona || !of.zona || of.zona.toLowerCase().includes(bu.zona.toLowerCase());
     const precioOk = !bu.presupuesto_max || !of.precio || of.precio <= bu.presupuesto_max;
     const precioMinOk = !bu.presupuesto_min || !of.precio || of.precio >= bu.presupuesto_min;

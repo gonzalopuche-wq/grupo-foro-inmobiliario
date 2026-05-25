@@ -354,15 +354,15 @@ export default function CarteraPage() {
       // Si es colaborador, usar el perfil_id del corredor para toda la cartera
       let efectivoId = data.user.id;
       const { data: perfil } = await supabase
-        .from("perfiles").select("tipo").eq("id", data.user.id).single();
+        .from("perfiles").select("tipo").eq("id", data.user.id).maybeSingle();
       if (perfil?.tipo === "colaborador") {
         const { data: colab } = await supabase
-          .from("colaboradores").select("corredor_id").eq("user_id", data.user.id).single();
+          .from("colaboradores").select("corredor_id").eq("user_id", data.user.id).maybeSingle();
         if (colab?.corredor_id) efectivoId = colab.corredor_id;
       }
 
       setUserId(efectivoId);
-      const { data: pd } = await supabase.from("perfiles").select("nombre,apellido,telefono").eq("id", efectivoId).single();
+      const { data: pd } = await supabase.from("perfiles").select("nombre,apellido,telefono").eq("id", efectivoId).maybeSingle();
       if (pd) setPerfilData(pd as any);
       const { data: wc } = await supabase.from("web_corredor_config").select("slug").eq("perfil_id", efectivoId).maybeSingle();
       if (wc?.slug) setWebSlug(wc.slug);
@@ -641,7 +641,7 @@ export default function CarteraPage() {
         .from("cartera_parametros")
         .select("*")
         .eq("perfil_id", userId)
-        .single();
+        .maybeSingle();
       if (params) {
         base = {
           ...base,

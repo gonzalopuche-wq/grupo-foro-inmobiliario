@@ -173,7 +173,7 @@ export default function CalculadorasPage() {
     cargar();
   }, []);
 
-  const indiceInfo = INDICES_INFO.find(i => i.id === indice)!;
+  const indiceInfo = INDICES_INFO.find(i => i.id === indice) ?? INDICES_INFO[0];
   const mesesPeriodo = parseInt(periodoAjuste);
   const montoNum = parseFloat(alquilerActual.replace(/\./g, "").replace(",", ".")) || 0;
   const datosIndice = indicesData?.indices?.[indice] ?? {};
@@ -753,7 +753,7 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
     });
   };
 
-  const indiceInfo = INDICES_INFO.find(x => x.id === indiceAct)!;
+  const indiceInfo = INDICES_INFO.find(x => x.id === indiceAct) ?? INDICES_INFO[0];
 
   return (
     <div style={{ maxWidth: 900, display: "flex", flexDirection: "column", gap: 16, marginTop: 20, paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.06)" }}>

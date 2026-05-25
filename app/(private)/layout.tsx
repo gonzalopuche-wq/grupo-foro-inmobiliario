@@ -128,13 +128,13 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         if (tipo !== "colaborador") {
           supabase.from("web_leads").select("id", { count: "exact", head: true })
             .eq("perfil_id", auth.user.id).eq("leido", false)
-            .then(({ count }) => setLeadsNoLeidos(count ?? 0));
+            .then(({ count }) => setLeadsNoLeidos(count ?? 0), () => {});
         }
 
         // Badge de notificaciones no leídas
         supabase.from("notificaciones").select("id", { count: "exact", head: true })
           .eq("user_id", auth.user.id).eq("leida", false)
-          .then(({ count }) => setNotifsNoLeidas(count ?? 0));
+          .then(({ count }) => setNotifsNoLeidas(count ?? 0), () => {});
 
         // Badge de tareas y recordatorios vencidos en CRM
         const hoy = new Date().toISOString().slice(0, 10);

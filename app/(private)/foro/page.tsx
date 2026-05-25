@@ -386,8 +386,10 @@ export default function ForoPage() {
     if (!userId || !eventoForm.titulo || !eventoForm.fecha) return;
     setGuardandoEvento(true);
     const fechaISO = new Date(`${eventoForm.fecha}T${eventoForm.hora}:00`).toISOString();
-    await supabase.from("eventos").insert({
-      titulo: eventoForm.titulo, descripcion: eventoForm.descripcion || null,
+    // Capture title before resetting state so the chat notification uses the correct value
+    const tituloEvento = eventoForm.titulo;
+    const { error } = await supabase.from("eventos").insert({
+      titulo: tituloEvento, descripcion: eventoForm.descripcion || null,
       fecha: fechaISO, lugar: eventoForm.lugar || null, plataforma: eventoForm.plataforma || null,
       link_reunion: eventoForm.link_reunion || null, gratuito: eventoForm.gratuito,
       precio_entrada: eventoForm.gratuito ? null : (parseFloat(eventoForm.precio_entrada) || null),
@@ -397,10 +399,11 @@ export default function ForoPage() {
       media: eventoMediaFiles.length > 0 ? eventoMediaFiles : null,
     });
     setGuardandoEvento(false);
+    if (error) { showToast("Error al guardar el evento. Intentá de nuevo."); return; }
     setMostrarModalEvento(false);
     setEventoForm({ titulo: "", descripcion: "", fecha: "", hora: "09:00", lugar: "", plataforma: "presencial", link_reunion: "", gratuito: true, precio_entrada: "", capacidad: "", link_externo: "", tipo: "gfi" });
     setEventoMediaFiles([]);
-    await supabase.from("forum_chat_messages").insert({ user_id: userId, body: `📅 Propuse un evento: "${eventoForm.titulo}" — pendiente de aprobación del admin.` });
+    await supabase.from("forum_chat_messages").insert({ user_id: userId, body: `📅 Propuse un evento: "${tituloEvento}" — pendiente de aprobación del admin.` });
   };
 
   const sendChat = async () => {

@@ -48,6 +48,7 @@ export default function NoticiasPage() {
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [errorCarga, setErrorCarga] = useState(false);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [form, setForm] = useState(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
@@ -110,7 +111,9 @@ export default function NoticiasPage() {
     }
 
     const { data, error } = await query;
-    if (!error) setNoticias((data as unknown as Noticia[]) ?? []);
+    if (error) { setErrorCarga(true); return; }
+    setErrorCarga(false);
+    setNoticias((data as unknown as Noticia[]) ?? []);
   };
 
   const guardarNoticia = async () => {
@@ -381,6 +384,17 @@ export default function NoticiasPage() {
       {loading ? (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
           <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        </div>
+      ) : errorCarga ? (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 12 }}>
+          <span style={{ fontSize: 36 }}>⚠️</span>
+          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>No se pudieron cargar las noticias</div>
+          <button
+            onClick={() => cargarNoticias(esAdmin)}
+            style={{ padding: "8px 20px", background: "rgba(204,0,0,0.12)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 4, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.1em" }}
+          >
+            Reintentar
+          </button>
         </div>
       ) : (
         <div className="not-container">

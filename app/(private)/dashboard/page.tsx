@@ -721,7 +721,7 @@ export default function DashboardPage() {
                         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.cliente_nombre}</div>
                         {v.propiedad && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(v.propiedad as any).titulo}</div>}
                       </div>
-                      {v.fecha_visita && <span style={{ fontSize: 10, color: "rgba(34,197,94,0.7)", flexShrink: 0 }}>{new Date(v.fecha_visita).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}</span>}
+                      {v.fecha_visita && (() => { const d = new Date(v.fecha_visita); return !isNaN(d.getTime()) ? <span style={{ fontSize: 10, color: "rgba(34,197,94,0.7)", flexShrink: 0 }}>{d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}</span> : null; })()}
                     </div>
                   ))}
                 </a>
