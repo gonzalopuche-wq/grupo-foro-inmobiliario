@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
   const [cocirRes, gfiRes] = await Promise.all([
     cargarTodo(
       "cocir_padron",
-      "id,matricula,apellido,nombre,inmobiliaria,direccion,localidad,telefono,email,estado,actualizado_at",
+      "id,matricula,apellido,nombre,inmobiliaria,direccion,localidad,telefono,celular,email,estado,actualizado_at",
       "apellido"
     ),
     cargarCorredoresGFI(),

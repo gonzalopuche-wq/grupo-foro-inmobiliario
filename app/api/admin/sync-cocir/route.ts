@@ -10,8 +10,8 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"] as const;
-const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
+const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "celular", "email"] as const;
+const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "celular", "email"];
 
 // URL real de los datos — BuscarMatriculados() hace POST con {texto, filtro} y devuelve JSON {success, html}
 const AJAX_PHP_BASE = "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php";
@@ -41,7 +41,8 @@ function detectarCampo(texto: string): string | null {
   if (t.includes("inmob") || t.includes("empresa") || t.includes("razon")) return "inmobiliaria";
   if (t.includes("direcc") || t.includes("domicilio") || t.includes("calle")) return "direccion";
   if (t.includes("localidad") || t.includes("ciudad") || t.includes("partido")) return "localidad";
-  if (t.includes("tel") || t.includes("celular") || t.includes("whatsapp")) return "telefono";
+  if (t.includes("celular") || t.includes("whatsapp") || t.includes("movil") || t.includes("móvil")) return "celular";
+  if (t.includes("tel") || t.includes("fijo") || t.includes("phone")) return "telefono";
   if (t.includes("email") || t.includes("mail") || t.includes("correo")) return "email";
   return null;
 }
@@ -263,7 +264,8 @@ function parsearFilasDT(filas: unknown[]): Record<string, string | null>[] {
         direccion: fila[5] != null ? String(fila[5]) : null,
         localidad: fila[6] != null ? String(fila[6]) : null,
         telefono:  fila[7] != null ? String(fila[7]) : null,
-        email:     fila[8] != null ? String(fila[8]) : null,
+        celular:   fila[8] != null ? String(fila[8]) : null,
+        email:     fila[9] != null ? String(fila[9]) : null,
       };
     }
     const r: Record<string, string | null> = {};
