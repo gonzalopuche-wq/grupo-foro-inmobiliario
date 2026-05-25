@@ -11,7 +11,7 @@ const sb = createClient(
 );
 
 const CAMPOS_CONOCIDOS = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "celular", "email"] as const;
-const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "celular", "email"];
+const FALLBACK_ORDEN = ["matricula", "apellido", "nombre", "estado", "inmobiliaria", "direccion", "localidad", "telefono", "email"];
 
 // URL real de los datos — BuscarMatriculados() hace POST con {texto, filtro} y devuelve JSON {success, html}
 const AJAX_PHP_BASE = "https://cocir.org.ar/webfiles/cocir/actualizar/matriculados.php";
@@ -98,6 +98,17 @@ function limpiarNombre(s: string | null | undefined): string | null {
     .trim() || null;
 }
 
+// COCIR a veces mete celular y email en la misma celda, separados por espacio, coma, "|" o "/"
+function separarContacto(valor: string | null | undefined): { celular: string | null; email: string | null } {
+  if (!valor) return { celular: null, email: null };
+  const emailMatch = valor.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/);
+  const email = emailMatch ? emailMatch[0].toLowerCase() : null;
+  // Números argentinos: 10 dígitos empezando en 3xx, o con prefijo 0 (11 dígitos), o +549...
+  const telMatch = valor.replace(/[\s.()\-\/|]/g, "").match(/(?:\+?549?|0)?([3][0-9]{9})\b/);
+  const celular = telMatch ? normalizarTelefono(telMatch[0]) : null;
+  return { celular, email };
+}
+
 function parsearTabla(html: string, camposPorCol: string[]): Record<string, string | null>[] {
   const $ = cheerio.load(html);
   const usarFallback = camposPorCol.length === 0 || camposPorCol.every(c => c.startsWith("_"));
@@ -147,6 +158,16 @@ function parsearTabla(html: string, camposPorCol: string[]): Record<string, stri
           if (norm) rec.telefono = norm;
         }
       });
+    }
+    // COCIR a veces junta celular + email en una sola celda — separar ambos
+    for (const campo of ["email", "telefono", "celular"] as const) {
+      const val = rec[campo];
+      if (!val) continue;
+      const { celular, email } = separarContacto(val);
+      if (email && !rec.email) rec.email = email;
+      if (celular && !rec.celular) rec.celular = celular;
+      // Si el campo original era "email" pero solo tenía un tel, limpiar el email falso
+      if (campo === "email" && !email && celular) rec.email = null;
     }
     registros.push(rec);
   });
@@ -264,14 +285,27 @@ function parsearFilasDT(filas: unknown[]): Record<string, string | null>[] {
         direccion: fila[5] != null ? String(fila[5]) : null,
         localidad: fila[6] != null ? String(fila[6]) : null,
         telefono:  fila[7] != null ? String(fila[7]) : null,
-        celular:   fila[8] != null ? String(fila[8]) : null,
-        email:     fila[9] != null ? String(fila[9]) : null,
+        ...(() => {
+          // celular y email pueden venir juntos en la misma celda en DataTables también
+          const { celular, email } = separarContacto(fila[8] != null ? String(fila[8]) : null);
+          const emailFinal = email ?? (fila[9] != null ? String(fila[9]) : null);
+          const { celular: c2, email: e2 } = separarContacto(emailFinal);
+          return { celular: celular ?? c2, email: e2 ?? emailFinal };
+        })(),
       };
     }
     const r: Record<string, string | null> = {};
     for (const [k, v] of Object.entries(fila as Record<string, unknown>)) {
       const campo = detectarCampo(k);
       if (campo) r[campo] = v ? String(v) : null;
+    }
+    // Aplicar splitting también en registros object
+    for (const campo of ["email", "celular"] as const) {
+      if (!r[campo]) continue;
+      const { celular, email } = separarContacto(r[campo]);
+      if (email && !r.email) r.email = email;
+      if (celular && !r.celular) r.celular = celular;
+      if (campo === "email" && !email && celular) r.email = null;
     }
     return r;
   }).filter(r => (r.matricula || r.apellido || r.nombre) && (esNombreValido(r.apellido) || esNombreValido(r.nombre)));
