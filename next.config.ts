@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
 
 const securityHeaders = [
   // Evita clickjacking — no permite embeber en iframes externos
@@ -75,12 +74,4 @@ const nextConfig: NextConfig = {
   poweredByHeader: false, // Oculta X-Powered-By: Next.js
 };
 
-export default process.env.NEXT_PUBLIC_SENTRY_DSN
-  ? withSentryConfig(nextConfig, {
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
-      silent: true,
-      disableLogger: true,
-      automaticVercelMonitors: false,
-    })
-  : nextConfig;
+export default nextConfig;
