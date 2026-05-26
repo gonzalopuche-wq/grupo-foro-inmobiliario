@@ -1432,41 +1432,32 @@ export default function CarteraPage() {
             <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); setFiltroPrecioMin(""); setFiltroPrecioMax(""); setFiltroSoloWeb(false); setFiltroConLeads(false); setFiltroPortal(""); }}>✕ Limpiar</button>
           )}
           <span className="cart-count">{filtradas.length} propiedades</span>
+
+          {/* Segunda fila: filtro por portal con contadores */}
+          <div style={{ flexBasis: "100%", width: "100%", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 10, marginTop: 2, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+            <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginRight: 4 }}>Red/Portal</span>
+            {[
+              { id: "",         label: "Todos",      count: propiedades.length },
+              { id: "gfi",      label: "Solo GFI",   count: propiedades.filter(p => !p.kiteprop_id && !p.propia_id && !syncData[p.id]?.tokko_id && !syncData[p.id]?.kiteprop_id).length },
+              { id: "kiteprop", label: "KiteProp",   count: propiedades.filter(p => p.kiteprop_id || syncData[p.id]?.kiteprop_id).length },
+              { id: "propia",   label: "Propia MLS", count: propiedades.filter(p => p.propia_id).length },
+              { id: "tokko",    label: "Tokko",      count: propiedades.filter(p => syncData[p.id]?.tokko_id).length },
+            ].map(chip => {
+              const isActive = filtroPortal === chip.id;
+              const activeClass = chip.id === "kiteprop" ? "active-kite" : chip.id === "propia" ? "active-propia" : chip.id === "tokko" ? "active-tokko" : "active-gfi";
+              return (
+                <button key={chip.id} className={`portal-chip ${isActive ? activeClass : ""}`} onClick={() => setFiltroPortal(chip.id)}
+                  style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  {chip.label}
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 18, height: 16, borderRadius: 8, padding: "0 4px", fontSize: 9, fontWeight: 800, background: isActive ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)", color: isActive ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                    {chip.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Filtro por portal */}
-        <div style={{ display: "flex", gap: 6, alignItems: "center", padding: "0 0 10px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase", marginRight: 2 }}>Portal</span>
-          {[
-            { id: "",         label: "Todos",      count: propiedades.length },
-            { id: "gfi",      label: "Solo GFI",   count: propiedades.filter(p => !p.kiteprop_id && !p.propia_id && !syncData[p.id]?.tokko_id && !syncData[p.id]?.kiteprop_id).length },
-            { id: "kiteprop", label: "KiteProp",   count: propiedades.filter(p => p.kiteprop_id || syncData[p.id]?.kiteprop_id).length },
-            { id: "propia",   label: "Propia MLS", count: propiedades.filter(p => p.propia_id).length },
-            { id: "tokko",    label: "Tokko",      count: propiedades.filter(p => syncData[p.id]?.tokko_id).length },
-          ].map(chip => {
-            const isActive = filtroPortal === chip.id;
-            const activeClass = chip.id === "kiteprop" ? "active-kite" : chip.id === "propia" ? "active-propia" : chip.id === "tokko" ? "active-tokko" : "active-gfi";
-            return (
-              <button
-                key={chip.id}
-                className={`portal-chip ${isActive ? activeClass : ""}`}
-                onClick={() => setFiltroPortal(chip.id)}
-                style={{ display: "flex", alignItems: "center", gap: 5 }}
-              >
-                {chip.label}
-                <span style={{
-                  display: "inline-flex", alignItems: "center", justifyContent: "center",
-                  minWidth: 16, height: 16, borderRadius: 8, padding: "0 4px",
-                  fontSize: 9, fontWeight: 800, lineHeight: 1,
-                  background: isActive ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)",
-                  color: isActive ? "#fff" : "rgba(255,255,255,0.35)",
-                }}>
-                  {chip.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
 
         {/* Alertas de Autorizaciones de Venta */}
         {!loading && alertasAutorizacion.length > 0 && (
