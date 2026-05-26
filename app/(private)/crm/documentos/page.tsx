@@ -33,7 +33,7 @@ const DOCS_BASE: Documento[] = [
   { id: "informe_inhibicion",   grupo: "Vendedor",    nombre: "Informe de inhibición",            descripcion: "Estado de deudas y embargos del titular",          obligatorio: true },
   { id: "libre_deuda_expensas", grupo: "Vendedor",    nombre: "Libre deuda de expensas",          descripcion: "Administración del consorcio",                     obligatorio: false },
   { id: "libre_deuda_abl",      grupo: "Vendedor",    nombre: "Libre deuda TGI / rentas municipales", descripcion: "Municipalidad de Santa Fe o municipio correspondiente", obligatorio: true },
-  { id: "libre_deuda_abl_2",    grupo: "Vendedor",    nombre: "Certificado de valuación fiscal",  descripcion: "ATER para cálculo de sellos",                      obligatorio: true },
+  { id: "libre_deuda_abl_2",    grupo: "Vendedor",    nombre: "Certificado de valuación fiscal",  descripcion: "API Santa Fe para cálculo de sellos",              obligatorio: true },
   { id: "planos",               grupo: "Vendedor",    nombre: "Planos municipales aprobados",     descripcion: "Visados por DGRoc/municipio",                      obligatorio: false },
   { id: "reglamento",           grupo: "Vendedor",    nombre: "Reglamento de copropiedad",        descripcion: "PH o consorcio — art. 2038 CCC",                   obligatorio: false },
   { id: "coti",                 grupo: "Vendedor",    nombre: "COTI (AFIP)",                      descripcion: "Si precio supera límite AFIP",                     obligatorio: false },
