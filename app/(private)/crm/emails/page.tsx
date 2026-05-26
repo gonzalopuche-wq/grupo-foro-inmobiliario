@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import { enviarEmail } from "../../../lib/email";
 
 interface Contacto { id: string; nombre: string; apellido: string; email: string | null; }
 interface Negocio { id: string; titulo: string; }
@@ -121,11 +122,7 @@ function EmailsContent() {
 
     let estado = "enviado";
     try {
-      const res = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: form.para.trim(), subject: form.asunto.trim(), html }),
-      });
+      const res = await enviarEmail(form.para.trim(), form.asunto.trim(), html);
       if (!res.ok) estado = "error";
     } catch {
       estado = "error";

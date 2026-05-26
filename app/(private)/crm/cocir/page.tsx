@@ -61,6 +61,7 @@ export default function COCIRPage() {
   const [syncError, setSyncError] = useState("");
   const [esAdmin, setEsAdmin] = useState(false);
   const [perfilCargado, setPerfilCargado] = useState(false);
+  const [contacto, setContacto] = useState<PadronEntry | null>(null);
 
   // Verificar rol admin
   useEffect(() => {
@@ -314,7 +315,7 @@ export default function COCIRPage() {
                 <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>
                   Muestra del padrón — últimos 20 registros
                 </div>
-                <PadronMuestra />
+                <PadronMuestra onSelect={setContacto} />
               </div>
             ) : (
               <div style={{ textAlign: "center", padding: "30px 20px" }}>
@@ -368,7 +369,7 @@ export default function COCIRPage() {
                   </thead>
                   <tbody>
                     {resultados.map(r => (
-                      <tr key={r.matricula}>
+                      <tr key={r.matricula} style={{ cursor: "pointer" }} onClick={() => setContacto(r)}>
                         <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#cc0000" }}>{r.matricula}</td>
                         <td style={{ color: "#fff", fontWeight: 600, fontFamily: "Montserrat,sans-serif", fontSize: 12 }}>
                           {[r.apellido, r.nombre].filter(Boolean).join(", ") || "—"}
@@ -525,13 +526,77 @@ export default function COCIRPage() {
           </div>
         )}
       </div>
+
+      {contacto && (
+        <div
+          style={{ position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",padding:16 }}
+          onClick={() => setContacto(null)}
+        >
+          <div
+            style={{ background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"28px 24px",maxWidth:480,width:"100%",display:"flex",flexDirection:"column",gap:16 }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
+              <div>
+                <div style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:18,color:"#fff"}}>
+                  {[contacto.apellido, contacto.nombre].filter(Boolean).join(", ") || "—"}
+                </div>
+                <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,color:"#cc0000",fontWeight:700,marginTop:3}}>
+                  Matrícula {contacto.matricula}
+                </div>
+              </div>
+              <button onClick={() => setContacto(null)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:22,cursor:"pointer",lineHeight:1,padding:0}}>×</button>
+            </div>
+            {contacto.estado && (
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 10px",borderRadius:20,background:`${estadoColor(contacto.estado)}18`,border:`1px solid ${estadoColor(contacto.estado)}40`,alignSelf:"flex-start"}}>
+                <span style={{width:7,height:7,borderRadius:"50%",background:estadoColor(contacto.estado),display:"inline-block"}}/>
+                <span style={{fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",color:estadoColor(contacto.estado)}}>{contacto.estado.toUpperCase()}</span>
+              </div>
+            )}
+            <div style={{display:"flex",flexDirection:"column",gap:10,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:16}}>
+              {contacto.inmobiliaria && (
+                <div style={{display:"flex",gap:10}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Inmob.</span>
+                  <span style={{fontSize:13,color:"rgba(255,255,255,0.8)"}}>{contacto.inmobiliaria}</span>
+                </div>
+              )}
+              {contacto.localidad && (
+                <div style={{display:"flex",gap:10}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Localidad</span>
+                  <span style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>{contacto.localidad}</span>
+                </div>
+              )}
+              {contacto.celular && (
+                <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Celular</span>
+                  <a href={`https://wa.me/${contacto.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontWeight:700,fontSize:13}}>
+                    {contacto.celular}
+                  </a>
+                </div>
+              )}
+              {contacto.telefono && contacto.telefono !== contacto.celular && (
+                <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Teléfono</span>
+                  <span style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>{contacto.telefono}</span>
+                </div>
+              )}
+              {contacto.email && (
+                <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Email</span>
+                  <a href={`mailto:${contacto.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:13,wordBreak:"break-all"}}>{contacto.email}</a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 // ── Sub-componente: muestra del padrón ───────────────────────────────────────
 
-function PadronMuestra() {
+function PadronMuestra({ onSelect }: { onSelect: (r: PadronEntry) => void }) {
   const [filas, setFilas] = useState<PadronEntry[]>([]);
   const [cargando, setCargando] = useState(true);
 
@@ -563,7 +628,7 @@ function PadronMuestra() {
         </thead>
         <tbody>
           {filas.map(r => (
-            <tr key={r.matricula}>
+            <tr key={r.matricula} style={{ cursor: "pointer" }} onClick={() => onSelect(r)}>
               <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#cc0000" }}>{r.matricula}</td>
               <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: "#fff", fontWeight: 600, fontFamily: "Montserrat,sans-serif", fontSize: 12 }}>
                 {[r.apellido, r.nombre].filter(Boolean).join(", ") || "—"}

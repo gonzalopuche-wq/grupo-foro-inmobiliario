@@ -13,6 +13,7 @@ interface RegistroCOCIR {
   direccion: string | null;
   localidad: string | null;
   telefono: string | null;
+  celular: string | null;
   email: string | null;
   estado: string | null;
   actualizado_at: string;
@@ -46,6 +47,7 @@ interface RegistroUnificado {
   nombre: string;
   inmobiliaria: string | null;
   telefono: string | null;
+  celular: string | null;
   email: string | null;
   direccion: string | null;
   localidad: string | null;
@@ -99,6 +101,7 @@ export default function PadronGFIPage() {
   const POR_PAGINA = 50;
   const [syncPhonesState, setSyncPhonesState] = useState<"idle" | "loading" | "done">("idle");
   const [syncPhonesResult, setSyncPhonesResult] = useState<{ actualizados: number; omitidos: number; errores: number; total_perfiles: number } | null>(null);
+  const [contactoSeleccionado, setContactoSeleccionado] = useState<RegistroUnificado | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -129,7 +132,7 @@ export default function PadronGFIPage() {
         key: `cocir-${c.id}`,
         enCOCIR: true, enGFI: false,
         matricula: c.matricula, apellido: c.apellido, nombre: c.nombre,
-        inmobiliaria: c.inmobiliaria, telefono: c.telefono, email: c.email,
+        inmobiliaria: c.inmobiliaria, telefono: c.telefono, celular: c.celular, email: c.email,
         direccion: c.direccion, localidad: c.localidad, estadoCOCIR: c.estado,
         perfilId: null, foto_url: null, zona_trabajo: null,
         especialidades: null, socio_cir: false, tipo: null,
@@ -141,7 +144,7 @@ export default function PadronGFIPage() {
         key: `gfi-${g.id}`,
         enCOCIR: false, enGFI: true,
         matricula: g.matricula, apellido: g.apellido, nombre: g.nombre,
-        inmobiliaria: g.inmobiliaria, telefono: g.telefono, email: g.email,
+        inmobiliaria: g.inmobiliaria, telefono: g.telefono, celular: null, email: g.email,
         direccion: null, localidad: null, estadoCOCIR: null,
         perfilId: g.id, foto_url: g.foto_url, zona_trabajo: g.zona_trabajo,
         especialidades: g.especialidades, socio_cir: g.socio_cir, tipo: g.tipo,
@@ -162,7 +165,7 @@ export default function PadronGFIPage() {
         key: `ambos-${c.id}`, enCOCIR: true, enGFI: !!gfi,
         matricula: c.matricula, apellido: c.apellido, nombre: c.nombre,
         inmobiliaria: gfi?.inmobiliaria ?? c.inmobiliaria,
-        telefono: gfi?.telefono ?? c.telefono, email: gfi?.email ?? c.email,
+        telefono: gfi?.telefono ?? c.telefono, celular: c.celular, email: gfi?.email ?? c.email,
         direccion: c.direccion, localidad: c.localidad, estadoCOCIR: c.estado,
         perfilId: gfi?.id ?? null, foto_url: gfi?.foto_url ?? null,
         zona_trabajo: gfi?.zona_trabajo ?? null, especialidades: gfi?.especialidades ?? null,
@@ -176,7 +179,7 @@ export default function PadronGFIPage() {
         resultado.push({
           key: `gfi-solo-${g.id}`, enCOCIR: false, enGFI: true,
           matricula: g.matricula, apellido: g.apellido, nombre: g.nombre,
-          inmobiliaria: g.inmobiliaria, telefono: g.telefono, email: g.email,
+          inmobiliaria: g.inmobiliaria, telefono: g.telefono, celular: null, email: g.email,
           direccion: null, localidad: null, estadoCOCIR: null,
           perfilId: g.id, foto_url: g.foto_url, zona_trabajo: g.zona_trabajo,
           especialidades: g.especialidades, socio_cir: g.socio_cir, tipo: g.tipo,
@@ -456,13 +459,15 @@ export default function PadronGFIPage() {
                 {paginados.map(r => {
                   const color = estadoColor(r.estadoCOCIR);
                   const esAlerta = r.estadoCOCIR && ESTADOS_ALERTA.some(s => r.estadoCOCIR!.toLowerCase().includes(s));
-                  const esClickable = !!r.perfilId;
 
                   return (
                     <tr
                       key={r.key}
-                      className={esClickable ? "clickable" : ""}
-                      onClick={() => { if (r.perfilId) setPerfilRapidoId(r.perfilId); }}
+                      className="clickable"
+                      onClick={() => {
+                        if (r.perfilId) setPerfilRapidoId(r.perfilId);
+                        else setContactoSeleccionado(r);
+                      }}
                     >
                       <td>
                         <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -492,9 +497,9 @@ export default function PadronGFIPage() {
                           : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                       </td>
                       <td style={{fontSize:12}}>
-                        {r.telefono
-                          ? <a href={`https://wa.me/${r.telefono.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"#25d366",textDecoration:"none",fontFamily:"Inter,sans-serif"}}>
-                              {r.telefono}
+                        {(r.celular ?? r.telefono)
+                          ? <a href={`https://wa.me/${(r.celular ?? r.telefono)!.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"#25d366",textDecoration:"none",fontFamily:"Inter,sans-serif"}}>
+                              {r.celular ?? r.telefono}
                             </a>
                           : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                       </td>
@@ -546,6 +551,80 @@ export default function PadronGFIPage() {
           miUserId={userId}
           onClose={() => setPerfilRapidoId(null)}
         />
+      )}
+
+      {contactoSeleccionado && (
+        <div
+          style={{ position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,0.7)",display:"flex",alignItems:"center",justifyContent:"center",padding:16 }}
+          onClick={() => setContactoSeleccionado(null)}
+        >
+          <div
+            style={{ background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"28px 24px",maxWidth:480,width:"100%",display:"flex",flexDirection:"column",gap:16 }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
+              <div>
+                <div style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:18,color:"#fff"}}>
+                  {[contactoSeleccionado.apellido, contactoSeleccionado.nombre].filter(Boolean).join(", ") || "—"}
+                </div>
+                {contactoSeleccionado.matricula && (
+                  <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,color:"#cc0000",fontWeight:700,marginTop:3}}>
+                    Matrícula {contactoSeleccionado.matricula}
+                  </div>
+                )}
+              </div>
+              <button onClick={() => setContactoSeleccionado(null)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:22,cursor:"pointer",lineHeight:1,padding:0}}>×</button>
+            </div>
+
+            {contactoSeleccionado.estadoCOCIR && (
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 10px",borderRadius:20,background:`${estadoColor(contactoSeleccionado.estadoCOCIR)}18`,border:`1px solid ${estadoColor(contactoSeleccionado.estadoCOCIR)}40`,alignSelf:"flex-start"}}>
+                <span style={{width:7,height:7,borderRadius:"50%",background:estadoColor(contactoSeleccionado.estadoCOCIR),display:"inline-block"}}/>
+                <span style={{fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",color:estadoColor(contactoSeleccionado.estadoCOCIR)}}>
+                  {contactoSeleccionado.estadoCOCIR.toUpperCase()}
+                </span>
+              </div>
+            )}
+
+            <div style={{display:"flex",flexDirection:"column",gap:10,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:16}}>
+              {contactoSeleccionado.inmobiliaria && (
+                <div style={{display:"flex",gap:10}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Inmob.</span>
+                  <span style={{fontSize:13,color:"rgba(255,255,255,0.8)"}}>{contactoSeleccionado.inmobiliaria}</span>
+                </div>
+              )}
+              {(contactoSeleccionado.direccion || contactoSeleccionado.localidad) && (
+                <div style={{display:"flex",gap:10}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Dirección</span>
+                  <span style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>
+                    {[contactoSeleccionado.direccion, contactoSeleccionado.localidad].filter(Boolean).join(" · ")}
+                  </span>
+                </div>
+              )}
+              {contactoSeleccionado.celular && (
+                <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Celular</span>
+                  <a href={`https://wa.me/${contactoSeleccionado.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontWeight:700,fontSize:13}}>
+                    {contactoSeleccionado.celular}
+                  </a>
+                </div>
+              )}
+              {contactoSeleccionado.telefono && contactoSeleccionado.telefono !== contactoSeleccionado.celular && (
+                <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Teléfono</span>
+                  <span style={{color:"rgba(255,255,255,0.7)",fontSize:13}}>{contactoSeleccionado.telefono}</span>
+                </div>
+              )}
+              {contactoSeleccionado.email && (
+                <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Email</span>
+                  <a href={`mailto:${contactoSeleccionado.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:13,wordBreak:"break-all"}}>
+                    {contactoSeleccionado.email}
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

@@ -98,7 +98,9 @@ export async function POST(req: NextRequest) {
   }
 
   if (perfilError) {
-    await sb.auth.admin.deleteUser(userId);
+    await sb.auth.admin.deleteUser(userId).catch(delErr =>
+      console.error("deleteUser cleanup failed for orphaned auth user", userId, delErr)
+    );
     return NextResponse.json({ error: "Error al guardar el perfil." }, { status: 500 });
   }
 

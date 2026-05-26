@@ -88,7 +88,81 @@ export async function POST(req: NextRequest) {
     propId = nueva?.id ?? null;
   }
 
+  void sincronizarConPropia(propId!, datos, efectivoId);
+
   return NextResponse.json({ ok: true, propId });
+}
+
+async function sincronizarConPropia(propId: string, datos: Record<string, unknown>, userId: string) {
+  try {
+    const { data: creds } = await supabaseAdmin
+      .from("portal_credenciales")
+      .select("propia_api_key, propia_provider, propia_usuario")
+      .eq("perfil_id", userId)
+      .maybeSingle();
+
+    const apiKey = (creds as Record<string, string | null> | null)?.propia_api_key;
+    const provider = (creds as Record<string, string | null> | null)?.propia_provider;
+    if (!apiKey || !provider) return;
+
+    const seller = (creds as Record<string, string | null>).propia_usuario ?? undefined;
+    const op = ((datos.operacion as string) ?? "venta").toLowerCase();
+    const forSale = op === "venta" || op === "ambas";
+    const forRent = op === "alquiler" || op === "ambas";
+
+    const { data: existing } = await supabaseAdmin
+      .from("cartera_propiedades").select("propia_id").eq("id", propId).maybeSingle();
+    const currentPropiaId = (existing as Record<string, string | null> | null)?.propia_id;
+
+    const payload: Record<string, unknown> = {
+      provider, seller,
+      external_identifier: propId,
+      title: datos.titulo ?? "",
+      description: (datos.descripcion_privada as string | null) ?? null,
+      for_sale: forSale,
+      for_rent: forRent,
+      for_sale_price: forSale ? (datos.precio ?? null) : null,
+      for_rent_price: forRent ? (datos.precio ?? null) : null,
+      currency: ((datos.moneda as string) ?? "USD").toLowerCase(),
+      address: datos.direccion ?? "",
+      city: datos.ciudad ?? "",
+      state: datos.zona ?? "",
+      country: "Argentina",
+      rooms: datos.ambientes ?? null,
+      bedrooms: datos.dormitorios ?? null,
+      bathrooms: datos.banos ?? null,
+      total_meters: datos.superficie_total ?? null,
+      covered_meters: datos.superficie_cubierta ?? null,
+      images: Array.isArray(datos.fotos)
+        ? (datos.fotos as string[]).map(url => ({ lg: url, md: url, sm: url }))
+        : [],
+    };
+    if (currentPropiaId) payload.property_id = currentPropiaId;
+
+    const PROPIA_BASE = (process.env.PROPIA_API_BASE ?? "https://propia.com.ar/api").replace(/\/$/, "");
+    const res = await fetch(`${PROPIA_BASE}/properties/publish`, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(20_000),
+    });
+
+    if (!res.ok) {
+      console.error("[cartera/guardar] Propia sync HTTP", res.status);
+      return;
+    }
+
+    const result = await res.json() as Record<string, unknown>;
+    const propiaId = (result.id ?? result.property_id ?? result.propia_id) as string | undefined;
+    if (propiaId) {
+      await supabaseAdmin.from("cartera_propiedades").update({
+        propia_id: String(propiaId),
+        propia_sync_at: new Date().toISOString(),
+      }).eq("id", propId);
+    }
+  } catch (err) {
+    console.error("[cartera/guardar] sincronizarConPropia:", err);
+  }
 }
 
 async function notificarBajaDePrecio({

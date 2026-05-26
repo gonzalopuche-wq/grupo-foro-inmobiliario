@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { enviarEmail } from "../lib/email";
 
 interface Suscripcion {
   id: string;
@@ -191,33 +192,7 @@ export default function SuscripcionPage() {
 
     // Email al admin
     try {
-      await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: "admin@foroinmobiliario.com.ar",
-          subject: `💰 Pago declarado — ${perfil.apellido}, ${perfil.nombre}`,
-          html: `
-            <div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(200,0,0,0.2);">
-              <h2 style="color:#cc0000;margin-bottom:20px;font-family:sans-serif;">GFI® — Nuevo pago declarado</h2>
-              <table style="width:100%;border-collapse:collapse;font-size:14px;">
-                <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);width:140px;">Corredor</td><td style="color:#fff;font-weight:600;">${perfil.apellido}, ${perfil.nombre}</td></tr>
-                <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Matrícula</td><td style="color:#fff;">${perfil.matricula ?? "—"}</td></tr>
-                <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto USD</td><td style="color:#fff;">USD ${precioUsd}</td></tr>
-                <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto ARS</td><td style="color:#22c55e;font-weight:700;">$ ${montoNum.toLocaleString("es-AR")}</td></tr>
-                <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Comprobante</td><td style="color:#fff;">${comprobante}</td></tr>
-                <tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Fecha</td><td style="color:#fff;">${new Date(fechaPago).toLocaleDateString("es-AR")}</td></tr>
-                ${cbuOrigen ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">CBU origen</td><td style="color:#fff;">${cbuOrigen}</td></tr>` : ""}
-              </table>
-              <div style="margin-top:24px;">
-                <a href="https://www.foroinmobiliario.com.ar/admin/suscripciones" style="display:inline-block;background:#cc0000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;font-family:sans-serif;">
-                  ✓ Confirmar en el panel admin
-                </a>
-              </div>
-            </div>
-          `,
-        }),
-      });
+      await enviarEmail("admin@foroinmobiliario.com.ar", `💰 Pago declarado — ${perfil.apellido}, ${perfil.nombre}`, `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(200,0,0,0.2);"><h2 style="color:#cc0000;margin-bottom:20px;font-family:sans-serif;">GFI® — Nuevo pago declarado</h2><table style="width:100%;border-collapse:collapse;font-size:14px;"><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);width:140px;">Corredor</td><td style="color:#fff;font-weight:600;">${perfil.apellido}, ${perfil.nombre}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Matrícula</td><td style="color:#fff;">${perfil.matricula ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto USD</td><td style="color:#fff;">USD ${precioUsd}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto ARS</td><td style="color:#22c55e;font-weight:700;">$ ${montoNum.toLocaleString("es-AR")}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Comprobante</td><td style="color:#fff;">${comprobante}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Fecha</td><td style="color:#fff;">${new Date(fechaPago).toLocaleDateString("es-AR")}</td></tr>${cbuOrigen ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">CBU origen</td><td style="color:#fff;">${cbuOrigen}</td></tr>` : ""}</table><div style="margin-top:24px;"><a href="https://www.foroinmobiliario.com.ar/admin/suscripciones" style="display:inline-block;background:#cc0000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;font-family:sans-serif;">✓ Confirmar en el panel admin</a></div></div>`);
     } catch {}
 
     setEnviando(false);

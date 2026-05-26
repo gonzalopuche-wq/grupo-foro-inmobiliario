@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
 
   const [logs, configs] = await Promise.all([
     sb.from("crm_integraciones_log").select("*").eq("perfil_id", user.id).order("created_at", { ascending: false }).limit(50),
-    sb.from("crm_integraciones_config").select("tipo,activo,ultima_sincronizacion,created_at").eq("perfil_id", user.id),
+    sb.from("crm_integraciones_config").select("tipo,activo,ultima_sincronizacion,created_at,config").eq("perfil_id", user.id),
   ]);
   return NextResponse.json({ logs: logs.data ?? [], configs: configs.data ?? [] });
 }

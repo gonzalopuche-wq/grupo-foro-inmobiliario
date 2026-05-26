@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import PWAInstallWidget from "../components/PWAInstallWidget";
 
 type Paso = "tipo" | "datos" | "enviado";
 type TipoUsuario = "corredor" | "colaborador";
@@ -612,6 +613,9 @@ export default function RegistroPage() {
               <div className="reg-footer">
                 ¿Ya tenés cuenta? <a href="/login">Ingresá acá</a>
               </div>
+
+              <PWAInstallWidget />
+
               <div className="reg-divider" />
               <div className="reg-brand">Grupo Foro Inmobiliario · Rosario</div>
             </>

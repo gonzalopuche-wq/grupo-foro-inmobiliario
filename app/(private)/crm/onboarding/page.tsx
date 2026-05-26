@@ -23,7 +23,7 @@ const TAREAS_BASE: TareaOnboarding[] = [
   { id: "t2", grupo: "Documentación", titulo: "Título de propiedad o escritura", descripcion: "Copia completa o acceso al original para verificar dominio.", prioridad: "alta", responsable: "vendedor", plazo: "Día 1" },
   { id: "t3", grupo: "Documentación", titulo: "Plano de mensura / subdivisión", descripcion: "Plano registrado en catastro o registro de la propiedad.", prioridad: "alta", responsable: "vendedor", plazo: "Semana 1" },
   { id: "t4", grupo: "Documentación", titulo: "Reglamento de copropiedad (PH)", descripcion: "Solo para propiedades horizontales. Verificar restricciones.", prioridad: "media", responsable: "vendedor", plazo: "Semana 1" },
-  { id: "t5", grupo: "Documentación", titulo: "Últimas boletas ABL / ARBA", descripcion: "Mínimo 3 boletas. Verificar deuda pendiente.", prioridad: "alta", responsable: "vendedor", plazo: "Día 1" },
+  { id: "t5", grupo: "Documentación", titulo: "Últimas boletas TGI / municipales", descripcion: "Mínimo 3 boletas. Verificar deuda pendiente.", prioridad: "alta", responsable: "vendedor", plazo: "Día 1" },
   { id: "t6", grupo: "Documentación", titulo: "Expensas últimos 6 meses", descripcion: "Liquidaciones de administración. Detectar deuda o juicio.", prioridad: "alta", responsable: "vendedor", plazo: "Día 1" },
   { id: "t7", grupo: "Documentación", titulo: "Últimas boletas servicios", descripcion: "Gas, luz, agua. Verificar deuda y titularidad.", prioridad: "media", responsable: "vendedor", plazo: "Semana 1" },
   { id: "t8", grupo: "Documentación", titulo: "Inhibiciones y anotaciones (RPBA)", descripcion: "Informe de inhibiciones del/los titular(es).", prioridad: "alta", responsable: "corredor", plazo: "Semana 1" },

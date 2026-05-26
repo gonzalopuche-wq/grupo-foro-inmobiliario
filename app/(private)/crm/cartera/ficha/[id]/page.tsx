@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import { PrintButton } from "./PrintButton";
 import { PostRedesButton } from "./PostRedesButton";
+import { PropiaPublicarButton } from "./PropiaPublicarButton";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,6 +23,7 @@ async function getData(id: string) {
       antiguedad, piso, orientacion, amenities, observaciones,
       fotos, estado, expensas, precio_expensas_moneda,
       video_url, tour_virtual_url, vistas, publicada_web, created_at,
+      propia_id, propia_sync_at,
       perfil:perfiles(nombre, apellido, matricula, telefono, email, foto_url, inmobiliaria)
     `)
     .eq("id", id)
@@ -134,6 +136,25 @@ export default async function FichaPage({ params }: Props) {
         <a href="/cartera" className="toolbar-back">← Volver a mi cartera</a>
         <div className="toolbar-title">Ficha de propiedad</div>
         <div className="toolbar-actions">
+          <PropiaPublicarButton
+            propiedadId={prop.id}
+            propiaId={(prop as any).propia_id ?? null}
+            propiaSyncAt={(prop as any).propia_sync_at ?? null}
+            titulo={prop.titulo ?? ""}
+            operacion={prop.operacion ?? "Venta"}
+            precio={prop.precio ?? null}
+            moneda={prop.moneda ?? "USD"}
+            descripcion={prop.descripcion ?? null}
+            direccion={prop.direccion ?? null}
+            ciudad={prop.ciudad ?? null}
+            zona={prop.zona ?? null}
+            ambientes={prop.ambientes ?? null}
+            dormitorios={prop.dormitorios ?? null}
+            banos={prop.banos ?? null}
+            superficieTotal={prop.superficie_total ?? null}
+            superficieCubierta={prop.superficie_cubierta ?? null}
+            fotos={prop.fotos ?? []}
+          />
           <PostRedesButton propiedadId={prop.id} />
           <PrintButton />
         </div>

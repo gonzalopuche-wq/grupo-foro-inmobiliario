@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
+declare global {
+  interface Window { __pwaPrompt?: BeforeInstallPromptEvent; __pwaInstalled?: boolean; }
 }
 
 function isIOS() {
@@ -21,10 +26,13 @@ export default function PWAInstallBanner() {
   const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [modoIOS, setModoIOS] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (localStorage.getItem("pwa-install-dismissed")) return;
+    // El widget inline en login/registro ya cubre estas páginas
+    if (pathname === "/login" || pathname === "/registro") return;
+    if (sessionStorage.getItem("pwa-install-dismissed")) return;
     if (isInStandaloneMode()) return;
 
     if (isIOS()) {
@@ -33,13 +41,25 @@ export default function PWAInstallBanner() {
       return;
     }
 
-    const handler = (e: Event) => {
+    // Prompt may already be captured by the inline <head> script before React hydrated
+    if (window.__pwaPrompt) { setPrompt(window.__pwaPrompt); setVisible(true); return; }
+
+    const onPromptReady = () => {
+      if (window.__pwaPrompt) { setPrompt(window.__pwaPrompt!); setVisible(true); }
+    };
+    const onNativePrompt = (e: Event) => {
       e.preventDefault();
-      setPrompt(e as BeforeInstallPromptEvent);
+      const pwaEvent = e as BeforeInstallPromptEvent;
+      window.__pwaPrompt = pwaEvent;
+      setPrompt(pwaEvent);
       setVisible(true);
     };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    window.addEventListener("pwa-prompt-ready", onPromptReady);
+    window.addEventListener("beforeinstallprompt", onNativePrompt);
+    return () => {
+      window.removeEventListener("pwa-prompt-ready", onPromptReady);
+      window.removeEventListener("beforeinstallprompt", onNativePrompt);
+    };
   }, []);
 
   const instalar = async () => {
@@ -54,7 +74,7 @@ export default function PWAInstallBanner() {
   };
 
   const cerrar = () => {
-    localStorage.setItem("pwa-install-dismissed", "1");
+    sessionStorage.setItem("pwa-install-dismissed", "1");
     setVisible(false);
   };
 

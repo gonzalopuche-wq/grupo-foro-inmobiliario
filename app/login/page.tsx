@@ -3,6 +3,7 @@
 import { useState, FormEvent, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../lib/supabase";
+import PWAInstallWidget from "../components/PWAInstallWidget";
 
 const MAX_INTENTOS = 5;
 const BLOQUEO_MS = 60 * 1000; // 1 minuto de espera tras 5 intentos
@@ -199,6 +200,8 @@ function LoginInner() {
           <div className="login-footer">
             ¿No tenés cuenta? <a href="/registro">Solicitá tu acceso acá</a>
           </div>
+
+          <PWAInstallWidget />
 
           <div className="login-brand">Grupo Foro Inmobiliario · Rosario</div>
         </div>

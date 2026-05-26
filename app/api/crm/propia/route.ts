@@ -10,6 +10,10 @@ const sb = createClient(
 );
 
 const PROPIA_BASE = (process.env.PROPIA_API_BASE ?? "https://propia.com.ar/api").replace(/\/$/, "");
+// Propia uses different base paths per service group
+const PROPIA_HOST  = PROPIA_BASE.replace(/\/api$/, "");
+const PROPIA_SRCH  = `${PROPIA_HOST}/search`;
+const PROPIA_STATS = `${PROPIA_HOST}/stats`;
 
 async function autenticar(req: NextRequest) {
   const jwt = req.headers.get("authorization")?.replace("Bearer ", "") ?? "";
@@ -96,10 +100,11 @@ export async function GET(req: NextRequest) {
     if (action === "search") {
       const q = sp.get("q") ?? "";
       if (!q) return NextResponse.json({ error: "Parámetro q requerido" }, { status: 400 });
-      const params = new URLSearchParams({ q, limit: sp.get("limit") ?? "25", page: sp.get("page") ?? "1" });
-      if (sp.get("filter"))      params.set("filter", sp.get("filter")!);
-      if (companyId)             params.set("company_id", companyId);
-      const data = await propiaFetch(`${PROPIA_BASE}/search/properties?${params}`, apiKey);
+      const params = new URLSearchParams({ q, limit: sp.get("limit") ?? "25", page: sp.get("page") ?? "1", meta: sp.get("meta") ?? "filter_count,total_count" });
+      if (sp.get("filter"))  params.set("filter", sp.get("filter")!);
+      if (sp.get("target"))  params.set("target", sp.get("target")!);
+      if (sp.get("sort"))    params.set("sort", sp.get("sort")!);
+      const data = await propiaFetch(`${PROPIA_SRCH}/properties?${params}`, apiKey);
       return NextResponse.json({ ok: true, ...data });
     }
 
@@ -126,7 +131,7 @@ export async function GET(req: NextRequest) {
       if (sp.get("property_type")) params.set("property_type", sp.get("property_type")!);
       if (sp.get("operation"))     params.set("operation", sp.get("operation")!);
       if (sp.get("currency"))      params.set("currency", sp.get("currency") ?? "USD");
-      const data = await propiaFetch(`${PROPIA_BASE}/stats/prices?${params}`, apiKey);
+      const data = await propiaFetch(`${PROPIA_STATS}/prices?${params}`, apiKey);
       return NextResponse.json({ ok: true, ...data });
     }
 

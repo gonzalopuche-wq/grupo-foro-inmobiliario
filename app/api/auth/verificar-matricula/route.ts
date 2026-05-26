@@ -16,8 +16,8 @@ export async function POST(req: NextRequest) {
   // Try numeric and several text variants to handle leading zeros or different storage formats
   const candidatosTexto = Array.from(new Set([raw, sinCero, String(num), sinCero.padStart(3, "0"), sinCero.padStart(4, "0"), sinCero.padStart(5, "0")]));
   const [{ data: rowsNum }, { data: rowsTxt }] = await Promise.all([
-    sbAdmin.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").eq("matricula", num),
-    sbAdmin.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula").in("matricula", candidatosTexto),
+    sbAdmin.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula, telefono").eq("matricula", num),
+    sbAdmin.from("cocir_padron").select("nombre, apellido, inmobiliaria, estado, matricula, telefono").in("matricula", candidatosTexto),
   ]);
   const data = (rowsNum?.[0] ?? rowsTxt?.[0]) ?? null;
   if (!data) {
@@ -28,5 +28,5 @@ export async function POST(req: NextRequest) {
   if (estado && ESTADOS_ALERTA.some(s => estado.includes(s))) return NextResponse.json({ error: `Matrícula con estado: ${data.estado}. Solo se aceptan corredores habilitados.` }, { status: 403 });
   const { data: perfilExistente } = await sbAdmin.from("perfiles").select("id").eq("matricula", String(data.matricula)).maybeSingle();
   if (perfilExistente) return NextResponse.json({ error: "Esta matrícula ya tiene una cuenta registrada." }, { status: 409 });
-  return NextResponse.json({ ok: true, nombre: data.nombre, apellido: data.apellido, inmobiliaria: data.inmobiliaria ?? "", matricula: data.matricula });
+  return NextResponse.json({ ok: true, nombre: data.nombre, apellido: data.apellido, inmobiliaria: data.inmobiliaria ?? "", matricula: data.matricula, telefono: data.telefono ?? null });
 }

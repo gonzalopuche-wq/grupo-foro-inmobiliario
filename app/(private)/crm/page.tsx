@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../../lib/supabase";
+import { enviarEmail } from "../../lib/email";
 import * as XLSX from "xlsx";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
@@ -403,11 +404,20 @@ function CrmPageInner() {
   const guardarContacto = async () => {
     if (!userId || !formContacto.nombre) return;
     setGuardandoContacto(true);
-    const etiquetasArr = formContacto.etiquetas.split(",").map(e => e.trim()).filter(Boolean);
-    const datos = { perfil_id: userId, nombre: formContacto.nombre, apellido: formContacto.apellido, telefono: formContacto.telefono || null, email: formContacto.email || null, matricula: formContacto.matricula || null, inmobiliaria: formContacto.inmobiliaria || null, tipo: formContacto.tipo, origen: formContacto.origen || null, interes: formContacto.interes || null, zona_interes: formContacto.zona_interes || null, presupuesto_min: formContacto.presupuesto_min ? parseFloat(formContacto.presupuesto_min) : null, presupuesto_max: formContacto.presupuesto_max ? parseFloat(formContacto.presupuesto_max) : null, moneda: formContacto.moneda, etiquetas: etiquetasArr.length > 0 ? etiquetasArr : null, notas: formContacto.notas || null, updated_at: new Date().toISOString() };
-    if (editandoContactoId) { await supabase.from("crm_contactos").update(datos).eq("id", editandoContactoId); } else { await supabase.from("crm_contactos").insert(datos); }
-    setGuardandoContacto(false); setMostrarFormContacto(false); cargarContactos(userId);
-    if (contactoSeleccionado?.id === editandoContactoId) { const { data } = await supabase.from("crm_contactos").select("*").eq("id", editandoContactoId).single(); if (data) setContactoSeleccionado(data as Contacto); }
+    try {
+      const etiquetasArr = formContacto.etiquetas.split(",").map(e => e.trim()).filter(Boolean);
+      const datos = { perfil_id: userId, nombre: formContacto.nombre, apellido: formContacto.apellido, telefono: formContacto.telefono || null, email: formContacto.email || null, matricula: formContacto.matricula || null, inmobiliaria: formContacto.inmobiliaria || null, tipo: formContacto.tipo, origen: formContacto.origen || null, interes: formContacto.interes || null, zona_interes: formContacto.zona_interes || null, presupuesto_min: formContacto.presupuesto_min ? parseFloat(formContacto.presupuesto_min) : null, presupuesto_max: formContacto.presupuesto_max ? parseFloat(formContacto.presupuesto_max) : null, moneda: formContacto.moneda, etiquetas: etiquetasArr.length > 0 ? etiquetasArr : null, notas: formContacto.notas || null, updated_at: new Date().toISOString() };
+      const { error } = editandoContactoId
+        ? await supabase.from("crm_contactos").update(datos).eq("id", editandoContactoId)
+        : await supabase.from("crm_contactos").insert(datos);
+      if (error) throw error;
+      setMostrarFormContacto(false); cargarContactos(userId);
+      if (contactoSeleccionado?.id === editandoContactoId) { const { data } = await supabase.from("crm_contactos").select("*").eq("id", editandoContactoId).single(); if (data) setContactoSeleccionado(data as Contacto); }
+    } catch (e: any) {
+      alert("Error al guardar el contacto: " + (e?.message ?? "Error desconocido"));
+    } finally {
+      setGuardandoContacto(false);
+    }
   };
 
   const eliminarContacto = async (id: string) => {
@@ -458,11 +468,7 @@ function CrmPageInner() {
     try {
       const texto = obtenerTextoConPropiedades();
       const html = `<div style="font-family:Arial,sans-serif;white-space:pre-wrap;">${texto.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>`;
-      await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: contactoSeleccionado.email, subject: `Seguimiento — ${contactoSeleccionado.nombre} ${contactoSeleccionado.apellido ?? ""}`.trim(), html }),
-      });
+      await enviarEmail(contactoSeleccionado.email, `Seguimiento — ${contactoSeleccionado.nombre} ${contactoSeleccionado.apellido ?? ""}`.trim(), html);
       await supabase.from("crm_interacciones").insert({ contacto_id: contactoSeleccionado.id, perfil_id: userId, tipo: "email", descripcion: `✉️ Email enviado: ${texto.slice(0, 300)}` });
       await supabase.from("crm_contactos").update({ updated_at: new Date().toISOString() }).eq("id", contactoSeleccionado.id);
       if (estadoAlResponder) await actualizarEstadoLead(contactoSeleccionado, estadoAlResponder);

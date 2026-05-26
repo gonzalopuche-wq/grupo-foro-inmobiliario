@@ -33,7 +33,7 @@ const PLANTILLAS = [
   { titulo: "Llamar al cliente para satisfacción post-venta", tipo: "contacto" },
   { titulo: "Seguimiento a 30 días del cierre", tipo: "contacto" },
   { titulo: "Solicitar testimonio / reseña", tipo: "contacto" },
-  { titulo: "Verificar inhabilitaciones AFIP/ARBA", tipo: "documento" },
+  { titulo: "Verificar inhabilitaciones AFIP/ATER", tipo: "documento" },
   { titulo: "Fecha de posesión efectiva", tipo: "fecha" },
 ];
 

@@ -140,6 +140,11 @@ interface Propiedad {
   link_tokko: string | null;
   vistas: number;
   leads_count?: number;
+  kiteprop_id: string | null;
+  propia_id: string | null;
+  kiteprop_sync_at: string | null;
+  propia_sync_at: string | null;
+  origen: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -288,6 +293,7 @@ export default function CarteraPage() {
   const [filtroPrecioMax, setFiltroPrecioMax] = useState("");
   const [filtroSoloWeb, setFiltroSoloWeb] = useState(false);
   const [filtroConLeads, setFiltroConLeads] = useState(false);
+  const [filtroPortal, setFiltroPortal] = useState("");
   const [orden, setOrden] = useState("nuevas");
   const [duplicando, setDuplicando] = useState<string | null>(null);
 
@@ -354,15 +360,15 @@ export default function CarteraPage() {
       // Si es colaborador, usar el perfil_id del corredor para toda la cartera
       let efectivoId = data.user.id;
       const { data: perfil } = await supabase
-        .from("perfiles").select("tipo").eq("id", data.user.id).single();
+        .from("perfiles").select("tipo").eq("id", data.user.id).maybeSingle();
       if (perfil?.tipo === "colaborador") {
         const { data: colab } = await supabase
-          .from("colaboradores").select("corredor_id").eq("user_id", data.user.id).single();
+          .from("colaboradores").select("corredor_id").eq("user_id", data.user.id).maybeSingle();
         if (colab?.corredor_id) efectivoId = colab.corredor_id;
       }
 
       setUserId(efectivoId);
-      const { data: pd } = await supabase.from("perfiles").select("nombre,apellido,telefono").eq("id", efectivoId).single();
+      const { data: pd } = await supabase.from("perfiles").select("nombre,apellido,telefono").eq("id", efectivoId).maybeSingle();
       if (pd) setPerfilData(pd as any);
       const { data: wc } = await supabase.from("web_corredor_config").select("slug").eq("perfil_id", efectivoId).maybeSingle();
       if (wc?.slug) setWebSlug(wc.slug);
@@ -641,7 +647,7 @@ export default function CarteraPage() {
         .from("cartera_parametros")
         .select("*")
         .eq("perfil_id", userId)
-        .single();
+        .maybeSingle();
       if (params) {
         base = {
           ...base,
@@ -1123,7 +1129,18 @@ export default function CarteraPage() {
       if (filtroConLeads && !(p.leads_count ?? 0)) return false;
       if (precioMin !== null && (p.precio ?? 0) < precioMin) return false;
       if (precioMax !== null && (p.precio ?? 0) > precioMax) return false;
-      if (busqueda.trim()) { const q = busqueda.toLowerCase(); return p.titulo?.toLowerCase().includes(q) || p.direccion?.toLowerCase().includes(q) || p.zona?.toLowerCase().includes(q); }
+      if (filtroPortal === "kiteprop" && !p.kiteprop_id && !syncData[p.id]?.kiteprop_id) return false;
+      if (filtroPortal === "propia"   && !p.propia_id) return false;
+      if (filtroPortal === "tokko"    && !syncData[p.id]?.tokko_id) return false;
+      if (filtroPortal === "gfi"      && (p.kiteprop_id || p.propia_id || syncData[p.id]?.tokko_id || syncData[p.id]?.kiteprop_id)) return false;
+      if (busqueda.trim()) {
+        const q = busqueda.toLowerCase();
+        return p.titulo?.toLowerCase().includes(q) ||
+               p.direccion?.toLowerCase().includes(q) ||
+               p.zona?.toLowerCase().includes(q) ||
+               p.ciudad?.toLowerCase().includes(q) ||
+               p.tipo?.toLowerCase().includes(q);
+      }
       return true;
     });
     const sorted = [...base];
@@ -1135,7 +1152,7 @@ export default function CarteraPage() {
     else if (orden === "leads") sorted.sort((a, b) => (b.leads_count ?? 0) - (a.leads_count ?? 0));
     else sorted.sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
     return sorted;
-  }, [propiedades, filtroOp, filtroTipo, filtroEstado, filtroSoloWeb, filtroConLeads, filtroPrecioMin, filtroPrecioMax, busqueda, orden]);
+  }, [propiedades, filtroOp, filtroTipo, filtroEstado, filtroSoloWeb, filtroConLeads, filtroPortal, filtroPrecioMin, filtroPrecioMax, busqueda, orden, syncData]);
 
   const estadoInfo = (e: string) => ESTADOS.find(x => x.value === e) ?? { value: e, label: e.toUpperCase(), color: "#6b7280" };
   const pct = Math.round((paso / 7) * 100);
@@ -1217,6 +1234,13 @@ export default function CarteraPage() {
         .sync-badge { font-size: 8px; padding: 2px 6px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; }
         .sync-badge-tokko { background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.25); color: rgba(220,38,38,0.7); }
         .sync-badge-kite { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: rgba(59,130,246,0.7); }
+        .sync-badge-propia { background: rgba(204,0,0,0.1); border: 1px solid rgba(204,0,0,0.3); color: rgba(204,0,0,0.8); }
+        .portal-chip { padding: 5px 11px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4); transition: all 0.15s; }
+        .portal-chip:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
+        .portal-chip.active-kite { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); color: #60a5fa; }
+        .portal-chip.active-propia { background: rgba(204,0,0,0.12); border-color: rgba(204,0,0,0.4); color: #cc0000; }
+        .portal-chip.active-tokko { background: rgba(220,38,38,0.1); border-color: rgba(220,38,38,0.3); color: rgba(220,38,38,0.85); }
+        .portal-chip.active-gfi { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #22c55e; }
         .cart-card-acciones { width: 120px; flex-shrink: 0; padding: 12px 10px; display: flex; flex-direction: column; gap: 5px; border-left: 1px solid rgba(255,255,255,0.05); }
         .cart-acc-btn { padding: 5px 8px; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; text-align: center; width: 100%; }
         .cart-acc-editar { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); }
@@ -1404,11 +1428,36 @@ export default function CarteraPage() {
             style={{padding:"7px 10px",background:filtroConLeads?"rgba(204,0,0,0.12)":"rgba(255,255,255,0.04)",border:filtroConLeads?"1px solid rgba(204,0,0,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroConLeads?"#cc0000":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
             title="Mostrar solo propiedades que recibieron leads"
           >✉ Con leads</button>
-          {(filtroOp || filtroTipo || filtroEstado || busqueda || filtroPrecioMin || filtroPrecioMax || filtroSoloWeb || filtroConLeads) && (
-            <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); setFiltroPrecioMin(""); setFiltroPrecioMax(""); setFiltroSoloWeb(false); setFiltroConLeads(false); }}>✕ Limpiar</button>
+          {(filtroOp || filtroTipo || filtroEstado || busqueda || filtroPrecioMin || filtroPrecioMax || filtroSoloWeb || filtroConLeads || filtroPortal) && (
+            <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); setFiltroPrecioMin(""); setFiltroPrecioMax(""); setFiltroSoloWeb(false); setFiltroConLeads(false); setFiltroPortal(""); }}>✕ Limpiar</button>
           )}
           <span className="cart-count">{filtradas.length} propiedades</span>
+
+          {/* Segunda fila: filtro por portal con contadores */}
+          <div style={{ flexBasis: "100%", width: "100%", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 10, marginTop: 2, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+            <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginRight: 4 }}>Red/Portal</span>
+            {[
+              { id: "",         label: "Todos",      count: propiedades.length },
+              { id: "gfi",      label: "Solo GFI",   count: propiedades.filter(p => !p.kiteprop_id && !p.propia_id && !syncData[p.id]?.tokko_id && !syncData[p.id]?.kiteprop_id).length },
+              { id: "kiteprop", label: "KiteProp",   count: propiedades.filter(p => p.kiteprop_id || syncData[p.id]?.kiteprop_id).length },
+              { id: "propia",   label: "Propia MLS", count: propiedades.filter(p => p.propia_id).length },
+              { id: "tokko",    label: "Tokko",      count: propiedades.filter(p => syncData[p.id]?.tokko_id).length },
+            ].map(chip => {
+              const isActive = filtroPortal === chip.id;
+              const activeClass = chip.id === "kiteprop" ? "active-kite" : chip.id === "propia" ? "active-propia" : chip.id === "tokko" ? "active-tokko" : "active-gfi";
+              return (
+                <button key={chip.id} className={`portal-chip ${isActive ? activeClass : ""}`} onClick={() => setFiltroPortal(chip.id)}
+                  style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  {chip.label}
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 18, height: 16, borderRadius: 8, padding: "0 4px", fontSize: 9, fontWeight: 800, background: isActive ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)", color: isActive ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                    {chip.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+
 
         {/* Alertas de Autorizaciones de Venta */}
         {!loading && alertasAutorizacion.length > 0 && (
@@ -1518,9 +1567,10 @@ export default function CarteraPage() {
                         {(p.vistas ?? 0) > 0 && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"rgba(255,255,255,0.35)",letterSpacing:"0.04em"}} title="Vistas en el sitio web">👁 {p.vistas}</span>}
                         {(p.leads_count ?? 0) > 0 && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:"rgba(204,0,0,0.08)",border:"1px solid rgba(204,0,0,0.2)",borderRadius:3,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#cc0000",letterSpacing:"0.04em"}} title="Leads recibidos">✉ {p.leads_count}</span>}
                       </div>
-                      <div style={{display:"flex",gap:4}}>
+                      <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
                         {sync?.tokko_id && <span className="sync-badge sync-badge-tokko">Tokko ✓</span>}
-                        {sync?.kiteprop_id && <span className="sync-badge sync-badge-kite">KiteProp ✓</span>}
+                        {(sync?.kiteprop_id || p.kiteprop_id) && <span className="sync-badge sync-badge-kite">KiteProp ✓</span>}
+                        {p.propia_id && <span className="sync-badge sync-badge-propia">Propia ✓</span>}
                       </div>
                     </div>
                   </div>

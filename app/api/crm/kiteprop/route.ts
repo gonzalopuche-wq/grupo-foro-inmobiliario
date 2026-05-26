@@ -47,8 +47,16 @@ async function kpFetch(method: string, url: string, apiKey: string, body?: unkno
     method,
     headers: { "X-API-Key": apiKey, Accept: "application/json", "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(30_000),
   });
   return res;
+}
+
+function kpRows(json: Record<string, unknown>): Record<string, unknown>[] {
+  if (Array.isArray(json.results)) return json.results as Record<string, unknown>[];
+  if (Array.isArray(json.data)) return json.data as Record<string, unknown>[];
+  if (Array.isArray(json)) return json as Record<string, unknown>[];
+  return [];
 }
 
 // Convierte una propiedad KiteProp → payload para cartera_propiedades
@@ -142,8 +150,8 @@ export async function GET(req: NextRequest) {
         const t = await res.text();
         throw new Error(`KiteProp ${res.status}: ${t.slice(0, 200)}`);
       }
-      const json = await res.json() as { data?: unknown; next?: unknown; count?: number };
-      const rows = Array.isArray(json.data) ? json.data as Record<string, unknown>[] : [];
+      const json = await res.json() as Record<string, unknown>;
+      const rows = kpRows(json);
       all.push(...rows);
       if (!json.next || rows.length === 0) break;
       page++;
@@ -203,8 +211,8 @@ export async function POST(req: NextRequest) {
     while (true) {
       const res = await kpFetch("GET", `${baseUrl}/properties/?page=${page}`, apiKey!);
       if (!res.ok) return NextResponse.json({ error: `KiteProp ${res.status}` }, { status: 502 });
-      const json = await res.json() as { data?: unknown; next?: unknown };
-      const rows = Array.isArray(json.data) ? json.data as Record<string, unknown>[] : [];
+      const json = await res.json() as Record<string, unknown>;
+      const rows = kpRows(json);
       if (rows.length === 0) break;
 
       for (const kp of rows) {
@@ -267,8 +275,8 @@ export async function POST(req: NextRequest) {
       }
 
       if (kpRes.ok) {
-        const kpData = await kpRes.json() as { data?: { id?: number } };
-        const kpId = kpData.data?.id ? String(kpData.data.id) : prop.kiteprop_id;
+        const kpData = await kpRes.json() as { data?: { id?: number }; id?: number };
+        const kpId = kpData.data?.id ? String(kpData.data.id) : kpData.id ? String(kpData.id) : prop.kiteprop_id;
         // Guardar kiteprop_id + sync_at en GFI
         await sb.from("cartera_propiedades").update({
           kiteprop_id: kpId,

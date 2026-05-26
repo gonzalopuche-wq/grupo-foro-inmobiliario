@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit } from "../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -381,6 +382,10 @@ export async function POST(req: NextRequest) {
   if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   const { data: { user } } = await supabaseAdmin.auth.getUser(token);
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+  if (!rateLimit(`tasador-ia:${user.id}`, 10, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Límite de tasaciones alcanzado. Esperá 1 hora." }, { status: 429 });
+  }
 
   const datos = await req.json();
 

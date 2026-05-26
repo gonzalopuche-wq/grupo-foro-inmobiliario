@@ -320,7 +320,7 @@ export default function EventosPage() {
     const fechaFinISO = modoFecha === "multidia" && form.fecha_fin
       ? new Date(`${form.fecha_fin}T${form.hora_fin || "23:59"}:00`).toISOString()
       : null;
-    const { error } = await supabase.from("eventos").insert({
+    const { data: eventoCreado, error } = await supabase.from("eventos").insert({
       titulo: form.titulo, descripcion: form.descripcion || null,
       fecha: fechaISO, fecha_fin: fechaFinISO,
       lugar: form.lugar || null, lugar_url: form.lugar_url || null,
@@ -336,18 +336,10 @@ export default function EventosPage() {
       es_recurrente: modoFecha === "recurrente",
       fechas_recurrentes: modoFecha === "recurrente" && fechasRec.length > 0 ? fechasRec : null,
       recurrencia_desc: modoFecha !== "unico" && form.recurrencia_desc ? form.recurrencia_desc : null,
-    });
+    }).select("*").single();
     setGuardando(false);
     if (error) { mostrarToast("Error al guardar", "err"); return; }
     mostrarToast(esAdmin ? "Evento publicado" : "Propuesta enviada — el admin la revisará");
-
-    // Get the inserted event to pass to the API
-    const { data: eventoCreado } = await supabase.from("eventos")
-      .select("*")
-      .eq("organizador_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
 
     if (esAdmin && eventoCreado) {
       mostrarToast("Publicando en redes sociales...");
