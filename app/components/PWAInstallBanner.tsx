@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -8,7 +9,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 declare global {
-  interface Window { __pwaInstallPrompt?: BeforeInstallPromptEvent; }
+  interface Window { __pwaPrompt?: BeforeInstallPromptEvent; }
 }
 
 function isIOS() {
@@ -25,9 +26,12 @@ export default function PWAInstallBanner() {
   const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [modoIOS, setModoIOS] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // El widget inline en login/registro ya cubre estas páginas
+    if (pathname === "/login" || pathname === "/registro") return;
     if (sessionStorage.getItem("pwa-install-dismissed")) return;
     if (isInStandaloneMode()) return;
 
@@ -40,8 +44,7 @@ export default function PWAInstallBanner() {
     const handler = (e: Event) => {
       e.preventDefault();
       const pwaEvent = e as BeforeInstallPromptEvent;
-      // Store globally so PWAInstallInline can also use it
-      window.__pwaInstallPrompt = pwaEvent;
+      window.__pwaPrompt = pwaEvent;
       setPrompt(pwaEvent);
       setVisible(true);
     };
