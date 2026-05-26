@@ -921,13 +921,14 @@ A partir de esa fecha el costo mensual será de USD 15.
           }),
         }).catch(() => {});
       }
-      // Push de bienvenida
-      fetch("/api/push/send", {
+      // Push de bienvenida (via admin endpoint — no expone CRON_SECRET al browser)
+      const { data: { session: sessionPush } } = await supabase.auth.getSession();
+      if (sessionPush) fetch("/api/admin/enviar-push", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-internal-secret": process.env.NEXT_PUBLIC_CRON_SECRET ?? "" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${sessionPush.access_token}` },
         body: JSON.stringify({
           titulo: "🎉 ¡Tu cuenta fue aprobada!",
-          body: `Bienvenido a GFI®. Período gratuito hasta el ${fechaStr}.`,
+          bodyText: `Bienvenido a GFI®. Período gratuito hasta el ${fechaStr}.`,
           url: "/dashboard",
           perfil_id: id,
         }),

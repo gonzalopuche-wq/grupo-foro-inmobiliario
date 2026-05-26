@@ -61,6 +61,11 @@ export async function GET(req: NextRequest) {
   const user = await getAuthUser(req)
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
+  const { data: perfil } = await supabaseAdmin.from("perfiles").select("tipo").eq("id", user.id).maybeSingle()
+  if (!perfil || perfil.tipo === "colaborador") {
+    return NextResponse.json({ error: "Acceso restringido a corredores matriculados" }, { status: 403 })
+  }
+
   const [cocirRes, gfiRes] = await Promise.all([
     cargarTodo(
       "cocir_padron",

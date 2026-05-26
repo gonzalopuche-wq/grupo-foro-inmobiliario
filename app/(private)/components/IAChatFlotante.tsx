@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { supabase } from '../../lib/supabase'
 
 interface Mensaje {
   rol: 'user' | 'ia'
@@ -44,9 +45,13 @@ export default function IAChatFlotante() {
 
     try {
       const historial = mensajes.map(m => ({ rol: m.rol === 'user' ? 'user' : 'assistant', texto: m.texto }))
+      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch('/api/ia-chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
         body: JSON.stringify({ mensaje: texto, historial }),
       })
 

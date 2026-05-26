@@ -1,15 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { createClient } from "@supabase/supabase-js";
 import { rateLimit, getIp } from "../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const sbAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 export async function POST(req: NextRequest) {
-  // 10 emails per user per hour
-  if (!rateLimit(`email:${getIp(req)}`, 10, 60 * 60 * 1000)) {
-    return NextResponse.json({ error: "Demasiadas solicitudes. Intentá más tarde." }, { status: 429 });
+  // Require authenticated session OR internal server secret
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  const internalSecret = req.headers.get("x-internal-secret");
+  const isInternal = internalSecret === process.env.CRON_SECRET;
+
+  if (!token && !isInternal) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (token) {
+    const { data: { user } } = await sbAdmin.auth.getUser(token);
+    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    if (!rateLimit(`email:${user.id}`, 30, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Demasiadas solicitudes. Intentá más tarde." }, { status: 429 });
+    }
+  } else {
+    // Internal calls: still rate limit by IP
+    if (!rateLimit(`email:${getIp(req)}`, 50, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Demasiadas solicitudes." }, { status: 429 });
+    }
   }
 
   try {

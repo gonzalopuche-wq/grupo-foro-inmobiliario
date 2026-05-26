@@ -69,7 +69,6 @@ export async function POST(req: NextRequest) {
   if (!data) {
     return NextResponse.json({
       error: "Matrícula no encontrada en el padrón COCIR. Verificá el número ingresado.",
-      _debug: { raw, sinCero, num, total: todos.length, muestra: todos.slice(0, 3).map(r => r.matricula) }
     }, { status: 404 });
   }
 

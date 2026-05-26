@@ -33,6 +33,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Match no encontrado" }, { status: 404 });
     }
 
+    // Verificar que el usuario sea parte de este match (previene IDOR)
+    const [{ data: ofrecido }, { data: busqueda }] = await Promise.all([
+      supabaseAdmin.from("mir_ofrecidos").select("perfil_id").eq("id", match.mir_ofrecido_id).maybeSingle(),
+      supabaseAdmin.from("mir_busquedas").select("perfil_id").eq("id", match.mir_busqueda_id).maybeSingle(),
+    ]);
+    if (ofrecido?.perfil_id !== user_id && busqueda?.perfil_id !== user_id) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
     // Verificar si ya está desbloqueado por este lado
     const campoDesbloqueo = es_duenio_ofrecido ? "desbloqueado_ofrecido" : "desbloqueado_busqueda";
     if (match[campoDesbloqueo]) {

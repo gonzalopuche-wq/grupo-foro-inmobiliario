@@ -82,9 +82,19 @@ async function getForumContext(query: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-  // 30 messages per IP per hour
   if (!rateLimit(`ia-chat:${getIp(req)}`, 30, 60 * 60 * 1000)) {
     return Response.json({ respuesta: "Límite de mensajes alcanzado. Intentá en 1 hora." }, { status: 429 });
+  }
+
+  // Require authenticated session to access GFI private IA
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return Response.json({ respuesta: "Sesión requerida." }, { status: 401 });
+  const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+  if (!user) return Response.json({ respuesta: "No autorizado." }, { status: 401 });
+
+  // Per-user rate limit (stricter than IP limit)
+  if (!rateLimit(`ia-chat-user:${user.id}`, 60, 60 * 60 * 1000)) {
+    return Response.json({ respuesta: "Límite de mensajes por usuario alcanzado. Esperá un momento." }, { status: 429 });
   }
 
   const { mensaje, historial } = await req.json();
