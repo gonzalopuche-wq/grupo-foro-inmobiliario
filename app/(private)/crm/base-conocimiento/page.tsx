@@ -93,7 +93,7 @@ const ARTICULOS_INICIALES: Articulo[] = [
     titulo: "Checklist de tasación",
     categoria: "procesos",
     contenido:
-      "PRE-VISITA:\n☐ Confirmar dirección y horario\n☐ Investigar operaciones comparables en la zona\n☐ Revisar valuación fiscal (ATER/catastro municipal)\n\nDURANTE LA VISITA:\n☐ Fotografiar todos los ambientes\n☐ Medir superficie cubierta y semicubierta\n☐ Registrar estado general (bueno/regular/malo)\n☐ Anotar amenities del edificio\n☐ Verificar año de construcción\n\nINFORME:\n☐ Buscar 3+ comparables recientes\n☐ Aplicar ajustes por diferencias\n☐ Calcular rango de valor (±10%)\n☐ Redactar informe en PDF",
+      "PRE-VISITA:\n☐ Confirmar dirección y horario\n☐ Investigar operaciones comparables en la zona\n☐ Revisar valuación fiscal (API Santa Fe/catastro municipal)\n\nDURANTE LA VISITA:\n☐ Fotografiar todos los ambientes\n☐ Medir superficie cubierta y semicubierta\n☐ Registrar estado general (bueno/regular/malo)\n☐ Anotar amenities del edificio\n☐ Verificar año de construcción\n\nINFORME:\n☐ Buscar 3+ comparables recientes\n☐ Aplicar ajustes por diferencias\n☐ Calcular rango de valor (±10%)\n☐ Redactar informe en PDF",
     tags: ["tasación", "checklist", "proceso"],
     favorito: false,
     created_at: new Date().toISOString(),
