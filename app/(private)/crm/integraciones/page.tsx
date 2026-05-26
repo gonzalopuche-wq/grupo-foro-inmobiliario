@@ -21,6 +21,7 @@ interface ConfigEntry {
   activo: boolean;
   ultima_sincronizacion: string | null;
   created_at: string;
+  config?: Record<string, string>;
 }
 
 type Tab = "tokko" | "kiteprop" | "propia" | "ml" | "google" | "importar" | "exportar" | "historial";
@@ -193,6 +194,9 @@ function IntegracionesInner() {
     const json = await res.json();
     setLogs(json.logs ?? []);
     setConfigs(json.configs ?? []);
+    const kpCfg = (json.configs ?? []).find((c: ConfigEntry) => c.tipo === "kiteprop");
+    if (kpCfg?.config?.api_key) setKitepropKey(kpCfg.config.api_key);
+    if (kpCfg?.config?.base_url) setKitepropBaseUrl(kpCfg.config.base_url);
     setLoading(false);
   }, [authHeader]);
 
