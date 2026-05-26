@@ -7,6 +7,10 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+declare global {
+  interface Window { __pwaInstallPrompt?: BeforeInstallPromptEvent; }
+}
+
 function isIOS() {
   if (typeof navigator === "undefined") return false;
   return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -24,7 +28,7 @@ export default function PWAInstallBanner() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (localStorage.getItem("pwa-install-dismissed")) return;
+    if (sessionStorage.getItem("pwa-install-dismissed")) return;
     if (isInStandaloneMode()) return;
 
     if (isIOS()) {
@@ -35,7 +39,10 @@ export default function PWAInstallBanner() {
 
     const handler = (e: Event) => {
       e.preventDefault();
-      setPrompt(e as BeforeInstallPromptEvent);
+      const pwaEvent = e as BeforeInstallPromptEvent;
+      // Store globally so PWAInstallInline can also use it
+      window.__pwaInstallPrompt = pwaEvent;
+      setPrompt(pwaEvent);
       setVisible(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
@@ -54,7 +61,7 @@ export default function PWAInstallBanner() {
   };
 
   const cerrar = () => {
-    localStorage.setItem("pwa-install-dismissed", "1");
+    sessionStorage.setItem("pwa-install-dismissed", "1");
     setVisible(false);
   };
 
