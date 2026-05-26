@@ -132,11 +132,17 @@ export default function PWAInstallWidget() {
         <img src="/logo_gfi.png" alt="GFI" style={styles.logo} />
         <div style={{ flex: 1 }}>
           <p style={styles.titulo}>Instalá GFI® en tu PC</p>
-          <p style={styles.subtitulo}>
-            En Chrome, hacé clic en el ícono{" "}
-            <strong style={{ color: "#fff" }}>⊕</strong>{" "}
-            en la barra de direcciones
-          </p>
+          {!expandido ? (
+            <button onClick={() => setExpandido(true)} style={styles.btnTexto}>
+              Ver cómo instalar ▾
+            </button>
+          ) : (
+            <ol style={styles.pasos}>
+              <li>En Chrome, buscá el ícono <strong style={{ color: "#fff" }}>⊕</strong> en la barra de direcciones</li>
+              <li>Hacé clic y luego en <strong>"Instalar"</strong></li>
+              <li>Si no ves el ícono, recargá la página y volvé a intentar</li>
+            </ol>
+          )}
         </div>
       </div>
     );
@@ -250,7 +256,19 @@ export default function PWAInstallWidget() {
     );
   }
 
-  return null;
+  // Cualquier otro navegador → sugerir Chrome/Edge
+  return (
+    <div style={styles.card}>
+      <img src="/logo_gfi.png" alt="GFI" style={styles.logo} />
+      <div style={{ flex: 1 }}>
+        <p style={styles.titulo}>Instalá GFI® como app</p>
+        <p style={styles.subtitulo}>
+          Abrí esta página en <strong style={{ color: "#fff" }}>Chrome</strong> o{" "}
+          <strong style={{ color: "#fff" }}>Edge</strong> para poder instalarla en tu dispositivo
+        </p>
+      </div>
+    </div>
+  );
 }
 
 const styles = {
