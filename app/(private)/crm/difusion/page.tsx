@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import { enviarEmail } from "../../../lib/email";
 
 function DifusionInner() {
   const router = useRouter();
@@ -77,15 +78,7 @@ function DifusionInner() {
     await Promise.allSettled(
       conEmail.map(c => {
         const cuerpo = mensaje.replace("{nombre}", c.nombre ?? "").replace("{apellido}", c.apellido ?? "");
-        return fetch("/api/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            to: c.email,
-            subject: propTitulo ? `Propiedad de tu interés: ${propTitulo}` : "Mensaje de Grupo Foro Inmobiliario",
-            html: `<p style="font-family:Arial,sans-serif;font-size:15px;color:#222;white-space:pre-wrap">${cuerpo.replace(/\n/g, "<br>")}</p>`,
-          }),
-        });
+        return enviarEmail(c.email, propTitulo ? `Propiedad de tu interés: ${propTitulo}` : "Mensaje de Grupo Foro Inmobiliario", `<p style="font-family:Arial,sans-serif;font-size:15px;color:#222;white-space:pre-wrap">${cuerpo.replace(/\n/g, "<br>")}</p>`);
       })
     );
 

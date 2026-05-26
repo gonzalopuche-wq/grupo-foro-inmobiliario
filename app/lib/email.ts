@@ -1,8 +1,8 @@
 import { supabase } from "./supabase";
 
-export async function enviarEmail(to: string, subject: string, html: string): Promise<void> {
+export async function enviarEmail(to: string, subject: string, html: string): Promise<Response> {
   const { data: { session } } = await supabase.auth.getSession();
-  await fetch("/api/send-email", {
+  return fetch("/api/send-email", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

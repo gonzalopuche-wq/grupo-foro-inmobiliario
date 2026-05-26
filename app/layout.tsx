@@ -40,6 +40,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="GFI" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png?v=3" />
+        {/* Captura beforeinstallprompt ANTES de que React hidrate — si lo
+            escuchamos desde useEffect ya es tarde porque el evento ya pasó */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){
+            if('serviceWorker' in navigator){
+              navigator.serviceWorker.register('/sw.js').catch(function(){});
+            }
+            window.addEventListener('beforeinstallprompt', function(e){
+              e.preventDefault();
+              window.__pwaPrompt = e;
+              window.dispatchEvent(new CustomEvent('pwa-prompt-ready'));
+            });
+            window.addEventListener('appinstalled', function(){
+              window.__pwaInstalled = true;
+              window.__pwaPrompt = undefined;
+              window.dispatchEvent(new CustomEvent('pwa-installed'));
+            });
+          })();
+        ` }} />
       </head>
       <body suppressHydrationWarning={true}>
         {children}

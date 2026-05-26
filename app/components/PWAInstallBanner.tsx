@@ -9,7 +9,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 declare global {
-  interface Window { __pwaPrompt?: BeforeInstallPromptEvent; }
+  interface Window { __pwaPrompt?: BeforeInstallPromptEvent; __pwaInstalled?: boolean; }
 }
 
 function isIOS() {
@@ -41,15 +41,25 @@ export default function PWAInstallBanner() {
       return;
     }
 
-    const handler = (e: Event) => {
+    // Prompt may already be captured by the inline <head> script before React hydrated
+    if (window.__pwaPrompt) { setPrompt(window.__pwaPrompt); setVisible(true); return; }
+
+    const onPromptReady = () => {
+      if (window.__pwaPrompt) { setPrompt(window.__pwaPrompt!); setVisible(true); }
+    };
+    const onNativePrompt = (e: Event) => {
       e.preventDefault();
       const pwaEvent = e as BeforeInstallPromptEvent;
       window.__pwaPrompt = pwaEvent;
       setPrompt(pwaEvent);
       setVisible(true);
     };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    window.addEventListener("pwa-prompt-ready", onPromptReady);
+    window.addEventListener("beforeinstallprompt", onNativePrompt);
+    return () => {
+      window.removeEventListener("pwa-prompt-ready", onPromptReady);
+      window.removeEventListener("beforeinstallprompt", onNativePrompt);
+    };
   }, []);
 
   const instalar = async () => {

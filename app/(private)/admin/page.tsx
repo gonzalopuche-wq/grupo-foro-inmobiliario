@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { enviarEmail } from "../../lib/email";
 import AdminBeneficios from "../../components/AdminBeneficios";
 
 interface Perfil { id: string; tipo: string; rubro: string | null; estado: string; nombre: string; apellido: string; matricula: string | null; dni: string | null; telefono: string | null; email: string | null; inmobiliaria: string | null; especialidades: string[] | null; created_at: string; insignia_mentor?: boolean; insignia_tasador?: boolean; categoria?: string; bonificacion_pct?: number; }
@@ -456,15 +457,7 @@ export default function AdminPage() {
     });
     // Enviar email al colaborador
     try {
-      await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: c.email,
-          subject: "✅ Tu acceso a GFI® fue aprobado",
-          html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:rgba(255,255,255,0.5);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`,
-        }),
-      });
+      await enviarEmail(c.email, "✅ Tu acceso a GFI® fue aprobado", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:rgba(255,255,255,0.5);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`);
     } catch {}
     setProcesandoColab(null);
     cargarColaboradores(filtroColab);
@@ -818,7 +811,7 @@ export default function AdminPage() {
     await supabase.from("perfiles").update({ estado: "aprobado" }).eq("id", pago.perfil_id);
     if (pago.perfiles?.email) {
       try {
-        await fetch("/api/send-email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ to: pago.perfiles.email, subject: "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario", html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Pago confirmado</h2><p>Hola <strong>${pago.perfiles.nombre}</strong>, tu pago fue confirmado. Vence el ${vencimiento.toLocaleDateString("es-AR")}.</p></div>` }) });
+        await enviarEmail(pago.perfiles.email, "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Pago confirmado</h2><p>Hola <strong>${pago.perfiles.nombre}</strong>, tu pago fue confirmado. Vence el ${vencimiento.toLocaleDateString("es-AR")}.</p></div>`);
       } catch {}
     }
     setProcesandoPago(null); cargarPagos();
@@ -903,23 +896,7 @@ export default function AdminPage() {
       // Email de bienvenida al corredor aprobado
       const perfilAprobado = perfiles.find(p => p.id === id);
       if (perfilAprobado?.email) {
-        fetch("/api/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            to: perfilAprobado.email,
-            subject: "✅ ¡Tu cuenta en GFI® fue aprobada!",
-            html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);">
-<h2 style="color:#22c55e;margin-bottom:16px;">🎉 ¡Bienvenido a GFI®!</h2>
-<p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${perfilAprobado.nombre}</strong>, tu cuenta en <strong>GFI® Grupo Foro Inmobiliario</strong> fue aprobada y ya podés acceder a la plataforma.</p>
-<div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.6);">
-<strong style="color:#eab308;">Período gratuito:</strong> Tu primer mes es gratuito hasta el ${fechaStr}.<br/>
-A partir de esa fecha el costo mensual será de USD 15.
-</div>
-<a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ingresar a GFI®</a>
-</div>`,
-          }),
-        }).catch(() => {});
+        enviarEmail(perfilAprobado.email, "✅ ¡Tu cuenta en GFI® fue aprobada!", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">🎉 ¡Bienvenido a GFI®!</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${perfilAprobado.nombre}</strong>, tu cuenta en <strong>GFI® Grupo Foro Inmobiliario</strong> fue aprobada y ya podés acceder a la plataforma.</p><div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.6);"><strong style="color:#eab308;">Período gratuito:</strong> Tu primer mes es gratuito hasta el ${fechaStr}.<br/>A partir de esa fecha el costo mensual será de USD 15.</div><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ingresar a GFI®</a></div>`).catch(() => {});
       }
       // Push de bienvenida (via admin endpoint — no expone CRON_SECRET al browser)
       const { data: { session: sessionPush } } = await supabase.auth.getSession();
@@ -1084,20 +1061,7 @@ A partir de esa fecha el costo mensual será de USD 15.
       updated_at: new Date().toISOString(),
     }).eq("id", ticketVer.id);
     if (ticketVer.perfiles?.email) {
-      fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: ticketVer.perfiles.email,
-          subject: "✅ Respuesta a tu ticket de soporte — GFI®",
-          html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);">
-<h2 style="color:#22c55e;margin-bottom:16px;">✅ Tu ticket fue respondido</h2>
-<p style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:8px;"><strong>Asunto:</strong> ${ticketVer.asunto}</p>
-<div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;white-space:pre-wrap;">${respuestaForm.trim()}</div>
-<a href="https://www.foroinmobiliario.com.ar/soporte" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ver mi ticket</a>
-</div>`,
-        }),
-      }).catch(() => {});
+      enviarEmail(ticketVer.perfiles.email, "✅ Respuesta a tu ticket de soporte — GFI®", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Tu ticket fue respondido</h2><p style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:8px;"><strong>Asunto:</strong> ${ticketVer.asunto}</p><div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;white-space:pre-wrap;">${respuestaForm.trim()}</div><a href="https://www.foroinmobiliario.com.ar/soporte" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ver mi ticket</a></div>`).catch(() => {});
     }
     await supabase.from("notificaciones").insert({
       user_id: ticketVer.user_id,

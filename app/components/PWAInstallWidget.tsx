@@ -8,7 +8,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 declare global {
-  interface Window { __pwaPrompt?: BeforeInstallPromptEvent; }
+  interface Window { __pwaPrompt?: BeforeInstallPromptEvent; __pwaInstalled?: boolean; }
 }
 
 type Plataforma =
@@ -54,19 +54,30 @@ export default function PWAInstallWidget() {
   const [expandido, setExpandido] = useState(false);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     setPlataforma(detectar());
 
-    // Tomar prompt global si ya fue capturado por el banner
-    if (window.__pwaPrompt) setPrompt(window.__pwaPrompt);
+    // Prompt may already be captured by the inline <head> script before React hydrated
+    if ((window as any).__pwaInstalled) { setInstalada(true); return; }
+    if (window.__pwaPrompt) { setPrompt(window.__pwaPrompt); return; }
 
-    const handler = (e: Event) => {
+    const onPromptReady = () => { if (window.__pwaPrompt) setPrompt(window.__pwaPrompt!); };
+    const onInstalled = () => setInstalada(true);
+    const onNativePrompt = (e: Event) => {
       e.preventDefault();
       const ev = e as BeforeInstallPromptEvent;
       window.__pwaPrompt = ev;
       setPrompt(ev);
     };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+
+    window.addEventListener("pwa-prompt-ready", onPromptReady);
+    window.addEventListener("pwa-installed", onInstalled);
+    window.addEventListener("beforeinstallprompt", onNativePrompt);
+    return () => {
+      window.removeEventListener("pwa-prompt-ready", onPromptReady);
+      window.removeEventListener("pwa-installed", onInstalled);
+      window.removeEventListener("beforeinstallprompt", onNativePrompt);
+    };
   }, []);
 
   const instalar = async () => {

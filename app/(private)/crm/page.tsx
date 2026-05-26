@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../../lib/supabase";
+import { enviarEmail } from "../../lib/email";
 import * as XLSX from "xlsx";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
@@ -467,11 +468,7 @@ function CrmPageInner() {
     try {
       const texto = obtenerTextoConPropiedades();
       const html = `<div style="font-family:Arial,sans-serif;white-space:pre-wrap;">${texto.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>`;
-      await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: contactoSeleccionado.email, subject: `Seguimiento — ${contactoSeleccionado.nombre} ${contactoSeleccionado.apellido ?? ""}`.trim(), html }),
-      });
+      await enviarEmail(contactoSeleccionado.email, `Seguimiento — ${contactoSeleccionado.nombre} ${contactoSeleccionado.apellido ?? ""}`.trim(), html);
       await supabase.from("crm_interacciones").insert({ contacto_id: contactoSeleccionado.id, perfil_id: userId, tipo: "email", descripcion: `✉️ Email enviado: ${texto.slice(0, 300)}` });
       await supabase.from("crm_contactos").update({ updated_at: new Date().toISOString() }).eq("id", contactoSeleccionado.id);
       if (estadoAlResponder) await actualizarEstadoLead(contactoSeleccionado, estadoAlResponder);
