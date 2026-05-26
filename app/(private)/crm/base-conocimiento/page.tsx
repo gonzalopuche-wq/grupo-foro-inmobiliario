@@ -60,7 +60,7 @@ const ARTICULOS_INICIALES: Articulo[] = [
     titulo: "Pasos para escritura de compraventa",
     categoria: "legal",
     contenido:
-      "1. Firma boleto de compraventa\n2. Solicitar informe de dominio al Registro de la Propiedad\n3. Obtener certificado de libre deuda ARBA\n4. Coordinar con escribanía la fecha de escritura\n5. Preparar documentación: DNI, CUIT, planos aprobados\n6. Firma de escritura y pago de gastos notariales\n7. Inscripción en el Registro de la Propiedad (15-30 días)",
+      "1. Firma boleto de compraventa\n2. Solicitar informe de dominio al Registro de la Propiedad\n3. Obtener certificado de libre deuda TGI (Municipalidad)\n4. Coordinar con escribanía la fecha de escritura\n5. Preparar documentación: DNI, CUIT, planos aprobados\n6. Firma de escritura y pago de gastos notariales\n7. Inscripción en el Registro de la Propiedad (15-30 días)",
     tags: ["escritura", "legal", "venta"],
     favorito: true,
     created_at: new Date().toISOString(),
@@ -93,7 +93,7 @@ const ARTICULOS_INICIALES: Articulo[] = [
     titulo: "Checklist de tasación",
     categoria: "procesos",
     contenido:
-      "PRE-VISITA:\n☐ Confirmar dirección y horario\n☐ Investigar operaciones comparables en la zona\n☐ Revisar valuación fiscal (ARBA/AVM)\n\nDURANTE LA VISITA:\n☐ Fotografiar todos los ambientes\n☐ Medir superficie cubierta y semicubierta\n☐ Registrar estado general (bueno/regular/malo)\n☐ Anotar amenities del edificio\n☐ Verificar año de construcción\n\nINFORME:\n☐ Buscar 3+ comparables recientes\n☐ Aplicar ajustes por diferencias\n☐ Calcular rango de valor (±10%)\n☐ Redactar informe en PDF",
+      "PRE-VISITA:\n☐ Confirmar dirección y horario\n☐ Investigar operaciones comparables en la zona\n☐ Revisar valuación fiscal (ATER/catastro municipal)\n\nDURANTE LA VISITA:\n☐ Fotografiar todos los ambientes\n☐ Medir superficie cubierta y semicubierta\n☐ Registrar estado general (bueno/regular/malo)\n☐ Anotar amenities del edificio\n☐ Verificar año de construcción\n\nINFORME:\n☐ Buscar 3+ comparables recientes\n☐ Aplicar ajustes por diferencias\n☐ Calcular rango de valor (±10%)\n☐ Redactar informe en PDF",
     tags: ["tasación", "checklist", "proceso"],
     favorito: false,
     created_at: new Date().toISOString(),

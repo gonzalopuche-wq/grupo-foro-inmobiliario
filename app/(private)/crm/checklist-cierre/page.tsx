@@ -17,9 +17,9 @@ const CHECKLIST_VENTA: CheckItem[] = [
   // Pre-reserva
   { id: "v1", label: "Verificar titularidad en Registro de la Propiedad", categoria: "Pre-reserva", responsable: "escribano", obligatorio: true },
   { id: "v2", label: "Certificado de inhibición del vendedor", categoria: "Pre-reserva", responsable: "escribano", obligatorio: true },
-  { id: "v3", label: "Libre deuda ABL (Alumbrado, Barrido y Limpieza)", categoria: "Pre-reserva", responsable: "vendedor", obligatorio: true },
+  { id: "v3", label: "Libre deuda TGI (Tasa General de Inmuebles)", categoria: "Pre-reserva", responsable: "vendedor", obligatorio: true },
   { id: "v4", label: "Libre deuda expensas", categoria: "Pre-reserva", responsable: "vendedor", obligatorio: false },
-  { id: "v5", label: "Libre deuda agua (AySA / ABSA)", categoria: "Pre-reserva", responsable: "vendedor", obligatorio: true },
+  { id: "v5", label: "Libre deuda agua (Aguas Santafesinas)", categoria: "Pre-reserva", responsable: "vendedor", obligatorio: true },
   { id: "v6", label: "Verificar medidas del plano municipal", categoria: "Pre-reserva", responsable: "corredor", obligatorio: false },
   // Reserva
   { id: "r1", label: "Contrato de reserva firmado por ambas partes", categoria: "Reserva", responsable: "corredor", obligatorio: true },
@@ -44,7 +44,7 @@ const CHECKLIST_VENTA: CheckItem[] = [
   // Post-escritura
   { id: "p1", label: "Honorarios inmobiliaria cobrados", categoria: "Post-escritura", responsable: "corredor", obligatorio: true },
   { id: "p2", label: "Escritura inscripta en Registro (definitiva)", categoria: "Post-escritura", responsable: "escribano", obligatorio: true },
-  { id: "p3", label: "Cambio de titularidad en ABL y servicios", categoria: "Post-escritura", responsable: "comprador", obligatorio: false },
+  { id: "p3", label: "Cambio de titularidad en TGI y servicios", categoria: "Post-escritura", responsable: "comprador", obligatorio: false },
   { id: "p4", label: "Feedback al cliente solicitado", categoria: "Post-escritura", responsable: "corredor", obligatorio: false },
   { id: "p5", label: "Negocio cerrado en sistema CRM", categoria: "Post-escritura", responsable: "corredor", obligatorio: true },
 ];
