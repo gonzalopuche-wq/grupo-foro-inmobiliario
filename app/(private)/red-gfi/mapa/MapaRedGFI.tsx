@@ -43,15 +43,15 @@ const OP_LABEL: Record<string, string> = {
 const fmtPrecio = (n: number | null, m: string) =>
   n ? `${m ?? 'USD'} ${n.toLocaleString('es-AR')}` : 'Sin precio'
 
-async function geocodeInterseccion(calle1: string, calle2: string, ciudad: string): Promise<[number, number] | null> {
-  const q = encodeURIComponent(`${calle1} y ${calle2}, ${ciudad}, Argentina`)
+async function geocodeInterseccion(calle1: string, calle2: string, ciudad: string, token: string): Promise<[number, number] | null> {
+  const q = `${calle1} y ${calle2}, ${ciudad}, Argentina`
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=ar`,
-      { headers: { 'Accept-Language': 'es', 'User-Agent': 'GrupoForoInmobiliario/1.0' } }
+      `/api/geocodificar?q=${encodeURIComponent(q)}`,
+      { headers: { Authorization: `Bearer ${token}` } }
     )
     const data = await res.json()
-    if (data[0]) return [parseFloat(data[0].lat), parseFloat(data[0].lon)]
+    if (Array.isArray(data) && data[0]) return [parseFloat(data[0].lat), parseFloat(data[0].lon)]
   } catch { /* silent */ }
   return null
 }
@@ -142,9 +142,11 @@ export default function MapaRedGFI() {
     if (!c1a || !c1b || !c2a || !c2b) { setGeoError('Completá las cuatro calles para definir el cuadrante.'); return }
     setGeocodificando(true)
     setGeoError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token ?? ''
     const [p1, p2] = await Promise.all([
-      geocodeInterseccion(c1a, c1b, ciudadGeo),
-      geocodeInterseccion(c2a, c2b, ciudadGeo),
+      geocodeInterseccion(c1a, c1b, ciudadGeo, token),
+      geocodeInterseccion(c2a, c2b, ciudadGeo, token),
     ])
     if (!p1 || !p2) {
       setGeoError('No se encontraron las intersecciones. Verificá los nombres de las calles.')
