@@ -1435,46 +1435,38 @@ export default function CarteraPage() {
         </div>
 
         {/* Filtro por portal */}
-        {!loading && (() => {
-          const cntKite   = propiedades.filter(p => p.kiteprop_id || syncData[p.id]?.kiteprop_id).length;
-          const cntPropia = propiedades.filter(p => p.propia_id).length;
-          const cntTokko  = propiedades.filter(p => syncData[p.id]?.tokko_id).length;
-          const cntGfi    = propiedades.filter(p => !p.kiteprop_id && !p.propia_id && !syncData[p.id]?.tokko_id && !syncData[p.id]?.kiteprop_id).length;
-          const chips = [
-            { id: "",         label: "Todos",      count: propiedades.length, activeClass: "" },
-            { id: "gfi",      label: "Solo GFI",   count: cntGfi,    activeClass: "active-gfi" },
-            { id: "kiteprop", label: "KiteProp",   count: cntKite,   activeClass: "active-kite" },
-            { id: "propia",   label: "Propia MLS", count: cntPropia, activeClass: "active-propia" },
-            { id: "tokko",    label: "Tokko",      count: cntTokko,  activeClass: "active-tokko" },
-          ];
-          return (
-            <div style={{ display: "flex", gap: 6, alignItems: "center", padding: "0 0 10px", flexWrap: "wrap" }}>
-              <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase", marginRight: 2 }}>Portal</span>
-              {chips.map(chip => {
-                const isActive = filtroPortal === chip.id;
-                return (
-                  <button
-                    key={chip.id}
-                    className={`portal-chip ${isActive ? (chip.activeClass || "active-gfi") : ""}`}
-                    onClick={() => setFiltroPortal(chip.id)}
-                    style={{ display: "flex", alignItems: "center", gap: 5 }}
-                  >
-                    {chip.label}
-                    <span style={{
-                      display: "inline-flex", alignItems: "center", justifyContent: "center",
-                      minWidth: 16, height: 16, borderRadius: 8, padding: "0 4px",
-                      fontSize: 9, fontWeight: 800, lineHeight: 1,
-                      background: isActive ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)",
-                      color: isActive ? "#fff" : "rgba(255,255,255,0.35)",
-                    }}>
-                      {chip.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          );
-        })()}
+        <div style={{ display: "flex", gap: 6, alignItems: "center", padding: "0 0 10px", flexWrap: "wrap" }}>
+          <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase", marginRight: 2 }}>Portal</span>
+          {[
+            { id: "",         label: "Todos",      count: propiedades.length },
+            { id: "gfi",      label: "Solo GFI",   count: propiedades.filter(p => !p.kiteprop_id && !p.propia_id && !syncData[p.id]?.tokko_id && !syncData[p.id]?.kiteprop_id).length },
+            { id: "kiteprop", label: "KiteProp",   count: propiedades.filter(p => p.kiteprop_id || syncData[p.id]?.kiteprop_id).length },
+            { id: "propia",   label: "Propia MLS", count: propiedades.filter(p => p.propia_id).length },
+            { id: "tokko",    label: "Tokko",      count: propiedades.filter(p => syncData[p.id]?.tokko_id).length },
+          ].map(chip => {
+            const isActive = filtroPortal === chip.id;
+            const activeClass = chip.id === "kiteprop" ? "active-kite" : chip.id === "propia" ? "active-propia" : chip.id === "tokko" ? "active-tokko" : "active-gfi";
+            return (
+              <button
+                key={chip.id}
+                className={`portal-chip ${isActive ? activeClass : ""}`}
+                onClick={() => setFiltroPortal(chip.id)}
+                style={{ display: "flex", alignItems: "center", gap: 5 }}
+              >
+                {chip.label}
+                <span style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  minWidth: 16, height: 16, borderRadius: 8, padding: "0 4px",
+                  fontSize: 9, fontWeight: 800, lineHeight: 1,
+                  background: isActive ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)",
+                  color: isActive ? "#fff" : "rgba(255,255,255,0.35)",
+                }}>
+                  {chip.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
         {/* Alertas de Autorizaciones de Venta */}
         {!loading && alertasAutorizacion.length > 0 && (
