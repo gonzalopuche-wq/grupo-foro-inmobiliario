@@ -1612,6 +1612,7 @@ export default function AdminPage() {
             <span className="adm-topbar-tag">Admin Master</span>
             <a className="adm-btn-volver" href="/admin/importar-precios" style={{marginRight:6}}>💲 Precios constructoras</a>
             <a className="adm-btn-volver" href="/admin/enlaces" style={{marginRight:6}}>🔗 Gestionar enlaces</a>
+            <a className="adm-btn-volver" href="/admin/mir" style={{marginRight:6}}>🏠 MIR Gestión</a>
             <a className="adm-btn-volver" href="/dashboard">← Dashboard</a>
           </div>
         </header>
