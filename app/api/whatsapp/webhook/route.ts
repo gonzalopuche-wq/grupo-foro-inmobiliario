@@ -137,12 +137,6 @@ async function processMessages(payload: any) {
           continue;
         }
 
-        // Cotizaciones → guardar en tabla cotizaciones de GFI
-        if (grupoGfi === "cotizaciones") {
-          await handleCotizacion(texto, perfilId, waMsg.id, sb);
-          continue;
-        }
-
         // Si el grupo no tiene parser MIR → solo guardar
         if (!GRUPOS_MIR.has(grupoGfi)) {
           await sendWhatsAppMessage(
@@ -452,64 +446,3 @@ Si no es una recomendación de proveedor: {"nombre": null}`,
   await sb.from("whatsapp_mensajes").update({ procesado: true, mir_tabla: "red_proveedores" }).eq("id", msgId);
 }
 
-// ── Captura de cotizaciones/transacciones al módulo divisas de GFI ───────────
-// Inserta en divisas_publicaciones (tabla usada por /cotizaciones)
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function handleCotizacion(texto: string, perfilId: string | null, msgId: string, sb: any) {
-  // Solo procesar si hay un corredor GFI asociado
-  if (!perfilId) {
-    await sb.from("whatsapp_mensajes").update({ procesado: true, error_detalle: "no_perfil" }).eq("id", msgId);
-    return;
-  }
-
-  const response = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 200,
-    messages: [{
-      role: "user",
-      content: `Analizá este mensaje de WhatsApp de corredores inmobiliarios argentinos sobre divisas.
-Si es una transacción individual (alguien vende o compra divisas), extraé los datos. Si solo son valores de referencia del mercado, devolvé null.
-Respondé SOLO con JSON válido:
-
-MENSAJE: "${texto.slice(0, 500)}"
-
-Si es transacción: {"tipo": "venta|compra", "moneda": "USD|EUR|BRL|USDT", "monto": num, "precio_referencia": "texto como intermedio/blue/null", "zona": "str|null", "notas": "str|null"}
-Si es referencia de mercado o chat: null`,
-    }],
-  });
-
-  const raw = response.content[0].type === "text" ? response.content[0].text : "";
-  const trimmed = raw.trim();
-  if (trimmed === "null" || trimmed === "") {
-    await sb.from("whatsapp_mensajes").update({ procesado: true, error_detalle: "solo_referencia" }).eq("id", msgId);
-    return;
-  }
-
-  let parsed: any = null;
-  try {
-    const m = trimmed.match(/\{[\s\S]*\}/);
-    if (m) parsed = JSON.parse(m[0]);
-  } catch { /* skip */ }
-
-  if (!parsed?.monto) {
-    await sb.from("whatsapp_mensajes").update({ procesado: true, error_detalle: "no_transaccion" }).eq("id", msgId);
-    return;
-  }
-
-  // Publicación visible en /cotizaciones → match entre colegas
-  const venceAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-  await sb.from("divisas_publicaciones").insert({
-    perfil_id:        perfilId,
-    tipo:             parsed.tipo ?? "venta",
-    moneda:           parsed.moneda ?? "USD",
-    monto:            parsed.monto,
-    precio_referencia: parsed.precio_referencia ?? null,
-    zona:             parsed.zona ?? null,
-    notas:            parsed.notas ?? texto.slice(0, 200),
-    activa:           true,
-    vence_at:         venceAt,
-  });
-
-  await sb.from("whatsapp_mensajes").update({ procesado: true, mir_tabla: "divisas_publicaciones" }).eq("id", msgId);
-}

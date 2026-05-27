@@ -111,16 +111,6 @@ function esContenidoProfesional(texto: string): boolean {
   );
 }
 
-function esCotizacion(lower: string): boolean {
-  // Patrones de tipo de cambio: rangos como "1.380-1.450", "1380/1450"
-  if (/\b1[.,]?[2-5]\d{2}\s*[-/]\s*1[.,]?[2-5]\d{2}\b/.test(lower)) return true;
-  // Palabras clave del mercado cambiario
-  if (/(blue|azules?|dólar|dolar|divisas?|cambio|cotizaci[oó]n|cripto|usdt|bitcoin)\b/.test(lower) &&
-      /\b\d{3,}/.test(lower)) return true;
-  // Compra/venta de moneda extranjera
-  if (/\b(vendo|compro)\s+(u\$s|usd|dólares?|dolares?|azules?|euros?|reales?)\s*[\d.,]+/.test(lower)) return true;
-  return false;
-}
 
 export function inferGrupoGfi(texto: string): string {
   const lower = texto.toLowerCase();
@@ -133,9 +123,6 @@ export function inferGrupoGfi(texto: string): string {
 
   // Detectar contenido profesional (plantillas legales, guías)
   if (esContenidoProfesional(texto)) return "foro-consultas";
-
-  // Mensajes de tipo de cambio (USD blue, EUR, BRL, cripto)
-  if (esCotizacion(lower)) return "cotizaciones";
 
   const esBusqueda = /^(busco|necesito|busca|cliente busca|buscamos|busco para cliente|necesitamos)\b/i.test(texto);
   // Excluir participios pasados "alquilado/alquilada" que describen estado, no la operación
