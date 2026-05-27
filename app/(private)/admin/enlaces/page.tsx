@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../../lib/supabase";
 
 const CATEGORIAS = [
@@ -170,11 +170,32 @@ export default function AdminEnlacesPage() {
     cargarTodo();
   };
 
-  const enlacesFiltrados = enlaces.filter(e => {
-    if (!busqueda.trim()) return true;
-    const q = busqueda.toLowerCase();
-    return e.nombre.toLowerCase().includes(q) || e.url.toLowerCase().includes(q);
-  });
+  const [sortCol, setSortCol] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const toggleSort = (col: string) => {
+    if (sortCol === col) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortCol(col); setSortDir("asc"); }
+  };
+  const sortIcon = (col: string) => sortCol === col ? (sortDir === "asc" ? " ↑" : " ↓") : "";
+
+  const enlacesFiltrados = useMemo(() => {
+    const base = enlaces.filter(e => {
+      if (!busqueda.trim()) return true;
+      const q = busqueda.toLowerCase();
+      return e.nombre.toLowerCase().includes(q) || e.url.toLowerCase().includes(q);
+    });
+    if (!sortCol) return base;
+    return [...base].sort((a, b) => {
+      let sa = "", sb = "";
+      if (sortCol === "nombre") { sa = a.nombre; sb = b.nombre; }
+      else if (sortCol === "url") { sa = a.url; sb = b.url; }
+      else if (sortCol === "categoria") { sa = a.categoria; sb = b.categoria; }
+      else if (sortCol === "localidad") { sa = a.localidad ?? ""; sb = b.localidad ?? ""; }
+      else if (sortCol === "destacado") { sa = a.destacado ? "0" : "1"; sb = b.destacado ? "0" : "1"; }
+      const cmp = sa.toLowerCase().localeCompare(sb.toLowerCase(), "es-AR");
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [enlaces, busqueda, sortCol, sortDir]);
 
   return (
     <>
@@ -223,6 +244,9 @@ export default function AdminEnlacesPage() {
         .adm-table-wrap { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; }
         .adm-table { width: 100%; border-collapse: collapse; }
         .adm-table th { padding: 10px 14px; font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.28); text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.3); white-space: nowrap; }
+        .adm-table th.sortable { cursor: pointer; user-select: none; }
+        .adm-table th.sortable:hover { color: rgba(255,255,255,0.6); }
+        .adm-table th.sort-activo { color: #cc0000 !important; }
         .adm-table td { padding: 11px 14px; font-size: 12px; color: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
         .adm-table tr:last-child td { border-bottom: none; }
         .adm-table tr:hover td { background: rgba(255,255,255,0.02); }
@@ -377,11 +401,11 @@ export default function AdminEnlacesPage() {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Nombre</th>
-                      <th>URL</th>
-                      <th>Categoría</th>
-                      <th>Localidad</th>
-                      <th>⭐</th>
+                      <th className={`sortable${sortCol==="nombre"?" sort-activo":""}`} onClick={() => toggleSort("nombre")}>Nombre{sortIcon("nombre")}</th>
+                      <th className={`sortable${sortCol==="url"?" sort-activo":""}`} onClick={() => toggleSort("url")}>URL{sortIcon("url")}</th>
+                      <th className={`sortable${sortCol==="categoria"?" sort-activo":""}`} onClick={() => toggleSort("categoria")}>Categoría{sortIcon("categoria")}</th>
+                      <th className={`sortable${sortCol==="localidad"?" sort-activo":""}`} onClick={() => toggleSort("localidad")}>Localidad{sortIcon("localidad")}</th>
+                      <th className={`sortable${sortCol==="destacado"?" sort-activo":""}`} onClick={() => toggleSort("destacado")}>⭐{sortIcon("destacado")}</th>
                       <th>Activo</th>
                       <th>Acciones</th>
                     </tr>
