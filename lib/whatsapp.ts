@@ -58,8 +58,50 @@ export function verifyMetaSignature(rawBody: string, signature: string): boolean
 
 // ── Inferencia de grupo GFI desde contenido del mensaje ──────────────────────
 
+const RUBROS_PROVEEDOR: Record<string, string[]> = {
+  "Fotógrafo": ["fotógrafo", "fotografo", "foto de propiedad", "foto inmueble"],
+  "Escribano": ["escribano", "escribana"],
+  "Arquitecto": ["arquitecto", "arquitecta"],
+  "Tasador": ["tasador", "tasadora"],
+  "Ingeniero": ["ingeniero", "ingeniera"],
+  "Plomero": ["plomero", "cañería", "agua"],
+  "Electricista": ["electricista"],
+  "Contador": ["contador", "contadora"],
+  "Abogado": ["abogado", "abogada"],
+  "Agrimensor": ["agrimensor", "mensura"],
+  "Martillero": ["martillero"],
+};
+
+export function detectarRubroProveedor(texto: string): string | null {
+  const lower = texto.toLowerCase();
+  for (const [rubro, keywords] of Object.entries(RUBROS_PROVEEDOR)) {
+    if (keywords.some(kw => lower.includes(kw))) return rubro;
+  }
+  return null;
+}
+
+function esSolicitudProveedor(texto: string): boolean {
+  const tienePeticion = /tienen alg[uú]n|conocen alg[uú]n|me pueden recomendar|para recomendar|alguien tiene|me recomiendan|necesito un |busco un /i.test(texto);
+  const tieneRubro = detectarRubroProveedor(texto) !== null;
+  return texto.length < 350 && tienePeticion && tieneRubro;
+}
+
+function esContenidoProfesional(texto: string): boolean {
+  return (
+    texto.length > 400 &&
+    /(cláusula|artículo|compraventa|hipotecario|escritura|penitencial|resolutoria|ad referendum|honorarios|código civil|código civil y comercial|seña penitencial|escribano|operaci[oó]n inmobiliaria)/i.test(texto)
+  );
+}
+
 export function inferGrupoGfi(texto: string): string {
   const lower = texto.toLowerCase();
+
+  // Detectar solicitudes de proveedor antes que cualquier otra clasificación
+  if (esSolicitudProveedor(texto)) return "solicitud-proveedor";
+
+  // Detectar contenido profesional (plantillas legales, guías)
+  if (esContenidoProfesional(texto)) return "foro-consultas";
+
   const esBusqueda = /^(busco|necesito|busca|cliente busca|buscamos|busco para cliente|necesitamos)\b/i.test(texto);
   const esAlquiler = /\balquil/i.test(lower);
   const esTemporal = /\btempor/i.test(lower);
