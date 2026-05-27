@@ -6,6 +6,7 @@ import {
   inferGrupoGfi,
   sendWhatsAppMessage,
   runSmartProspecting,
+  detectarRubroProveedor,
   GRUPOS_MIR,
   SUBTIPO,
   OPERACION_GRUPO,
@@ -114,6 +115,19 @@ async function processMessages(payload: any) {
             "Para cargar propiedades automáticamente, ingresá a tu perfil en GFI® y agregá este número en el campo «WhatsApp Negocio».\n\n" +
             "🌐 gfi.com.ar"
           );
+          continue;
+        }
+
+        // Solicitud de proveedor → match en red_proveedores
+        if (grupoGfi === "solicitud-proveedor") {
+          await handleSolicitudProveedor(from, texto, sb);
+          await sb.from("whatsapp_mensajes").update({ procesado: true, mir_tabla: "solicitud_proveedor" }).eq("id", waMsg.id);
+          continue;
+        }
+
+        // Contenido profesional (plantillas, cláusulas) → Foro GFI
+        if (grupoGfi === "foro-consultas" && perfilId) {
+          await handleForoConocimiento(texto, perfilId, waMsg.id, sb);
           continue;
         }
 
@@ -282,4 +296,100 @@ Si NO es búsqueda: {"es_operacion":false}`;
     tabla,
     mir_id:  entry.id,
   };
+}
+
+// ── Match de proveedores ──────────────────────────────────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleSolicitudProveedor(from: string, texto: string, sb: any) {
+  const rubro = detectarRubroProveedor(texto);
+  if (!rubro) {
+    await sendWhatsAppMessage(from, "🔍 No identifiqué el tipo de proveedor. Visitá gfi.com.ar/proveedores para ver todos.");
+    return;
+  }
+
+  const { data: proveedores } = await sb
+    .from("red_proveedores")
+    .select("nombre, rubro, telefono, zona, notas")
+    .ilike("rubro", `%${rubro.split(" ")[0].toLowerCase()}%`)
+    .eq("activo", true)
+    .limit(5);
+
+  if (!proveedores || proveedores.length === 0) {
+    await sendWhatsAppMessage(
+      from,
+      `🔍 No encontré ${rubro.toLowerCase()}s en la Red GFI todavía.\n\n¿Conocés uno? Podés cargarlo en gfi.com.ar/proveedores y ayudar a toda la comunidad.`
+    );
+    return;
+  }
+
+  const lista = (proveedores as any[]).map(p =>
+    `• *${p.nombre}* (${p.rubro})${p.zona ? ` — ${p.zona}` : ""}${p.telefono ? `\n  📱 ${p.telefono}` : ""}`
+  ).join("\n\n");
+
+  await sendWhatsAppMessage(
+    from,
+    `📋 Encontré ${proveedores.length} ${rubro.toLowerCase()}${proveedores.length > 1 ? "s" : ""} en la Red GFI®:\n\n${lista}\n\n_Ver todos: gfi.com.ar/proveedores_`
+  );
+}
+
+// ── Captura de conocimiento profesional al Foro ───────────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleForoConocimiento(texto: string, perfilId: string, msgId: string, sb: any) {
+  // Claude classifica el contenido
+  const response = await anthropic.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 300,
+    messages: [{
+      role: "user",
+      content: `Analizá este mensaje de un grupo WhatsApp de corredores inmobiliarios argentinos.
+Respondé SOLO con JSON válido:
+
+MENSAJE:
+"""${texto.slice(0, 1200)}"""
+
+{
+  "tipo": "plantilla_legal|guia_profesional|consulta_profesional|chat_informal",
+  "titulo": "título descriptivo y corto para el Foro (null si chat_informal)",
+  "resumen": "resumen de 1 oración (null si chat_informal)"
+}`,
+    }],
+  });
+
+  const raw = response.content[0].type === "text" ? response.content[0].text : "";
+  let parsed: { tipo: string; titulo: string | null; resumen: string | null } | null = null;
+  try {
+    const m = raw.match(/\{[\s\S]*\}/);
+    if (m) parsed = JSON.parse(m[0]);
+  } catch { /* skip */ }
+
+  if (!parsed || parsed.tipo === "chat_informal" || !parsed.titulo) return;
+
+  // Buscar categoría en el foro
+  const { data: cat } = await sb
+    .from("forum_categories")
+    .select("id")
+    .in("slug", ["recursos-comunidad", "recursos", "general", "conocimiento"])
+    .limit(1)
+    .maybeSingle();
+
+  const categoryId = (cat as any)?.id;
+  if (!categoryId) return;
+
+  const esPinned = parsed.tipo === "plantilla_legal";
+
+  await sb.from("forum_topics").insert({
+    title: parsed.titulo,
+    body: `> 🤖 *Capturado automáticamente del grupo WhatsApp GFI®*\n\n${texto}`,
+    category_id: categoryId,
+    author_id: perfilId,
+    status: "published",
+    is_pinned: esPinned,
+  });
+
+  await sb.from("whatsapp_mensajes").update({
+    procesado: true,
+    mir_tabla: "forum_topics",
+  }).eq("id", msgId);
 }
