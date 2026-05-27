@@ -96,4 +96,138 @@ aesthetic.
 
 ---
 ---
+
+## GUÍA DE PRODUCCIÓN EN CANVA (clips de ~8 s)
+
+> Canva (Veo 3) y la mayoría de generadores IA hacen clips cortos (~5–8 s).
+> Por eso cada reel/demo se arma con **varios clips** que después unís en Canva.
+>
+> **Regla de oro:**
+> - 📹 **GRABAR PANTALLA REAL** todo lo que muestre el producto GFI (dashboard, CRM,
+>   MIR, Tasador, web). La IA inventa pantallas falsas que no son tu sistema.
+> - 🤖 **GENERAR CON IA** solo lo conceptual/emocional (mapas de red, persona sola
+>   vs. comunidad, animaciones abstractas).
+> - ✍️ Los **textos en pantalla**, transiciones, música y color `#CC0000` se ponen
+>   en Canva al editar, no en el prompt de IA.
+
+---
+
+### REEL 1 — CRM en acción (≈20 s = 3 clips)
+| # | Tipo | Contenido | Texto en pantalla (Canva) |
+| - | ---- | --------- | ------------------------- |
+| 1 | 📹 Pantalla real | Scroll por el dashboard / cartera de propiedades | "¿Todavía gestionás tu cartera en papel?" |
+| 2 | 📹 Pantalla real | Pipeline de clientes + calendario | "→ GFI tiene todo en un solo lugar" |
+| 3 | 🤖 IA | Cierre con logo GFI sobre fondo oscuro | Logo + URL |
+
+🤖 **Prompt IA (solo clip 3):**
+```
+8-second clip. Minimal dark background with subtle red #CC0000 geometric glow,
+empty center space for a logo, slow elegant motion, premium tech aesthetic, no text.
+```
+
+---
+
+### REEL 2 — MIR / Red de corredores (≈20 s = 3 clips)
+| # | Tipo | Contenido | Texto en pantalla |
+| - | ---- | --------- | ----------------- |
+| 1 | 🤖 IA | Mapa de Santa Fe con puntos conectados | "2700+ corredores." |
+| 2 | 🤖 IA | Líneas que conectan agentes / propiedades | "Una sola red." |
+| 3 | 📹 Pantalla real | Match del MIR + chat entre corredores | "Match automático. Chat directo." |
+
+🤖 **Prompt IA (clips 1–2):**
+```
+8-second clip. Map of Santa Fe province, Argentina, dark background, glowing red
+and white connection dots linking points across the map, cinematic drone-style
+slow zoom, network visualization, no text.
+```
+
+---
+
+### REEL 3 — Tasación con IA (≈25 s = 3 clips)
+| # | Tipo | Contenido | Texto en pantalla |
+| - | ---- | --------- | ----------------- |
+| 1 | 📹 Pantalla real | Cargar una propiedad en el Tasador IA | "¿Tasar te lleva horas?" |
+| 2 | 📹 Pantalla real | Resultado: rango de valor + comparables + PDF | "Tasá en segundos, no en días." |
+| 3 | 🤖 IA | Cierre conceptual tech / logo | Logo GFI |
+
+🤖 **Prompt IA (solo clip 3):**
+```
+8-second clip. Abstract AI data analysis aesthetic, holographic price charts
+dissolving into a dark background with red #CC0000 highlights, fast elegant
+motion, premium tech feel, no text.
+```
+
+---
+
+### REEL 4 — Portal web personalizado (≈20 s = 3 clips)
+| # | Tipo | Contenido | Texto en pantalla |
+| - | ---- | --------- | ----------------- |
+| 1 | 📹 Pantalla real | Configurar "Mi Web" en GFI | "Tu web inmobiliaria." |
+| 2 | 📹 Pantalla real | La web publicada con propiedades + contacto | "Incluida. Lista." |
+| 3 | 📹 Pantalla real | URL personal en foroinmobiliario.com.ar | URL + logo |
+
+🤖 *Sin IA: este reel es 100% producto real.*
+
+---
+
+### REEL 5 — Comunidad GFI (≈25 s = 3 clips)
+| # | Tipo | Contenido | Texto en pantalla |
+| - | ---- | --------- | ----------------- |
+| 1 | 🤖 IA | Corredor solo, trabajando aislado | "¿Trabajás solo?" |
+| 2 | 🤖 IA | Mapa de red GFI con cientos de corredores activos | "Dejá de trabajar solo." |
+| 3 | 📹 Pantalla real | Foro / comunidad / red GFI en la plataforma | "Sumate a la red." |
+
+🤖 **Prompt IA (clip 1):**
+```
+8-second clip. A single real estate agent working alone at a desk in a dim office,
+moody lighting, sense of isolation, cinematic, muted colors, no text.
+```
+🤖 **Prompt IA (clip 2):**
+```
+8-second clip. Aerial view of a glowing network of hundreds of connected dots
+across a dark map, warm red #CC0000 connection lines, sense of community and
+energy, cinematic drone style, no text.
+```
+
+---
+
+### DEMO 1 — CRM Completo (≈90 s = grabación de pantalla)
+📹 **Todo pantalla real**, narrado en español (Argentina). Grabá en este orden y
+unís en Canva con transiciones suaves:
+1. Cartera de propiedades con fotos y filtros (~20 s)
+2. Ficha de cliente con historial (~20 s)
+3. Pipeline de negocios tipo kanban (~25 s)
+4. Tasación con IA (~25 s)
+
+🤖 *IA opcional solo para intro/outro con logo (clip de 8 s, mismo prompt que Reel 1 clip 3).*
+
+---
+
+### DEMO 2 — MIR explicado (≈60 s = animación)
+🤖 **Animación explicativa** (ideal hacerla con las animaciones de Canva, no foto-realista).
+Secuencia en 3 partes (un clip por paso):
+1. Corredor A publica una propiedad en el MIR
+2. Corredor B la encuentra (match)
+3. Ambos cierran y comparten honorarios
+
+🤖 **Prompt IA / estilo:**
+```
+8-second clip, simple flat 2D animation style, two real estate agent characters
+connecting over a property icon, red #CC0000 and dark color palette, clean motion
+graphics, upbeat feel, no text.
+```
+*(Repetí variando la acción para cada uno de los 3 pasos.)*
+
+---
+
+### DEMO 3 — IA para corredores (≈90 s = 3 escenas)
+📹 **Pantalla real** de cada función, con captions en español:
+1. Tasación automática con comparables reales (~30 s)
+2. Generación de descripción de propiedad con IA (~30 s)
+3. Propuesta comercial para captar propietario (~30 s)
+
+🤖 *IA solo para transiciones/intro tech entre escenas.*
+
+---
+---
 *Documento generado: Mayo 2026 · Uso interno GFI*
