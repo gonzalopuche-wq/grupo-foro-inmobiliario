@@ -64,12 +64,20 @@ const RUBROS_PROVEEDOR: Record<string, string[]> = {
   "Arquitecto": ["arquitecto", "arquitecta"],
   "Tasador": ["tasador", "tasadora"],
   "Ingeniero": ["ingeniero", "ingeniera"],
-  "Plomero": ["plomero", "cañería", "agua"],
-  "Electricista": ["electricista"],
+  "Plomero": ["plomero", "cañería", "plomería"],
+  "Gasista": ["gasista", "gas natural", "instalación de gas", "conexión de gas"],
+  "Electricista": ["electricista", "electricidad", "instalación eléctrica"],
   "Contador": ["contador", "contadora"],
   "Abogado": ["abogado", "abogada"],
   "Agrimensor": ["agrimensor", "mensura"],
   "Martillero": ["martillero"],
+  "Jardinero": ["jardinero", "jardinería", "jardín", "poda"],
+  "Empresa de limpieza": ["limpieza", "empresa de limpieza", "servicio de limpieza", "limpiadores"],
+  "Cartelería": ["carteles", "cartelería", "letrero", "cartelera"],
+  "Pulidor": ["pulidor", "pulido de pisos", "parquet", "piso de madera"],
+  "Cerrajero": ["cerrajero", "cerradura", "llave"],
+  "Pintor": ["pintor", "pintora", "pintura"],
+  "Inmobiliaria": ["inmobiliaria"],
 };
 
 export function detectarRubroProveedor(texto: string): string | null {
@@ -86,11 +94,32 @@ function esSolicitudProveedor(texto: string): boolean {
   return texto.length < 350 && tienePeticion && tieneRubro;
 }
 
+// Respuesta corta con nombre + rubro sin pregunta → recomendación de proveedor
+function esRecomendacionProveedor(texto: string): boolean {
+  return (
+    texto.length < 120 &&
+    !texto.includes("?") &&
+    detectarRubroProveedor(texto) !== null &&
+    !esSolicitudProveedor(texto)
+  );
+}
+
 function esContenidoProfesional(texto: string): boolean {
   return (
     texto.length > 400 &&
     /(cláusula|artículo|compraventa|hipotecario|escritura|penitencial|resolutoria|ad referendum|honorarios|código civil|código civil y comercial|seña penitencial|escribano|operaci[oó]n inmobiliaria)/i.test(texto)
   );
+}
+
+function esCotizacion(lower: string): boolean {
+  // Patrones de tipo de cambio: rangos como "1.380-1.450", "1380/1450"
+  if (/\b1[.,]?[2-5]\d{2}\s*[-/]\s*1[.,]?[2-5]\d{2}\b/.test(lower)) return true;
+  // Palabras clave del mercado cambiario
+  if (/(blue|azules?|dólar|dolar|divisas?|cambio|cotizaci[oó]n|cripto|usdt|bitcoin)\b/.test(lower) &&
+      /\b\d{3,}/.test(lower)) return true;
+  // Compra/venta de moneda extranjera
+  if (/\b(vendo|compro)\s+(u\$s|usd|dólares?|dolares?|azules?|euros?|reales?)\s*[\d.,]+/.test(lower)) return true;
+  return false;
 }
 
 export function inferGrupoGfi(texto: string): string {
@@ -99,11 +128,18 @@ export function inferGrupoGfi(texto: string): string {
   // Detectar solicitudes de proveedor antes que cualquier otra clasificación
   if (esSolicitudProveedor(texto)) return "solicitud-proveedor";
 
+  // Respuesta corta con nombre + rubro → recomendación de proveedor
+  if (esRecomendacionProveedor(texto)) return "recomendacion-proveedor";
+
   // Detectar contenido profesional (plantillas legales, guías)
   if (esContenidoProfesional(texto)) return "foro-consultas";
 
+  // Mensajes de tipo de cambio (USD blue, EUR, BRL, cripto)
+  if (esCotizacion(lower)) return "cotizaciones";
+
   const esBusqueda = /^(busco|necesito|busca|cliente busca|buscamos|busco para cliente|necesitamos)\b/i.test(texto);
-  const esAlquiler = /\balquil/i.test(lower);
+  // Excluir participios pasados "alquilado/alquilada" que describen estado, no la operación
+  const esAlquiler = /\balquil(?!ado|ada)/i.test(lower);
   const esTemporal = /\btempor/i.test(lower);
   const esComercial = /\b(local|comercio|oficina|fondo de comercio|galp[oó]n)\b/i.test(lower);
   const esPermuta   = /\bpermut/i.test(lower);
