@@ -100,6 +100,19 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const [notifsNoLeidas, setNotifsNoLeidas] = useState(0);
   const [crmPendientes, setCrmPendientes] = useState(0);
 
+  // Tracking de visitas (fire-and-forget)
+  useEffect(() => {
+    if (pathname.startsWith("/admin")) return;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return;
+      fetch("/api/track-visit", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ ruta: pathname }),
+      }).catch(() => {});
+    });
+  }, [pathname]);
+
   useEffect(() => {
     const init = async () => {
       const { data: auth } = await supabase.auth.getUser();
