@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../../lib/supabase";
 
 interface Autorizacion {
@@ -138,7 +138,30 @@ export default function AutorizacionesPage() {
     await cargar();
   };
 
-  const filtrados = items.filter(i => filtro === "todas" || i.estado === filtro);
+  const [sortCol, setSortCol] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const toggleSort = (col: string) => {
+    if (sortCol === col) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortCol(col); setSortDir("asc"); }
+  };
+  const sortIcon = (col: string) => sortCol === col ? (sortDir === "asc" ? " ↑" : " ↓") : "";
+
+  const ordenados = useMemo(() => {
+    const filtered = items.filter(i => filtro === "todas" || i.estado === filtro);
+    if (!sortCol) return filtered;
+    return [...filtered].sort((a, b) => {
+      let sa = "", sb = "";
+      if (sortCol === "propietario") { sa = a.propietario_nombre ?? ""; sb = b.propietario_nombre ?? ""; }
+      else if (sortCol === "direccion") { sa = a.direccion ?? ""; sb = b.direccion ?? ""; }
+      else if (sortCol === "operacion") { sa = a.tipo_operacion ?? ""; sb = b.tipo_operacion ?? ""; }
+      else if (sortCol === "vencimiento") { sa = a.fecha_vencimiento ?? ""; sb = b.fecha_vencimiento ?? ""; }
+      else if (sortCol === "estado") { sa = a.estado ?? ""; sb = b.estado ?? ""; }
+      const cmp = sa.toLowerCase().localeCompare(sb.toLowerCase(), "es-AR");
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [items, filtro, sortCol, sortDir]);
+
+  const filtrados = ordenados;
   const vencenProximas = items.filter(i => i.estado === "vigente" && diasRestantes(i.fecha_vencimiento) <= 30).length;
 
   const inp: React.CSSProperties = {
@@ -153,6 +176,9 @@ export default function AutorizacionesPage() {
       <style>{`
         .aut-table { width: 100%; border-collapse: collapse; font-family: Inter,sans-serif; }
         .aut-table th { font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .aut-table th.sortable { cursor: pointer; user-select: none; }
+        .aut-table th.sortable:hover { color: rgba(255,255,255,0.6); }
+        .aut-table th.sort-activo { color: #cc0000 !important; }
         .aut-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: rgba(255,255,255,0.75); vertical-align: middle; }
         .aut-table tr:hover td { background: rgba(255,255,255,0.02); cursor: pointer; }
         .aut-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: Montserrat,sans-serif; letter-spacing: 0.08em; }
@@ -225,16 +251,16 @@ export default function AutorizacionesPage() {
           <table className="aut-table">
             <thead>
               <tr>
-                <th>Propietario</th>
-                <th>Dirección</th>
-                <th>Operación</th>
-                <th>Vencimiento</th>
-                <th>Estado</th>
+                <th className={`sortable${sortCol==="propietario"?" sort-activo":""}`} onClick={() => toggleSort("propietario")}>Propietario{sortIcon("propietario")}</th>
+                <th className={`sortable${sortCol==="direccion"?" sort-activo":""}`} onClick={() => toggleSort("direccion")}>Dirección{sortIcon("direccion")}</th>
+                <th className={`sortable${sortCol==="operacion"?" sort-activo":""}`} onClick={() => toggleSort("operacion")}>Operación{sortIcon("operacion")}</th>
+                <th className={`sortable${sortCol==="vencimiento"?" sort-activo":""}`} onClick={() => toggleSort("vencimiento")}>Vencimiento{sortIcon("vencimiento")}</th>
+                <th className={`sortable${sortCol==="estado"?" sort-activo":""}`} onClick={() => toggleSort("estado")}>Estado{sortIcon("estado")}</th>
                 <th>Días</th>
               </tr>
             </thead>
             <tbody>
-              {filtrados.map(item => {
+              {ordenados.map(item => {
                 const dias = diasRestantes(item.fecha_vencimiento);
                 const alerta = alertColor(dias, item.estado);
                 const est = ESTADO_COLORS[item.estado] ?? ESTADO_COLORS.vigente;

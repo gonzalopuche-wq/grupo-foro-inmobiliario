@@ -375,6 +375,8 @@ export default function AdminMirPage() {
   const [editandoOf, setEditandoOf] = useState<Ofrecido | null>(null);
   const [editandoBq, setEditandoBq] = useState<Busqueda | null>(null);
   const [eliminando, setEliminando] = useState<string | null>(null);
+  const [sortCol, setSortCol] = useState<string>("fecha");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
     cargar();
@@ -462,7 +464,29 @@ export default function AdminMirPage() {
   };
 
   const ops = tab === "ofrecidos" ? OPS_OFRECIDO : OPS_BUSQUEDA;
-  const lista = tab === "ofrecidos" ? ofrecidosFiltrados : busquedasFiltradas;
+
+  const listaOrdenada = useMemo(() => {
+    const arr: (Ofrecido | Busqueda)[] = tab === "ofrecidos" ? ofrecidosFiltrados : busquedasFiltradas;
+    return [...arr].sort((a, b) => {
+      let va: string | number = 0, vb: string | number = 0;
+      if (sortCol === "fecha") { va = a.created_at; vb = b.created_at; }
+      else if (sortCol === "ciudad") { va = a.ciudad ?? ""; vb = b.ciudad ?? ""; }
+      else if (sortCol === "operacion") { va = a.operacion ?? ""; vb = b.operacion ?? ""; }
+      else if (sortCol === "precio") {
+        va = tab === "ofrecidos" ? ((a as Ofrecido).precio ?? 0) : ((a as Busqueda).presupuesto_max ?? (a as Busqueda).presupuesto_min ?? 0);
+        vb = tab === "ofrecidos" ? ((b as Ofrecido).precio ?? 0) : ((b as Busqueda).presupuesto_max ?? (b as Busqueda).presupuesto_min ?? 0);
+      }
+      else if (sortCol === "corredor") {
+        va = a.perfiles ? `${a.perfiles.apellido} ${a.perfiles.nombre}` : (a.nombre_publicante ?? "");
+        vb = b.perfiles ? `${b.perfiles.apellido} ${b.perfiles.nombre}` : (b.nombre_publicante ?? "");
+      }
+      if (typeof va === "number" && typeof vb === "number") return sortDir === "asc" ? va - vb : vb - va;
+      const cmp = String(va).toLowerCase().localeCompare(String(vb).toLowerCase(), "es-AR");
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [ofrecidosFiltrados, busquedasFiltradas, tab, sortCol, sortDir]);
+
+  const lista = listaOrdenada;
   const total = tab === "ofrecidos" ? ofrecidos.length : busquedas.length;
   const activos = tab === "ofrecidos"
     ? ofrecidos.filter(o => o.activo).length
@@ -526,6 +550,31 @@ export default function AdminMirPage() {
           </select>
         </div>
 
+        {/* Barra de ordenamiento */}
+        <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginRight: 4 }}>Ordenar:</span>
+          {([
+            { key: "fecha", label: "Fecha" },
+            { key: "ciudad", label: "Ciudad" },
+            { key: "operacion", label: "Operación" },
+            { key: "precio", label: tab === "ofrecidos" ? "Precio" : "Presupuesto" },
+            { key: "corredor", label: "Corredor" },
+          ] as const).map(({ key, label }) => (
+            <button key={key} onClick={() => {
+              if (sortCol === key) setSortDir(d => d === "asc" ? "desc" : "asc");
+              else { setSortCol(key); setSortDir(key === "fecha" ? "desc" : "asc"); }
+            }} style={{
+              padding: "3px 10px", borderRadius: 3, cursor: "pointer", fontSize: 10,
+              fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em",
+              border: `1px solid ${sortCol === key ? "#cc0000" : "rgba(255,255,255,0.1)"}`,
+              background: sortCol === key ? "rgba(200,0,0,0.12)" : "transparent",
+              color: sortCol === key ? "#fff" : "rgba(255,255,255,0.4)",
+            }}>
+              {label}{sortCol === key ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
+            </button>
+          ))}
+        </div>
+
         {/* Lista */}
         {loading ? (
           <div style={{ textAlign: "center", color: "#666", padding: 48 }}>Cargando MIR...</div>
@@ -533,7 +582,7 @@ export default function AdminMirPage() {
           <div style={{ textAlign: "center", color: "#555", padding: 48 }}>Sin resultados</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {tab === "ofrecidos" && (ofrecidosFiltrados as Ofrecido[]).map(o => {
+            {tab === "ofrecidos" && (listaOrdenada as Ofrecido[]).map(o => {
               const corredor = o.perfiles
                 ? `${o.perfiles.nombre} ${o.perfiles.apellido}${o.perfiles.matricula ? ` · Mat. ${o.perfiles.matricula}` : ""}`
                 : (o.nombre_publicante ?? "Sin corredor");
@@ -587,7 +636,7 @@ export default function AdminMirPage() {
               );
             })}
 
-            {tab === "busquedas" && (busquedasFiltradas as Busqueda[]).map(b => {
+            {tab === "busquedas" && (listaOrdenada as Busqueda[]).map(b => {
               const corredor = b.perfiles
                 ? `${b.perfiles.nombre} ${b.perfiles.apellido}${b.perfiles.matricula ? ` · Mat. ${b.perfiles.matricula}` : ""}`
                 : (b.nombre_publicante ?? "Sin corredor");
