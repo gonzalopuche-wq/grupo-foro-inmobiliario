@@ -957,11 +957,12 @@ export default function CarteraPage() {
     if (!q.trim()) return;
     setGeocodificando(true);
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`, {
-        headers: { "Accept-Language": "es", "User-Agent": "GrupoForoInmobiliario/1.0" },
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`/api/geocodificar?q=${encodeURIComponent(q)}`, {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
       });
       const data = await res.json();
-      if (data?.[0]) {
+      if (Array.isArray(data) && data[0]) {
         setF("latitud", parseFloat(data[0].lat).toFixed(6));
         setF("longitud", parseFloat(data[0].lon).toFixed(6));
       } else {

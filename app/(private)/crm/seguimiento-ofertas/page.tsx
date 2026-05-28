@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-// supabase available for future server-side integration
-import { supabase as _supabase } from "../../../lib/supabase";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -41,8 +40,6 @@ type EstadoFiltro = "todos" | "activa" | "aceptada" | "rechazada" | "vencida" | 
 type TipoOpFiltro = "todos" | "venta" | "alquiler";
 
 // ── Datos de ejemplo ──────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "ofertas_crm";
 
 function generarId(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
@@ -212,24 +209,6 @@ function crearEjemplos(): Oferta[] {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function cargarOfertas(): Oferta[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as Oferta[];
-  } catch {
-    // ignore
-  }
-  const ejemplos = crearEjemplos();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ejemplos));
-  return ejemplos;
-}
-
-function guardarOfertas(ofertas: Oferta[]): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ofertas));
-}
 
 function fmtMoneda(monto: number, moneda: "ARS" | "USD"): string {
   if (moneda === "USD") {
@@ -780,17 +759,44 @@ function GraficoBarras({ ofertas }: GraficoBarrasProps) {
 // ── Componente principal ──────────────────────────────────────────────────────
 
 export default function SeguimientoOfertas() {
-  const [ofertas, setOfertas] = useState<Oferta[]>(() => cargarOfertas());
+  const [ofertas, setOfertas] = useState<Oferta[]>([]);
+  const [uid, setUid] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabId>("activas");
   const [filtroEstado, setFiltroEstado] = useState<EstadoFiltro>("todos");
   const [filtroTipoOp, setFiltroTipoOp] = useState<TipoOpFiltro>("todos");
   const [modalNuevaOferta, setModalNuevaOferta] = useState(false);
   const [modalRondaOfertaId, setModalRondaOfertaId] = useState<string | null>(null);
 
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_seguimiento_ofertas")
+        .select("ofertas")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.ofertas && Array.isArray(row.ofertas) && row.ofertas.length > 0) {
+        setOfertas(row.ofertas as Oferta[]);
+      }
+      setLoading(false);
+    });
+  }, []);
+
+  const guardarSB = useCallback(async (nuevas: Oferta[]) => {
+    if (!uid) return;
+    await supabase.from("crm_seguimiento_ofertas").upsert(
+      { perfil_id: uid, ofertas: nuevas, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    );
+  }, [uid]);
+
   const actualizarYGuardar = useCallback((nuevas: Oferta[]) => {
     setOfertas(nuevas);
-    guardarOfertas(nuevas);
-  }, []);
+    guardarSB(nuevas);
+  }, [guardarSB]);
 
   const agregarOferta = useCallback((oferta: Oferta) => {
     const nuevas = [oferta, ...ofertas];
@@ -892,6 +898,10 @@ export default function SeguimientoOfertas() {
     padding: "14px 18px",
     flex: "1 1 140px",
   };
+
+  if (loading) {
+    return <div style={{ ...styleBase, display: "flex", alignItems: "center", justifyContent: "center" }}>Cargando...</div>;
+  }
 
   return (
     <div style={styleBase}>

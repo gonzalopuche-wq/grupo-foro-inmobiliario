@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -51,7 +52,7 @@ const C = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+const genId = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 const hoy = () => new Date().toISOString().slice(0, 10);
 
 const fmtUSD = (n: number) =>
@@ -113,7 +114,7 @@ function recalcularMontos(participantes: Participante[], comisionTotal: number):
 
 function generarEjemplos(): OperacionSplit[] {
   const op1: OperacionSplit = {
-    id: uid(),
+    id: genId(),
     descripcion: "Venta Dto. Alberdi - García",
     tipo: "venta",
     valor_operacion: 85000,
@@ -121,9 +122,9 @@ function generarEjemplos(): OperacionSplit[] {
     comision_total_pct: 3,
     comision_total_usd: 2550,
     participantes: [
-      { id: uid(), nombre: "Carlos Méndez", rol: "captador", porcentaje: 40, monto_usd: 1020, cobrado: true, fecha_cobro: "2026-03-15" },
-      { id: uid(), nombre: "Ana Rodríguez", rol: "vendedor", porcentaje: 40, monto_usd: 1020, cobrado: true, fecha_cobro: "2026-03-15" },
-      { id: uid(), nombre: "Roberto Silva", rol: "gerente", porcentaje: 20, monto_usd: 510, cobrado: true, fecha_cobro: "2026-03-15" },
+      { id: genId(), nombre: "Carlos Méndez", rol: "captador", porcentaje: 40, monto_usd: 1020, cobrado: true, fecha_cobro: "2026-03-15" },
+      { id: genId(), nombre: "Ana Rodríguez", rol: "vendedor", porcentaje: 40, monto_usd: 1020, cobrado: true, fecha_cobro: "2026-03-15" },
+      { id: genId(), nombre: "Roberto Silva", rol: "gerente", porcentaje: 20, monto_usd: 510, cobrado: true, fecha_cobro: "2026-03-15" },
     ],
     estado: "cobrada",
     fecha: "2026-03-10",
@@ -132,7 +133,7 @@ function generarEjemplos(): OperacionSplit[] {
   };
 
   const op2: OperacionSplit = {
-    id: uid(),
+    id: genId(),
     descripcion: "Alquiler Local Pichincha - Martínez",
     tipo: "alquiler",
     valor_operacion: 800,
@@ -140,8 +141,8 @@ function generarEjemplos(): OperacionSplit[] {
     comision_total_pct: 100,
     comision_total_usd: 800,
     participantes: [
-      { id: uid(), nombre: "Lucía Fernández", rol: "captador", porcentaje: 50, monto_usd: 400, cobrado: true, fecha_cobro: "2026-04-05" },
-      { id: uid(), nombre: "Marcos Torres", rol: "vendedor", porcentaje: 50, monto_usd: 400, cobrado: false, fecha_cobro: null },
+      { id: genId(), nombre: "Lucía Fernández", rol: "captador", porcentaje: 50, monto_usd: 400, cobrado: true, fecha_cobro: "2026-04-05" },
+      { id: genId(), nombre: "Marcos Torres", rol: "vendedor", porcentaje: 50, monto_usd: 400, cobrado: false, fecha_cobro: null },
     ],
     estado: "cobrada_parcial",
     fecha: "2026-04-01",
@@ -150,7 +151,7 @@ function generarEjemplos(): OperacionSplit[] {
   };
 
   const op3: OperacionSplit = {
-    id: uid(),
+    id: genId(),
     descripcion: "Venta Casa Fisherton - López",
     tipo: "venta",
     valor_operacion: 120000,
@@ -158,10 +159,10 @@ function generarEjemplos(): OperacionSplit[] {
     comision_total_pct: 3,
     comision_total_usd: 3600,
     participantes: [
-      { id: uid(), nombre: "Carlos Méndez", rol: "captador", porcentaje: 35, monto_usd: 1260, cobrado: false, fecha_cobro: null },
-      { id: uid(), nombre: "Sofía Gómez", rol: "vendedor", porcentaje: 35, monto_usd: 1260, cobrado: false, fecha_cobro: null },
-      { id: uid(), nombre: "Roberto Silva", rol: "gerente", porcentaje: 20, monto_usd: 720, cobrado: false, fecha_cobro: null },
-      { id: uid(), nombre: "Javier Paz", rol: "referido", porcentaje: 10, monto_usd: 360, cobrado: false, fecha_cobro: null },
+      { id: genId(), nombre: "Carlos Méndez", rol: "captador", porcentaje: 35, monto_usd: 1260, cobrado: false, fecha_cobro: null },
+      { id: genId(), nombre: "Sofía Gómez", rol: "vendedor", porcentaje: 35, monto_usd: 1260, cobrado: false, fecha_cobro: null },
+      { id: genId(), nombre: "Roberto Silva", rol: "gerente", porcentaje: 20, monto_usd: 720, cobrado: false, fecha_cobro: null },
+      { id: genId(), nombre: "Javier Paz", rol: "referido", porcentaje: 10, monto_usd: 360, cobrado: false, fecha_cobro: null },
     ],
     estado: "pendiente",
     fecha: "2026-05-10",
@@ -172,26 +173,6 @@ function generarEjemplos(): OperacionSplit[] {
   return [op1, op2, op3];
 }
 
-// ── localStorage ──────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "comisiones_split";
-
-function cargarOperaciones(): OperacionSplit[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as OperacionSplit[];
-    const ejemplos = generarEjemplos();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ejemplos));
-    return ejemplos;
-  } catch {
-    return generarEjemplos();
-  }
-}
-
-function guardarOperaciones(ops: OperacionSplit[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ops));
-}
 
 // ── Draft inicial ─────────────────────────────────────────────────────────────
 
@@ -213,7 +194,7 @@ function draftVacio(): OperacionSplit {
 }
 
 function participanteVacio(): Participante {
-  return { id: uid(), nombre: "", rol: "vendedor", porcentaje: 0, monto_usd: 0, cobrado: false, fecha_cobro: null };
+  return { id: genId(), nombre: "", rol: "vendedor", porcentaje: 0, monto_usd: 0, cobrado: false, fecha_cobro: null };
 }
 
 // ── Estilos compartidos ───────────────────────────────────────────────────────
@@ -412,7 +393,9 @@ function ModalEditar({ op, tc, onGuardar, onCerrar }: ModalEditarProps) {
 // ── Componente principal ──────────────────────────────────────────────────────
 
 export default function ComisionesSplitPage() {
-  const [operaciones, setOperaciones] = useState<OperacionSplit[]>(cargarOperaciones);
+  const [operaciones, setOperaciones] = useState<OperacionSplit[]>([]);
+  const [uid, setUid] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"nueva" | "historial" | "resumen">("nueva");
   const [tc, setTc] = useState(1280);
   const [editModal, setEditModal] = useState<OperacionSplit | null>(null);
@@ -421,10 +404,35 @@ export default function ComisionesSplitPage() {
   const [draft, setDraft] = useState<OperacionSplit>(draftVacio);
   const [retencion, setRetencion] = useState<"monotributo" | "ri">("monotributo");
 
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_comisiones_split")
+        .select("operaciones")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.operaciones && Array.isArray(row.operaciones) && row.operaciones.length > 0) {
+        setOperaciones(row.operaciones as OperacionSplit[]);
+      }
+      setLoading(false);
+    });
+  }, []);
+
+  const guardarSB = useCallback(async (ops: OperacionSplit[]) => {
+    if (!uid) return;
+    await supabase.from("crm_comisiones_split").upsert(
+      { perfil_id: uid, operaciones: ops, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    );
+  }, [uid]);
+
   const persistir = useCallback((ops: OperacionSplit[]) => {
     setOperaciones(ops);
-    guardarOperaciones(ops);
-  }, []);
+    guardarSB(ops);
+  }, [guardarSB]);
 
   // ── Actualizar comisión al cambiar valor u operación ──────────────────────
 
@@ -466,9 +474,9 @@ export default function ComisionesSplitPage() {
   const presetTipico = () => {
     setDraft(d => {
       const base = [
-        { id: uid(), nombre: "", rol: "captador" as RolParticipante, porcentaje: 40, monto_usd: 0, cobrado: false, fecha_cobro: null },
-        { id: uid(), nombre: "", rol: "vendedor" as RolParticipante, porcentaje: 40, monto_usd: 0, cobrado: false, fecha_cobro: null },
-        { id: uid(), nombre: "", rol: "gerente" as RolParticipante, porcentaje: 20, monto_usd: 0, cobrado: false, fecha_cobro: null },
+        { id: genId(), nombre: "", rol: "captador" as RolParticipante, porcentaje: 40, monto_usd: 0, cobrado: false, fecha_cobro: null },
+        { id: genId(), nombre: "", rol: "vendedor" as RolParticipante, porcentaje: 40, monto_usd: 0, cobrado: false, fecha_cobro: null },
+        { id: genId(), nombre: "", rol: "gerente" as RolParticipante, porcentaje: 20, monto_usd: 0, cobrado: false, fecha_cobro: null },
       ];
       return { ...d, participantes: recalcularMontos(base, d.comision_total_usd) };
     });
@@ -478,7 +486,7 @@ export default function ComisionesSplitPage() {
     if (!draft.descripcion.trim() || draft.valor_operacion <= 0) return;
     const nueva: OperacionSplit = {
       ...draft,
-      id: uid(),
+      id: genId(),
       estado: calcularEstado(draft),
       created_at: new Date().toISOString(),
     };
@@ -529,11 +537,11 @@ export default function ComisionesSplitPage() {
   const duplicarOperacion = (op: OperacionSplit) => {
     const nueva: OperacionSplit = {
       ...op,
-      id: uid(),
+      id: genId(),
       fecha: hoy(),
       estado: "pendiente",
       created_at: new Date().toISOString(),
-      participantes: op.participantes.map(p => ({ ...p, id: uid(), cobrado: false, fecha_cobro: null })),
+      participantes: op.participantes.map(p => ({ ...p, id: genId(), cobrado: false, fecha_cobro: null })),
     };
     persistir([nueva, ...operaciones]);
     setTab("historial");
@@ -675,6 +683,10 @@ export default function ComisionesSplitPage() {
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
+
+  if (loading) {
+    return <div style={{ background: C.bg, minHeight: "100vh", color: C.muted, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter, sans-serif" }}>Cargando...</div>;
+  }
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Inter, sans-serif", padding: "24px 16px" }}>

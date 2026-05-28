@@ -87,6 +87,9 @@ export default function ProduccionPage() {
   useEffect(() => {
     const cargar = async () => {
       setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = "/login"; return; }
+      const uid = user.id;
       const [
         { data: negData },
         { data: pipeData },
@@ -97,13 +100,13 @@ export default function ProduccionPage() {
           .select(
             "id,tipo_operacion,valor_operacion,moneda,honorarios_pct,split_pct,fecha_cierre,colega_id,etapa"
           )
-          .eq("etapa", "cerrado"),
+          .eq("perfil_id", uid).eq("etapa", "cerrado"),
         supabase
           .from("crm_negocios")
           .select(
             "id,tipo_operacion,valor_operacion,moneda,honorarios_pct,split_pct,colega_id,etapa"
           )
-          .not("etapa", "in", '("cerrado","perdido")'),
+          .eq("perfil_id", uid).not("etapa", "in", '("cerrado","perdido")'),
         supabase.from("perfiles").select("id,nombre,apellido,email"),
       ]);
 

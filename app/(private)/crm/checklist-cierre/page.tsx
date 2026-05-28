@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "../../../lib/supabase";
 
 // ── Plantillas de checklist ────────────────────────────────────────────────────
@@ -82,8 +82,6 @@ const RESP_LABELS: Record<string, string> = {
 
 type TipoOp = "venta" | "alquiler";
 
-const STORAGE_KEY = "crm_checklists_v1";
-
 interface ChecklistGuardado {
   negocioId: string;
   checks: Record<string, boolean>;
@@ -98,49 +96,62 @@ export default function ChecklistCierrePage() {
   const [notas, setNotas] = useState<Record<string, string>>({});
   const [editandoNota, setEditandoNota] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [uid, setUid] = useState<string | null>(null);
+  const [allChecklists, setAllChecklists] = useState<ChecklistGuardado[]>([]);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      const uid = data?.user?.id;
-      if (!uid) { setLoading(false); return; }
-      supabase
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_checklists_cierre")
+        .select("checklists")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.checklists && Array.isArray(row.checklists)) {
+        setAllChecklists(row.checklists as ChecklistGuardado[]);
+      }
+      const { data: neg } = await supabase
         .from("crm_negocios")
         .select("id,titulo,tipo_operacion,etapa")
-        .eq("perfil_id", uid)
+        .eq("perfil_id", userId)
         .eq("archivado", false)
-        .order("updated_at", { ascending: false })
-        .then(({ data: neg }) => {
-          setNegocios(neg ?? []);
-          setLoading(false);
-        });
+        .order("updated_at", { ascending: false });
+      setNegocios(neg ?? []);
+      setLoading(false);
     });
   }, []);
 
-  // Cargar/guardar en localStorage por negocio
+  // Load checks/notas for the selected negocio from allChecklists
   useEffect(() => {
     if (!negocioId) return;
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const all: ChecklistGuardado[] = JSON.parse(stored);
-      const found = all.find((c) => c.negocioId === negocioId);
-      if (found) {
-        setChecks(found.checks);
-        setNotas(found.notas);
-        return;
-      }
+    const found = allChecklists.find((c) => c.negocioId === negocioId);
+    if (found) {
+      setChecks(found.checks);
+      setNotas(found.notas);
+    } else {
+      setChecks({});
+      setNotas({});
     }
-    setChecks({});
-    setNotas({});
-  }, [negocioId]);
+  }, [negocioId, allChecklists]);
+
+  const guardarSB = useCallback((updated: ChecklistGuardado[]) => {
+    if (!uid) return;
+    supabase.from("crm_checklists_cierre").upsert(
+      { perfil_id: uid, checklists: updated, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    ).then(() => {});
+  }, [uid]);
 
   function guardar(newChecks: Record<string, boolean>, newNotas: Record<string, string>) {
     if (!negocioId) return;
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const all: ChecklistGuardado[] = stored ? JSON.parse(stored) : [];
-    const idx = all.findIndex((c) => c.negocioId === negocioId);
     const entry: ChecklistGuardado = { negocioId, checks: newChecks, notas: newNotas };
-    if (idx >= 0) all[idx] = entry; else all.push(entry);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    const updated = allChecklists.some((c) => c.negocioId === negocioId)
+      ? allChecklists.map((c) => c.negocioId === negocioId ? entry : c)
+      : [...allChecklists, entry];
+    setAllChecklists(updated);
+    guardarSB(updated);
   }
 
   function toggleCheck(id: string) {

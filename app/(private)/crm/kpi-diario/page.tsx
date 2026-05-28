@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -35,9 +36,6 @@ interface MetaDiaria {
 type KPIKey = keyof Omit<DiaKPI, "fecha" | "notas">;
 
 // ── Constantes ───────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "crm_kpi_diario_v1";
-const META_KEY = "crm_kpi_meta_v1";
 
 const META_DEFAULT: MetaDiaria = {
   llamadas: 20,
@@ -460,6 +458,7 @@ function BarChart({ dias, campo }: { dias: DiaKPI[]; campo: KPIKey }) {
 // ── Página principal ──────────────────────────────────────────────────────────
 
 export default function KPIDiarioPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [dias, setDias] = useState<DiaKPI[]>([]);
   const [meta, setMeta] = useState<MetaDiaria>({ ...META_DEFAULT });
   const [metaEdit, setMetaEdit] = useState<MetaDiaria>({ ...META_DEFAULT });
@@ -472,20 +471,60 @@ export default function KPIDiarioPage() {
 
   const hoy = fechaHoy();
 
-  // Load from localStorage
+  // Load from Supabase
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setDias(JSON.parse(raw) as DiaKPI[]);
-      const rawMeta = localStorage.getItem(META_KEY);
-      if (rawMeta) {
-        const m = JSON.parse(rawMeta) as MetaDiaria;
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      // Load KPI data for the last 90 days
+      const since = addDays(fechaHoy(), -90);
+      const [kpiRes, metaRes] = await Promise.all([
+        supabase
+          .from("crm_kpi_diario")
+          .select("fecha,llamadas,whatsapps,emails,visitas,tasaciones,nuevos_contactos,publicaciones,reuniones,captaciones,cierres,notas")
+          .eq("perfil_id", userId)
+          .gte("fecha", since)
+          .order("fecha", { ascending: false }),
+        supabase
+          .from("crm_kpi_meta")
+          .select("*")
+          .eq("perfil_id", userId)
+          .maybeSingle(),
+      ]);
+      // Map DB rows to DiaKPI (snake_case → camelCase)
+      const rows: DiaKPI[] = (kpiRes.data ?? []).map(r => ({
+        fecha: r.fecha as string,
+        llamadas: r.llamadas,
+        whatsapps: r.whatsapps,
+        emails: r.emails,
+        visitas: r.visitas,
+        tasaciones: r.tasaciones,
+        nuevosContactos: r.nuevos_contactos,
+        publicaciones: r.publicaciones,
+        reuniones: r.reuniones,
+        captaciones: r.captaciones,
+        cierres: r.cierres,
+        notas: r.notas ?? "",
+      }));
+      setDias(rows);
+      if (metaRes.data) {
+        const m: MetaDiaria = {
+          llamadas: metaRes.data.llamadas,
+          whatsapps: metaRes.data.whatsapps,
+          emails: metaRes.data.emails,
+          visitas: metaRes.data.visitas,
+          tasaciones: metaRes.data.tasaciones,
+          nuevosContactos: metaRes.data.nuevos_contactos,
+          publicaciones: metaRes.data.publicaciones,
+          reuniones: metaRes.data.reuniones,
+          captaciones: metaRes.data.captaciones,
+          cierres: metaRes.data.cierres,
+        };
         setMeta(m);
         setMetaEdit(m);
       }
-    } catch {
-      // ignore
-    }
+    });
   }, []);
 
   // Sync formDia when fechaActiva changes
@@ -503,14 +542,45 @@ export default function KPIDiarioPage() {
     const nuevos = dias.filter((d) => d.fecha !== formDia.fecha);
     const updated = [...nuevos, { ...formDia }].sort((a, b) => a.fecha.localeCompare(b.fecha));
     setDias(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    if (uid) {
+      supabase.from("crm_kpi_diario").upsert({
+        perfil_id: uid,
+        fecha: formDia.fecha,
+        llamadas: formDia.llamadas,
+        whatsapps: formDia.whatsapps,
+        emails: formDia.emails,
+        visitas: formDia.visitas,
+        tasaciones: formDia.tasaciones,
+        nuevos_contactos: formDia.nuevosContactos,
+        publicaciones: formDia.publicaciones,
+        reuniones: formDia.reuniones,
+        captaciones: formDia.captaciones,
+        cierres: formDia.cierres,
+        notas: formDia.notas,
+      }, { onConflict: "perfil_id,fecha" }).then(() => {});
+    }
     showToast("Día guardado ✓");
   }
 
   function guardarMeta() {
-    setMeta({ ...metaEdit });
-    localStorage.setItem(META_KEY, JSON.stringify(metaEdit));
+    const newMeta = { ...metaEdit };
+    setMeta(newMeta);
     setMetaOpen(false);
+    if (uid) {
+      supabase.from("crm_kpi_meta").upsert({
+        perfil_id: uid,
+        llamadas: newMeta.llamadas,
+        whatsapps: newMeta.whatsapps,
+        emails: newMeta.emails,
+        visitas: newMeta.visitas,
+        tasaciones: newMeta.tasaciones,
+        nuevos_contactos: newMeta.nuevosContactos,
+        publicaciones: newMeta.publicaciones,
+        reuniones: newMeta.reuniones,
+        captaciones: newMeta.captaciones,
+        cierres: newMeta.cierres,
+      }, { onConflict: "perfil_id" }).then(() => {});
+    }
     showToast("Metas actualizadas ✓");
   }
 

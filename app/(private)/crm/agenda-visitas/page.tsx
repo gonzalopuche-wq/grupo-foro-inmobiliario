@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -24,8 +25,6 @@ interface Visita {
 type Tab = "semanal" | "proximas" | "historial";
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
-
-const LS_KEY = "agenda_visitas";
 
 const TIPO_EMOJI: Record<TipoVisita, string> = {
   visita: "🏠",
@@ -192,24 +191,6 @@ function generarEjemplos(): Visita[] {
       created_at: new Date().toISOString(),
     },
   ];
-}
-
-// ─── localStorage ─────────────────────────────────────────────────────────────
-
-function cargarVisitas(): Visita[] {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) return JSON.parse(raw) as Visita[];
-  } catch {
-    // ignore
-  }
-  const ejemplos = generarEjemplos();
-  localStorage.setItem(LS_KEY, JSON.stringify(ejemplos));
-  return ejemplos;
-}
-
-function guardarVisitas(visitas: Visita[]): void {
-  localStorage.setItem(LS_KEY, JSON.stringify(visitas));
 }
 
 // ─── Valores por defecto del form ─────────────────────────────────────────────
@@ -519,6 +500,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
 // ─── Componente principal ────────────────────────────────────────────────────
 
 export default function AgendaVisitasPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [visitas, setVisitas] = useState<Visita[]>([]);
   const [tab, setTab] = useState<Tab>("semanal");
   const [semanaOffset, setSemanaOffset] = useState(0);
@@ -530,16 +512,35 @@ export default function AgendaVisitasPage() {
   const [filtroHasta, setFiltroHasta] = useState<string>("");
   const [montado, setMontado] = useState(false);
 
-  // Cargar desde localStorage (solo en cliente)
+  // Cargar desde Supabase (solo en cliente)
   useEffect(() => {
-    setVisitas(cargarVisitas());
-    setMontado(true);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_agenda_visitas")
+        .select("visitas")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.visitas && Array.isArray(row.visitas)) {
+        setVisitas(row.visitas as Visita[]);
+      } else {
+        setVisitas(generarEjemplos());
+      }
+      setMontado(true);
+    });
   }, []);
 
   const persistir = useCallback((nuevas: Visita[]) => {
     setVisitas(nuevas);
-    guardarVisitas(nuevas);
-  }, []);
+    if (uid) {
+      supabase.from("crm_agenda_visitas").upsert(
+        { perfil_id: uid, visitas: nuevas, updated_at: new Date().toISOString() },
+        { onConflict: "perfil_id" }
+      ).then(() => {});
+    }
+  }, [uid]);
 
   const handleGuardar = useCallback(
     (datos: Omit<Visita, "id" | "created_at">) => {

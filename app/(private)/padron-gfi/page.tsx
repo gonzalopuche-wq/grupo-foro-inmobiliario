@@ -103,6 +103,8 @@ export default function PadronGFIPage() {
   const [syncPhonesResult, setSyncPhonesResult] = useState<{ actualizados: number; omitidos: number; errores: number; total_perfiles: number } | null>(null);
   const [contactoSeleccionado, setContactoSeleccionado] = useState<RegistroUnificado | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [sortCol, setSortCol] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
     const init = async () => {
@@ -202,11 +204,31 @@ export default function PadronGFIPage() {
     );
   }, [registros, busqueda]);
 
-  const totalPaginas = Math.ceil(filtrados.length / POR_PAGINA);
-  const paginados = filtrados.slice(pagina * POR_PAGINA, (pagina + 1) * POR_PAGINA);
+  const ordenados = useMemo(() => {
+    if (!sortCol) return filtrados;
+    return [...filtrados].sort((a, b) => {
+      let sa = "", sb = "";
+      if (sortCol === "nombre") { sa = `${a.apellido} ${a.nombre}`; sb = `${b.apellido} ${b.nombre}`; }
+      else if (sortCol === "matricula") { sa = a.matricula ?? ""; sb = b.matricula ?? ""; }
+      else if (sortCol === "inmobiliaria") { sa = a.inmobiliaria ?? ""; sb = b.inmobiliaria ?? ""; }
+      else if (sortCol === "email") { sa = a.email ?? ""; sb = b.email ?? ""; }
+      else if (sortCol === "estado") { sa = a.estadoCOCIR ?? ""; sb = b.estadoCOCIR ?? ""; }
+      const cmp = sa.toLowerCase().localeCompare(sb.toLowerCase(), "es-AR");
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [filtrados, sortCol, sortDir]);
+
+  const totalPaginas = Math.ceil(ordenados.length / POR_PAGINA);
+  const paginados = ordenados.slice(pagina * POR_PAGINA, (pagina + 1) * POR_PAGINA);
 
   const cambiarFuente = (f: Fuente) => { setFuente(f); setBusqueda(""); setPagina(0); };
   const cambiarBusqueda = (v: string) => { setBusqueda(v); setPagina(0); };
+  const toggleSort = (col: string) => {
+    setPagina(0);
+    if (sortCol === col) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortCol(col); setSortDir("asc"); }
+  };
+  const sortIcon = (col: string) => sortCol === col ? (sortDir === "asc" ? " ↑" : " ↓") : "";
 
   const sincronizarTelefonos = async () => {
     setSyncPhonesState("loading");
@@ -284,6 +306,9 @@ export default function PadronGFIPage() {
         .pad-pag-info { font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
         .pad-contact-btn { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; transition: opacity 0.15s; }
         .pad-contact-btn:hover { opacity: 0.8; }
+        .pad-tabla th.sortable { cursor: pointer; user-select: none; }
+        .pad-tabla th.sortable:hover { color: rgba(255,255,255,0.65); }
+        .pad-tabla th.sort-activo { color: #cc0000 !important; }
         @media (max-width: 700px) {
           .pad-tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
           .pad-tabla { min-width: 700px; }
@@ -445,14 +470,14 @@ export default function PadronGFIPage() {
             <table className="pad-tabla">
               <thead>
                 <tr>
-                  <th>Nombre</th>
-                  <th>Matrícula</th>
-                  <th>Inmobiliaria</th>
+                  <th className={`sortable${sortCol==="nombre"?" sort-activo":""}`} onClick={() => toggleSort("nombre")}>Nombre{sortIcon("nombre")}</th>
+                  <th className={`sortable${sortCol==="matricula"?" sort-activo":""}`} onClick={() => toggleSort("matricula")}>Matrícula{sortIcon("matricula")}</th>
+                  <th className={`sortable${sortCol==="inmobiliaria"?" sort-activo":""}`} onClick={() => toggleSort("inmobiliaria")}>Inmobiliaria{sortIcon("inmobiliaria")}</th>
                   <th>Dirección</th>
                   <th>Celular</th>
-                  <th>Email</th>
+                  <th className={`sortable${sortCol==="email"?" sort-activo":""}`} onClick={() => toggleSort("email")}>Email{sortIcon("email")}</th>
                   {fuente === "ambos" && <th>Fuente</th>}
-                  <th>Estado</th>
+                  <th className={`sortable${sortCol==="estado"?" sort-activo":""}`} onClick={() => toggleSort("estado")}>Estado{sortIcon("estado")}</th>
                 </tr>
               </thead>
               <tbody>

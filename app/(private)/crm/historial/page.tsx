@@ -103,19 +103,26 @@ export default function HistorialPage() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("todos");
 
+  const [uid, setUid] = useState<string | null>(null);
+
   useEffect(() => {
-    supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,etiquetas,created_at")
-      .order("nombre").then(({ data }) => setContactos((data ?? []) as Contacto[]));
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,etiquetas,created_at")
+        .eq("perfil_id", userId).order("nombre").then(({ data: c }) => setContactos((c ?? []) as Contacto[]));
+    });
   }, []);
 
   useEffect(() => {
-    if (!selectedId) return;
+    if (!selectedId || !uid) return;
     setLoading(true);
     Promise.all([
-      supabase.from("crm_interacciones").select("*").eq("contacto_id", selectedId).order("created_at", { ascending: false }),
-      supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_operacion,moneda,created_at,updated_at").eq("contacto_id", selectedId),
-      supabase.from("crm_tareas").select("id,titulo,estado,prioridad,fecha_vencimiento,created_at").eq("contacto_id", selectedId),
-      supabase.from("crm_recordatorios").select("*").eq("contacto_id", selectedId),
+      supabase.from("crm_interacciones").select("*").eq("perfil_id", uid).eq("contacto_id", selectedId).order("created_at", { ascending: false }),
+      supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_operacion,moneda,created_at,updated_at").eq("perfil_id", uid).eq("contacto_id", selectedId),
+      supabase.from("crm_tareas").select("id,titulo,estado,prioridad,fecha_vencimiento,created_at").eq("perfil_id", uid).eq("contacto_id", selectedId),
+      supabase.from("crm_recordatorios").select("*").eq("perfil_id", uid).eq("contacto_id", selectedId),
     ]).then(([{ data: i }, { data: n }, { data: t }, { data: r }]) => {
       setInteracciones((i ?? []) as Interaccion[]);
       setNegocios((n ?? []) as Negocio[]);
@@ -123,7 +130,7 @@ export default function HistorialPage() {
       setRecordatorios((r ?? []) as Recordatorio[]);
       setLoading(false);
     });
-  }, [selectedId]);
+  }, [selectedId, uid]);
 
   const contacto = useMemo(() => contactos.find(c => c.id === selectedId), [contactos, selectedId]);
 

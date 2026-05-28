@@ -66,14 +66,17 @@ export default function PanelComisiones() {
   const [anioFiltro, setAnioFiltro] = useState<string>("todos");
 
   useEffect(() => {
-    supabase
-      .from("crm_negocios")
-      .select("id,titulo,etapa,valor_operacion,honorarios_pct,moneda,fecha_cierre,created_at,tipo_operacion,contacto_id")
-      .order("fecha_cierre", { ascending: false })
-      .then(({ data }) => {
-        setNegocios((data ?? []) as Negocio[]);
-        setLoading(false);
-      });
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
+      const { data: rows } = await supabase
+        .from("crm_negocios")
+        .select("id,titulo,etapa,valor_operacion,honorarios_pct,moneda,fecha_cierre,created_at,tipo_operacion,contacto_id")
+        .eq("perfil_id", uid)
+        .order("fecha_cierre", { ascending: false });
+      setNegocios((rows ?? []) as Negocio[]);
+      setLoading(false);
+    });
   }, []);
 
   const hoy = new Date().toISOString().substring(0, 7);

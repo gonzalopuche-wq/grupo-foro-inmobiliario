@@ -109,20 +109,17 @@ function buildPeriodos(): { key: string; label: string }[] {
   return lista;
 }
 
-function cargarLocalStorage<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
-}
-
-function guardarLocalStorage<T>(key: string, value: T): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(value));
+async function upsertReportesSupabase(
+  uid: string,
+  reportes: ReportePropietario[],
+  asignaciones: Record<string, string>
+): Promise<void> {
+  await supabase
+    .from("crm_reportes_propietarios")
+    .upsert(
+      { perfil_id: uid, reportes, asignaciones, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    );
 }
 
 // ── componente principal ───────────────────────────────────────────────────────
@@ -140,7 +137,7 @@ export default function ReportesPropietariosPage() {
   const [propiedades, setPropiedades] = useState<PropiedadCartera[]>([]);
   const [contactos, setContactos] = useState<Contacto[]>([]);
 
-  // ── localStorage ──────────────────────────────────────────────────────────
+  // ── asignaciones (supabase) ────────────────────────────────────────────────
   const [asignaciones, setAsignaciones] = useState<Record<string, string>>({});
   const [reportes, setReportes] = useState<ReportePropietario[]>([]);
 
@@ -170,7 +167,7 @@ export default function ReportesPropietariosPage() {
 
   const cargarDatos = async (uid: string) => {
     setLoading(true);
-    const [resProp, resCont] = await Promise.all([
+    const [resProp, resCont, resReportes] = await Promise.all([
       supabase
         .from("cartera_propiedades")
         .select("id,created_at,operacion,tipo,zona,precio,moneda,estado,descripcion,perfil_id")
@@ -181,13 +178,27 @@ export default function ReportesPropietariosPage() {
         .select("id,nombre,email,telefono,perfil_id")
         .eq("perfil_id", uid)
         .order("nombre", { ascending: true }),
+      supabase
+        .from("crm_reportes_propietarios")
+        .select("reportes,asignaciones")
+        .eq("perfil_id", uid)
+        .single(),
     ]);
     setPropiedades((resProp.data ?? []) as PropiedadCartera[]);
     setContactos((resCont.data ?? []) as Contacto[]);
 
-    // cargar localStorage
-    setAsignaciones(cargarLocalStorage<Record<string, string>>("asignaciones_propietario", {}));
-    setReportes(cargarLocalStorage<ReportePropietario[]>("reportes_propietarios", []));
+    // cargar reportes y asignaciones desde Supabase
+    const reportesData = resReportes.data;
+    if (reportesData && Array.isArray(reportesData.reportes)) {
+      setReportes(reportesData.reportes as ReportePropietario[]);
+    } else {
+      setReportes([]);
+    }
+    if (reportesData && reportesData.asignaciones && typeof reportesData.asignaciones === "object") {
+      setAsignaciones(reportesData.asignaciones as Record<string, string>);
+    } else {
+      setAsignaciones({});
+    }
 
     setLoading(false);
   };
@@ -201,10 +212,10 @@ export default function ReportesPropietariosPage() {
       } else {
         next[propiedadId] = contactoId;
       }
-      guardarLocalStorage("asignaciones_propietario", next);
+      if (userId) upsertReportesSupabase(userId, reportes, next);
       return next;
     });
-  }, []);
+  }, [userId, reportes]);
 
   // ── editor helpers ─────────────────────────────────────────────────────────
   const limpiarEditor = useCallback(() => {
@@ -283,7 +294,7 @@ export default function ReportesPropietariosPage() {
               }
             : r
         );
-        guardarLocalStorage("reportes_propietarios", next);
+        if (userId) upsertReportesSupabase(userId, next, asignaciones);
         return next;
       });
     } else {
@@ -305,7 +316,7 @@ export default function ReportesPropietariosPage() {
       setReportes(prev => {
         const filtrado = prev.filter(r => !(r.propiedad_id === editorPropiedadId && r.periodo === editorPeriodo));
         const next = [nuevo, ...filtrado];
-        guardarLocalStorage("reportes_propietarios", next);
+        if (userId) upsertReportesSupabase(userId, next, asignaciones);
         return next;
       });
       setEditorReporteId(nuevo.id);
@@ -315,7 +326,7 @@ export default function ReportesPropietariosPage() {
   }, [
     editorPropiedadId, editorPeriodo, editorActividad, editorObservaciones,
     editorPrecioSugerido, editorMonedaSugerida, editorReporteId,
-    propiedades, asignaciones,
+    propiedades, asignaciones, userId,
   ]);
 
   const marcarEnviado = useCallback((reporteId: string) => {
@@ -325,10 +336,10 @@ export default function ReportesPropietariosPage() {
           ? { ...r, enviado: true, fecha_envio: new Date().toISOString() }
           : r
       );
-      guardarLocalStorage("reportes_propietarios", next);
+      if (userId) upsertReportesSupabase(userId, next, asignaciones);
       return next;
     });
-  }, []);
+  }, [userId, asignaciones]);
 
   // ── propiedades activas ────────────────────────────────────────────────────
   const propiedadesActivas = useMemo(

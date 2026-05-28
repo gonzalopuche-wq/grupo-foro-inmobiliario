@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,8 +43,6 @@ interface Campana {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "campanas_marketing";
 
 const CANALES_DISPONIBLES = [
   "instagram",
@@ -195,7 +194,7 @@ function formatFecha(str: string): string {
   return `${d}/${m}/${y}`;
 }
 
-function uid(): string {
+function generarId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
@@ -274,6 +273,7 @@ const EMPTY_FORM: Omit<Campana, "id" | "created_at"> = {
 };
 
 export default function CampanasMarketingPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [campanas, setCampanas] = useState<Campana[]>([]);
   const [tab, setTab] = useState<"activas" | "analisis" | "calendario">("activas");
   const [showModal, setShowModal] = useState(false);
@@ -285,28 +285,40 @@ export default function CampanasMarketingPage() {
   const [sortCol, setSortCol] = useState<string>("nombre");
   const [sortAsc, setSortAsc] = useState(true);
 
-  // Load from localStorage
+  // Auth + load from Supabase
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        const data = JSON.parse(raw) as Campana[];
-        if (data.length > 0) {
-          setCampanas(data);
-          return;
-        }
-      } catch {
-        // ignore parse errors
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_campanas_marketing")
+        .select("campanas")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.campanas && Array.isArray(row.campanas) && (row.campanas as Campana[]).length > 0) {
+        setCampanas(row.campanas as Campana[]);
+      } else {
+        setCampanas(EJEMPLOS);
+        supabase.from("crm_campanas_marketing").upsert(
+          { perfil_id: userId, campanas: EJEMPLOS, updated_at: new Date().toISOString() },
+          { onConflict: "perfil_id" }
+        ).then(() => {});
       }
-    }
-    // Load examples
-    setCampanas(EJEMPLOS);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(EJEMPLOS));
+    });
   }, []);
+
+  const guardarSB = useCallback((items: Campana[]) => {
+    if (!uid) return;
+    supabase.from("crm_campanas_marketing").upsert(
+      { perfil_id: uid, campanas: items, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    ).then(() => {});
+  }, [uid]);
 
   function save(data: Campana[]) {
     setCampanas(data);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    guardarSB(data);
   }
 
   function openNew() {
@@ -340,7 +352,7 @@ export default function CampanasMarketingPage() {
     if (editando) {
       save(campanas.map((c) => (c.id === editando.id ? { ...editando, ...form } : c)));
     } else {
-      const nueva: Campana = { ...form, id: uid(), created_at: new Date().toISOString() };
+      const nueva: Campana = { ...form, id: generarId(), created_at: new Date().toISOString() };
       save([...campanas, nueva]);
     }
     setShowModal(false);

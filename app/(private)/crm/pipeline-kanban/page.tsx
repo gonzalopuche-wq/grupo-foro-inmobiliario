@@ -113,7 +113,16 @@ function normalizeContacto(raw: CrmContactoRow | CrmContactoRow[] | null): strin
   return `${c.nombre} ${c.apellido}`.trim();
 }
 
+const ETAPA_ALIAS: Record<string, Etapa> = {
+  visita_coordinada: "visita",
+  visita_realizada:  "visita",
+  oferta_enviada:    "oferta",
+  escriturado:       "cerrado",
+  firmado:           "cerrado",
+};
+
 function toEtapa(raw: string): Etapa {
+  if (ETAPA_ALIAS[raw]) return ETAPA_ALIAS[raw];
   const found = ETAPAS.find((e) => e.id === raw);
   return found ? found.id : "prospecto";
 }

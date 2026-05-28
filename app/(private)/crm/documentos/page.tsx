@@ -59,19 +59,6 @@ const DOCS_BASE: Documento[] = [
   { id: "registro_cci",         grupo: "Inmobiliaria",nombre: "Registro CCI / matrícula",        descripcion: "Número de matrícula del corredor interviniente",    obligatorio: true },
 ];
 
-const STORAGE_KEY = "crm_documentos_estado";
-
-function getEstados(): Record<string, Record<string, DocEstado>> {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
-  } catch {
-    return {};
-  }
-}
-
-function saveEstados(data: Record<string, Record<string, DocEstado>>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
 
 // ── Componente ───────────────────────────────────────────────────────────────
 
@@ -81,24 +68,42 @@ export default function GestionDocumentos() {
   const [negocioSeleccionado, setNegocioSeleccionado] = useState<string | null>(null);
   const [estados, setEstados] = useState<Record<string, Record<string, DocEstado>>>({});
   const [busqueda, setBusqueda] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    setEstados(getEstados());
-    supabase
-      .from("crm_negocios")
-      .select("id,titulo,etapa,tipo_operacion")
-      .not("etapa", "in", "(perdido)")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setNegocios((data ?? []) as Negocio[]);
-        setLoading(false);
-      });
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        const { data: cfgRow } = await supabase
+          .from("crm_documentos_estado")
+          .select("estado")
+          .eq("perfil_id", user.id)
+          .maybeSingle();
+        if (cfgRow?.estado) {
+          setEstados(cfgRow.estado as Record<string, Record<string, DocEstado>>);
+        }
+      }
+      const { data } = await supabase
+        .from("crm_negocios")
+        .select("id,titulo,etapa,tipo_operacion")
+        .not("etapa", "in", "(perdido)")
+        .order("created_at", { ascending: false });
+      setNegocios((data ?? []) as Negocio[]);
+      setLoading(false);
+    })();
   }, []);
 
-  function setEstadoDoc(negocioId: string, docId: string, estado: DocEstado) {
+  async function setEstadoDoc(negocioId: string, docId: string, estado: DocEstado) {
     const next = { ...estados, [negocioId]: { ...(estados[negocioId] ?? {}), [docId]: estado } };
     setEstados(next);
-    saveEstados(next);
+    if (userId) {
+      await supabase.from("crm_documentos_estado").upsert({
+        perfil_id: userId,
+        estado: next,
+        updated_at: new Date().toISOString(),
+      });
+    }
   }
 
   const negocioActual = negocios.find(n => n.id === negocioSeleccionado);

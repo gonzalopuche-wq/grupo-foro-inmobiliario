@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -57,8 +58,6 @@ interface Propuesta {
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "crm_propuestas_v1";
 
 const PORTALES_OPCIONES = [
   "ZonaProp",
@@ -160,20 +159,6 @@ const defaultAgencia = (): DatosAgencia => ({
 
 function genId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-function loadPropuestas(): Propuesta[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as Propuesta[];
-  } catch {
-    return [];
-  }
-}
-
-function savePropuestas(list: Propuesta[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
 function loadAgenciaDefecto(): DatosAgencia {
@@ -1044,20 +1029,46 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function PropuestaComercialPage() {
+  const [uid, setUid] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [paso, setPaso] = useState(1);
   const [propietario, setPropietario] = useState<DatosPropietario>(defaultPropietario);
   const [inmueble, setInmueble] = useState<DatosInmueble>(defaultInmueble);
   const [operacion, setOperacion] = useState<DatosOperacion>(defaultOperacion);
   const [agencia, setAgencia] = useState<DatosAgencia>(() => loadAgenciaDefecto());
-  const [propuestas, setPropuestas] = useState<Propuesta[]>(() => loadPropuestas());
+  const [propuestas, setPropuestas] = useState<Propuesta[]>([]);
   const [propuestaSeleccionada, setPropuestaSeleccionada] = useState<string>("");
   const [toast, setToast] = useState<{ msg: string; tipo: "ok" | "err" }>({ msg: "", tipo: "ok" });
   const [ventajaInput, setVentajaInput] = useState("");
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_propuestas_comerciales")
+        .select("propuestas")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.propuestas) {
+        setPropuestas(row.propuestas as Propuesta[]);
+      }
+      setLoading(false);
+    });
+  }, []);
 
   const showToast = useCallback((msg: string, tipo: "ok" | "err" = "ok") => {
     setToast({ msg, tipo });
     setTimeout(() => setToast({ msg: "", tipo: "ok" }), 3000);
   }, []);
+
+  const savePropuestasToSupabase = useCallback(async (list: Propuesta[]) => {
+    if (!uid) return;
+    await supabase
+      .from("crm_propuestas_comerciales")
+      .upsert({ perfil_id: uid, propuestas: list, updated_at: new Date().toISOString() });
+  }, [uid]);
 
   const propuestaActual = useMemo<Propuesta>(
     () => ({
@@ -1073,13 +1084,13 @@ export default function PropuestaComercialPage() {
 
   // ─ Acciones ─────────────────────────────────────────────────────────────────
 
-  const guardarPropuesta = useCallback(() => {
+  const guardarPropuesta = useCallback(async () => {
     const nueva: Propuesta = { ...propuestaActual, id: genId(), createdAt: new Date().toISOString() };
     const updated = [nueva, ...propuestas];
-    savePropuestas(updated);
     setPropuestas(updated);
+    await savePropuestasToSupabase(updated);
     showToast("Propuesta guardada correctamente");
-  }, [propuestaActual, propuestas, showToast]);
+  }, [propuestaActual, propuestas, showToast, savePropuestasToSupabase]);
 
   const cargarPropuesta = useCallback(
     (id: string) => {
@@ -1097,28 +1108,28 @@ export default function PropuestaComercialPage() {
   );
 
   const duplicarPropuesta = useCallback(
-    (id: string) => {
+    async (id: string) => {
       const found = propuestas.find((p) => p.id === id);
       if (!found) return;
       const copia: Propuesta = { ...found, id: genId(), createdAt: new Date().toISOString() };
       const updated = [copia, ...propuestas];
-      savePropuestas(updated);
       setPropuestas(updated);
+      await savePropuestasToSupabase(updated);
       showToast("Propuesta duplicada");
     },
-    [propuestas, showToast]
+    [propuestas, showToast, savePropuestasToSupabase]
   );
 
   const eliminarPropuesta = useCallback(
-    (id: string) => {
+    async (id: string) => {
       if (!window.confirm("¿Eliminar esta propuesta? Esta acción no se puede deshacer.")) return;
       const updated = propuestas.filter((p) => p.id !== id);
-      savePropuestas(updated);
       setPropuestas(updated);
+      await savePropuestasToSupabase(updated);
       if (propuestaSeleccionada === id) setPropuestaSeleccionada("");
       showToast("Propuesta eliminada", "err");
     },
-    [propuestas, propuestaSeleccionada, showToast]
+    [propuestas, propuestaSeleccionada, showToast, savePropuestasToSupabase]
   );
 
   const guardarAgenciaDefecto = useCallback(() => {
@@ -1882,6 +1893,14 @@ export default function PropuestaComercialPage() {
   // ─ Main render ──────────────────────────────────────────────────────────────
 
   const PASOS = ["Propiedad", "Operación", "Difusión", "Agencia"];
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif", fontSize: 13 }}>Cargando...</p>
+      </div>
+    );
+  }
 
   return (
     <div

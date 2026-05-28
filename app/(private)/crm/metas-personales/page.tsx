@@ -34,7 +34,6 @@ interface Contacto {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = "crm_metas_personales_v1";
 const CIRCUMFERENCE = 2 * Math.PI * 45;
 
 const DEFAULT_META: MetaPersonal = {
@@ -398,44 +397,60 @@ export default function MetasPersonalesPage() {
   const [meta, setMeta] = useState<MetaPersonal>({ ...DEFAULT_META, año: añoActual });
   const [editOpen, setEditOpen] = useState(false);
   const [formMeta, setFormMeta] = useState<MetaPersonal>({ ...DEFAULT_META, año: añoActual });
+  const [uid, setUid] = useState<string | null>(null);
 
   const [negocios, setNegocios] = useState<Negocio[]>([]);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ── Load meta from localStorage ──────────────────────────────────────────
+  // ── Load auth + meta from Supabase ───────────────────────────────────────
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as Record<string, MetaPersonal>;
-        const found = parsed[String(selectedAño)];
-        if (found) {
-          setMeta(found);
-          setFormMeta(found);
-        } else {
-          const fresh = { ...DEFAULT_META, año: selectedAño };
-          setMeta(fresh);
-          setFormMeta(fresh);
-        }
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_metas_personales")
+        .select("*")
+        .eq("perfil_id", userId)
+        .eq("anio", selectedAño)
+        .maybeSingle();
+      if (row) {
+        const loaded: MetaPersonal = {
+          año: row.anio,
+          metaHonorariosUSD: row.meta_honorarios_usd,
+          metaOperaciones: row.meta_operaciones,
+          metaNuevasCapt: row.meta_nuevas_capt,
+          metaTaskaciones: row.meta_tasaciones,
+          metaTasaCierreObj: row.meta_tasa_cierre_obj,
+          notas: row.notas ?? "",
+        };
+        setMeta(loaded);
+        setFormMeta(loaded);
+        if (row.tipo_cambio) setTipoCambio(row.tipo_cambio);
+      } else {
+        const fresh = { ...DEFAULT_META, año: selectedAño };
+        setMeta(fresh);
+        setFormMeta(fresh);
       }
-    } catch {
-      // ignore parse errors
-    }
+    });
   }, [selectedAño]);
 
   // ── Fetch Supabase data ──────────────────────────────────────────────────
   useEffect(() => {
+    if (!uid) return;
     setLoading(true);
     const fetchData = async () => {
       const [negRes, contRes] = await Promise.all([
         supabase
           .from("crm_negocios")
           .select("id,etapa,valor_operacion,moneda,honorarios_pct,split_pct,fecha_cierre,tipo_operacion")
+          .eq("perfil_id", uid)
           .eq("etapa", "cerrado"),
         supabase
           .from("crm_contactos")
           .select("id,created_at,tipo")
+          .eq("perfil_id", uid)
           .gte("created_at", `${selectedAño}-01-01`),
       ]);
       setNegocios((negRes.data ?? []) as Negocio[]);
@@ -443,7 +458,7 @@ export default function MetasPersonalesPage() {
       setLoading(false);
     };
     fetchData();
-  }, [selectedAño]);
+  }, [selectedAño, uid]);
 
   // ── Calculations (useMemo) ───────────────────────────────────────────────
   const negociosDelAño = useMemo(() => {
@@ -506,19 +521,24 @@ export default function MetasPersonalesPage() {
   }, [realHonorariosUSD, meta.metaHonorariosUSD]);
 
   // ── Handlers ─────────────────────────────────────────────────────────────
-  const handleSaveMeta = () => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const all: Record<string, MetaPersonal> = stored
-        ? (JSON.parse(stored) as Record<string, MetaPersonal>)
-        : {};
-      all[String(formMeta.año)] = formMeta;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  const handleSaveMeta = async () => {
+    if (!uid) return;
+    const { error } = await supabase.from("crm_metas_personales").upsert({
+      perfil_id: uid,
+      anio: formMeta.año,
+      meta_honorarios_usd: formMeta.metaHonorariosUSD,
+      meta_operaciones: formMeta.metaOperaciones,
+      meta_nuevas_capt: formMeta.metaNuevasCapt,
+      meta_tasaciones: formMeta.metaTaskaciones,
+      meta_tasa_cierre_obj: formMeta.metaTasaCierreObj,
+      notas: formMeta.notas,
+      tipo_cambio: tipoCambio,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "perfil_id,anio" });
+    if (!error) {
       setMeta(formMeta);
       setSelectedAño(formMeta.año);
       setEditOpen(false);
-    } catch {
-      // ignore
     }
   };
 

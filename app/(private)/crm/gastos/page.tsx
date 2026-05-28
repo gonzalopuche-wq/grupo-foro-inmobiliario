@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { supabase } from "../../../lib/supabase";
 
 interface Gasto {
-  id: number;
+  id: string;
   descripcion: string;
   categoria: string;
   monto: number;
@@ -30,59 +31,79 @@ const CATEGORIAS = [
 
 const MESES_LABEL = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 
-const STORAGE_KEY = "crm_gastos_inmobiliaria_v1";
-let gid = Date.now();
-
-function cargar(): Gasto[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-}
-
 function fmt(n: number, dec = 0) {
   return n.toLocaleString("es-AR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
 
 function hoy() { return new Date().toISOString().slice(0, 10); }
 
+const DRAFT_VACIO = (mes: string): Gasto => ({ id: "", descripcion: "", categoria: CATEGORIAS[0].label, monto: 0, moneda: "ARS", fecha: `${mes}-01`, recurrente: false, pagado: false, notas: "" });
+
 export default function GastosPage() {
-  const [gastos, setGastos] = useState<Gasto[]>(cargar);
+  const [uid, setUid] = useState<string | null>(null);
+  const [gastos, setGastos] = useState<Gasto[]>([]);
   const [tc, setTc] = useState(1300);
-  const [mesActual, setMesActual] = useState(new Date().toISOString().slice(0, 7));
+  const [mesActual] = useState(new Date().toISOString().slice(0, 7));
   const [ingresosMes, setIngresosMes] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
-  const [draft, setDraft] = useState<Gasto>({ id: 0, descripcion: "", categoria: CATEGORIAS[0].label, monto: 0, moneda: "ARS", fecha: hoy(), recurrente: false, pagado: false, notas: "" });
-  const [filtroMes, setFiltroMes] = useState(mesActual);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Gasto>(DRAFT_VACIO(new Date().toISOString().slice(0, 7)));
+  const [filtroMes, setFiltroMes] = useState(new Date().toISOString().slice(0, 7));
   const [filtrocat, setFiltrocat] = useState("todas");
 
-  const guardar = (lista: Gasto[]) => {
-    setGastos(lista);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
-  };
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: rows } = await supabase
+        .from("crm_gastos")
+        .select("id,descripcion,categoria,monto,moneda,fecha,recurrente,pagado,notas")
+        .eq("perfil_id", userId)
+        .order("fecha", { ascending: false });
+      setGastos((rows ?? []) as Gasto[]);
+    });
+  }, []);
 
   const abrirNuevo = () => {
-    setDraft({ id: 0, descripcion: "", categoria: CATEGORIAS[0].label, monto: 0, moneda: "ARS", fecha: `${mesActual}-01`, recurrente: false, pagado: false, notas: "" });
+    setDraft(DRAFT_VACIO(mesActual));
     setEditId(null);
     setFormOpen(true);
   };
 
   const abrirEditar = (g: Gasto) => { setDraft({ ...g }); setEditId(g.id); setFormOpen(true); };
 
-  const guardarDraft = () => {
-    if (!draft.descripcion || !draft.monto) return;
-    if (editId !== null) {
-      guardar(gastos.map(g => g.id === editId ? draft : g));
+  const guardarDraft = async () => {
+    if (!draft.descripcion || !draft.monto || !uid) return;
+    if (editId) {
+      const { error } = await supabase.from("crm_gastos").update({
+        descripcion: draft.descripcion, categoria: draft.categoria,
+        monto: draft.monto, moneda: draft.moneda, fecha: draft.fecha,
+        recurrente: draft.recurrente, pagado: draft.pagado, notas: draft.notas || null,
+      }).eq("id", editId);
+      if (!error) setGastos(prev => prev.map(g => g.id === editId ? { ...draft } : g));
     } else {
-      guardar([...gastos, { ...draft, id: ++gid }]);
+      const { data, error } = await supabase.from("crm_gastos").insert({
+        perfil_id: uid, descripcion: draft.descripcion, categoria: draft.categoria,
+        monto: draft.monto, moneda: draft.moneda, fecha: draft.fecha,
+        recurrente: draft.recurrente, pagado: draft.pagado, notas: draft.notas || null,
+      }).select("id,descripcion,categoria,monto,moneda,fecha,recurrente,pagado,notas").single();
+      if (!error && data) setGastos(prev => [data as Gasto, ...prev]);
     }
     setFormOpen(false);
   };
 
-  const eliminar = (id: number) => guardar(gastos.filter(g => g.id !== id));
-  const togglePagado = (id: number) => guardar(gastos.map(g => g.id === id ? { ...g, pagado: !g.pagado } : g));
+  const eliminar = async (id: string) => {
+    await supabase.from("crm_gastos").delete().eq("id", id);
+    setGastos(prev => prev.filter(g => g.id !== id));
+  };
+
+  const togglePagado = async (id: string) => {
+    const g = gastos.find(g => g.id === id);
+    if (!g) return;
+    await supabase.from("crm_gastos").update({ pagado: !g.pagado }).eq("id", id);
+    setGastos(prev => prev.map(g => g.id === id ? { ...g, pagado: !g.pagado } : g));
+  };
 
   const montoARS = (g: Gasto) => g.moneda === "USD" ? g.monto * tc : g.monto;
 

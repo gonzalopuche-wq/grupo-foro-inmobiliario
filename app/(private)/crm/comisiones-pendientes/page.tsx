@@ -4,7 +4,6 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
-const STORAGE_KEY = "crm_com_cobros_v1";
 
 interface Negocio {
   id: string;
@@ -53,6 +52,7 @@ function fmt(n: number, dec = 0) {
 const ETAPAS_COBRO = ["reserva", "escritura", "cierre", "firmado"];
 
 export default function ComisionesPendientesPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [negocios, setNegocios] = useState<Negocio[]>([]);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [cobros, setCobros] = useState<CobrosRegistrados>({});
@@ -64,19 +64,22 @@ export default function ComisionesPendientesPage() {
   const [nuevoCobro, setNuevoCobro] = useState({ monto: 0, fecha: new Date().toISOString().split("T")[0], nota: "" });
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) setCobros(JSON.parse(stored));
-
-    const cargar = async () => {
-      const [{ data: negs }, { data: ctcs }] = await Promise.all([
-        supabase.from("crm_negocios").select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,honorarios_pct,fecha_cierre,fecha_reserva,contacto_id,colega_id,split_pct,notas,archivado"),
-        supabase.from("crm_contactos").select("id,nombre,apellido,telefono"),
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
+      setUid(uid);
+      const [{ data: negs }, { data: ctcs }, { data: cobrosRow }] = await Promise.all([
+        supabase.from("crm_negocios").select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,honorarios_pct,fecha_cierre,fecha_reserva,contacto_id,colega_id,split_pct,notas,archivado").eq("perfil_id", uid),
+        supabase.from("crm_contactos").select("id,nombre,apellido,telefono").eq("perfil_id", uid),
+        supabase.from("crm_comisiones_cobros").select("cobros").eq("perfil_id", uid).maybeSingle(),
       ]);
       setNegocios((negs ?? []) as Negocio[]);
       setContactos((ctcs ?? []) as Contacto[]);
+      if (cobrosRow?.cobros) {
+        setCobros(cobrosRow.cobros as CobrosRegistrados);
+      }
       setLoading(false);
-    };
-    cargar();
+    });
   }, []);
 
   const contactoMap = useMemo(() => {
@@ -150,12 +153,17 @@ export default function ComisionesPendientesPage() {
     };
   }, [negocios, cobros, tc]);
 
-  const registrarCobro = () => {
+  const registrarCobro = async () => {
     if (!negocioModal || nuevoCobro.monto <= 0) return;
     const prevCobros = cobros[negocioModal] ?? [];
     const nuevos = { ...cobros, [negocioModal]: [...prevCobros, { montoCobrado: nuevoCobro.monto, fechaCobro: nuevoCobro.fecha, nota: nuevoCobro.nota }] };
     setCobros(nuevos);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nuevos));
+    if (uid) {
+      supabase.from("crm_comisiones_cobros").upsert(
+        { perfil_id: uid, cobros: nuevos, updated_at: new Date().toISOString() },
+        { onConflict: "perfil_id" }
+      ).then(() => {});
+    }
     setNegocioModal(null);
     setNuevoCobro({ monto: 0, fecha: new Date().toISOString().split("T")[0], nota: "" });
   };

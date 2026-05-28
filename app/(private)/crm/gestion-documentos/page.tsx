@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -163,24 +164,24 @@ function buildEjemplos(): Expediente[] {
   ];
 }
 
-// ── localStorage helpers ──────────────────────────────────────────────────────
+// ── Supabase helpers ──────────────────────────────────────────────────────────
 
-const LS_KEY = "documentos_crm";
-
-function loadExpedientes(): Expediente[] {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) return JSON.parse(raw) as Expediente[];
-  } catch {
-    // ignore
+async function loadExpedientesFromSupabase(uid: string): Promise<Expediente[]> {
+  const { data } = await supabase
+    .from("crm_gestion_documentos")
+    .select("documentos")
+    .eq("perfil_id", uid)
+    .single();
+  if (data && Array.isArray(data.documentos) && data.documentos.length > 0) {
+    return data.documentos as Expediente[];
   }
-  const ejemplos = buildEjemplos();
-  localStorage.setItem(LS_KEY, JSON.stringify(ejemplos));
-  return ejemplos;
+  return buildEjemplos();
 }
 
-function saveExpedientes(data: Expediente[]): void {
-  localStorage.setItem(LS_KEY, JSON.stringify(data));
+async function saveExpedientesToSupabase(uid: string, data: Expediente[]): Promise<void> {
+  await supabase
+    .from("crm_gestion_documentos")
+    .upsert({ perfil_id: uid, documentos: data, updated_at: new Date().toISOString() }, { onConflict: "perfil_id" });
 }
 
 // ── Helpers de fecha ──────────────────────────────────────────────────────────
@@ -639,18 +640,24 @@ export default function GestionDocumentosPage() {
   const [editandoNotaId, setEditandoNotaId] = useState<string | null>(null);
   const [notaTemp, setNotaTemp] = useState("");
   const [inited, setInited] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
-    setExpedientes(loadExpedientes());
-    setInited(true);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      setUid(data.user.id);
+      const loaded = await loadExpedientesFromSupabase(data.user.id);
+      setExpedientes(loaded);
+      setInited(true);
+    });
   }, []);
 
   const persist = useCallback(
     (next: Expediente[]) => {
       setExpedientes(next);
-      saveExpedientes(next);
+      if (uid) saveExpedientesToSupabase(uid, next);
     },
-    []
+    [uid]
   );
 
   // ── Expediente actual ────────────────────────────────────────────────────────
@@ -853,7 +860,7 @@ export default function GestionDocumentosPage() {
             Gestión de Documentos
           </h1>
           <p style={{ margin: "3px 0 0", fontSize: 12, color: "#666" }}>
-            Checklist de documentación por expediente — guardado localmente
+            Checklist de documentación por expediente — guardado en la nube
           </p>
         </div>
         <button

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,8 +36,6 @@ interface ObjetivoMes {
 type Tab = "actual" | "historico" | "proyeccion";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "objetivos_crm";
 
 const MESES = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -113,54 +112,6 @@ function colorScore(score: number): string {
   if (score >= 80) return "#22c55e";
   if (score >= 50) return "#eab308";
   return "#cc0000";
-}
-
-// ─── localStorage helpers ─────────────────────────────────────────────────────
-
-function cargarTodos(): ObjetivoMes[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as ObjetivoMes[];
-  } catch {
-    return [];
-  }
-}
-
-function guardarTodos(lista: ObjetivoMes[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
-}
-
-function obtenerOCrearMes(anio: number, mes: number): { mes: ObjetivoMes; lista: ObjetivoMes[] } {
-  const lista = cargarTodos();
-  const existente = lista.find((m) => m.anio === anio && m.mes === mes);
-  if (existente) return { mes: existente, lista };
-  const nuevo: ObjetivoMes = {
-    id: genId(),
-    anio,
-    mes,
-    objetivos: OBJETIVOS_DEFAULT.map((o) => ({ ...o, id: genId() })),
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-  const nuevaLista = [...lista, nuevo];
-  guardarTodos(nuevaLista);
-  return { mes: nuevo, lista: nuevaLista };
-}
-
-function persistirMes(mesDato: ObjetivoMes): ObjetivoMes[] {
-  const lista = cargarTodos();
-  const idx = lista.findIndex((m) => m.anio === mesDato.anio && m.mes === mesDato.mes);
-  const actualizado = { ...mesDato, updated_at: new Date().toISOString() };
-  let nuevaLista: ObjetivoMes[];
-  if (idx >= 0) {
-    nuevaLista = lista.map((m, i) => (i === idx ? actualizado : m));
-  } else {
-    nuevaLista = [...lista, actualizado];
-  }
-  guardarTodos(nuevaLista);
-  return nuevaLista;
 }
 
 // ─── SVG Gauge ───────────────────────────────────────────────────────────────
@@ -422,25 +373,63 @@ export default function ObjetivosMensualesPage() {
   const [anio, setAnio] = useState(hoy.getFullYear());
   const [mes, setMes] = useState(hoy.getMonth() + 1);
   const [mesDato, setMesDato] = useState<ObjetivoMes | null>(null);
+  const [data, setData] = useState<ObjetivoMes[]>([]);
+  const [uid, setUid] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("actual");
   const [editandoReal, setEditandoReal] = useState<string | null>(null);
   const [valorTemp, setValorTemp] = useState<string>("");
   const [modalEdicion, setModalEdicion] = useState(false);
   const [historico, setHistorico] = useState<MesHistorico[]>([]);
 
-  // Cargar mes actual
-  const cargarMes = useCallback((a: number, m: number) => {
-    const { mes: dato } = obtenerOCrearMes(a, m);
-    setMesDato(dato);
+  // Auth + load all months from Supabase
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: authData }) => {
+      if (!authData.user) { window.location.href = "/login"; return; }
+      const userId = authData.user.id;
+      setUid(userId);
+      const { data: rows } = await supabase
+        .from("crm_objetivos_mensuales")
+        .select("id,anio,mes,objetivos,created_at,updated_at")
+        .eq("perfil_id", userId)
+        .order("anio", { ascending: false })
+        .order("mes", { ascending: false });
+      if (rows && rows.length > 0) {
+        const meses: ObjetivoMes[] = rows.map(r => ({
+          id: r.id as string,
+          anio: r.anio as number,
+          mes: r.mes as number,
+          objetivos: (r.objetivos as Objetivo[]) ?? [],
+          created_at: r.created_at as string,
+          updated_at: r.updated_at as string,
+        }));
+        setData(meses);
+      }
+      setLoading(false);
+    });
   }, []);
 
+  // Set mesDato when data or selected month changes
   useEffect(() => {
-    cargarMes(anio, mes);
-  }, [anio, mes, cargarMes]);
+    if (loading) return;
+    const existente = data.find((m) => m.anio === anio && m.mes === mes);
+    if (existente) {
+      setMesDato(existente);
+    } else {
+      // Create a local placeholder (will be upserted on first save)
+      setMesDato({
+        id: "",
+        anio,
+        mes,
+        objetivos: OBJETIVOS_DEFAULT.map((o) => ({ ...o, id: genId() })),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+    }
+  }, [anio, mes, data, loading]);
 
   // Cargar histórico (últimos 6 meses)
   useEffect(() => {
-    const todos = cargarTodos();
     const resultado: MesHistorico[] = [];
     let mejorScore = -1;
     let mejorIdx = -1;
@@ -449,7 +438,7 @@ export default function ObjetivosMensualesPage() {
       const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
       const a = fecha.getFullYear();
       const m = fecha.getMonth() + 1;
-      const encontrado = todos.find((x) => x.anio === a && x.mes === m);
+      const encontrado = data.find((x) => x.anio === a && x.mes === m);
       const objs = encontrado ? encontrado.objetivos : [];
       const score = scoreMes(objs);
       const logrados = objs.filter((o) => o.real >= o.meta).length;
@@ -477,26 +466,58 @@ export default function ObjetivosMensualesPage() {
     setMes(fecha.getMonth() + 1);
   };
 
+  const upsertMes = useCallback(async (mesActualizado: ObjetivoMes) => {
+    if (!uid) return;
+    const { data: row } = await supabase
+      .from("crm_objetivos_mensuales")
+      .upsert(
+        { perfil_id: uid, anio: mesActualizado.anio, mes: mesActualizado.mes, objetivos: mesActualizado.objetivos, updated_at: new Date().toISOString() },
+        { onConflict: "perfil_id,anio,mes" }
+      )
+      .select("id,anio,mes,objetivos,created_at,updated_at")
+      .single();
+    if (row) {
+      const saved: ObjetivoMes = {
+        id: row.id as string,
+        anio: row.anio as number,
+        mes: row.mes as number,
+        objetivos: (row.objetivos as Objetivo[]) ?? [],
+        created_at: row.created_at as string,
+        updated_at: row.updated_at as string,
+      };
+      setData((prev) => {
+        const idx = prev.findIndex((m) => m.anio === saved.anio && m.mes === saved.mes);
+        if (idx >= 0) {
+          const copy = [...prev];
+          copy[idx] = saved;
+          return copy;
+        }
+        return [...prev, saved];
+      });
+      setMesDato(saved);
+    }
+  }, [uid]);
+
   const guardarReal = (objId: string, valor: number) => {
     if (!mesDato) return;
     const nuevosObjs = mesDato.objetivos.map((o) =>
       o.id === objId ? { ...o, real: Math.max(0, valor) } : o
     );
     const actualizado = { ...mesDato, objetivos: nuevosObjs };
-    persistirMes(actualizado);
     setMesDato(actualizado);
     setEditandoReal(null);
+    upsertMes(actualizado);
   };
 
   const guardarEdicionMetas = (nuevosObjs: Objetivo[]) => {
     if (!mesDato) return;
     const actualizado = { ...mesDato, objetivos: nuevosObjs };
-    persistirMes(actualizado);
     setMesDato(actualizado);
     setModalEdicion(false);
+    upsertMes(actualizado);
   };
 
-  if (!mesDato) {
+  if (loading || !mesDato) {
     return (
       <div style={{ color: "#e0e0e0", padding: 40, fontFamily: "Inter,sans-serif" }}>Cargando...</div>
     );

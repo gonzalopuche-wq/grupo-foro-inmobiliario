@@ -122,16 +122,17 @@ export default function MatchClientesPage() {
   const [expandidos, setExpandidos] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const cargar = async () => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
       const [{ data: ctcs }, { data: negs }] = await Promise.all([
-        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,tipo,estado,interes,presupuesto_min,presupuesto_max,moneda,zona_interes,created_at"),
-        supabase.from("crm_negocios").select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,direccion,descripcion,contacto_id,archivado"),
+        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,tipo,estado,interes,presupuesto_min,presupuesto_max,moneda,zona_interes,created_at").eq("perfil_id", uid),
+        supabase.from("crm_negocios").select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,direccion,descripcion,contacto_id,archivado").eq("perfil_id", uid),
       ]);
       setContactos((ctcs ?? []) as Contacto[]);
       setNegocios((negs ?? []) as Negocio[]);
       setLoading(false);
-    };
-    cargar();
+    });
   }, []);
 
   const negociosFiltrados = useMemo(() => {

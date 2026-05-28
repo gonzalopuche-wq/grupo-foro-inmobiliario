@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { supabase } from "../../../lib/supabase";
 
 interface Referido {
   id: number;
@@ -47,18 +48,10 @@ function fmt(n: number, dec = 0) {
   return n.toLocaleString("es-AR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
 
-const STORAGE_KEY = "crm_referidos_v1";
-
-function cargarStorage(): Referido[] {
-  if (typeof window === "undefined") return [emptyRef()];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Referido[]) : [emptyRef()];
-  } catch { return [emptyRef()]; }
-}
-
 export default function ReferidosPage() {
-  const [refs, setRefs] = useState<Referido[]>(cargarStorage);
+  const [refs, setRefs] = useState<Referido[]>([]);
+  const [uid, setUid] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [filtroBusq, setFiltroBusq] = useState("");
   const [filtroEst, setFiltroEst] = useState("todos");
   const [filtroRef, setFiltroRef] = useState("todos");
@@ -66,9 +59,34 @@ export default function ReferidosPage() {
   const [editId, setEditId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Referido>(emptyRef());
 
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_referidos")
+        .select("referidos")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.referidos && Array.isArray(row.referidos)) {
+        setRefs(row.referidos as Referido[]);
+      }
+      setLoading(false);
+    });
+  }, []);
+
+  const guardarSB = useCallback((items: Referido[]) => {
+    if (!uid) return;
+    supabase.from("crm_referidos").upsert(
+      { perfil_id: uid, referidos: items, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    ).then(() => {});
+  }, [uid]);
+
   const guardar = (lista: Referido[]) => {
     setRefs(lista);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
+    guardarSB(lista);
   };
 
   const abrirNuevo = () => { setDraft(emptyRef()); setEditId(null); setFormOpen(true); };
@@ -194,59 +212,62 @@ export default function ReferidosPage() {
         </div>
 
         {/* Lista */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {filtrados.length === 0 && (
-            <div style={{ textAlign: "center", color: "#4b5563", padding: 60 }}>Sin referidos. Agregá el primero.</div>
-          )}
-          {filtrados.map(r => (
-            <div key={r.id} style={{ background: "#111", border: `1px solid ${colEst(r.estado)}33`, borderLeft: `3px solid ${colEst(r.estado)}`, borderRadius: 10, padding: "14px 18px", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-              <div style={{ flex: 2, minWidth: 160 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#e5e5e5" }}>{r.nombre} {r.apellido}</div>
-                <div style={{ fontSize: 11, color: "#6b7280" }}>Referido por: <span style={{ color: "#9ca3af" }}>{r.referidoPor || "—"}</span> · {r.fecha}</div>
-                {r.zona && <div style={{ fontSize: 11, color: "#4b5563" }}>📍 {r.zona}</div>}
-              </div>
-              <div style={{ flex: 1, minWidth: 100 }}>
-                <div style={{ fontSize: 11, color: "#6b7280" }}>Tipo</div>
-                <div style={{ fontSize: 13, color: "#9ca3af" }}>{r.tipo}</div>
-                {r.presupuesto > 0 && <div style={{ fontSize: 12, color: "#e5e5e5" }}>{r.moneda} {fmt(r.presupuesto)}</div>}
-              </div>
-              <div style={{ flex: 1, minWidth: 100 }}>
-                <span style={{ background: `${colEst(r.estado)}22`, color: colEst(r.estado), fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 4 }}>
-                  {lblEst(r.estado)}
-                </span>
-              </div>
-              {r.estado === "cerrado" && (
-                <div style={{ flex: 1, minWidth: 120, textAlign: "right" }}>
-                  <div style={{ fontSize: 11, color: "#6b7280" }}>Honorarios</div>
-                  <div style={{ fontWeight: 700, color: "#a855f7" }}>USD {fmt(r.honorarios)}</div>
-                  {r.recompensaAcordada > 0 && (
-                    <div style={{ fontSize: 11 }}>
-                      <span style={{ color: r.recompensaPagada ? "#22c55e" : "#f97316" }}>
-                        Recomp: USD {fmt(r.recompensaAcordada)} {r.recompensaPagada ? "✅" : "⏳"}
-                      </span>
-                    </div>
-                  )}
+        {loading && <div style={{ textAlign: "center", color: "#4b5563", padding: 60 }}>Cargando...</div>}
+        {!loading && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {filtrados.length === 0 && (
+              <div style={{ textAlign: "center", color: "#4b5563", padding: 60 }}>Sin referidos. Agregá el primero.</div>
+            )}
+            {filtrados.map(r => (
+              <div key={r.id} style={{ background: "#111", border: `1px solid ${colEst(r.estado)}33`, borderLeft: `3px solid ${colEst(r.estado)}`, borderRadius: 10, padding: "14px 18px", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ flex: 2, minWidth: 160 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "#e5e5e5" }}>{r.nombre} {r.apellido}</div>
+                  <div style={{ fontSize: 11, color: "#6b7280" }}>Referido por: <span style={{ color: "#9ca3af" }}>{r.referidoPor || "—"}</span> · {r.fecha}</div>
+                  {r.zona && <div style={{ fontSize: 11, color: "#4b5563" }}>📍 {r.zona}</div>}
                 </div>
-              )}
-              <div style={{ display: "flex", gap: 6 }}>
-                {r.telefono && (
-                  <a href={`https://wa.me/${r.telefono.replace(/\D/g,"")}`} target="_blank" rel="noreferrer"
-                    style={{ background: "#15803d22", color: "#22c55e", border: "1px solid #22c55e44", borderRadius: 6, padding: "5px 8px", fontSize: 12, textDecoration: "none" }}>💬</a>
+                <div style={{ flex: 1, minWidth: 100 }}>
+                  <div style={{ fontSize: 11, color: "#6b7280" }}>Tipo</div>
+                  <div style={{ fontSize: 13, color: "#9ca3af" }}>{r.tipo}</div>
+                  {r.presupuesto > 0 && <div style={{ fontSize: 12, color: "#e5e5e5" }}>{r.moneda} {fmt(r.presupuesto)}</div>}
+                </div>
+                <div style={{ flex: 1, minWidth: 100 }}>
+                  <span style={{ background: `${colEst(r.estado)}22`, color: colEst(r.estado), fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 4 }}>
+                    {lblEst(r.estado)}
+                  </span>
+                </div>
+                {r.estado === "cerrado" && (
+                  <div style={{ flex: 1, minWidth: 120, textAlign: "right" }}>
+                    <div style={{ fontSize: 11, color: "#6b7280" }}>Honorarios</div>
+                    <div style={{ fontWeight: 700, color: "#a855f7" }}>USD {fmt(r.honorarios)}</div>
+                    {r.recompensaAcordada > 0 && (
+                      <div style={{ fontSize: 11 }}>
+                        <span style={{ color: r.recompensaPagada ? "#22c55e" : "#f97316" }}>
+                          Recomp: USD {fmt(r.recompensaAcordada)} {r.recompensaPagada ? "✅" : "⏳"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 )}
-                {r.estado === "cerrado" && r.recompensaAcordada > 0 && (
-                  <button onClick={() => togglePago(r.id)}
-                    style={{ background: r.recompensaPagada ? "#22c55e22" : "#f9731622", color: r.recompensaPagada ? "#22c55e" : "#f97316", border: `1px solid ${r.recompensaPagada ? "#22c55e44" : "#f9731644"}`, borderRadius: 6, padding: "5px 8px", fontSize: 11, cursor: "pointer" }}>
-                    {r.recompensaPagada ? "Pagado" : "Pagar"}
-                  </button>
-                )}
-                <button onClick={() => abrirEditar(r)}
-                  style={{ background: "#1a1a1a", color: "#9ca3af", border: "1px solid #333", borderRadius: 6, padding: "5px 8px", fontSize: 12, cursor: "pointer" }}>✏️</button>
-                <button onClick={() => eliminar(r.id)}
-                  style={{ background: "transparent", color: "#4b5563", border: "none", cursor: "pointer", fontSize: 14 }}>✕</button>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {r.telefono && (
+                    <a href={`https://wa.me/${r.telefono.replace(/\D/g,"")}`} target="_blank" rel="noreferrer"
+                      style={{ background: "#15803d22", color: "#22c55e", border: "1px solid #22c55e44", borderRadius: 6, padding: "5px 8px", fontSize: 12, textDecoration: "none" }}>💬</a>
+                  )}
+                  {r.estado === "cerrado" && r.recompensaAcordada > 0 && (
+                    <button onClick={() => togglePago(r.id)}
+                      style={{ background: r.recompensaPagada ? "#22c55e22" : "#f9731622", color: r.recompensaPagada ? "#22c55e" : "#f97316", border: `1px solid ${r.recompensaPagada ? "#22c55e44" : "#f9731644"}`, borderRadius: 6, padding: "5px 8px", fontSize: 11, cursor: "pointer" }}>
+                      {r.recompensaPagada ? "Pagado" : "Pagar"}
+                    </button>
+                  )}
+                  <button onClick={() => abrirEditar(r)}
+                    style={{ background: "#1a1a1a", color: "#9ca3af", border: "1px solid #333", borderRadius: 6, padding: "5px 8px", fontSize: 12, cursor: "pointer" }}>✏️</button>
+                  <button onClick={() => eliminar(r.id)}
+                    style={{ background: "transparent", color: "#4b5563", border: "none", cursor: "pointer", fontSize: 14 }}>✕</button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Modal formulario */}
         {formOpen && (

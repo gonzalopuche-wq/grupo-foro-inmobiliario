@@ -176,16 +176,17 @@ export default function SmartMatch() {
   const [expandido, setExpandido] = useState<string | null>(null);
 
   useEffect(() => {
-    async function load() {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
       const [{ data: c }, { data: p }] = await Promise.all([
-        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,interes,presupuesto_min,presupuesto_max,moneda,zona_interes,estado,etiquetas").eq("estado", "activo"),
-        supabase.from("cartera_propiedades").select("id,titulo,operacion,tipo,precio,moneda,zona,ciudad,dormitorios,ambientes,superficie_cubierta,estado,apto_credito,con_cochera").eq("estado", "activa"),
+        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,interes,presupuesto_min,presupuesto_max,moneda,zona_interes,estado,etiquetas").eq("perfil_id", uid).eq("estado", "activo"),
+        supabase.from("cartera_propiedades").select("id,titulo,operacion,tipo,precio,moneda,zona,ciudad,dormitorios,ambientes,superficie_cubierta,estado,apto_credito,con_cochera").eq("perfil_id", uid).eq("estado", "activa"),
       ]);
       setContactos((c ?? []) as Contacto[]);
       setPropiedades((p ?? []) as Propiedad[]);
       setLoading(false);
-    }
-    load();
+    });
   }, []);
 
   const matches = useMemo<MatchResult[]>(() => {

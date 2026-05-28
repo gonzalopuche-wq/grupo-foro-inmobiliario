@@ -48,8 +48,6 @@ interface NegocioCerrado {
 
 // ── constantes ────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = "crm_seguimiento_post_v1";
-
 const TIPO_CONTACTO_LABELS: Record<TipoContacto, string> = {
   llamada: "Llamada",
   whatsapp: "WhatsApp",
@@ -91,7 +89,7 @@ const RESULTADO_CONFIG: Record<ContactoPost["resultado"], { label: string; color
 
 // ── utilidades ────────────────────────────────────────────────────────────────
 
-function uid(): string {
+function genId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
@@ -138,22 +136,6 @@ function diasHasta(fecha: string): number {
   return Math.ceil((new Date(fecha).getTime() - Date.now()) / 86400000);
 }
 
-// ── carga/guardado storage ────────────────────────────────────────────────────
-
-function cargarStorage(): SeguimientoPost[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as SeguimientoPost[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function guardarStorage(data: SeguimientoPost[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
 // ── estado nuevo contacto ─────────────────────────────────────────────────────
 
 function nuevoContactoVacio(): Omit<ContactoPost, "id"> {
@@ -194,6 +176,7 @@ function nuevoSeguimientoVacio(): Omit<SeguimientoPost, "id" | "createdAt"> {
 export default function SeguimientoPostVentaPage() {
   const [seguimientos, setSeguimientos] = useState<SeguimientoPost[]>([]);
   const [negocios, setNegocios] = useState<NegocioCerrado[]>([]);
+  const [uid, setUid] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"lista" | "calendario" | "analytics">("lista");
 
@@ -215,26 +198,43 @@ export default function SeguimientoPostVentaPage() {
   // ── carga inicial ─────────────────────────────────────────────────────────
 
   useEffect(() => {
-    setSeguimientos(cargarStorage());
-
-    (async () => {
-      const { data } = await supabase
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_seguimiento_post_venta")
+        .select("seguimientos")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.seguimientos && Array.isArray(row.seguimientos)) {
+        setSeguimientos(row.seguimientos as SeguimientoPost[]);
+      }
+      const { data: negData } = await supabase
         .from("crm_negocios")
         .select("id,titulo,tipo_operacion,fecha_cierre,etapa")
         .eq("etapa", "cerrado")
         .order("fecha_cierre", { ascending: false })
         .limit(100);
-      setNegocios((data ?? []) as NegocioCerrado[]);
+      setNegocios((negData ?? []) as NegocioCerrado[]);
       setLoading(false);
-    })();
+    });
   }, []);
 
   // ── persistencia ──────────────────────────────────────────────────────────
 
+  const guardarSB = useCallback((items: SeguimientoPost[]) => {
+    if (!uid) return;
+    supabase.from("crm_seguimiento_post_venta").upsert(
+      { perfil_id: uid, seguimientos: items, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    ).then(() => {});
+  }, [uid]);
+
   const persistir = useCallback((lista: SeguimientoPost[]) => {
     setSeguimientos(lista);
-    guardarStorage(lista);
-  }, []);
+    guardarSB(lista);
+  }, [guardarSB]);
 
   // ── kpis ──────────────────────────────────────────────────────────────────
 
@@ -325,7 +325,7 @@ export default function SeguimientoPostVentaPage() {
     const form = nuevoContactoForm[segId];
     if (!form || !form.descripcion.trim()) return;
 
-    const nuevoC: ContactoPost = { id: uid(), ...form };
+    const nuevoC: ContactoPost = { id: genId(),...form };
     const lista = seguimientos.map(s => {
       if (s.id !== segId) return s;
       const generaRef = s.generaReferido || nuevoC.generaReferido;
@@ -364,7 +364,7 @@ export default function SeguimientoPostVentaPage() {
   const guardarNuevoSeguimiento = () => {
     if (!draftSeg.clienteNombre.trim()) return;
     const nuevo: SeguimientoPost = {
-      id: uid(),
+      id: genId(),
       createdAt: new Date().toISOString(),
       ...draftSeg,
     };

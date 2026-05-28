@@ -49,7 +49,6 @@ interface ResumenHonorario {
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 
-const LS_KEY = "crm_honorarios_v1";
 const ESTADO_META: Record<EstadoCobro, { label: string; color: string; bg: string }> = {
   pendiente:   { label: "Pendiente",    color: "#9ca3af", bg: "rgba(156,163,175,0.12)" },
   parcial:     { label: "Parcial",      color: "#f59e0b", bg: "rgba(245,158,11,0.12)" },
@@ -78,18 +77,6 @@ function addDays(iso: string, days: number): string {
 
 function hoy(): string {
   return new Date().toISOString().slice(0, 10);
-}
-
-function loadLS(): Record<string, HonorarioExtra> {
-  try {
-    return JSON.parse(localStorage.getItem(LS_KEY) ?? "{}");
-  } catch {
-    return {};
-  }
-}
-
-function saveLS(data: Record<string, HonorarioExtra>): void {
-  localStorage.setItem(LS_KEY, JSON.stringify(data));
 }
 
 function cuotasDefault(total: number, fechaBase: string): CuotaHonorario[] {
@@ -189,26 +176,38 @@ export default function GestionHonorariosPage() {
 
   // Cargar datos
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { window.location.href = "/login"; return; }
       setUid(data.user.id);
-      supabase
+      const { data: rows } = await supabase
         .from("crm_negocios")
         .select("id, titulo, tipo_operacion, valor_operacion, moneda, honorarios_pct, split_pct, fecha_cierre, updated_at, crm_contactos(nombre, apellido)")
         .eq("etapa", "cerrado")
         .eq("perfil_id", data.user.id)
-        .order("updated_at", { ascending: false })
-        .then(({ data: rows }) => {
-          const raw = (rows ?? []) as NegocioRaw[];
-          setNegocios(raw);
-          if (raw.length > 0) setNegocioSelId(raw[0].id);
-          setLoading(false);
-        });
+        .order("updated_at", { ascending: false });
+      const raw = (rows ?? []) as NegocioRaw[];
+      setNegocios(raw);
+      if (raw.length > 0) setNegocioSelId(raw[0].id);
+      // Load honorarios cuotas from Supabase
+      const { data: cuotasRows } = await supabase
+        .from("crm_honorarios_cuotas")
+        .select("negocio_id, cuotas, notas, estado")
+        .eq("perfil_id", data.user.id);
+      const extrasMap: Record<string, HonorarioExtra> = {};
+      for (const row of cuotasRows ?? []) {
+        extrasMap[row.negocio_id] = {
+          negocio_id: row.negocio_id,
+          cuotas: row.cuotas as CuotaHonorario[],
+          notas: row.notas ?? "",
+          estado: row.estado as EstadoCobro,
+        };
+      }
+      setExtras(extrasMap);
+      setLoading(false);
     });
-    setExtras(loadLS());
   }, []);
 
-  // Guardar extras en localStorage
+  // Guardar extras en Supabase
   const updateExtra = useCallback((negocioId: string, patch: Partial<HonorarioExtra>) => {
     setExtras(prev => {
       const defaults: HonorarioExtra = {
@@ -221,10 +220,21 @@ export default function GestionHonorariosPage() {
         ...prev,
         [negocioId]: { ...defaults, ...prev[negocioId], ...patch },
       };
-      saveLS(next);
+      // Save to Supabase (fire-and-forget)
+      if (uid) {
+        const updated = next[negocioId];
+        supabase.from("crm_honorarios_cuotas").upsert({
+          perfil_id: uid,
+          negocio_id: negocioId,
+          cuotas: updated.cuotas,
+          notas: updated.notas,
+          estado: updated.estado,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "perfil_id,negocio_id" }).then(() => {});
+      }
       return next;
     });
-  }, []);
+  }, [uid]);
 
   // Resúmenes calculados
   const resumenes = useMemo<ResumenHonorario[]>(() =>

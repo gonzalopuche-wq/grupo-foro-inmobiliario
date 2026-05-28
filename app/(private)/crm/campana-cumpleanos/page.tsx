@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "../../../lib/supabase";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -34,10 +34,6 @@ interface Plantillas {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const STORAGE_FELICITADOS = "crm_felicitados_v1";
-const STORAGE_PLANTILLAS = "crm_plantillas_cumple_v1";
-const STORAGE_CONFIG = "crm_config_cumple_v1";
 
 const PLANTILLAS_DEFAULT: Plantillas = {
   whatsapp:
@@ -324,6 +320,7 @@ function CalendarioMes({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function CampanaCumpleanosPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [totalContactos, setTotalContactos] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -341,35 +338,33 @@ export default function CampanaCumpleanosPage() {
   // ── Cargar datos ──────────────────────────────────────────────────────────
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_FELICITADOS);
-    if (stored) {
-      try { setFelicitados(JSON.parse(stored) as Felicitado[]); } catch { /* ignore */ }
-    }
-    const storedP = localStorage.getItem(STORAGE_PLANTILLAS);
-    if (storedP) {
-      try { setPlantillas(JSON.parse(storedP) as Plantillas); } catch { /* ignore */ }
-    }
-    const storedC = localStorage.getItem(STORAGE_CONFIG);
-    if (storedC) {
-      try { setConfig(JSON.parse(storedC) as ConfigLocal); } catch { /* ignore */ }
-    }
-  }, []);
-
-  useEffect(() => {
-    const cargar = async () => {
-      const [{ data: conFecha }, { count }] = await Promise.all([
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const [{ data: conFecha }, { count }, { data: campanaRow }] = await Promise.all([
         supabase
           .from("crm_contactos")
           .select("id,nombre,apellido,telefono,email,fecha_nacimiento,tipo,estado")
+          .eq("perfil_id", userId)
           .not("fecha_nacimiento", "is", null)
           .order("nombre"),
-        supabase.from("crm_contactos").select("id", { count: "exact", head: true }),
+        supabase.from("crm_contactos").select("id", { count: "exact", head: true }).eq("perfil_id", userId),
+        supabase
+          .from("crm_campana_cumpleanos")
+          .select("config, felicitados, plantillas")
+          .eq("perfil_id", userId)
+          .maybeSingle(),
       ]);
       setContactos((conFecha ?? []) as Contacto[]);
       setTotalContactos(count ?? 0);
+      if (campanaRow) {
+        if (campanaRow.felicitados && Array.isArray(campanaRow.felicitados)) setFelicitados(campanaRow.felicitados as Felicitado[]);
+        if (campanaRow.plantillas && typeof campanaRow.plantillas === "object" && !Array.isArray(campanaRow.plantillas)) setPlantillas(campanaRow.plantillas as Plantillas);
+        if (campanaRow.config && typeof campanaRow.config === "object" && !Array.isArray(campanaRow.config)) setConfig(campanaRow.config as ConfigLocal);
+      }
       setLoading(false);
-    };
-    cargar();
+    });
   }, []);
 
   // ── Cálculos ──────────────────────────────────────────────────────────────
@@ -436,6 +431,20 @@ export default function CampanaCumpleanosPage() {
   const esFelicitado = (id: string) =>
     felicitadosEsteAnio.some((f) => f.contactoId === id);
 
+  // ── Supabase save helper ──────────────────────────────────────────────────
+
+  const guardarSB = useCallback(
+    (data: { config?: ConfigLocal; felicitados?: Felicitado[]; plantillas?: Plantillas }) => {
+      if (!uid) return;
+      const payload: Record<string, unknown> = { perfil_id: uid, updated_at: new Date().toISOString() };
+      if (data.config !== undefined) payload.config = data.config;
+      if (data.felicitados !== undefined) payload.felicitados = data.felicitados;
+      if (data.plantillas !== undefined) payload.plantillas = data.plantillas;
+      supabase.from("crm_campana_cumpleanos").upsert(payload, { onConflict: "perfil_id" }).then(() => {});
+    },
+    [uid]
+  );
+
   // ── Acciones ──────────────────────────────────────────────────────────────
 
   const marcarFelicitado = (id: string) => {
@@ -446,13 +455,13 @@ export default function CampanaCumpleanosPage() {
     };
     const actualizado = [...felicitados.filter((f) => !(f.contactoId === id && f.anio === anioActual)), nuevo];
     setFelicitados(actualizado);
-    localStorage.setItem(STORAGE_FELICITADOS, JSON.stringify(actualizado));
+    guardarSB({ felicitados: actualizado });
   };
 
   const desmarcarFelicitado = (id: string) => {
     const actualizado = felicitados.filter((f) => !(f.contactoId === id && f.anio === anioActual));
     setFelicitados(actualizado);
-    localStorage.setItem(STORAGE_FELICITADOS, JSON.stringify(actualizado));
+    guardarSB({ felicitados: actualizado });
   };
 
   const copiarMensaje = async (c: Contacto) => {
@@ -478,12 +487,12 @@ export default function CampanaCumpleanosPage() {
 
   const guardarPlantillas = (p: Plantillas) => {
     setPlantillas(p);
-    localStorage.setItem(STORAGE_PLANTILLAS, JSON.stringify(p));
+    guardarSB({ plantillas: p });
   };
 
   const guardarConfig = (c: ConfigLocal) => {
     setConfig(c);
-    localStorage.setItem(STORAGE_CONFIG, JSON.stringify(c));
+    guardarSB({ config: c });
   };
 
   // ── Estilos base ──────────────────────────────────────────────────────────
@@ -1136,7 +1145,7 @@ export default function CampanaCumpleanosPage() {
                   onClick={() => {
                     const resto = felicitados.filter((f) => f.anio !== anioActual);
                     setFelicitados(resto);
-                    localStorage.setItem(STORAGE_FELICITADOS, JSON.stringify(resto));
+                    guardarSB({ felicitados: resto });
                   }}
                 >
                   Limpiar historial
