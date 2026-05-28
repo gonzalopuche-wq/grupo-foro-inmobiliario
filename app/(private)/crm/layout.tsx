@@ -1,385 +1,465 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
-const CRM_CORE = [
-  { href: "/crm",           icon: "📊", label: "Dashboard" },
-  { href: "/crm?s=contactos", icon: "👥", label: "Contactos" },
-  { href: "/crm?s=negocios",  icon: "💼", label: "Negocios" },
-  { href: "/crm?s=tareas",    icon: "✅", label: "Tareas" },
-  { href: "/crm?s=notas",     icon: "📝", label: "Notas" },
+// ── Estructura de navegación ──────────────────────────────────────────────────
+
+const NAV = [
+  {
+    id: "inicio",
+    icon: "📊",
+    label: "Inicio",
+    href: "/crm",
+    exact: true,
+  },
+  {
+    id: "propiedades",
+    icon: "🏠",
+    label: "Propiedades",
+    children: [
+      { href: "/crm/cartera",        label: "Listado" },
+      { href: "/crm/cartera/nueva",  label: "Nueva propiedad" },
+      { href: "/crm/busqueda",       label: "Búsquedas" },
+      { href: "/crm/autorizaciones", label: "Autorizaciones" },
+      { href: "/crm/tasacion",       label: "Tasaciones" },
+      { href: "/crm/difusion",       label: "Difusión" },
+    ],
+  },
+  {
+    id: "contactos",
+    icon: "👥",
+    label: "Contactos",
+    href: "/crm/contactos",
+  },
+  {
+    id: "negocios",
+    icon: "💼",
+    label: "Negocios",
+    children: [
+      { href: "/crm/negocios",        label: "Mis negocios" },
+      { href: "/crm/pipeline-kanban", label: "Pipeline" },
+      { href: "/crm/seguimiento",     label: "Seguimiento" },
+      { href: "/crm/escrituras",      label: "Escrituras" },
+    ],
+  },
+  {
+    id: "tareas",
+    icon: "✅",
+    label: "Tareas",
+    href: "/crm/tareas",
+  },
+  {
+    id: "agenda",
+    icon: "📅",
+    label: "Agenda",
+    children: [
+      { href: "/crm/hoy",           label: "Hoy" },
+      { href: "/agenda",            label: "Calendario" },
+      { href: "/crm/visitas",       label: "Visitas" },
+      { href: "/crm/vencimientos",  label: "Vencimientos" },
+    ],
+  },
+  {
+    id: "notas",
+    icon: "📝",
+    label: "Notas",
+    href: "/crm/notas",
+  },
+  {
+    id: "finanzas",
+    icon: "💰",
+    label: "Finanzas",
+    children: [
+      { href: "/crm/honorarios",  label: "Honorarios" },
+      { href: "/crm/comisiones",  label: "Comisiones" },
+      { href: "/crm/cobranzas",   label: "Cobranzas" },
+    ],
+  },
+  {
+    id: "actividad",
+    icon: "⚡",
+    label: "Actividad",
+    href: "/crm/actividad",
+  },
+  {
+    id: "config",
+    icon: "⚙️",
+    label: "Configuración",
+    href: "/crm/configuracion",
+  },
 ];
 
-const CRM_SECTIONS: { id: string; label: string; items: { href: string; icon: string; label: string }[] }[] = [
-  {
-    id: "agenda", label: "Agenda",
-    items: [
-      { href: "/crm/hoy",                icon: "🌅", label: "Hoy" },
-      { href: "/agenda",                 icon: "📆", label: "Agenda" },
-      { href: "/crm/visitas",            icon: "🗓",  label: "Visitas" },
-      { href: "/crm/vencimientos",       icon: "📅", label: "Vencimientos" },
-      { href: "/crm/recordatorios",      icon: "🔔", label: "Recordatorios" },
-      { href: "/crm/campana-cumpleanos", icon: "🎂", label: "Cumpleaños" },
-    ],
-  },
-  {
-    id: "propiedades", label: "Propiedades",
-    items: [
-      { href: "/crm/cartera",            icon: "🏠", label: "Cartera" },
-      { href: "/crm/propia",             icon: "🏛️", label: "Propia MLS" },
-      { href: "/crm/tasacion",           icon: "🔢", label: "Tasación" },
-      { href: "/crm/captacion",          icon: "📝", label: "Captación" },
-      { href: "/crm/llaves",             icon: "🔑", label: "Llaves" },
-      { href: "/crm/emprendimientos",    icon: "🏗️", label: "Emprendimientos" },
-      { href: "/crm/carga-masiva",       icon: "📥", label: "Carga Masiva" },
-    ],
-  },
-  {
-    id: "ventas", label: "Ventas",
-    items: [
-      { href: "/crm/seguimiento",        icon: "📡", label: "Seguimiento" },
-      { href: "/crm/embudo",             icon: "🔻", label: "Embudo" },
-      { href: "/crm/pipeline-kanban",    icon: "📋", label: "Kanban" },
-      { href: "/crm/forecast",           icon: "📊", label: "Forecast" },
-      { href: "/crm/negociacion",        icon: "🤝", label: "Negociación" },
-      { href: "/crm/checklist-cierre",   icon: "✅", label: "Cierre" },
-      { href: "/crm/escrituras",         icon: "⚖️", label: "Escrituras" },
-    ],
-  },
-  {
-    id: "marketing", label: "Marketing",
-    items: [
-      { href: "/crm/smart-match",        icon: "🎯", label: "Smart Match" },
-      { href: "/crm/campanas-marketing", icon: "📣", label: "Campañas" },
-      { href: "/crm/difusion",           icon: "📡", label: "Difusión" },
-      { href: "/crm/plantillas",         icon: "📄", label: "Plantillas" },
-      { href: "/crm/listas",             icon: "🔖", label: "Listas" },
-      { href: "/crm/busqueda",           icon: "🔍", label: "Búsqueda" },
-    ],
-  },
-  {
-    id: "finanzas", label: "Finanzas",
-    items: [
-      { href: "/crm/honorarios",         icon: "💰", label: "Honorarios" },
-      { href: "/crm/comisiones",         icon: "💰", label: "Comisiones" },
-      { href: "/crm/cobranzas",          icon: "💳", label: "Cobranzas" },
-      { href: "/crm/autorizaciones",     icon: "📋", label: "Autorizaciones" },
-    ],
-  },
-  {
-    id: "reportes", label: "Reportes",
-    items: [
-      { href: "/crm/actividad",               icon: "⚡", label: "Actividad" },
-      { href: "/crm/estadisticas-captacion",  icon: "📈", label: "Estadísticas" },
-      { href: "/crm/kpi-diario",              icon: "📊", label: "KPI" },
-      { href: "/crm/historial",               icon: "📋", label: "Historial" },
-    ],
-  },
-  {
-    id: "herramientas", label: "Herramientas",
-    items: [
-      { href: "/crm/integraciones",      icon: "🛠️", label: "Integraciones" },
-      { href: "/crm/api-accesos",        icon: "🔑", label: "API Accesos" },
-      { href: "/crm/smart-prospecting",  icon: "🎯", label: "Prospectos" },
-      { href: "/crm/webhooks",           icon: "⚡", label: "Webhooks" },
-      { href: "/crm/configuracion",      icon: "⚙️", label: "Config." },
-    ],
-  },
-];
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-function CrmLayoutInner({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const tabActivo = searchParams.get("s") ?? "dashboard";
-  const [abierto, setAbierto] = useState(true);
+function isActive(href: string, pathname: string, exact = false) {
+  if (exact) return pathname === href;
+  return pathname === href || pathname.startsWith(href + "/");
+}
 
-  function isActivo(href: string) {
-    if (href === "/crm") return pathname === "/crm" && tabActivo === "dashboard";
-    if (href.startsWith("/crm?s=")) {
-      const s = href.match(/[?&]s=([^&]+)/)?.[1] ?? "";
-      return pathname === "/crm" && tabActivo === s;
-    }
-    return pathname === href || (href !== "/crm" && (pathname.startsWith(href + "/") || pathname.startsWith(href)));
-  }
+function navItemActive(item: typeof NAV[0], pathname: string): boolean {
+  if ("href" in item && item.href) return isActive(item.href, pathname, item.exact);
+  if ("children" in item && item.children)
+    return item.children.some(c => isActive(c.href, pathname));
+  return false;
+}
 
-  // Detectar qué sección contiene la ruta activa
-  function activeSectionId(): string | null {
-    for (const sec of CRM_SECTIONS) {
-      if (sec.items.some(it => isActivo(it.href))) return sec.id;
-    }
-    return null;
-  }
+// ── Componente sidebar ────────────────────────────────────────────────────────
 
+function Sidebar({ pathname, onNav }: { pathname: string; onNav?: () => void }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
-    const active = CRM_SECTIONS.find(s => s.items.some(it => isActivo(it.href)));
-    return active ? { [active.id]: true } : {};
+    const init: Record<string, boolean> = {};
+    for (const item of NAV) {
+      if ("children" in item && item.children?.some(c => isActive(c.href, pathname))) {
+        init[item.id] = true;
+      }
+    }
+    return init;
   });
 
-  // Expandir automáticamente la sección al navegar
-  useEffect(() => {
-    const id = activeSectionId();
-    if (id) setExpanded(prev => ({ ...prev, [id]: true }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, tabActivo]);
+  function toggle(id: string) {
+    setExpanded(p => ({ ...p, [id]: !p[id] }));
+  }
 
-  function toggleSection(id: string) {
-    setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+  return (
+    <div className="crm2-sidebar">
+      <div className="crm2-sb-brand">
+        <span className="crm2-sb-logo">GFI®</span>
+        <span className="crm2-sb-sub">CRM Inmobiliario</span>
+      </div>
+
+      <nav className="crm2-sb-nav">
+        {NAV.map(item => {
+          const active = navItemActive(item, pathname);
+
+          if ("href" in item && item.href && !("children" in item)) {
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                className={`crm2-nav-item${active ? " act" : ""}`}
+                onClick={onNav}
+              >
+                <span className="crm2-nav-ico">{item.icon}</span>
+                <span className="crm2-nav-lbl">{item.label}</span>
+              </Link>
+            );
+          }
+
+          const open = !!expanded[item.id];
+          return (
+            <div key={item.id}>
+              <button
+                className={`crm2-nav-item crm2-nav-parent${active ? " act" : ""}`}
+                onClick={() => toggle(item.id)}
+              >
+                <span className="crm2-nav-ico">{item.icon}</span>
+                <span className="crm2-nav-lbl">{item.label}</span>
+                <span className={`crm2-nav-arrow${open ? " open" : ""}`}>›</span>
+              </button>
+              {open && (
+                <div className="crm2-nav-children">
+                  {"children" in item && item.children?.map(c => (
+                    <Link
+                      key={c.href}
+                      href={c.href}
+                      className={`crm2-nav-child${isActive(c.href, pathname) ? " act" : ""}`}
+                      onClick={onNav}
+                    >
+                      — {c.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </nav>
+    </div>
+  );
+}
+
+// ── Layout principal ──────────────────────────────────────────────────────────
+
+export default function CrmLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [busqueda, setBusqueda] = useState("");
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Cerrar drawer al cambiar ruta
+  useEffect(() => { setDrawerOpen(false); }, [pathname]);
+
+  // Cerrar al presionar Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setDrawerOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  function handleBuscar(e: React.FormEvent) {
+    e.preventDefault();
+    if (busqueda.trim()) {
+      router.push(`/crm/contactos?q=${encodeURIComponent(busqueda.trim())}`);
+      setBusqueda("");
+    }
   }
 
   return (
     <>
       <style>{`
-        .crm-root {
+        /* ── Reset de layout padre ── */
+        .crm2-root {
           display: flex;
           min-height: calc(100vh - 96px);
           margin: -24px -28px;
+          background: #080808;
         }
 
-        /* ── Sidebar ── */
-        .crm-sb {
+        /* ── Sidebar desktop ── */
+        .crm2-sidebar {
+          width: 220px;
           flex-shrink: 0;
-          background: rgba(5,5,5,0.99);
+          background: #0a0a0a;
           border-right: 1px solid rgba(255,255,255,0.07);
           display: flex;
           flex-direction: column;
-          overflow: hidden;
-          transition: width 0.2s cubic-bezier(0.4,0,0.2,1);
-          position: sticky;
-          top: 0;
-          height: 100vh;
-          max-height: 100vh;
-        }
-        .crm-sb.open  { width: 200px; }
-        .crm-sb.close { width: 36px; }
-
-        /* Header */
-        .crm-sb-head {
-          flex-shrink: 0;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 8px 0 12px;
-          height: 44px;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
-        .crm-sb.close .crm-sb-head { justify-content: center; padding: 0; }
-        .crm-sb-head-lbl {
-          font-family: 'Montserrat',sans-serif;
-          font-size: 9px; font-weight: 800;
-          letter-spacing: 0.22em; text-transform: uppercase;
-          color: rgba(255,255,255,0.45);
-          white-space: nowrap;
-        }
-
-        /* Toggle */
-        .crm-toggle {
-          flex-shrink: 0;
-          width: 26px; height: 26px;
-          border-radius: 5px;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.09);
-          color: rgba(255,255,255,0.5);
-          font-size: 10px;
-          cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          transition: background 0.12s, color 0.12s;
-        }
-        .crm-toggle:hover { background: rgba(204,0,0,0.18); color: #cc0000; border-color: rgba(204,0,0,0.35); }
-
-        /* Scroll area */
-        .crm-sb-scroll {
-          flex: 1;
+          height: 100%;
           overflow-y: auto;
           overflow-x: hidden;
-          padding: 4px 0 20px;
         }
-        .crm-sb-scroll::-webkit-scrollbar { width: 3px; }
-        .crm-sb-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
-        .crm-sb.close .crm-sb-scroll { display: none; }
+        .crm2-sidebar::-webkit-scrollbar { width: 3px; }
+        .crm2-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
 
-        /* Core items block */
-        .crm-core-block {
-          padding: 6px 8px 6px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          display: flex;
-          flex-direction: column;
-          gap: 1px;
-        }
-
-        /* Core nav item */
-        .crm-core-item {
-          display: flex; align-items: center; gap: 8px;
-          padding: 0 8px;
-          height: 30px;
-          text-decoration: none;
-          border-radius: 6px;
-          white-space: nowrap; overflow: hidden;
-          transition: background 0.1s;
-        }
-        .crm-core-item:hover { background: rgba(255,255,255,0.07); }
-        .crm-core-item.act   { background: rgba(204,0,0,0.15); }
-        .crm-core-item .crm-nav-ico { font-size: 13px; flex-shrink: 0; width: 18px; text-align: center; }
-        .crm-core-item .crm-nav-lbl {
-          font-family: 'Inter',sans-serif;
-          font-size: 12px; font-weight: 600;
-          color: rgba(255,255,255,0.8);
-        }
-        .crm-core-item.act .crm-nav-lbl { color: #fff; }
-
-        /* Section header row (clickable) */
-        .crm-sec-head {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 8px 10px 4px 12px;
-          cursor: pointer;
-          user-select: none;
-        }
-        .crm-sec-head:hover .crm-sec-lbl { color: rgba(255,255,255,0.55); }
-        .crm-sec-lbl {
-          font-family: 'Montserrat',sans-serif;
-          font-size: 7.5px; font-weight: 700;
-          letter-spacing: 0.20em; text-transform: uppercase;
-          color: rgba(255,255,255,0.28);
-          white-space: nowrap;
-          transition: color 0.12s;
-        }
-        .crm-sec-arrow {
-          font-size: 8px;
-          color: rgba(255,255,255,0.25);
-          transition: transform 0.18s, color 0.12s;
+        .crm2-sb-brand {
+          padding: 20px 16px 14px;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
           flex-shrink: 0;
         }
-        .crm-sec-head:hover .crm-sec-arrow { color: rgba(255,255,255,0.5); }
-        .crm-sec-arrow.open { transform: rotate(90deg); color: rgba(255,255,255,0.4); }
-
-        /* Section items container */
-        .crm-sec-items {
-          overflow: hidden;
-          transition: max-height 0.2s ease, opacity 0.18s ease;
+        .crm2-sb-logo {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 15px; font-weight: 800;
+          color: #cc0000; letter-spacing: 0.06em;
         }
-        .crm-sec-items.collapsed { max-height: 0; opacity: 0; }
-        .crm-sec-items.open      { max-height: 400px; opacity: 1; }
-
-        /* Nav item */
-        .crm-nav-item {
-          display: flex; align-items: center; gap: 9px;
-          padding: 0 12px;
-          height: 30px;
-          text-decoration: none;
-          border-left: 2px solid transparent;
-          white-space: nowrap; overflow: hidden;
-          transition: background 0.1s, border-color 0.1s;
+        .crm2-sb-sub {
+          display: block;
+          font-size: 10px; color: rgba(255,255,255,0.3);
+          margin-top: 2px; font-family: 'Inter', sans-serif;
         }
-        .crm-nav-item:hover { background: rgba(255,255,255,0.04); border-left-color: rgba(255,255,255,0.15); }
-        .crm-nav-item.act   { background: rgba(204,0,0,0.10); border-left-color: #cc0000; }
 
-        .crm-nav-ico {
-          font-size: 13px; flex-shrink: 0;
-          width: 18px; text-align: center;
-        }
-        .crm-nav-lbl {
-          font-family: 'Inter',sans-serif;
-          font-size: 12px; font-weight: 500;
-          color: rgba(255,255,255,0.72);
-          overflow: hidden; text-overflow: ellipsis;
-        }
-        .crm-nav-item.act .crm-nav-lbl { color: #fff; font-weight: 600; }
-
-        /* Collapsed sidebar: only icons */
-        .crm-sb.close .crm-core-block { padding: 4px 0; }
-        .crm-sb.close .crm-core-item  { justify-content: center; padding: 0; border-radius: 0; height: 34px; }
-        .crm-sb.close .crm-core-item .crm-nav-ico { width: 36px; font-size: 15px; }
-        .crm-sb.close .crm-core-item .crm-nav-lbl { display: none; }
-        .crm-sb.close .crm-sec-head,
-        .crm-sb.close .crm-sec-items { display: none; }
-
-        /* Content */
-        .crm-content {
+        .crm2-sb-nav {
           flex: 1;
-          min-width: 0;
+          padding: 8px 0 24px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* Item de nav */
+        .crm2-nav-item {
+          display: flex; align-items: center; gap: 10px;
+          padding: 0 16px; height: 38px;
+          text-decoration: none; cursor: pointer;
+          background: transparent; border: none; width: 100%;
+          text-align: left;
+          color: rgba(255,255,255,0.65);
+          font-family: 'Inter', sans-serif;
+          font-size: 13px; font-weight: 500;
+          border-left: 2px solid transparent;
+          transition: background 0.12s, color 0.12s, border-color 0.12s;
+        }
+        .crm2-nav-item:hover {
+          background: rgba(255,255,255,0.04);
+          color: rgba(255,255,255,0.9);
+          border-left-color: rgba(255,255,255,0.15);
+        }
+        .crm2-nav-item.act {
+          background: rgba(204,0,0,0.12);
+          color: #fff;
+          border-left-color: #cc0000;
+          font-weight: 600;
+        }
+        .crm2-nav-ico { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+        .crm2-nav-lbl { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .crm2-nav-arrow {
+          font-size: 16px; color: rgba(255,255,255,0.3);
+          transition: transform 0.18s;
+          line-height: 1;
+        }
+        .crm2-nav-arrow.open { transform: rotate(90deg); color: rgba(255,255,255,0.5); }
+
+        /* Sub-items */
+        .crm2-nav-children { padding-bottom: 2px; }
+        .crm2-nav-child {
+          display: block;
+          padding: 0 16px 0 46px; height: 32px;
+          line-height: 32px;
+          text-decoration: none;
+          font-family: 'Inter', sans-serif; font-size: 12px;
+          color: rgba(255,255,255,0.5);
+          border-left: 2px solid transparent;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          transition: background 0.1s, color 0.1s, border-color 0.1s;
+        }
+        .crm2-nav-child:hover {
+          background: rgba(255,255,255,0.03);
+          color: rgba(255,255,255,0.8);
+          border-left-color: rgba(255,255,255,0.12);
+        }
+        .crm2-nav-child.act {
+          color: #fff; font-weight: 500;
+          border-left-color: rgba(204,0,0,0.6);
+          background: rgba(204,0,0,0.07);
+        }
+
+        /* ── Header mobile ── */
+        .crm2-header {
+          display: none;
+          align-items: center; gap: 10px;
+          padding: 0 12px;
+          height: 52px;
+          background: #0a0a0a;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          position: sticky; top: 0; z-index: 40;
+        }
+        .crm2-hamburger {
+          width: 36px; height: 36px;
+          border-radius: 8px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.7);
+          font-size: 16px;
+          cursor: pointer; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .crm2-header-search {
+          flex: 1;
+          display: flex; align-items: center;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 8px;
+          padding: 0 12px; gap: 8px; height: 36px;
+        }
+        .crm2-header-search input {
+          flex: 1; background: none; border: none; outline: none;
+          color: #fff; font-size: 13px; font-family: 'Inter', sans-serif;
+        }
+        .crm2-header-search input::placeholder { color: rgba(255,255,255,0.3); }
+        .crm2-header-search .srch-ico { color: rgba(255,255,255,0.3); font-size: 14px; }
+        .crm2-header-title {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 14px; font-weight: 800;
+          color: #cc0000; flex-shrink: 0;
+        }
+
+        /* ── Overlay drawer mobile ── */
+        .crm2-overlay {
+          display: none;
+          position: fixed; inset: 0; z-index: 100;
+        }
+        .crm2-overlay.open { display: block; }
+        .crm2-overlay-bg {
+          position: absolute; inset: 0;
+          background: rgba(0,0,0,0.6);
+        }
+        .crm2-drawer {
+          position: absolute; top: 0; left: 0; bottom: 0;
+          width: 280px; max-width: 85vw;
+          background: #0a0a0a;
+          border-right: 1px solid rgba(255,255,255,0.08);
+          overflow-y: auto;
+          animation: crm2-slide-in 0.22s ease;
+        }
+        @keyframes crm2-slide-in {
+          from { transform: translateX(-100%); }
+          to   { transform: translateX(0); }
+        }
+        .crm2-drawer-header {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 16px 16px 12px;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .crm2-drawer-close {
+          width: 32px; height: 32px;
+          border-radius: 6px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.6);
+          font-size: 16px; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ── Content ── */
+        .crm2-content {
+          flex: 1; min-width: 0;
           padding: 24px 28px;
           overflow-y: auto;
         }
 
-        @media (max-width: 900px) {
-          .crm-sb.open { width: 180px; }
-          .crm-content { padding: 16px; }
+        /* ── Desktop: show sidebar, hide header ── */
+        @media (min-width: 769px) {
+          .crm2-root { display: flex; }
+          .crm2-sidebar-wrap { display: contents; }
+          .crm2-header { display: none !important; }
+          .crm2-overlay { display: none !important; }
         }
-        @media (max-width: 640px) {
-          .crm-sb.open { width: 44px; }
-          .crm-sb.open .crm-core-item { justify-content: center; padding: 0; }
-          .crm-sb.open .crm-core-item .crm-nav-ico { width: 44px; font-size: 15px; }
-          .crm-sb.open .crm-core-item .crm-nav-lbl { display: none; }
-          .crm-sb.open .crm-sec-head,
-          .crm-sb.open .crm-sec-items { display: none; }
-          .crm-sb-head { justify-content: center; padding: 0; }
-          .crm-sb-head-lbl { display: none; }
-          .crm-content { padding: 12px; }
+
+        /* ── Mobile: hide sidebar, show header ── */
+        @media (max-width: 768px) {
+          .crm2-root { flex-direction: column; }
+          .crm2-sidebar-wrap { display: none; }
+          .crm2-header { display: flex; }
+          .crm2-content { padding: 12px; }
+          .crm2-drawer .crm2-sb-nav .crm2-nav-item { height: 44px; font-size: 14px; }
+          .crm2-drawer .crm2-nav-child { height: 36px; line-height: 36px; font-size: 13px; }
         }
       `}</style>
 
-      <div className="crm-root">
+      {/* Header mobile */}
+      <header className="crm2-header">
+        <button className="crm2-hamburger" onClick={() => setDrawerOpen(true)} aria-label="Abrir menú">
+          ☰
+        </button>
+        <span className="crm2-header-title">CRM</span>
+        <form className="crm2-header-search" onSubmit={handleBuscar}>
+          <span className="srch-ico">🔍</span>
+          <input
+            placeholder="Buscar contacto, propiedad..."
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+          />
+        </form>
+      </header>
 
-        <nav className={`crm-sb ${abierto ? "open" : "close"}`} aria-label="Menú CRM">
-          <div className="crm-sb-head">
-            {abierto && <span className="crm-sb-head-lbl">CRM GFI®</span>}
-            <button
-              className="crm-toggle"
-              onClick={() => setAbierto(v => !v)}
-              title={abierto ? "Colapsar" : "Expandir"}
-              aria-label={abierto ? "Colapsar menú CRM" : "Expandir menú CRM"}
-            >
-              {abierto ? "◀" : "▶"}
-            </button>
-          </div>
-
-          <div className="crm-sb-scroll">
-            {/* Items principales siempre visibles */}
-            <div className="crm-core-block">
-              {CRM_CORE.map(item => (
-                <Link key={item.href} href={item.href} className={`crm-core-item${isActivo(item.href) ? " act" : ""}`}>
-                  <span className="crm-nav-ico">{item.icon}</span>
-                  <span className="crm-nav-lbl">{item.label}</span>
-                </Link>
-              ))}
+      {/* Overlay drawer mobile */}
+      <div className={`crm2-overlay${drawerOpen ? " open" : ""}`} ref={overlayRef}>
+        <div className="crm2-overlay-bg" onClick={() => setDrawerOpen(false)} />
+        <div className="crm2-drawer">
+          <div className="crm2-drawer-header">
+            <div>
+              <span className="crm2-sb-logo">GFI®</span>
+              <span className="crm2-sb-sub">CRM Inmobiliario</span>
             </div>
-
-            {/* Secciones colapsables */}
-            {CRM_SECTIONS.map(sec => {
-              const isOpen = !!expanded[sec.id];
-              return (
-                <div key={sec.id}>
-                  <div className="crm-sec-head" onClick={() => toggleSection(sec.id)} role="button" aria-expanded={isOpen}>
-                    <span className="crm-sec-lbl">{sec.label}</span>
-                    <span className={`crm-sec-arrow${isOpen ? " open" : ""}`}>▶</span>
-                  </div>
-                  <div className={`crm-sec-items${isOpen ? " open" : " collapsed"}`}>
-                    {sec.items.map(item => (
-                      <Link key={item.href} href={item.href} className={`crm-nav-item${isActivo(item.href) ? " act" : ""}`}>
-                        <span className="crm-nav-ico">{item.icon}</span>
-                        <span className="crm-nav-lbl">{item.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+            <button className="crm2-drawer-close" onClick={() => setDrawerOpen(false)}>✕</button>
           </div>
-        </nav>
+          <Sidebar pathname={pathname} onNav={() => setDrawerOpen(false)} />
+        </div>
+      </div>
 
-        <div className="crm-content">
+      <div className="crm2-root">
+        {/* Sidebar desktop */}
+        <div className="crm2-sidebar-wrap">
+          <Sidebar pathname={pathname} />
+        </div>
+
+        {/* Contenido */}
+        <div className="crm2-content">
           {children}
         </div>
       </div>
     </>
-  );
-}
-
-export default function CrmLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <Suspense fallback={null}>
-      <CrmLayoutInner>{children}</CrmLayoutInner>
-    </Suspense>
   );
 }
