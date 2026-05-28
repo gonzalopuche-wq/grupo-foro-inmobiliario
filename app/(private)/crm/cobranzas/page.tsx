@@ -3,17 +3,19 @@
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 
+// Usa la tabla crm_contratos (migración 097) + columnas dia_vencimiento/estado (migración 105)
 interface Contrato {
   id: string;
   perfil_id: string;
-  inquilino: string;
-  propiedad: string;
-  telefono: string | null;
-  alquiler_base: number;
+  inquilino_nombre: string;
+  inquilino_telefono: string | null;
+  propietario_nombre: string;
+  direccion: string;
+  alquiler_actual: number;
   moneda: "ARS" | "USD";
   dia_vencimiento: number;
-  fecha_inicio: string | null;
-  fecha_fin: string | null;
+  fecha_inicio: string;
+  fecha_fin: string;
   estado: "activo" | "finalizado" | "en-proceso";
   notas: string | null;
 }
@@ -30,8 +32,9 @@ interface Pago {
 }
 
 const FORM_VACIO = {
-  inquilino: "", propiedad: "", telefono: "",
-  alquiler_base: "", moneda: "ARS" as "ARS" | "USD",
+  inquilino_nombre: "", propietario_nombre: "", inquilino_telefono: "",
+  direccion: "",
+  alquiler_actual: "", moneda: "ARS" as "ARS" | "USD",
   dia_vencimiento: "5", fecha_inicio: "", fecha_fin: "", notas: "",
 };
 
@@ -73,16 +76,16 @@ const estadoLabel = (e: string | undefined) => {
 };
 
 export default function CobranzasPage() {
-  const [uid, setUid]           = useState<string | null>(null);
+  const [uid, setUid]             = useState<string | null>(null);
   const [contratos, setContratos] = useState<Contrato[]>([]);
-  const [pagos, setPagos]       = useState<Pago[]>([]);
-  const [mes, setMes]           = useState(mesActual());
-  const [tc, setTc]             = useState(1300);
-  const [loading, setLoading]   = useState(true);
-  const [modal, setModal]       = useState(false);
-  const [form, setForm]         = useState(FORM_VACIO);
+  const [pagos, setPagos]         = useState<Pago[]>([]);
+  const [mes, setMes]             = useState(mesActual());
+  const [tc, setTc]               = useState(1300);
+  const [loading, setLoading]     = useState(true);
+  const [modal, setModal]         = useState(false);
+  const [form, setForm]           = useState(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
-  const [toast, setToast]       = useState<string | null>(null);
+  const [toast, setToast]         = useState<string | null>(null);
   const [verFinalizados, setVerFinalizados] = useState(false);
 
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(null), 3200); };
@@ -98,7 +101,10 @@ export default function CobranzasPage() {
   const cargar = async (id: string) => {
     setLoading(true);
     const [{ data: c }, { data: p }] = await Promise.all([
-      supabase.from("crm_contratos").select("*").eq("perfil_id", id).order("created_at", { ascending: false }),
+      supabase.from("crm_contratos")
+        .select("id,perfil_id,inquilino_nombre,inquilino_telefono,propietario_nombre,direccion,alquiler_actual,moneda,dia_vencimiento,fecha_inicio,fecha_fin,estado,notas")
+        .eq("perfil_id", id)
+        .order("created_at", { ascending: false }),
       supabase.from("crm_pagos_alquiler").select("*").eq("perfil_id", id),
     ]);
     setContratos((c as Contrato[]) ?? []);
@@ -107,21 +113,23 @@ export default function CobranzasPage() {
   };
 
   const guardarContrato = async () => {
-    if (!form.inquilino.trim() || !form.propiedad.trim() || !uid) return;
+    if (!form.inquilino_nombre.trim() || !form.direccion.trim() || !uid) return;
     setGuardando(true);
     const payload = {
-      perfil_id: uid,
-      inquilino: form.inquilino.trim(),
-      propiedad: form.propiedad.trim(),
-      telefono: form.telefono || null,
-      alquiler_base: parseFloat(form.alquiler_base) || 0,
-      moneda: form.moneda,
-      dia_vencimiento: parseInt(form.dia_vencimiento) || 5,
-      fecha_inicio: form.fecha_inicio || null,
-      fecha_fin: form.fecha_fin || null,
-      estado: "activo" as const,
-      notas: form.notas || null,
-      updated_at: new Date().toISOString(),
+      perfil_id:         uid,
+      inquilino_nombre:  form.inquilino_nombre.trim(),
+      inquilino_telefono: form.inquilino_telefono || null,
+      propietario_nombre: form.propietario_nombre.trim() || "",
+      direccion:         form.direccion.trim(),
+      alquiler_inicial:  parseFloat(form.alquiler_actual) || 0,
+      alquiler_actual:   parseFloat(form.alquiler_actual) || 0,
+      moneda:            form.moneda,
+      dia_vencimiento:   parseInt(form.dia_vencimiento) || 5,
+      fecha_inicio:      form.fecha_inicio || new Date().toISOString().slice(0, 10),
+      fecha_fin:         form.fecha_fin || new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString().slice(0, 10),
+      estado:            "activo" as const,
+      notas:             form.notas || null,
+      updated_at:        new Date().toISOString(),
     };
     await supabase.from("crm_contratos").insert(payload);
     setGuardando(false);
@@ -158,14 +166,14 @@ export default function CobranzasPage() {
     } else {
       const { data } = await supabase.from("crm_pagos_alquiler")
         .insert({
-          perfil_id: uid,
+          perfil_id:   uid,
           contrato_id: contrato.id,
-          mes: m,
-          monto: null,
-          fecha_pago: estado === "pagado" ? new Date().toISOString().slice(0, 10) : null,
+          mes:         m,
+          monto:       null,
+          fecha_pago:  estado === "pagado" ? new Date().toISOString().slice(0, 10) : null,
           estado,
-          diferencia: 0,
-          notas: null,
+          diferencia:  0,
+          notas:       null,
         })
         .select()
         .single();
@@ -191,17 +199,17 @@ export default function CobranzasPage() {
   const stats = useMemo(() => {
     const activos = contratos.filter(c => c.estado === "activo");
     const pagosMes = activos.map(c => ({ contrato: c, pago: getPago(c.id, mes) }));
-    const pagados   = pagosMes.filter(x => x.pago?.estado === "pagado").length;
-    const pendientes= pagosMes.filter(x => !x.pago || x.pago.estado === "pendiente").length;
-    const morosos   = pagosMes.filter(x => x.pago?.estado === "moroso").length;
+    const pagados    = pagosMes.filter(x => x.pago?.estado === "pagado").length;
+    const pendientes = pagosMes.filter(x => !x.pago || x.pago.estado === "pendiente").length;
+    const morosos    = pagosMes.filter(x => x.pago?.estado === "moroso").length;
     const totalEsperado = pagosMes.reduce((s, x) => {
-      const monto = x.contrato.moneda === "USD" ? x.contrato.alquiler_base * tc : x.contrato.alquiler_base;
+      const monto = x.contrato.moneda === "USD" ? x.contrato.alquiler_actual * tc : x.contrato.alquiler_actual;
       return s + monto;
     }, 0);
     const totalCobrado = pagosMes
       .filter(x => x.pago?.estado === "pagado" || x.pago?.estado === "parcial")
       .reduce((s, x) => {
-        const base = x.pago?.monto ?? x.contrato.alquiler_base;
+        const base = x.pago?.monto ?? x.contrato.alquiler_actual;
         return s + (x.contrato.moneda === "USD" ? base * tc : base);
       }, 0);
     return { pagados, pendientes, morosos, totalEsperado, totalCobrado };
@@ -219,8 +227,8 @@ export default function CobranzasPage() {
         .cob-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
         .cob-field { margin-bottom: 12px; }
         @media (max-width: 600px) {
-          .cob-stats { grid-template-columns: repeat(2,1fr) !important; }
-          .cob-grid2 { grid-template-columns: 1fr !important; }
+          .cob-stats { flex-direction: column !important; }
+          .cob-grid3 { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
@@ -248,7 +256,7 @@ export default function CobranzasPage() {
           </div>
         </div>
 
-        {/* Filtros */}
+        {/* Filtros + stats */}
         <div className="cob-card" style={{ display: "flex", gap: 14, alignItems: "flex-end", flexWrap: "wrap" }}>
           <div>
             <label className="cob-label">Mes</label>
@@ -296,7 +304,7 @@ export default function CobranzasPage() {
         ) : contratosVisibles.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px 20px", color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif" }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>📋</div>
-            <div style={{ fontWeight: 700 }}>Sin contratos</div>
+            <div style={{ fontWeight: 700 }}>Sin contratos activos</div>
             <div style={{ fontSize: 12, marginTop: 4 }}>Hacé clic en "+ Contrato" para agregar uno</div>
           </div>
         ) : (
@@ -305,14 +313,17 @@ export default function CobranzasPage() {
               const p = getPago(c.id, mes);
               const estado = p?.estado ?? "pendiente";
               const mora = (!p || estado === "pendiente" || estado === "moroso") ? diasMora(mes, c.dia_vencimiento) : 0;
-              const montoDisplay = `${c.moneda} ${fmt(c.alquiler_base)}`;
+              const montoDisplay = `${c.moneda} ${fmt(c.alquiler_actual)}`;
               return (
                 <div key={c.id} className="cob-card" style={{ borderColor: `${estadoColor(estado)}33` }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                     <div>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#fff" }}>{c.inquilino}</div>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{c.propiedad}</div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>Vence día {c.dia_vencimiento} · {montoDisplay}/mes</div>
+                      <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#fff" }}>{c.inquilino_nombre}</div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{c.direccion}</div>
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>
+                        Vence día {c.dia_vencimiento} · {montoDisplay}/mes
+                        {c.propietario_nombre && <span> · Prop: {c.propietario_nombre}</span>}
+                      </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
                       <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 13, color: estadoColor(estado) }}>
@@ -335,8 +346,8 @@ export default function CobranzasPage() {
                         {estadoLabel(est)}
                       </button>
                     ))}
-                    {c.telefono && (
-                      <a href={`https://wa.me/54${c.telefono}?text=${encodeURIComponent(`Hola ${c.inquilino.split(",")[0]}, te recordamos que el alquiler de ${mesLabel(mes)} por ${montoDisplay} vence el día ${c.dia_vencimiento}. Gracias!`)}`}
+                    {c.inquilino_telefono && (
+                      <a href={`https://wa.me/54${c.inquilino_telefono}?text=${encodeURIComponent(`Hola ${c.inquilino_nombre.split(",")[0]}, te recordamos que el alquiler de ${mesLabel(mes)} por ${montoDisplay} vence el día ${c.dia_vencimiento}. Gracias!`)}`}
                         target="_blank" rel="noreferrer"
                         style={{ background: "rgba(37,211,102,0.12)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 5, color: "#25d366", padding: "4px 12px", fontSize: 10, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em" }}>
                         💬 WA
@@ -358,25 +369,29 @@ export default function CobranzasPage() {
       {/* Modal nuevo contrato */}
       {modal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 24, width: "100%", maxWidth: 480, maxHeight: "90vh", overflowY: "auto" }}>
+          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 24, width: "100%", maxWidth: 500, maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 20 }}>Nuevo Contrato</div>
 
             <div className="cob-field">
               <label className="cob-label">Inquilino *</label>
-              <input className="cob-input" placeholder="Apellido, Nombre" value={form.inquilino} onChange={e => setForm(f => ({ ...f, inquilino: e.target.value }))} />
+              <input className="cob-input" placeholder="Apellido, Nombre" value={form.inquilino_nombre} onChange={e => setForm(f => ({ ...f, inquilino_nombre: e.target.value }))} />
             </div>
             <div className="cob-field">
-              <label className="cob-label">Propiedad / Dirección *</label>
-              <input className="cob-input" placeholder="Ej: Corrientes 1234 3°A" value={form.propiedad} onChange={e => setForm(f => ({ ...f, propiedad: e.target.value }))} />
+              <label className="cob-label">Propietario</label>
+              <input className="cob-input" placeholder="Apellido, Nombre del dueño" value={form.propietario_nombre} onChange={e => setForm(f => ({ ...f, propietario_nombre: e.target.value }))} />
             </div>
             <div className="cob-field">
-              <label className="cob-label">Teléfono (sin 0 ni 15)</label>
-              <input className="cob-input" placeholder="1112345678" value={form.telefono} onChange={e => setForm(f => ({ ...f, telefono: e.target.value }))} />
+              <label className="cob-label">Dirección / Propiedad *</label>
+              <input className="cob-input" placeholder="Ej: Corrientes 1234 3°A" value={form.direccion} onChange={e => setForm(f => ({ ...f, direccion: e.target.value }))} />
             </div>
-            <div className="cob-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px", gap: 12 }}>
+            <div className="cob-field">
+              <label className="cob-label">Teléfono inquilino (sin 0 ni 15)</label>
+              <input className="cob-input" placeholder="1112345678" value={form.inquilino_telefono} onChange={e => setForm(f => ({ ...f, inquilino_telefono: e.target.value }))} />
+            </div>
+            <div className="cob-grid3" style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px", gap: 12 }}>
               <div className="cob-field">
                 <label className="cob-label">Alquiler mensual</label>
-                <input className="cob-input" type="number" placeholder="0" value={form.alquiler_base} onChange={e => setForm(f => ({ ...f, alquiler_base: e.target.value }))} />
+                <input className="cob-input" type="number" placeholder="0" value={form.alquiler_actual} onChange={e => setForm(f => ({ ...f, alquiler_actual: e.target.value }))} />
               </div>
               <div className="cob-field">
                 <label className="cob-label">Moneda</label>
