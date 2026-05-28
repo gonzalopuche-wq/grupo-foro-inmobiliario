@@ -341,6 +341,16 @@ export default function SuscripcionPage() {
                       📋 Nota del admin: {suscripcionActual.nota_admin}
                     </div>
                   )}
+                  {suscripcionActual.estado === "activa" && (
+                    <a
+                      href={`/recibo/${suscripcionActual.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: "inline-block", marginTop: 10, fontSize: 11, color: "#cc0000", textDecoration: "none", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em", padding: "6px 14px", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 3 }}
+                    >
+                      ↓ Descargar comprobante
+                    </a>
+                  )}
                 </div>
                 {dias !== null && (
                   <div>
@@ -546,7 +556,7 @@ export default function SuscripcionPage() {
                     <th>Monto</th>
                     <th>Fecha</th>
                     <th>Estado</th>
-                    <th>Comprobante</th>
+                    <th>Recibo</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -565,7 +575,20 @@ export default function SuscripcionPage() {
                             {s.estado}
                           </span>
                         </td>
-                        <td style={{ fontSize: 11 }}>{s.comprobante ?? "—"}</td>
+                        <td>
+                          {s.estado === "activa" ? (
+                            <a
+                              href={`/recibo/${s.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ fontSize: 11, color: "#cc0000", textDecoration: "none", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em" }}
+                            >
+                              ↓ Ver recibo
+                            </a>
+                          ) : (
+                            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>{s.comprobante ?? "—"}</span>
+                          )}
+                        </td>
                       </tr>
                     );
                   })}
