@@ -219,6 +219,31 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     }
   }, [pathname]);
 
+  // Sincronización de sesión entre pestañas: si se cierra sesión en cualquier pestaña,
+  // todas las demás redirigen a login automáticamente
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        router.replace("/login");
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Re-verificar auth cuando la pestaña vuelve a estar visible
+  useEffect(() => {
+    if (!userId) return;
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        supabase.auth.getUser().then(({ data }) => {
+          if (!data.user) router.replace("/login");
+        });
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [userId]);
+
   // Real-time badge for new notifications
   useEffect(() => {
     if (!userId) return;
