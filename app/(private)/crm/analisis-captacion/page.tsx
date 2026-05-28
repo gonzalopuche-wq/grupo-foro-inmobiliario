@@ -69,13 +69,17 @@ export default function AnalisisCaptacion() {
   const [mesesVer, setMesesVer] = useState(12);
 
   useEffect(() => {
-    Promise.all([
-      supabase.from("crm_contactos").select("id,nombre,apellido,tipo,estado,created_at,origen").order("created_at", { ascending: false }),
-      supabase.from("crm_negocios").select("id,etapa,contacto_id,created_at,valor_operacion,honorarios_pct"),
-    ]).then(([{ data: c }, { data: n }]) => {
-      setContactos((c ?? []) as Contacto[]);
-      setNegocios((n ?? []) as Negocio[]);
-      setLoading(false);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
+      Promise.all([
+        supabase.from("crm_contactos").select("id,nombre,apellido,tipo,estado,created_at,origen").eq("perfil_id", uid).order("created_at", { ascending: false }),
+        supabase.from("crm_negocios").select("id,etapa,contacto_id,created_at,valor_operacion,honorarios_pct").eq("perfil_id", uid),
+      ]).then(([{ data: c }, { data: n }]) => {
+        setContactos((c ?? []) as Contacto[]);
+        setNegocios((n ?? []) as Negocio[]);
+        setLoading(false);
+      });
     });
   }, []);
 

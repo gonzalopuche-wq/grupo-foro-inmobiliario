@@ -85,21 +85,22 @@ export default function AgendaSemanal() {
   const hoy = toLocalDateStr(new Date());
 
   useEffect(() => {
-    async function load() {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
       const [{ data: t }, { data: r }, { data: h }] = await Promise.all([
         supabase.from("crm_tareas").select("id,titulo,estado,prioridad,fecha_vencimiento,negocio_id,contacto_id")
-          .not("estado", "eq", "completada").not("fecha_vencimiento", "is", null),
+          .eq("perfil_id", uid).not("estado", "eq", "completada").not("fecha_vencimiento", "is", null),
         supabase.from("crm_recordatorios").select("id,descripcion,fecha_recordatorio,completado,contacto_id")
-          .eq("completado", false).not("fecha_recordatorio", "is", null),
+          .eq("perfil_id", uid).eq("completado", false).not("fecha_recordatorio", "is", null),
         supabase.from("crm_escritura_hitos").select("id,tipo,fecha,completado,negocio_id,crm_negocios(titulo)")
-          .eq("completado", false).not("fecha", "is", null),
+          .eq("perfil_id", uid).eq("completado", false).not("fecha", "is", null),
       ]);
       setTareas((t ?? []) as Tarea[]);
       setRecordatorios((r ?? []) as Recordatorio[]);
       setHitos((h ?? []) as unknown as Hito[]);
       setLoading(false);
-    }
-    load();
+    });
   }, []);
 
   const lunes = startOfWeek(new Date(), semanaOffset);

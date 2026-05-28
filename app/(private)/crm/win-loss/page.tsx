@@ -43,13 +43,17 @@ export default function WinLossPage() {
   const [honPct, setHonPct] = useState(3);
 
   useEffect(() => {
-    Promise.all([
-      supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,created_at,updated_at,fecha_cierre"),
-      supabase.from("crm_interacciones").select("id,negocio_id,tipo,created_at"),
-    ]).then(([{ data: n }, { data: i }]) => {
-      setNegocios((n ?? []) as Negocio[]);
-      setInteracciones((i ?? []) as Interaccion[]);
-      setLoading(false);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
+      Promise.all([
+        supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,created_at,updated_at,fecha_cierre").eq("perfil_id", uid),
+        supabase.from("crm_interacciones").select("id,negocio_id,tipo,created_at").eq("perfil_id", uid),
+      ]).then(([{ data: n }, { data: i }]) => {
+        setNegocios((n ?? []) as Negocio[]);
+        setInteracciones((i ?? []) as Interaccion[]);
+        setLoading(false);
+      });
     });
   }, []);
 
