@@ -38,7 +38,10 @@ export default function SuscripcionPage() {
   const [perfil, setPerfil] = useState<any>(null);
   const [suscripciones, setSuscripciones] = useState<Suscripcion[]>([]);
   const [dolarBlue, setDolarBlue] = useState<number | null>(null);
-  const [precioUsd, setPrecioUsd] = useState<number>(10);
+  const [precioUsd, setPrecioUsd] = useState<number>(15);
+  const [precioColabUsd, setPrecioColabUsd] = useState<number>(5);
+  const [ivaPct, setIvaPct] = useState<number>(21);
+  const [colaboradoresCount, setColaboradoresCount] = useState<number>(0);
   const [cbuDatos, setCbuDatos] = useState<Record<string, string>>({
     titular: "Gonzalo Leandro Puche",
     cvu: "0000003100046173873221",
@@ -101,11 +104,23 @@ export default function SuscripcionPage() {
         });
       } catch { /* silenciar si tablas no existen aún */ }
 
+      // Contar colaboradores activos vinculados a este corredor
+      const { count: colabCount } = await supabase
+        .from("colaboradores")
+        .select("id", { count: "exact", head: true })
+        .eq("corredor_id", session.user.id)
+        .eq("estado", "activo");
+      setColaboradoresCount(colabCount ?? 0);
+
       if (ind) {
         const get = (k: string) => ind.find((i: any) => i.clave === k)?.valor;
         const tipoPerfil = p?.tipo ?? "corredor";
-        const precio = get(tipoPerfil === "colaborador" ? "precio_colaborador_usd" : "precio_corredor_usd") ?? (tipoPerfil === "colaborador" ? 5 : 10);
-        setPrecioUsd(precio);
+        const precio = get(tipoPerfil === "colaborador" ? "precio_colaborador_usd" : "precio_corredor_usd") ?? (tipoPerfil === "colaborador" ? 5 : 15);
+        const precioColab = get("precio_colaborador_usd") ?? 5;
+        const iva = get("iva_pct") ?? 21;
+        setPrecioUsd(Number(precio));
+        setPrecioColabUsd(Number(precioColab));
+        setIvaPct(Number(iva));
 
         // CBU desde indicadores si existen
         const titular = get("cbu_titular");
@@ -131,7 +146,16 @@ export default function SuscripcionPage() {
     init();
   }, []);
 
-  const montoArs = dolarBlue ? Math.round(precioUsd * dolarBlue) : null;
+  // Precio total para el matriculado: base + colaboradores × precio_colab
+  const esColaborador = perfil?.tipo === "colaborador";
+  const subtotalUsd = esColaborador
+    ? precioUsd
+    : precioUsd + colaboradoresCount * precioColabUsd;
+  const ivaUsd = Math.round(subtotalUsd * (ivaPct / 100) * 100) / 100;
+  const totalUsd = Math.round((subtotalUsd + ivaUsd) * 100) / 100;
+  const montoArs = dolarBlue ? Math.round(subtotalUsd * dolarBlue) : null;
+  const ivaArs = montoArs ? Math.round(montoArs * (ivaPct / 100)) : null;
+  const totalArs = montoArs && ivaArs ? montoArs + ivaArs : null;
 
   // MI ABONO INTELIGENTE: calcular descuento total
   const calcBonificaciones = () => {
@@ -177,8 +201,8 @@ export default function SuscripcionPage() {
     const { error: err } = await supabase.from("suscripciones").insert({
       perfil_id: perfil.id,
       tipo: perfil.tipo,
-      monto_usd: precioUsd,
-      monto_ars: montoArs,
+      monto_usd: subtotalUsd,
+      monto_ars: totalArs,
       monto_declarado_ars: isNaN(montoNum) ? null : montoNum,
       dolar_ref: dolarBlue,
       estado: "pendiente",
@@ -192,7 +216,11 @@ export default function SuscripcionPage() {
 
     // Email al admin
     try {
-      await enviarEmail("admin@foroinmobiliario.com.ar", `💰 Pago declarado — ${perfil.apellido}, ${perfil.nombre}`, `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(200,0,0,0.2);"><h2 style="color:#cc0000;margin-bottom:20px;font-family:sans-serif;">GFI® — Nuevo pago declarado</h2><table style="width:100%;border-collapse:collapse;font-size:14px;"><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);width:140px;">Corredor</td><td style="color:#fff;font-weight:600;">${perfil.apellido}, ${perfil.nombre}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Matrícula</td><td style="color:#fff;">${perfil.matricula ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto USD</td><td style="color:#fff;">USD ${precioUsd}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto ARS</td><td style="color:#22c55e;font-weight:700;">$ ${montoNum.toLocaleString("es-AR")}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Comprobante</td><td style="color:#fff;">${comprobante}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Fecha</td><td style="color:#fff;">${new Date(fechaPago).toLocaleDateString("es-AR")}</td></tr>${cbuOrigen ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">CBU origen</td><td style="color:#fff;">${cbuOrigen}</td></tr>` : ""}</table><div style="margin-top:24px;"><a href="https://www.foroinmobiliario.com.ar/admin/suscripciones" style="display:inline-block;background:#cc0000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;font-family:sans-serif;">✓ Confirmar en el panel admin</a></div></div>`);
+      const colabLine = !esColaborador && colaboradoresCount > 0
+        ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Colaboradores</td><td style="color:#fff;">${colaboradoresCount} × USD ${precioColabUsd} = USD ${colaboradoresCount * precioColabUsd}</td></tr>`
+        : "";
+      const ivaLine = `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">IVA ${ivaPct}%</td><td style="color:#fff;">$ ${ivaArs?.toLocaleString("es-AR") ?? "—"}</td></tr>`;
+      await enviarEmail("admin@foroinmobiliario.com.ar", `💰 Pago declarado — ${perfil.apellido}, ${perfil.nombre}`, `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(200,0,0,0.2);"><h2 style="color:#cc0000;margin-bottom:20px;font-family:sans-serif;">GFI® — Nuevo pago declarado</h2><table style="width:100%;border-collapse:collapse;font-size:14px;"><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);width:140px;">Corredor</td><td style="color:#fff;font-weight:600;">${perfil.apellido}, ${perfil.nombre}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Matrícula</td><td style="color:#fff;">${perfil.matricula ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Base USD</td><td style="color:#fff;">USD ${precioUsd}</td></tr>${colabLine}${ivaLine}<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Total ARS (c/ IVA)</td><td style="color:#22c55e;font-weight:700;">$ ${totalArs?.toLocaleString("es-AR") ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto declarado</td><td style="color:#fff;font-weight:700;">$ ${montoNum.toLocaleString("es-AR")}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Comprobante</td><td style="color:#fff;">${comprobante}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Fecha</td><td style="color:#fff;">${new Date(fechaPago).toLocaleDateString("es-AR")}</td></tr>${cbuOrigen ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">CBU origen</td><td style="color:#fff;">${cbuOrigen}</td></tr>` : ""}</table><div style="margin-top:24px;"><a href="https://www.foroinmobiliario.com.ar/admin/suscripciones" style="display:inline-block;background:#cc0000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;font-family:sans-serif;">✓ Confirmar en el panel admin</a></div></div>`);
     } catch {}
 
     setEnviando(false);
@@ -329,10 +357,40 @@ export default function SuscripcionPage() {
           {/* Monto */}
           <div className="sus-card">
             <div className="sus-card-titulo">Monto mensual</div>
-            <div className="sus-monto">USD {precioUsd}<span>/ mes</span></div>
-            {dolarBlue && montoArs && (
+
+            {/* Desglose */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+                <span>{esColaborador ? "Colaborador" : "Membresía base"}</span>
+                <span>USD {precioUsd}</span>
+              </div>
+              {!esColaborador && colaboradoresCount > 0 && (
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+                  <span>{colaboradoresCount} colaborador{colaboradoresCount > 1 ? "es" : ""} × USD {precioColabUsd}</span>
+                  <span>USD {colaboradoresCount * precioColabUsd}</span>
+                </div>
+              )}
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "rgba(255,255,255,0.4)", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 8 }}>
+                <span>Subtotal</span>
+                <span>USD {subtotalUsd}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+                <span>IVA {ivaPct}%</span>
+                {dolarBlue && ivaArs
+                  ? <span>$ {ivaArs.toLocaleString("es-AR")}</span>
+                  : <span>USD {ivaUsd.toFixed(2)}</span>}
+              </div>
+            </div>
+
+            <div className="sus-monto">
+              {dolarBlue && totalArs
+                ? <>$ {totalArs.toLocaleString("es-AR")}<span>ARS / mes (c/ IVA)</span></>
+                : <>USD {totalUsd.toFixed(2)}<span>/ mes (c/ IVA)</span></>}
+            </div>
+            {dolarBlue && (
               <div className="sus-ars">
-                Equivale a <strong>${montoArs.toLocaleString("es-AR")}</strong> al dólar blue de hoy (${dolarBlue.toLocaleString("es-AR")})
+                Dólar blue de referencia: <strong>${dolarBlue.toLocaleString("es-AR")}</strong>
+                {montoArs && <> · Neto s/ IVA: <strong>${montoArs.toLocaleString("es-AR")}</strong></>}
               </div>
             )}
           </div>
@@ -444,7 +502,7 @@ export default function SuscripcionPage() {
                 <div className="sus-field">
                   <label className="sus-label">Monto transferido (ARS) <span>*</span></label>
                   <input className="sus-input" type="text"
-                    placeholder={montoArs ? `Ej: ${montoArs.toLocaleString("es-AR")}` : "Ej: 21000"}
+                    placeholder={totalArs ? `Ej: ${totalArs.toLocaleString("es-AR")} (c/ IVA)` : "Ej: 21000"}
                     value={montoDeclarado} onChange={e => setMontoDeclarado(e.target.value)} />
                 </div>
                 <div className="sus-field">

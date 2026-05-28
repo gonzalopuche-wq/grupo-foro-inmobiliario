@@ -312,6 +312,21 @@ export default function AdminPage() {
   const [clearingCargando, setClearingCargando] = useState(false);
   const [clearingError, setClearingError] = useState("");
 
+  // Resumen de facturación mensual (IVA + colaboradores)
+  interface ResumenFact {
+    periodo: string;
+    corredores: { id: string; nombre: string; apellido: string; matricula: string | null; colaboradores: number; precio_base_usd: number; subtotal_usd: number; }[];
+    precio_corredor: number;
+    precio_colab: number;
+    iva_pct: number;
+    dolar_ref: number | null;
+  }
+  const [resumenFact, setResumenFact] = useState<ResumenFact | null>(null);
+  const [loadingResumenFact, setLoadingResumenFact] = useState(false);
+  const [periodoFact, setPeriodoFact] = useState<string>(() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}`; });
+  const [guardandoFactura, setGuardandoFactura] = useState(false);
+  const [numeroFacturaInput, setNumeroFacturaInput] = useState("");
+
   // WhatsApp
   interface WaGrupo { id: string; nombre: string; grupo_gfi: string; descripcion: string | null; wa_link: string | null; miembros: number; activo: boolean; mensajes_30d: number; procesados_30d: number; }
   interface WaMensaje { id: string; numero_from: string; nombre_from: string | null; perfil_id: string | null; contenido: string; grupo_gfi: string | null; procesado: boolean; mir_entry_id: string | null; mir_tabla: string | null; error_detalle: string | null; created_at: string; }
@@ -744,6 +759,49 @@ export default function AdminPage() {
     setLoadingProv(false);
   };
 
+  const cargarResumenFact = async (periodo: string) => {
+    setLoadingResumenFact(true);
+    try {
+      const [{ data: ind }, { data: perfilesData }] = await Promise.all([
+        supabase.from("indicadores").select("clave,valor").in("clave", ["precio_corredor_usd","precio_colaborador_usd","iva_pct"]),
+        supabase.from("perfiles").select("id,nombre,apellido,matricula").in("tipo", ["corredor","admin","master"]).eq("estado","aprobado"),
+      ]);
+      const get = (k: string) => ind?.find((i: any) => i.clave === k)?.valor;
+      const precioCorr = Number(get("precio_corredor_usd") ?? 15);
+      const precioColab = Number(get("precio_colaborador_usd") ?? 5);
+      const ivaPct = Number(get("iva_pct") ?? 21);
+
+      const ids = (perfilesData ?? []).map((p: any) => p.id);
+      const { data: subsActivas } = await supabase.from("suscripciones").select("perfil_id").eq("estado","activa").in("perfil_id", ids);
+      const idsActivos = new Set((subsActivas ?? []).map((s: any) => s.perfil_id));
+
+      const { data: colabData } = await supabase.from("colaboradores").select("corredor_id").eq("estado","activo").in("corredor_id", ids);
+      const colabPorCorredor: Record<string, number> = {};
+      for (const c of colabData ?? []) {
+        colabPorCorredor[c.corredor_id] = (colabPorCorredor[c.corredor_id] ?? 0) + 1;
+      }
+
+      const corredores = (perfilesData ?? [])
+        .filter((p: any) => idsActivos.has(p.id))
+        .map((p: any) => {
+          const colab = colabPorCorredor[p.id] ?? 0;
+          return { id: p.id, nombre: p.nombre, apellido: p.apellido, matricula: p.matricula, colaboradores: colab, precio_base_usd: precioCorr, subtotal_usd: precioCorr + colab * precioColab };
+        });
+
+      let dolarRef: number | null = null;
+      try {
+        const dr = await fetch("https://dolarapi.com/v1/dolares/blue").then(r => r.json());
+        dolarRef = Math.round((dr.compra + dr.venta) / 2);
+      } catch { /* no criticial */ }
+
+      setResumenFact({ periodo, corredores, precio_corredor: precioCorr, precio_colab: precioColab, iva_pct: ivaPct, dolar_ref: dolarRef });
+    } catch (e) {
+      console.error("Error cargarResumenFact", e);
+    } finally {
+      setLoadingResumenFact(false);
+    }
+  };
+
   const cargarDocumentos = async (estado: string) => {
     setLoadingDocs(true);
     const { data } = await supabase.from("biblioteca").select("*, perfiles(nombre, apellido, matricula)").eq("estado", estado).order("created_at", { ascending: false });
@@ -842,6 +900,35 @@ export default function AdminPage() {
     setGuardando(clave);
     await supabase.from("indicadores").update({ valor }).eq("clave", clave);
     setGuardando(null); setGuardadoOk(clave); setTimeout(() => setGuardadoOk(null), 2000); cargarIndicadores();
+  };
+
+  const registrarFacturaEmitida = async () => {
+    if (!resumenFact) return;
+    setGuardandoFactura(true);
+    const rf = resumenFact;
+    const totalUsd = rf.corredores.reduce((s, c) => s + c.subtotal_usd, 0);
+    const subtotalArs = rf.dolar_ref ? Math.round(totalUsd * rf.dolar_ref) : null;
+    const ivaArs = subtotalArs ? Math.round(subtotalArs * (rf.iva_pct / 100)) : null;
+    const totalArs = subtotalArs && ivaArs ? subtotalArs + ivaArs : null;
+    const { data: uid } = await supabase.auth.getUser();
+    await supabase.from("facturas_emitidas").insert({
+      periodo: rf.periodo,
+      total_corredores: rf.corredores.length,
+      total_colaboradores: rf.corredores.reduce((s, c) => s + c.colaboradores, 0),
+      precio_corredor_usd: rf.precio_corredor,
+      precio_colaborador_usd: rf.precio_colab,
+      subtotal_usd: totalUsd,
+      dolar_ref: rf.dolar_ref,
+      subtotal_ars: subtotalArs,
+      iva_pct: rf.iva_pct,
+      iva_ars: ivaArs,
+      total_ars: totalArs,
+      numero_factura: numeroFacturaInput || null,
+      admin_id: uid.user?.id,
+    });
+    setGuardandoFactura(false);
+    setNumeroFacturaInput("");
+    mostrarToast("Factura registrada correctamente");
   };
 
   const cambiarEstado = async (id: string, nuevoEstado: "aprobado" | "rechazado") => {
@@ -1982,6 +2069,136 @@ export default function AdminPage() {
                 </tbody>
               </table>}
             </div>
+          </div>
+
+          {/* ── FACTURACIÓN MENSUAL ── */}
+          <div>
+            <div className="adm-header">
+              <h1>Facturación <span>mensual</span></h1>
+              <p>Resumen de cuotas activas con IVA 21% — base para emisión de factura A/B al período.</p>
+            </div>
+
+            {/* Selector de período */}
+            <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 20, flexWrap: "wrap" }}>
+              <input
+                type="month"
+                value={periodoFact}
+                onChange={e => setPeriodoFact(e.target.value)}
+                style={{ padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
+              />
+              <button
+                onClick={() => cargarResumenFact(periodoFact)}
+                disabled={loadingResumenFact}
+                style={{ padding: "8px 20px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: loadingResumenFact ? 0.6 : 1 }}
+              >
+                {loadingResumenFact ? "Calculando..." : "Calcular resumen"}
+              </button>
+            </div>
+
+            {resumenFact && (() => {
+              const totalUsd = resumenFact.corredores.reduce((s, c) => s + c.subtotal_usd, 0);
+              const totalColab = resumenFact.corredores.reduce((s, c) => s + c.colaboradores, 0);
+              const subtotalArs = resumenFact.dolar_ref ? Math.round(totalUsd * resumenFact.dolar_ref) : null;
+              const ivaArs = subtotalArs ? Math.round(subtotalArs * (resumenFact.iva_pct / 100)) : null;
+              const totalArs = subtotalArs && ivaArs ? subtotalArs + ivaArs : null;
+              const fmtARS = (n: number) => `$ ${n.toLocaleString("es-AR")}`;
+
+              return (
+                <>
+                  {/* Totales */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 12, marginBottom: 20 }}>
+                    {[
+                      { label: "Corredores activos", val: String(resumenFact.corredores.length), color: "#fff" },
+                      { label: "Colaboradores (adicionales)", val: String(totalColab), color: "#60a5fa" },
+                      { label: `Subtotal USD (s/ IVA)`, val: `USD ${totalUsd.toFixed(2)}`, color: "#fff" },
+                      { label: `IVA ${resumenFact.iva_pct}%`, val: ivaArs ? fmtARS(ivaArs) : "—", color: "#eab308" },
+                      { label: "Total ARS (c/ IVA)", val: totalArs ? fmtARS(totalArs) : "—", color: "#22c55e" },
+                      { label: "Dólar blue ref.", val: resumenFact.dolar_ref ? `$ ${resumenFact.dolar_ref.toLocaleString("es-AR")}` : "—", color: "rgba(255,255,255,0.5)" },
+                    ].map(card => (
+                      <div key={card.label} style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 6, padding: "16px 18px" }}>
+                        <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>{card.label}</div>
+                        <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 18, color: card.color }}>{card.val}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Tabla detalle */}
+                  <div className="adm-tabla-wrap" style={{ marginBottom: 16 }}>
+                    <table className="adm-tabla">
+                      <thead>
+                        <tr>
+                          <th>Corredor</th>
+                          <th>Mat.</th>
+                          <th>Colaboradores</th>
+                          <th>Base USD</th>
+                          <th>Adicionales USD</th>
+                          <th>Subtotal USD</th>
+                          <th>Subtotal ARS</th>
+                          <th>IVA ARS</th>
+                          <th>Total ARS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {resumenFact.corredores.map(c => {
+                          const subtUsd = c.precio_base_usd + c.colaboradores * resumenFact.precio_colab;
+                          const subtArs = resumenFact.dolar_ref ? Math.round(subtUsd * resumenFact.dolar_ref) : null;
+                          const ivaRow = subtArs ? Math.round(subtArs * (resumenFact.iva_pct / 100)) : null;
+                          const totRow = subtArs && ivaRow ? subtArs + ivaRow : null;
+                          return (
+                            <tr key={c.id}>
+                              <td className="adm-nombre">{c.apellido}, {c.nombre}</td>
+                              <td style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11 }}>{c.matricula ?? "—"}</td>
+                              <td style={{ color: c.colaboradores > 0 ? "#60a5fa" : "rgba(255,255,255,0.3)" }}>{c.colaboradores}</td>
+                              <td>USD {c.precio_base_usd}</td>
+                              <td style={{ color: c.colaboradores > 0 ? "#60a5fa" : "rgba(255,255,255,0.3)" }}>
+                                {c.colaboradores > 0 ? `USD ${c.colaboradores * resumenFact.precio_colab}` : "—"}
+                              </td>
+                              <td style={{ fontWeight: 700 }}>USD {subtUsd}</td>
+                              <td>{subtArs ? fmtARS(subtArs) : "—"}</td>
+                              <td style={{ color: "#eab308" }}>{ivaRow ? fmtARS(ivaRow) : "—"}</td>
+                              <td style={{ color: "#22c55e", fontWeight: 700 }}>{totRow ? fmtARS(totRow) : "—"}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Totales finales + registro */}
+                  <div style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                    <div>
+                      <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
+                        Total a facturar — {resumenFact.periodo}
+                      </div>
+                      <div style={{ fontSize: 26, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#22c55e" }}>
+                        {totalArs ? fmtARS(totalArs) : `USD ${totalUsd.toFixed(2)}`}
+                      </div>
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>
+                        Neto s/ IVA: {subtotalArs ? fmtARS(subtotalArs) : `USD ${totalUsd}`} · IVA {resumenFact.iva_pct}%: {ivaArs ? fmtARS(ivaArs) : "—"}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+                      <div>
+                        <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Nro. Factura AFIP</div>
+                        <input
+                          value={numeroFacturaInput}
+                          onChange={e => setNumeroFacturaInput(e.target.value)}
+                          placeholder="Ej: 0001-00000123"
+                          style={{ padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none", width: 180 }}
+                        />
+                      </div>
+                      <button
+                        onClick={registrarFacturaEmitida}
+                        disabled={guardandoFactura}
+                        style={{ padding: "9px 20px", background: "#22c55e", border: "none", borderRadius: 4, color: "#000", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoFactura ? 0.6 : 1 }}
+                      >
+                        {guardandoFactura ? "Guardando..." : "✓ Registrar factura"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </div>
 
           {/* ── REFERIDOS ── */}
