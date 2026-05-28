@@ -99,9 +99,12 @@ export default function CampanaReactivacionPage() {
     if (stored) setReactivados(new Set(JSON.parse(stored)));
 
     const cargar = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = "/login"; return; }
+      const uid = user.id;
       const [{ data: ctcs }, { data: ints }] = await Promise.all([
-        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,zona_interes,presupuesto_min,presupuesto_max,moneda,created_at"),
-        supabase.from("crm_interacciones").select("contacto_id,created_at").order("created_at", { ascending: false }),
+        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,zona_interes,presupuesto_min,presupuesto_max,moneda,created_at").eq("perfil_id", uid),
+        supabase.from("crm_interacciones").select("contacto_id,created_at").eq("perfil_id", uid).order("created_at", { ascending: false }),
       ]);
 
       // Última interacción por contacto

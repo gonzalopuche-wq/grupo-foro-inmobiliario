@@ -155,17 +155,21 @@ export default function ScoringPage() {
   const [seleccionado, setSeleccionado] = useState<ContactoScore | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,presupuesto_min,presupuesto_max,moneda,zona_interes,notas,created_at,updated_at"),
-      supabase.from("crm_interacciones").select("contacto_id,tipo,created_at"),
-      supabase.from("crm_negocios").select("contacto_id,etapa"),
-      supabase.from("crm_tareas").select("contacto_id,estado,fecha_vencimiento"),
-    ]).then(([{ data: c }, { data: i }, { data: n }, { data: t }]) => {
-      setContactos((c ?? []) as Contacto[]);
-      setInteracciones((i ?? []) as Interaccion[]);
-      setNegocios((n ?? []) as Negocio[]);
-      setTareas((t ?? []) as Tarea[]);
-      setLoading(false);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
+      Promise.all([
+        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,presupuesto_min,presupuesto_max,moneda,zona_interes,notas,created_at,updated_at").eq("perfil_id", uid),
+        supabase.from("crm_interacciones").select("contacto_id,tipo,created_at").eq("perfil_id", uid),
+        supabase.from("crm_negocios").select("contacto_id,etapa").eq("perfil_id", uid),
+        supabase.from("crm_tareas").select("contacto_id,estado,fecha_vencimiento").eq("perfil_id", uid),
+      ]).then(([{ data: c }, { data: i }, { data: n }, { data: t }]) => {
+        setContactos((c ?? []) as Contacto[]);
+        setInteracciones((i ?? []) as Interaccion[]);
+        setNegocios((n ?? []) as Negocio[]);
+        setTareas((t ?? []) as Tarea[]);
+        setLoading(false);
+      });
     });
   }, []);
 
