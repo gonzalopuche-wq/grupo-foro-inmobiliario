@@ -67,16 +67,17 @@ export default function ComisionesPendientesPage() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setCobros(JSON.parse(stored));
 
-    const cargar = async () => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
       const [{ data: negs }, { data: ctcs }] = await Promise.all([
-        supabase.from("crm_negocios").select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,honorarios_pct,fecha_cierre,fecha_reserva,contacto_id,colega_id,split_pct,notas,archivado"),
-        supabase.from("crm_contactos").select("id,nombre,apellido,telefono"),
+        supabase.from("crm_negocios").select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,honorarios_pct,fecha_cierre,fecha_reserva,contacto_id,colega_id,split_pct,notas,archivado").eq("perfil_id", uid),
+        supabase.from("crm_contactos").select("id,nombre,apellido,telefono").eq("perfil_id", uid),
       ]);
       setNegocios((negs ?? []) as Negocio[]);
       setContactos((ctcs ?? []) as Contacto[]);
       setLoading(false);
-    };
-    cargar();
+    });
   }, []);
 
   const contactoMap = useMemo(() => {

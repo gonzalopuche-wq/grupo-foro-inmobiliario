@@ -356,20 +356,22 @@ export default function CampanaCumpleanosPage() {
   }, []);
 
   useEffect(() => {
-    const cargar = async () => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
       const [{ data: conFecha }, { count }] = await Promise.all([
         supabase
           .from("crm_contactos")
           .select("id,nombre,apellido,telefono,email,fecha_nacimiento,tipo,estado")
+          .eq("perfil_id", uid)
           .not("fecha_nacimiento", "is", null)
           .order("nombre"),
-        supabase.from("crm_contactos").select("id", { count: "exact", head: true }),
+        supabase.from("crm_contactos").select("id", { count: "exact", head: true }).eq("perfil_id", uid),
       ]);
       setContactos((conFecha ?? []) as Contacto[]);
       setTotalContactos(count ?? 0);
       setLoading(false);
-    };
-    cargar();
+    });
   }, []);
 
   // ── Cálculos ──────────────────────────────────────────────────────────────

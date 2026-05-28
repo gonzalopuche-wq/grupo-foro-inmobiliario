@@ -91,13 +91,15 @@ export default function AlertasPage() {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    async function cargar() {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
       const [{ data: t }, { data: c }, { data: i }, { data: n }, { data: r }] = await Promise.all([
-        supabase.from("crm_tareas").select("*").neq("estado", "completada"),
-        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,updated_at"),
-        supabase.from("crm_interacciones").select("id,contacto_id,tipo,created_at").order("created_at", { ascending: false }),
-        supabase.from("crm_negocios").select("id,titulo,etapa,valor_operacion,moneda,updated_at").not("etapa", "in", '("cerrado","perdido","archivado")'),
-        supabase.from("crm_recordatorios").select("*").eq("completado", false).lte("fecha_recordatorio", HOY),
+        supabase.from("crm_tareas").select("*").eq("perfil_id", uid).neq("estado", "completada"),
+        supabase.from("crm_contactos").select("id,nombre,apellido,telefono,updated_at").eq("perfil_id", uid),
+        supabase.from("crm_interacciones").select("id,contacto_id,tipo,created_at").eq("perfil_id", uid).order("created_at", { ascending: false }),
+        supabase.from("crm_negocios").select("id,titulo,etapa,valor_operacion,moneda,updated_at").eq("perfil_id", uid).not("etapa", "in", '("cerrado","perdido","archivado")'),
+        supabase.from("crm_recordatorios").select("*").eq("perfil_id", uid).eq("completado", false).lte("fecha_recordatorio", HOY),
       ]);
       setTareas((t ?? []) as Tarea[]);
       setContactos((c ?? []) as Contacto[]);
@@ -105,8 +107,7 @@ export default function AlertasPage() {
       setNegocios((n ?? []) as Negocio[]);
       setRecordatorios((r ?? []) as Recordatorio[]);
       setLoading(false);
-    }
-    cargar();
+    });
   }, []);
 
   const alertas = useMemo<Alerta[]>(() => {

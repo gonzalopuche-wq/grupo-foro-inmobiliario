@@ -61,12 +61,16 @@ export default function ObjetivosPage() {
   const [historial, setHistorial] = useState<Record<string, Record<string, number>>>({});
 
   useEffect(() => {
-    Promise.all([
-      supabase.from("crm_negocios").select("id,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,fecha_cierre,created_at"),
-      supabase.from("crm_interacciones").select("created_at,tipo"),
-    ]).then(([{ data: n }, { data: i }]) => {
-      setNegocios((n ?? []) as Negocio[]);
-      setInteracciones(i ?? []);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
+      Promise.all([
+        supabase.from("crm_negocios").select("id,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,fecha_cierre,created_at").eq("perfil_id", uid),
+        supabase.from("crm_interacciones").select("created_at,tipo").eq("perfil_id", uid),
+      ]).then(([{ data: n }, { data: i }]) => {
+        setNegocios((n ?? []) as Negocio[]);
+        setInteracciones(i ?? []);
+      });
     });
     // Cargar historial
     const raw = localStorage.getItem("crm_objetivos_historial_v1");

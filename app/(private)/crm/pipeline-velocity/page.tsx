@@ -62,17 +62,18 @@ export default function PipelineVelocity() {
   const [filtroEtapa, setFiltroEtapa] = useState<string>("todas");
 
   useEffect(() => {
-    async function load() {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
       const [{ data: n }, { data: i }] = await Promise.all([
         supabase.from("crm_negocios").select("id,titulo,etapa,tipo_operacion,valor_operacion,moneda,contacto_id,honorarios_pct,created_at,updated_at,fecha_cierre")
-          .not("etapa", "in", '("cerrado","perdido")'),
-        supabase.from("crm_interacciones").select("negocio_id,created_at").not("negocio_id", "is", null),
+          .eq("perfil_id", uid).not("etapa", "in", '("cerrado","perdido")'),
+        supabase.from("crm_interacciones").select("negocio_id,created_at").eq("perfil_id", uid).not("negocio_id", "is", null),
       ]);
       setNegocios((n ?? []) as Negocio[]);
       setInteracciones((i ?? []) as Interaccion[]);
       setLoading(false);
-    }
-    load();
+    });
   }, []);
 
   // Última interacción por negocio

@@ -102,11 +102,15 @@ export default function DuplicadosPage() {
     const stored = localStorage.getItem("crm_dup_descartados_v1");
     if (stored) setDescartados(new Set(JSON.parse(stored)));
 
-    supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,created_at")
-      .then(({ data }) => {
-        setContactos((data ?? []) as Contacto[]);
-        setLoading(false);
-      });
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
+      supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,created_at")
+        .eq("perfil_id", uid).then(({ data: c }) => {
+          setContactos((c ?? []) as Contacto[]);
+          setLoading(false);
+        });
+    });
   }, []);
 
   const pares = useMemo(() => detectarDuplicados(contactos), [contactos]);
