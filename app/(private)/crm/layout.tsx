@@ -20,7 +20,6 @@ const NAV = [
     label: "Propiedades",
     children: [
       { href: "/crm/cartera",        label: "Listado" },
-      { href: "/crm/cartera/nueva",  label: "Nueva propiedad" },
       { href: "/crm/busqueda",       label: "Búsquedas" },
       { href: "/crm/autorizaciones", label: "Autorizaciones" },
       { href: "/crm/tasacion",       label: "Tasaciones" },
