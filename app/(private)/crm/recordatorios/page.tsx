@@ -53,10 +53,37 @@ interface NegocioRaw {
   updated_at: string;
 }
 
-// ─── Storage Keys ─────────────────────────────────────────────────────────────
+// ─── Supabase shape for manual reminders ──────────────────────────────────────
 
-const STORAGE_KEY = "crm_recordatorios_v1";
-const IGNORADOS_KEY = "crm_recordatorios_ignorados_v1";
+interface RecordatorioSB {
+  id: string;
+  perfil_id: string;
+  titulo: string | null;
+  descripcion: string;
+  notas: string | null;
+  fecha_recordatorio: string;
+  estado: string;
+  completado: boolean;
+  prioridad: string;
+  contacto_nombre: string | null;
+  negocio_titulo: string | null;
+  created_at: string;
+}
+
+function sbToLocal(r: RecordatorioSB): Recordatorio {
+  return {
+    id: r.id,
+    tipo: "manual",
+    titulo: r.titulo ?? r.descripcion,
+    descripcion: r.descripcion,
+    fecha: r.fecha_recordatorio.slice(0, 10),
+    prioridad: (r.prioridad ?? "media") as PrioridadRecordatorio,
+    estado: r.completado ? "completado" : "pendiente",
+    contacto_nombre: r.contacto_nombre ?? undefined,
+    negocio_titulo: r.negocio_titulo ?? undefined,
+    created_at: r.created_at,
+  };
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -113,21 +140,9 @@ function tipoColor(t: TipoRecordatorio): string {
   return "#6b7280";
 }
 
-// ─── LocalStorage helpers ─────────────────────────────────────────────────────
+// ─── Ignorados: se mantienen en localStorage solo para las alertas auto ───────
 
-function cargarManuales(): Recordatorio[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as Recordatorio[];
-  } catch {
-    return [];
-  }
-}
-
-function guardarManuales(list: Recordatorio[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-}
+const IGNORADOS_KEY = "crm_recordatorios_ignorados_v1";
 
 function cargarIgnorados(): Set<string> {
   try {
@@ -313,25 +328,39 @@ export default function RecordatoriosPage() {
     return alertas;
   }, []);
 
+  // ── Cargar manuales desde Supabase ────────────────────────────────────────
+
+  const cargarManualesSB = useCallback(async (userId: string) => {
+    const { data } = await supabase
+      .from("crm_recordatorios")
+      .select("id,perfil_id,titulo,descripcion,notas,fecha_recordatorio,estado,completado,prioridad,contacto_nombre,negocio_titulo,created_at")
+      .eq("perfil_id", userId)
+      .neq("estado", "cancelado")
+      .order("fecha_recordatorio", { ascending: true });
+    setManuales(((data ?? []) as RecordatorioSB[]).map(sbToLocal));
+  }, []);
+
   // ── Load ──────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const ignoradosLS = cargarIgnorados();
     setIgnorados(ignoradosLS);
-    const manualesLS = cargarManuales();
-    setManuales(manualesLS);
 
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) {
         window.location.href = "/login";
         return;
       }
-      setUid(data.user.id);
-      const alertasGen = await generarAlertas(data.user.id);
+      const userId = data.user.id;
+      setUid(userId);
+      const [alertasGen] = await Promise.all([
+        generarAlertas(userId),
+        cargarManualesSB(userId),
+      ]);
       setAutos(alertasGen);
       setLoading(false);
     });
-  }, [generarAlertas]);
+  }, [generarAlertas, cargarManualesSB]);
 
   // ── Computed ──────────────────────────────────────────────────────────────
 
@@ -376,37 +405,38 @@ export default function RecordatoriosPage() {
     showToast("Alerta ignorada");
   };
 
-  const completarManual = (id: string) => {
-    const updated = manuales.map((r) =>
-      r.id === id ? { ...r, estado: "completado" as EstadoRecordatorio } : r
-    );
-    setManuales(updated);
-    guardarManuales(updated);
+  const completarManual = async (id: string) => {
+    await supabase
+      .from("crm_recordatorios")
+      .update({ completado: true, estado: "completado" })
+      .eq("id", id);
+    setManuales((prev) => prev.map((r) => r.id === id ? { ...r, estado: "completado" as EstadoRecordatorio } : r));
     showToast("Recordatorio completado");
   };
 
-  const eliminarManual = (id: string) => {
+  const eliminarManual = async (id: string) => {
     if (!confirm("¿Eliminar este recordatorio?")) return;
-    const updated = manuales.filter((r) => r.id !== id);
-    setManuales(updated);
-    guardarManuales(updated);
+    await supabase.from("crm_recordatorios").delete().eq("id", id);
+    setManuales((prev) => prev.filter((r) => r.id !== id));
     showToast("Recordatorio eliminado");
   };
 
-  const restaurarManual = (id: string) => {
-    const updated = manuales.map((r) =>
-      r.id === id ? { ...r, estado: "pendiente" as EstadoRecordatorio } : r
-    );
-    setManuales(updated);
-    guardarManuales(updated);
+  const restaurarManual = async (id: string) => {
+    await supabase
+      .from("crm_recordatorios")
+      .update({ completado: false, estado: "pendiente" })
+      .eq("id", id);
+    setManuales((prev) => prev.map((r) => r.id === id ? { ...r, estado: "pendiente" as EstadoRecordatorio } : r));
     showToast("Recordatorio restaurado");
   };
 
-  const vaciarHistorial = () => {
+  const vaciarHistorial = async () => {
     if (!confirm("¿Vaciar todo el historial? Esta acción no se puede deshacer.")) return;
-    const pendientes = manuales.filter((r) => r.estado === "pendiente");
-    setManuales(pendientes);
-    guardarManuales(pendientes);
+    const ids = manuales.filter((r) => r.estado !== "pendiente").map((r) => r.id);
+    if (ids.length > 0) {
+      await supabase.from("crm_recordatorios").delete().in("id", ids);
+    }
+    setManuales((prev) => prev.filter((r) => r.estado === "pendiente"));
     showToast("Historial vaciado");
   };
 
@@ -423,44 +453,49 @@ export default function RecordatoriosPage() {
     setTab("crear");
   };
 
-  const guardarForm = () => {
-    if (!form.titulo.trim()) return;
-    const now = new Date().toISOString();
+  const guardarForm = async () => {
+    if (!form.titulo.trim() || !uid) return;
 
     if (editId) {
-      const updated = manuales.map((r) =>
-        r.id === editId
-          ? {
-              ...r,
-              titulo: form.titulo.trim(),
-              descripcion: form.descripcion,
-              fecha: form.fecha,
-              prioridad: form.prioridad,
-              contacto_nombre: form.contacto_nombre || undefined,
-              negocio_titulo: form.negocio_titulo || undefined,
-            }
-          : r
-      );
-      setManuales(updated);
-      guardarManuales(updated);
-      showToast("Recordatorio actualizado");
+      const { error } = await supabase
+        .from("crm_recordatorios")
+        .update({
+          titulo: form.titulo.trim(),
+          descripcion: form.descripcion,
+          fecha_recordatorio: form.fecha + "T12:00:00",
+          prioridad: form.prioridad,
+          contacto_nombre: form.contacto_nombre || null,
+          negocio_titulo: form.negocio_titulo || null,
+        })
+        .eq("id", editId);
+      if (!error) {
+        setManuales((prev) => prev.map((r) =>
+          r.id === editId
+            ? { ...r, titulo: form.titulo.trim(), descripcion: form.descripcion, fecha: form.fecha, prioridad: form.prioridad, contacto_nombre: form.contacto_nombre || undefined, negocio_titulo: form.negocio_titulo || undefined }
+            : r
+        ));
+        showToast("Recordatorio actualizado");
+      }
     } else {
-      const nuevo: Recordatorio = {
-        id: crypto.randomUUID(),
-        tipo: "manual",
-        titulo: form.titulo.trim(),
-        descripcion: form.descripcion,
-        fecha: form.fecha,
-        prioridad: form.prioridad,
-        estado: "pendiente",
-        contacto_nombre: form.contacto_nombre || undefined,
-        negocio_titulo: form.negocio_titulo || undefined,
-        created_at: now,
-      };
-      const updated = [...manuales, nuevo];
-      setManuales(updated);
-      guardarManuales(updated);
-      showToast("Recordatorio creado");
+      const { data, error } = await supabase
+        .from("crm_recordatorios")
+        .insert({
+          perfil_id: uid,
+          titulo: form.titulo.trim(),
+          descripcion: form.descripcion || form.titulo.trim(),
+          fecha_recordatorio: form.fecha + "T12:00:00",
+          prioridad: form.prioridad,
+          contacto_nombre: form.contacto_nombre || null,
+          negocio_titulo: form.negocio_titulo || null,
+          estado: "pendiente",
+          completado: false,
+        })
+        .select("id,perfil_id,titulo,descripcion,notas,fecha_recordatorio,estado,completado,prioridad,contacto_nombre,negocio_titulo,created_at")
+        .single();
+      if (!error && data) {
+        setManuales((prev) => [...prev, sbToLocal(data as RecordatorioSB)]);
+        showToast("Recordatorio creado");
+      }
     }
 
     setForm(FORM_VACIO);
