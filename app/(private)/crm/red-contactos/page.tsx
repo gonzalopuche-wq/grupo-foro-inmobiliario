@@ -28,8 +28,6 @@ type TabId = "directorio" | "red" | "referidos";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = "red_contactos";
-
 const TIPO_COLORES: Record<Contacto["tipo"], string> = {
   propietario: "#7c3aed",
   comprador:   "#0ea5e9",
@@ -59,20 +57,6 @@ const RELACION_TIPOS: Array<{ value: Relacion["tipo"]; label: string; color: str
 const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-function cargarRelaciones(): Relacion[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Relacion[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function guardarRelaciones(lista: Relacion[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
-}
 
 function generarId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -1057,6 +1041,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
 // ── Page principal ────────────────────────────────────────────────────────────
 
 export default function RedContactosPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [tab, setTab] = useState<TabId>("directorio");
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [relaciones, setRelaciones] = useState<Relacion[]>([]);
@@ -1064,22 +1049,38 @@ export default function RedContactosPage() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [preseleccionado, setPreseleccionado] = useState<string | null>(null);
 
-  // Cargar contactos desde Supabase
+  const guardarRelacionesSB = useCallback((lista: Relacion[], userId: string) => {
+    supabase.from("crm_red_contactos").upsert(
+      { perfil_id: userId, contactos: lista, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    ).then(() => {});
+  }, []);
+
+  // Cargar contactos y relaciones desde Supabase
   useEffect(() => {
     async function cargar() {
       setCargando(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setCargando(false); return; }
+      if (!user) { window.location.href = "/login"; return; }
+      const userId = user.id;
+      setUid(userId);
 
-      const { data, error } = await supabase
-        .from("crm_contactos")
-        .select("id, nombre, email, telefono, tipo, created_at, perfil_id")
-        .eq("perfil_id", user.id)
-        .order("nombre");
+      const [contactosRes, relacionesRes] = await Promise.all([
+        supabase
+          .from("crm_contactos")
+          .select("id, nombre, email, telefono, tipo, created_at, perfil_id")
+          .eq("perfil_id", userId)
+          .order("nombre"),
+        supabase
+          .from("crm_red_contactos")
+          .select("contactos")
+          .eq("perfil_id", userId)
+          .maybeSingle(),
+      ]);
 
-      if (!error && data) {
+      if (!contactosRes.error && contactosRes.data) {
         setContactos(
-          data.map(row => ({
+          contactosRes.data.map(row => ({
             id:         String(row.id),
             nombre:     String(row.nombre ?? ""),
             email:      row.email != null ? String(row.email) : null,
@@ -1092,20 +1093,20 @@ export default function RedContactosPage() {
           }))
         );
       }
+
+      if (relacionesRes.data?.contactos && Array.isArray(relacionesRes.data.contactos)) {
+        setRelaciones(relacionesRes.data.contactos as Relacion[]);
+      }
+
       setCargando(false);
     }
     cargar();
   }, []);
 
-  // Cargar relaciones desde localStorage
-  useEffect(() => {
-    setRelaciones(cargarRelaciones());
-  }, []);
-
   function handleGuardarRelacion(rel: Relacion) {
     const nueva = [...relaciones, rel];
     setRelaciones(nueva);
-    guardarRelaciones(nueva);
+    if (uid) guardarRelacionesSB(nueva, uid);
     setModalAbierto(false);
     setPreseleccionado(null);
   }
@@ -1113,7 +1114,7 @@ export default function RedContactosPage() {
   function handleEliminarRelacion(id: string) {
     const filtrada = relaciones.filter(r => r.id !== id);
     setRelaciones(filtrada);
-    guardarRelaciones(filtrada);
+    if (uid) guardarRelacionesSB(filtrada, uid);
   }
 
   function abrirModal(contactoId: string | null = null) {

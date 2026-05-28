@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ── tipos ─────────────────────────────────────────────────────────────────────
 
@@ -25,7 +26,6 @@ interface Presupuesto {
 
 // ── constantes ────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = "presupuesto_anual";
 const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 const MESES_FULL = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
@@ -51,7 +51,7 @@ function pct(a: number, b: number): number {
   if (b === 0) return 0;
   return Math.round((a / b) * 100);
 }
-function uid(): string {
+function genId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
@@ -68,7 +68,7 @@ function defaultIngresos(): ItemPresupuesto[] {
   // Honorarios venta: 5 ops × $800.000, variable, estacionalidad
   const ventaMeses = [800000,800000,1600000,1600000,800000,800000,800000,1600000,1600000,2400000,2400000,1600000];
   const venta: ItemPresupuesto = {
-    id: uid(),
+    id: genId(),
     nombre: "Honorarios venta",
     categoria: "ingresos",
     monto_mensual: 800000,
@@ -79,7 +79,7 @@ function defaultIngresos(): ItemPresupuesto[] {
   // Honorarios alquiler: 8 ops × $300.000, variable
   const alqMeses = [300000,300000,600000,300000,300000,300000,600000,300000,300000,600000,300000,600000];
   const alquiler: ItemPresupuesto = {
-    id: uid(),
+    id: genId(),
     nombre: "Honorarios alquiler",
     categoria: "ingresos",
     monto_mensual: 300000,
@@ -89,7 +89,7 @@ function defaultIngresos(): ItemPresupuesto[] {
   };
   // Honorarios renovación: 3 ops × $150.000, fijo desde marzo
   const renov: ItemPresupuesto = {
-    id: uid(),
+    id: genId(),
     nombre: "Honorarios renovación",
     categoria: "ingresos",
     monto_mensual: 150000,
@@ -102,7 +102,7 @@ function defaultIngresos(): ItemPresupuesto[] {
 
 function defaultGastos(): ItemPresupuesto[] {
   const mk = (nombre: string, cat: string, monto: number, meses: boolean[], variable = false): ItemPresupuesto => ({
-    id: uid(),
+    id: genId(),
     nombre,
     categoria: cat,
     monto_mensual: monto,
@@ -133,29 +133,6 @@ function presupuestoDefault(anio: number): Presupuesto {
     gastos: defaultGastos(),
     updated_at: new Date().toISOString(),
   };
-}
-
-// ── carga / guardado ──────────────────────────────────────────────────────────
-
-function cargar(anio: number): Presupuesto {
-  if (typeof window === "undefined") return presupuestoDefault(anio);
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return presupuestoDefault(anio);
-    const todos = JSON.parse(raw) as Record<string, Presupuesto>;
-    return todos[String(anio)] ?? presupuestoDefault(anio);
-  } catch {
-    return presupuestoDefault(anio);
-  }
-}
-
-function guardarLS(pres: Presupuesto): void {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const todos: Record<string, Presupuesto> = raw ? (JSON.parse(raw) as Record<string, Presupuesto>) : {};
-    todos[String(pres.anio)] = { ...pres, updated_at: new Date().toISOString() };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-  } catch { /* noop */ }
 }
 
 // ── estilos compartidos ───────────────────────────────────────────────────────
@@ -281,19 +258,48 @@ const S = {
 export default function PresupuestoAnualPage() {
   const anioActual = new Date().getFullYear();
   const [anio, setAnio] = useState(anioActual);
-  const [pres, setPresRaw] = useState<Presupuesto>(() => cargar(anioActual));
+  const [pres, setPresRaw] = useState<Presupuesto>(presupuestoDefault(anioActual));
   const [tab, setTab] = useState<0 | 1 | 2>(0);
   const [modalImportar, setModalImportar] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
+  const [loadingPres, setLoadingPres] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      setUid(data.user.id);
+      const { data: row } = await supabase
+        .from("crm_presupuesto_anual")
+        .select("data")
+        .eq("perfil_id", data.user.id)
+        .eq("anio", anio)
+        .maybeSingle();
+      if (row?.data) {
+        setPresRaw(row.data as Presupuesto);
+      } else {
+        setPresRaw(presupuestoDefault(anio));
+      }
+      setLoadingPres(false);
+    });
+  }, [anio]);
 
   const setPres = useCallback((next: Presupuesto) => {
-    guardarLS(next);
     setPresRaw(next);
   }, []);
+
+  // Save to Supabase whenever pres changes
+  useEffect(() => {
+    if (!uid || loadingPres) return;
+    supabase.from("crm_presupuesto_anual").upsert(
+      { perfil_id: uid, anio: pres.anio, data: pres, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id,anio" }
+    ).then(() => {});
+  }, [pres, uid, loadingPres]);
 
   const cambiarAnio = (delta: number) => {
     const nuevo = anio + delta;
     setAnio(nuevo);
-    setPresRaw(cargar(nuevo));
+    setLoadingPres(true);
   };
 
   // ── cálculos anuales ─────────────────────────────────────────────────────
@@ -321,6 +327,14 @@ export default function PresupuestoAnualPage() {
   const margen        = pct(resultadoNeto, totalIngresos);
   const ingresosUSD   = totalIngresos / pres.tipo_cambio_ref;
   const cumplimientoMeta = pct(ingresosUSD, pres.meta_honorarios_usd);
+
+  if (loadingPres) {
+    return (
+      <div style={{ ...S.page, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span style={{ color: "#888", fontSize: 14 }}>Cargando presupuesto...</span>
+      </div>
+    );
+  }
 
   return (
     <div style={S.page}>
@@ -642,7 +656,7 @@ function TabIngresos({ pres, setPres, ingresosPorMes, totalIngresos, ingresosUSD
 
   const agregar = () => {
     const nuevo: ItemPresupuesto = {
-      id: uid(),
+      id: genId(),
       nombre: "Nuevo ingreso",
       categoria: "ingresos",
       monto_mensual: 100000,
@@ -765,7 +779,7 @@ function TabGastos({ pres, setPres, gastosPorMes, totalGastos }: TabGastosProps)
 
   const agregar = () => {
     const nuevo: ItemPresupuesto = {
-      id: uid(),
+      id: genId(),
       nombre: "Nuevo gasto",
       categoria: "Operativos",
       monto_mensual: 10000,

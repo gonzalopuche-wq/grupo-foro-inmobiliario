@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { supabase } from "../../../lib/supabase";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -44,7 +45,6 @@ type SortDir = "asc" | "desc";
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = "competencia_crm";
 const TIPOS_PROPIEDAD = ["Departamento", "Casa", "PH", "Local", "Oficina", "Terreno", "Cochera", "Otro"];
 
 // ── Datos de ejemplo ──────────────────────────────────────────────────────────
@@ -422,6 +422,7 @@ function emptyFormPropiedad(inmobiliariaId = ""): FormPropiedad {
 
 export default function AnalisisCompetencia() {
   // ── Estado persistido ──
+  const [uid, setUid] = useState<string | null>(null);
   const [inmobiliarias, setInmobiliarias] = useState<Inmobiliaria[]>([]);
   const [propiedades, setPropiedades] = useState<PropiedadCompetencia[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -450,33 +451,39 @@ export default function AnalisisCompetencia() {
   const [nuevoEstado, setNuevoEstado] = useState<"activa" | "vendida" | "retirada">("vendida");
   const [fechaVentaInput, setFechaVentaInput] = useState(fechaHoy());
 
-  // ── Hidratación desde localStorage ──
+  // ── Hidratación desde Supabase ──
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as { inmobiliarias: Inmobiliaria[]; propiedades: PropiedadCompetencia[] };
-        setInmobiliarias(parsed.inmobiliarias ?? []);
-        setPropiedades(parsed.propiedades ?? []);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_analisis_competencia")
+        .select("competidores")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.competidores) {
+        const stored = row.competidores as { inmobiliarias: Inmobiliaria[]; propiedades: PropiedadCompetencia[] };
+        setInmobiliarias(stored.inmobiliarias ?? []);
+        setPropiedades(stored.propiedades ?? []);
       } else {
         const { inmobiliarias: inm, propiedades: props } = generarDatosEjemplo();
         setInmobiliarias(inm);
         setPropiedades(props);
       }
-    } catch {
-      const { inmobiliarias: inm, propiedades: props } = generarDatosEjemplo();
-      setInmobiliarias(inm);
-      setPropiedades(props);
-    }
-    setHydrated(true);
+      setHydrated(true);
+    });
   }, []);
 
   // ── Persistencia ──
   const persist = useCallback(
-    (inm: Inmobiliaria[], props: PropiedadCompetencia[]) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ inmobiliarias: inm, propiedades: props }));
+    async (inm: Inmobiliaria[], props: PropiedadCompetencia[]) => {
+      if (!uid) return;
+      await supabase
+        .from("crm_analisis_competencia")
+        .upsert({ perfil_id: uid, competidores: { inmobiliarias: inm, propiedades: props }, updated_at: new Date().toISOString() });
     },
-    []
+    [uid]
   );
 
   // ── CRUD Inmobiliaria ──

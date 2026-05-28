@@ -223,40 +223,17 @@ function getPlantilla(tipo: string | null): Omit<Documento, "id">[] {
   }));
 }
 
-// ── Persistencia ──────────────────────────────────────────────────────────────
+// ── Persistencia helpers ──────────────────────────────────────────────────────
 
-const LS_KEY = "crm_expedientes_v1";
-
-function loadAllExpedientes(): Expediente[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    return raw ? (JSON.parse(raw) as Expediente[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveExpediente(exp: Expediente): void {
-  const all = loadAllExpedientes();
-  const idx = all.findIndex((e) => e.negocioId === exp.negocioId);
-  if (idx >= 0) all[idx] = exp;
-  else all.push(exp);
-  localStorage.setItem(LS_KEY, JSON.stringify(all));
-}
-
-function loadExpediente(negocioId: string): Expediente {
-  const all = loadAllExpedientes();
-  return (
-    all.find((e) => e.negocioId === negocioId) ?? {
-      negocioId,
-      partes: [],
-      documentos: [],
-      hitos: [],
-      notas: "",
-      updatedAt: new Date().toISOString(),
-    }
-  );
+function expedienteVacio(negocioId: string): Expediente {
+  return {
+    negocioId,
+    partes: [],
+    documentos: [],
+    hitos: [],
+    notas: "",
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 // ── Utilidades ────────────────────────────────────────────────────────────────
@@ -304,10 +281,24 @@ export default function ExpedientePage() {
   const [exp, setExp] = useState<Expediente | null>(null);
   const [tab, setTab] = useState<TabId>("documentos");
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [allExpedientes, setAllExpedientes] = useState<Expediente[]>([]);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        const { data: cfgRow } = await supabase
+          .from("crm_expedientes")
+          .select("expedientes")
+          .eq("perfil_id", user.id)
+          .maybeSingle();
+        if (cfgRow?.expedientes) {
+          setAllExpedientes(cfgRow.expedientes as Expediente[]);
+        }
+      }
       const { data } = await supabase
         .from("crm_negocios")
         .select("id,titulo,tipo_operacion,etapa,valor_operacion,moneda,fecha_cierre")
@@ -321,15 +312,32 @@ export default function ExpedientePage() {
 
   useEffect(() => {
     if (!negocioId) { setExp(null); return; }
-    setExp(loadExpediente(negocioId));
-  }, [negocioId]);
+    const found = allExpedientes.find((e) => e.negocioId === negocioId);
+    setExp(found ?? expedienteVacio(negocioId));
+  }, [negocioId, allExpedientes]);
 
   const updateExp = useCallback((fn: (prev: Expediente) => Expediente) => {
     setExp((prev) => {
       if (!prev) return prev;
       const next = fn(prev);
       next.updatedAt = new Date().toISOString();
-      saveExpediente(next);
+      // Persist to Supabase
+      setAllExpedientes((prevAll) => {
+        const idx = prevAll.findIndex((e) => e.negocioId === next.negocioId);
+        const updated = idx >= 0
+          ? prevAll.map((e) => (e.negocioId === next.negocioId ? next : e))
+          : [...prevAll, next];
+        // Fire and forget upsert
+        supabase.auth.getUser().then(({ data: { user } }) => {
+          if (!user) return;
+          supabase.from("crm_expedientes").upsert({
+            perfil_id: user.id,
+            expedientes: updated,
+            updated_at: new Date().toISOString(),
+          });
+        });
+        return updated;
+      });
       return next;
     });
   }, []);

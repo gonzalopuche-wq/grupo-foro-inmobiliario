@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { supabase } from "../../../lib/supabase";
 
 type Categoria =
   | "legal"
@@ -51,8 +52,6 @@ const CATEGORIAS: Categoria[] = [
   "plantillas",
   "otro",
 ];
-
-const LS_KEY = "crm_base_conocimiento_v1";
 
 const ARTICULOS_INICIALES: Articulo[] = [
   {
@@ -141,6 +140,7 @@ function articuloToForm(a: Articulo): FormState {
 export default function BaseConocimientoPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [hidratado, setHidratado] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
   const [seleccionadoId, setSeleccionadoId] = useState<string | null>(null);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [esNuevo, setEsNuevo] = useState(false);
@@ -148,31 +148,32 @@ export default function BaseConocimientoPage() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroCat, setFiltroCat] = useState<Categoria | "todos">("todos");
 
-  // Cargar desde localStorage
+  // Auth + cargar desde Supabase
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (raw) {
-        const parsed: unknown = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          setArticulos(parsed as Articulo[]);
-        } else {
-          setArticulos(ARTICULOS_INICIALES);
-        }
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      setUid(data.user.id);
+      const { data: row } = await supabase
+        .from("crm_base_conocimiento")
+        .select("articulos")
+        .eq("perfil_id", data.user.id)
+        .single();
+      if (row && Array.isArray(row.articulos) && row.articulos.length > 0) {
+        setArticulos(row.articulos as Articulo[]);
       } else {
         setArticulos(ARTICULOS_INICIALES);
       }
-    } catch {
-      setArticulos(ARTICULOS_INICIALES);
-    }
-    setHidratado(true);
+      setHidratado(true);
+    });
   }, []);
 
-  // Guardar en localStorage en cada cambio
+  // Guardar en Supabase en cada cambio
   useEffect(() => {
-    if (!hidratado) return;
-    localStorage.setItem(LS_KEY, JSON.stringify(articulos));
-  }, [articulos, hidratado]);
+    if (!hidratado || !uid) return;
+    supabase
+      .from("crm_base_conocimiento")
+      .upsert({ perfil_id: uid, articulos, updated_at: new Date().toISOString() }, { onConflict: "perfil_id" });
+  }, [articulos, hidratado, uid]);
 
   const articuloSeleccionado = useMemo(
     () => articulos.find((a) => a.id === seleccionadoId) ?? null,

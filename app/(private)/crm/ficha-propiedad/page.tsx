@@ -49,7 +49,6 @@ interface FichaPropiedad {
 }
 
 // ── Constantes ─────────────────────────────────────────────────────────────
-const STORAGE_KEY = "fichas_propiedades";
 
 const AMENITIES_DISPONIBLES = [
   "Cochera",
@@ -404,6 +403,7 @@ export default function FichaPropiedadPage() {
   const [tab, setTab] = useState<"fichas" | "editor" | "preview">("fichas");
   const [fichas, setFichas] = useState<FichaPropiedad[]>([]);
   const [fichaActual, setFichaActual] = useState<FichaPropiedad | null>(null);
+  const [uid, setUid] = useState<string | null>(null);
 
   // Cartera de Supabase
   const [propiedades, setPropiedades] = useState<PropiedadCartera[]>([]);
@@ -426,19 +426,32 @@ export default function FichaPropiedadPage() {
   // Nuevo punto destacado
   const [nuevoPunto, setNuevoPunto] = useState("");
 
-  // ── Persistencia localStorage ─────────────────────────────────────────
+  // ── Auth + carga desde Supabase ───────────────────────────────────────
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setFichas(JSON.parse(raw) as FichaPropiedad[]);
-    } catch {
-      // ignorar
-    }
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      setUid(user.id);
+      const { data } = await supabase
+        .from("crm_fichas_propiedades")
+        .select("fichas")
+        .eq("perfil_id", user.id)
+        .maybeSingle();
+      if (data?.fichas) {
+        setFichas(data.fichas as FichaPropiedad[]);
+      }
+    })();
   }, []);
 
-  const guardarEnStorage = useCallback((lista: FichaPropiedad[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
+  const guardarEnStorage = useCallback(async (lista: FichaPropiedad[]) => {
     setFichas(lista);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("crm_fichas_propiedades").upsert({
+      perfil_id: user.id,
+      fichas: lista,
+      updated_at: new Date().toISOString(),
+    });
   }, []);
 
   // ── Cargar cartera de Supabase ────────────────────────────────────────
@@ -482,7 +495,7 @@ export default function FichaPropiedadPage() {
     setTab("editor");
   };
 
-  const duplicarFicha = (f: FichaPropiedad) => {
+  const duplicarFicha = async (f: FichaPropiedad) => {
     const now = new Date().toISOString();
     const copia: FichaPropiedad = {
       ...f,
@@ -492,19 +505,19 @@ export default function FichaPropiedadPage() {
       updated_at: now,
     };
     const nueva = [copia, ...fichas];
-    guardarEnStorage(nueva);
+    await guardarEnStorage(nueva);
   };
 
-  const eliminarFicha = (id: string) => {
+  const eliminarFicha = async (id: string) => {
     if (!confirm("¿Eliminár esta ficha?")) return;
     const nueva = fichas.filter((f) => f.id !== id);
-    guardarEnStorage(nueva);
+    await guardarEnStorage(nueva);
     if (fichaActual?.id === id) {
       setFichaActual(null);
     }
   };
 
-  const guardarFicha = () => {
+  const guardarFicha = async () => {
     if (!fichaActual) return;
     const updated: FichaPropiedad = {
       ...fichaActual,
@@ -514,7 +527,7 @@ export default function FichaPropiedadPage() {
     const nueva = existe
       ? fichas.map((f) => (f.id === updated.id ? updated : f))
       : [updated, ...fichas];
-    guardarEnStorage(nueva);
+    await guardarEnStorage(nueva);
     setFichaActual(updated);
   };
 

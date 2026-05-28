@@ -87,15 +87,37 @@ export default function SecurityGuard({ children }: { children: React.ReactNode 
     document.head.appendChild(style);
 
     // ── 7. Timeout por inactividad: cierra sesión a los 30 minutos ─────────
+    //      Con sincronización entre pestañas vía BroadcastChannel
+    const bc = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("gfi_tab_activity") : null;
+    let lastBroadcast = 0;
+
     const resetTimer = () => {
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(async () => {
+        bc?.postMessage({ type: "signout" });
         await supabase.auth.signOut();
         router.replace("/login?motivo=inactividad");
       }, INACTIVITY_MS);
     };
+
+    const onActivity = () => {
+      resetTimer();
+      const now = Date.now();
+      if (now - lastBroadcast > 5000) {
+        lastBroadcast = now;
+        bc?.postMessage({ type: "activity" });
+      }
+    };
+
+    if (bc) {
+      bc.onmessage = (ev) => {
+        if (ev.data?.type === "activity") resetTimer();
+        if (ev.data?.type === "signout") router.replace("/login?motivo=inactividad");
+      };
+    }
+
     const actEvents = ["mousedown", "mousemove", "keydown", "scroll", "touchstart", "click"] as const;
-    actEvents.forEach(ev => document.addEventListener(ev, resetTimer, { passive: true }));
+    actEvents.forEach(ev => document.addEventListener(ev, onActivity, { passive: true }));
     resetTimer();
 
     return () => {
@@ -107,8 +129,9 @@ export default function SecurityGuard({ children }: { children: React.ReactNode 
       (window as Window).print = origPrint;
       window.removeEventListener("beforeprint", beforePrint);
       document.getElementById("__gfi_sec")?.remove();
-      actEvents.forEach(ev => document.removeEventListener(ev, resetTimer));
+      actEvents.forEach(ev => document.removeEventListener(ev, onActivity));
       if (timerRef.current) clearTimeout(timerRef.current);
+      bc?.close();
     };
   }, [router]);
 

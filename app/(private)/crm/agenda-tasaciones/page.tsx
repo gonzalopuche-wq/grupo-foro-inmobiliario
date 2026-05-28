@@ -45,8 +45,6 @@ interface FormData {
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 
-const LS_KEY = "crm_tasaciones_v1";
-
 const ESTADO_CONFIG: Record<EstadoTasacion, { label: string; bg: string; color: string }> = {
   programada:    { label: "Programada",    bg: "rgba(99,102,241,0.15)",  color: "#818cf8" },
   realizada:     { label: "Realizada",     bg: "rgba(34,197,94,0.15)",   color: "#4ade80" },
@@ -144,22 +142,6 @@ function fmtFechaCorta(iso: string): string {
 
 function fmtValor(v: number): string {
   return `USD ${v.toLocaleString("es-AR")}`;
-}
-
-// ── Almacenamiento localStorage ───────────────────────────────────────────────
-
-function cargarTasaciones(): Tasacion[] {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as Tasacion[];
-  } catch {
-    return [];
-  }
-}
-
-function guardarTasaciones(lista: Tasacion[]): void {
-  localStorage.setItem(LS_KEY, JSON.stringify(lista));
 }
 
 // ── Chip de estado ────────────────────────────────────────────────────────────
@@ -275,9 +257,7 @@ function GraficoBarras({ data }: { data: SemanaData[] }) {
 // ── Componente principal ──────────────────────────────────────────────────────
 
 export default function AgendaTasacionesPage() {
-  // Evitamos usar supabase directamente pero lo importamos para cumplir el requisito
-  void supabase;
-
+  const [uid, setUid] = useState<string | null>(null);
   const [tasaciones, setTasaciones] = useState<Tasacion[]>([]);
   const [vistaActiva, setVistaActiva] = useState<"calendario" | "lista" | "kpis">("calendario");
   const [filtroEstado, setFiltroEstado] = useState<EstadoTasacion | "todas">("todas");
@@ -292,9 +272,21 @@ export default function AgendaTasacionesPage() {
 
   const hoy = toLocalStr(new Date());
 
-  // ── Cargar desde localStorage ──
+  // ── Cargar desde Supabase ──
   useEffect(() => {
-    setTasaciones(cargarTasaciones());
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_agenda_tasaciones")
+        .select("tasaciones")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.tasaciones && Array.isArray(row.tasaciones)) {
+        setTasaciones(row.tasaciones as Tasacion[]);
+      }
+    });
   }, []);
 
   const showToast = useCallback((msg: string) => {
@@ -327,6 +319,16 @@ export default function AgendaTasacionesPage() {
     setEditandoId(t.id);
     setMostrarForm(true);
   }, []);
+
+  const persistirTasaciones = useCallback((lista: Tasacion[]) => {
+    setTasaciones(lista);
+    if (uid) {
+      supabase.from("crm_agenda_tasaciones").upsert(
+        { perfil_id: uid, tasaciones: lista, updated_at: new Date().toISOString() },
+        { onConflict: "perfil_id" }
+      ).then(() => {});
+    }
+  }, [uid]);
 
   const guardarForm = useCallback(() => {
     if (!form.contacto_nombre.trim() || !form.direccion.trim()) {
@@ -362,27 +364,24 @@ export default function AgendaTasacionesPage() {
       ? tasaciones.map(t => t.id === editandoId ? nueva : t)
       : [...tasaciones, nueva];
 
-    guardarTasaciones(nuevaLista);
-    setTasaciones(nuevaLista);
+    persistirTasaciones(nuevaLista);
     setMostrarForm(false);
     setEditandoId(null);
     setForm(FORM_INICIAL);
     showToast(editandoId ? "Tasación actualizada" : "Tasación creada");
-  }, [form, editandoId, tasaciones, showToast]);
+  }, [form, editandoId, tasaciones, showToast, persistirTasaciones]);
 
   const cambiarEstado = useCallback((id: string, estado: EstadoTasacion) => {
     const nuevaLista = tasaciones.map(t => t.id === id ? { ...t, estado } : t);
-    guardarTasaciones(nuevaLista);
-    setTasaciones(nuevaLista);
-  }, [tasaciones]);
+    persistirTasaciones(nuevaLista);
+  }, [tasaciones, persistirTasaciones]);
 
   const eliminar = useCallback((id: string) => {
     if (!confirm("¿Eliminar esta tasación?")) return;
     const nuevaLista = tasaciones.filter(t => t.id !== id);
-    guardarTasaciones(nuevaLista);
-    setTasaciones(nuevaLista);
+    persistirTasaciones(nuevaLista);
     showToast("Tasación eliminada");
-  }, [tasaciones, showToast]);
+  }, [tasaciones, showToast, persistirTasaciones]);
 
   // ── Filtrado ──
   const tasacionesFiltradas = useMemo(() => {

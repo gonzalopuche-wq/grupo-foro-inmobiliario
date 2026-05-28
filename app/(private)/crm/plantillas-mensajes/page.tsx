@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -30,8 +31,6 @@ interface Plantilla {
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "plantillas_mensajes";
 
 const CATEGORIAS: Record<Categoria, { label: string; color: string; bg: string }> = {
   captacion:    { label: "Captación",    color: "#f59e0b", bg: "rgba(245,158,11,0.15)" },
@@ -221,22 +220,6 @@ const PLANTILLAS_DEFAULT: Plantilla[] = [
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function loadPlantillas(): Plantilla[] {
-  if (typeof window === "undefined") return PLANTILLAS_DEFAULT;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return PLANTILLAS_DEFAULT;
-    return JSON.parse(raw) as Plantilla[];
-  } catch {
-    return PLANTILLAS_DEFAULT;
-  }
-}
-
-function savePlantillas(list: Plantilla[]): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-}
 
 function extractVariables(texto: string): string[] {
   const matches = texto.match(/\{([^}]+)\}/g) ?? [];
@@ -522,8 +505,8 @@ function PlantillaCard({ p, onToggleFav, onUsar, onEditar, copiadoId, onCopiar }
 interface EditModalProps {
   plantilla: Plantilla | null; // null = nueva
   onClose: () => void;
-  onSave: (p: Plantilla) => void;
-  onDelete: (id: string) => void;
+  onSave: (p: Plantilla) => void | Promise<void>;
+  onDelete: (id: string) => void | Promise<void>;
 }
 
 function EditModal({ plantilla, onClose, onSave, onDelete }: EditModalProps) {
@@ -1115,6 +1098,7 @@ function Tab3Estadisticas({ plantillas }: Tab3Props) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function PlantillasMensajesPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [plantillas, setPlantillas] = useState<Plantilla[]>([]);
   const [tab, setTab] = useState<0 | 1 | 2>(0);
   const [editModal, setEditModal] = useState<{ open: boolean; plantilla: Plantilla | null }>({ open: false, plantilla: null });
@@ -1122,9 +1106,40 @@ export default function PlantillasMensajesPage() {
   const [copiadoId, setCopiadoId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  // Load on mount
+  // Auth + load on mount
   useEffect(() => {
-    setPlantillas(loadPlantillas());
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: rows } = await supabase
+        .from("crm_plantillas_mensajes")
+        .select("*")
+        .eq("perfil_id", userId)
+        .order("created_at", { ascending: true });
+      if (rows && rows.length > 0) {
+        setPlantillas(rows as Plantilla[]);
+      } else {
+        // Seed defaults into Supabase on first load
+        const now = new Date().toISOString();
+        const toInsert = PLANTILLAS_DEFAULT.map((p) => ({
+          perfil_id: userId,
+          nombre: p.nombre,
+          categoria: p.categoria,
+          canal: p.canal,
+          texto: p.texto,
+          favorita: p.favorita,
+          usos: p.usos,
+          created_at: now,
+          updated_at: now,
+        }));
+        const { data: inserted } = await supabase
+          .from("crm_plantillas_mensajes")
+          .insert(toInsert)
+          .select("*");
+        if (inserted) setPlantillas(inserted as Plantilla[]);
+      }
+    });
   }, []);
 
   const showToast = useCallback((msg: string) => {
@@ -1132,18 +1147,21 @@ export default function PlantillasMensajesPage() {
     setTimeout(() => setToast(null), 2500);
   }, []);
 
-  const saveAndSet = useCallback((list: Plantilla[]) => {
-    savePlantillas(list);
-    setPlantillas(list);
-  }, []);
-
   const handleToggleFav = useCallback((id: string) => {
+    if (!uid) return;
     setPlantillas((prev) => {
-      const next = prev.map((p) => (p.id === id ? { ...p, favorita: !p.favorita, updated_at: new Date().toISOString() } : p));
-      savePlantillas(next);
-      return next;
+      const updated = prev.find((p) => p.id === id);
+      if (!updated) return prev;
+      const newFav = !updated.favorita;
+      supabase
+        .from("crm_plantillas_mensajes")
+        .update({ favorita: newFav, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .eq("perfil_id", uid)
+        .then(() => {});
+      return prev.map((p) => (p.id === id ? { ...p, favorita: newFav, updated_at: new Date().toISOString() } : p));
     });
-  }, []);
+  }, [uid]);
 
   const handleCopiar = useCallback(async (p: Plantilla) => {
     await navigator.clipboard.writeText(p.texto);
@@ -1165,33 +1183,73 @@ export default function PlantillasMensajesPage() {
     setEditModal({ open: true, plantilla: null });
   }, []);
 
-  const handleSavePlantilla = useCallback((p: Plantilla) => {
-    setPlantillas((prev) => {
-      const exists = prev.find((x) => x.id === p.id);
-      const next = exists ? prev.map((x) => (x.id === p.id ? p : x)) : [...prev, p];
-      savePlantillas(next);
-      return next;
-    });
+  const handleSavePlantilla = useCallback(async (p: Plantilla) => {
+    if (!uid) return;
+    const now = new Date().toISOString();
+    const isNew = !plantillas.find((x) => x.id === p.id);
+    if (isNew) {
+      const { data: inserted } = await supabase
+        .from("crm_plantillas_mensajes")
+        .insert({
+          perfil_id: uid,
+          nombre: p.nombre,
+          categoria: p.categoria,
+          canal: p.canal,
+          texto: p.texto,
+          favorita: p.favorita,
+          usos: p.usos,
+          created_at: now,
+          updated_at: now,
+        })
+        .select("*")
+        .single();
+      if (inserted) setPlantillas((prev) => [...prev, inserted as Plantilla]);
+    } else {
+      await supabase
+        .from("crm_plantillas_mensajes")
+        .update({
+          nombre: p.nombre,
+          categoria: p.categoria,
+          canal: p.canal,
+          texto: p.texto,
+          favorita: p.favorita,
+          usos: p.usos,
+          updated_at: now,
+        })
+        .eq("id", p.id)
+        .eq("perfil_id", uid);
+      setPlantillas((prev) => prev.map((x) => (x.id === p.id ? { ...p, updated_at: now } : x)));
+    }
     setEditModal({ open: false, plantilla: null });
-    showToast(p.id.startsWith("p_") ? "¡Plantilla guardada!" : "¡Plantilla actualizada!");
-  }, [showToast]);
+    showToast(isNew ? "¡Plantilla guardada!" : "¡Plantilla actualizada!");
+  }, [uid, plantillas, showToast]);
 
-  const handleDeletePlantilla = useCallback((id: string) => {
-    setPlantillas((prev) => {
-      const next = prev.filter((p) => p.id !== id);
-      savePlantillas(next);
-      return next;
-    });
+  const handleDeletePlantilla = useCallback(async (id: string) => {
+    if (!uid) return;
+    await supabase
+      .from("crm_plantillas_mensajes")
+      .delete()
+      .eq("id", id)
+      .eq("perfil_id", uid);
+    setPlantillas((prev) => prev.filter((p) => p.id !== id));
     showToast("Plantilla eliminada");
-  }, [showToast]);
+  }, [uid, showToast]);
 
   const handleIncrementUso = useCallback((id: string) => {
+    if (!uid) return;
     setPlantillas((prev) => {
-      const next = prev.map((p) => (p.id === id ? { ...p, usos: p.usos + 1, updated_at: new Date().toISOString() } : p));
-      savePlantillas(next);
-      return next;
+      const p = prev.find((x) => x.id === id);
+      if (!p) return prev;
+      const newUsos = p.usos + 1;
+      supabase
+        .from("crm_plantillas_mensajes")
+        .update({ usos: newUsos, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .eq("perfil_id", uid)
+        .then(() => {});
+      return prev.map((x) => (x.id === id ? { ...x, usos: newUsos, updated_at: new Date().toISOString() } : x));
     });
-  }, []);
+  }, [uid]);
 
   const TABS = ["Biblioteca", "Personalizar", "Estadísticas"];
 

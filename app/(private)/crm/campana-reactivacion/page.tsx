@@ -30,8 +30,6 @@ interface ContactoInactivo extends Contacto {
   categoria: "tibia" | "fria" | "perdida";
 }
 
-const STORAGE_KEY = "crm_reactivados_v1";
-
 const CAT_CONFIG = {
   tibia:   { label: "Tibia",   color: "#eab308", dias: "30–60 días",   icon: "🟡" },
   fria:    { label: "Fría",    color: "#f97316", dias: "60–90 días",   icon: "🟠" },
@@ -81,6 +79,7 @@ const PLANTILLAS_DEFAULT = [
 ];
 
 export default function CampanaReactivacionPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [interacciones, setInteracciones] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -95,13 +94,21 @@ export default function CampanaReactivacionPage() {
   const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) setReactivados(new Set(JSON.parse(stored)));
-
     const cargar = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = "/login"; return; }
       const uid = user.id;
+      setUid(uid);
+
+      const { data: reactRow } = await supabase
+        .from("crm_campana_reactivacion")
+        .select("reactivados")
+        .eq("perfil_id", uid)
+        .maybeSingle();
+      if (reactRow?.reactivados && Array.isArray(reactRow.reactivados)) {
+        setReactivados(new Set(reactRow.reactivados as string[]));
+      }
+
       const [{ data: ctcs }, { data: ints }] = await Promise.all([
         supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,zona_interes,presupuesto_min,presupuesto_max,moneda,created_at").eq("perfil_id", uid),
         supabase.from("crm_interacciones").select("contacto_id,created_at").eq("perfil_id", uid).order("created_at", { ascending: false }),
@@ -164,15 +171,25 @@ export default function CampanaReactivacionPage() {
   }), [inactivos, reactivados]);
 
   const marcarReactivado = (id: string) => {
-    const nuevo = new Set([...reactivados, id]);
-    setReactivados(nuevo);
+    const newSet = new Set([...reactivados, id]);
+    setReactivados(newSet);
     setSeleccionados(prev => { const s = new Set(prev); s.delete(id); return s; });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...nuevo]));
+    if (uid) {
+      supabase.from("crm_campana_reactivacion").upsert(
+        { perfil_id: uid, reactivados: [...newSet], updated_at: new Date().toISOString() },
+        { onConflict: "perfil_id" }
+      ).then(() => {});
+    }
   };
 
   const limpiarReactivados = () => {
     setReactivados(new Set());
-    localStorage.removeItem(STORAGE_KEY);
+    if (uid) {
+      supabase.from("crm_campana_reactivacion").upsert(
+        { perfil_id: uid, reactivados: [], updated_at: new Date().toISOString() },
+        { onConflict: "perfil_id" }
+      ).then(() => {});
+    }
   };
 
   const toggleSeleccion = (id: string) => {
@@ -430,7 +447,7 @@ export default function CampanaReactivacionPage() {
         </div>
 
         <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 20, fontSize: 12, color: "#6b7280" }}>
-          <strong style={{ color: "#9ca3af" }}>📌 Nota:</strong> La inactividad se calcula desde la última interacción registrada en el CRM. Los contactos marcados como reactivados se ocultan de la lista y se guardan localmente en este dispositivo.
+          <strong style={{ color: "#9ca3af" }}>📌 Nota:</strong> La inactividad se calcula desde la última interacción registrada en el CRM. Los contactos marcados como reactivados se ocultan de la lista y se guardan en la base de datos.
         </div>
       </div>
     </div>

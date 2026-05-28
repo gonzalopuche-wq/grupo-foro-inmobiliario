@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { supabase } from "../../../lib/supabase";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -36,8 +37,6 @@ interface Tarea {
 type Tab = "hoy" | "kanban" | "historial";
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
-
-const LS_KEY = "tareas_crm";
 
 const CATEGORIA_EMOJI: Record<Categoria, string> = {
   llamada: "📞",
@@ -1742,70 +1741,83 @@ export default function GestionTareasPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [tareaEditando, setTareaEditando] = useState<Tarea | null>(null);
   const [initialForm, setInitialForm] = useState<Partial<FormData>>({});
-  const [loaded, setLoaded] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Cargar desde localStorage
+  // Auth + load from Supabase
   useEffect(() => {
-    const raw = typeof window !== "undefined" ? localStorage.getItem(LS_KEY) : null;
-    if (raw) {
-      try {
-        setTareas(JSON.parse(raw) as Tarea[]);
-      } catch {
-        setTareas(generarEjemplos());
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_gestion_tareas")
+        .select("tareas")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row?.tareas && Array.isArray(row.tareas)) {
+        setTareas(row.tareas as Tarea[]);
       }
-    } else {
-      const ejemplos = generarEjemplos();
-      setTareas(ejemplos);
-      localStorage.setItem(LS_KEY, JSON.stringify(ejemplos));
-    }
-    setLoaded(true);
+      setLoading(false);
+    });
   }, []);
 
-  // Persistir
-  useEffect(() => {
-    if (loaded) {
-      localStorage.setItem(LS_KEY, JSON.stringify(tareas));
-    }
-  }, [tareas, loaded]);
+  const guardarSB = useCallback((items: Tarea[]) => {
+    if (!uid) return;
+    supabase.from("crm_gestion_tareas").upsert(
+      { perfil_id: uid, tareas: items, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    ).then(() => {});
+  }, [uid]);
 
   const guardarTarea = useCallback((t: Tarea) => {
     setTareas((prev) => {
       const idx = prev.findIndex((x) => x.id === t.id);
+      let next: Tarea[];
       if (idx >= 0) {
         const copy = [...prev];
         copy[idx] = t;
-        return copy;
+        next = copy;
+      } else {
+        next = [t, ...prev];
       }
-      return [t, ...prev];
+      guardarSB(next);
+      return next;
     });
     setModalOpen(false);
     setTareaEditando(null);
-  }, []);
+  }, [guardarSB]);
 
   const eliminarTarea = useCallback((id: string) => {
-    setTareas((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+    setTareas((prev) => {
+      const next = prev.filter((t) => t.id !== id);
+      guardarSB(next);
+      return next;
+    });
+  }, [guardarSB]);
 
   const toggleCompletada = useCallback((id: string) => {
     const now = new Date().toISOString();
-    setTareas((prev) =>
-      prev.map((t) => {
+    setTareas((prev) => {
+      const next = prev.map((t) => {
         if (t.id !== id) return t;
         const yaCompletada = t.estado === "completada";
         return {
           ...t,
-          estado: yaCompletada ? "pendiente" : "completada",
+          estado: (yaCompletada ? "pendiente" : "completada") as Estado,
           fecha_completada: yaCompletada ? null : isoHoy(),
           updated_at: now,
         };
-      })
-    );
-  }, []);
+      });
+      guardarSB(next);
+      return next;
+    });
+  }, [guardarSB]);
 
   const moverEstado = useCallback((id: string, nuevoEstado: Estado) => {
     const now = new Date().toISOString();
-    setTareas((prev) =>
-      prev.map((t) => {
+    setTareas((prev) => {
+      const next = prev.map((t) => {
         if (t.id !== id) return t;
         return {
           ...t,
@@ -1818,9 +1830,11 @@ export default function GestionTareasPage() {
               : t.fecha_completada,
           updated_at: now,
         };
-      })
-    );
-  }, []);
+      });
+      guardarSB(next);
+      return next;
+    });
+  }, [guardarSB]);
 
   function abrirNueva(partial?: Partial<FormData>) {
     setTareaEditando(null);
@@ -1839,6 +1853,12 @@ export default function GestionTareasPage() {
     { id: "kanban", label: "🗂 Kanban" },
     { id: "historial", label: "📊 Historial" },
   ];
+
+  if (loading) {
+    return (
+      <div style={{ color: "#e0e0e0", padding: 40, fontFamily: "Inter, sans-serif" }}>Cargando...</div>
+    );
+  }
 
   return (
     <div

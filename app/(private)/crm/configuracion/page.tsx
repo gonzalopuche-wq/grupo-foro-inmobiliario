@@ -75,22 +75,6 @@ const defaultAgencia: DatosAgencia = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function lsGet<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    return { ...fallback, ...(JSON.parse(raw) as Partial<T>) };
-  } catch {
-    return fallback;
-  }
-}
-
-function lsSet(key: string, value: unknown): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
 function fmtFecha(s: string | null | undefined): string {
   if (!s) return "—";
   return new Date(s).toLocaleDateString("es-AR", {
@@ -173,8 +157,13 @@ export default function ConfiguracionPage() {
         setPerfil((prev) => ({ ...prev, id: user.id, email: user.email ?? null }));
       }
 
-      setConfig(lsGet<ConfigExtra>("crm_config_v1", defaultConfigExtra));
-      setAgencia(lsGet<DatosAgencia>("crm_agencia_v1", defaultAgencia));
+      const { data: cfgRow } = await supabase
+        .from("crm_configuracion")
+        .select("config_extra, datos_agencia")
+        .eq("perfil_id", user.id)
+        .maybeSingle();
+      if (cfgRow?.config_extra) setConfig({ ...defaultConfigExtra, ...(cfgRow.config_extra as Partial<ConfigExtra>) });
+      if (cfgRow?.datos_agencia) setAgencia({ ...defaultAgencia, ...(cfgRow.datos_agencia as Partial<DatosAgencia>) });
       setLoading(false);
     })();
   }, []);
@@ -202,16 +191,34 @@ export default function ConfiguracionPage() {
 
   // ── Guardar preferencias ────────────────────────────────────────────────────
 
-  const guardarPreferencias = () => {
-    lsSet("crm_config_v1", config);
-    showToast("Preferencias guardadas", "ok");
+  const guardarPreferencias = async () => {
+    if (!userId) return;
+    const { error } = await supabase.from("crm_configuracion").upsert({
+      perfil_id: userId,
+      config_extra: config,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) {
+      showToast("Error al guardar: " + error.message, "error");
+    } else {
+      showToast("Preferencias guardadas", "ok");
+    }
   };
 
   // ── Guardar agencia ─────────────────────────────────────────────────────────
 
-  const guardarAgencia = () => {
-    lsSet("crm_agencia_v1", agencia);
-    showToast("Datos de agencia guardados", "ok");
+  const guardarAgencia = async () => {
+    if (!userId) return;
+    const { error } = await supabase.from("crm_configuracion").upsert({
+      perfil_id: userId,
+      datos_agencia: agencia,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) {
+      showToast("Error al guardar: " + error.message, "error");
+    } else {
+      showToast("Datos de agencia guardados", "ok");
+    }
   };
 
   // ── Helpers zonas ───────────────────────────────────────────────────────────
@@ -248,12 +255,20 @@ export default function ConfiguracionPage() {
     URL.revokeObjectURL(url);
   };
 
-  const limpiarDatos = () => {
-    if (!window.confirm("¿Seguro? Esto borrará todas tus preferencias locales.")) return;
+  const limpiarDatos = async () => {
+    if (!window.confirm("¿Seguro? Esto borrará todas tus preferencias locales y en la nube.")) return;
     localStorage.clear();
     setConfig(defaultConfigExtra);
     setAgencia(defaultAgencia);
-    showToast("Datos locales eliminados", "ok");
+    if (userId) {
+      await supabase.from("crm_configuracion").upsert({
+        perfil_id: userId,
+        config_extra: defaultConfigExtra,
+        datos_agencia: defaultAgencia,
+        updated_at: new Date().toISOString(),
+      });
+    }
+    showToast("Datos eliminados", "ok");
   };
 
   const cerrarSesion = async () => {

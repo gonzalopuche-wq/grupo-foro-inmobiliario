@@ -33,9 +33,6 @@ type KPIKey = keyof KPIs;
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = "crm_scorecard_v1";
-const METAS_KEY = "crm_scorecard_metas_v1";
-
 const PESOS: KPIs = {
   llamadas: 15,
   visitas: 20,
@@ -281,6 +278,7 @@ export default function ScorecardSemanal() {
   const semanas12 = build12Weeks();
   const semanaActual = semanas12[semanas12.length - 1].semana;
 
+  const [uid, setUid] = useState<string | null>(null);
   const [tab, setTab] = useState<"scorecard" | "historico" | "metas">("scorecard");
   const [semanaSeleccionada, setSemanaSeleccionada] = useState<string>(semanaActual);
   const [historial, setHistorial] = useState<SemanaScore[]>([]);
@@ -290,21 +288,26 @@ export default function ScorecardSemanal() {
   const [guardando, setGuardando] = useState(false);
   const [metasSaved, setMetasSaved] = useState(false);
 
-  // ── Cargar datos de localStorage ──────────────────────────────────────────
+  // ── Cargar datos de Supabase ──────────────────────────────────────────────
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setHistorial(JSON.parse(raw) as SemanaScore[]);
-      const rawMetas = localStorage.getItem(METAS_KEY);
-      if (rawMetas) {
-        const m = JSON.parse(rawMetas) as KPIs;
-        setMetas(m);
-        setMetasEdit(m);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const userId = data.user.id;
+      setUid(userId);
+      const { data: row } = await supabase
+        .from("crm_scorecard_semanal")
+        .select("semanas, metas")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (row) {
+        if (row.semanas && typeof row.semanas === 'object') setHistorial(row.semanas as SemanaScore[]);
+        if (row.metas && typeof row.metas === 'object') {
+          setMetas(row.metas as KPIs);
+          setMetasEdit(row.metas as KPIs);
+        }
       }
-    } catch {
-      // ignore parse errors
-    }
+    });
   }, []);
 
   // ── Semana seleccionada ───────────────────────────────────────────────────
@@ -323,6 +326,16 @@ export default function ScorecardSemanal() {
     score: 0,
     comentario: "",
   };
+
+  // ── Guardar en Supabase ───────────────────────────────────────────────────
+
+  const guardarSB = useCallback((newSemanas: SemanaScore[], newMetas: KPIs) => {
+    if (!uid) return;
+    supabase.from("crm_scorecard_semanal").upsert(
+      { perfil_id: uid, semanas: newSemanas, metas: newMetas, updated_at: new Date().toISOString() },
+      { onConflict: "perfil_id" }
+    ).then(() => {});
+  }, [uid]);
 
   // ── Fetch Supabase ────────────────────────────────────────────────────────
 
@@ -364,7 +377,7 @@ export default function ScorecardSemanal() {
           // no change needed, handled separately
           return prev;
         }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        guardarSB(updated, metas);
         return updated;
       });
     } catch {
@@ -372,7 +385,7 @@ export default function ScorecardSemanal() {
     } finally {
       setLoading(false);
     }
-  }, [semanaSeleccionada]);
+  }, [semanaSeleccionada, guardarSB, metas]);
 
   useEffect(() => {
     if (semanaInfo) {
@@ -424,7 +437,7 @@ export default function ScorecardSemanal() {
       const updated = prev.find((s) => s.semana === semanaSeleccionada)
         ? prev.map((s) => (s.semana === semanaSeleccionada ? entry : s))
         : [...prev, entry];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      guardarSB(updated, metas);
       return updated;
     });
 
@@ -433,7 +446,7 @@ export default function ScorecardSemanal() {
 
   function guardarMetas() {
     setMetas(metasEdit);
-    localStorage.setItem(METAS_KEY, JSON.stringify(metasEdit));
+    guardarSB(historial, metasEdit);
     setMetasSaved(true);
     setTimeout(() => setMetasSaved(false), 1500);
   }

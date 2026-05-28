@@ -252,4 +252,34 @@ const OPERACION_GRUPO: Record<string, string> = {
   "inmuebles-comerciales": "comercial", "fondos-comercio": "fondo_comercio",
 };
 
+const RUBROS_PROVEEDOR: Record<string, string> = {
+  escribano: "Escribano",
+  tasador: "Tasador",
+  fotógrafo: "Fotógrafo",
+  fotografo: "Fotógrafo",
+  abogado: "Abogado",
+  contador: "Contador",
+  gestor: "Gestor",
+  plomero: "Plomero",
+  electricista: "Electricista",
+  pintor: "Pintor",
+  arquitecto: "Arquitecto",
+  ingeniero: "Ingeniero",
+  cerrajero: "Cerrajero",
+  carpintero: "Carpintero",
+  albañil: "Albañil",
+  albanil: "Albañil",
+  inmobiliaria: "Inmobiliaria",
+  corredor: "Corredor",
+  martillero: "Martillero",
+};
+
+export function detectarRubroProveedor(texto: string): string | null {
+  const lower = texto.toLowerCase();
+  for (const [clave, rubro] of Object.entries(RUBROS_PROVEEDOR)) {
+    if (lower.includes(clave)) return rubro;
+  }
+  return null;
+}
+
 export { GRUPOS_MIR, SUBTIPO, OPERACION_GRUPO, OPERACION_BUSQUEDA };

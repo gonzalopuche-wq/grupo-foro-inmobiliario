@@ -24,7 +24,6 @@ interface Objetivo {
   color: string;
 }
 
-const STORAGE_KEY = "crm_objetivos_v1";
 const HOY = new Date().toISOString().slice(0, 10);
 
 function mesActual() { return HOY.slice(0, 7); }
@@ -42,16 +41,9 @@ const DEFAULTS: Objetivo[] = [
   { id: "propiedades_captadas", label: "Propiedades captadas", tipo: "cantidad", meta: 5, icono: "🔑", color: "#06b6d4" },
 ];
 
-function cargarObjetivos(): Objetivo[] {
-  if (typeof window === "undefined") return DEFAULTS;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : DEFAULTS;
-  } catch { return DEFAULTS; }
-}
-
 export default function ObjetivosPage() {
-  const [objetivos, setObjetivos] = useState<Objetivo[]>(cargarObjetivos);
+  const [uid, setUid] = useState<string | null>(null);
+  const [objetivos, setObjetivos] = useState<Objetivo[]>(DEFAULTS);
   const [negocios, setNegocios] = useState<Negocio[]>([]);
   const [interacciones, setInteracciones] = useState<{ created_at: string; tipo: string }[]>([]);
   const [tc, setTc] = useState(1300);
@@ -63,23 +55,93 @@ export default function ObjetivosPage() {
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { window.location.href = "/login"; return; }
-      const uid = data.user.id;
+      const userId = data.user.id;
+      setUid(userId);
+
+      // Load negocios and interacciones
       Promise.all([
-        supabase.from("crm_negocios").select("id,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,fecha_cierre,created_at").eq("perfil_id", uid),
-        supabase.from("crm_interacciones").select("created_at,tipo").eq("perfil_id", uid),
+        supabase.from("crm_negocios").select("id,etapa,tipo_operacion,valor_operacion,moneda,honorarios_pct,fecha_cierre,created_at").eq("perfil_id", userId),
+        supabase.from("crm_interacciones").select("created_at,tipo").eq("perfil_id", userId),
       ]).then(([{ data: n }, { data: i }]) => {
         setNegocios((n ?? []) as Negocio[]);
         setInteracciones(i ?? []);
       });
+
+      // Load objectives config from Supabase (rows where anio IS NULL = config rows)
+      const { data: objRows } = await supabase
+        .from("crm_objetivos")
+        .select("*")
+        .eq("perfil_id", userId)
+        .is("anio", null)
+        .order("created_at", { ascending: true });
+
+      if (objRows && objRows.length > 0) {
+        const mapped: Objetivo[] = objRows.map((row: Record<string, unknown>) => ({
+          id: row.titulo as string,
+          label: row.descripcion as string,
+          tipo: (row.categoria as string) === "monto" ? "monto" : "cantidad",
+          meta: row.meta as number,
+          icono: row.unidad as string,
+          color: row.periodo as string,
+        }));
+        setObjetivos(mapped);
+      }
+
+      // Load historial from Supabase (rows where anio IS NOT NULL = per-month entries)
+      const { data: histRows } = await supabase
+        .from("crm_objetivos")
+        .select("*")
+        .eq("perfil_id", userId)
+        .not("anio", "is", null)
+        .order("created_at", { ascending: true });
+
+      if (histRows && histRows.length > 0) {
+        const hist: Record<string, Record<string, number>> = {};
+        for (const row of histRows as Record<string, unknown>[]) {
+          const anio = row.anio as number;
+          const mes_ = String(row.mes as number).padStart(2, "0");
+          const key = `${anio}-${mes_}`;
+          if (!hist[key]) hist[key] = {};
+          const titulo = row.titulo as string;
+          const progreso = row.progreso as number | null;
+          const meta_ = row.meta as number | null;
+          if (progreso !== null && progreso !== undefined) {
+            hist[key][titulo] = progreso;
+          }
+          if (meta_ !== null && meta_ !== undefined) {
+            hist[key][`meta_${titulo}`] = meta_;
+          }
+        }
+        setHistorial(hist);
+      }
     });
-    // Cargar historial
-    const raw = localStorage.getItem("crm_objetivos_historial_v1");
-    if (raw) setHistorial(JSON.parse(raw));
   }, []);
 
-  const guardarObjetivos = (list: Objetivo[]) => {
+  const guardarObjetivos = async (list: Objetivo[]) => {
     setObjetivos(list);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    if (!uid) return;
+
+    // Delete existing config rows (anio IS NULL) and re-insert
+    await supabase
+      .from("crm_objetivos")
+      .delete()
+      .eq("perfil_id", uid)
+      .is("anio", null);
+
+    const rows = list.map((obj) => ({
+      perfil_id: uid,
+      titulo: obj.id,
+      descripcion: obj.label,
+      categoria: obj.tipo,
+      meta: obj.meta,
+      unidad: obj.icono,
+      periodo: obj.color,
+      completado: false,
+    }));
+
+    if (rows.length > 0) {
+      await supabase.from("crm_objetivos").insert(rows);
+    }
   };
 
   const valorUSD = (n: Negocio) => {
@@ -106,7 +168,6 @@ export default function ObjetivosPage() {
   }, [negocios, interacciones, mes, tc, honPct]);
 
   const getMeta = (obj: Objetivo) => {
-    // Verificar si hay meta manual guardada en historial para este mes
     return historial[mes]?.[`meta_${obj.id}`] ?? obj.meta;
   };
 
@@ -122,23 +183,65 @@ export default function ObjetivosPage() {
     return getRealAuto(obj.id);
   };
 
-  const setRealManual = (id: string, val: number) => {
-    const nuevo = { ...historial, [mes]: { ...(historial[mes] ?? {}), [id]: val } };
-    setHistorial(nuevo);
-    localStorage.setItem("crm_objetivos_historial_v1", JSON.stringify(nuevo));
+  const upsertHistorialRow = async (
+    mesKey: string,
+    objId: string,
+    progresoVal: number | null,
+    metaVal: number | null
+  ) => {
+    if (!uid) return;
+    const [anio, mesNum] = mesKey.split("-").map(Number);
+    // Find existing row for this month+objId
+    const { data: existing } = await supabase
+      .from("crm_objetivos")
+      .select("id")
+      .eq("perfil_id", uid)
+      .eq("titulo", objId)
+      .eq("anio", anio)
+      .eq("mes", mesNum)
+      .maybeSingle();
+
+    if (existing) {
+      const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (progresoVal !== null) updates.progreso = progresoVal;
+      if (metaVal !== null) updates.meta = metaVal;
+      await supabase
+        .from("crm_objetivos")
+        .update(updates)
+        .eq("id", existing.id)
+        .eq("perfil_id", uid);
+    } else {
+      const insert: Record<string, unknown> = {
+        perfil_id: uid,
+        titulo: objId,
+        anio,
+        mes: mesNum,
+        completado: false,
+      };
+      if (progresoVal !== null) insert.progreso = progresoVal;
+      if (metaVal !== null) insert.meta = metaVal;
+      await supabase.from("crm_objetivos").insert(insert);
+    }
   };
 
-  const setMetaOverride = (id: string, val: number) => {
+  const setRealManual = async (id: string, val: number) => {
+    const nuevo = { ...historial, [mes]: { ...(historial[mes] ?? {}), [id]: val } };
+    setHistorial(nuevo);
+    const metaVal = historial[mes]?.[`meta_${id}`] ?? null;
+    await upsertHistorialRow(mes, id, val, metaVal);
+  };
+
+  const setMetaOverride = async (id: string, val: number) => {
     const nuevo = { ...historial, [mes]: { ...(historial[mes] ?? {}), [`meta_${id}`]: val } };
     setHistorial(nuevo);
-    localStorage.setItem("crm_objetivos_historial_v1", JSON.stringify(nuevo));
+    const progresoVal = historial[mes]?.[id] ?? null;
+    await upsertHistorialRow(mes, id, progresoVal, val);
   };
 
   const mesesDisp = useMemo(() => {
     const set = new Set<string>();
     set.add(mesActual());
     set.add(mes);
-    // meses de los últimos 6
     for (let i = 0; i < 6; i++) {
       const d = new Date();
       d.setMonth(d.getMonth() - i);

@@ -93,20 +93,29 @@ function detectarDuplicados(contactos: Contacto[]): Par[] {
 }
 
 export default function DuplicadosPage() {
+  const [uid, setUid] = useState<string | null>(null);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [loading, setLoading] = useState(true);
   const [descartados, setDescartados] = useState<Set<string>>(new Set());
   const [filtro, setFiltro] = useState<"todos" | "alta" | "media">("todos");
 
   useEffect(() => {
-    const stored = localStorage.getItem("crm_dup_descartados_v1");
-    if (stored) setDescartados(new Set(JSON.parse(stored)));
-
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { window.location.href = "/login"; return; }
-      const uid = data.user.id;
+      const userId = data.user.id;
+      setUid(userId);
+
+      const { data: descRow } = await supabase
+        .from("crm_duplicados_descartados")
+        .select("descartados")
+        .eq("perfil_id", userId)
+        .maybeSingle();
+      if (descRow?.descartados && Array.isArray(descRow.descartados)) {
+        setDescartados(new Set(descRow.descartados as string[]));
+      }
+
       supabase.from("crm_contactos").select("id,nombre,apellido,telefono,email,tipo,estado,created_at")
-        .eq("perfil_id", uid).then(({ data: c }) => {
+        .eq("perfil_id", userId).then(({ data: c }) => {
           setContactos((c ?? []) as Contacto[]);
           setLoading(false);
         });
@@ -127,14 +136,24 @@ export default function DuplicadosPage() {
 
   const descartar = (a: Contacto, b: Contacto) => {
     const key = `${a.id}_${b.id}`;
-    const nuevo = new Set([...descartados, key]);
-    setDescartados(nuevo);
-    localStorage.setItem("crm_dup_descartados_v1", JSON.stringify([...nuevo]));
+    const newSet = new Set([...descartados, key]);
+    setDescartados(newSet);
+    if (uid) {
+      supabase.from("crm_duplicados_descartados").upsert(
+        { perfil_id: uid, descartados: [...newSet], updated_at: new Date().toISOString() },
+        { onConflict: "perfil_id" }
+      ).then(() => {});
+    }
   };
 
   const limpiarDescartados = () => {
     setDescartados(new Set());
-    localStorage.removeItem("crm_dup_descartados_v1");
+    if (uid) {
+      supabase.from("crm_duplicados_descartados").upsert(
+        { perfil_id: uid, descartados: [], updated_at: new Date().toISOString() },
+        { onConflict: "perfil_id" }
+      ).then(() => {});
+    }
   };
 
   const scoreColor = (score: number) => score >= 70 ? "#cc0000" : score >= 50 ? "#f97316" : "#eab308";
