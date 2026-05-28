@@ -18,6 +18,7 @@ interface Tarea {
 
 interface Recordatorio {
   id: string;
+  titulo: string | null;
   descripcion: string;
   fecha_recordatorio: string;
   completado: boolean;
@@ -131,7 +132,7 @@ export default function CrmHoyPage() {
         .order("fecha_vencimiento"),
       // Recordatorios de hoy y próximos 3 días
       supabase.from("crm_recordatorios")
-        .select("id,descripcion,fecha_recordatorio,completado,contacto_id, contacto:crm_contactos(nombre,apellido)")
+        .select("id,titulo,descripcion,fecha_recordatorio,completado,contacto_id, contacto:crm_contactos(nombre,apellido)")
         .eq("perfil_id", userId)
         .eq("completado", false)
         .lte("fecha_recordatorio", enNDias(3))
@@ -355,7 +356,7 @@ export default function CrmHoyPage() {
                     <div key={r.id} className="hoy-item">
                       <button className="hoy-check" onClick={() => completarRecordatorio(r.id)}>✓</button>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontFamily: "Inter,sans-serif", color: "#fff", lineHeight: 1.4 }}>{r.descripcion}</div>
+                        <div style={{ fontSize: 13, fontFamily: "Inter,sans-serif", color: "#fff", lineHeight: 1.4 }}>{r.titulo || r.descripcion}</div>
                         <div style={{ fontSize: 11, marginTop: 3, fontFamily: "Inter,sans-serif" }}>
                           {ctc && <span style={{ color: "rgba(255,255,255,0.35)", marginRight: 8 }}>👤 {ctc.nombre} {ctc.apellido}</span>}
                           <span style={{ color: pasado ? "#ef4444" : esHoy ? "#f59e0b" : "rgba(255,255,255,0.35)", fontWeight: pasado || esHoy ? 700 : 400 }}>

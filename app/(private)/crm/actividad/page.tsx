@@ -65,18 +65,21 @@ export default function ActividadCRM() {
   const [vistaMode, setVistaMode] = useState<"timeline" | "estadisticas">("timeline");
 
   useEffect(() => {
-    const desde = new Date();
-    desde.setDate(desde.getDate() - 180);
-    supabase
-      .from("crm_interacciones")
-      .select("id,tipo,descripcion,created_at,contacto_id,negocio_id,crm_contactos(nombre,apellido),crm_negocios(titulo)")
-      .gte("created_at", desde.toISOString())
-      .order("created_at", { ascending: false })
-      .limit(500)
-      .then(({ data }) => {
-        setInteracciones((data ?? []) as unknown as Interaccion[]);
-        setLoading(false);
-      });
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = "/login"; return; }
+      const uid = data.user.id;
+      const desde = new Date();
+      desde.setDate(desde.getDate() - 180);
+      const { data: rows } = await supabase
+        .from("crm_interacciones")
+        .select("id,tipo,descripcion,created_at,contacto_id,negocio_id,crm_contactos(nombre,apellido),crm_negocios(titulo)")
+        .eq("perfil_id", uid)
+        .gte("created_at", desde.toISOString())
+        .order("created_at", { ascending: false })
+        .limit(500);
+      setInteracciones((rows ?? []) as unknown as Interaccion[]);
+      setLoading(false);
+    });
   }, []);
 
   const limiteDesde = useMemo(() => {
