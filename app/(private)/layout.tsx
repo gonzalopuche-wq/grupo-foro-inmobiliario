@@ -8,6 +8,9 @@ import IAChatFlotante from "./components/IAChatFlotante";
 import AnuncioBanner from "../components/AnuncioBanner";
 import BusquedaGlobal from "./components/BusquedaGlobal";
 import SecurityGuard from "./components/SecurityGuard";
+import { WindowManagerProvider, useWindowManager } from "./components/WindowManager";
+import FloatingWindow from "./components/FloatingWindow";
+import TaskBar from "./components/TaskBar";
 
 // ── Nav corredor matriculado (acceso completo) ─────────────────────────────
 const NAV_CORREDOR = [
@@ -76,6 +79,19 @@ const RUTAS_SOLO_CORREDOR = [
 ];
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <WindowManagerProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </WindowManagerProvider>
+  );
+}
+
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  // Modo ventana flotante: sin sidebar ni topbar (iframe interno)
+  const [isVentana] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("ventana") === "1";
+  });
   const pathname = usePathname();
   const router = useRouter();
   const [perfil, setPerfil] = useState<any>(null);
@@ -99,6 +115,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const [leadsNoLeidos, setLeadsNoLeidos] = useState(0);
   const [notifsNoLeidas, setNotifsNoLeidas] = useState(0);
   const [crmPendientes, setCrmPendientes] = useState(0);
+  const { windows, openWindow } = useWindowManager();
 
   // Tracking de visitas (fire-and-forget)
   useEffect(() => {
@@ -307,6 +324,24 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const navItems = tipoUsuario === "colaborador" ? NAV_COLABORADOR : NAV_CORREDOR;
   const isAdmin = tipoUsuario === "admin";
 
+  // Modo iframe interno: layout mínimo sin chrome
+  if (isVentana) {
+    if (loading) return (
+      <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+    return (
+      <div style={{ background: "#0a0a0a", minHeight: "100vh" }}>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <SecurityGuard>
+          <div style={{ padding: "16px 20px" }}>{children}</div>
+        </SecurityGuard>
+      </div>
+    );
+  }
+
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ width: 32, height: 32, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
@@ -447,6 +482,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         .topbar-menu-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
         .page-content { flex: 1; padding: 24px 28px; }
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 45; }
+        .nav-item-row:hover .nav-open-win { opacity: 1 !important; }
         .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,5,5,0.98); border-top: 1px solid rgba(255,255,255,0.07); z-index: 50; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
         .bottom-nav-inner { display: flex; height: 62px; align-items: stretch; padding-bottom: env(safe-area-inset-bottom, 0px); }
         .bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: none; color: rgba(255,255,255,0.32); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.03em; cursor: pointer; text-decoration: none; transition: color 0.15s; position: relative; -webkit-tap-highlight-color: transparent; padding: 0; min-height: 44px; }
@@ -494,30 +530,48 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
             )}
             <div className="sidebar-section-label">Plataforma</div>
             {[...navItems].sort((a,b) => a.label.localeCompare(b.label, "es")).map(item => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`nav-item${isActive(item.href) ? " active" : ""}`}
-                onClick={() => setMenuAbierto(false)}
-              >
-                <span className="nav-item-icon">{item.icon}</span>
-                {item.label}
-                {item.href === "/mi-web" && leadsNoLeidos > 0 && (
-                  <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
-                    {leadsNoLeidos > 99 ? "99+" : leadsNoLeidos}
-                  </span>
-                )}
-                {item.href === "/notificaciones" && notifsNoLeidas > 0 && (
-                  <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
-                    {notifsNoLeidas > 99 ? "99+" : notifsNoLeidas}
-                  </span>
-                )}
-                {item.href === "/crm" && crmPendientes > 0 && (
-                  <span style={{ marginLeft: "auto", background: "#f59e0b", color: "#000", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
-                    {crmPendientes > 99 ? "99+" : crmPendientes}
-                  </span>
-                )}
-              </Link>
+              <div key={item.href} className="nav-item-row" style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <Link
+                  href={item.href}
+                  className={`nav-item${isActive(item.href) ? " active" : ""}`}
+                  onClick={() => setMenuAbierto(false)}
+                  style={{ flex: 1 }}
+                >
+                  <span className="nav-item-icon">{item.icon}</span>
+                  {item.label}
+                  {item.href === "/mi-web" && leadsNoLeidos > 0 && (
+                    <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                      {leadsNoLeidos > 99 ? "99+" : leadsNoLeidos}
+                    </span>
+                  )}
+                  {item.href === "/notificaciones" && notifsNoLeidas > 0 && (
+                    <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                      {notifsNoLeidas > 99 ? "99+" : notifsNoLeidas}
+                    </span>
+                  )}
+                  {item.href === "/crm" && crmPendientes > 0 && (
+                    <span style={{ marginLeft: "auto", background: "#f59e0b", color: "#000", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                      {crmPendientes > 99 ? "99+" : crmPendientes}
+                    </span>
+                  )}
+                </Link>
+                <button
+                  className="nav-open-win"
+                  onClick={() => openWindow(item.label, item.icon, item.href)}
+                  title={`Abrir ${item.label} en ventana flotante`}
+                  style={{
+                    position: "absolute", right: 4,
+                    width: 18, height: 18, borderRadius: 3,
+                    background: "rgba(255,255,255,0.07)", border: "none",
+                    color: "rgba(255,255,255,0.4)", cursor: "pointer",
+                    fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center",
+                    opacity: 0, transition: "opacity 0.15s",
+                    flexShrink: 0,
+                  }}
+                >
+                  ⊞
+                </button>
+              </div>
             ))}
 
             {isAdmin && (
@@ -623,6 +677,10 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
       </nav>
 
       <IAChatFlotante />
+
+      {/* ── Ventanas flotantes + barra de tareas ────────────────────────── */}
+      {windows.map(win => <FloatingWindow key={win.id} win={win} />)}
+      <TaskBar />
     </>
   );
 }
