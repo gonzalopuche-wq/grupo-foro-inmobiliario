@@ -230,4 +230,51 @@ graphics, upbeat feel, no text.
 
 ---
 ---
+
+## DEMO TODO-EN-UNO (≈60 s) — "Recorrido completo GFI"
+
+> Un solo video que muestra TODO por dentro con capturas. Ritmo rápido (~5 s por
+> módulo). Grabá cada pantalla, unilas en orden en Canva, sumá la narración y los
+> textos. Formato vertical 9:16 o 16:9 según dónde lo publiques.
+
+**Cómo armarlo en Canva:** subí todas las capturas a la línea de tiempo en el orden
+de la tabla → poné ~5 s cada una → agregá el texto de la columna "En pantalla"
+(color `#CC0000`) → grabá o generá la narración como audio → música de fondo suave.
+
+| Seg | Pantalla a capturar (📹) | En pantalla | Narración (voz en off) |
+| --- | ------------------------ | ----------- | ---------------------- |
+| 0–5 | 🤖 Intro: logo GFI sobre fondo oscuro | **GRUPO FORO INMOBILIARIO** | "Esto es Grupo Foro Inmobiliario: la plataforma del corredor matriculado argentino." |
+| 5–10 | Dashboard con KPIs | Tu centro de control | "Tu dashboard: propiedades, visitas, leads y tareas, de un vistazo." |
+| 10–17 | MIR — ofrecido/búsqueda + match + chat | MIR · Match automático | "El MIR cruza lo que ofrecés con lo que buscan otros colegas. Match al instante y chat directo." |
+| 17–24 | CRM — cartera con fotos + ficha de cliente | CRM profesional | "Tu CRM: cartera con fotos, contactos, historial y los leads de tu web, todo junto." |
+| 24–31 | Tasador IA — resultado con comparables + PDF | Tasaciones en 30 s | "Tasá en segundos con el Tasador IA: comparables reales, justificación y PDF listo." |
+| 31–36 | Calculadoras — alquiler ICL/IPC/UVA, comisión | Calculadoras al día | "Calculadoras actualizadas con el BCRA: alquileres, comisiones y honorarios." |
+| 36–41 | Padrón + Red GFI | +2700 corredores | "El padrón oficial y la red: 2700 corredores con contacto directo." |
+| 41–46 | Foro / Comunidad / Canal educativo | Comunidad activa | "Foro, comunidad y canal educativo. No trabajás solo." |
+| 46–52 | Mi Web — sitio publicado | Tu web incluida | "Y tu propia web profesional en foroinmobiliario.com.ar, lista en minutos." |
+| 52–60 | 🤖 Cierre: logo + URL | Registrate con tu matrícula | "Tu matrícula, tu plataforma. Registrate y empezá hoy." |
+
+🤖 **Prompt IA para intro y cierre (clip de ~8 s, en inglés):**
+```
+8-second clip. Dark cinematic background with subtle red #CC0000 geometric glow
+and abstract network nodes, elegant slow motion, empty center space for a logo,
+premium real estate fintech aesthetic, no text.
+```
+
+**Guion de narración completo (para copiar y leer / generar con voz IA):**
+```
+Esto es Grupo Foro Inmobiliario: la plataforma del corredor matriculado argentino.
+Tu dashboard: propiedades, visitas, leads y tareas, de un vistazo.
+El MIR cruza lo que ofrecés con lo que buscan otros colegas. Match al instante y chat directo.
+Tu CRM: cartera con fotos, contactos, historial y los leads de tu web, todo junto.
+Tasá en segundos con el Tasador IA: comparables reales, justificación y PDF listo.
+Calculadoras actualizadas con el BCRA: alquileres, comisiones y honorarios.
+El padrón oficial y la red: 2700 corredores con contacto directo.
+Foro, comunidad y canal educativo. No trabajás solo.
+Y tu propia web profesional en foroinmobiliario.com.ar, lista en minutos.
+Tu matrícula, tu plataforma. Registrate y empezá hoy.
+```
+
+---
+---
 *Documento generado: Mayo 2026 · Uso interno GFI*
