@@ -91,10 +91,11 @@ export default function CrmNegociosPage() {
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(null), 3200); };
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { window.location.href = "/login"; return; }
       setUid(data.user.id);
-      cargar(data.user.id);
+      await cargar(data.user.id);
+      if (new URLSearchParams(window.location.search).get("nuevo") === "1") abrirNuevo();
     });
   }, []);
 

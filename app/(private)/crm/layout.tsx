@@ -417,23 +417,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         }
       `}</style>
 
-      {/* Header mobile */}
-      <header className="crm2-header">
-        <button className="crm2-hamburger" onClick={() => setDrawerOpen(true)} aria-label="Abrir menú">
-          ☰
-        </button>
-        <span className="crm2-header-title">CRM</span>
-        <form className="crm2-header-search" onSubmit={handleBuscar}>
-          <span className="srch-ico">🔍</span>
-          <input
-            placeholder="Buscar contacto, propiedad..."
-            value={busqueda}
-            onChange={e => setBusqueda(e.target.value)}
-          />
-        </form>
-      </header>
-
-      {/* Overlay drawer mobile */}
+      {/* Overlay drawer mobile — fixed, DOM position no importa */}
       <div className={`crm2-overlay${drawerOpen ? " open" : ""}`} ref={overlayRef}>
         <div className="crm2-overlay-bg" onClick={() => setDrawerOpen(false)} />
         <div className="crm2-drawer">
@@ -449,6 +433,22 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="crm2-root">
+        {/* Header mobile — dentro de crm2-root para heredar el margin negativo */}
+        <header className="crm2-header">
+          <button className="crm2-hamburger" onClick={() => setDrawerOpen(true)} aria-label="Abrir menú">
+            ☰
+          </button>
+          <span className="crm2-header-title">CRM</span>
+          <form className="crm2-header-search" onSubmit={handleBuscar}>
+            <span className="srch-ico">🔍</span>
+            <input
+              placeholder="Buscar contacto, propiedad..."
+              value={busqueda}
+              onChange={e => setBusqueda(e.target.value)}
+            />
+          </form>
+        </header>
+
         {/* Sidebar desktop */}
         <div className="crm2-sidebar-wrap">
           <Sidebar pathname={pathname} />
