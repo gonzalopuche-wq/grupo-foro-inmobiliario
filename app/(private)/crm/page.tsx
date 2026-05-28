@@ -88,7 +88,7 @@ export default function CrmDashboard() {
       { data: tareas },
       { data: interacciones },
     ] = await Promise.all([
-      supabase.from("propiedades").select("*", { count: "exact", head: true })
+      supabase.from("cartera_propiedades").select("*", { count: "exact", head: true })
         .eq("perfil_id", uid).eq("activa", true),
       supabase.from("crm_contactos").select("*", { count: "exact", head: true })
         .eq("perfil_id", uid),
