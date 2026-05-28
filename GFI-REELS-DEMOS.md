@@ -277,4 +277,59 @@ Tu matrícula, tu plataforma. Registrate y empezá hoy.
 
 ---
 ---
+
+## ⭐ VIDEO DE VENTA (≈60 s) — "El Foro de siempre, ahora con todo"
+
+> Objetivo: **que se suscriban**. Ángulo emocional: continuidad + pertenencia.
+> No vendemos algo nuevo y desconocido — es **el Foro que ya conocés y en el que
+> confiás**, ahora más grande, más ordenado y con todas las herramientas adentro.
+> Ritmo: arranca cálido y nostálgico, se acelera al mostrar las herramientas,
+> cierra invitando a sumarse.
+
+**Cómo armarlo en Canva:** mismo flujo que el todo-en-uno (capturas en la línea de
+tiempo + textos `#CC0000` + narración como audio). La diferencia está en el **tono
+de la narración** y en el **cierre con la frase de pertenencia**.
+
+| Seg | Pantalla (📹/🤖) | En pantalla | Narración (voz cálida, cercana) |
+| --- | --------------- | ----------- | ------------------------------- |
+| 0–6 | 🤖 Logo GFI + fotos del foro/comunidad de fondo | El Foro de siempre | "El Foro que ya conocés. El de siempre. El que te acompañó todos estos años." |
+| 6–12 | 🤖 Transición de "viejo" a plataforma moderna | Ahora con todo | "Hoy da un paso más. Más capacidad. Más orden. Todo en un solo lugar." |
+| 12–18 | Dashboard con KPIs | Tu centro de control | "Entrás y ves todo: propiedades, visitas, leads y tareas." |
+| 18–25 | MIR — match + chat | MIR · Conectá con la red | "El MIR cruza lo que ofrecés con lo que buscan tus colegas. Match y chat directo." |
+| 25–32 | CRM — cartera + ficha | Tu negocio ordenado | "Tu cartera, tus contactos y los leads de tu web, todo junto y a mano." |
+| 32–38 | Tasador IA — resultado + PDF | Tasá en 30 segundos | "Tasaciones en segundos, con comparables reales y PDF para tu cliente." |
+| 38–44 | Padrón + Red GFI | +2700 corredores | "Y la red: más de 2700 corredores matriculados, con contacto directo." |
+| 44–50 | Foro / Comunidad / Mi Web | Comunidad + tu web | "El foro, la comunidad y hasta tu propia web profesional. Como siempre, juntos." |
+| 50–60 | 🤖 Logo grande + URL + botón | **Sumate. Registrate con tu matrícula.** | "El de ayer, el de hoy, el que ya conocés… ahora con todo. Para vos. Sumate con tu matrícula." |
+
+🤖 **Prompt IA para intro/cierre (clip ~8 s, en inglés):**
+```
+8-second clip. Warm, emotional opening: subtle transition from an old simple forum
+look into a modern premium real estate platform, dark background with red #CC0000
+glow, sense of community and belonging, empty center for a logo, cinematic, no text.
+```
+
+**Guion de narración completo (copiá y leé / generá con voz IA, tono cálido y cercano):**
+```
+El Foro que ya conocés. El de siempre. El que te acompañó todos estos años.
+Hoy da un paso más. Más capacidad. Más orden. Todo en un solo lugar.
+Entrás y ves todo: propiedades, visitas, leads y tareas.
+El MIR cruza lo que ofrecés con lo que buscan tus colegas. Match y chat directo.
+Tu cartera, tus contactos y los leads de tu web, todo junto y a mano.
+Tasaciones en segundos, con comparables reales y PDF para tu cliente.
+Y la red: más de 2700 corredores matriculados, con contacto directo.
+El foro, la comunidad y hasta tu propia web profesional. Como siempre, juntos.
+El de ayer, el de hoy, el que ya conocés… ahora con todo. Para vos.
+Sumate con tu matrícula.
+```
+
+**Por qué este video convierte:**
+- **Confianza:** no pide creer en algo nuevo, recuerda algo que ya quieren.
+- **Pertenencia:** "el de siempre", "juntos", "para vos" → el espectador se siente parte.
+- **Valor concreto:** muestra herramientas reales en el medio, no solo promesas.
+- **Prueba social:** +2700 corredores baja el miedo a sumarse.
+- **CTA claro y de baja fricción:** "Sumate con tu matrícula" — ya tienen la matrícula.
+
+---
+---
 *Documento generado: Mayo 2026 · Uso interno GFI*
