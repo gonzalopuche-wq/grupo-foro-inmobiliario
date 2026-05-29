@@ -71,16 +71,16 @@ export async function POST(req: NextRequest) {
         const { items, publicaciones } = await syncKitepropRed();
         const importados = await upsertBatch(auth.sb, items, "kiteprop");
 
-        // Upsert publicaciones cruzadas en sus respectivos portales
+        // Upsert publicaciones cruzadas en lotes por portal
+        const mappedKP = publicaciones.map((pub: any) => {
+          const { _portal, _portal_id, _url, ...rest } = pub;
+          return { ...rest, portal: _portal, portal_id: _portal_id, url: _url, activa: true, synced_at: new Date().toISOString() };
+        });
         let cruzadas = 0;
-        for (const pub of publicaciones) {
-          const { _portal, _portal_id, _url, ...rest } = pub as any;
-          const crossItem = { ...rest, portal_id: _portal_id, url: _url };
-          const { error } = await auth.sb.from("propiedades_externas").upsert(
-            [{ ...crossItem, portal: _portal, activa: true, synced_at: new Date().toISOString() }],
-            { onConflict: "portal,portal_id" }
-          );
-          if (!error) cruzadas++;
+        const CROSS_BATCH = 50;
+        for (let i = 0; i < mappedKP.length; i += CROSS_BATCH) {
+          const { error } = await auth.sb.from("propiedades_externas").upsert(mappedKP.slice(i, i + CROSS_BATCH), { onConflict: "portal,portal_id" });
+          if (!error) cruzadas += Math.min(CROSS_BATCH, mappedKP.length - i);
         }
 
         resultados[portal] = { importados, cruzadas };
@@ -91,15 +91,14 @@ export async function POST(req: NextRequest) {
         const { items, publicaciones } = await syncTokkoRed();
         const importados = await upsertBatch(auth.sb, items, "tokko");
 
+        const mappedTK = publicaciones.map((pub: any) => {
+          const { _portal, _portal_id, _url, ...rest } = pub;
+          return { ...rest, portal: _portal, portal_id: _portal_id, url: _url, activa: true, synced_at: new Date().toISOString() };
+        });
         let cruzadas = 0;
-        for (const pub of publicaciones) {
-          const { _portal, _portal_id, _url, ...rest } = pub as any;
-          const crossItem = { ...rest, portal_id: _portal_id, url: _url };
-          const { error } = await auth.sb.from("propiedades_externas").upsert(
-            [{ ...crossItem, portal: _portal, activa: true, synced_at: new Date().toISOString() }],
-            { onConflict: "portal,portal_id" }
-          );
-          if (!error) cruzadas++;
+        for (let i = 0; i < mappedTK.length; i += 50) {
+          const { error } = await auth.sb.from("propiedades_externas").upsert(mappedTK.slice(i, i + 50), { onConflict: "portal,portal_id" });
+          if (!error) cruzadas += Math.min(50, mappedTK.length - i);
         }
 
         resultados[portal] = { importados, cruzadas };

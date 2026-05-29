@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
@@ -69,7 +69,7 @@ function formatFecha(iso: string) {
   return new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit" });
 }
 
-export default function ContactosPage() {
+function ContactosContent() {
   const router = useRouter();
   const sp = useSearchParams();
   const [userId, setUserId] = useState<string | null>(null);
@@ -391,5 +391,13 @@ export default function ContactosPage() {
         </div>
       )}
     </>
+  );
+}
+
+export default function ContactosPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 40, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>Cargando...</div>}>
+      <ContactosContent />
+    </Suspense>
   );
 }
