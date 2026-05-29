@@ -492,7 +492,7 @@ export default function ReciboPage() {
               <tbody>
                 {datos.monto_usd && datos.dolar_ref && (
                   <tr>
-                    <td>Cuota mensual (USD {datos.monto_usd} × dólar ref. ${datos.dolar_ref.toLocaleString("es-AR")})</td>
+                    <td>Cuota USD {datos.monto_usd} × $ {datos.dolar_ref.toLocaleString("es-AR")}</td>
                     <td>{subtotalArs ? fmtARS(subtotalArs) : "—"}</td>
                   </tr>
                 )}
