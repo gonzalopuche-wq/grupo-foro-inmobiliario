@@ -14,10 +14,14 @@ export async function POST(req: NextRequest) {
     matricula, padron_vacio,
     dni, celular_oficina, celular_personal, celular_mostrar,
     inmobiliaria, especialidades, corredor_matricula,
+    acepto_terminos,
   } = body;
 
   if (!email || !password || !nombre || !apellido) {
     return NextResponse.json({ error: "Completá todos los campos obligatorios." }, { status: 400 });
+  }
+  if (!acepto_terminos) {
+    return NextResponse.json({ error: "Debés aceptar los Términos de Uso." }, { status: 400 });
   }
   if (tipo === "corredor" && !matricula) {
     return NextResponse.json({ error: "La matrícula es obligatoria para corredores." }, { status: 400 });
@@ -32,6 +36,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "La contraseña debe tener al menos 8 caracteres." }, { status: 400 });
   }
 
+  const ip = getIp(req);
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
   // Para colaboradores: verificar que existe el corredor
@@ -86,6 +91,9 @@ export async function POST(req: NextRequest) {
     telefono: telefonoPublico,
     inmobiliaria: tipo === "corredor" ? (inmobiliaria || null) : null,
     especialidades: tipo === "colaborador" ? especialidades : null,
+    acepto_terminos: true,
+    acepto_terminos_at: new Date().toISOString(),
+    ip_registro: ip,
   };
 
   let { error: perfilError } = await sb.from("perfiles").insert(perfilPayload);
@@ -121,6 +129,15 @@ export async function POST(req: NextRequest) {
       console.error("colaboradores insert error:", colabError.message);
     }
   }
+
+  // Log de auditoría del registro
+  await sb.from("logs_actividad").insert({
+    user_id: userId,
+    accion: "registro",
+    modulo: "auth",
+    detalle: `Alta como ${tipo}. Matrícula: ${matricula || "N/A"}. Términos aceptados. IP: ${ip}`,
+    ip,
+  }).catch(() => {}); // no bloquear si la tabla aún no existe
 
   return NextResponse.json({ ok: true });
 }

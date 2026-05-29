@@ -91,6 +91,12 @@ function LoginInner() {
     sessionStorage.removeItem("gfi_login_locked_until");
     setIntentosFallidos(0);
 
+    // Log de auditoría (fire-and-forget, no bloquea el acceso)
+    fetch("/api/auth/log-login", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${data.session?.access_token}` },
+    }).catch(() => {});
+
     const { data: perfil } = await supabase
       .from("perfiles")
       .select("tipo, estado")

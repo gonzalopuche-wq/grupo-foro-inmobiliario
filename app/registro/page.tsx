@@ -32,6 +32,7 @@ export default function RegistroPage() {
   const [dni, setDni] = useState("");
   const [especialidades, setEspecialidades] = useState<string[]>([]);
   const [corredorMatricula, setCorredorMatricula] = useState("");
+  const [aceptoTerminos, setAceptoTerminos] = useState(false);
 
   // Verificación COCIR
   const [estadoMatricula, setEstadoMatricula] = useState<EstadoMatricula>("idle");
@@ -154,6 +155,10 @@ export default function RegistroPage() {
       setError("La contraseña debe tener al menos 8 caracteres.");
       return;
     }
+    if (!aceptoTerminos) {
+      setError("Debés aceptar los Términos de Uso para continuar.");
+      return;
+    }
 
     setLoading(true);
 
@@ -173,6 +178,7 @@ export default function RegistroPage() {
           inmobiliaria: tipo === "corredor" ? inmobiliaria : null,
           especialidades: tipo === "colaborador" ? especialidades : null,
           corredor_matricula: tipo === "colaborador" ? corredorMatricula.trim() : null,
+          acepto_terminos: true,
         }),
       });
       const json = await res.json();
@@ -413,6 +419,45 @@ export default function RegistroPage() {
         .reg-enviado p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 320px; }
         .reg-enviado-volver { margin-top: 8px; font-size: 12px; color: rgba(200,0,0,0.7); text-decoration: none; font-weight: 500; }
         .reg-enviado-volver:hover { color: #cc0000; }
+
+        .reg-terminos {
+          background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 4px;
+          padding: 16px;
+          margin-bottom: 16px;
+        }
+        .reg-terminos-check {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          cursor: pointer;
+        }
+        .reg-terminos-check input[type="checkbox"] {
+          width: 16px; height: 16px;
+          accent-color: #cc0000;
+          margin-top: 2px;
+          flex-shrink: 0;
+          cursor: pointer;
+        }
+        .reg-terminos-texto {
+          font-size: 11px;
+          color: rgba(255,255,255,0.5);
+          line-height: 1.6;
+          user-select: none;
+        }
+        .reg-terminos-texto strong { color: rgba(255,255,255,0.75); }
+        .reg-terminos-clausulas {
+          margin-top: 10px;
+          padding: 10px 12px;
+          background: rgba(200,0,0,0.05);
+          border: 1px solid rgba(200,0,0,0.12);
+          border-radius: 3px;
+          font-size: 10px;
+          color: rgba(255,255,255,0.35);
+          line-height: 1.7;
+        }
+        .reg-terminos-clausulas li { margin-left: 12px; }
       `}</style>
 
       <div className="reg-root">
@@ -598,12 +643,34 @@ export default function RegistroPage() {
                     value={password} onChange={e => setPassword(e.target.value)} disabled={loading} />
                 </div>
 
+                {/* Deslinde de responsabilidades */}
+                <div className="reg-terminos">
+                  <label className="reg-terminos-check">
+                    <input
+                      type="checkbox"
+                      checked={aceptoTerminos}
+                      onChange={e => setAceptoTerminos(e.target.checked)}
+                      disabled={loading}
+                    />
+                    <div className="reg-terminos-texto">
+                      <strong>Acepto los Términos de Uso y el Código de Ética GFI®</strong>
+                      <ul className="reg-terminos-clausulas">
+                        <li>Soy el titular de la matrícula indicada y estoy habilitado por COCIR 2ª Circunscripción.</li>
+                        <li>Soy el único responsable de la confidencialidad de mis credenciales de acceso.</li>
+                        <li>GFI® Grupo Foro Inmobiliario no asume responsabilidad por accesos realizados con usuario y contraseña válidos.</li>
+                        <li>Toda actividad realizada con esta cuenta queda registrada con fecha, hora e IP de acceso.</li>
+                        <li>El incumplimiento del Código de Ética puede resultar en la suspensión inmediata de la cuenta.</li>
+                      </ul>
+                    </div>
+                  </label>
+                </div>
+
                 {error && <div className="reg-error" role="alert">{error}</div>}
 
                 <button
                   className="reg-btn"
                   type="submit"
-                  disabled={loading || (tipo === "corredor" && !matriculaVerificada)}
+                  disabled={loading || (tipo === "corredor" && !matriculaVerificada) || !aceptoTerminos}
                 >
                   {loading && <span className="reg-spinner" />}
                   {loading ? "Enviando..." : tipo === "corredor" && !matriculaVerificada ? "Verificá tu matrícula primero" : "Enviar solicitud"}
