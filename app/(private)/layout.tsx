@@ -474,7 +474,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         .sidebar-perfil-mat { font-size: 10px; color: rgba(255,255,255,0.3); }
         .sidebar-logout { padding: 4px 6px; background: none; border: none; color: rgba(255,255,255,0.25); cursor: pointer; font-size: 14px; transition: color 0.15s; }
         .sidebar-logout:hover { color: #cc0000; }
-        .main-content { margin-left: 220px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+        .main-content { margin-left: 220px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 44px; }
         .topbar { display: none; height: 54px; background: rgba(5,5,5,0.98); border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0 14px; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 40; backdrop-filter: blur(8px); }
         .topbar-logo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; flex: 1; text-align: center; letter-spacing: 0.04em; }
         .topbar-logo span { color: #cc0000; }
@@ -482,6 +482,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         .topbar-menu-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
         .page-content { flex: 1; padding: 24px 28px; }
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 45; }
+        .nav-item-row .nav-open-win { opacity: 0.28; }
         .nav-item-row:hover .nav-open-win { opacity: 1 !important; }
         .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,5,5,0.98); border-top: 1px solid rgba(255,255,255,0.07); z-index: 50; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
         .bottom-nav-inner { display: flex; height: 62px; align-items: stretch; padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -565,7 +566,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     background: "rgba(255,255,255,0.07)", border: "none",
                     color: "rgba(255,255,255,0.4)", cursor: "pointer",
                     fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center",
-                    opacity: 0, transition: "opacity 0.15s",
+                    transition: "opacity 0.15s",
                     flexShrink: 0,
                   }}
                 >
@@ -672,6 +673,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           <button className="bnav-item" onClick={() => setMenuAbierto(true)}>
             <span className="bnav-icon">☰</span>
             <span>Más</span>
+          </button>
+          <button
+            className="bnav-item"
+            onClick={() => {
+              const current = navItems.find(n => isActive(n.href));
+              if (current) openWindow(current.label, current.icon, current.href);
+            }}
+            title="Abrir en ventana flotante"
+          >
+            <span className="bnav-icon">⊞</span>
+            <span>Ventana</span>
+            {windows.length > 0 && (
+              <span className="bnav-badge">{windows.length}</span>
+            )}
           </button>
         </div>
       </nav>
