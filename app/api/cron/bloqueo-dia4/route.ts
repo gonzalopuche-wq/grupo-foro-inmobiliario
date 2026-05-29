@@ -201,7 +201,7 @@ export async function GET(req: NextRequest) {
               </table>
 
               <p style="color:rgba(255,255,255,0.2);font-size:11px;text-align:center;margin:24px 0 0;line-height:1.6;">
-                Si tenés alguna consulta escribí a admin@foroinmobiliario.com.ar
+                Si tenés alguna consulta escribí a foroinmobiliariomatriculados@gmail.com
               </p>
             </td>
           </tr>

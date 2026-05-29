@@ -520,7 +520,7 @@ export default function ReciboPage() {
             <div className="recibo-footer-left">
               GFI® Grupo Foro Inmobiliario<br />
               2da Circunscripción COCIR · Rosario, Santa Fe<br />
-              admin@foroinmobiliario.com.ar
+              foroinmobiliariomatriculados@gmail.com
             </div>
             <div className="recibo-footer-aviso">
               Este comprobante no reemplaza la factura fiscal.<br />
