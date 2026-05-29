@@ -451,12 +451,13 @@ export default function CarteraPage() {
       const res = await fetch(`/api/propiedades-externas?${params}`, {
         headers: { Authorization: `Bearer ${session?.access_token}` },
       });
-      if (!res.ok) return;
-      const json = await res.json();
-      setPropsExternas(json.data ?? []);
-      setTotalExternas(json.total ?? 0);
-      setPorPortalExt(json.porPortal ?? {});
-      if ((json.data ?? []).length > 0 && json.data[0].synced_at) setUltimaSyncExt(json.data[0].synced_at);
+      if (res.ok) {
+        const json = await res.json();
+        setPropsExternas(json.data ?? []);
+        setTotalExternas(json.total ?? 0);
+        setPorPortalExt(json.porPortal ?? {});
+        if ((json.data ?? []).length > 0 && json.data[0].synced_at) setUltimaSyncExt(json.data[0].synced_at);
+      }
     } catch {}
     setLoadingExternas(false);
   }, []);
