@@ -131,13 +131,15 @@ export async function POST(req: NextRequest) {
   }
 
   // Log de auditoría del registro
-  await sb.from("logs_actividad").insert({
-    user_id: userId,
-    accion: "registro",
-    modulo: "auth",
-    detalle: `Alta como ${tipo}. Matrícula: ${matricula || "N/A"}. Términos aceptados. IP: ${ip}`,
-    ip,
-  }).catch(() => {}); // no bloquear si la tabla aún no existe
+  try {
+    await sb.from("logs_actividad").insert({
+      user_id: userId,
+      accion: "registro",
+      modulo: "auth",
+      detalle: `Alta como ${tipo}. Matrícula: ${matricula || "N/A"}. Términos aceptados. IP: ${ip}`,
+      ip,
+    });
+  } catch {} // no bloquear si la tabla aún no existe
 
   return NextResponse.json({ ok: true });
 }

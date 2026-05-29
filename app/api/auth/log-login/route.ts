@@ -19,13 +19,15 @@ export async function POST(req: NextRequest) {
 
   const ip = getIp(req);
 
-  await sb.from("logs_actividad").insert({
-    user_id: user.id,
-    accion: "login",
-    modulo: "auth",
-    detalle: `Inicio de sesión. IP: ${ip}`,
-    ip,
-  }).catch(() => {});
+  try {
+    await sb.from("logs_actividad").insert({
+      user_id: user.id,
+      accion: "login",
+      modulo: "auth",
+      detalle: `Inicio de sesión. IP: ${ip}`,
+      ip,
+    });
+  } catch {}
 
   return NextResponse.json({ ok: true });
 }
