@@ -4,12 +4,13 @@ import { syncMercadoLibre } from "../../../lib/portales/mercadolibre";
 import { syncZonaprop } from "../../../lib/portales/zonaprop";
 import { syncArgenprop } from "../../../lib/portales/argenprop";
 import { syncProperati } from "../../../lib/portales/properati";
+import { syncGFIRed, syncGFIPortal } from "../../../lib/portales/gfi";
 import { getIp } from "../../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const PORTALES = ["mercadolibre", "zonaprop", "argenprop", "properati"] as const;
+const PORTALES = ["mercadolibre", "zonaprop", "argenprop", "properati", "gfi_red", "gfi_portal"] as const;
 type Portal = (typeof PORTALES)[number];
 
 async function verificarAdmin(token: string | null) {
@@ -42,10 +43,12 @@ export async function POST(req: NextRequest) {
   for (const portal of portalesSync) {
     try {
       let items: any[] = [];
-      if (portal === "mercadolibre") items = await syncMercadoLibre(300);
+      if (portal === "mercadolibre")    items = await syncMercadoLibre(300);
       else if (portal === "zonaprop")   items = await syncZonaprop(2);
       else if (portal === "argenprop")  items = await syncArgenprop(2);
       else if (portal === "properati")  items = await syncProperati();
+      else if (portal === "gfi_red")    items = await syncGFIRed();
+      else if (portal === "gfi_portal") items = await syncGFIPortal();
 
       if (!items.length) {
         resultados[portal] = { importados: 0, error: "Sin resultados del portal" };
