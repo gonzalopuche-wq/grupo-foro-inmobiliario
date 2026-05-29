@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
@@ -164,6 +164,18 @@ const DISPOSICIONES = ["Frente", "Contrafrente", "Lateral", "Interno"];
 const TIPOS_DEPTO = ["Monoambiente", "1 ambiente", "2 ambientes", "3 ambientes", "4 ambientes", "5+ ambientes", "Duplex", "Triplex"];
 const HONORARIOS_COMPARTIR = ["No comparte", "50%", "40%", "30%"];
 const MAX_FOTOS = 40;
+
+const PORTALES_EXT = [
+  { id: "gfi_red",      label: "Red GFI",      color: "#cc0000", bg: "rgba(200,0,0,0.15)" },
+  { id: "gfi_portal",   label: "Portal GFI",   color: "#ff4444", bg: "rgba(255,68,68,0.12)" },
+  { id: "kiteprop",     label: "Kiteprop",     color: "#7c3aed", bg: "rgba(124,58,237,0.13)" },
+  { id: "tokko",        label: "Tokko Broker", color: "#0ea5e9", bg: "rgba(14,165,233,0.13)" },
+  { id: "mercadolibre", label: "Mercado Libre",color: "#d4b800", bg: "rgba(255,230,0,0.10)" },
+  { id: "zonaprop",     label: "Zonaprop",     color: "#00b274", bg: "rgba(0,178,116,0.12)" },
+  { id: "argenprop",    label: "Argenprop",    color: "#4a90d9", bg: "rgba(74,144,217,0.12)" },
+  { id: "properati",    label: "Properati",    color: "#ff6b35", bg: "rgba(255,107,53,0.12)" },
+] as const;
+type PortalExtId = (typeof PORTALES_EXT)[number]["id"];
 const MAX_PLANOS = 10;
 
 const AMBIENTES_LIST = [
@@ -352,6 +364,22 @@ export default function CarteraPage() {
   const [toastGuardado, setToastGuardado] = useState("");
   const [geocodificando, setGeocodificando] = useState(false);
 
+  // ── Vista unificada: Mi Cartera | Portales del Mercado ────────────────────
+  const [fuenteActiva, setFuenteActiva] = useState<"propia" | "mercado">("propia");
+  const [esAdmin, setEsAdmin] = useState(false);
+  const [propsExternas, setPropsExternas] = useState<any[]>([]);
+  const [loadingExternas, setLoadingExternas] = useState(false);
+  const [totalExternas, setTotalExternas] = useState(0);
+  const [porPortalExt, setPorPortalExt] = useState<Record<string, number>>({});
+  const [portalesActivosExt, setPortalesActivosExt] = useState<PortalExtId[]>([]);
+  const [filtroOpExt, setFiltroOpExt] = useState("");
+  const [filtroTipoExt, setFiltroTipoExt] = useState("");
+  const [busquedaExt, setBusquedaExt] = useState("");
+  const [paginaExt, setPaginaExt] = useState(1);
+  const [sincronizandoExt, setSincronizandoExt] = useState(false);
+  const [syncResExt, setSyncResExt] = useState<string | null>(null);
+  const [ultimaSyncExt, setUltimaSyncExt] = useState<string | null>(null);
+
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
@@ -368,6 +396,7 @@ export default function CarteraPage() {
       }
 
       setUserId(efectivoId);
+      if (perfil?.tipo === "admin" || perfil?.tipo === "master") setEsAdmin(true);
       const { data: pd } = await supabase.from("perfiles").select("nombre,apellido,telefono").eq("id", efectivoId).maybeSingle();
       if (pd) setPerfilData(pd as any);
       const { data: wc } = await supabase.from("web_corredor_config").select("slug").eq("perfil_id", efectivoId).maybeSingle();
@@ -407,6 +436,30 @@ export default function CarteraPage() {
     }
     setLoading(false);
   };
+
+  const cargarExternas = useCallback(async (portales: PortalExtId[] = [], pagina = 1, op = "", tipo = "", q = "") => {
+    setLoadingExternas(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const params = new URLSearchParams();
+      if (portales.length === 1) params.set("portal", portales[0]);
+      else if (portales.length > 1) params.set("portales", portales.join(","));
+      if (op) params.set("operacion", op);
+      if (tipo) params.set("tipo", tipo);
+      if (q) params.set("q", q);
+      params.set("page", String(pagina));
+      const res = await fetch(`/api/propiedades-externas?${params}`, {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+      if (!res.ok) return;
+      const json = await res.json();
+      setPropsExternas(json.data ?? []);
+      setTotalExternas(json.total ?? 0);
+      setPorPortalExt(json.porPortal ?? {});
+      if ((json.data ?? []).length > 0 && json.data[0].synced_at) setUltimaSyncExt(json.data[0].synced_at);
+    } catch {}
+    setLoadingExternas(false);
+  }, []);
 
   // ── Fotos ─────────────────────────────────────────────────────────────────
   const handleFotos = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1380,6 +1433,39 @@ export default function CarteraPage() {
           </div>
         </div>
 
+        {/* ── Selector de fuente ── */}
+        <div style={{ display: "flex", gap: 0, borderBottom: "2px solid rgba(255,255,255,0.06)", marginTop: 2 }}>
+          {[
+            { id: "propia" as const,  label: "🏠 Mi Cartera",           count: propiedades.length },
+            { id: "mercado" as const, label: "🏙️ Portales del Mercado",  count: totalExternas || null },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setFuenteActiva(tab.id);
+                if (tab.id === "mercado" && propsExternas.length === 0) {
+                  cargarExternas(portalesActivosExt, 1, filtroOpExt, filtroTipoExt, busquedaExt);
+                }
+              }}
+              style={{
+                padding: "12px 20px", background: "none", border: "none", cursor: "pointer",
+                fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
+                color: fuenteActiva === tab.id ? "#fff" : "rgba(255,255,255,0.3)",
+                borderBottom: fuenteActiva === tab.id ? "2px solid #cc0000" : "2px solid transparent",
+                marginBottom: -2, transition: "all 0.15s",
+              }}
+            >
+              {tab.label}
+              {tab.count !== null && tab.count > 0 && (
+                <span style={{ marginLeft: 6, fontSize: 10, background: fuenteActiva === tab.id ? "rgba(200,0,0,0.2)" : "rgba(255,255,255,0.08)", borderRadius: 10, padding: "1px 7px", color: fuenteActiva === tab.id ? "#cc0000" : "rgba(255,255,255,0.35)" }}>
+                  {tab.count.toLocaleString("es-AR")}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {fuenteActiva === "propia" && <>
         {/* Toolbar */}
         <div className="cart-toolbar">
           <div className="cart-search-wrap">
@@ -1651,6 +1737,139 @@ export default function CarteraPage() {
                 </div>
               );
             })}
+          </div>
+        )}
+        </> /* fin fuenteActiva === "propia" */}
+
+        {fuenteActiva === "mercado" && (
+          <div style={{ paddingTop: 16 }}>
+            {/* Portal chips + contadores */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
+              <button
+                onClick={() => { setPortalesActivosExt([]); cargarExternas([], 1, filtroOpExt, filtroTipoExt, busquedaExt); }}
+                style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${portalesActivosExt.length === 0 ? "rgba(200,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: portalesActivosExt.length === 0 ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.04)", color: portalesActivosExt.length === 0 ? "#cc0000" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+              >
+                Todos ({Object.values(porPortalExt).reduce((a, b) => a + b, 0).toLocaleString("es-AR")})
+              </button>
+              {PORTALES_EXT.map(p => {
+                const activo = portalesActivosExt.includes(p.id);
+                const count = porPortalExt[p.id] ?? 0;
+                return (
+                  <button key={p.id}
+                    onClick={() => {
+                      const next = activo ? portalesActivosExt.filter(x => x !== p.id) : [...portalesActivosExt, p.id];
+                      setPortalesActivosExt(next);
+                      cargarExternas(next, 1, filtroOpExt, filtroTipoExt, busquedaExt);
+                    }}
+                    style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${activo ? p.color + "60" : "rgba(255,255,255,0.08)"}`, background: activo ? p.bg : "rgba(255,255,255,0.04)", color: activo ? p.color : "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, transition: "all 0.15s" }}
+                  >
+                    {p.label} {count > 0 && <span style={{ fontSize: 9, marginLeft: 4, opacity: 0.7 }}>{count}</span>}
+                  </button>
+                );
+              })}
+              {esAdmin && (
+                <button
+                  onClick={async () => {
+                    setSincronizandoExt(true);
+                    setSyncResExt(null);
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      const portal = portalesActivosExt.length === 1 ? portalesActivosExt[0] : "all";
+                      const res = await fetch("/api/propiedades-externas/sync", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ portal }) });
+                      const json = await res.json();
+                      if (json.ok) { setSyncResExt(`✓ ${json.total} importadas`); cargarExternas(portalesActivosExt, 1, filtroOpExt, filtroTipoExt, busquedaExt); }
+                      else setSyncResExt("✗ Error");
+                    } catch { setSyncResExt("✗ Error de red"); }
+                    setSincronizandoExt(false);
+                  }}
+                  disabled={sincronizandoExt}
+                  style={{ marginLeft: "auto", padding: "5px 14px", borderRadius: 4, background: "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", color: "#cc0000", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, opacity: sincronizandoExt ? 0.6 : 1 }}
+                >
+                  {sincronizandoExt ? "Sincronizando..." : "↻ Sincronizar"}
+                </button>
+              )}
+            </div>
+
+            {/* Filtros */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+              <input
+                placeholder="🔍 Buscar..."
+                value={busquedaExt}
+                onChange={e => { setBusquedaExt(e.target.value); cargarExternas(portalesActivosExt, 1, filtroOpExt, filtroTipoExt, e.target.value); }}
+                style={{ padding: "7px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 200 }}
+              />
+              <select value={filtroOpExt} onChange={e => { setFiltroOpExt(e.target.value); cargarExternas(portalesActivosExt, 1, e.target.value, filtroTipoExt, busquedaExt); }} style={{ padding: "7px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
+                <option value="">Operación</option>
+                <option value="venta">Venta</option>
+                <option value="alquiler">Alquiler</option>
+                <option value="alquiler_temporal">Alquiler temporal</option>
+              </select>
+              <select value={filtroTipoExt} onChange={e => { setFiltroTipoExt(e.target.value); cargarExternas(portalesActivosExt, 1, filtroOpExt, e.target.value, busquedaExt); }} style={{ padding: "7px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
+                <option value="">Tipo</option>
+                <option value="departamento">Departamento</option>
+                <option value="casa">Casa</option>
+                <option value="ph">PH</option>
+                <option value="local">Local</option>
+                <option value="oficina">Oficina</option>
+                <option value="terreno">Terreno</option>
+              </select>
+              {syncResExt && <span style={{ fontSize: 11, color: syncResExt.startsWith("✓") ? "#22c55e" : "#ef4444", alignSelf: "center", fontFamily: "Inter,sans-serif" }}>{syncResExt}</span>}
+              {ultimaSyncExt && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", alignSelf: "center", marginLeft: "auto" }}>Sync: {new Date(ultimaSyncExt).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>}
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", alignSelf: "center" }}>{totalExternas.toLocaleString("es-AR")} propiedades</span>
+            </div>
+
+            {/* Cards */}
+            {loadingExternas ? (
+              <div style={{ padding: "40px 20px", textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Cargando...</div>
+            ) : propsExternas.length === 0 ? (
+              <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.18)", fontSize: 13, lineHeight: 1.8 }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>🏙️</div>
+                {totalExternas === 0 ? "No hay propiedades sincronizadas todavía.\nUsá el botón ↻ Sincronizar para traer los datos." : "Sin resultados."}
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 12, marginBottom: 20 }}>
+                  {propsExternas.map((p: any) => {
+                    const portal = PORTALES_EXT.find(x => x.id === p.portal);
+                    const precio = p.precio ? `${p.moneda === "ARS" ? "$" : "USD"} ${Number(p.precio).toLocaleString("es-AR", { maximumFractionDigits: 0 })}` : "A consultar";
+                    const specs: string[] = [];
+                    if (p.ambientes) specs.push(`${p.ambientes} amb.`);
+                    else if (p.dormitorios) specs.push(`${p.dormitorios} dorm.`);
+                    if (p.superficie_cubierta) specs.push(`${p.superficie_cubierta} m²`);
+                    const img = (p.imagenes ?? [])[0];
+                    const opColor = p.operacion === "venta" ? "#22c55e" : p.operacion === "alquiler" ? "#60a5fa" : "#f59e0b";
+                    return (
+                      <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                        <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "border-color 0.12s" }}
+                          onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.16)"}
+                          onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"}
+                        >
+                          <div style={{ position: "relative", height: 140, background: "#111", flexShrink: 0 }}>
+                            {img ? <img src={img} alt={p.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, color: "rgba(255,255,255,0.08)" }}>🏠</div>}
+                            <span style={{ position: "absolute", top: 7, left: 7, fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 3, background: `${opColor}25`, color: opColor, border: `1px solid ${opColor}40`, fontFamily: "Montserrat,sans-serif", textTransform: "uppercase" }}>{p.operacion}</span>
+                            {portal && <span style={{ position: "absolute", top: 7, right: 7, fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 3, background: portal.bg, color: portal.color, border: `1px solid ${portal.color}40`, fontFamily: "Montserrat,sans-serif" }}>{portal.label}</span>}
+                          </div>
+                          <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 5, flex: 1 }}>
+                            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", fontWeight: 500, fontFamily: "Inter,sans-serif", margin: 0, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{p.titulo}</p>
+                            <p style={{ fontSize: 15, fontWeight: 700, color: "#fff", fontFamily: "Montserrat,sans-serif", margin: 0 }}>{precio}</p>
+                            {specs.length > 0 && <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", margin: 0 }}>{specs.join(" · ")}</p>}
+                            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", margin: 0, marginTop: "auto" }}>📍 {[p.barrio, p.ciudad].filter(Boolean).join(", ")}</p>
+                          </div>
+                        </div>
+                      </a>
+                    );
+                  })}
+                </div>
+                {/* Paginación */}
+                {totalExternas > 24 && (
+                  <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+                    <button onClick={() => { const p = Math.max(1, paginaExt - 1); setPaginaExt(p); cargarExternas(portalesActivosExt, p, filtroOpExt, filtroTipoExt, busquedaExt); }} disabled={paginaExt <= 1} style={{ padding: "7px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 11 }}>← Anterior</button>
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", alignSelf: "center" }}>Página {paginaExt} de {Math.ceil(totalExternas / 24)}</span>
+                    <button onClick={() => { const p = paginaExt + 1; setPaginaExt(p); cargarExternas(portalesActivosExt, p, filtroOpExt, filtroTipoExt, busquedaExt); }} disabled={paginaExt >= Math.ceil(totalExternas / 24)} style={{ padding: "7px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 11 }}>Siguiente →</button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>
