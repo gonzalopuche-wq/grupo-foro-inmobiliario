@@ -5,12 +5,18 @@ import { syncZonaprop } from "../../../lib/portales/zonaprop";
 import { syncArgenprop } from "../../../lib/portales/argenprop";
 import { syncProperati } from "../../../lib/portales/properati";
 import { syncGFIRed, syncGFIPortal } from "../../../lib/portales/gfi";
+import { syncKitepropRed } from "../../../lib/portales/kiteprop_red";
+import { syncTokkoRed } from "../../../lib/portales/tokko_red";
 import { getIp } from "../../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const PORTALES = ["mercadolibre", "zonaprop", "argenprop", "properati", "gfi_red", "gfi_portal"] as const;
+const PORTALES = [
+  "mercadolibre", "zonaprop", "argenprop", "properati",
+  "gfi_red", "gfi_portal",
+  "kiteprop", "tokko",
+] as const;
 type Portal = (typeof PORTALES)[number];
 
 async function verificarAdmin(token: string | null) {
@@ -26,6 +32,24 @@ async function verificarAdmin(token: string | null) {
   return { user, sb };
 }
 
+async function upsertBatch(sb: any, items: any[], portal: string) {
+  let importados = 0;
+  const BATCH = 50;
+  for (let i = 0; i < items.length; i += BATCH) {
+    const batch = items.slice(i, i + BATCH).map(item => ({
+      ...item,
+      portal,
+      activa: true,
+      synced_at: new Date().toISOString(),
+    }));
+    const { error } = await sb
+      .from("propiedades_externas")
+      .upsert(batch, { onConflict: "portal,portal_id" });
+    if (!error) importados += batch.length;
+  }
+  return importados;
+}
+
 export async function POST(req: NextRequest) {
   const token = req.headers.get("authorization")?.replace("Bearer ", "") ?? null;
   const auth = await verificarAdmin(token);
@@ -38,10 +62,51 @@ export async function POST(req: NextRequest) {
     ? [...PORTALES]
     : PORTALES.filter(p => p === portalFiltro);
 
-  const resultados: Record<string, { importados: number; error?: string }> = {};
+  const resultados: Record<string, { importados: number; cruzadas?: number; error?: string }> = {};
 
   for (const portal of portalesSync) {
     try {
+      // ── CRMs con cross-referencia de portales ──────────────────────────────
+      if (portal === "kiteprop") {
+        const { items, publicaciones } = await syncKitepropRed();
+        const importados = await upsertBatch(auth.sb, items, "kiteprop");
+
+        // Upsert publicaciones cruzadas en sus respectivos portales
+        let cruzadas = 0;
+        for (const pub of publicaciones) {
+          const { _portal, _portal_id, _url, ...rest } = pub as any;
+          const crossItem = { ...rest, portal_id: _portal_id, url: _url };
+          const { error } = await auth.sb.from("propiedades_externas").upsert(
+            [{ ...crossItem, portal: _portal, activa: true, synced_at: new Date().toISOString() }],
+            { onConflict: "portal,portal_id" }
+          );
+          if (!error) cruzadas++;
+        }
+
+        resultados[portal] = { importados, cruzadas };
+        continue;
+      }
+
+      if (portal === "tokko") {
+        const { items, publicaciones } = await syncTokkoRed();
+        const importados = await upsertBatch(auth.sb, items, "tokko");
+
+        let cruzadas = 0;
+        for (const pub of publicaciones) {
+          const { _portal, _portal_id, _url, ...rest } = pub as any;
+          const crossItem = { ...rest, portal_id: _portal_id, url: _url };
+          const { error } = await auth.sb.from("propiedades_externas").upsert(
+            [{ ...crossItem, portal: _portal, activa: true, synced_at: new Date().toISOString() }],
+            { onConflict: "portal,portal_id" }
+          );
+          if (!error) cruzadas++;
+        }
+
+        resultados[portal] = { importados, cruzadas };
+        continue;
+      }
+
+      // ── Portales directos ──────────────────────────────────────────────────
       let items: any[] = [];
       if (portal === "mercadolibre")    items = await syncMercadoLibre(300);
       else if (portal === "zonaprop")   items = await syncZonaprop(2);
@@ -55,22 +120,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      let importados = 0;
-      const BATCH = 50;
-      for (let i = 0; i < items.length; i += BATCH) {
-        const batch = items.slice(i, i + BATCH).map(item => ({
-          ...item,
-          portal,
-          activa: true,
-          synced_at: new Date().toISOString(),
-        }));
-        const { error } = await auth.sb
-          .from("propiedades_externas")
-          .upsert(batch, { onConflict: "portal,portal_id" });
-        if (!error) importados += batch.length;
-      }
-
-      resultados[portal] = { importados };
+      resultados[portal] = { importados: await upsertBatch(auth.sb, items, portal) };
     } catch (e: any) {
       resultados[portal] = { importados: 0, error: e?.message ?? "Error desconocido" };
     }

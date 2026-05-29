@@ -7,6 +7,8 @@ import { supabase } from "../../lib/supabase";
 const PORTALES = [
   { id: "gfi_red",      label: "Red GFI",       color: "#cc0000", bg: "rgba(200,0,0,0.14)", textColor: "#fff" },
   { id: "gfi_portal",   label: "Portal GFI",    color: "#ff4444", bg: "rgba(255,68,68,0.10)", textColor: "#fff" },
+  { id: "kiteprop",     label: "Kiteprop",      color: "#7c3aed", bg: "rgba(124,58,237,0.12)", textColor: "#fff" },
+  { id: "tokko",        label: "Tokko Broker",  color: "#0ea5e9", bg: "rgba(14,165,233,0.12)", textColor: "#fff" },
   { id: "mercadolibre", label: "Mercado Libre",  color: "#ffe600", bg: "rgba(255,230,0,0.12)", textColor: "#000" },
   { id: "zonaprop",     label: "Zonaprop",       color: "#00b274", bg: "rgba(0,178,116,0.12)", textColor: "#fff" },
   { id: "argenprop",    label: "Argenprop",       color: "#4a90d9", bg: "rgba(74,144,217,0.12)", textColor: "#fff" },
