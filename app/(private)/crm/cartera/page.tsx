@@ -1862,7 +1862,7 @@ export default function CarteraPage() {
                     const opLabel = p.operacion === "alquiler_temporal" ? "Alq. temp." : p.operacion;
                     const ubicacion = [p.barrio, p.ciudad].filter(Boolean).join(", ");
                     return (
-                      <a key={p.id} href={p.url || undefined} target={p.url ? "_blank" : undefined} rel="noopener noreferrer" style={{ textDecoration: "none", cursor: p.url ? "pointer" : "default" }}>
+                      <a key={p.id} href={p.url || undefined} target={p.url && !p.url.startsWith("/") ? "_blank" : undefined} rel="noopener noreferrer" style={{ textDecoration: "none", cursor: p.url ? "pointer" : "default" }}>
                         <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "border-color 0.15s, box-shadow 0.15s" }}
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.18)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.5)"; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}

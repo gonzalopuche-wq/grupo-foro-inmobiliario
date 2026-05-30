@@ -28,9 +28,7 @@ function normalizarImagenes(fotos: any): string[] {
 function mapearPropiedad(p: any, portal: "gfi_red" | "gfi_portal"): PropExtNorm {
   return {
     portal_id: p.id,
-    url: p.codigo
-      ? `https://www.foroinmobiliario.com.ar/propiedades?codigo=${p.codigo}`
-      : `https://www.foroinmobiliario.com.ar/propiedades`,
+    url: `/crm/cartera/ficha/${p.id}`,
     titulo: p.titulo ?? "",
     operacion: normalizarOperacion(p.operacion ?? "venta"),
     tipo: normalizarTipo(p.tipo ?? "otro"),
