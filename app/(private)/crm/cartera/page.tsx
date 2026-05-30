@@ -1808,13 +1808,42 @@ export default function CarteraPage() {
                 <button
                   onClick={async () => {
                     const { data: { session } } = await supabase.auth.getSession();
-                    const res = await fetch("/api/propiedades-externas/diagnostico", { headers: { Authorization: `Bearer ${session?.access_token}` } });
-                    const json = await res.json();
-                    alert(JSON.stringify(json, null, 2));
+                    const headers = { Authorization: `Bearer ${session?.access_token}` };
+
+                    // 1. Diagnóstico
+                    const diagRes = await fetch("/api/propiedades-externas/diagnostico", { headers });
+                    const diag = await diagRes.json();
+
+                    const portalesOk = Object.entries(diag.constraint_portales ?? {}).filter(([, ok]) => ok).map(([p]) => p);
+                    const portalesFail = Object.entries(diag.constraint_portales ?? {}).filter(([, ok]) => !ok).map(([p]) => p);
+                    const carteraTotal = diag.cartera_propiedades?.total ?? "?";
+                    const porEstado = JSON.stringify(diag.cartera_propiedades?.por_estado ?? {});
+                    const gfiQuery = diag.gfi_query?.error ?? "OK";
+
+                    if (portalesFail.length === 0) {
+                      alert(`✅ Constraint OK\nPortales habilitados: ${portalesOk.join(", ")}\n\nCartera: ${carteraTotal} propiedades\nPor estado: ${porEstado}\nQuery GFI: ${gfiQuery}\nKeys: ${JSON.stringify(diag.keys_configuradas)}`);
+                      return;
+                    }
+
+                    // 2. Intentar reparación automática
+                    const repRes = await fetch("/api/propiedades-externas/reparar", { method: "POST", headers });
+                    const rep = await repRes.json();
+
+                    if (rep.ok) {
+                      alert(`✅ Constraint reparado automáticamente!\n\nVolvé a hacer clic en ↻ Sincronizar para importar todas las propiedades.`);
+                      return;
+                    }
+
+                    // 3. Reparación manual necesaria
+                    const sql = rep.sql ?? "";
+                    if (sql) {
+                      await navigator.clipboard.writeText(sql).catch(() => {});
+                    }
+                    alert(`⚠️ El constraint de portales está incompleto.\nPortales bloqueados: ${portalesFail.join(", ")}\n\n${sql ? "✅ El SQL fue copiado al portapapeles.\n\n" : ""}PASOS:\n1. Ir a Supabase → SQL Editor\n2. Pegar y ejecutar:\n\n${sql}\n\n3. Volver y hacer clic en ↻ Sincronizar`);
                   }}
                   style={{ padding: "6px 12px", borderRadius: 4, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
-                  title="Ver diagnóstico de sync"
-                >🔍</button>
+                  title="Diagnosticar y reparar sync"
+                >🔧</button>
               )}
             </div>
 
