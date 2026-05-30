@@ -75,7 +75,25 @@ async function getMLAccessToken(): Promise<string | null> {
       .eq("activo", true)
       .limit(1)
       .single();
-    return (data?.config as any)?.access_token ?? null;
+
+    const cfg = data?.config as any;
+    if (!cfg) return null;
+
+    // Si tiene access_token directo, usarlo
+    if (cfg.access_token) return cfg.access_token as string;
+
+    // Si tiene client_id + client_secret, obtener token automáticamente
+    if (cfg.client_id && cfg.client_secret) {
+      const res = await fetch(
+        `https://api.mercadolibre.com/oauth/token?grant_type=client_credentials&client_id=${cfg.client_id}&client_secret=${cfg.client_secret}`,
+        { method: "POST", signal: AbortSignal.timeout(10000) }
+      );
+      if (!res.ok) return null;
+      const tokenData = await res.json();
+      return tokenData.access_token ?? null;
+    }
+
+    return null;
   } catch {
     return null;
   }
