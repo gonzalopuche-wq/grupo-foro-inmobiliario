@@ -65,7 +65,8 @@ export async function syncGFIRed(): Promise<PropExtNorm[]> {
     .order("created_at", { ascending: false })
     .limit(500);
 
-  if (error || !data) return [];
+  if (error) throw new Error(`GFI Red: ${error.message}`);
+  if (!data) return [];
   return data.map(p => mapearPropiedad(p, "gfi_red"));
 }
 
@@ -82,6 +83,7 @@ export async function syncGFIPortal(): Promise<PropExtNorm[]> {
     .order("created_at", { ascending: false })
     .limit(500);
 
-  if (error || !data) return [];
+  if (error) throw new Error(`GFI Portal: ${error.message}`);
+  if (!data) return [];
   return data.map(p => mapearPropiedad(p, "gfi_portal"));
 }

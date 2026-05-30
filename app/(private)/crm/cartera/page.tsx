@@ -1833,7 +1833,17 @@ export default function CarteraPage() {
               <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", alignSelf: "center", marginLeft: "auto" }}>{totalExternas.toLocaleString("es-AR")} propiedades</span>
               {ultimaSyncExt && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.18)", alignSelf: "center" }}>Sync: {new Date(ultimaSyncExt).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>}
             </div>
-
+            {/* Errores de sync por portal */}
+            {syncResultados && Object.entries(syncResultados).some(([, r]: any) => r.error) && (
+              <div style={{ marginBottom: 12, padding: "10px 14px", background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#ef4444", fontFamily: "Montserrat,sans-serif", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>⚠ Errores en sync</div>
+                {Object.entries(syncResultados).filter(([, r]: any) => r.error).map(([portal, r]: any) => (
+                  <div key={portal} style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif", marginBottom: 3 }}>
+                    <span style={{ color: "#f87171", fontWeight: 600 }}>{portal}:</span> {r.error}
+                  </div>
+                ))}
+              </div>
+            )}
             {/* Cards */}
             {loadingExternas ? (
               <div style={{ padding: "40px 20px", textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Cargando propiedades...</div>
