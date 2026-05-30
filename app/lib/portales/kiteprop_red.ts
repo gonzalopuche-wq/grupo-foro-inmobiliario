@@ -13,9 +13,12 @@ const KP_TIPO: Record<string, string> = {
 };
 
 function normalizarKP(kp: Record<string, any>): PropExtNorm {
-  const imgs: string[] = (kp.images_list ?? kp.photos ?? [])
-    .map((i: any) => i.lg ?? i.url ?? i.image ?? "")
-    .filter((u: string) => u.startsWith("http"));
+  const imgs: string[] = (kp.images_list ?? kp.photos ?? kp.images ?? kp.fotos ?? [])
+    .map((i: any) => {
+      if (typeof i === "string") return i;
+      return i.lg ?? i.original ?? i.url ?? i.image ?? i.src ?? i.thumb ?? "";
+    })
+    .filter((u: string) => !!u && u.startsWith("http"));
 
   const operacion = kp.for_sale && kp.for_rent
     ? "venta"
@@ -53,9 +56,9 @@ async function fetchAllKP(apiKey: string, baseUrl = KP_BASE): Promise<Record<str
   const all: Record<string, any>[] = [];
   let page = 1;
   while (true) {
-    const res = await fetch(`${baseUrl}/properties/?page=${page}`, {
+    const res = await fetch(`${baseUrl}/properties/?page=${page}&page_size=100`, {
       headers: { "X-API-Key": apiKey, Accept: "application/json" },
-      signal: AbortSignal.timeout(20_000),
+      signal: AbortSignal.timeout(30_000),
       next: { revalidate: 0 },
     });
     if (!res.ok) break;
@@ -66,9 +69,13 @@ async function fetchAllKP(apiKey: string, baseUrl = KP_BASE): Promise<Record<str
       : Array.isArray(json) ? json : [];
     if (!rows.length) break;
     all.push(...rows);
-    if (!json.next) break;
+    // Detectar si hay más páginas: por campo next, o por total count
+    const total = json.count ?? json.total ?? json.total_count ?? null;
+    const hasNext = !!json.next;
+    if (!hasNext) break;
+    if (total !== null && all.length >= total) break;
     page++;
-    if (page > 20) break; // límite de seguridad: máx 20 páginas por key
+    if (page > 50) break;
   }
   return all;
 }

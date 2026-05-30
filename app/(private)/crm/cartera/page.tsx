@@ -1840,7 +1840,7 @@ export default function CarteraPage() {
                     const img = (p.imagenes ?? [])[0];
                     const opColor = p.operacion === "venta" ? "#22c55e" : p.operacion === "alquiler" ? "#60a5fa" : "#f59e0b";
                     return (
-                      <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                      <a key={p.id} href={p.url || undefined} target={p.url ? "_blank" : undefined} rel="noopener noreferrer" style={{ textDecoration: "none", cursor: p.url ? "pointer" : "default" }}>
                         <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 7, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "border-color 0.12s" }}
                           onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.16)"}
                           onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"}
