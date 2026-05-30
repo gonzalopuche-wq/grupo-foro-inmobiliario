@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
   // ── 2. Test query GFI (sin upsert) ────────────────────────────────────────
   const { data: gfiData, error: gfiErr } = await sb
     .from("cartera_propiedades")
-    .select("id,titulo,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,fotos,codigo,estado,provincia,direccion,latitud,longitud,descripcion,perfil_id", { count: "exact" })
+    .select("id,titulo,operacion,tipo,precio,estado")
     .in("estado", ["activa", "reservada"])
     .limit(1);
 
