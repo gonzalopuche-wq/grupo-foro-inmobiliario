@@ -11,13 +11,14 @@ import { syncPropiaRed } from "../../../lib/portales/propia_red";
 import { getIp } from "../../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
+// GFI y Propia van primero (sync local/rápido), externos lentos al final
 const PORTALES = [
-  "mercadolibre", "zonaprop", "argenprop", "properati",
   "gfi_red", "gfi_portal",
-  "kiteprop", "tokko",
   "propia_red", "propia_portal",
+  "kiteprop", "tokko",
+  "mercadolibre", "zonaprop", "argenprop", "properati",
 ] as const;
 type Portal = (typeof PORTALES)[number];
 
@@ -34,7 +35,7 @@ async function verificarAdmin(token: string | null) {
   return { user, sb };
 }
 
-async function upsertBatch(sb: any, items: any[], portal: string) {
+async function upsertBatch(sb: any, items: any[], portal: string): Promise<{ importados: number; upsertError?: string }> {
   let importados = 0;
   const BATCH = 50;
   for (let i = 0; i < items.length; i += BATCH) {
@@ -47,9 +48,10 @@ async function upsertBatch(sb: any, items: any[], portal: string) {
     const { error } = await sb
       .from("propiedades_externas")
       .upsert(batch, { onConflict: "portal,portal_id" });
-    if (!error) importados += batch.length;
+    if (error) return { importados, upsertError: error.message };
+    importados += batch.length;
   }
-  return importados;
+  return { importados };
 }
 
 export async function POST(req: NextRequest) {
@@ -71,9 +73,8 @@ export async function POST(req: NextRequest) {
       // ── CRMs con cross-referencia de portales ──────────────────────────────
       if (portal === "kiteprop") {
         const { items, publicaciones } = await syncKitepropRed();
-        const importados = await upsertBatch(auth.sb, items, "kiteprop");
+        const { importados, upsertError } = await upsertBatch(auth.sb, items, "kiteprop");
 
-        // Upsert publicaciones cruzadas en lotes por portal
         const mappedKP = publicaciones.map((pub: any) => {
           const { _portal, _portal_id, _url, ...rest } = pub;
           return { ...rest, portal: _portal, portal_id: _portal_id, url: _url, activa: true, synced_at: new Date().toISOString() };
@@ -85,13 +86,13 @@ export async function POST(req: NextRequest) {
           if (!error) cruzadas += Math.min(CROSS_BATCH, mappedKP.length - i);
         }
 
-        resultados[portal] = { importados, cruzadas };
+        resultados[portal] = { importados, cruzadas, ...(upsertError ? { error: upsertError } : {}) };
         continue;
       }
 
       if (portal === "tokko") {
         const { items, publicaciones } = await syncTokkoRed();
-        const importados = await upsertBatch(auth.sb, items, "tokko");
+        const { importados, upsertError } = await upsertBatch(auth.sb, items, "tokko");
 
         const mappedTK = publicaciones.map((pub: any) => {
           const { _portal, _portal_id, _url, ...rest } = pub;
@@ -103,17 +104,19 @@ export async function POST(req: NextRequest) {
           if (!error) cruzadas += Math.min(50, mappedTK.length - i);
         }
 
-        resultados[portal] = { importados, cruzadas };
+        resultados[portal] = { importados, cruzadas, ...(upsertError ? { error: upsertError } : {}) };
         continue;
       }
 
-      // ── Propia.com.ar: MLS y Portal en un solo fetch ──────────────────────
+      // ── Propia.com.ar: MLS y Portal en un solo fetch (evita doble llamada) ──
       if (portal === "propia_red" || portal === "propia_portal") {
-        const { mls, portal: portalItems } = await syncPropiaRed();
-        const mlsI    = await upsertBatch(auth.sb, mls,         "propia_red");
-        const portalI = await upsertBatch(auth.sb, portalItems, "propia_portal");
-        resultados["propia_red"]    = { importados: mlsI };
-        resultados["propia_portal"] = { importados: portalI };
+        if (!resultados["propia_red"]) {
+          const { mls, portal: portalItems } = await syncPropiaRed();
+          const { importados: mlsI, upsertError: mlsErr } = await upsertBatch(auth.sb, mls, "propia_red");
+          const { importados: portalI, upsertError: portalErr } = await upsertBatch(auth.sb, portalItems, "propia_portal");
+          resultados["propia_red"]    = { importados: mlsI,    ...(mlsErr    ? { error: mlsErr }    : {}) };
+          resultados["propia_portal"] = { importados: portalI, ...(portalErr ? { error: portalErr } : {}) };
+        }
         continue;
       }
 
@@ -131,7 +134,8 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      resultados[portal] = { importados: await upsertBatch(auth.sb, items, portal) };
+      const { importados, upsertError } = await upsertBatch(auth.sb, items, portal);
+      resultados[portal] = { importados, ...(upsertError ? { error: upsertError } : {}) };
     } catch (e: any) {
       resultados[portal] = { importados: 0, error: e?.message ?? "Error desconocido" };
     }

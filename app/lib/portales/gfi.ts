@@ -28,9 +28,7 @@ function normalizarImagenes(fotos: any): string[] {
 function mapearPropiedad(p: any, portal: "gfi_red" | "gfi_portal"): PropExtNorm {
   return {
     portal_id: p.id,
-    url: p.codigo
-      ? `https://www.foroinmobiliario.com.ar/propiedades?codigo=${p.codigo}`
-      : `https://www.foroinmobiliario.com.ar/propiedades`,
+    url: `/crm/cartera/ficha/${p.id}`,
     titulo: p.titulo ?? "",
     operacion: normalizarOperacion(p.operacion ?? "venta"),
     tipo: normalizarTipo(p.tipo ?? "otro"),
@@ -40,14 +38,14 @@ function mapearPropiedad(p: any, portal: "gfi_red" | "gfi_portal"): PropExtNorm 
     banos: parseNum(p.banos),
     ambientes: parseNum(p.ambientes),
     superficie_cubierta: parseNum(p.superficie_cubierta),
-    sup_terreno: parseNum(p.sup_terreno),
+    sup_terreno: null,
     expensas: parseNum(p.expensas),
     barrio: p.zona ?? null,
     ciudad: p.ciudad ?? "Rosario",
     provincia: p.provincia ?? "Santa Fe",
     direccion: p.direccion ?? null,
-    lat: parseNum(p.lat),
-    lng: parseNum(p.lng),
+    lat: parseNum(p.latitud),
+    lng: parseNum(p.longitud),
     imagenes: normalizarImagenes(p.fotos),
     descripcion: p.descripcion ?? null,
     datos_raw: { codigo: p.codigo, perfil_id: p.perfil_id },
@@ -62,12 +60,13 @@ export async function syncGFIRed(): Promise<PropExtNorm[]> {
 
   const { data, error } = await sb
     .from("cartera_propiedades")
-    .select("id,titulo,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,fotos,codigo,estado,provincia,direccion,lat,lng,descripcion,perfil_id")
+    .select("*")
     .in("estado", ["activa", "reservada"])
     .order("created_at", { ascending: false })
     .limit(500);
 
-  if (error || !data) return [];
+  if (error) throw new Error(`GFI Red: ${error.message}`);
+  if (!data) return [];
   return data.map(p => mapearPropiedad(p, "gfi_red"));
 }
 
@@ -79,11 +78,12 @@ export async function syncGFIPortal(): Promise<PropExtNorm[]> {
 
   const { data, error } = await sb
     .from("cartera_propiedades")
-    .select("id,titulo,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,fotos,codigo,estado,provincia,direccion,lat,lng,descripcion,perfil_id")
+    .select("*")
     .eq("estado", "activa")
     .order("created_at", { ascending: false })
     .limit(500);
 
-  if (error || !data) return [];
+  if (error) throw new Error(`GFI Portal: ${error.message}`);
+  if (!data) return [];
   return data.map(p => mapearPropiedad(p, "gfi_portal"));
 }

@@ -380,6 +380,7 @@ export default function CarteraPage() {
   const [paginaExt, setPaginaExt] = useState(1);
   const [sincronizandoExt, setSincronizandoExt] = useState(false);
   const [syncResExt, setSyncResExt] = useState<string | null>(null);
+  const [syncResultados, setSyncResultados] = useState<Record<string, { importados: number; cruzadas?: number; error?: string }> | null>(null);
   const [ultimaSyncExt, setUltimaSyncExt] = useState<string | null>(null);
 
   useEffect(() => {
@@ -1446,7 +1447,7 @@ export default function CarteraPage() {
               key={tab.id}
               onClick={() => {
                 setFuenteActiva(tab.id);
-                if (tab.id === "mercado" && propsExternas.length === 0) {
+                if (tab.id === "mercado") {
                   cargarExternas(portalesActivosExt, 1, filtroOpExt, filtroTipoExt, busquedaExt);
                 }
               }}
@@ -1757,16 +1758,18 @@ export default function CarteraPage() {
               {PORTALES_EXT.map(p => {
                 const activo = portalesActivosExt.includes(p.id);
                 const count = porPortalExt[p.id] ?? 0;
+                const sinDatos = count === 0;
                 return (
                   <button key={p.id}
+                    title={sinDatos ? `${p.label}: sin datos — sincronizá para traer propiedades` : `${p.label}: ${count} propiedades`}
                     onClick={() => {
                       const next = activo ? portalesActivosExt.filter(x => x !== p.id) : [...portalesActivosExt, p.id];
                       setPortalesActivosExt(next);
                       cargarExternas(next, 1, filtroOpExt, filtroTipoExt, busquedaExt);
                     }}
-                    style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${activo ? p.color + "60" : "rgba(255,255,255,0.08)"}`, background: activo ? p.bg : "rgba(255,255,255,0.04)", color: activo ? p.color : "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, transition: "all 0.15s" }}
+                    style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${activo ? p.color + "60" : sinDatos ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.08)"}`, background: activo ? p.bg : "rgba(255,255,255,0.03)", color: activo ? p.color : sinDatos ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, transition: "all 0.15s" }}
                   >
-                    {p.label} {count > 0 && <span style={{ fontSize: 9, marginLeft: 4, opacity: 0.7 }}>{count}</span>}
+                    {p.label}{sinDatos ? <span style={{ marginLeft: 3, fontSize: 8, opacity: 0.5 }}>·</span> : <span style={{ fontSize: 9, marginLeft: 4, opacity: 0.7 }}>{count}</span>}
                   </button>
                 );
               })}
@@ -1775,21 +1778,72 @@ export default function CarteraPage() {
                   onClick={async () => {
                     setSincronizandoExt(true);
                     setSyncResExt(null);
+                    setSyncResultados(null);
                     try {
                       const { data: { session } } = await supabase.auth.getSession();
                       const portal = portalesActivosExt.length === 1 ? portalesActivosExt[0] : "all";
                       const res = await fetch("/api/propiedades-externas/sync", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ portal }) });
                       const json = await res.json();
-                      if (json.ok) { setSyncResExt(`✓ ${json.total} importadas`); cargarExternas(portalesActivosExt, 1, filtroOpExt, filtroTipoExt, busquedaExt); }
-                      else setSyncResExt("✗ Error");
-                    } catch { setSyncResExt("✗ Error de red"); }
+                      if (json.ok) {
+                        setSyncResultados(json.resultados ?? null);
+                        const desglose = Object.entries(json.resultados ?? {})
+                          .filter(([, r]: any) => r.importados > 0)
+                          .map(([k, r]: any) => `${k}:${r.importados}`)
+                          .join(" · ");
+                        setSyncResExt(`✓ ${json.total} total${desglose ? ` (${desglose})` : ""}`);
+                        cargarExternas(portalesActivosExt, 1, filtroOpExt, filtroTipoExt, busquedaExt);
+                      } else {
+                        setSyncResExt(`✗ ${json.error ?? "Error"}`);
+                      }
+                    } catch (e: any) { setSyncResExt(`✗ ${e?.message ?? "Error de red"}`); }
                     setSincronizandoExt(false);
                   }}
                   disabled={sincronizandoExt}
-                  style={{ marginLeft: "auto", padding: "5px 14px", borderRadius: 4, background: "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", color: "#cc0000", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, opacity: sincronizandoExt ? 0.6 : 1 }}
+                  style={{ marginLeft: "auto", padding: "6px 16px", borderRadius: 4, background: sincronizandoExt ? "rgba(200,0,0,0.06)" : "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", color: "#cc0000", cursor: sincronizandoExt ? "wait" : "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
                 >
-                  {sincronizandoExt ? "Sincronizando..." : "↻ Sincronizar"}
+                  {sincronizandoExt ? "⏳ Sincronizando..." : "↻ Sincronizar"}
                 </button>
+              )}
+              {esAdmin && (
+                <button
+                  onClick={async () => {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const headers = { Authorization: `Bearer ${session?.access_token}` };
+
+                    // 1. Diagnóstico
+                    const diagRes = await fetch("/api/propiedades-externas/diagnostico", { headers });
+                    const diag = await diagRes.json();
+
+                    const portalesOk = Object.entries(diag.constraint_portales ?? {}).filter(([, ok]) => ok).map(([p]) => p);
+                    const portalesFail = Object.entries(diag.constraint_portales ?? {}).filter(([, ok]) => !ok).map(([p]) => p);
+                    const carteraTotal = diag.cartera_propiedades?.total ?? "?";
+                    const porEstado = JSON.stringify(diag.cartera_propiedades?.por_estado ?? {});
+                    const gfiQuery = diag.gfi_query?.error ?? "OK";
+
+                    if (portalesFail.length === 0) {
+                      alert(`✅ Constraint OK\nPortales habilitados: ${portalesOk.join(", ")}\n\nCartera: ${carteraTotal} propiedades\nPor estado: ${porEstado}\nQuery GFI: ${gfiQuery}\nKeys: ${JSON.stringify(diag.keys_configuradas)}`);
+                      return;
+                    }
+
+                    // 2. Intentar reparación automática
+                    const repRes = await fetch("/api/propiedades-externas/reparar", { method: "POST", headers });
+                    const rep = await repRes.json();
+
+                    if (rep.ok) {
+                      alert(`✅ Constraint reparado automáticamente!\n\nVolvé a hacer clic en ↻ Sincronizar para importar todas las propiedades.`);
+                      return;
+                    }
+
+                    // 3. Reparación manual necesaria
+                    const sql = rep.sql ?? "";
+                    if (sql) {
+                      await navigator.clipboard.writeText(sql).catch(() => {});
+                    }
+                    alert(`⚠️ El constraint de portales está incompleto.\nPortales bloqueados: ${portalesFail.join(", ")}\n\n${sql ? "✅ El SQL fue copiado al portapapeles.\n\n" : ""}PASOS:\n1. Ir a Supabase → SQL Editor\n2. Pegar y ejecutar:\n\n${sql}\n\n3. Volver y hacer clic en ↻ Sincronizar`);
+                  }}
+                  style={{ padding: "6px 12px", borderRadius: 4, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                  title="Diagnosticar y reparar sync"
+                >🔧</button>
               )}
             </div>
 
@@ -1816,18 +1870,30 @@ export default function CarteraPage() {
                 <option value="oficina">Oficina</option>
                 <option value="terreno">Terreno</option>
               </select>
-              {syncResExt && <span style={{ fontSize: 11, color: syncResExt.startsWith("✓") ? "#22c55e" : "#ef4444", alignSelf: "center", fontFamily: "Inter,sans-serif" }}>{syncResExt}</span>}
-              {ultimaSyncExt && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", alignSelf: "center", marginLeft: "auto" }}>Sync: {new Date(ultimaSyncExt).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>}
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", alignSelf: "center" }}>{totalExternas.toLocaleString("es-AR")} propiedades</span>
+              {syncResExt && <span style={{ fontSize: 10, color: syncResExt.startsWith("✓") ? "#22c55e" : "#ef4444", alignSelf: "center", fontFamily: "Inter,sans-serif", maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={syncResExt}>{syncResExt}</span>}
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", alignSelf: "center", marginLeft: "auto" }}>{totalExternas.toLocaleString("es-AR")} propiedades</span>
+              {ultimaSyncExt && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.18)", alignSelf: "center" }}>Sync: {new Date(ultimaSyncExt).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>}
             </div>
-
+            {/* Errores de sync por portal */}
+            {syncResultados && Object.entries(syncResultados).some(([, r]: any) => r.error) && (
+              <div style={{ marginBottom: 12, padding: "10px 14px", background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#ef4444", fontFamily: "Montserrat,sans-serif", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>⚠ Errores en sync</div>
+                {Object.entries(syncResultados).filter(([, r]: any) => r.error).map(([portal, r]: any) => (
+                  <div key={portal} style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif", marginBottom: 3 }}>
+                    <span style={{ color: "#f87171", fontWeight: 600 }}>{portal}:</span> {r.error}
+                  </div>
+                ))}
+              </div>
+            )}
             {/* Cards */}
             {loadingExternas ? (
-              <div style={{ padding: "40px 20px", textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Cargando...</div>
+              <div style={{ padding: "40px 20px", textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Cargando propiedades...</div>
             ) : propsExternas.length === 0 ? (
-              <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.18)", fontSize: 13, lineHeight: 1.8 }}>
+              <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.18)", fontSize: 13, lineHeight: 2 }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🏙️</div>
-                {totalExternas === 0 ? "No hay propiedades sincronizadas todavía.\nUsá el botón ↻ Sincronizar para traer los datos." : "Sin resultados."}
+                {totalExternas === 0
+                  ? <>{esAdmin ? <>Sin propiedades sincronizadas.<br/><span style={{ color: "#cc0000", cursor: "pointer", textDecoration: "underline" }} onClick={async () => { setSincronizandoExt(true); const { data: { session } } = await supabase.auth.getSession(); const res = await fetch("/api/propiedades-externas/sync", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ portal: "all" }) }); const json = await res.json(); if (json.ok) { setSyncResExt(`✓ ${json.total} importadas`); cargarExternas([], 1, "", "", ""); } setSincronizandoExt(false); }}>Hacer clic aquí para sincronizar todos los portales ahora</span></> : "Sin propiedades sincronizadas. Pedile al administrador que sincronice los portales."}</>
+                  : "Sin resultados para los filtros aplicados."}
               </div>
             ) : (
               <>
@@ -1847,7 +1913,7 @@ export default function CarteraPage() {
                     const opLabel = p.operacion === "alquiler_temporal" ? "Alq. temp." : p.operacion;
                     const ubicacion = [p.barrio, p.ciudad].filter(Boolean).join(", ");
                     return (
-                      <a key={p.id} href={p.url || undefined} target={p.url ? "_blank" : undefined} rel="noopener noreferrer" style={{ textDecoration: "none", cursor: p.url ? "pointer" : "default" }}>
+                      <a key={p.id} href={p.url || undefined} target={p.url && (p.url.startsWith("http://") || p.url.startsWith("https://")) ? "_blank" : undefined} rel="noopener noreferrer" style={{ textDecoration: "none", cursor: p.url ? "pointer" : "default" }}>
                         <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "border-color 0.15s, box-shadow 0.15s" }}
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.18)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.5)"; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}

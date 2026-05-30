@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
 
   const sp = new URL(req.url).searchParams;
   const portal    = sp.get("portal");
+  const portales  = sp.get("portales")?.split(",").filter(Boolean) ?? [];
   const operacion = sp.get("operacion");
   const tipo      = sp.get("tipo");
   const min       = sp.get("min");
@@ -29,18 +30,19 @@ export async function GET(req: NextRequest) {
 
   let query = sb
     .from("propiedades_externas")
-    .select("id,portal,portal_id,url,titulo,operacion,tipo,precio,moneda,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,barrio,ciudad,imagenes,synced_at", { count: "exact" })
+    .select("id,portal,portal_id,url,titulo,operacion,tipo,precio,moneda,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,barrio,ciudad,direccion,imagenes,synced_at", { count: "exact" })
     .eq("activa", true)
     .order("synced_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  if (portal)    query = query.eq("portal", portal);
+  if (portal)           query = query.eq("portal", portal);
+  else if (portales.length > 0) query = query.in("portal", portales);
   if (operacion) query = query.eq("operacion", operacion);
   if (tipo)      query = query.eq("tipo", tipo);
   if (dorm)      query = query.gte("dormitorios", parseInt(dorm));
   if (min)       query = query.gte("precio", parseInt(min)).eq("moneda", moneda);
   if (max)       query = query.lte("precio", parseInt(max)).eq("moneda", moneda);
-  if (q)         query = query.ilike("titulo", `%${q}%`);
+  if (q)         query = query.or(`titulo.ilike.%${q}%,direccion.ilike.%${q}%,barrio.ilike.%${q}%`);
 
   const { data, count, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
