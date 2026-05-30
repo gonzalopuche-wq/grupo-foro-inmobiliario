@@ -1,12 +1,15 @@
 // Mercado Libre official REST API — no auth required for searches
-// Docs: https://developers.mercadolibre.com.ar/es_ar/categorias-y-atributos-inmuebles
+// Docs: https://developers.mercadolibre.com.ar/en_us/locate-property
 import { PropExtNorm, normalizeTipo, normalizeOperacion, parseNum } from "./types";
 
 const ML_API = "https://api.mercadolibre.com";
 const ML_CATEGORY = "MLA1459"; // Inmuebles Argentina
 const ML_SITE = "MLA";
 const ML_HEADERS = { "User-Agent": "Mozilla/5.0 (compatible; GFI-Sync/1.0)" };
-const ML_TIMEOUT = 30000;
+
+// Bounding box de Rosario, Santa Fe (oficialmente documentado por ML para item_location)
+const ROSARIO_LAT = "-33.0394_-32.8717";
+const ROSARIO_LON = "-60.7961_-60.6122";
 
 function getAttr(attrs: Array<{ id: string; value_name?: string }>, id: string): string | null {
   return attrs?.find(a => a.id === id)?.value_name ?? null;
@@ -61,7 +64,7 @@ async function mlGet(url: string): Promise<{ ok: boolean; data?: any; status: nu
     const res = await fetch(url, {
       headers: ML_HEADERS,
       next: { revalidate: 0 },
-      signal: AbortSignal.timeout(ML_TIMEOUT),
+      signal: AbortSignal.timeout(30000),
     });
     if (!res.ok) return { ok: false, status: res.status };
     return { ok: true, data: await res.json(), status: res.status };
@@ -70,88 +73,48 @@ async function mlGet(url: string): Promise<{ ok: boolean; data?: any; status: nu
   }
 }
 
-// Descubre el state_id de Santa Fe desde la API de ML (dinámico, no hardcodeado)
-async function getSantaFeStateId(): Promise<string | null> {
-  const { ok, data } = await mlGet(`${ML_API}/classified_locations/states`);
-  if (!ok || !Array.isArray(data)) return null;
-  const sf = data.find((s: any) =>
-    typeof s.name === "string" && s.name.toLowerCase().includes("santa fe")
-  );
-  return sf?.id ?? null;
-}
-
-// Descubre el city_id de Rosario via search_location
-async function getRosarioCityId(): Promise<string | null> {
-  const { ok, data } = await mlGet(
-    `${ML_API}/sites/${ML_SITE}/search_location?q=Rosario+Santa+Fe`
-  );
-  if (!ok) return null;
-  const candidates: any[] = data?.matching_content ?? data?.results ?? [];
-  const rosario = candidates.find(
-    (c: any) =>
-      c.type === "city" &&
-      (c.name?.toLowerCase().includes("rosario") || c.place_id?.toString().includes("rosario"))
-  );
-  return rosario?.id ?? rosario?.place_id ?? null;
-}
-
-async function fetchPage(baseUrl: string, offset: number, perPage: number) {
-  const { ok, data, status } = await mlGet(`${baseUrl}&offset=${offset}`);
+async function fetchPageItems(url: string): Promise<{
+  items: any[];
+  total: number;
+  httpError?: number;
+}> {
+  const { ok, data, status } = await mlGet(url);
   if (!ok) return { items: [], total: 0, httpError: status };
-  return {
-    items: (data?.results ?? []) as any[],
-    total: (data?.paging?.total ?? 0) as number,
-    httpError: undefined,
-  };
+  return { items: data?.results ?? [], total: data?.paging?.total ?? 0 };
 }
 
 export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
   const perPage = 50;
+
+  // Estrategias en orden de confiabilidad:
+  // 1. item_location (bounding box) — método oficialmente documentado por ML para inmuebles
+  // 2. city ID de Rosario (MLAC128755 encoded) — filtro por ciudad
+  // 3. Santa Fe state IDs candidatos (12 chars cada uno, formato correcto de estado)
+  const strategies = [
+    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&item_location=lat:${ROSARIO_LAT},lon:${ROSARIO_LON}&limit=${perPage}`,
+    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&city=TUxBQUMxMjg3NTU&limit=${perPage}`,
+    // IDs candidatos de Santa Fe (12 chars — formato correcto de estado en ML)
+    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&state=TUxBUFNBTmU5Nzk2&limit=${perPage}`,
+    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&state=TUxBUFNBTm5lYjU4&limit=${perPage}`,
+  ];
+
   let lastError: string | null = null;
 
-  // Descubrir IDs dinámicamente (no depende de hardcoded IDs)
-  const [stateId, cityId] = await Promise.all([
-    getSantaFeStateId(),
-    getRosarioCityId(),
-  ]);
-
-  // Construir estrategias en orden: city (más específico) → state → fallbacks
-  const strategies: string[] = [];
-
-  if (cityId) {
-    strategies.push(`${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&city=${encodeURIComponent(cityId)}&limit=${perPage}`);
-  }
-  if (stateId) {
-    strategies.push(`${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&state=${encodeURIComponent(stateId)}&limit=${perPage}`);
-  }
-
-  // Fallbacks con parámetros conocidos
-  strategies.push(
-    // city ID conocido de Rosario (MLAC128755 encoded)
-    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&city=TUxBQUMxMjg3NTU&limit=${perPage}`,
-    // state ID conocido de Santa Fe (TUxBUFNBTjI3MTQ)
-    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&state=TUxBUFNBTjI3MTQ&limit=${perPage}`,
-  );
-
-  // Eliminar estrategias duplicadas (si el ID dinámico coincide con el hardcodeado)
-  const uniqueStrategies = [...new Set(strategies)];
-
-  for (const baseUrl of uniqueStrategies) {
+  for (const baseUrl of strategies) {
     const strategyResults: PropExtNorm[] = [];
     let offset = 0;
 
     while (strategyResults.length < maxItems) {
-      const { items, total, httpError } = await fetchPage(baseUrl, offset, perPage);
+      const { items, total, httpError } = await fetchPageItems(`${baseUrl}&offset=${offset}`);
 
       if (httpError !== undefined) {
         lastError = httpError === 0
-          ? `Error de red/timeout en ML API (strategy: ${baseUrl.split("?")[1]?.slice(0, 60)})`
+          ? "Error de red/timeout en ML API"
           : `HTTP ${httpError} en ML API`;
-        // Para errores HTTP fatales, no tiene sentido probar más estrategias
         if (httpError === 403 || httpError === 429 || httpError === 503) {
           throw new Error(`MercadoLibre: ${lastError}`);
         }
-        break; // Para otros errores, intentar siguiente estrategia
+        break;
       }
 
       if (!items.length) break;
@@ -162,9 +125,7 @@ export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
       if (offset >= Math.min(total, maxItems)) break;
     }
 
-    if (strategyResults.length > 0) {
-      return strategyResults;
-    }
+    if (strategyResults.length > 0) return strategyResults;
   }
 
   if (lastError) throw new Error(`MercadoLibre: ${lastError}`);

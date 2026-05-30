@@ -103,8 +103,8 @@ export async function GET(req: NextRequest) {
 
   // ── 6. Test ML API directamente ──────────────────────────────────────────
   const mlTestUrls = [
-    "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&state=TUxBUFNBTjI3MTQ&limit=1",
-    "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&q=Rosario&limit=1",
+    "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&item_location=lat:-33.0394_-32.8717,lon:-60.7961_-60.6122&limit=1",
+    "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&city=TUxBQUMxMjg3NTU&limit=1",
   ];
   const mlTests: Record<string, any> = {};
   for (const url of mlTestUrls) {
