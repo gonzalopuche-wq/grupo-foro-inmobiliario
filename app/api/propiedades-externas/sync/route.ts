@@ -13,11 +13,12 @@ import { getIp } from "../../../lib/ratelimit";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
+// GFI y Propia van primero (sync local/rápido), externos lentos al final
 const PORTALES = [
-  "mercadolibre", "zonaprop", "argenprop", "properati",
   "gfi_red", "gfi_portal",
-  "kiteprop", "tokko",
   "propia_red", "propia_portal",
+  "kiteprop", "tokko",
+  "mercadolibre", "zonaprop", "argenprop", "properati",
 ] as const;
 type Portal = (typeof PORTALES)[number];
 
@@ -107,13 +108,18 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // ── Propia.com.ar: MLS y Portal en un solo fetch ──────────────────────
-      if (portal === "propia_red" || portal === "propia_portal") {
+      // ── Propia.com.ar: MLS y Portal en un solo fetch (evita doble llamada) ──
+      if (portal === "propia_red") {
         const { mls, portal: portalItems } = await syncPropiaRed();
         const mlsI    = await upsertBatch(auth.sb, mls,         "propia_red");
         const portalI = await upsertBatch(auth.sb, portalItems, "propia_portal");
         resultados["propia_red"]    = { importados: mlsI };
         resultados["propia_portal"] = { importados: portalI };
+        continue;
+      }
+      // propia_portal se maneja junto con propia_red — saltear si ya fue procesado
+      if (portal === "propia_portal") {
+        if (!resultados["propia_portal"]) resultados["propia_portal"] = { importados: 0 };
         continue;
       }
 
