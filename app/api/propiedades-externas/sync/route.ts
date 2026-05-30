@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
       else if (portal === "gfi_portal") items = await syncGFIPortal();
 
       if (!items.length) {
-        resultados[portal] = { importados: 0, error: "Sin resultados del portal" };
+        resultados[portal] = { importados: 0, error: "Portal sin resultados (0 propiedades encontradas)" };
         continue;
       }
 

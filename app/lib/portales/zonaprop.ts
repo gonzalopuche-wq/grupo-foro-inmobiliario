@@ -1,14 +1,20 @@
 // Zonaprop scraper — extrae __NEXT_DATA__ JSON del HTML
+// NOTA: Zonaprop bloquea IPs de datacenter (Cloudflare). Si retorna 0 es probable bloqueo.
 // URL pattern: /departamentos-venta-rosario-pagina-N.html
-import { PropExtNorm, normalizeTipo, normalizeOperacion, parseNum } from "./types";
+import { PropExtNorm, normalizeTipo, parseNum } from "./types";
 
 const ZP_BASE = "https://www.zonaprop.com.ar";
 const ZP_HEADERS = {
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
   "Accept-Language": "es-AR,es;q=0.9,en;q=0.8",
   "Accept-Encoding": "gzip, deflate, br",
   "Cache-Control": "no-cache",
+  "Pragma": "no-cache",
+  "Sec-Fetch-Dest": "document",
+  "Sec-Fetch-Mode": "navigate",
+  "Sec-Fetch-Site": "none",
+  "Upgrade-Insecure-Requests": "1",
   "Referer": "https://www.zonaprop.com.ar/",
 };
 
@@ -31,7 +37,6 @@ function extractNextData(html: string): any {
 }
 
 function extractPostings(nextData: any): any[] {
-  // Intentar múltiples rutas conocidas de Zonaprop
   const pp = nextData?.props?.pageProps;
   const paths = [
     pp?.initialData?.postings,
@@ -87,33 +92,55 @@ function normalizeZP(item: any, operacion: string, tipo: string): PropExtNorm {
   };
 }
 
-async function fetchPage(url: string): Promise<any[]> {
+async function fetchPage(url: string): Promise<{ items: any[]; httpStatus: number }> {
   try {
-    const res = await fetch(url, { headers: ZP_HEADERS, next: { revalidate: 0 } });
-    if (!res.ok) return [];
+    const res = await fetch(url, {
+      headers: ZP_HEADERS,
+      next: { revalidate: 0 },
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!res.ok) return { items: [], httpStatus: res.status };
     const html = await res.text();
     const nextData = extractNextData(html);
-    if (!nextData) return [];
-    return extractPostings(nextData);
-  } catch {
-    return [];
+    if (!nextData) return { items: [], httpStatus: -1 }; // -1 = sin __NEXT_DATA__
+    return { items: extractPostings(nextData), httpStatus: 200 };
+  } catch (e: any) {
+    return { items: [], httpStatus: -2 }; // -2 = error de red
   }
 }
 
 export async function syncZonaprop(maxPerCombo = 2): Promise<PropExtNorm[]> {
   const results: PropExtNorm[] = [];
+  let lastError: string | null = null;
 
-  for (const { tipoSlug, tipo } of SLUGS) {
+  outer: for (const { tipoSlug, tipo } of SLUGS) {
     for (const { opSlug, operacion } of OPS) {
       for (let page = 1; page <= maxPerCombo; page++) {
         const suffix = page > 1 ? `-pagina-${page}` : "";
         const url = `${ZP_BASE}/${tipoSlug}-${opSlug}-rosario${suffix}.html`;
-        const items = await fetchPage(url);
+        const { items, httpStatus } = await fetchPage(url);
+
+        if (httpStatus === 403 || httpStatus === 429 || httpStatus === 503) {
+          lastError = `HTTP ${httpStatus} (bloqueado por Zonaprop desde IPs de datacenter)`;
+          break outer;
+        }
+        if (httpStatus === -1) {
+          lastError = "Sin __NEXT_DATA__ en HTML (estructura del portal cambió)";
+          break outer;
+        }
+        if (httpStatus === -2) {
+          lastError = "Error de red al conectar con Zonaprop";
+          break outer;
+        }
         if (!items.length) break;
         for (const item of items) results.push(normalizeZP(item, operacion, tipo));
         if (items.length < 20) break;
       }
     }
+  }
+
+  if (results.length === 0 && lastError) {
+    throw new Error(`Zonaprop: ${lastError}`);
   }
 
   return results;

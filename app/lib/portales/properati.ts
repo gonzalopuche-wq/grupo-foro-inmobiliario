@@ -1,12 +1,17 @@
-// Properati scraper — plataforma de LIFULL Connect
-// Menor volumen en Rosario; misma técnica __NEXT_DATA__
+// Properati scraper — plataforma de LIFULL Connect (ahora parte del grupo ML)
+// NOTA: Properati bloquea IPs de datacenter igual que Zonaprop/Argenprop.
 import { PropExtNorm, normalizeTipo, parseNum } from "./types";
 
 const PP_BASE = "https://www.properati.com.ar";
 const PP_HEADERS = {
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
   "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
   "Accept-Language": "es-AR,es;q=0.9",
+  "Accept-Encoding": "gzip, deflate, br",
+  "Sec-Fetch-Dest": "document",
+  "Sec-Fetch-Mode": "navigate",
+  "Sec-Fetch-Site": "none",
+  "Upgrade-Insecure-Requests": "1",
   "Referer": "https://www.properati.com.ar/",
 };
 
@@ -71,19 +76,35 @@ function normalizePP(item: any, operacion: string): PropExtNorm {
 
 export async function syncProperati(): Promise<PropExtNorm[]> {
   const results: PropExtNorm[] = [];
+  let lastError: string | null = null;
 
   for (const { url, operacion } of SEARCHES) {
     try {
-      const res = await fetch(url, { headers: PP_HEADERS, next: { revalidate: 0 } });
-      if (!res.ok) continue;
+      const res = await fetch(url, {
+        headers: PP_HEADERS,
+        next: { revalidate: 0 },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!res.ok) {
+        lastError = `HTTP ${res.status} (bloqueado por Properati desde IPs de datacenter)`;
+        if (res.status === 403 || res.status === 429 || res.status === 503) break;
+        continue;
+      }
       const html = await res.text();
       const nextData = extractNextData(html);
-      if (!nextData) continue;
+      if (!nextData) {
+        lastError = "Sin __NEXT_DATA__ en HTML (estructura del portal cambió)";
+        continue;
+      }
       const items = extractListings(nextData);
       for (const item of items) results.push(normalizePP(item, operacion));
-    } catch {
-      // Portal no disponible — no bloquea el sync general
+    } catch (e: any) {
+      lastError = e?.message ?? "Error de red";
     }
+  }
+
+  if (results.length === 0 && lastError) {
+    throw new Error(`Properati: ${lastError}`);
   }
 
   return results;

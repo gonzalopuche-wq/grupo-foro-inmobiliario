@@ -3,12 +3,8 @@
 import { PropExtNorm, normalizeTipo, normalizeOperacion, parseNum } from "./types";
 
 const ML_API = "https://api.mercadolibre.com";
-
-// MLA1459 = Inmuebles Argentina (root, cubre venta + alquiler)
-const ML_CATEGORY = "MLA1459";
-
-// Estado Santa Fe (base64 del ID interno de ML)
-const ML_STATE_SANTA_FE = "TUxBUFNBTjI3MTQ";
+const ML_CATEGORY = "MLA1459"; // Inmuebles Argentina
+const ML_SITE = "MLA";
 
 function getAttr(attrs: Array<{ id: string; value_name?: string }>, id: string): string | null {
   return attrs?.find(a => a.id === id)?.value_name ?? null;
@@ -24,7 +20,10 @@ function normalizeML(item: Record<string, any>): PropExtNorm {
 
   const imagenes: string[] = [];
   if (Array.isArray(item.pictures)) {
-    for (const p of item.pictures) imagenes.push(p.secure_url ?? p.url ?? "");
+    for (const p of item.pictures) {
+      const url = p.secure_url ?? p.url ?? "";
+      if (url) imagenes.push(url);
+    }
   } else if (item.thumbnail) {
     imagenes.push(item.thumbnail);
   }
@@ -41,7 +40,7 @@ function normalizeML(item: Record<string, any>): PropExtNorm {
     banos: parseNum(getAttr(attrs, "BATHROOMS")),
     ambientes: parseNum(getAttr(attrs, "ROOMS")),
     superficie_cubierta: supCubierta,
-    sup_terreno: supTotal ?? (supCubierta ? null : parseNum(getAttr(attrs, "LOT_AREA")?.replace(/[^\d.]/g, "") ?? null)),
+    sup_terreno: supTotal ?? parseNum(getAttr(attrs, "LOT_AREA")?.replace(/[^\d.]/g, "") ?? null),
     expensas: null,
     barrio: item.location?.neighborhood?.name ?? null,
     ciudad: item.location?.city?.name ?? "Rosario",
@@ -55,42 +54,72 @@ function normalizeML(item: Record<string, any>): PropExtNorm {
   };
 }
 
+async function fetchMLPage(url: string): Promise<{ items: any[]; total: number; httpStatus?: number }> {
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; GFI-Sync/1.0)" },
+      next: { revalidate: 0 },
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!res.ok) return { items: [], total: 0, httpStatus: res.status };
+    const data = await res.json();
+    return {
+      items: data.results ?? [],
+      total: data.paging?.total ?? 0,
+    };
+  } catch (e: any) {
+    return { items: [], total: 0, httpStatus: 0 };
+  }
+}
+
 export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
   const results: PropExtNorm[] = [];
   const perPage = 50;
 
-  // Primero intentar filtrar por estado Santa Fe; si da 0, buscar con q=Rosario
+  // Estrategias en orden de especificidad: ciudad → estado → búsqueda libre
   const strategies = [
-    `${ML_API}/sites/MLA/search?category=${ML_CATEGORY}&state=${ML_STATE_SANTA_FE}&limit=${perPage}`,
-    `${ML_API}/sites/MLA/search?category=${ML_CATEGORY}&q=Rosario+Santa+Fe&limit=${perPage}`,
+    // Ciudad de Rosario directa — más preciso
+    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&q=Rosario+Santa+Fe&limit=${perPage}`,
+    // Solo departamento Santa Fe
+    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&state=TUxBUFNBTjI3MTQ&limit=${perPage}`,
+    // Búsqueda sin filtros geográficos para propiedades en Rosario
+    `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&q=Rosario&limit=${perPage}`,
   ];
 
-  for (const baseUrl of strategies) {
+  let lastError: string | null = null;
+
+  outer: for (const baseUrl of strategies) {
     let offset = 0;
-    while (results.length < maxItems) {
+    const strategyResults: PropExtNorm[] = [];
+
+    while (strategyResults.length < maxItems) {
       const url = `${baseUrl}&offset=${offset}`;
-      try {
-        const res = await fetch(url, {
-          headers: { "User-Agent": "GFI-Sync/1.0" },
-          next: { revalidate: 0 },
-        });
-        if (!res.ok) break;
-        const data = await res.json();
-        const items: any[] = data.results ?? [];
-        if (!items.length) break;
+      const { items, total, httpStatus } = await fetchMLPage(url);
 
-        for (const item of items) {
-          results.push(normalizeML(item));
-        }
-
-        const paging = data.paging ?? {};
-        offset += perPage;
-        if (offset >= Math.min(paging.total ?? 0, maxItems)) break;
-      } catch {
-        break;
+      if (httpStatus !== undefined) {
+        lastError = httpStatus === 0
+          ? "Error de red o timeout en ML API"
+          : `HTTP ${httpStatus} en ML API`;
+        break outer;
       }
+      if (!items.length) break;
+
+      for (const item of items) {
+        strategyResults.push(normalizeML(item));
+      }
+
+      offset += perPage;
+      if (offset >= Math.min(total, maxItems)) break;
     }
-    if (results.length > 0) break; // Primera estrategia exitosa, no continuar
+
+    if (strategyResults.length > 0) {
+      results.push(...strategyResults);
+      break;
+    }
+  }
+
+  if (results.length === 0 && lastError) {
+    throw new Error(`MercadoLibre: ${lastError}`);
   }
 
   return results;
