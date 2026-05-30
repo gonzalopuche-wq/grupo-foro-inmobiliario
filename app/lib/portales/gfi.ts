@@ -46,8 +46,8 @@ function mapearPropiedad(p: any, portal: "gfi_red" | "gfi_portal"): PropExtNorm 
     ciudad: p.ciudad ?? "Rosario",
     provincia: p.provincia ?? "Santa Fe",
     direccion: p.direccion ?? null,
-    lat: parseNum(p.lat),
-    lng: parseNum(p.lng),
+    lat: parseNum(p.latitud),
+    lng: parseNum(p.longitud),
     imagenes: normalizarImagenes(p.fotos),
     descripcion: p.descripcion ?? null,
     datos_raw: { codigo: p.codigo, perfil_id: p.perfil_id },
@@ -62,7 +62,7 @@ export async function syncGFIRed(): Promise<PropExtNorm[]> {
 
   const { data, error } = await sb
     .from("cartera_propiedades")
-    .select("id,titulo,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,fotos,codigo,estado,provincia,direccion,lat,lng,descripcion,perfil_id")
+    .select("id,titulo,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,fotos,codigo,estado,provincia,direccion,latitud,longitud,descripcion,perfil_id")
     .in("estado", ["activa", "reservada"])
     .order("created_at", { ascending: false })
     .limit(500);
@@ -79,7 +79,7 @@ export async function syncGFIPortal(): Promise<PropExtNorm[]> {
 
   const { data, error } = await sb
     .from("cartera_propiedades")
-    .select("id,titulo,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,fotos,codigo,estado,provincia,direccion,lat,lng,descripcion,perfil_id")
+    .select("id,titulo,operacion,tipo,precio,moneda,ciudad,zona,dormitorios,banos,ambientes,superficie_cubierta,sup_terreno,expensas,fotos,codigo,estado,provincia,direccion,latitud,longitud,descripcion,perfil_id")
     .eq("estado", "activa")
     .order("created_at", { ascending: false })
     .limit(500);
