@@ -15,7 +15,7 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function upsert(items: any[], portal: string) {
+async function upsert(items: any[], portal: string): Promise<number> {
   let ok = 0;
   const BATCH = 50;
   const now = new Date().toISOString();
@@ -29,7 +29,8 @@ async function upsert(items: any[], portal: string) {
     const { error } = await sb
       .from("propiedades_externas")
       .upsert(batch, { onConflict: "portal,portal_id" });
-    if (!error) ok += batch.length;
+    if (error) throw new Error(`Upsert ${portal}: ${error.message}`);
+    ok += batch.length;
   }
   return ok;
 }

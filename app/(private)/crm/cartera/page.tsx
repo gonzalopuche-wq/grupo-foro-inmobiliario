@@ -1804,6 +1804,18 @@ export default function CarteraPage() {
                   {sincronizandoExt ? "⏳ Sincronizando..." : "↻ Sincronizar"}
                 </button>
               )}
+              {esAdmin && (
+                <button
+                  onClick={async () => {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const res = await fetch("/api/propiedades-externas/diagnostico", { headers: { Authorization: `Bearer ${session?.access_token}` } });
+                    const json = await res.json();
+                    alert(JSON.stringify(json, null, 2));
+                  }}
+                  style={{ padding: "6px 12px", borderRadius: 4, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                  title="Ver diagnóstico de sync"
+                >🔍</button>
+              )}
             </div>
 
             {/* Filtros */}
@@ -1833,7 +1845,17 @@ export default function CarteraPage() {
               <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", alignSelf: "center", marginLeft: "auto" }}>{totalExternas.toLocaleString("es-AR")} propiedades</span>
               {ultimaSyncExt && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.18)", alignSelf: "center" }}>Sync: {new Date(ultimaSyncExt).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>}
             </div>
-
+            {/* Errores de sync por portal */}
+            {syncResultados && Object.entries(syncResultados).some(([, r]: any) => r.error) && (
+              <div style={{ marginBottom: 12, padding: "10px 14px", background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#ef4444", fontFamily: "Montserrat,sans-serif", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>⚠ Errores en sync</div>
+                {Object.entries(syncResultados).filter(([, r]: any) => r.error).map(([portal, r]: any) => (
+                  <div key={portal} style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif", marginBottom: 3 }}>
+                    <span style={{ color: "#f87171", fontWeight: 600 }}>{portal}:</span> {r.error}
+                  </div>
+                ))}
+              </div>
+            )}
             {/* Cards */}
             {loadingExternas ? (
               <div style={{ padding: "40px 20px", textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Cargando propiedades...</div>
@@ -1862,7 +1884,7 @@ export default function CarteraPage() {
                     const opLabel = p.operacion === "alquiler_temporal" ? "Alq. temp." : p.operacion;
                     const ubicacion = [p.barrio, p.ciudad].filter(Boolean).join(", ");
                     return (
-                      <a key={p.id} href={p.url || undefined} target={p.url ? "_blank" : undefined} rel="noopener noreferrer" style={{ textDecoration: "none", cursor: p.url ? "pointer" : "default" }}>
+                      <a key={p.id} href={p.url || undefined} target={p.url && (p.url.startsWith("http://") || p.url.startsWith("https://")) ? "_blank" : undefined} rel="noopener noreferrer" style={{ textDecoration: "none", cursor: p.url ? "pointer" : "default" }}>
                         <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "border-color 0.15s, box-shadow 0.15s" }}
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.18)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.5)"; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
