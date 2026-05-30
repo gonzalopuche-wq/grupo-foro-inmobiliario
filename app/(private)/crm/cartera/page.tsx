@@ -1820,8 +1820,17 @@ export default function CarteraPage() {
                     const porEstado = JSON.stringify(diag.cartera_propiedades?.por_estado ?? {});
                     const gfiQuery = diag.gfi_query?.error ?? "OK";
 
+                    // Mostrar test ML API
+                    const mlTests = diag.ml_api_test ?? {};
+                    const mlLines = Object.entries(mlTests).map(([url, r]: [string, any]) => {
+                      const key = url.includes("state=") ? "ML (state)" : "ML (q=Rosario)";
+                      if (r.error) return `${key}: ERROR - ${r.error}`;
+                      if (r.httpStatus && r.httpStatus !== 200) return `${key}: HTTP ${r.httpStatus} (BLOQUEADO)`;
+                      return `${key}: ✅ ${r.paging?.total ?? 0} propiedades (page=${r.results_count})`;
+                    }).join("\n");
+
                     if (portalesFail.length === 0) {
-                      alert(`✅ Constraint OK\nPortales habilitados: ${portalesOk.join(", ")}\n\nCartera: ${carteraTotal} propiedades\nPor estado: ${porEstado}\nQuery GFI: ${gfiQuery}\nKeys: ${JSON.stringify(diag.keys_configuradas)}`);
+                      alert(`✅ Constraint OK\nPortales habilitados: ${portalesOk.join(", ")}\n\nCartera GFI: ${carteraTotal} propiedades\nPor estado: ${porEstado}\nQuery GFI: ${gfiQuery}\nKeys: ${JSON.stringify(diag.keys_configuradas)}\n\n═══ TEST ML API ═══\n${mlLines || "No testeado"}`);
                       return;
                     }
 
