@@ -113,7 +113,7 @@ export async function syncZonaprop(maxPerCombo = 2): Promise<PropExtNorm[]> {
   const results: PropExtNorm[] = [];
   let lastError: string | null = null;
 
-  for (const { tipoSlug, tipo } of SLUGS) {
+  outer: for (const { tipoSlug, tipo } of SLUGS) {
     for (const { opSlug, operacion } of OPS) {
       for (let page = 1; page <= maxPerCombo; page++) {
         const suffix = page > 1 ? `-pagina-${page}` : "";
@@ -122,15 +122,15 @@ export async function syncZonaprop(maxPerCombo = 2): Promise<PropExtNorm[]> {
 
         if (httpStatus === 403 || httpStatus === 429 || httpStatus === 503) {
           lastError = `HTTP ${httpStatus} (bloqueado por Zonaprop desde IPs de datacenter)`;
-          break;
+          break outer;
         }
         if (httpStatus === -1) {
           lastError = "Sin __NEXT_DATA__ en HTML (estructura del portal cambió)";
-          break;
+          break outer;
         }
         if (httpStatus === -2) {
           lastError = "Error de red al conectar con Zonaprop";
-          break;
+          break outer;
         }
         if (!items.length) break;
         for (const item of items) results.push(normalizeZP(item, operacion, tipo));

@@ -88,7 +88,7 @@ export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
 
   let lastError: string | null = null;
 
-  for (const baseUrl of strategies) {
+  outer: for (const baseUrl of strategies) {
     let offset = 0;
     const strategyResults: PropExtNorm[] = [];
 
@@ -96,9 +96,11 @@ export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
       const url = `${baseUrl}&offset=${offset}`;
       const { items, total, httpStatus } = await fetchMLPage(url);
 
-      if (httpStatus !== undefined && httpStatus !== 0) {
-        lastError = `HTTP ${httpStatus} en ML API`;
-        break;
+      if (httpStatus !== undefined) {
+        lastError = httpStatus === 0
+          ? "Error de red o timeout en ML API"
+          : `HTTP ${httpStatus} en ML API`;
+        break outer;
       }
       if (!items.length) break;
 

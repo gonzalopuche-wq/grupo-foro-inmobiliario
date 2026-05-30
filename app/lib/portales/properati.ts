@@ -87,6 +87,7 @@ export async function syncProperati(): Promise<PropExtNorm[]> {
       });
       if (!res.ok) {
         lastError = `HTTP ${res.status} (bloqueado por Properati desde IPs de datacenter)`;
+        if (res.status === 403 || res.status === 429 || res.status === 503) break;
         continue;
       }
       const html = await res.text();
