@@ -1,13 +1,16 @@
-// Mercado Libre official REST API — no auth required for searches
+// Mercado Libre official REST API
 // Docs: https://developers.mercadolibre.com.ar/en_us/locate-property
+//
+// Para funcionar desde Vercel: registrar app en developers.mercadolibre.com.ar
+// y guardar en crm_integraciones_config: { tipo: "mercadolibre", config: { access_token: "APP_USR-..." } }
+import { createClient } from "@supabase/supabase-js";
 import { PropExtNorm, normalizeTipo, normalizeOperacion, parseNum } from "./types";
 
 const ML_API = "https://api.mercadolibre.com";
 const ML_CATEGORY = "MLA1459"; // Inmuebles Argentina
 const ML_SITE = "MLA";
-const ML_HEADERS = { "User-Agent": "Mozilla/5.0 (compatible; GFI-Sync/1.0)" };
 
-// Bounding box de Rosario, Santa Fe (oficialmente documentado por ML para item_location)
+// Bounding box de Rosario, Santa Fe (método oficial ML para inmuebles)
 const ROSARIO_LAT = "-33.0394_-32.8717";
 const ROSARIO_LON = "-60.7961_-60.6122";
 
@@ -59,41 +62,69 @@ function normalizeML(item: Record<string, any>): PropExtNorm {
   };
 }
 
-async function mlGet(url: string): Promise<{ ok: boolean; data?: any; status: number }> {
+async function getMLAccessToken(): Promise<string | null> {
   try {
-    const res = await fetch(url, {
-      headers: ML_HEADERS,
-      next: { revalidate: 0 },
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!res.ok) return { ok: false, status: res.status };
-    return { ok: true, data: await res.json(), status: res.status };
+    const sb = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    const { data } = await sb
+      .from("crm_integraciones_config")
+      .select("config")
+      .eq("tipo", "mercadolibre")
+      .eq("activo", true)
+      .limit(1)
+      .single();
+    return (data?.config as any)?.access_token ?? null;
   } catch {
-    return { ok: false, status: 0 };
+    return null;
   }
 }
 
-async function fetchPageItems(url: string): Promise<{
-  items: any[];
-  total: number;
-  httpError?: number;
-}> {
-  const { ok, data, status } = await mlGet(url);
-  if (!ok) return { items: [], total: 0, httpError: status };
-  return { items: data?.results ?? [], total: data?.paging?.total ?? 0 };
+function buildHeaders(accessToken: string | null): Record<string, string> {
+  const headers: Record<string, string> = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "es-AR,es;q=0.9",
+    "Referer": "https://www.mercadolibre.com.ar/",
+    "Origin": "https://www.mercadolibre.com.ar",
+  };
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+  return headers;
+}
+
+async function fetchPageItems(
+  url: string,
+  headers: Record<string, string>
+): Promise<{ items: any[]; total: number; httpError?: number }> {
+  try {
+    const res = await fetch(url, {
+      headers,
+      next: { revalidate: 0 },
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!res.ok) return { items: [], total: 0, httpError: res.status };
+    const data = await res.json();
+    return { items: data?.results ?? [], total: data?.paging?.total ?? 0 };
+  } catch {
+    return { items: [], total: 0, httpError: 0 };
+  }
 }
 
 export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
   const perPage = 50;
+  const accessToken = await getMLAccessToken();
+  const headers = buildHeaders(accessToken);
 
   // Estrategias en orden de confiabilidad:
-  // 1. item_location (bounding box) — método oficialmente documentado por ML para inmuebles
-  // 2. city ID de Rosario (MLAC128755 encoded) — filtro por ciudad
-  // 3. Santa Fe state IDs candidatos (12 chars cada uno, formato correcto de estado)
+  // 1. item_location (bounding box) — método oficial ML para inmuebles
+  // 2. city ID de Rosario (MLAC128755)
+  // 3/4. state IDs candidatos de Santa Fe (12 chars — formato correcto)
   const strategies = [
     `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&item_location=lat:${ROSARIO_LAT},lon:${ROSARIO_LON}&limit=${perPage}`,
     `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&city=TUxBQUMxMjg3NTU&limit=${perPage}`,
-    // IDs candidatos de Santa Fe (12 chars — formato correcto de estado en ML)
     `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&state=TUxBUFNBTmU5Nzk2&limit=${perPage}`,
     `${ML_API}/sites/${ML_SITE}/search?category=${ML_CATEGORY}&state=TUxBUFNBTm5lYjU4&limit=${perPage}`,
   ];
@@ -105,12 +136,18 @@ export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
     let offset = 0;
 
     while (strategyResults.length < maxItems) {
-      const { items, total, httpError } = await fetchPageItems(`${baseUrl}&offset=${offset}`);
+      const { items, total, httpError } = await fetchPageItems(
+        `${baseUrl}&offset=${offset}`,
+        headers
+      );
 
       if (httpError !== undefined) {
+        const hint = httpError === 403 && !accessToken
+          ? " — registrar app en developers.mercadolibre.com.ar para obtener access_token"
+          : "";
         lastError = httpError === 0
           ? "Error de red/timeout en ML API"
-          : `HTTP ${httpError} en ML API`;
+          : `HTTP ${httpError} en ML API${hint}`;
         if (httpError === 403 || httpError === 429 || httpError === 503) {
           throw new Error(`MercadoLibre: ${lastError}`);
         }
@@ -118,7 +155,6 @@ export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
       }
 
       if (!items.length) break;
-
       for (const item of items) strategyResults.push(normalizeML(item));
 
       offset += perPage;
