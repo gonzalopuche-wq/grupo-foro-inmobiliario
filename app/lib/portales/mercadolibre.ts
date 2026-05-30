@@ -63,6 +63,14 @@ function normalizeML(item: Record<string, any>): PropExtNorm {
 }
 
 async function getMLAccessToken(): Promise<string | null> {
+  // Primero: env vars de Vercel (más seguro)
+  const envClientId = process.env.ML_CLIENT_ID;
+  const envClientSecret = process.env.ML_CLIENT_SECRET;
+  if (envClientId && envClientSecret) {
+    return fetchMLToken(envClientId, envClientSecret);
+  }
+
+  // Fallback: crm_integraciones_config en Supabase
   try {
     const sb = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -78,22 +86,25 @@ async function getMLAccessToken(): Promise<string | null> {
 
     const cfg = data?.config as any;
     if (!cfg) return null;
-
-    // Si tiene access_token directo, usarlo
     if (cfg.access_token) return cfg.access_token as string;
-
-    // Si tiene client_id + client_secret, obtener token automáticamente
     if (cfg.client_id && cfg.client_secret) {
-      const res = await fetch(
-        `https://api.mercadolibre.com/oauth/token?grant_type=client_credentials&client_id=${cfg.client_id}&client_secret=${cfg.client_secret}`,
-        { method: "POST", signal: AbortSignal.timeout(10000) }
-      );
-      if (!res.ok) return null;
-      const tokenData = await res.json();
-      return tokenData.access_token ?? null;
+      return fetchMLToken(cfg.client_id, cfg.client_secret);
     }
-
     return null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchMLToken(clientId: string, clientSecret: string): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://api.mercadolibre.com/oauth/token?grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`,
+      { method: "POST", signal: AbortSignal.timeout(10000) }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.access_token ?? null;
   } catch {
     return null;
   }
