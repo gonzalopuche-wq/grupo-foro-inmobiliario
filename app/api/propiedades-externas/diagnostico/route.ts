@@ -101,7 +101,42 @@ export async function GET(req: NextRequest) {
   }
   resultados.constraint_portales = constraintOk;
 
-  // ── 6. Test ML API directamente ──────────────────────────────────────────
+  // ── 6. Test token ML + API ────────────────────────────────────────────────
+  const mlClientId = process.env.ML_CLIENT_ID ?? null;
+  const mlClientSecret = process.env.ML_CLIENT_SECRET ?? null;
+  resultados.ml_env_vars = {
+    ML_CLIENT_ID: mlClientId ? `configurado (${mlClientId.slice(0, 6)}...)` : "NO configurado",
+    ML_CLIENT_SECRET: mlClientSecret ? "configurado" : "NO configurado",
+  };
+
+  let mlToken: string | null = null;
+  if (mlClientId && mlClientSecret) {
+    try {
+      const tokenRes = await fetch(
+        `https://api.mercadolibre.com/oauth/token?grant_type=client_credentials&client_id=${mlClientId}&client_secret=${mlClientSecret}`,
+        { method: "POST", signal: AbortSignal.timeout(10000) }
+      );
+      if (tokenRes.ok) {
+        const td = await tokenRes.json();
+        mlToken = td.access_token ?? null;
+        resultados.ml_token = mlToken ? "✅ Token obtenido OK" : `❌ Sin access_token en respuesta: ${JSON.stringify(td).slice(0, 200)}`;
+      } else {
+        const errBody = await tokenRes.text();
+        resultados.ml_token = `❌ HTTP ${tokenRes.status}: ${errBody.slice(0, 300)}`;
+      }
+    } catch (e: any) {
+      resultados.ml_token = `❌ Error: ${e?.message}`;
+    }
+  } else {
+    resultados.ml_token = "⚠️ No se puede probar — env vars no configuradas";
+  }
+
+  const mlHeaders: Record<string, string> = {
+    "User-Agent": "Mozilla/5.0 (compatible; GFI-Sync/1.0)",
+    "Accept": "application/json",
+  };
+  if (mlToken) mlHeaders["Authorization"] = `Bearer ${mlToken}`;
+
   const mlTestUrls = [
     "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&item_location=lat:-33.0394_-32.8717,lon:-60.7961_-60.6122&limit=1",
     "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&city=TUxBQUMxMjg3NTU&limit=1",
@@ -109,10 +144,7 @@ export async function GET(req: NextRequest) {
   const mlTests: Record<string, any> = {};
   for (const url of mlTestUrls) {
     try {
-      const res = await fetch(url, {
-        headers: { "User-Agent": "Mozilla/5.0 (compatible; GFI-Sync/1.0)" },
-        signal: AbortSignal.timeout(15000),
-      });
+      const res = await fetch(url, { headers: mlHeaders, signal: AbortSignal.timeout(15000) });
       if (!res.ok) {
         mlTests[url] = { httpStatus: res.status, error: `HTTP ${res.status}` };
         continue;
