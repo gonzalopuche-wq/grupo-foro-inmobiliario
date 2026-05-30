@@ -55,6 +55,10 @@
     {
       "path": "/api/cron/sync-phones-cocir",
       "schedule": "0 5 * * 1"
+    },
+    {
+      "path": "/api/cron/sync-propiedades-externas",
+      "schedule": "0 3 * * *"
     }
   ]
 }
