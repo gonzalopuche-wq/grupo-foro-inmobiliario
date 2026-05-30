@@ -101,5 +101,53 @@ export async function GET(req: NextRequest) {
   }
   resultados.constraint_portales = constraintOk;
 
+  // ── 6. Test ML API directamente ──────────────────────────────────────────
+  const mlTestUrls = [
+    "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&state=TUxBUFNBTjI3MTQ&limit=1",
+    "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&q=Rosario&limit=1",
+  ];
+  const mlTests: Record<string, any> = {};
+  for (const url of mlTestUrls) {
+    try {
+      const res = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; GFI-Sync/1.0)" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!res.ok) {
+        mlTests[url] = { httpStatus: res.status, error: `HTTP ${res.status}` };
+        continue;
+      }
+      const data = await res.json();
+      mlTests[url] = {
+        httpStatus: 200,
+        paging: data.paging ?? null,
+        results_count: (data.results ?? []).length,
+        first_title: data.results?.[0]?.title ?? null,
+      };
+    } catch (e: any) {
+      mlTests[url] = { error: e?.message ?? "Error de red" };
+    }
+  }
+  resultados.ml_api_test = mlTests;
+
+  // ── 7. Verificar estados ML ────────────────────────────────────────────────
+  try {
+    const statesRes = await fetch("https://api.mercadolibre.com/classified_locations/states", {
+      signal: AbortSignal.timeout(10000),
+    });
+    if (statesRes.ok) {
+      const statesData = await statesRes.json();
+      const states: any[] = Array.isArray(statesData) ? statesData : (statesData.states ?? []);
+      const santaFe = states.find((s: any) =>
+        s.name?.toLowerCase().includes("santa fe") || s.id?.toString().includes("SANTA")
+      );
+      resultados.ml_santa_fe_state = santaFe ?? `No encontrado entre ${states.slice(0, 3).map((s: any) => s.name).join(", ")}...`;
+    } else {
+      resultados.ml_santa_fe_state = { error: `HTTP ${statesRes.status}` };
+    }
+  } catch (e: any) {
+    resultados.ml_santa_fe_state = { error: e?.message };
+  }
+
   return NextResponse.json(resultados);
 }
