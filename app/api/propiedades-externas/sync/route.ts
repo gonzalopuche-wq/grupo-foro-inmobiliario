@@ -7,6 +7,7 @@ import { syncProperati } from "../../../lib/portales/properati";
 import { syncGFIRed, syncGFIPortal } from "../../../lib/portales/gfi";
 import { syncKitepropRed } from "../../../lib/portales/kiteprop_red";
 import { syncTokkoRed } from "../../../lib/portales/tokko_red";
+import { syncPropiaRed } from "../../../lib/portales/propia_red";
 import { getIp } from "../../../lib/ratelimit";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ const PORTALES = [
   "mercadolibre", "zonaprop", "argenprop", "properati",
   "gfi_red", "gfi_portal",
   "kiteprop", "tokko",
+  "propia_red", "propia_portal",
 ] as const;
 type Portal = (typeof PORTALES)[number];
 
@@ -102,6 +104,16 @@ export async function POST(req: NextRequest) {
         }
 
         resultados[portal] = { importados, cruzadas };
+        continue;
+      }
+
+      // ── Propia.com.ar: MLS y Portal en un solo fetch ──────────────────────
+      if (portal === "propia_red" || portal === "propia_portal") {
+        const { mls, portal: portalItems } = await syncPropiaRed();
+        const mlsI    = await upsertBatch(auth.sb, mls,         "propia_red");
+        const portalI = await upsertBatch(auth.sb, portalItems, "propia_portal");
+        resultados["propia_red"]    = { importados: mlsI };
+        resultados["propia_portal"] = { importados: portalI };
         continue;
       }
 
