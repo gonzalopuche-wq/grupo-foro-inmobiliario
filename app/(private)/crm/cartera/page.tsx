@@ -1804,6 +1804,18 @@ export default function CarteraPage() {
                   {sincronizandoExt ? "⏳ Sincronizando..." : "↻ Sincronizar"}
                 </button>
               )}
+              {esAdmin && (
+                <button
+                  onClick={async () => {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const res = await fetch("/api/propiedades-externas/diagnostico", { headers: { Authorization: `Bearer ${session?.access_token}` } });
+                    const json = await res.json();
+                    alert(JSON.stringify(json, null, 2));
+                  }}
+                  style={{ padding: "6px 12px", borderRadius: 4, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                  title="Ver diagnóstico de sync"
+                >🔍</button>
+              )}
             </div>
 
             {/* Filtros */}
