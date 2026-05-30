@@ -15,6 +15,7 @@ const KP_TIPO: Record<string, string> = {
 function normalizarKP(kp: Record<string, any>): PropExtNorm {
   const imgs: string[] = (kp.images_list ?? kp.photos ?? kp.images ?? kp.fotos ?? [])
     .map((i: any) => {
+      if (!i) return "";
       if (typeof i === "string") return i;
       return i.lg ?? i.original ?? i.url ?? i.image ?? i.src ?? i.thumb ?? "";
     })
