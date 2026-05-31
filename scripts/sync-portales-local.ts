@@ -131,50 +131,61 @@ function normalizeML(item: any): any {
 
 async function syncML(): Promise<any[]> {
   const token = await getMLToken();
-  const headers: Record<string, string> = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Accept": "application/json",
-  };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-    console.log("  🔑 Token ML ok");
-  }
 
-  // Búsqueda por texto: no requiere permisos de categoría especiales
+  // Estrategias de headers: primero sin auth, luego con token
+  const headerSets: Array<{ label: string; headers: Record<string, string> }> = [
+    { label: "sin auth", headers: { "Accept": "application/json" } },
+    { label: "User-Agent", headers: { "User-Agent": "Mozilla/5.0 (compatible; GFI/1.0)", "Accept": "application/json" } },
+    ...(token ? [{ label: "token", headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" } }] : []),
+  ];
+
   const queries = [
-    "departamento venta rosario santa fe",
-    "casa venta rosario santa fe",
-    "departamento alquiler rosario santa fe",
-    "propiedad inmueble rosario",
+    "rosario santa fe inmuebles",
+    "departamento venta rosario",
+    "casa venta rosario",
   ];
 
   const all: any[] = [];
   const seen = new Set<string>();
 
-  for (const q of queries) {
-    const base = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(q)}&limit=50`;
-    let offset = 0;
-    while (all.length < 400) {
-      const res = await fetch(`${base}&offset=${offset}`, { headers });
+  for (const { label, headers } of headerSets) {
+    let anyOk = false;
+    for (const q of queries) {
+      const base = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(q)}&limit=50`;
+      const res = await fetch(`${base}&offset=0`, { headers });
       if (!res.ok) {
         const body = await res.text();
-        console.warn(`  ⚠️ ML HTTP ${res.status} para "${q}": ${body.slice(0, 120)}`);
-        break;
+        console.warn(`  ⚠️ ML [${label}] HTTP ${res.status} para "${q}": ${body.slice(0, 100)}`);
+        continue;
       }
-      const data = await res.json();
-      const items: any[] = data.results ?? [];
-      if (!items.length) break;
-      let added = 0;
-      for (const item of items) {
-        if (seen.has(item.id)) continue;
-        seen.add(item.id);
-        const norm = normalizeML(item);
-        if (norm) { all.push(norm); added++; }
+      anyOk = true;
+      console.log(`  ✅ ML [${label}] funciona para "${q}"`);
+      // Si encontramos headers que funcionan, usarlos para todas las queries
+      for (const q2 of queries) {
+        const base2 = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(q2)}&limit=50`;
+        let offset = 0;
+        while (all.length < 400) {
+          const r2 = await fetch(`${base2}&offset=${offset}`, { headers });
+          if (!r2.ok) break;
+          const data = await r2.json();
+          const items: any[] = data.results ?? [];
+          if (!items.length) break;
+          for (const item of items) {
+            if (seen.has(item.id)) continue;
+            seen.add(item.id);
+            const norm = normalizeML(item);
+            if (norm) all.push(norm);
+          }
+          offset += 50;
+          if (offset >= Math.min(data.paging?.total ?? 0, 400)) break;
+        }
       }
-      offset += 50;
-      if (offset >= Math.min(data.paging?.total ?? 0, 400)) break;
+      break;
     }
+    if (anyOk) break;
   }
+
+  if (!all.length) console.warn("  ⚠️ ML bloqueado en todos los intentos — omitir y usar Zonaprop/Argenprop");
   return all;
 }
 
@@ -214,35 +225,36 @@ async function createStealthBrowser(pw: any) {
 }
 
 async function scrapeNextData(page: any, url: string): Promise<any | null> {
+  // __NEXT_DATA__ está en el HTML server-rendered: no necesita networkidle.
+  // Zonaprop/Argenprop tienen polling/analytics que nunca llegan a networkidle.
   try {
-    // networkidle: espera hasta que no haya requests por 500ms
-    // Esto incluye el tiempo de resolución del challenge de Cloudflare
-    await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
-
-    const title = await page.title().catch(() => "");
-    if (title.toLowerCase().includes("just a moment") || title.toLowerCase().includes("cloudflare")) {
-      console.warn(`    ⚠️ Cloudflare challenge activo, esperando resolución...`);
-      // Esperar a que CF resuelva (normalmente 5-10 seg)
-      await page
-        .waitForFunction(() => !document.title.toLowerCase().includes("just a moment"), { timeout: 30000 })
-        .catch(() => null);
-      await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => null);
-    }
-
-    return await page.evaluate(() => {
-      const el = document.getElementById("__NEXT_DATA__");
-      if (!el?.textContent) return null;
-      try {
-        return JSON.parse(el.textContent);
-      } catch {
-        return null;
-      }
-    });
-  } catch (e: any) {
-    const title = await page.title().catch(() => "?");
-    console.warn(`    ⚠️ Error al cargar "${url.split("?")[0].slice(-60)}" (título: "${title}"): ${e.message?.slice(0, 60)}`);
-    return null;
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
+  } catch {
+    // Si hay timeout en la navegación, el DOM puede igual estar listo — seguimos.
   }
+
+  const title = await page.title().catch(() => "");
+
+  // Si Cloudflare aún está resolviendo, esperar a que cambie el título
+  if (title.toLowerCase().includes("just a moment") || title.toLowerCase().includes("cloudflare")) {
+    console.warn(`    ⚠️ CF challenge (${title}) — esperando resolución...`);
+    await page
+      .waitForFunction(() => !document.title.toLowerCase().includes("just a moment"), { timeout: 30000 })
+      .catch(() => null);
+  }
+
+  const nd = await page.evaluate(() => {
+    const el = document.getElementById("__NEXT_DATA__");
+    if (!el?.textContent) return null;
+    try { return JSON.parse(el.textContent); } catch { return null; }
+  }).catch(() => null);
+
+  if (!nd) {
+    const t = await page.title().catch(() => "?");
+    console.warn(`    ⚠️ Sin NEXT_DATA (título: "${t}")`);
+  }
+
+  return nd;
 }
 
 // ── Zonaprop ──────────────────────────────────────────────────────────────────
