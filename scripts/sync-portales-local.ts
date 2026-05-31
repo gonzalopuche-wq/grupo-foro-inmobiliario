@@ -620,7 +620,7 @@ async function syncArgenprop(): Promise<any[]> {
     { tipo: "departamentos", path: "departamentos" },
     { tipo: "casas", path: "casas" },
     { tipo: "ph", path: "ph" },
-    { tipo: "locales", path: "local-comercial" },
+    { tipo: "locales", path: "locales-comerciales" },
     { tipo: "terrenos", path: "terrenos" },
   ];
   const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
@@ -659,7 +659,13 @@ async function syncArgenprop(): Promise<any[]> {
     await browser.close();
   }
 
-  return all;
+  // Deduplicar por portal_id (misma card puede aparecer en múltiples páginas)
+  const seenAP = new Set<string>();
+  return all.filter(item => {
+    if (seenAP.has(item.portal_id)) return false;
+    seenAP.add(item.portal_id);
+    return true;
+  });
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
