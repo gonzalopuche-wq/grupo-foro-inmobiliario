@@ -188,13 +188,13 @@ function hasListingData(json: any): boolean {
   );
 }
 
-// Navega a una URL y extrae listings del DOM (SSR) o de XHR completados.
-// Usa page.on('requestfinished') en lugar de route/response (más confiable).
+// Navega a una URL y extrae listings del DOM o de XHR.
+// Estrategia: esperar a que aparezca [data-postingid] (React hydration puede tardar),
+// y si no aparece, hacer un dump del DOM para diagnóstico.
 async function scrapeListingsFromPage(page: any, url: string): Promise<any | null> {
   const captured: any[] = [];
   const xhrInfos: string[] = [];
 
-  // Método 1: capturar XHR completados (requestfinished tiene el body completo)
   const reqHandler = async (request: any) => {
     const rt = request.resourceType();
     if (rt !== "xhr" && rt !== "fetch") return;
@@ -216,15 +216,21 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
   } catch {}
 
-  // Esperar a que cargue (manejar CF challenge si apareció)
+  // Esperar si hay CF challenge
   for (let i = 0; i < 30; i++) {
     const t = await page.title().catch(() => "");
     if (t.length > 10 && !t.toLowerCase().includes("just a moment") && !t.toLowerCase().includes("cloudflare")) break;
     await page.waitForTimeout(1000);
   }
-  await page.waitForTimeout(3000);
-  page.off("requestfinished", reqHandler);
 
+  // Esperar hasta que aparezcan las cards de listing (React hydration puede agregar data-postingid después del HTML inicial)
+  try {
+    await page.waitForSelector("[data-postingid], [data-id]", { timeout: 20000 });
+  } catch {
+    // Selector no encontrado en 20s — seguimos con debug
+  }
+
+  page.off("requestfinished", reqHandler);
   const title = await page.title().catch(() => "?");
 
   if (captured.length > 0) {
@@ -232,17 +238,14 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
     return captured[0];
   }
 
-  // Método 2: DOM extraction — listings están en HTML SSR, no en XHR
   const domResult = await page.evaluate(() => {
-    // Zonaprop: usa data-postingid en cada card
     const zpCards = document.querySelectorAll("[data-postingid]");
     if (zpCards.length > 0) {
       const first = zpCards[0] as HTMLElement;
-      const allAttrs = Array.from(first.attributes).map(a => `${a.name}=${a.value.slice(0, 50)}`);
       return {
         type: "zonaprop-dom",
         count: zpCards.length,
-        firstAttrs: allAttrs,
+        firstAttrs: Array.from(first.attributes).map(a => `${a.name}=${a.value.slice(0, 50)}`),
         firstHTML: first.outerHTML.slice(0, 1500),
         postings: Array.from(zpCards).map((card: any) => {
           const attrs: Record<string, string> = {};
@@ -256,7 +259,6 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
       };
     }
 
-    // Argenprop: buscar cards por data-id o article
     const apCards = document.querySelectorAll("[data-id]");
     if (apCards.length > 3) {
       const first = apCards[0] as HTMLElement;
@@ -277,31 +279,60 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
       };
     }
 
-    // Debug: qué hay en el DOM
-    const bodyHTML = document.body?.innerHTML?.slice(0, 2000) || "";
+    // Debug: dump DOM para entender estructura
+    const bodyHTML = document.body?.innerHTML?.slice(0, 5000) || "";
     const dataAttrEls = Array.from(document.querySelectorAll("*"))
       .filter((el: any) => el.getAttribute("data-id") || el.getAttribute("data-postingid") || el.getAttribute("data-property-id"))
       .slice(0, 5)
       .map((el: any) => el.tagName + " " + Array.from(el.attributes).map((a: any) => `${a.name}=${a.value.slice(0,30)}`).join(" "));
-    return { type: "debug", count: 0, dataAttrEls, bodyHTML };
-  }).catch(() => null);
 
-  // Log XHR info para diagnóstico
-  if (xhrInfos.length > 0) {
-    process.stdout.write(`    🔍 XHR completados (${xhrInfos.length}):\n`);
-    for (const info of xhrInfos.slice(0, 6)) process.stdout.write(`       ${info}\n`);
-  }
+    // Buscar scripts inline con datos de listings
+    const inlineScripts = Array.from(document.querySelectorAll("script:not([src])"))
+      .filter(s => {
+        const t = s.textContent || "";
+        return t.includes("postingId") || t.includes("listings") || t.includes("postings") || t.includes("INITIAL");
+      })
+      .map(s => (s.id ? `[${s.id}] ` : "") + (s.textContent || "").slice(0, 400))
+      .slice(0, 3);
+
+    // Buscar globals de window que puedan tener listings
+    const listingGlobals: Record<string, string> = {};
+    try {
+      for (const key of Object.keys(window as any)) {
+        const kl = key.toLowerCase();
+        if (kl.includes("listing") || kl.includes("posting") || kl.includes("initial") || kl.includes("store") || kl.includes("state")) {
+          try {
+            const val = (window as any)[key];
+            if (val && typeof val === "object") listingGlobals[key] = JSON.stringify(val).slice(0, 300);
+          } catch {}
+        }
+      }
+    } catch {}
+
+    return { type: "debug", count: 0, dataAttrEls, bodyHTML, inlineScripts, listingGlobals };
+  }).catch(() => null);
 
   if (domResult?.count > 0) {
     process.stdout.write(`    🔍 DOM: ${domResult.count} cards (${domResult.type})\n`);
     process.stdout.write(`    🔍 Primer card attrs: ${domResult.firstAttrs?.slice(0, 6).join(" | ")}\n`);
-    // Devolver los datos crudos del DOM
     return domResult;
   }
 
   process.stdout.write(`    ⚠️ Sin datos — título: "${title.slice(0, 60)}"\n`);
   if (domResult?.dataAttrEls?.length > 0) {
     process.stdout.write(`    🔍 data-* elements: ${domResult.dataAttrEls.join(" | ")}\n`);
+  }
+  const globKeys = Object.keys(domResult?.listingGlobals ?? {});
+  if (globKeys.length > 0) {
+    process.stdout.write(`    🔍 Window globals: ${globKeys.join(", ")}\n`);
+    for (const k of globKeys.slice(0, 2)) process.stdout.write(`       ${k}: ${domResult.listingGlobals[k]}\n`);
+  }
+  if (domResult?.inlineScripts?.length > 0) {
+    process.stdout.write(`    📄 Inline scripts con listing data:\n`);
+    for (const s of domResult.inlineScripts) process.stdout.write(`       ${s.slice(0, 400)}\n`);
+  }
+  if (domResult?.bodyHTML) {
+    process.stdout.write(`    📄 Body HTML dump:\n${domResult.bodyHTML.slice(0, 3000)}\n`);
   }
   return null;
 }
@@ -465,7 +496,7 @@ async function syncArgenprop(): Promise<any[]> {
     { tipo: "departamentos", path: "departamentos" },
     { tipo: "casas", path: "casas" },
     { tipo: "ph", path: "ph" },
-    { tipo: "locales", path: "locales-comerciales" },
+    { tipo: "locales", path: "local-comercial" },
     { tipo: "terrenos", path: "terrenos" },
   ];
   const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
