@@ -175,26 +175,33 @@ async function createBrowser(pw: any) {
   return { browser, context };
 }
 
-// Navega a una URL e intercepta respuestas JSON que contengan listings.
-// También intenta __NEXT_DATA__ como fallback.
+function hasListingData(json: any): boolean {
+  return !!(
+    (Array.isArray(json.postings) && json.postings.length > 0) ||
+    (Array.isArray(json.initialData?.postings) && json.initialData.postings.length > 0) ||
+    (Array.isArray(json.listingData?.postings) && json.listingData.postings.length > 0) ||
+    (Array.isArray(json.data?.postings) && json.data.postings.length > 0) ||
+    (Array.isArray(json.listings) && json.listings.length > 0) ||
+    (Array.isArray(json.listingResults) && json.listingResults.length > 0) ||
+    (Array.isArray(json.data?.listings) && json.data.listings.length > 0) ||
+    (Array.isArray(json.results) && json.results.length > 0 && json.results[0]?.postingId)
+  );
+}
+
+// Navega a una URL, espera a que el challenge de Cloudflare pase,
+// intercepta TODAS las respuestas JSON y devuelve la que tenga listings.
 async function scrapeListingsFromPage(page: any, url: string): Promise<any | null> {
   const captured: any[] = [];
 
   const onResponse = async (response: any) => {
-    const ct = response.headers()["content-type"] ?? "";
-    if (!ct.includes("json")) return;
+    const status = response.status();
+    if (status < 200 || status >= 300) return;
     try {
-      const json = await response.json();
-      // Aceptar cualquier respuesta que parezca tener listings
-      if (
-        Array.isArray(json.postings) && json.postings.length > 0 ||
-        Array.isArray(json.initialData?.postings) && json.initialData.postings.length > 0 ||
-        Array.isArray(json.listingData?.postings) && json.listingData.postings.length > 0 ||
-        Array.isArray(json.listingResults) && json.listingResults.length > 0 ||
-        Array.isArray(json.listings) && json.listings.length > 0
-      ) {
-        captured.push(json);
-      }
+      const text = await response.text();
+      // Aceptar cualquier texto que empiece con { o [ (no filtrar por content-type)
+      if (!text || (text[0] !== "{" && text[0] !== "[")) return;
+      const json = JSON.parse(text);
+      if (hasListingData(json)) captured.push(json);
     } catch { /* ignorar */ }
   };
 
@@ -202,22 +209,41 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
 
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
-  } catch { /* timeout ok, DOM puede estar listo */ }
+  } catch { /* timeout ok */ }
 
-  // Esperar a que los XHR de listings terminen
-  await page.waitForTimeout(5000);
+  // Polling: esperar a que el challenge de CF pase y la página real cargue (max 35s)
+  for (let i = 0; i < 35; i++) {
+    const title = await page.title().catch(() => "");
+    const cfPasado = title.length > 10 &&
+      !title.toLowerCase().includes("just a moment") &&
+      !title.toLowerCase().includes("cloudflare") &&
+      !title.toLowerCase().includes("attention required");
+    if (cfPasado) break;
+    await page.waitForTimeout(1000);
+  }
+
+  // Esperar a que los XHR de listings completen
+  await page.waitForTimeout(4000);
 
   page.off("response", onResponse);
 
-  // Primero: datos capturados vía XHR
-  if (captured.length > 0) return captured[0];
+  const title = await page.title().catch(() => "");
+  if (captured.length > 0) {
+    process.stdout.write(`    📡 XHR capturado (${title.slice(0, 50)})\n`);
+    return captured[0];
+  }
 
   // Fallback: __NEXT_DATA__
-  return await page.evaluate(() => {
+  const nd = await page.evaluate(() => {
     const el = document.getElementById("__NEXT_DATA__");
     if (!el?.textContent) return null;
     try { return JSON.parse(el.textContent); } catch { return null; }
   }).catch(() => null);
+
+  if (!nd) {
+    process.stdout.write(`    ⚠️ Sin datos (título: "${title.slice(0, 60)}")\n`);
+  }
+  return nd;
 }
 
 // ── Zonaprop ──────────────────────────────────────────────────────────────────
