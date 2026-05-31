@@ -18,7 +18,7 @@ SELECT
   moneda,
   zona                                                          AS barrio,
   ciudad,
-  provincia,
+  'Santa Fe'::text                                              AS provincia,
   direccion,
   latitud                                                       AS lat,
   longitud                                                      AS lng,
