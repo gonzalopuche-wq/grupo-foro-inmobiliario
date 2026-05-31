@@ -240,8 +240,8 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
   }
 
   const domResult = await page.evaluate(() => {
-    // ── Zonaprop: cards con data-qa="posting PROPERTY" + data-id ────────────
-    const zpCards = document.querySelectorAll('[data-qa^="posting "][data-id]');
+    // ── Zonaprop: cards identificadas por data-to-posting (único de ZP) + data-id ──
+    const zpCards = document.querySelectorAll('[data-to-posting][data-id]');
     if (zpCards.length > 0) {
       const first = zpCards[0] as HTMLElement;
       return {
@@ -290,14 +290,25 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
       }
     }
 
-    // ── Debug: sin listings conocidos ────────────────────────────────────────
-    const bodyHTML = document.body?.innerHTML?.slice(0, 3000) || "";
-    // Buscar qué data-* attributes hay
+    // ── Debug: sin listings conocidos — buscar pistas del DOM ───────────────
+    // Intentar detectar cards de AP buscando elementos con data-id numérico largo
+    const apNumericId = Array.from(document.querySelectorAll("[data-id]"))
+      .filter((el: any) => /^\d{5,}$/.test(el.getAttribute("data-id") ?? ""))
+      .slice(0, 5)
+      .map((el: any) => el.tagName + " data-id=" + el.getAttribute("data-id") + " class=" + (el.className || "").slice(0, 40));
+    // Clases únicas de elementos que tengan links a /propiedades/
+    const propLinks = Array.from(document.querySelectorAll("a[href*='/propiedades/']"))
+      .slice(0, 5)
+      .map((el: any) => {
+        const par = el.closest("[class]");
+        return `a href=${el.getAttribute("href")?.slice(0, 60)} parent_class=${par?.className?.slice(0, 60) ?? "?"}`;
+      });
+    const bodyHTML = document.body?.innerHTML?.slice(0, 2000) || "";
     const dataEls = Array.from(document.querySelectorAll("*"))
       .filter((el: any) => Array.from(el.attributes).some((a: any) => a.name.startsWith("data-") && a.value.length > 3))
       .slice(0, 8)
       .map((el: any) => el.tagName + Array.from(el.attributes).filter((a: any) => a.name.startsWith("data-")).map((a: any) => ` ${a.name}=${a.value.slice(0,30)}`).join(""));
-    return { type: "debug", count: 0, bodyHTML, dataEls };
+    return { type: "debug", count: 0, bodyHTML, dataEls, apNumericId, propLinks };
   }).catch(() => null);
 
   if (domResult && domResult.count > 0) {
@@ -310,8 +321,14 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
   if (domResult?.dataEls?.length > 0) {
     process.stdout.write(`    🔍 data-* elements: ${(domResult.dataEls as string[]).slice(0, 5).join(" | ")}\n`);
   }
+  if (domResult?.apNumericId?.length > 0) {
+    process.stdout.write(`    🔢 data-id numéricos: ${(domResult.apNumericId as string[]).join(" | ")}\n`);
+  }
+  if (domResult?.propLinks?.length > 0) {
+    process.stdout.write(`    🔗 Links /propiedades/: ${(domResult.propLinks as string[]).slice(0, 3).join(" | ")}\n`);
+  }
   if (domResult?.bodyHTML) {
-    process.stdout.write(`    📄 Body HTML (primeros 1500 chars):\n${(domResult.bodyHTML as string).slice(0, 1500)}\n`);
+    process.stdout.write(`    📄 Body HTML (primeros 2000 chars):\n${(domResult.bodyHTML as string).slice(0, 2000)}\n`);
   }
   return null;
 }
@@ -454,7 +471,8 @@ async function syncZonaprop(): Promise<any[]> {
             console.warn(`  ⚠️ ZP DOM debug sin listings: ${tipo}-${op} p${pg}`);
             break;
           }
-          const items = data.type === "zonaprop-dom"
+          // ZP siempre llega como DOM (no XHR) — usar extractor DOM para ambos tipos
+          const items = (data.type === "zonaprop-dom" || data.type === "argenprop-dom")
             ? extractZonapropDOMPostings(data, op, tipo)
             : extractZonapropPostings(data, op, tipo);
           if (!items.length) {
