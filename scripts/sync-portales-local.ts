@@ -490,10 +490,14 @@ async function syncZonaprop(): Promise<any[]> {
     await browser.close();
   }
 
-  return all;
+  // Deduplicar por portal_id (el mismo terreno puede aparecer en múltiples páginas)
+  const seen = new Set<string>();
+  return all.filter(item => {
+    if (seen.has(item.portal_id)) return false;
+    seen.add(item.portal_id);
+    return true;
+  });
 }
-
-// ── Argenprop ─────────────────────────────────────────────────────────────────
 
 function extractArgenpropItems(data: any, operacion: string, tipo: string): any[] {
   const items: any[] =
@@ -539,17 +543,21 @@ function extractArgenpropDOMPostings(data: any, operacion: string, tipo: string)
   if (!Array.isArray(data?.postings)) return [];
   return data.postings
     .filter((card: any) => {
-      const href = card.href ?? "";
+      const elemId = String(card.attrs?.["id"] ?? "");
       const dataId = String(card.attrs?.["data-id"] ?? "");
-      // Solo cards reales: href a /propiedades/ O data-id numérico largo (5+ dígitos)
-      return href.includes("/propiedades/") || /^\d{5,}$/.test(dataId);
+      const href = card.href ?? "";
+      // Cards reales: id/data-id numérico largo (5+ dígitos) O href no vacío
+      return /^\d{5,}$/.test(elemId) || /^\d{5,}$/.test(dataId) || (href.length > 1);
     })
     .map((card: any) => {
       const href = card.href ?? "";
-      // portal_id desde data-id, o último segmento numérico de la URL
+      // AP usa el atributo id del elemento .listing__item como portal_id
+      const elemId = card.attrs?.["id"];
       const dataId = card.attrs?.["data-id"];
-      const urlIdMatch = href.match(/[_-](\d{5,})(?:[_-]|$)/);
-      const portal_id = dataId ? String(dataId) : (urlIdMatch ? urlIdMatch[1] : String(Math.random()));
+      const urlIdMatch = href.match(/(\d{5,})/);
+      const portal_id = (elemId && /^\d{5,}$/.test(String(elemId)))
+        ? String(elemId)
+        : (dataId ? String(dataId) : (urlIdMatch ? urlIdMatch[1] : String(Math.random())));
       const url = href.startsWith("http") ? href : `https://www.argenprop.com${href}`;
       const text = card.text ?? "";
 
