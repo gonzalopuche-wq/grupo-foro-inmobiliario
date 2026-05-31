@@ -538,7 +538,12 @@ function extractArgenpropItems(data: any, operacion: string, tipo: string): any[
 function extractArgenpropDOMPostings(data: any, operacion: string, tipo: string): any[] {
   if (!Array.isArray(data?.postings)) return [];
   return data.postings
-    .filter((card: any) => card.href || card.attrs?.["data-id"])
+    .filter((card: any) => {
+      const href = card.href ?? "";
+      const dataId = String(card.attrs?.["data-id"] ?? "");
+      // Solo cards reales: href a /propiedades/ O data-id numérico largo (5+ dígitos)
+      return href.includes("/propiedades/") || /^\d{5,}$/.test(dataId);
+    })
     .map((card: any) => {
       const href = card.href ?? "";
       // portal_id desde data-id, o último segmento numérico de la URL
