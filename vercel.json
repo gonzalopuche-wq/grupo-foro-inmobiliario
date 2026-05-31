@@ -59,6 +59,10 @@
     {
       "path": "/api/cron/sync-propiedades-externas",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/sync-portales-scraper",
+      "schedule": "0 4 * * *"
     }
   ]
 }
