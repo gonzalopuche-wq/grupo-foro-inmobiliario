@@ -3,9 +3,9 @@
 
 import { useState, useCallback } from 'react'
 import { supabase } from '../../../lib/supabase'
-import { Search, BookmarkPlus, Loader2, Home, AlertCircle,
+import { Search, Loader2, Home, AlertCircle,
          ChevronDown, SlidersHorizontal, ExternalLink } from 'lucide-react'
-import CrearListaModal from './CrearListaModal'
+import PropDetailModal from './PropDetailModal'
 
 interface Propiedad {
   portal: string
@@ -169,6 +169,7 @@ export default function BusquedaPage() {
   const [cargandoLocal, setCargandoLocal] = useState(false)
   const [buscadoLocal, setBuscadoLocal] = useState(false)
   const [fuentesFiltro, setFuentesFiltro] = useState<string[]>(['gfi', 'zonaprop', 'argenprop'])
+  const [selectedProp, setSelectedProp] = useState<{id: string; fuente: string} | null>(null)
 
 
   // Armar URLs con los filtros actuales (para links externos)
@@ -391,9 +392,9 @@ export default function BusquedaPage() {
                     ? `${p.moneda === 'ARS' ? '$' : 'U$D'} ${p.precio.toLocaleString('es-AR')}`
                     : null
                   return (
-                    <a key={p.id} href={p.url ?? '#'} target={p.url?.startsWith('http') ? '_blank' : '_self'}
-                      rel="noopener noreferrer"
-                      style={{display:'block', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:10, overflow:'hidden', textDecoration:'none', color:'inherit', transition:'border-color 0.15s', cursor:'pointer'}}
+                    <div key={p.id}
+                      onClick={() => setSelectedProp({id: p.id, fuente: p.fuente})}
+                      style={{display:'block', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:10, overflow:'hidden', color:'inherit', transition:'border-color 0.15s', cursor:'pointer'}}
                       onMouseEnter={e => (e.currentTarget.style.borderColor = cfg.border)}
                       onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}>
                       <div style={{height:160, background:'rgba(255,255,255,0.05)', overflow:'hidden', position:'relative'}}>
@@ -430,7 +431,7 @@ export default function BusquedaPage() {
                           <div style={{fontSize:10, color:'rgba(255,255,255,0.2)', marginTop:6}}>{[p.operacion, p.tipo].filter(Boolean).join(' · ')}</div>
                         )}
                       </div>
-                    </a>
+                    </div>
                   )
                 })}
               </div>
@@ -441,6 +442,14 @@ export default function BusquedaPage() {
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      {selectedProp && (
+        <PropDetailModal
+          propId={selectedProp.id}
+          fuente={selectedProp.fuente}
+          onClose={() => setSelectedProp(null)}
+        />
+      )}
     </div>
   )
 }
