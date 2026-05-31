@@ -65,18 +65,18 @@ SELECT
   banos,
   ambientes,
   superficie_cubierta,
-  sup_terreno,
-  expensas,
+  NULL::numeric                                                 AS sup_terreno,
+  NULL::numeric                                                 AS expensas,
   (
     CASE
-      WHEN imagenes IS NOT NULL AND jsonb_typeof(imagenes) = 'array' AND jsonb_array_length(imagenes) > 0
+      WHEN imagenes IS NOT NULL AND jsonb_array_length(imagenes) > 0
       THEN imagenes ->> 0
       ELSE NULL
     END
   )                                                             AS foto_principal,
   descripcion,
   url,
-  NULL                                                          AS propietario_id,
+  NULL::text                                                    AS propietario_id,
   'activa'                                                      AS estado,
   synced_at                                                     AS updated_at
 FROM propiedades_externas
