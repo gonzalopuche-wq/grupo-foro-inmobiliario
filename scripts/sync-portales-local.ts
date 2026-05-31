@@ -188,49 +188,75 @@ function hasListingData(json: any): boolean {
   );
 }
 
-// Navega a una URL, espera a que el challenge de Cloudflare pase,
-// intercepta TODAS las respuestas JSON y devuelve la que tenga listings.
+// Navega a una URL usando page.route() para interceptar XHR/fetch con acceso garantizado al body.
+// page.on('response').text() falla en headless:false — route.fetch() es la alternativa correcta.
 async function scrapeListingsFromPage(page: any, url: string): Promise<any | null> {
   const captured: any[] = [];
+  const xhrLog: string[] = [];
 
-  const onResponse = async (response: any) => {
-    const status = response.status();
-    if (status < 200 || status >= 300) return;
+  const routeHandler = async (route: any) => {
+    const request = route.request();
+    const rt = request.resourceType();
+
+    if (rt !== "xhr" && rt !== "fetch") {
+      return route.continue().catch(() => null);
+    }
+
+    xhrLog.push(request.url().slice(0, 120));
+
     try {
-      const text = await response.text();
-      // Aceptar cualquier texto que empiece con { o [ (no filtrar por content-type)
-      if (!text || (text[0] !== "{" && text[0] !== "[")) return;
-      const json = JSON.parse(text);
-      if (hasListingData(json)) captured.push(json);
-    } catch { /* ignorar */ }
+      const response = await route.fetch();
+      const buffer = await response.body();
+      const text = buffer.toString("utf-8");
+
+      if (text && (text[0] === "{" || text[0] === "[")) {
+        try {
+          const json = JSON.parse(text);
+          if (hasListingData(json)) captured.push(json);
+        } catch {}
+      }
+
+      return route.fulfill({ response });
+    } catch {
+      return route.continue().catch(() => null);
+    }
   };
 
-  page.on("response", onResponse);
+  await page.route("**/*", routeHandler);
 
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
-  } catch { /* timeout ok */ }
+  } catch {}
 
-  // Polling: esperar a que el challenge de CF pase y la página real cargue (max 35s)
-  for (let i = 0; i < 35; i++) {
+  // Polling: esperar a que la página real cargue (por si hay CF challenge)
+  for (let i = 0; i < 30; i++) {
     const title = await page.title().catch(() => "");
-    const cfPasado = title.length > 10 &&
+    if (
+      title.length > 10 &&
       !title.toLowerCase().includes("just a moment") &&
-      !title.toLowerCase().includes("cloudflare") &&
-      !title.toLowerCase().includes("attention required");
-    if (cfPasado) break;
+      !title.toLowerCase().includes("cloudflare")
+    ) break;
     await page.waitForTimeout(1000);
   }
 
-  // Esperar a que los XHR de listings completen
-  await page.waitForTimeout(4000);
+  // Dar tiempo a los XHR
+  await page.waitForTimeout(5000);
 
-  page.off("response", onResponse);
+  await page.unroute("**/*", routeHandler).catch(() => null);
 
-  const title = await page.title().catch(() => "");
+  const title = await page.title().catch(() => "?");
+
   if (captured.length > 0) {
-    process.stdout.write(`    📡 XHR capturado (${title.slice(0, 50)})\n`);
+    process.stdout.write(`    📡 ${captured.length} XHR capturado(s) — ${title.slice(0, 50)}\n`);
     return captured[0];
+  }
+
+  // Debug: mostrar todas las XHR calls para diagnóstico
+  if (xhrLog.length > 0) {
+    process.stdout.write(`    🔍 XHR sin listings (${xhrLog.length} calls):\n`);
+    for (const u of xhrLog.slice(0, 6)) process.stdout.write(`       ${u}\n`);
+  } else {
+    process.stdout.write(`    🔍 0 calls XHR/fetch detectadas\n`);
   }
 
   // Fallback: __NEXT_DATA__
