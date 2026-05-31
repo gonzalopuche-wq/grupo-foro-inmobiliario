@@ -230,7 +230,7 @@ function WebTemplate({ cfg, perfil, propiedades, testimonios, noticias = [] }: {
         </div>
         <nav className="w-nav">
           <a href={`/web/${cfg.slug}/propiedades`}>Propiedades</a>
-          <a href="#buscador">Búsqueda IA</a>
+          {propiedades.length > 0 && <a href="#buscador">Búsqueda IA</a>}
           {cfg.mostrar_sobre_mi && <a href="#sobre-mi">Sobre mí</a>}
           {cfg.mostrar_testimonios && testimonios.length > 0 && <a href="#testimonios">Testimonios</a>}
           {cfg.mostrar_formulario_tasacion && <a href="#tasacion">Tasación</a>}
@@ -310,6 +310,7 @@ function WebTemplate({ cfg, perfil, propiedades, testimonios, noticias = [] }: {
       </div>
 
       {/* ── BUSCADOR IA ── */}
+      {propiedades.length > 0 && (
       <section className="w-section" id="buscador" style={{ background: t.bgAlt }}>
         <div style={{ maxWidth: 720, margin: "0 auto" }}>
           <div className="w-section-tag">Búsqueda inteligente</div>
@@ -320,6 +321,7 @@ function WebTemplate({ cfg, perfil, propiedades, testimonios, noticias = [] }: {
           </div>
         </div>
       </section>
+      )}
 
       {/* ── PROPIEDADES ── */}
       {cfg.mostrar_propiedades_destacadas && propiedades.length > 0 && (
