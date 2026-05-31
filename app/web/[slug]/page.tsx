@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import { ContactForm, TasacionForm } from "./WebForms";
+import PropChat from "@/app/components/ai/PropChat";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -229,6 +230,7 @@ function WebTemplate({ cfg, perfil, propiedades, testimonios, noticias = [] }: {
         </div>
         <nav className="w-nav">
           <a href={`/web/${cfg.slug}/propiedades`}>Propiedades</a>
+          {propiedades.length > 0 && <a href="#buscador">Búsqueda IA</a>}
           {cfg.mostrar_sobre_mi && <a href="#sobre-mi">Sobre mí</a>}
           {cfg.mostrar_testimonios && testimonios.length > 0 && <a href="#testimonios">Testimonios</a>}
           {cfg.mostrar_formulario_tasacion && <a href="#tasacion">Tasación</a>}
@@ -306,6 +308,20 @@ function WebTemplate({ cfg, perfil, propiedades, testimonios, noticias = [] }: {
           <div className="w-stat-label">Miembro verificado</div>
         </div>
       </div>
+
+      {/* ── BUSCADOR IA ── */}
+      {propiedades.length > 0 && (
+      <section className="w-section" id="buscador" style={{ background: t.bgAlt }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
+          <div className="w-section-tag">Búsqueda inteligente</div>
+          <h2 className="w-section-h2">Encontrá tu propiedad ideal</h2>
+          <p className="w-section-desc">Describí lo que buscás y te ayudo a encontrarlo en mi cartera.</p>
+          <div style={{ background: t.card, border: `1px solid ${t.cardBorder}`, borderRadius: 12, padding: "24px 20px" }}>
+            <PropChat slug={cfg.slug} />
+          </div>
+        </div>
+      </section>
+      )}
 
       {/* ── PROPIEDADES ── */}
       {cfg.mostrar_propiedades_destacadas && propiedades.length > 0 && (
