@@ -30,8 +30,8 @@ SELECT
   expensas,
   (
     CASE
-      WHEN fotos IS NOT NULL AND jsonb_typeof(fotos::jsonb) = 'array' AND jsonb_array_length(fotos::jsonb) > 0
-      THEN fotos::jsonb ->> 0
+      WHEN fotos IS NOT NULL AND array_length(fotos, 1) > 0
+      THEN fotos[1]
       ELSE NULL
     END
   )                                                             AS foto_principal,
