@@ -1,9 +1,9 @@
 /**
- * sync-portales-local.ts v2
+ * sync-portales-local.ts v3
  *
  * Corre desde tu PC (IP residencial) y guarda en Supabase.
- * Usa Playwright (browser real) para Zonaprop y Argenprop → bypasea Cloudflare.
- * Usa la API pública de ML directamente.
+ * Usa Playwright con Chrome visible (headless: false) para Zonaprop y Argenprop.
+ * Chrome visible bypasea Cloudflare correctamente.
  *
  * INSTALACIÓN (una sola vez):
  *   npm install playwright
@@ -12,8 +12,7 @@
  * USO:
  *   npx tsx scripts/sync-portales-local.ts
  *
- * Para correr automáticamente (Windows Task Scheduler o crontab en Mac/Linux):
- *   Mac/Linux: crontab -e → 0 3 * * * cd /ruta && npx tsx scripts/sync-portales-local.ts >> /tmp/sync.log 2>&1
+ * Nota: se va a abrir una ventana de Chrome — es normal, la podés minimizar.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -79,7 +78,7 @@ async function upsertBatch(items: any[], portal: string): Promise<{ importados: 
   return { importados };
 }
 
-// ── MercadoLibre (API pública) ────────────────────────────────────────────────
+// ── MercadoLibre (búsqueda por texto — no requiere permisos especiales) ────────
 
 async function getMLToken(): Promise<string | null> {
   if (!ML_CLIENT_ID || !ML_CLIENT_SECRET) return null;
@@ -88,15 +87,10 @@ async function getMLToken(): Promise<string | null> {
       `https://api.mercadolibre.com/oauth/token?grant_type=client_credentials&client_id=${ML_CLIENT_ID}&client_secret=${ML_CLIENT_SECRET}`,
       { method: "POST" }
     );
-    if (!res.ok) {
-      const body = await res.text();
-      console.warn(`  ⚠️ ML token HTTP ${res.status}: ${body.slice(0, 150)}`);
-      return null;
-    }
+    if (!res.ok) return null;
     const d = await res.json();
     return d.access_token ?? null;
-  } catch (e: any) {
-    console.warn("  ⚠️ ML token error:", e.message);
+  } catch {
     return null;
   }
 }
@@ -104,12 +98,17 @@ async function getMLToken(): Promise<string | null> {
 function normalizeML(item: any): any {
   const attrs = item.attributes ?? [];
   const ga = (id: string) => attrs.find((a: any) => a.id === id)?.value_name ?? null;
+  const isMueble =
+    (item.category_id ?? "").includes("1459") ||
+    (ga("PROPERTY_TYPE") ?? "") !== "" ||
+    (ga("OPERATION") ?? "") !== "";
+  if (!isMueble) return null;
   return {
     portal_id: String(item.id),
     url: item.permalink ?? "",
     titulo: item.title ?? "",
     operacion: (ga("OPERATION") ?? "").toLowerCase().includes("alquiler") ? "alquiler" : "venta",
-    tipo: (ga("PROPERTY_TYPE") ?? "otro").toLowerCase(),
+    tipo: (ga("PROPERTY_TYPE") ?? "otro").toLowerCase() || "otro",
     precio: parseNum(item.price),
     moneda: item.currency_id === "ARS" ? "ARS" : "USD",
     dormitorios: parseNum(ga("BEDROOMS")),
@@ -126,96 +125,122 @@ function normalizeML(item: any): any {
     lng: parseNum(item.location?.longitude),
     imagenes: (item.pictures ?? []).map((p: any) => p.secure_url ?? p.url ?? "").filter(Boolean),
     descripcion: null,
-    datos_raw: {},
+    datos_raw: { category_id: item.category_id },
   };
 }
 
 async function syncML(): Promise<any[]> {
-  const ROSARIO_LAT = "-33.0394_-32.8717";
-  const ROSARIO_LON = "-60.7961_-60.6122";
+  const token = await getMLToken();
+  const headers: Record<string, string> = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+    console.log("  🔑 Token ML ok");
+  }
 
-  const strategies = [
-    // Sin token primero (endpoint público ML)
-    { url: `https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&city=TUxBQUMxMjg3NTU&limit=50`, needsToken: false },
-    { url: `https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&item_location=lat:${ROSARIO_LAT},lon:${ROSARIO_LON}&limit=50`, needsToken: false },
-    // Con token como fallback
-    { url: `https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&city=TUxBQUMxMjg3NTU&limit=50`, needsToken: true },
-    { url: `https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&item_location=lat:${ROSARIO_LAT},lon:${ROSARIO_LON}&limit=50`, needsToken: true },
+  // Búsqueda por texto: no requiere permisos de categoría especiales
+  const queries = [
+    "departamento venta rosario santa fe",
+    "casa venta rosario santa fe",
+    "departamento alquiler rosario santa fe",
+    "propiedad inmueble rosario",
   ];
 
-  let token: string | null = null;
+  const all: any[] = [];
+  const seen = new Set<string>();
 
-  for (const { url: baseUrl, needsToken } of strategies) {
-    if (needsToken && !token) {
-      token = await getMLToken();
-      if (token) console.log("  🔑 Usando token ML");
-      else { console.warn("  ⚠️ No se pudo obtener token ML"); continue; }
-    }
-
-    const headers: Record<string, string> = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Accept": "application/json",
-    };
-    if (needsToken && token) headers["Authorization"] = `Bearer ${token}`;
-
-    const strategyLabel = (needsToken ? "[+token] " : "[sin auth] ") + baseUrl.split("?")[1]?.slice(0, 50);
-    const all: any[] = [];
+  for (const q of queries) {
+    const base = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(q)}&limit=50`;
     let offset = 0;
-    let blocked = false;
-
-    while (all.length < 500) {
-      const res = await fetch(`${baseUrl}&offset=${offset}`, { headers });
+    while (all.length < 400) {
+      const res = await fetch(`${base}&offset=${offset}`, { headers });
       if (!res.ok) {
         const body = await res.text();
-        console.warn(`  ⚠️ ML HTTP ${res.status} para ${strategyLabel}`);
-        if (res.status === 403) console.warn(`  🔍 Respuesta ML: ${body.slice(0, 200)}`);
-        blocked = true;
+        console.warn(`  ⚠️ ML HTTP ${res.status} para "${q}": ${body.slice(0, 120)}`);
         break;
       }
       const data = await res.json();
-      const items = data.results ?? [];
+      const items: any[] = data.results ?? [];
       if (!items.length) break;
-      all.push(...items.map((item: any) => normalizeML(item)));
+      let added = 0;
+      for (const item of items) {
+        if (seen.has(item.id)) continue;
+        seen.add(item.id);
+        const norm = normalizeML(item);
+        if (norm) { all.push(norm); added++; }
+      }
       offset += 50;
-      if (offset >= Math.min(data.paging?.total ?? 0, 500)) break;
-    }
-
-    if (!blocked && all.length > 0) {
-      console.log(`  ✅ ML: ${all.length} propiedades (${strategyLabel})`);
-      return all;
+      if (offset >= Math.min(data.paging?.total ?? 0, 400)) break;
     }
   }
-  return [];
+  return all;
 }
 
 // ── Playwright helper ─────────────────────────────────────────────────────────
 
-let _playwright: any = null;
-
 async function getPlaywright(): Promise<any | null> {
-  if (_playwright) return _playwright;
   try {
-    _playwright = await import("playwright");
-    return _playwright;
+    return await import("playwright");
   } catch {
     return null;
   }
 }
 
+async function createStealthBrowser(pw: any) {
+  const browser = await pw.chromium.launch({
+    headless: false,
+    args: [
+      "--disable-blink-features=AutomationControlled",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-infobars",
+    ],
+  });
+  const context = await browser.newContext({
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    locale: "es-AR",
+    viewport: { width: 1280, height: 800 },
+    extraHTTPHeaders: { "Accept-Language": "es-AR,es;q=0.9" },
+  });
+  // Ocultar automatización
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, "webdriver", { get: () => undefined });
+    Object.defineProperty(navigator, "plugins", { get: () => [1, 2, 3, 4, 5] });
+  });
+  return { browser, context };
+}
+
 async function scrapeNextData(page: any, url: string): Promise<any | null> {
   try {
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
-    // Esperar a que cargue el contenido (puede haber Cloudflare challenge)
-    await page.waitForFunction(
-      () => !!document.getElementById("__NEXT_DATA__"),
-      { timeout: 20000 }
-    ).catch(() => null);
+    // networkidle: espera hasta que no haya requests por 500ms
+    // Esto incluye el tiempo de resolución del challenge de Cloudflare
+    await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
+
+    const title = await page.title().catch(() => "");
+    if (title.toLowerCase().includes("just a moment") || title.toLowerCase().includes("cloudflare")) {
+      console.warn(`    ⚠️ Cloudflare challenge activo, esperando resolución...`);
+      // Esperar a que CF resuelva (normalmente 5-10 seg)
+      await page
+        .waitForFunction(() => !document.title.toLowerCase().includes("just a moment"), { timeout: 30000 })
+        .catch(() => null);
+      await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => null);
+    }
+
     return await page.evaluate(() => {
       const el = document.getElementById("__NEXT_DATA__");
       if (!el?.textContent) return null;
-      try { return JSON.parse(el.textContent); } catch { return null; }
+      try {
+        return JSON.parse(el.textContent);
+      } catch {
+        return null;
+      }
     });
-  } catch {
+  } catch (e: any) {
+    const title = await page.title().catch(() => "?");
+    console.warn(`    ⚠️ Error al cargar "${url.split("?")[0].slice(-60)}" (título: "${title}"): ${e.message?.slice(0, 60)}`);
     return null;
   }
 }
@@ -225,15 +250,15 @@ async function scrapeNextData(page: any, url: string): Promise<any | null> {
 function extractZonapropPostings(nd: any, operacion: string, tipo: string): any[] {
   const pp = nd?.props?.pageProps;
   const postings = pp?.initialData?.postings ?? pp?.listingData?.postings ?? pp?.postings ?? [];
-  const result: any[] = [];
-  for (const item of postings) {
+  return postings.map((item: any) => {
     const posting = item.postingData ?? item;
     const priceData = posting.priceOperationTypes?.[0] ?? {};
     const loc = posting.postingLocation ?? posting.location ?? {};
     const geo = loc.postingGeolocation ?? {};
     const imgs = (posting.postingGallery ?? posting.photos ?? [])
-      .map((p: any) => p.url ?? p.image ?? p).filter((u: any) => typeof u === "string" && u.startsWith("http"));
-    result.push({
+      .map((p: any) => p.url ?? p.image ?? p)
+      .filter((u: any) => typeof u === "string" && u.startsWith("http"));
+    return {
       portal_id: String(item.postingId ?? item.id),
       url: `https://www.zonaprop.com.ar${posting.url ?? ""}`,
       titulo: posting.title ?? "",
@@ -256,9 +281,8 @@ function extractZonapropPostings(nd: any, operacion: string, tipo: string): any[
       imagenes: imgs,
       descripcion: posting.description ?? null,
       datos_raw: {},
-    });
-  }
-  return result;
+    };
+  });
 }
 
 async function syncZonaprop(): Promise<any[]> {
@@ -268,15 +292,12 @@ async function syncZonaprop(): Promise<any[]> {
     return [];
   }
 
-  const SLUGS = ["departamentos", "casas", "ph"];
-  const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
-
-  const browser = await pw.chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    locale: "es-AR",
-  });
+  console.log("  ℹ️ Abriendo Chrome (puede aparecer ventana — podés minimizarla)");
+  const { browser, context } = await createStealthBrowser(pw);
   const all: any[] = [];
+
+  const SLUGS = ["departamentos", "casas", "ph", "locales", "terrenos"];
+  const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
 
   try {
     const page = await context.newPage();
@@ -286,10 +307,14 @@ async function syncZonaprop(): Promise<any[]> {
           const suffix = pg > 1 ? `-pagina-${pg}` : "";
           const url = `https://www.zonaprop.com.ar/${tipo}-${slug}-rosario${suffix}.html`;
           const nd = await scrapeNextData(page, url);
-          if (!nd) { console.warn(`  ⚠️ ZP sin datos: ${tipo}-${slug} p${pg}`); break; }
+          if (!nd) {
+            console.warn(`  ⚠️ ZP sin datos: ${tipo}-${slug} p${pg}`);
+            break;
+          }
           const items = extractZonapropPostings(nd, op, tipo);
           if (!items.length) break;
           all.push(...items);
+          process.stdout.write(`  ↳ ZP ${tipo}-${slug} p${pg}: ${items.length} props\n`);
           if (items.length < 20) break;
         }
       }
@@ -309,7 +334,8 @@ function extractArgenpropItems(nd: any, operacion: string, tipo: string): any[] 
   const items = pp?.initialData?.listingResults ?? pp?.listingResults ?? pp?.listings ?? [];
   return items.map((item: any) => {
     const imgs = (item.photos ?? item.images ?? [])
-      .map((p: any) => p.image ?? p.url ?? p).filter((u: any) => typeof u === "string" && u.startsWith("http"));
+      .map((p: any) => p.image ?? p.url ?? p)
+      .filter((u: any) => typeof u === "string" && u.startsWith("http"));
     return {
       portal_id: String(item.id ?? item.postingId),
       url: item.url ? `https://www.argenprop.com${item.url}` : "",
@@ -344,15 +370,12 @@ async function syncArgenprop(): Promise<any[]> {
     return [];
   }
 
-  const TIPOS = ["departamentos", "casas", "ph"];
-  const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
-
-  const browser = await pw.chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    locale: "es-AR",
-  });
+  console.log("  ℹ️ Abriendo Chrome para Argenprop");
+  const { browser, context } = await createStealthBrowser(pw);
   const all: any[] = [];
+
+  const TIPOS = ["departamentos", "casas", "ph", "locales", "terrenos"];
+  const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
 
   try {
     const page = await context.newPage();
@@ -362,10 +385,14 @@ async function syncArgenprop(): Promise<any[]> {
           const pageSuffix = pg > 1 ? `-pagina-${pg}` : "";
           const url = `https://www.argenprop.com/${tipo}/${slug}/rosario${pageSuffix}`;
           const nd = await scrapeNextData(page, url);
-          if (!nd) { console.warn(`  ⚠️ AP sin datos: ${tipo}-${slug} p${pg}`); break; }
+          if (!nd) {
+            console.warn(`  ⚠️ AP sin datos: ${tipo}-${slug} p${pg}`);
+            break;
+          }
           const items = extractArgenpropItems(nd, op, tipo);
           if (!items.length) break;
           all.push(...items);
+          process.stdout.write(`  ↳ AP ${tipo}-${slug} p${pg}: ${items.length} props\n`);
           if (items.length < 20) break;
         }
       }
@@ -392,7 +419,7 @@ async function main() {
   const resultados: Record<string, any> = {};
 
   for (const { nombre, fn, portal } of portales) {
-    process.stdout.write(`Sincronizando ${nombre}... \n`);
+    console.log(`\nSincronizando ${nombre}...`);
     try {
       const items = await fn();
       if (!items.length) {
