@@ -24,10 +24,10 @@ SELECT
   longitud                                                      AS lng,
   dormitorios,
   banos,
-  ambientes,
+  NULL::integer                                                 AS ambientes,
   superficie_cubierta,
-  sup_terreno,
-  expensas,
+  NULL::numeric                                                 AS sup_terreno,
+  NULL::numeric                                                 AS expensas,
   (
     CASE
       WHEN fotos IS NOT NULL AND array_length(fotos, 1) > 0
