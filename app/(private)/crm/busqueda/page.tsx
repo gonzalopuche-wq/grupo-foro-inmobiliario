@@ -32,6 +32,31 @@ const TIPOS = ['Departamento', 'Casa', 'PH', 'Local', 'Oficina', 'Terreno', 'Gal
 const OPERACIONES = ['Venta', 'Alquiler', 'Alquiler temporal']
 const DORMITORIOS = ['1', '2', '3', '4', '5+']
 
+const FUENTES_CONFIG: Record<string, { label: string; color: string; border: string; badge: string }> = {
+  gfi:          { label: 'Red GFI',   color: 'rgba(204,0,0,0.15)',    border: 'rgba(204,0,0,0.4)',    badge: '#cc0000' },
+  zonaprop:     { label: 'ZonaProp',  color: 'rgba(230,0,0,0.08)',    border: 'rgba(230,0,0,0.25)',   badge: '#e60000' },
+  argenprop:    { label: 'Argenprop', color: 'rgba(245,166,35,0.08)', border: 'rgba(245,166,35,0.3)', badge: '#f5a623' },
+  mercadolibre: { label: 'ML',        color: 'rgba(255,230,0,0.08)',  border: 'rgba(255,230,0,0.25)', badge: '#ffe600' },
+}
+
+interface PropLocal {
+  id: string
+  fuente: string
+  titulo: string
+  operacion: string
+  tipo: string | null
+  precio: number | null
+  moneda: string | null
+  barrio: string | null
+  ciudad: string | null
+  dormitorios: number | null
+  banos: number | null
+  superficie_cubierta: number | null
+  foto_principal: string | null
+  url: string | null
+  propietario_id: string | null
+}
+
 // ─── Helpers de normalización ─────────────────────────────────────────────────
 
 function slugify(s: string) {
@@ -147,6 +172,12 @@ export default function BusquedaPage() {
   const [propiedadesManuales, setPropiedadesManuales] = useState<Propiedad[]>([])
   const [cargandoManual, setCargandoManual] = useState(false)
 
+  const [resultadosLocal, setResultadosLocal] = useState<PropLocal[]>([])
+  const [totalLocal, setTotalLocal] = useState(0)
+  const [cargandoLocal, setCargandoLocal] = useState(false)
+  const [buscadoLocal, setBuscadoLocal] = useState(false)
+  const [fuentesFiltro, setFuentesFiltro] = useState<string[]>(['gfi', 'zonaprop', 'argenprop'])
+
   const [seleccionadas, setSeleccionadas] = useState<Set<string>>(new Set())
   const [modalLista, setModalLista] = useState(false)
 
@@ -187,6 +218,43 @@ export default function BusquedaPage() {
       setCargando(false)
     }
   }, [operacion, tipo, zona, precioMin, precioMax, dormitorios])
+
+  // Buscar en base local unificada (GFI + ZP + AP)
+  const buscarLocal = useCallback(async () => {
+    setCargandoLocal(true)
+    setBuscadoLocal(true)
+    setResultadosLocal([])
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { setCargandoLocal(false); return }
+
+      const params = new URLSearchParams()
+      if (operacion) params.set('operacion', operacion.toLowerCase().replace(' ', '_'))
+      if (tipo) params.set('tipo', tipo.toLowerCase())
+      if (zona.trim()) params.set('barrio', zona.trim())
+      if (precioMin) params.set('precioMin', precioMin)
+      if (precioMax) params.set('precioMax', precioMax)
+      if (dormitorios) params.set('dormitorios', dormitorios.replace('+', ''))
+      if (fuentesFiltro.length > 0 && fuentesFiltro.length < 4) params.set('fuentes', fuentesFiltro.join(','))
+      params.set('limit', '100')
+
+      const res = await fetch(`/api/propiedades/mercado?${params}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setResultadosLocal(data.propiedades ?? [])
+      setTotalLocal(data.total ?? 0)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setCargandoLocal(false)
+    }
+  }, [operacion, tipo, zona, precioMin, precioMax, dormitorios, fuentesFiltro])
+
+  const toggleFuente = (f: string) => {
+    setFuentesFiltro(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f])
+  }
 
   // Agregar propiedad por URL
   const agregarManual = async () => {
@@ -294,7 +362,7 @@ export default function BusquedaPage() {
               Búsqueda Inteligente
             </h1>
             <p style={{margin:'2px 0 0', fontSize:11, color:'rgba(255,255,255,0.3)'}}>
-              MercadoLibre · ZonaProp · Argenprop · Properati · Propia · InfoCasas · y más
+              Red GFI · ZonaProp · Argenprop · MercadoLibre · y más — todo el mercado de la 2da Circ. COCIR
             </p>
           </div>
           {seleccionadas.size > 0 && (
@@ -378,12 +446,37 @@ export default function BusquedaPage() {
             </div>
           )}
 
+          {/* Filtro de fuentes */}
+          <div style={{marginBottom:12}}>
+            <label style={label}>Buscar en</label>
+            <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
+              {Object.entries(FUENTES_CONFIG).map(([key, cfg]) => {
+                const activa = fuentesFiltro.includes(key)
+                return (
+                  <button key={key} onClick={() => toggleFuente(key)}
+                    style={{padding:'5px 12px', borderRadius:20, border:`1px solid ${activa ? cfg.badge : 'rgba(255,255,255,0.12)'}`, background:activa ? cfg.color : 'transparent', color:activa ? '#fff' : 'rgba(255,255,255,0.35)', fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', transition:'all 0.15s'}}>
+                    {cfg.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Botón base local */}
+          <button onClick={buscarLocal} disabled={cargandoLocal || fuentesFiltro.length === 0}
+            style={{width:'100%', background:'rgba(204,0,0,0.85)', border:'none', color:'#fff', padding:'12px', borderRadius:8, fontWeight:700, fontSize:13, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:(cargandoLocal||fuentesFiltro.length===0)?0.5:1, marginBottom:8}}>
+            {cargandoLocal
+              ? <><Loader2 style={{width:15, height:15, animation:'spin 1s linear infinite'}} />Buscando en base local...</>
+              : <><Search style={{width:15, height:15}} />Buscar en base GFI + portales (todo el mercado)</>
+            }
+          </button>
+
           {/* Botón ML */}
           <button onClick={buscar} disabled={cargando}
-            style={{width:'100%', background:'#cc0000', border:'none', color:'#fff', padding:'12px', borderRadius:8, fontWeight:700, fontSize:13, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:cargando?0.7:1, marginBottom:12}}>
+            style={{width:'100%', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)', color:'rgba(255,255,255,0.6)', padding:'10px', borderRadius:8, fontWeight:600, fontSize:12, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:cargando?0.7:1, marginBottom:12}}>
             {cargando
-              ? <><Loader2 style={{width:15, height:15, animation:'spin 1s linear infinite'}} />Buscando en MercadoLibre...</>
-              : <><Search style={{width:15, height:15}} />Buscar en MercadoLibre (resultados acá)</>
+              ? <><Loader2 style={{width:14, height:14, animation:'spin 1s linear infinite'}} />Buscando en MercadoLibre...</>
+              : <><Search style={{width:14, height:14}} />Buscar en MercadoLibre en tiempo real</>
             }
           </button>
 
@@ -442,6 +535,92 @@ export default function BusquedaPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ── Resultados base local (GFI + ZP + AP) ── */}
+        {buscadoLocal && (
+          <div style={{marginBottom:28}}>
+            <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14, gap:8, flexWrap:'wrap'}}>
+              <div>
+                <span style={{fontSize:14, fontWeight:800, color:'#fff', fontFamily:'Montserrat,sans-serif'}}>
+                  {cargandoLocal ? 'Buscando en base de mercado...' : `${totalLocal.toLocaleString('es-AR')} propiedades en el mercado`}
+                </span>
+                {!cargandoLocal && totalLocal > 0 && (
+                  <div style={{display:'flex', gap:8, marginTop:6, flexWrap:'wrap'}}>
+                    {Object.entries(
+                      resultadosLocal.reduce<Record<string, number>>((acc, p) => {
+                        acc[p.fuente] = (acc[p.fuente] ?? 0) + 1
+                        return acc
+                      }, {})
+                    ).map(([fuente, cant]) => (
+                      <span key={fuente} style={{fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:10, background: FUENTES_CONFIG[fuente]?.color ?? 'rgba(255,255,255,0.05)', border:`1px solid ${FUENTES_CONFIG[fuente]?.border ?? 'rgba(255,255,255,0.1)'}`, color:'rgba(255,255,255,0.7)', fontFamily:'Montserrat,sans-serif', letterSpacing:'0.05em'}}>
+                        {FUENTES_CONFIG[fuente]?.label ?? fuente}: {cant}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {!cargandoLocal && resultadosLocal.length === 0 && (
+              <div style={{textAlign:'center', padding:'32px 0', color:'rgba(255,255,255,0.2)'}}>
+                <Home style={{width:32, height:32, margin:'0 auto 8px', display:'block', opacity:0.3}} />
+                <p style={{margin:0}}>Sin resultados en la base local para esos filtros.</p>
+              </div>
+            )}
+
+            {resultadosLocal.length > 0 && (
+              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:14}}>
+                {resultadosLocal.map(p => {
+                  const cfg = FUENTES_CONFIG[p.fuente] ?? FUENTES_CONFIG.gfi
+                  const precioStr = p.precio
+                    ? `${p.moneda === 'ARS' ? '$' : 'U$D'} ${p.precio.toLocaleString('es-AR')}`
+                    : null
+                  return (
+                    <a key={p.id} href={p.url ?? '#'} target={p.url?.startsWith('http') ? '_blank' : '_self'}
+                      rel="noopener noreferrer"
+                      style={{display:'block', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:10, overflow:'hidden', textDecoration:'none', color:'inherit', transition:'border-color 0.15s', cursor:'pointer'}}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = cfg.border)}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}>
+                      <div style={{height:160, background:'rgba(255,255,255,0.05)', overflow:'hidden', position:'relative'}}>
+                        {p.foto_principal
+                          ? <img src={p.foto_principal} alt={p.titulo ?? ''} style={{width:'100%', height:'100%', objectFit:'cover'}} />
+                          : <div style={{display:'flex', alignItems:'center', justifyContent:'center', height:'100%', fontSize:28, color:'rgba(255,255,255,0.1)'}}>🏠</div>
+                        }
+                        <span style={{position:'absolute', top:8, left:8, fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:10, background:cfg.badge, color:'#fff', fontFamily:'Montserrat,sans-serif', letterSpacing:'0.06em', textTransform:'uppercase'}}>
+                          {cfg.label}
+                        </span>
+                        {p.fuente === 'gfi' && (
+                          <span style={{position:'absolute', top:8, right:8, fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:10, background:'rgba(0,0,0,0.6)', color:'rgba(255,255,255,0.6)', fontFamily:'Montserrat,sans-serif'}}>
+                            Cartera GFI
+                          </span>
+                        )}
+                      </div>
+                      <div style={{padding:'12px 14px'}}>
+                        <div style={{fontSize:13, fontWeight:700, color:'#fff', marginBottom:4, overflow:'hidden', whiteSpace:'nowrap', textOverflow:'ellipsis'}}>{p.titulo}</div>
+                        {(p.barrio || p.ciudad) && (
+                          <div style={{fontSize:11, color:'rgba(255,255,255,0.35)', marginBottom:8}}>📍 {[p.barrio, p.ciudad].filter(Boolean).join(', ')}</div>
+                        )}
+                        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                          {precioStr
+                            ? <span style={{fontSize:15, fontWeight:800, color:cfg.badge}}>{precioStr}</span>
+                            : <span style={{fontSize:12, color:'rgba(255,255,255,0.2)'}}>Consultar</span>
+                          }
+                          <div style={{display:'flex', gap:6}}>
+                            {p.dormitorios && <span style={{fontSize:10, background:'rgba(255,255,255,0.06)', padding:'2px 6px', borderRadius:4, color:'rgba(255,255,255,0.5)'}}>🛏 {p.dormitorios}</span>}
+                            {p.superficie_cubierta && <span style={{fontSize:10, background:'rgba(255,255,255,0.06)', padding:'2px 6px', borderRadius:4, color:'rgba(255,255,255,0.5)'}}>📐 {p.superficie_cubierta}m²</span>}
+                          </div>
+                        </div>
+                        {(p.operacion || p.tipo) && (
+                          <div style={{fontSize:10, color:'rgba(255,255,255,0.2)', marginTop:6}}>{[p.operacion, p.tipo].filter(Boolean).join(' · ')}</div>
+                        )}
+                      </div>
+                    </a>
+                  )
+                })}
+              </div>
+            )}
           </div>
         )}
 
