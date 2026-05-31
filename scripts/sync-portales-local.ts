@@ -1,9 +1,8 @@
 /**
- * sync-portales-local.ts v3
+ * sync-portales-local.ts v4
  *
- * Corre desde tu PC (IP residencial) y guarda en Supabase.
- * Usa Playwright con Chrome visible (headless: false) para Zonaprop y Argenprop.
- * Chrome visible bypasea Cloudflare correctamente.
+ * Usa Playwright para interceptar las llamadas XHR de Zonaprop/Argenprop.
+ * Zonaprop y Argenprop cargan listings via API client-side (no SSR).
  *
  * INSTALACIÓN (una sola vez):
  *   npm install playwright
@@ -12,7 +11,7 @@
  * USO:
  *   npx tsx scripts/sync-portales-local.ts
  *
- * Nota: se va a abrir una ventana de Chrome — es normal, la podés minimizar.
+ * Nota: se va a abrir una ventana de Chrome — es normal, podés minimizarla.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -78,7 +77,7 @@ async function upsertBatch(items: any[], portal: string): Promise<{ importados: 
   return { importados };
 }
 
-// ── MercadoLibre (búsqueda por texto — no requiere permisos especiales) ────────
+// ── MercadoLibre ──────────────────────────────────────────────────────────────
 
 async function getMLToken(): Promise<string | null> {
   if (!ML_CLIENT_ID || !ML_CLIENT_SECRET) return null;
@@ -90,19 +89,13 @@ async function getMLToken(): Promise<string | null> {
     if (!res.ok) return null;
     const d = await res.json();
     return d.access_token ?? null;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 function normalizeML(item: any): any {
   const attrs = item.attributes ?? [];
   const ga = (id: string) => attrs.find((a: any) => a.id === id)?.value_name ?? null;
-  const isMueble =
-    (item.category_id ?? "").includes("1459") ||
-    (ga("PROPERTY_TYPE") ?? "") !== "" ||
-    (ga("OPERATION") ?? "") !== "";
-  if (!isMueble) return null;
+  if (!ga("PROPERTY_TYPE") && !ga("OPERATION")) return null;
   return {
     portal_id: String(item.id),
     url: item.permalink ?? "",
@@ -130,93 +123,51 @@ function normalizeML(item: any): any {
 }
 
 async function syncML(): Promise<any[]> {
+  // ML bloquea category=MLA1459 sin permisos especiales de app.
+  // Intentamos text search sin categoría.
   const token = await getMLToken();
+  const headers: Record<string, string> = { "Accept": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  // Estrategias de headers: primero sin auth, luego con token
-  const headerSets: Array<{ label: string; headers: Record<string, string> }> = [
-    { label: "sin auth", headers: { "Accept": "application/json" } },
-    { label: "User-Agent", headers: { "User-Agent": "Mozilla/5.0 (compatible; GFI/1.0)", "Accept": "application/json" } },
-    ...(token ? [{ label: "token", headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" } }] : []),
-  ];
-
-  const queries = [
-    "rosario santa fe inmuebles",
-    "departamento venta rosario",
-    "casa venta rosario",
-  ];
-
+  const queries = ["departamento venta rosario", "casa venta rosario", "departamento alquiler rosario"];
   const all: any[] = [];
   const seen = new Set<string>();
 
-  for (const { label, headers } of headerSets) {
-    let anyOk = false;
-    for (const q of queries) {
-      const base = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(q)}&limit=50`;
-      const res = await fetch(`${base}&offset=0`, { headers });
-      if (!res.ok) {
-        const body = await res.text();
-        console.warn(`  ⚠️ ML [${label}] HTTP ${res.status} para "${q}": ${body.slice(0, 100)}`);
-        continue;
-      }
-      anyOk = true;
-      console.log(`  ✅ ML [${label}] funciona para "${q}"`);
-      // Si encontramos headers que funcionan, usarlos para todas las queries
-      for (const q2 of queries) {
-        const base2 = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(q2)}&limit=50`;
-        let offset = 0;
-        while (all.length < 400) {
-          const r2 = await fetch(`${base2}&offset=${offset}`, { headers });
-          if (!r2.ok) break;
-          const data = await r2.json();
-          const items: any[] = data.results ?? [];
-          if (!items.length) break;
-          for (const item of items) {
-            if (seen.has(item.id)) continue;
-            seen.add(item.id);
-            const norm = normalizeML(item);
-            if (norm) all.push(norm);
-          }
-          offset += 50;
-          if (offset >= Math.min(data.paging?.total ?? 0, 400)) break;
-        }
-      }
-      break;
+  for (const q of queries) {
+    const base = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(q)}&limit=50`;
+    const res = await fetch(`${base}&offset=0`, { headers });
+    if (!res.ok) {
+      console.warn(`  ⚠️ ML bloqueado (HTTP ${res.status}) — saltear ML, usar Zonaprop/Argenprop`);
+      return [];
     }
-    if (anyOk) break;
+    const data = await res.json();
+    for (const item of data.results ?? []) {
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      const norm = normalizeML(item);
+      if (norm) all.push(norm);
+    }
   }
-
-  if (!all.length) console.warn("  ⚠️ ML bloqueado en todos los intentos — omitir y usar Zonaprop/Argenprop");
   return all;
 }
 
-// ── Playwright helper ─────────────────────────────────────────────────────────
+// ── Playwright ────────────────────────────────────────────────────────────────
 
 async function getPlaywright(): Promise<any | null> {
-  try {
-    return await import("playwright");
-  } catch {
-    return null;
-  }
+  try { return await import("playwright"); } catch { return null; }
 }
 
-async function createStealthBrowser(pw: any) {
+async function createBrowser(pw: any) {
   const browser = await pw.chromium.launch({
     headless: false,
-    args: [
-      "--disable-blink-features=AutomationControlled",
-      "--no-first-run",
-      "--no-default-browser-check",
-      "--disable-infobars",
-    ],
+    args: ["--disable-blink-features=AutomationControlled", "--no-first-run", "--disable-infobars"],
   });
   const context = await browser.newContext({
-    userAgent:
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     locale: "es-AR",
     viewport: { width: 1280, height: 800 },
     extraHTTPHeaders: { "Accept-Language": "es-AR,es;q=0.9" },
   });
-  // Ocultar automatización
   await context.addInitScript(() => {
     Object.defineProperty(navigator, "webdriver", { get: () => undefined });
     Object.defineProperty(navigator, "plugins", { get: () => [1, 2, 3, 4, 5] });
@@ -224,44 +175,63 @@ async function createStealthBrowser(pw: any) {
   return { browser, context };
 }
 
-async function scrapeNextData(page: any, url: string): Promise<any | null> {
-  // __NEXT_DATA__ está en el HTML server-rendered: no necesita networkidle.
-  // Zonaprop/Argenprop tienen polling/analytics que nunca llegan a networkidle.
+// Navega a una URL e intercepta respuestas JSON que contengan listings.
+// También intenta __NEXT_DATA__ como fallback.
+async function scrapeListingsFromPage(page: any, url: string): Promise<any | null> {
+  const captured: any[] = [];
+
+  const onResponse = async (response: any) => {
+    const ct = response.headers()["content-type"] ?? "";
+    if (!ct.includes("json")) return;
+    try {
+      const json = await response.json();
+      // Aceptar cualquier respuesta que parezca tener listings
+      if (
+        Array.isArray(json.postings) && json.postings.length > 0 ||
+        Array.isArray(json.initialData?.postings) && json.initialData.postings.length > 0 ||
+        Array.isArray(json.listingData?.postings) && json.listingData.postings.length > 0 ||
+        Array.isArray(json.listingResults) && json.listingResults.length > 0 ||
+        Array.isArray(json.listings) && json.listings.length > 0
+      ) {
+        captured.push(json);
+      }
+    } catch { /* ignorar */ }
+  };
+
+  page.on("response", onResponse);
+
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
-  } catch {
-    // Si hay timeout en la navegación, el DOM puede igual estar listo — seguimos.
-  }
+  } catch { /* timeout ok, DOM puede estar listo */ }
 
-  const title = await page.title().catch(() => "");
+  // Esperar a que los XHR de listings terminen
+  await page.waitForTimeout(5000);
 
-  // Si Cloudflare aún está resolviendo, esperar a que cambie el título
-  if (title.toLowerCase().includes("just a moment") || title.toLowerCase().includes("cloudflare")) {
-    console.warn(`    ⚠️ CF challenge (${title}) — esperando resolución...`);
-    await page
-      .waitForFunction(() => !document.title.toLowerCase().includes("just a moment"), { timeout: 30000 })
-      .catch(() => null);
-  }
+  page.off("response", onResponse);
 
-  const nd = await page.evaluate(() => {
+  // Primero: datos capturados vía XHR
+  if (captured.length > 0) return captured[0];
+
+  // Fallback: __NEXT_DATA__
+  return await page.evaluate(() => {
     const el = document.getElementById("__NEXT_DATA__");
     if (!el?.textContent) return null;
     try { return JSON.parse(el.textContent); } catch { return null; }
   }).catch(() => null);
-
-  if (!nd) {
-    const t = await page.title().catch(() => "?");
-    console.warn(`    ⚠️ Sin NEXT_DATA (título: "${t}")`);
-  }
-
-  return nd;
 }
 
 // ── Zonaprop ──────────────────────────────────────────────────────────────────
 
-function extractZonapropPostings(nd: any, operacion: string, tipo: string): any[] {
-  const pp = nd?.props?.pageProps;
-  const postings = pp?.initialData?.postings ?? pp?.listingData?.postings ?? pp?.postings ?? [];
+function extractZonapropPostings(data: any, operacion: string, tipo: string): any[] {
+  // Soporta múltiples formatos de respuesta (SSR via __NEXT_DATA__ o XHR)
+  const postings: any[] =
+    data?.postings ??
+    data?.initialData?.postings ??
+    data?.listingData?.postings ??
+    data?.props?.pageProps?.initialData?.postings ??
+    data?.props?.pageProps?.postings ??
+    [];
+
   return postings.map((item: any) => {
     const posting = item.postingData ?? item;
     const priceData = posting.priceOperationTypes?.[0] ?? {};
@@ -271,7 +241,7 @@ function extractZonapropPostings(nd: any, operacion: string, tipo: string): any[
       .map((p: any) => p.url ?? p.image ?? p)
       .filter((u: any) => typeof u === "string" && u.startsWith("http"));
     return {
-      portal_id: String(item.postingId ?? item.id),
+      portal_id: String(item.postingId ?? item.id ?? Math.random()),
       url: `https://www.zonaprop.com.ar${posting.url ?? ""}`,
       titulo: posting.title ?? "",
       operacion,
@@ -300,33 +270,42 @@ function extractZonapropPostings(nd: any, operacion: string, tipo: string): any[
 async function syncZonaprop(): Promise<any[]> {
   const pw = await getPlaywright();
   if (!pw) {
-    console.warn("  ⚠️ Playwright no instalado. Corré: npm install playwright && npx playwright install chromium");
+    console.warn("  ⚠️ Playwright no instalado: npm install playwright && npx playwright install chromium");
     return [];
   }
 
-  console.log("  ℹ️ Abriendo Chrome (puede aparecer ventana — podés minimizarla)");
-  const { browser, context } = await createStealthBrowser(pw);
+  console.log("  ℹ️ Abriendo Chrome para Zonaprop (ventana visible, podés minimizarla)");
+  const { browser, context } = await createBrowser(pw);
   const all: any[] = [];
 
-  const SLUGS = ["departamentos", "casas", "ph", "locales", "terrenos"];
+  const SLUGS = [
+    { tipo: "departamentos", path: "departamentos" },
+    { tipo: "casas", path: "casas" },
+    { tipo: "ph", path: "ph" },
+    { tipo: "locales", path: "locales-comerciales" },
+    { tipo: "terrenos", path: "terrenos" },
+  ];
   const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
 
   try {
     const page = await context.newPage();
-    for (const tipo of SLUGS) {
+    for (const { tipo, path: tipoPath } of SLUGS) {
       for (const { slug, op } of OPS) {
         for (let pg = 1; pg <= 3; pg++) {
           const suffix = pg > 1 ? `-pagina-${pg}` : "";
-          const url = `https://www.zonaprop.com.ar/${tipo}-${slug}-rosario${suffix}.html`;
-          const nd = await scrapeNextData(page, url);
-          if (!nd) {
-            console.warn(`  ⚠️ ZP sin datos: ${tipo}-${slug} p${pg}`);
+          const url = `https://www.zonaprop.com.ar/${tipoPath}-${slug}-rosario${suffix}.html`;
+          const data = await scrapeListingsFromPage(page, url);
+          if (!data) {
+            console.warn(`  ⚠️ ZP sin datos: ${tipo}-${op} p${pg}`);
             break;
           }
-          const items = extractZonapropPostings(nd, op, tipo);
-          if (!items.length) break;
+          const items = extractZonapropPostings(data, op, tipo);
+          if (!items.length) {
+            console.warn(`  ⚠️ ZP 0 items extraídos: ${tipo}-${op} p${pg} (keys: ${Object.keys(data).slice(0, 6).join(",")})`);
+            break;
+          }
           all.push(...items);
-          process.stdout.write(`  ↳ ZP ${tipo}-${slug} p${pg}: ${items.length} props\n`);
+          process.stdout.write(`  ↳ ZP ${tipo}-${op} p${pg}: ${items.length} props\n`);
           if (items.length < 20) break;
         }
       }
@@ -341,15 +320,21 @@ async function syncZonaprop(): Promise<any[]> {
 
 // ── Argenprop ─────────────────────────────────────────────────────────────────
 
-function extractArgenpropItems(nd: any, operacion: string, tipo: string): any[] {
-  const pp = nd?.props?.pageProps;
-  const items = pp?.initialData?.listingResults ?? pp?.listingResults ?? pp?.listings ?? [];
+function extractArgenpropItems(data: any, operacion: string, tipo: string): any[] {
+  const items: any[] =
+    data?.listingResults ??
+    data?.initialData?.listingResults ??
+    data?.props?.pageProps?.initialData?.listingResults ??
+    data?.props?.pageProps?.listingResults ??
+    data?.listings ??
+    [];
+
   return items.map((item: any) => {
     const imgs = (item.photos ?? item.images ?? [])
       .map((p: any) => p.image ?? p.url ?? p)
       .filter((u: any) => typeof u === "string" && u.startsWith("http"));
     return {
-      portal_id: String(item.id ?? item.postingId),
+      portal_id: String(item.id ?? item.postingId ?? Math.random()),
       url: item.url ? `https://www.argenprop.com${item.url}` : "",
       titulo: item.title ?? item.headline ?? "",
       operacion,
@@ -378,33 +363,42 @@ function extractArgenpropItems(nd: any, operacion: string, tipo: string): any[] 
 async function syncArgenprop(): Promise<any[]> {
   const pw = await getPlaywright();
   if (!pw) {
-    console.warn("  ⚠️ Playwright no instalado. Corré: npm install playwright && npx playwright install chromium");
+    console.warn("  ⚠️ Playwright no instalado: npm install playwright && npx playwright install chromium");
     return [];
   }
 
-  console.log("  ℹ️ Abriendo Chrome para Argenprop");
-  const { browser, context } = await createStealthBrowser(pw);
+  console.log("  ℹ️ Abriendo Chrome para Argenprop (ventana visible, podés minimizarla)");
+  const { browser, context } = await createBrowser(pw);
   const all: any[] = [];
 
-  const TIPOS = ["departamentos", "casas", "ph", "locales", "terrenos"];
+  const TIPOS = [
+    { tipo: "departamentos", path: "departamentos" },
+    { tipo: "casas", path: "casas" },
+    { tipo: "ph", path: "ph" },
+    { tipo: "locales", path: "locales-comerciales" },
+    { tipo: "terrenos", path: "terrenos" },
+  ];
   const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
 
   try {
     const page = await context.newPage();
-    for (const tipo of TIPOS) {
+    for (const { tipo, path: tipoPath } of TIPOS) {
       for (const { slug, op } of OPS) {
         for (let pg = 1; pg <= 3; pg++) {
           const pageSuffix = pg > 1 ? `-pagina-${pg}` : "";
-          const url = `https://www.argenprop.com/${tipo}/${slug}/rosario${pageSuffix}`;
-          const nd = await scrapeNextData(page, url);
-          if (!nd) {
-            console.warn(`  ⚠️ AP sin datos: ${tipo}-${slug} p${pg}`);
+          const url = `https://www.argenprop.com/${tipoPath}/${slug}/rosario${pageSuffix}`;
+          const data = await scrapeListingsFromPage(page, url);
+          if (!data) {
+            console.warn(`  ⚠️ AP sin datos: ${tipo}-${op} p${pg}`);
             break;
           }
-          const items = extractArgenpropItems(nd, op, tipo);
-          if (!items.length) break;
+          const items = extractArgenpropItems(data, op, tipo);
+          if (!items.length) {
+            console.warn(`  ⚠️ AP 0 items: ${tipo}-${op} p${pg} (keys: ${Object.keys(data).slice(0, 6).join(",")})`);
+            break;
+          }
           all.push(...items);
-          process.stdout.write(`  ↳ AP ${tipo}-${slug} p${pg}: ${items.length} props\n`);
+          process.stdout.write(`  ↳ AP ${tipo}-${op} p${pg}: ${items.length} props\n`);
           if (items.length < 20) break;
         }
       }
