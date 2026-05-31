@@ -4,9 +4,8 @@
 import { useState, useCallback } from 'react'
 import { supabase } from '../../../lib/supabase'
 import { Search, BookmarkPlus, Loader2, Home, AlertCircle,
-         ChevronDown, SlidersHorizontal, ExternalLink, Plus, X, Link as LinkIcon } from 'lucide-react'
+         ChevronDown, SlidersHorizontal, ExternalLink } from 'lucide-react'
 import CrearListaModal from './CrearListaModal'
-import PropiedadCard from './PropiedadCard'
 
 interface Propiedad {
   portal: string
@@ -163,14 +162,7 @@ export default function BusquedaPage() {
   const [dormitorios, setDormitorios] = useState('')
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false)
 
-  const [resultados, setResultados] = useState<Propiedad[]>([])
-  const [cargando, setCargando] = useState(false)
-  const [buscado, setBuscado] = useState(false)
   const [error, setError] = useState('')
-
-  const [urlManual, setUrlManual] = useState('')
-  const [propiedadesManuales, setPropiedadesManuales] = useState<Propiedad[]>([])
-  const [cargandoManual, setCargandoManual] = useState(false)
 
   const [resultadosLocal, setResultadosLocal] = useState<PropLocal[]>([])
   const [totalLocal, setTotalLocal] = useState(0)
@@ -178,46 +170,11 @@ export default function BusquedaPage() {
   const [buscadoLocal, setBuscadoLocal] = useState(false)
   const [fuentesFiltro, setFuentesFiltro] = useState<string[]>(['gfi', 'zonaprop', 'argenprop'])
 
-  const [seleccionadas, setSeleccionadas] = useState<Set<string>>(new Set())
-  const [modalLista, setModalLista] = useState(false)
 
-  // Armar URLs con los filtros actuales
+  // Armar URLs con los filtros actuales (para links externos)
   const portalURLs = zona.trim()
     ? buildPortalURLs(operacion, tipo, zona, precioMin, precioMax, dormitorios)
     : null
-
-  // Buscar en MercadoLibre (API oficial gratuita)
-  const buscar = useCallback(async () => {
-    if (!zona.trim()) { setError('Ingresá una zona o barrio'); return }
-    setError('')
-    setCargando(true)
-    setBuscado(true)
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) { setError('Sesión expirada'); setCargando(false); return }
-
-      const res = await fetch('/api/scraper/buscar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-        body: JSON.stringify({
-          operacion: opSlug(operacion),
-          tipo: tipoSlug(tipo),
-          zona: zona.trim(),
-          precioMin: precioMin ? Number(precioMin) : undefined,
-          precioMax: precioMax ? Number(precioMax) : undefined,
-          dormitorios: dormitorios ? Number(dormitorios.replace('+', '')) : undefined,
-          portales: ['mercadolibre'],
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-      setResultados((data.propiedades || []).map((p: any) => ({ ...p, zona: p.zona || p.barrio || '' })))
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setCargando(false)
-    }
-  }, [operacion, tipo, zona, precioMin, precioMax, dormitorios])
 
   // Buscar en base local unificada (GFI + ZP + AP)
   const buscarLocal = useCallback(async () => {
@@ -256,98 +213,6 @@ export default function BusquedaPage() {
     setFuentesFiltro(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f])
   }
 
-  // Agregar propiedad por URL
-  const agregarManual = async () => {
-    if (!urlManual.trim()) return
-    const url = urlManual.trim()
-    if ([...resultados, ...propiedadesManuales].find(p => p.url_original === url)) {
-      setUrlManual(''); return
-    }
-
-    let portal = 'manual'
-    if (url.includes('zonaprop')) portal = 'zonaprop'
-    else if (url.includes('argenprop')) portal = 'argenprop'
-    else if (url.includes('mercadolibre') || url.includes('inmuebles.mercadolibre')) portal = 'mercadolibre'
-    else if (url.includes('infocasas')) portal = 'infocasas'
-    else if (url.includes('properati') || url.includes('proppit')) portal = 'properati'
-    else if (url.includes('propia.com.ar')) portal = 'propia'
-    else if (url.includes('bienesrosario')) portal = 'bienesrosario'
-    else if (url.includes('doomos')) portal = 'doomos'
-    else if (url.includes('lacapital')) portal = 'lacapital'
-    else if (url.includes('yumblin')) portal = 'yumblin'
-    else if (url.includes('bienesonline')) portal = 'bienesonline'
-
-    setCargandoManual(true)
-    try {
-      // ML: traer datos via API oficial
-      if (portal === 'mercadolibre') {
-        const mlId = url.match(/MLA-?(\d+)/i)?.[0]?.replace('-', '')
-        if (mlId) {
-          const res = await fetch(`https://api.mercadolibre.com/items/${mlId}`)
-          if (res.ok) {
-            const item = await res.json()
-            const atributos: Record<string, string> = {}
-            ;(item.attributes || []).forEach((a: any) => { atributos[a.id] = a.value_name || '' })
-            setPropiedadesManuales(prev => [{
-              portal: 'mercadolibre',
-              portal_id: item.id,
-              url_original: item.permalink || url,
-              titulo: item.title || url,
-              zona: atributos['NEIGHBORHOOD'] || '',
-              ciudad: atributos['CITY'] || 'Rosario',
-              precio_actual: item.price,
-              moneda: item.currency_id === 'ARS' ? 'ARS' : 'USD',
-              superficie_total: parseFloat(atributos['TOTAL_AREA'] || '0') || undefined,
-              dormitorios: parseInt(atributos['BEDROOMS'] || '0') || undefined,
-              banos: parseInt(atributos['BATHROOMS'] || '0') || undefined,
-              imagen_principal: item.thumbnail?.replace('-I.jpg', '-O.jpg'),
-              imagenes: (item.pictures || []).map((p: any) => p.url?.replace('-I.jpg', '-O.jpg')).filter(Boolean),
-              disponible: true,
-            }, ...prev])
-            setUrlManual('')
-            setCargandoManual(false)
-            return
-          }
-        }
-      }
-
-      // Resto de portales: agregar con datos mínimos
-      setPropiedadesManuales(prev => [{
-        portal,
-        portal_id: `manual_${Date.now()}`,
-        url_original: url,
-        titulo: `Propiedad en ${portal.charAt(0).toUpperCase() + portal.slice(1)}`,
-        zona: zona || '',
-        ciudad: 'Rosario',
-        disponible: true,
-      }, ...prev])
-      setUrlManual('')
-    } catch {
-      setPropiedadesManuales(prev => [{
-        portal,
-        portal_id: `manual_${Date.now()}`,
-        url_original: url,
-        titulo: `Propiedad desde ${portal}`,
-        disponible: true,
-      }, ...prev])
-      setUrlManual('')
-    } finally {
-      setCargandoManual(false)
-    }
-  }
-
-  const quitarManual = (url: string) => {
-    setPropiedadesManuales(prev => prev.filter(p => p.url_original !== url))
-    setSeleccionadas(prev => { const n = new Set(prev); n.delete(url); return n })
-  }
-
-  const toggleSeleccion = (url: string) => {
-    setSeleccionadas(prev => { const n = new Set(prev); n.has(url) ? n.delete(url) : n.add(url); return n })
-  }
-
-  const todasLasPropiedades = [...propiedadesManuales, ...resultados]
-  const propiedadesSeleccionadas = todasLasPropiedades.filter(p => seleccionadas.has(p.url_original))
-
   const label: React.CSSProperties = { fontSize:10, color:'rgba(255,255,255,0.4)', display:'block', marginBottom:6, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }
 
   return (
@@ -362,16 +227,9 @@ export default function BusquedaPage() {
               Búsqueda Inteligente
             </h1>
             <p style={{margin:'2px 0 0', fontSize:11, color:'rgba(255,255,255,0.3)'}}>
-              Red GFI · ZonaProp · Argenprop · MercadoLibre · y más — todo el mercado de la 2da Circ. COCIR
+              Todo el mercado de la 2da Circ. COCIR — Red GFI · ZonaProp · Argenprop · y más
             </p>
           </div>
-          {seleccionadas.size > 0 && (
-            <button onClick={() => setModalLista(true)}
-              style={{display:'flex', alignItems:'center', gap:8, background:'#cc0000', border:'none', color:'#fff', padding:'9px 18px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer'}}>
-              <BookmarkPlus style={{width:15, height:15}} />
-              Guardar lista ({seleccionadas.size})
-            </button>
-          )}
         </div>
       </div>
 
@@ -400,7 +258,7 @@ export default function BusquedaPage() {
             </div>
             <div>
               <label style={label}>Zona / Barrio</label>
-              <input type="text" value={zona} onChange={e => setZona(e.target.value)} onKeyDown={e => e.key==='Enter' && buscar()}
+              <input type="text" value={zona} onChange={e => setZona(e.target.value)} onKeyDown={e => e.key==='Enter' && buscarLocal()}
                 placeholder="Ej: Pichincha, Centro, Fisherton..."
                 style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
             </div>
@@ -471,15 +329,6 @@ export default function BusquedaPage() {
             }
           </button>
 
-          {/* Botón ML */}
-          <button onClick={buscar} disabled={cargando}
-            style={{width:'100%', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)', color:'rgba(255,255,255,0.6)', padding:'10px', borderRadius:8, fontWeight:600, fontSize:12, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:cargando?0.7:1, marginBottom:12}}>
-            {cargando
-              ? <><Loader2 style={{width:14, height:14, animation:'spin 1s linear infinite'}} />Buscando en MercadoLibre...</>
-              : <><Search style={{width:14, height:14}} />Buscar en MercadoLibre en tiempo real</>
-            }
-          </button>
-
           {/* Links a todos los portales */}
           {portalURLs && (
             <div>
@@ -501,42 +350,6 @@ export default function BusquedaPage() {
             </div>
           )}
         </div>
-
-        {/* ── Agregar por URL ── */}
-        <div style={{background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:16, marginBottom:20}}>
-          <label style={{...label, marginBottom:8}}>
-            <LinkIcon style={{width:12, height:12, display:'inline', marginRight:5}} />
-            Agregar propiedad por URL — de cualquier portal
-          </label>
-          <div style={{display:'flex', gap:8}}>
-            <input type="url" value={urlManual} onChange={e => setUrlManual(e.target.value)} onKeyDown={e => e.key==='Enter' && agregarManual()}
-              placeholder="Pegá la URL de ZonaProp, Argenprop, Properati, Propia, InfoCasas, Doomos, LaCapital..."
-              style={{flex:1, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'9px 12px', color:'#fff', fontSize:12, outline:'none', fontFamily:'Inter,sans-serif'}} />
-            <button onClick={agregarManual} disabled={cargandoManual || !urlManual.trim()}
-              style={{background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.15)', color:'#fff', padding:'9px 16px', borderRadius:6, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', gap:6, opacity:(!urlManual.trim()||cargandoManual)?0.4:1}}>
-              {cargandoManual ? <Loader2 style={{width:14, height:14, animation:'spin 1s linear infinite'}} /> : <Plus style={{width:14, height:14}} />}
-              Agregar
-            </button>
-          </div>
-        </div>
-
-        {/* ── Propiedades manuales ── */}
-        {propiedadesManuales.length > 0 && (
-          <div style={{marginBottom:24}}>
-            <p style={{...label, marginBottom:12}}>Propiedades agregadas ({propiedadesManuales.length})</p>
-            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:14}}>
-              {propiedadesManuales.map(prop => (
-                <div key={prop.url_original} style={{position:'relative'}}>
-                  <button onClick={() => quitarManual(prop.url_original)}
-                    style={{position:'absolute', top:8, right:8, zIndex:10, background:'rgba(0,0,0,0.7)', border:'none', color:'rgba(255,255,255,0.6)', borderRadius:'50%', width:24, height:24, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}>
-                    <X style={{width:12, height:12}} />
-                  </button>
-                  <PropiedadCard propiedad={prop} seleccionada={seleccionadas.has(prop.url_original)} onToggle={() => toggleSeleccion(prop.url_original)} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* ── Resultados base local (GFI + ZP + AP) ── */}
         {buscadoLocal && (
@@ -625,45 +438,7 @@ export default function BusquedaPage() {
           </div>
         )}
 
-        {/* ── Resultados MercadoLibre ── */}
-        {buscado && (
-          <>
-            <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14}}>
-              <span style={{fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.7)', fontFamily:'Montserrat,sans-serif'}}>
-                {cargando ? 'Buscando en MercadoLibre...' : resultados.length === 0 ? 'Sin resultados en MercadoLibre' : `${resultados.length} resultados en MercadoLibre`}
-              </span>
-              {todasLasPropiedades.length > 0 && (
-                <button onClick={() => {
-                  if (seleccionadas.size === todasLasPropiedades.length) setSeleccionadas(new Set())
-                  else setSeleccionadas(new Set(todasLasPropiedades.map(p => p.url_original)))
-                }} style={{background:'none', border:'none', color:'#cc0000', fontSize:11, cursor:'pointer', fontWeight:600}}>
-                  {seleccionadas.size === todasLasPropiedades.length ? 'Deseleccionar todas' : 'Seleccionar todas'}
-                </button>
-              )}
-            </div>
-
-            {!cargando && resultados.length === 0 && (
-              <div style={{textAlign:'center', padding:'48px 0', color:'rgba(255,255,255,0.2)'}}>
-                <Home style={{width:36, height:36, margin:'0 auto 10px', display:'block', opacity:0.3}} />
-                <p style={{margin:0}}>Sin resultados en MercadoLibre para esa búsqueda.</p>
-                <p style={{margin:'4px 0 0', fontSize:12}}>Buscá en los otros portales con los botones de arriba.</p>
-              </div>
-            )}
-
-            {resultados.length > 0 && (
-              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:14}}>
-                {resultados.map(prop => (
-                  <PropiedadCard key={prop.url_original} propiedad={prop} seleccionada={seleccionadas.has(prop.url_original)} onToggle={() => toggleSeleccion(prop.url_original)} />
-                ))}
-              </div>
-            )}
-          </>
-        )}
       </div>
-
-      {modalLista && (
-        <CrearListaModal propiedades={propiedadesSeleccionadas} onClose={() => setModalLista(false)} onCreada={() => { setModalLista(false); setSeleccionadas(new Set()) }} />
-      )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
