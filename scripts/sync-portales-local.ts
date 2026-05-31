@@ -188,88 +188,132 @@ function hasListingData(json: any): boolean {
   );
 }
 
-// Navega a una URL usando page.route() para interceptar XHR/fetch con acceso garantizado al body.
-// page.on('response').text() falla en headless:false — route.fetch() es la alternativa correcta.
+// Navega a una URL y extrae listings del DOM o de XHR.
+// Estrategia: esperar a que aparezca [data-postingid] (React hydration puede tardar),
+// y si no aparece, hacer un dump del DOM para diagnóstico.
 async function scrapeListingsFromPage(page: any, url: string): Promise<any | null> {
   const captured: any[] = [];
-  const xhrLog: string[] = [];
+  const xhrInfos: string[] = [];
 
-  const routeHandler = async (route: any) => {
-    const request = route.request();
+  const reqHandler = async (request: any) => {
     const rt = request.resourceType();
-
-    if (rt !== "xhr" && rt !== "fetch") {
-      return route.continue().catch(() => null);
-    }
-
-    xhrLog.push(request.url().slice(0, 120));
-
+    if (rt !== "xhr" && rt !== "fetch") return;
     try {
-      const response = await route.fetch();
+      const response = await request.response();
+      if (!response || response.status() < 200 || response.status() >= 300) return;
       const buffer = await response.body();
       const text = buffer.toString("utf-8");
-
-      if (text && (text[0] === "{" || text[0] === "[")) {
-        try {
-          const json = JSON.parse(text);
-          if (hasListingData(json)) captured.push(json);
-        } catch {}
-      }
-
-      return route.fulfill({ response });
-    } catch {
-      return route.continue().catch(() => null);
-    }
+      if (!text || (text[0] !== "{" && text[0] !== "[")) return;
+      const json = JSON.parse(text);
+      const keys = Array.isArray(json) ? [`arr[${json.length}]`] : Object.keys(json).slice(0, 6);
+      xhrInfos.push(`${request.url().slice(0, 90)} → keys:${keys.join(",")}`);
+      if (hasListingData(json)) captured.push(json);
+    } catch {}
   };
-
-  await page.route("**/*", routeHandler);
+  page.on("requestfinished", reqHandler);
 
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
   } catch {}
 
-  // Polling: esperar a que la página real cargue (por si hay CF challenge)
+  // Esperar si hay CF challenge
   for (let i = 0; i < 30; i++) {
-    const title = await page.title().catch(() => "");
-    if (
-      title.length > 10 &&
-      !title.toLowerCase().includes("just a moment") &&
-      !title.toLowerCase().includes("cloudflare")
-    ) break;
+    const t = await page.title().catch(() => "");
+    if (t.length > 10 && !t.toLowerCase().includes("just a moment") && !t.toLowerCase().includes("cloudflare")) break;
     await page.waitForTimeout(1000);
   }
 
-  // Dar tiempo a los XHR
-  await page.waitForTimeout(5000);
+  // Esperar cards de ZP: usan data-qa="posting PROPERTY" (no data-postingid).
+  // Para AP: intentar .listing__item; si no aparece en 15s seguimos igual.
+  try {
+    await page.waitForSelector('[data-qa^="posting "], .listing__item, [class*="listing__item"]', { timeout: 15000 });
+  } catch {
+    // No encontrado — seguimos con extracción y debug
+  }
 
-  await page.unroute("**/*", routeHandler).catch(() => null);
-
+  page.off("requestfinished", reqHandler);
   const title = await page.title().catch(() => "?");
 
   if (captured.length > 0) {
-    process.stdout.write(`    📡 ${captured.length} XHR capturado(s) — ${title.slice(0, 50)}\n`);
+    process.stdout.write(`    📡 XHR con listings capturado (${title.slice(0, 50)})\n`);
     return captured[0];
   }
 
-  // Debug: mostrar todas las XHR calls para diagnóstico
-  if (xhrLog.length > 0) {
-    process.stdout.write(`    🔍 XHR sin listings (${xhrLog.length} calls):\n`);
-    for (const u of xhrLog.slice(0, 6)) process.stdout.write(`       ${u}\n`);
-  } else {
-    process.stdout.write(`    🔍 0 calls XHR/fetch detectadas\n`);
-  }
+  const domResult = await page.evaluate(() => {
+    // ── Zonaprop: cards con data-qa="posting PROPERTY" + data-id ────────────
+    const zpCards = document.querySelectorAll('[data-qa^="posting "][data-id]');
+    if (zpCards.length > 0) {
+      const first = zpCards[0] as HTMLElement;
+      return {
+        type: "zonaprop-dom",
+        count: zpCards.length,
+        firstAttrs: Array.from(first.attributes).map(a => `${a.name}=${a.value.slice(0, 60)}`),
+        postings: Array.from(zpCards).map((card: any) => {
+          const attrs: Record<string, string> = {};
+          for (const a of card.attributes) attrs[a.name] = a.value;
+          const imgs = Array.from(card.querySelectorAll("img"))
+            .map((img: any) => img.getAttribute("src") || img.getAttribute("data-src") || "")
+            .filter((s: string) => s.startsWith("http"));
+          // Aumentar texto a 600 chars para capturar precio + features
+          return { attrs, imgs, text: (card.textContent || "").replace(/\s+/g, " ").trim().slice(0, 600) };
+        }),
+      };
+    }
 
-  // Fallback: __NEXT_DATA__
-  const nd = await page.evaluate(() => {
-    const el = document.getElementById("__NEXT_DATA__");
-    if (!el?.textContent) return null;
-    try { return JSON.parse(el.textContent); } catch { return null; }
+    // ── Argenprop: listing items (múltiples selectores posibles) ─────────────
+    const apSelectors = [
+      ".listing__item",
+      "[class*='listing__item']",
+      ".listing-item",
+      "[class*='listing-item']",
+      "article[class*='card']",
+    ];
+    for (const sel of apSelectors) {
+      const apCards = document.querySelectorAll(sel);
+      if (apCards.length > 2) {
+        const first = apCards[0] as HTMLElement;
+        return {
+          type: "argenprop-dom",
+          count: apCards.length,
+          selector: sel,
+          firstAttrs: Array.from(first.attributes).map(a => `${a.name}=${a.value.slice(0, 60)}`),
+          postings: Array.from(apCards).map((card: any) => {
+            const attrs: Record<string, string> = {};
+            for (const a of card.attributes) attrs[a.name] = a.value;
+            const link = card.querySelector("a[href*='/propiedades/']") ?? card.querySelector("a");
+            const imgs = Array.from(card.querySelectorAll("img"))
+              .map((img: any) => img.getAttribute("src") || img.getAttribute("data-src") || "")
+              .filter((s: string) => s.startsWith("http"));
+            return { attrs, href: link?.getAttribute("href") || "", imgs, text: (card.textContent || "").replace(/\s+/g, " ").trim().slice(0, 600) };
+          }),
+        };
+      }
+    }
+
+    // ── Debug: sin listings conocidos ────────────────────────────────────────
+    const bodyHTML = document.body?.innerHTML?.slice(0, 3000) || "";
+    // Buscar qué data-* attributes hay
+    const dataEls = Array.from(document.querySelectorAll("*"))
+      .filter((el: any) => Array.from(el.attributes).some((a: any) => a.name.startsWith("data-") && a.value.length > 3))
+      .slice(0, 8)
+      .map((el: any) => el.tagName + Array.from(el.attributes).filter((a: any) => a.name.startsWith("data-")).map((a: any) => ` ${a.name}=${a.value.slice(0,30)}`).join(""));
+    return { type: "debug", count: 0, bodyHTML, dataEls };
   }).catch(() => null);
 
-  if (!nd) {
-    process.stdout.write(`    ⚠️ Sin datos (título: "${title.slice(0, 60)}")\n`);
+  if (domResult && domResult.count > 0) {
+    process.stdout.write(`    🔍 DOM: ${domResult.count} cards (${domResult.type}${domResult.selector ? ` sel:${domResult.selector}` : ""})\n`);
+    process.stdout.write(`    🔍 Primer card attrs: ${domResult.firstAttrs?.slice(0, 5).join(" | ")}\n`);
+    return domResult;
   }
-  return nd;
+
+  process.stdout.write(`    ⚠️ Sin datos — título: "${title.slice(0, 60)}"\n`);
+  if (domResult?.dataEls?.length > 0) {
+    process.stdout.write(`    🔍 data-* elements: ${(domResult.dataEls as string[]).slice(0, 5).join(" | ")}\n`);
+  }
+  if (domResult?.bodyHTML) {
+    process.stdout.write(`    📄 Body HTML (primeros 1500 chars):\n${(domResult.bodyHTML as string).slice(0, 1500)}\n`);
+  }
+  return null;
 }
 
 // ── Zonaprop ──────────────────────────────────────────────────────────────────
@@ -319,6 +363,61 @@ function extractZonapropPostings(data: any, operacion: string, tipo: string): an
   });
 }
 
+function extractZonapropDOMPostings(data: any, operacion: string, tipo: string): any[] {
+  if (!Array.isArray(data?.postings)) return [];
+  return data.postings
+    .filter((card: any) => card.attrs?.["data-id"])
+    .map((card: any) => {
+      const attrs = card.attrs ?? {};
+      const portal_id = String(attrs["data-id"]);
+      const urlPath = attrs["data-to-posting"] ?? "";
+      const url = `https://www.zonaprop.com.ar${urlPath}`;
+      const text = card.text ?? "";
+
+      let precio: number | null = null;
+      let moneda = "USD";
+      const usdMatch = text.match(/USD\s*([\d.]+(?:,\d+)?)/i);
+      const arsMatch = text.match(/\$\s*([\d.]+(?:,\d+)?)/);
+      if (usdMatch) {
+        precio = parseFloat(usdMatch[1].replace(/\./g, "").replace(",", "."));
+        moneda = "USD";
+      } else if (arsMatch) {
+        precio = parseFloat(arsMatch[1].replace(/\./g, "").replace(",", "."));
+        moneda = "ARS";
+      }
+
+      const dormMatch = text.match(/(\d+)\s*dorm\.?/i);
+      const ambMatch = text.match(/(\d+)\s*amb\.?/i);
+      const supMatch = text.match(/(\d+(?:[.,]\d+)?)\s*m²/i);
+      const titulo = text.split(/[.\n]/).find((l: string) => l.trim().length > 5)?.trim() ?? "";
+
+      return {
+        portal_id,
+        url,
+        titulo,
+        operacion,
+        tipo,
+        precio: isNaN(precio as number) ? null : precio,
+        moneda,
+        dormitorios: dormMatch ? parseInt(dormMatch[1]) : null,
+        banos: null,
+        ambientes: ambMatch ? parseInt(ambMatch[1]) : null,
+        superficie_cubierta: supMatch ? parseFloat(supMatch[1].replace(",", ".")) : null,
+        sup_terreno: null,
+        expensas: null,
+        barrio: null,
+        ciudad: "Rosario",
+        provincia: "Santa Fe",
+        direccion: null,
+        lat: null,
+        lng: null,
+        imagenes: Array.isArray(card.imgs) ? card.imgs : [],
+        descripcion: null,
+        datos_raw: { zp_id: portal_id, zp_to: urlPath },
+      };
+    });
+}
+
 async function syncZonaprop(): Promise<any[]> {
   const pw = await getPlaywright();
   if (!pw) {
@@ -351,7 +450,13 @@ async function syncZonaprop(): Promise<any[]> {
             console.warn(`  ⚠️ ZP sin datos: ${tipo}-${op} p${pg}`);
             break;
           }
-          const items = extractZonapropPostings(data, op, tipo);
+          if (data.type === "debug") {
+            console.warn(`  ⚠️ ZP DOM debug sin listings: ${tipo}-${op} p${pg}`);
+            break;
+          }
+          const items = data.type === "zonaprop-dom"
+            ? extractZonapropDOMPostings(data, op, tipo)
+            : extractZonapropPostings(data, op, tipo);
           if (!items.length) {
             console.warn(`  ⚠️ ZP 0 items extraídos: ${tipo}-${op} p${pg} (keys: ${Object.keys(data).slice(0, 6).join(",")})`);
             break;
@@ -412,6 +517,63 @@ function extractArgenpropItems(data: any, operacion: string, tipo: string): any[
   });
 }
 
+function extractArgenpropDOMPostings(data: any, operacion: string, tipo: string): any[] {
+  if (!Array.isArray(data?.postings)) return [];
+  return data.postings
+    .filter((card: any) => card.href || card.attrs?.["data-id"])
+    .map((card: any) => {
+      const href = card.href ?? "";
+      // portal_id desde data-id, o último segmento numérico de la URL
+      const dataId = card.attrs?.["data-id"];
+      const urlIdMatch = href.match(/[_-](\d{5,})(?:[_-]|$)/);
+      const portal_id = dataId ? String(dataId) : (urlIdMatch ? urlIdMatch[1] : String(Math.random()));
+      const url = href.startsWith("http") ? href : `https://www.argenprop.com${href}`;
+      const text = card.text ?? "";
+
+      let precio: number | null = null;
+      let moneda = "USD";
+      const usdMatch = text.match(/USD\s*([\d.]+(?:,\d+)?)/i);
+      const arsMatch = text.match(/\$\s*([\d.]+(?:,\d+)?)/);
+      if (usdMatch) {
+        precio = parseFloat(usdMatch[1].replace(/\./g, "").replace(",", "."));
+        moneda = "USD";
+      } else if (arsMatch) {
+        precio = parseFloat(arsMatch[1].replace(/\./g, "").replace(",", "."));
+        moneda = "ARS";
+      }
+
+      const dormMatch = text.match(/(\d+)\s*(?:dorm|dormitorio)\.?/i);
+      const ambMatch = text.match(/(\d+)\s*(?:amb|ambiente)\.?/i);
+      const supMatch = text.match(/(\d+(?:[.,]\d+)?)\s*m²/i);
+      const titulo = text.split(/[.\n]/).find((l: string) => l.trim().length > 5)?.trim() ?? "";
+
+      return {
+        portal_id,
+        url,
+        titulo,
+        operacion,
+        tipo,
+        precio: isNaN(precio as number) ? null : precio,
+        moneda,
+        dormitorios: dormMatch ? parseInt(dormMatch[1]) : null,
+        banos: null,
+        ambientes: ambMatch ? parseInt(ambMatch[1]) : null,
+        superficie_cubierta: supMatch ? parseFloat(supMatch[1].replace(",", ".")) : null,
+        sup_terreno: null,
+        expensas: null,
+        barrio: null,
+        ciudad: "Rosario",
+        provincia: "Santa Fe",
+        direccion: null,
+        lat: null,
+        lng: null,
+        imagenes: Array.isArray(card.imgs) ? card.imgs : [],
+        descripcion: null,
+        datos_raw: { ap_href: href },
+      };
+    });
+}
+
 async function syncArgenprop(): Promise<any[]> {
   const pw = await getPlaywright();
   if (!pw) {
@@ -427,7 +589,7 @@ async function syncArgenprop(): Promise<any[]> {
     { tipo: "departamentos", path: "departamentos" },
     { tipo: "casas", path: "casas" },
     { tipo: "ph", path: "ph" },
-    { tipo: "locales", path: "locales-comerciales" },
+    { tipo: "locales", path: "local-comercial" },
     { tipo: "terrenos", path: "terrenos" },
   ];
   const OPS = [{ slug: "venta", op: "venta" }, { slug: "alquiler", op: "alquiler" }];
@@ -444,7 +606,13 @@ async function syncArgenprop(): Promise<any[]> {
             console.warn(`  ⚠️ AP sin datos: ${tipo}-${op} p${pg}`);
             break;
           }
-          const items = extractArgenpropItems(data, op, tipo);
+          if (data.type === "debug") {
+            console.warn(`  ⚠️ AP DOM debug sin listings: ${tipo}-${op} p${pg}`);
+            break;
+          }
+          const items = data.type === "argenprop-dom"
+            ? extractArgenpropDOMPostings(data, op, tipo)
+            : extractArgenpropItems(data, op, tipo);
           if (!items.length) {
             console.warn(`  ⚠️ AP 0 items: ${tipo}-${op} p${pg} (keys: ${Object.keys(data).slice(0, 6).join(",")})`);
             break;
