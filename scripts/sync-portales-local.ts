@@ -385,6 +385,10 @@ async function syncZonaprop(): Promise<any[]> {
             console.warn(`  ⚠️ ZP sin datos: ${tipo}-${op} p${pg}`);
             break;
           }
+          if (data.type === "zonaprop-dom" || data.type === "debug") {
+            console.warn(`  ⚠️ ZP DOM sin parser implementado todavía — saltando para evitar datos corruptos en DB`);
+            break;
+          }
           const items = extractZonapropPostings(data, op, tipo);
           if (!items.length) {
             console.warn(`  ⚠️ ZP 0 items extraídos: ${tipo}-${op} p${pg} (keys: ${Object.keys(data).slice(0, 6).join(",")})`);
@@ -476,6 +480,10 @@ async function syncArgenprop(): Promise<any[]> {
           const data = await scrapeListingsFromPage(page, url);
           if (!data) {
             console.warn(`  ⚠️ AP sin datos: ${tipo}-${op} p${pg}`);
+            break;
+          }
+          if (data.type === "argenprop-dom" || data.type === "debug") {
+            console.warn(`  ⚠️ AP DOM sin parser implementado todavía — saltando para evitar datos corruptos en DB`);
             break;
           }
           const items = extractArgenpropItems(data, op, tipo);

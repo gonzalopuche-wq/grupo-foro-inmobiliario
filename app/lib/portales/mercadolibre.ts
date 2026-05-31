@@ -100,7 +100,7 @@ export async function syncMercadoLibre(maxItems = 300): Promise<PropExtNorm[]> {
         lastError = httpStatus === 0
           ? "Error de red o timeout en ML API"
           : `HTTP ${httpStatus} en ML API`;
-        break outer;
+        break;
       }
       if (!items.length) break;
 
