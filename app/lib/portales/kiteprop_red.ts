@@ -56,8 +56,9 @@ function normalizarKP(kp: Record<string, any>): PropExtNorm {
 async function fetchAllKP(apiKey: string, baseUrl = KP_BASE): Promise<Record<string, any>[]> {
   const all: Record<string, any>[] = [];
   let page = 1;
+  // KiteProp ignora page_size grande; itera hasta agotar el total declarado
   while (true) {
-    const res = await fetch(`${baseUrl}/properties/?page=${page}&page_size=100`, {
+    const res = await fetch(`${baseUrl}/properties/?page=${page}`, {
       headers: { "X-API-Key": apiKey, Accept: "application/json" },
       signal: AbortSignal.timeout(30_000),
       next: { revalidate: 0 },
@@ -70,13 +71,14 @@ async function fetchAllKP(apiKey: string, baseUrl = KP_BASE): Promise<Record<str
       : Array.isArray(json) ? json : [];
     if (!rows.length) break;
     all.push(...rows);
-    // Detectar si hay más páginas: por campo next, o por total count
     const total = json.count ?? json.total ?? json.total_count ?? null;
-    const hasNext = !!json.next;
-    if (!hasNext) break;
+    // Parar si: campo next ausente/null Y (no hay total declarado o ya tenemos todo)
+    const hasNextUrl = !!json.next;
+    const hasMoreByCount = total !== null && all.length < total;
+    if (!hasNextUrl && !hasMoreByCount) break;
     if (total !== null && all.length >= total) break;
     page++;
-    if (page > 50) break;
+    if (page > 100) break;
   }
   return all;
 }
