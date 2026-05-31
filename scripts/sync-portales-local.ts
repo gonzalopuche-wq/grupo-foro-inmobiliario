@@ -252,8 +252,18 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
           const attrs: Record<string, string> = {};
           for (const a of card.attributes) attrs[a.name] = a.value;
           const imgs = Array.from(card.querySelectorAll("img"))
-            .map((img: any) => img.getAttribute("src") || img.getAttribute("data-src") || "")
-            .filter((s: string) => s.startsWith("http"));
+            .map((img: any) => {
+              // data-src tiene la URL real; src puede ser un placeholder lazy-load (data URI)
+              const candidates = [
+                img.getAttribute("data-src"),
+                img.getAttribute("data-lazy-img"),
+                img.getAttribute("data-lazy"),
+                img.getAttribute("data-original"),
+                img.getAttribute("src"),
+              ];
+              return candidates.find((s: any) => s && s.startsWith("http")) ?? "";
+            })
+            .filter(Boolean);
           // Aumentar texto a 600 chars para capturar precio + features
           return { attrs, imgs, text: (card.textContent || "").replace(/\s+/g, " ").trim().slice(0, 600) };
         }),
@@ -282,8 +292,17 @@ async function scrapeListingsFromPage(page: any, url: string): Promise<any | nul
             for (const a of card.attributes) attrs[a.name] = a.value;
             const link = card.querySelector("a[href*='/propiedades/']") ?? card.querySelector("a");
             const imgs = Array.from(card.querySelectorAll("img"))
-              .map((img: any) => img.getAttribute("src") || img.getAttribute("data-src") || "")
-              .filter((s: string) => s.startsWith("http"));
+              .map((img: any) => {
+                const candidates = [
+                  img.getAttribute("data-src"),
+                  img.getAttribute("data-lazy-img"),
+                  img.getAttribute("data-lazy"),
+                  img.getAttribute("data-original"),
+                  img.getAttribute("src"),
+                ];
+                return candidates.find((s: any) => s && s.startsWith("http")) ?? "";
+              })
+              .filter(Boolean);
             return { attrs, href: link?.getAttribute("href") || "", imgs, text: (card.textContent || "").replace(/\s+/g, " ").trim().slice(0, 600) };
           }),
         };

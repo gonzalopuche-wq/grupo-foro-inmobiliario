@@ -585,9 +585,10 @@ export default function BusquedaPage() {
                       onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}>
                       <div style={{height:160, background:'rgba(255,255,255,0.05)', overflow:'hidden', position:'relative'}}>
                         {p.foto_principal
-                          ? <img src={p.foto_principal} alt={p.titulo ?? ''} style={{width:'100%', height:'100%', objectFit:'cover'}} />
-                          : <div style={{display:'flex', alignItems:'center', justifyContent:'center', height:'100%', fontSize:28, color:'rgba(255,255,255,0.1)'}}>🏠</div>
-                        }
+                          ? <img src={p.foto_principal} alt={p.titulo ?? ''} style={{width:'100%', height:'100%', objectFit:'cover'}}
+                              onError={e => { const t = e.currentTarget; t.style.display='none'; (t.nextSibling as HTMLElement | null)?.style && ((t.nextSibling as HTMLElement).style.display='flex'); }} />
+                          : null}
+                        <div style={{display: p.foto_principal ? 'none' : 'flex', alignItems:'center', justifyContent:'center', height:'100%', fontSize:28, color:'rgba(255,255,255,0.1)'}}>🏠</div>
                         <span style={{position:'absolute', top:8, left:8, fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:10, background:cfg.badge, color:'#fff', fontFamily:'Montserrat,sans-serif', letterSpacing:'0.06em', textTransform:'uppercase'}}>
                           {cfg.label}
                         </span>
