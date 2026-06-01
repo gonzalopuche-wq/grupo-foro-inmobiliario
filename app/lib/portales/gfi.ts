@@ -60,7 +60,7 @@ export async function syncGFIRed(): Promise<PropExtNorm[]> {
 
   const { data, error } = await sb
     .from("cartera_propiedades")
-    .select("id,titulo,operacion,tipo,precio,moneda,zona,ciudad,provincia,direccion,latitud,longitud,dormitorios,banos,ambientes,superficie_cubierta,expensas,fotos,descripcion,codigo,perfil_id,estado")
+    .select("id,titulo,operacion,tipo,precio,moneda,zona,ciudad,direccion,latitud,longitud,dormitorios,banos,ambientes,superficie_cubierta,expensas,fotos,descripcion,codigo,perfil_id,estado")
     .in("estado", ["activa", "reservada"])
     .order("created_at", { ascending: false })
     .limit(500);
@@ -78,7 +78,7 @@ export async function syncGFIPortal(): Promise<PropExtNorm[]> {
 
   const { data, error } = await sb
     .from("cartera_propiedades")
-    .select("id,titulo,operacion,tipo,precio,moneda,zona,ciudad,provincia,direccion,latitud,longitud,dormitorios,banos,ambientes,superficie_cubierta,expensas,fotos,descripcion,codigo,perfil_id,estado")
+    .select("id,titulo,operacion,tipo,precio,moneda,zona,ciudad,direccion,latitud,longitud,dormitorios,banos,ambientes,superficie_cubierta,expensas,fotos,descripcion,codigo,perfil_id,estado")
     .eq("estado", "activa")
     .order("created_at", { ascending: false })
     .limit(500);
