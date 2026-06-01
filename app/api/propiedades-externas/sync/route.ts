@@ -37,12 +37,11 @@ async function verificarAdmin(token: string | null) {
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(`Timeout ${ms / 1000}s`)), ms)
-    ),
-  ]);
+  let timeoutId: ReturnType<typeof setTimeout>;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(`Timeout ${ms / 1000}s`)), ms);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
 }
 
 async function upsertBatch(
@@ -52,8 +51,9 @@ async function upsertBatch(
 ): Promise<{ importados: number; upsertError?: string }> {
   let importados = 0;
   const BATCH = 50;
-  for (let i = 0; i < items.length; i += BATCH) {
-    const batch = items.slice(i, i + BATCH).map(item => ({
+  const safeItems = Array.isArray(items) ? items : [];
+  for (let i = 0; i < safeItems.length; i += BATCH) {
+    const batch = safeItems.slice(i, i + BATCH).map(item => ({
       ...item,
       portal,
       activa: true,

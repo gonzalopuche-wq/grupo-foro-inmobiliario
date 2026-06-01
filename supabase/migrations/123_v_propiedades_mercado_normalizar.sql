@@ -70,7 +70,7 @@ SELECT
   NULL::numeric                                                 AS expensas,
   (
     CASE
-      WHEN imagenes IS NOT NULL AND jsonb_array_length(imagenes) > 0
+      WHEN imagenes IS NOT NULL AND jsonb_typeof(imagenes) = 'array' AND jsonb_array_length(imagenes) > 0
       THEN imagenes ->> 0
       ELSE NULL
     END
