@@ -16,6 +16,14 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+let constraintRepaired = false;
+
+async function repairConstraintIfNeeded(): Promise<void> {
+  if (constraintRepaired) return;
+  await sb.rpc("reparar_constraint_portales");
+  constraintRepaired = true;
+}
+
 async function upsert(items: any[], portal: string): Promise<number> {
   const BATCH = 50;
   const now = new Date().toISOString();
@@ -27,9 +35,16 @@ async function upsert(items: any[], portal: string): Promise<number> {
       activa: true,
       synced_at: now,
     }));
-    const { error } = await sb
+    let { error } = await sb
       .from("propiedades_externas")
       .upsert(batch, { onConflict: "portal,portal_id" });
+    if (error?.message?.includes("violates check constraint")) {
+      await repairConstraintIfNeeded();
+      const retry = await sb
+        .from("propiedades_externas")
+        .upsert(batch, { onConflict: "portal,portal_id" });
+      error = retry.error;
+    }
     if (error) throw new Error(`Upsert ${portal}: ${error.message}`);
     ok += batch.length;
   }
@@ -38,7 +53,8 @@ async function upsert(items: any[], portal: string): Promise<number> {
 
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || auth !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 

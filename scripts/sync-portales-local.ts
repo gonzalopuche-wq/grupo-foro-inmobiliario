@@ -154,6 +154,8 @@ async function syncML(): Promise<any[]> {
 // ── Playwright ────────────────────────────────────────────────────────────────
 
 async function getPlaywright(): Promise<any | null> {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore — playwright is an optional local dev dependency
   try { return await import("playwright"); } catch { return null; }
 }
 
