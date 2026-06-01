@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
+import PropDetailModal from "../busqueda/PropDetailModal";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 interface Propiedad {
@@ -382,6 +383,7 @@ export default function CarteraPage() {
   const [syncResExt, setSyncResExt] = useState<string | null>(null);
   const [syncResultados, setSyncResultados] = useState<Record<string, { importados: number; cruzadas?: number; error?: string }> | null>(null);
   const [ultimaSyncExt, setUltimaSyncExt] = useState<string | null>(null);
+  const [selectedPropExt, setSelectedPropExt] = useState<{ id: string; fuente: string } | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -1922,7 +1924,8 @@ export default function CarteraPage() {
                     const opLabel = p.operacion === "alquiler_temporal" ? "Alq. temp." : p.operacion;
                     const ubicacion = [p.barrio, p.ciudad].filter(Boolean).join(", ");
                     return (
-                      <a key={p.id} href={(p.url && (p.url.startsWith("http://") || p.url.startsWith("https://"))) ? p.url : undefined} target={(p.url && (p.url.startsWith("http://") || p.url.startsWith("https://"))) ? "_blank" : undefined} rel="noopener noreferrer" style={{ textDecoration: "none", cursor: (p.url && (p.url.startsWith("http://") || p.url.startsWith("https://"))) ? "pointer" : "default" }}>
+                      <div key={p.id} onClick={() => setSelectedPropExt({ id: p.id, fuente: p.portal })}
+                        style={{ cursor: "pointer" }}>
                         <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "border-color 0.15s, box-shadow 0.15s" }}
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.18)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.5)"; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
@@ -1930,7 +1933,7 @@ export default function CarteraPage() {
                           {/* Imagen */}
                           <div style={{ position: "relative", height: 170, background: "#111", flexShrink: 0, overflow: "hidden" }}>
                             {img
-                              ? <img src={img} alt={p.titulo} referrerPolicy="no-referrer" crossOrigin="anonymous" style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
+                              ? <img src={img} alt={p.titulo} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
                                   loading="lazy"
                                   onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
                                   onMouseEnter={e => { (e.target as HTMLImageElement).style.transform = "scale(1.04)"; }}
@@ -1965,7 +1968,7 @@ export default function CarteraPage() {
                             {ubicacion && <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", margin: 0, marginTop: "auto", display: "flex", alignItems: "center", gap: 4 }}>📍 {ubicacion}</p>}
                           </div>
                         </div>
-                      </a>
+                      </div>
                     );
                   })}
                 </div>
@@ -2909,6 +2912,13 @@ export default function CarteraPage() {
             </div>
           </div>
         </div>
+      )}
+      {selectedPropExt && (
+        <PropDetailModal
+          propId={selectedPropExt.id}
+          fuente={selectedPropExt.fuente}
+          onClose={() => setSelectedPropExt(null)}
+        />
       )}
     </>
   );
