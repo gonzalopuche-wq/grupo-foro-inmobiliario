@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +12,10 @@ ALTER TABLE propiedades_externas ADD CONSTRAINT propiedades_externas_portal_chec
     'tokko',
     'propia', 'propia_red', 'propia_portal'
   ));
-`;
+`.trim();
+
+const MIGRATION_122_STEP1 = `ALTER TABLE propiedades_externas DROP CONSTRAINT IF EXISTS propiedades_externas_portal_check;`;
+const MIGRATION_122_STEP2 = `ALTER TABLE propiedades_externas ADD CONSTRAINT propiedades_externas_portal_check CHECK (portal IN ('mercadolibre','zonaprop','argenprop','properati','gfi_red','gfi_portal','gfi','kiteprop','tokko','propia','propia_red','propia_portal'));`;
 
 const MIGRATION_123 = `
 DROP VIEW IF EXISTS v_propiedades_mercado;
@@ -43,42 +45,91 @@ FROM propiedades_externas
 WHERE activa = true;
 
 GRANT SELECT ON v_propiedades_mercado TO authenticated;
-`;
+`.trim();
 
-export async function GET(req: NextRequest) {
-  if (req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
+async function execViaManagementApi(sql: string, ref: string, accessToken: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: sql }),
+    });
+    if (res.ok) return { ok: true };
+    const body = await res.json().catch(() => ({}));
+    return { ok: false, error: body?.message ?? `HTTP ${res.status}` };
+  } catch (e: any) {
+    return { ok: false, error: e?.message };
+  }
+}
+
+async function execViaRpc(sql: string, supabaseUrl: string, serviceRoleKey: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${serviceRoleKey}`,
+        "apikey": serviceRoleKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ sql }),
+    });
+    if (res.ok) return { ok: true };
+    const body = await res.json().catch(() => ({}));
+    return { ok: false, error: body?.message ?? body?.hint ?? `HTTP ${res.status}` };
+  } catch (e: any) {
+    return { ok: false, error: e?.message };
+  }
+}
+
+async function runSql(sql: string, ref: string, supabaseUrl: string, serviceRoleKey: string, accessToken: string | undefined): Promise<{ ok: boolean; method?: string; error?: string }> {
+  // Try Management API first (most reliable for DDL)
+  if (accessToken) {
+    const r = await execViaManagementApi(sql, ref, accessToken);
+    if (r.ok) return { ok: true, method: "management_api" };
+  }
+
+  // Fall back to exec_sql RPC (requires the function to exist in the DB)
+  const r = await execViaRpc(sql, supabaseUrl, serviceRoleKey);
+  if (r.ok) return { ok: true, method: "exec_sql_rpc" };
+  return { ok: false, error: r.error };
+}
+
+export async function POST(req: NextRequest) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || req.headers.get("authorization") !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const sb = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const accessToken = process.env.SUPABASE_ACCESS_TOKEN; // optional — Supabase Management API PAT
+  const ref = supabaseUrl.replace("https://", "").replace(".supabase.co", "");
 
   const results: Record<string, any> = {};
 
-  // Migration 122 — fix CHECK constraint
-  try {
-    const { error } = await sb.rpc("exec_sql", { sql: MIGRATION_122 });
-    if (error) {
-      // Try individual statements via pg query
-      const r1 = await sb.rpc("exec_sql", { sql: "ALTER TABLE propiedades_externas DROP CONSTRAINT IF EXISTS propiedades_externas_portal_check;" });
-      const r2 = await sb.rpc("exec_sql", { sql: `ALTER TABLE propiedades_externas ADD CONSTRAINT propiedades_externas_portal_check CHECK (portal IN ('mercadolibre','zonaprop','argenprop','properati','gfi_red','gfi_portal','gfi','kiteprop','tokko','propia','propia_red','propia_portal'));` });
-      results.migration_122 = { ok: !r1.error && !r2.error, error: r1.error?.message ?? r2.error?.message };
-    } else {
-      results.migration_122 = { ok: true };
-    }
-  } catch (e: any) {
-    results.migration_122 = { ok: false, error: e?.message };
+  // Migration 122 — fix CHECK constraint (two statements needed)
+  const r122a = await runSql(MIGRATION_122_STEP1, ref, supabaseUrl, serviceRoleKey, accessToken);
+  if (r122a.ok) {
+    const r122b = await runSql(MIGRATION_122_STEP2, ref, supabaseUrl, serviceRoleKey, accessToken);
+    results.migration_122 = { ok: r122b.ok, method: r122b.method, error: r122b.error };
+  } else {
+    // Try as single block (some RPC implementations handle multi-statement)
+    const rFull = await runSql(MIGRATION_122, ref, supabaseUrl, serviceRoleKey, accessToken);
+    results.migration_122 = { ok: rFull.ok, method: rFull.method, error: rFull.error };
   }
 
-  // Migration 123 — update view
-  try {
-    const { error } = await sb.rpc("exec_sql", { sql: MIGRATION_123 });
-    results.migration_123 = { ok: !error, error: error?.message };
-  } catch (e: any) {
-    results.migration_123 = { ok: false, error: e?.message };
+  // Migration 123 — recreate view with LOWER(operacion/tipo)
+  const r123 = await runSql(MIGRATION_123, ref, supabaseUrl, serviceRoleKey, accessToken);
+  results.migration_123 = { ok: r123.ok, method: r123.method, error: r123.error };
+
+  const allOk = results.migration_122.ok && results.migration_123.ok;
+
+  if (!allOk) {
+    results._hint = "Para aplicar manualmente: copiar el contenido de supabase/migrations/122_* y 123_* en el SQL Editor de Supabase Dashboard. O configurar SUPABASE_ACCESS_TOKEN (Personal Access Token de supabase.com/dashboard/account/tokens) en las variables de entorno de Vercel.";
   }
 
-  return NextResponse.json({ results });
+  return NextResponse.json({ ok: allOk, results });
 }
