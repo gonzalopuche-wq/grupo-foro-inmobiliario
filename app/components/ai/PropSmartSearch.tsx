@@ -7,8 +7,8 @@
  *
  * Requiere ruta API: /api/web/[slug]/ai-search
  */
-import { Renderer, createSpecStreamCompiler } from "@json-render/react";
-import { useCallback, useState } from "react";
+import { Renderer, type ComponentRegistry, type ComponentRenderProps } from "@json-render/react";
+import React, { useCallback, useState } from "react";
 import type { PropCardProps, PropGridProps, PropResumenProps } from "@/app/lib/json-render/catalog";
 
 // ── Implementaciones de componentes (renderizado real) ───────────────────────
@@ -94,7 +94,20 @@ function MensajeVacio({ texto, sugerencia }: { texto: string; sugerencia?: strin
   );
 }
 
-const components = { PropCard, PropGrid, PropResumen, MensajeVacio };
+function mkRenderer<P extends Record<string, unknown>>(
+  Comp: React.ComponentType<P>,
+): React.ComponentType<ComponentRenderProps> {
+  return function RendererWrapper({ element, children }: ComponentRenderProps) {
+    return <Comp {...(element.props as P)}>{children as any}</Comp>;
+  };
+}
+
+const registry: ComponentRegistry = {
+  PropCard: mkRenderer(PropCard as React.ComponentType<any>),
+  PropGrid: mkRenderer(PropGrid as React.ComponentType<any>),
+  PropResumen: mkRenderer(PropResumen as React.ComponentType<any>),
+  MensajeVacio: mkRenderer(MensajeVacio as React.ComponentType<any>),
+};
 
 // ── Componente principal ──────────────────────────────────────────────────────
 
@@ -166,7 +179,7 @@ export default function PropSmartSearch({ slug, placeholder = "Ej: 3 dormitorios
         </div>
       )}
 
-      {spec && <Renderer spec={spec} components={components} />}
+      {spec && <Renderer spec={spec} registry={registry} />}
     </div>
   );
 }
