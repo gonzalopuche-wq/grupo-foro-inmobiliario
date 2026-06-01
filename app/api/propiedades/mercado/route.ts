@@ -31,7 +31,8 @@ export async function GET(req: NextRequest) {
     .from("v_propiedades_mercado")
     .select("id,fuente,red,titulo,operacion,tipo,precio,moneda,barrio,ciudad,provincia,dormitorios,banos,superficie_cubierta,foto_principal,url,propietario_id,estado", { count: "exact" });
 
-  if (operacion)    query = query.eq("operacion", operacion.toLowerCase());
+  // ilike es case-insensitive: coincide "Venta" (cartera GFI) y "venta" (externos)
+  if (operacion)    query = query.ilike("operacion", operacion.toLowerCase());
   if (tipo)         query = query.ilike("tipo", `%${tipo}%`);
   if (barrio)       query = query.ilike("barrio", `%${barrio}%`);
   if (ciudad)       query = query.ilike("ciudad", `%${ciudad}%`);

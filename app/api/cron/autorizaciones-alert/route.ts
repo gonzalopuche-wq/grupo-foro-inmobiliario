@@ -53,7 +53,8 @@ async function insertarNotifInApp(userId: string, titulo: string, cuerpo: string
 
 export async function GET(req: NextRequest) {
   const secret = req.headers.get("authorization")?.replace("Bearer ", "");
-  if (secret !== process.env.CRON_SECRET) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || secret !== cronSecret) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
