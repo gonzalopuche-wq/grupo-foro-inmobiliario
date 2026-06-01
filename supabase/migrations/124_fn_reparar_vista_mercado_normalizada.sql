@@ -53,7 +53,7 @@ BEGIN
     superficie_cubierta,
     NULL::numeric                                               AS sup_terreno,
     NULL::numeric                                               AS expensas,
-    (CASE WHEN imagenes IS NOT NULL AND jsonb_array_length(imagenes) > 0
+    (CASE WHEN imagenes IS NOT NULL AND jsonb_typeof(imagenes) = 'array' AND jsonb_array_length(imagenes) > 0
           THEN imagenes ->> 0 ELSE NULL END)                    AS foto_principal,
     descripcion, url,
     NULL::text                                                  AS propietario_id,
@@ -72,8 +72,9 @@ $$;
 REVOKE ALL ON FUNCTION reparar_vista_mercado_normalizada() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION reparar_vista_mercado_normalizada() TO service_role;
 
--- También actualizar el constraint para incluir 'gfi' y 'propia' plain
-CREATE OR REPLACE FUNCTION reparar_constraint_portales_v2()
+-- Actualizar reparar_constraint_portales() para incluir 'gfi' y 'propia' plain
+-- CREATE OR REPLACE sobreescribe la versión de migration 120 con la lista completa
+CREATE OR REPLACE FUNCTION reparar_constraint_portales()
 RETURNS text
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -96,5 +97,5 @@ EXCEPTION WHEN OTHERS THEN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION reparar_constraint_portales_v2() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION reparar_constraint_portales_v2() TO service_role;
+REVOKE ALL ON FUNCTION reparar_constraint_portales() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION reparar_constraint_portales() TO service_role;

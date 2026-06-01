@@ -25,7 +25,7 @@ SELECT id::text AS id, portal AS fuente, portal AS red, titulo,
   operacion, tipo, precio, moneda, barrio, ciudad, provincia, direccion, lat, lng,
   dormitorios, banos, ambientes, superficie_cubierta,
   NULL::numeric AS sup_terreno, NULL::numeric AS expensas,
-  (CASE WHEN imagenes IS NOT NULL AND jsonb_array_length(imagenes) > 0 THEN imagenes ->> 0 ELSE NULL END) AS foto_principal,
+  (CASE WHEN imagenes IS NOT NULL AND jsonb_typeof(imagenes) = 'array' AND jsonb_array_length(imagenes) > 0 THEN imagenes ->> 0 ELSE NULL END) AS foto_principal,
   descripcion, url, NULL::text AS propietario_id, 'activa' AS estado, synced_at AS updated_at
 FROM propiedades_externas WHERE activa = true;
 GRANT SELECT ON v_propiedades_mercado TO authenticated;
@@ -93,9 +93,9 @@ export async function POST(req: NextRequest) {
       extra122 = r2;
     }
     results.migration_122 = {
-      ok: true,
+      ok: extra122.ok,
       method: "reparar_constraint_portales_rpc" + (extra122.ok && accessToken ? "+management_api_v2" : ""),
-      note: rpcData ?? "constraint reparado — portales activos cubiertos",
+      note: extra122.ok ? (rpcData ?? "constraint reparado — portales activos cubiertos") : extra122.error,
     };
   } else {
     // Intento 2: Management API
