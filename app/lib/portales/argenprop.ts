@@ -29,9 +29,16 @@ const OPS = [
 ];
 
 function extractNextData(html: string): any {
-  const match = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
-  if (!match) return null;
-  try { return JSON.parse(match[1]); } catch { return null; }
+  // Intento 1: __NEXT_DATA__ estándar
+  const m1 = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if (m1) { try { return JSON.parse(m1[1]); } catch {} }
+  // Intento 2: window.__NEXT_DATA__ inline
+  const m2 = html.match(/window\.__NEXT_DATA__\s*=\s*(\{[\s\S]*?\});\s*(?:<\/script>|window\.)/);
+  if (m2) { try { return JSON.parse(m2[1]); } catch {} }
+  // Intento 3: __INIT_STATE__ (algunos frameworks alternativos)
+  const m3 = html.match(/window\.__INIT_STATE__\s*=\s*(\{[\s\S]*?\});\s*<\/script>/);
+  if (m3) { try { const d = JSON.parse(m3[1]); return { props: { pageProps: d } }; } catch {} }
+  return null;
 }
 
 function extractListings(nextData: any): any[] {
@@ -128,8 +135,8 @@ export async function syncArgenprop(maxPerCombo = 2): Promise<PropExtNorm[]> {
           break outer;
         }
         if (httpStatus === -1) {
-          lastError = "Sin __NEXT_DATA__ en HTML (estructura del portal cambió)";
-          break outer;
+          lastError = "Sin datos en HTML (estructura del portal cambió)";
+          break; // sólo corta páginas de este combo; intenta el siguiente
         }
         if (httpStatus === -2) {
           lastError = "Error de red al conectar con Argenprop";
