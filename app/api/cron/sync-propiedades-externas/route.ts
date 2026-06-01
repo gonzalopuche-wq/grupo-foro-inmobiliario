@@ -15,6 +15,15 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+let constraintRepaired = false;
+
+async function repairConstraintIfNeeded(): Promise<void> {
+  if (constraintRepaired) return;
+  // reparar_constraint_portales() existe desde migration 120 (SECURITY DEFINER)
+  await sb.rpc("reparar_constraint_portales");
+  constraintRepaired = true;
+}
+
 async function upsert(items: any[], portal: string): Promise<number> {
   let ok = 0;
   const BATCH = 50;
@@ -26,9 +35,17 @@ async function upsert(items: any[], portal: string): Promise<number> {
       activa: true,
       synced_at: now,
     }));
-    const { error } = await sb
+    let { error } = await sb
       .from("propiedades_externas")
       .upsert(batch, { onConflict: "portal,portal_id" });
+    if (error?.message?.includes("violates check constraint")) {
+      // El constraint no incluye este portal — intentar repararlo y reintentar
+      await repairConstraintIfNeeded();
+      const retry = await sb
+        .from("propiedades_externas")
+        .upsert(batch, { onConflict: "portal,portal_id" });
+      error = retry.error;
+    }
     if (error) throw new Error(`Upsert ${portal}: ${error.message}`);
     ok += batch.length;
   }
