@@ -7,36 +7,35 @@ import { Search, Loader2, Home, AlertCircle,
          ChevronDown, SlidersHorizontal, ExternalLink } from 'lucide-react'
 import PropDetailModal from './PropDetailModal'
 
-interface Propiedad {
-  portal: string
-  portal_id: string
-  url_original: string
-  titulo: string
-  descripcion?: string
-  tipo?: string
-  operacion?: string
-  zona?: string
-  ciudad?: string
-  precio_actual?: number
-  moneda?: string
-  superficie_total?: number
-  dormitorios?: number
-  banos?: number
-  imagen_principal?: string
-  imagenes?: string[]
-  disponible: boolean
-}
-
 const TIPOS = ['Departamento', 'Casa', 'PH', 'Local', 'Oficina', 'Terreno', 'Galpón']
 const OPERACIONES = ['Venta', 'Alquiler', 'Alquiler temporal']
 const DORMITORIOS = ['1', '2', '3', '4', '5+']
 
+// Config visual por fuente (cubre todos los valores posibles del campo fuente en v_propiedades_mercado)
 const FUENTES_CONFIG: Record<string, { label: string; color: string; border: string; badge: string }> = {
-  gfi:          { label: 'Red GFI',   color: 'rgba(204,0,0,0.15)',    border: 'rgba(204,0,0,0.4)',    badge: '#cc0000' },
-  zonaprop:     { label: 'ZonaProp',  color: 'rgba(230,0,0,0.08)',    border: 'rgba(230,0,0,0.25)',   badge: '#e60000' },
-  argenprop:    { label: 'Argenprop', color: 'rgba(245,166,35,0.08)', border: 'rgba(245,166,35,0.3)', badge: '#f5a623' },
-  mercadolibre: { label: 'ML',        color: 'rgba(255,230,0,0.08)',  border: 'rgba(255,230,0,0.25)', badge: '#ffe600' },
+  gfi:           { label: 'Red GFI',   color: 'rgba(204,0,0,0.15)',    border: 'rgba(204,0,0,0.4)',    badge: '#cc0000' },
+  gfi_red:       { label: 'Red GFI',   color: 'rgba(204,0,0,0.15)',    border: 'rgba(204,0,0,0.4)',    badge: '#cc0000' },
+  gfi_portal:    { label: 'Red GFI',   color: 'rgba(204,0,0,0.15)',    border: 'rgba(204,0,0,0.4)',    badge: '#cc0000' },
+  kiteprop:      { label: 'Kiteprop',  color: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.4)', badge: '#3b82f6' },
+  tokko:         { label: 'Tokko',     color: 'rgba(139,92,246,0.12)', border: 'rgba(139,92,246,0.4)', badge: '#8b5cf6' },
+  propia:        { label: 'Propia',    color: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', badge: '#10b981' },
+  propia_red:    { label: 'Propia',    color: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', badge: '#10b981' },
+  propia_portal: { label: 'Propia',    color: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', badge: '#10b981' },
+  zonaprop:      { label: 'ZonaProp',  color: 'rgba(230,0,0,0.08)',    border: 'rgba(230,0,0,0.25)',   badge: '#e60000' },
+  argenprop:     { label: 'Argenprop', color: 'rgba(245,166,35,0.08)', border: 'rgba(245,166,35,0.3)', badge: '#f5a623' },
+  mercadolibre:  { label: 'ML',        color: 'rgba(255,230,0,0.08)',  border: 'rgba(255,230,0,0.25)', badge: '#ffe600' },
 }
+
+// Grupos para los chips de filtro (cada grupo expande a múltiples valores de fuente)
+const FUENTES_GRUPOS = [
+  { id: 'gfi',          label: 'Red GFI',   badge: '#cc0000', portales: ['gfi', 'gfi_red', 'gfi_portal'] },
+  { id: 'kiteprop',     label: 'Kiteprop',  badge: '#3b82f6', portales: ['kiteprop'] },
+  { id: 'tokko',        label: 'Tokko',     badge: '#8b5cf6', portales: ['tokko'] },
+  { id: 'propia',       label: 'Propia',    badge: '#10b981', portales: ['propia', 'propia_red', 'propia_portal'] },
+  { id: 'zonaprop',     label: 'ZonaProp',  badge: '#e60000', portales: ['zonaprop'] },
+  { id: 'argenprop',    label: 'Argenprop', badge: '#f5a623', portales: ['argenprop'] },
+  { id: 'mercadolibre', label: 'ML',        badge: '#ffe600', portales: ['mercadolibre'] },
+]
 
 interface PropLocal {
   id: string
@@ -168,7 +167,8 @@ export default function BusquedaPage() {
   const [totalLocal, setTotalLocal] = useState(0)
   const [cargandoLocal, setCargandoLocal] = useState(false)
   const [buscadoLocal, setBuscadoLocal] = useState(false)
-  const [fuentesFiltro, setFuentesFiltro] = useState<string[]>(['gfi', 'zonaprop', 'argenprop'])
+  // IDs de grupos seleccionados (por defecto todos)
+  const [gruposFiltro, setGruposFiltro] = useState<string[]>(FUENTES_GRUPOS.map(g => g.id))
   const [selectedProp, setSelectedProp] = useState<{id: string; fuente: string} | null>(null)
 
 
@@ -177,23 +177,29 @@ export default function BusquedaPage() {
     ? buildPortalURLs(operacion, tipo, zona, precioMin, precioMax, dormitorios)
     : null
 
-  // Buscar en base local unificada (GFI + ZP + AP)
+  // Buscar en base local unificada (GFI + todos los portales)
   const buscarLocal = useCallback(async () => {
     setCargandoLocal(true)
     setBuscadoLocal(true)
     setResultadosLocal([])
+    setError('')
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { setCargandoLocal(false); return }
 
       const params = new URLSearchParams()
-      if (operacion) params.set('operacion', operacion.toLowerCase().replace(' ', '_'))
+      if (operacion) params.set('operacion', operacion.toLowerCase().replace(/ /g, '_'))
       if (tipo) params.set('tipo', tipo.toLowerCase())
       if (zona.trim()) params.set('barrio', zona.trim())
       if (precioMin) params.set('precioMin', precioMin)
       if (precioMax) params.set('precioMax', precioMax)
       if (dormitorios) params.set('dormitorios', dormitorios.replace('+', ''))
-      if (fuentesFiltro.length > 0 && fuentesFiltro.length < 4) params.set('fuentes', fuentesFiltro.join(','))
+      // Expandir grupos a portales individuales; si están todos seleccionados, no filtrar
+      const todosSeleccionados = gruposFiltro.length === FUENTES_GRUPOS.length
+      if (!todosSeleccionados && gruposFiltro.length > 0) {
+        const portales = gruposFiltro.flatMap(g => FUENTES_GRUPOS.find(x => x.id === g)?.portales ?? [])
+        params.set('fuentes', portales.join(','))
+      }
       params.set('limit', '100')
 
       const res = await fetch(`/api/propiedades/mercado?${params}`, {
@@ -208,10 +214,10 @@ export default function BusquedaPage() {
     } finally {
       setCargandoLocal(false)
     }
-  }, [operacion, tipo, zona, precioMin, precioMax, dormitorios, fuentesFiltro])
+  }, [operacion, tipo, zona, precioMin, precioMax, dormitorios, gruposFiltro])
 
-  const toggleFuente = (f: string) => {
-    setFuentesFiltro(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f])
+  const toggleGrupo = (id: string) => {
+    setGruposFiltro(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
 
   const label: React.CSSProperties = { fontSize:10, color:'rgba(255,255,255,0.4)', display:'block', marginBottom:6, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }
@@ -309,12 +315,12 @@ export default function BusquedaPage() {
           <div style={{marginBottom:12}}>
             <label style={label}>Buscar en</label>
             <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
-              {Object.entries(FUENTES_CONFIG).map(([key, cfg]) => {
-                const activa = fuentesFiltro.includes(key)
+              {FUENTES_GRUPOS.map(g => {
+                const activa = gruposFiltro.includes(g.id)
                 return (
-                  <button key={key} onClick={() => toggleFuente(key)}
-                    style={{padding:'5px 12px', borderRadius:20, border:`1px solid ${activa ? cfg.badge : 'rgba(255,255,255,0.12)'}`, background:activa ? cfg.color : 'transparent', color:activa ? '#fff' : 'rgba(255,255,255,0.35)', fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', transition:'all 0.15s'}}>
-                    {cfg.label}
+                  <button key={g.id} onClick={() => toggleGrupo(g.id)}
+                    style={{padding:'5px 12px', borderRadius:20, border:`1px solid ${activa ? g.badge : 'rgba(255,255,255,0.12)'}`, background:activa ? `${g.badge}22` : 'transparent', color:activa ? '#fff' : 'rgba(255,255,255,0.35)', fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', transition:'all 0.15s'}}>
+                    {g.label}
                   </button>
                 )
               })}
@@ -322,8 +328,8 @@ export default function BusquedaPage() {
           </div>
 
           {/* Botón base local */}
-          <button onClick={buscarLocal} disabled={cargandoLocal || fuentesFiltro.length === 0}
-            style={{width:'100%', background:'rgba(204,0,0,0.85)', border:'none', color:'#fff', padding:'12px', borderRadius:8, fontWeight:700, fontSize:13, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:(cargandoLocal||fuentesFiltro.length===0)?0.5:1, marginBottom:8}}>
+          <button onClick={buscarLocal} disabled={cargandoLocal || gruposFiltro.length === 0}
+            style={{width:'100%', background:'rgba(204,0,0,0.85)', border:'none', color:'#fff', padding:'12px', borderRadius:8, fontWeight:700, fontSize:13, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:(cargandoLocal||gruposFiltro.length===0)?0.5:1, marginBottom:8}}>
             {cargandoLocal
               ? <><Loader2 style={{width:15, height:15, animation:'spin 1s linear infinite'}} />Buscando en base local...</>
               : <><Search style={{width:15, height:15}} />Buscar en base GFI + portales (todo el mercado)</>
@@ -358,7 +364,7 @@ export default function BusquedaPage() {
             <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14, gap:8, flexWrap:'wrap'}}>
               <div>
                 <span style={{fontSize:14, fontWeight:800, color:'#fff', fontFamily:'Montserrat,sans-serif'}}>
-                  {cargandoLocal ? 'Buscando en base de mercado...' : `${totalLocal.toLocaleString('es-AR')} propiedades en el mercado`}
+                  {cargandoLocal ? 'Buscando en todo el mercado...' : `${totalLocal.toLocaleString('es-AR')} propiedades en el mercado`}
                 </span>
                 {!cargandoLocal && totalLocal > 0 && (
                   <div style={{display:'flex', gap:8, marginTop:6, flexWrap:'wrap'}}>

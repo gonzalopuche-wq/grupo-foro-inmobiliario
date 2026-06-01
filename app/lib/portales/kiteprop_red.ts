@@ -27,8 +27,11 @@ function normalizarKP(kp: Record<string, any>): PropExtNorm {
   const precio = parseNum(kp.for_sale_price ?? kp.for_rent_price ?? kp.price);
   const geo = kp.geo ?? kp.location ?? {};
 
+  const rawId = kp.id ?? kp.internal_id ?? kp.portal_id;
+  if (!rawId) return null as any; // filtrado en el llamador
+
   return {
-    portal_id: String(kp.id ?? kp.internal_id),
+    portal_id: String(rawId),
     url: kp.url ?? kp.web_url ?? "",
     titulo: kp.title ?? kp.address ?? "",
     operacion,
@@ -116,11 +119,13 @@ export async function syncKitepropRed(): Promise<KPSyncResult> {
   const seenIds = new Set<string>();
 
   for (const keyEntry of apiKeys) {
-    const [apiKey, baseUrl] = keyEntry.split("|");
+    const [apiKey, baseUrlPart] = keyEntry.split("|");
+    const baseUrl = baseUrlPart || KP_BASE;
     try {
       const props = await fetchAllKP(apiKey, baseUrl);
       for (const kp of props) {
         const norm = normalizarKP(kp);
+        if (!norm || !norm.portal_id || norm.portal_id === "undefined") continue;
         if (!seenIds.has(norm.portal_id)) {
           seenIds.add(norm.portal_id);
           items.push(norm);

@@ -66,8 +66,11 @@ function normalizeZP(item: any, operacion: string, tipo: string): PropExtNorm {
     .map((p: any) => p.url ?? p.image ?? p)
     .filter((u: any) => typeof u === "string" && u.startsWith("http"));
 
+  const rawId = item.postingId ?? item.id ?? posting.id;
+  if (!rawId) return null as any;
+
   return {
-    portal_id: String(item.postingId ?? item.id ?? posting.id),
+    portal_id: String(rawId),
     url: `${ZP_BASE}${posting.url ?? item.url ?? ""}`,
     titulo: posting.title ?? item.title ?? "",
     operacion,
@@ -133,7 +136,10 @@ export async function syncZonaprop(maxPerCombo = 2): Promise<PropExtNorm[]> {
           break outer;
         }
         if (!items.length) break;
-        for (const item of items) results.push(normalizeZP(item, operacion, tipo));
+        for (const item of items) {
+          const norm = normalizeZP(item, operacion, tipo);
+          if (norm && norm.portal_id && norm.portal_id !== "undefined") results.push(norm);
+        }
         if (items.length < 20) break;
       }
     }

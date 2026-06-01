@@ -66,8 +66,11 @@ function normalizeAP(item: any, operacion: string, tipo: string): PropExtNorm {
     .map((p: any) => p.image ?? p.url ?? p.src ?? p)
     .filter((u: any) => typeof u === "string" && u.startsWith("http"));
 
+  const rawId = item.id ?? item.listingId ?? item.postingId;
+  if (!rawId) return null as any;
+
   return {
-    portal_id: String(item.id ?? item.listingId ?? item.postingId),
+    portal_id: String(rawId),
     url: item.url ? `${AP_BASE}${item.url}` : (item.link ?? ""),
     titulo: item.title ?? item.headline ?? "",
     operacion,
@@ -133,7 +136,10 @@ export async function syncArgenprop(maxPerCombo = 2): Promise<PropExtNorm[]> {
           break outer;
         }
         if (!items.length) break;
-        for (const item of items) results.push(normalizeAP(item, operacion, tipo));
+        for (const item of items) {
+          const norm = normalizeAP(item, operacion, tipo);
+          if (norm && norm.portal_id && norm.portal_id !== "undefined") results.push(norm);
+        }
         if (items.length < 20) break;
       }
     }
