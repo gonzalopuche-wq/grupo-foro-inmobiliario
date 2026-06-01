@@ -59,9 +59,9 @@ function normalizarKP(kp: Record<string, any>): PropExtNorm {
 async function fetchAllKP(apiKey: string, baseUrl = KP_BASE): Promise<Record<string, any>[]> {
   const all: Record<string, any>[] = [];
   let page = 1;
-  // KiteProp ignora page_size grande; itera hasta agotar el total declarado
+  let inferredPageSize: number | null = null;
   while (true) {
-    const res = await fetch(`${baseUrl}/properties/?page=${page}`, {
+    const res = await fetch(`${baseUrl}/properties/?page=${page}&page_size=100`, {
       headers: { "X-API-Key": apiKey, Accept: "application/json" },
       signal: AbortSignal.timeout(30_000),
       next: { revalidate: 0 },
@@ -75,13 +75,16 @@ async function fetchAllKP(apiKey: string, baseUrl = KP_BASE): Promise<Record<str
     if (!rows.length) break;
     all.push(...rows);
     const total = json.count ?? json.total ?? json.total_count ?? null;
-    // Parar si: campo next ausente/null Y (no hay total declarado o ya tenemos todo)
     const hasNextUrl = !!json.next;
     const hasMoreByCount = total !== null && all.length < total;
-    if (!hasNextUrl && !hasMoreByCount) break;
+    // Inferir page_size de la primera página para detectar páginas completas
+    // cuando la API no devuelve 'next' ni 'total'
+    if (inferredPageSize === null) inferredPageSize = rows.length;
+    const hasFullPage = rows.length >= inferredPageSize;
+    if (!hasNextUrl && !hasMoreByCount && !hasFullPage) break;
     if (total !== null && all.length >= total) break;
     page++;
-    if (page > 100) break;
+    if (page > 200) break;
   }
   return all;
 }
