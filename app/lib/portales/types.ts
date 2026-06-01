@@ -46,6 +46,13 @@ export interface PropExtNorm {
   com_cowork?: boolean;
   com_juegos_ninos?: boolean;
   com_estac_visit?: boolean;
+  com_bicicletero?: boolean;
+  com_microcine?: boolean;
+  com_sauna?: boolean;
+  com_conserjeria?: boolean;
+  com_portero_electrico?: boolean;
+  com_wifi_comunes?: boolean;
+  com_espacio_verde?: boolean;
   // Ambientes propios
   amb_balcon?: boolean;
   amb_terraza?: boolean;
@@ -54,6 +61,11 @@ export interface PropExtNorm {
   // Multimedia
   video_url?: string | null;
   tour_virtual_url?: string | null;
+  // Clasificación (portales externos)
+  toilettes?: number | null;
+  disposicion?: string | null;
+  tipo_unidad?: string | null;
+  ocupacion?: string | null;
   // Agente
   agente_nombre?: string | null;
   agente_telefono?: string | null;

@@ -34,6 +34,7 @@ interface Propiedad {
   longitud: number | null;
   dormitorios: number | null;
   banos: number | null;
+  toilettes: number | null;
   banos_servicio: number | null;
   ambientes: number | null;
   estacionamientos: number | null;
@@ -116,6 +117,9 @@ interface Propiedad {
   com_salon_fiestas: boolean; com_juegos_infantiles: boolean;
   com_estac_visitantes: boolean; com_cancha_paddle: boolean;
   com_cancha_futbol: boolean; com_quincho: boolean; com_grupo_electrogeno: boolean;
+  com_bicicletero: boolean; com_microcine: boolean; com_sauna: boolean;
+  com_conserjeria: boolean; com_portero_electrico: boolean;
+  com_wifi_comunes: boolean; com_espacio_verde: boolean;
   // Documentación / CI
   contacto_propietario_id: string | null;
   ci_url: string | null;
@@ -205,6 +209,10 @@ const COMODIDADES_LIST = [
   { key: "com_cancha_futbol", label: "Cancha de fútbol" }, { key: "com_lavanderia", label: "Lavandería" },
   { key: "com_juegos_infantiles", label: "Juegos infantiles" }, { key: "com_estac_visitantes", label: "Estac. visitantes" },
   { key: "com_quincho", label: "Quincho" }, { key: "com_grupo_electrogeno", label: "Grupo electrógeno" },
+  { key: "com_bicicletero", label: "Bicicletero" }, { key: "com_microcine", label: "Microcine" },
+  { key: "com_sauna", label: "Sauna" }, { key: "com_conserjeria", label: "Conserjería" },
+  { key: "com_portero_electrico", label: "Portero eléctrico" }, { key: "com_wifi_comunes", label: "WiFi en comunes" },
+  { key: "com_espacio_verde", label: "Espacio verde" },
 ];
 
 const FORM_VACIO: any = {
@@ -224,7 +232,7 @@ const FORM_VACIO: any = {
   codigo_postal: "", sector: "", manzana: "", ocultar_ubicacion: false,
   latitud: "", longitud: "",
   // Paso 4
-  dormitorios: "", banos: "", banos_servicio: "", ambientes: "",
+  dormitorios: "", banos: "", toilettes: "", banos_servicio: "", ambientes: "",
   estacionamientos: "", anio_construccion: "", piso: "", numero_unidad: "",
   numero_torre: "", pisos_edificio: "", departamentos_por_piso: "", bauleras: "",
   disposicion: "", orientacion: "", tipo_departamento: "", luminosidad: "",
@@ -263,6 +271,9 @@ const FORM_VACIO: any = {
   com_salon_fiestas: false, com_juegos_infantiles: false, com_estac_visitantes: false,
   com_cancha_paddle: false, com_cancha_futbol: false, com_quincho: false,
   com_grupo_electrogeno: false,
+  com_bicicletero: false, com_microcine: false, com_sauna: false,
+  com_conserjeria: false, com_portero_electrico: false,
+  com_wifi_comunes: false, com_espacio_verde: false,
 };
 
 const PASOS = [
@@ -774,6 +785,7 @@ export default function CarteraPage() {
       ocultar_ubicacion: form.ocultar_ubicacion,
       latitud: numOrNull(form.latitud), longitud: numOrNull(form.longitud),
       dormitorios: intOrNull(form.dormitorios), banos: intOrNull(form.banos),
+      toilettes: intOrNull(form.toilettes),
       banos_servicio: intOrNull(form.banos_servicio), ambientes: intOrNull(form.ambientes),
       estacionamientos: intOrNull(form.estacionamientos),
       anio_construccion: intOrNull(form.anio_construccion),
@@ -1682,6 +1694,7 @@ export default function CarteraPage() {
                     <div className="cart-card-specs">
                       {p.dormitorios != null && <span className="cart-spec-item">🛏 {p.dormitorios} dorm.</span>}
                       {p.banos != null && <span className="cart-spec-item">🚿 {p.banos} baños</span>}
+                      {(p as any).toilettes != null && <span className="cart-spec-item">🚽 {(p as any).toilettes} toil.</span>}
                       {p.ambientes != null && <span className="cart-spec-item">🏠 {p.ambientes} amb.</span>}
                       {p.superficie_cubierta != null && <span className="cart-spec-item">📐 {p.superficie_cubierta} m²</span>}
                       {(p as any).sup_terreno != null && <span className="cart-spec-item">🌿 {(p as any).sup_terreno} m² tot.</span>}
@@ -2316,7 +2329,8 @@ export default function CarteraPage() {
                       <div className="wiz-field"><label className="wiz-label">Dormitorios</label><input className="wiz-input" type="number" value={form.dormitorios} onChange={e => setF("dormitorios", e.target.value)} placeholder="2" /></div>
                       <div className="wiz-field"><label className="wiz-label">Baños</label><input className="wiz-input" type="number" value={form.banos} onChange={e => setF("banos", e.target.value)} placeholder="1" /></div>
                     </div>
-                    <div className="wiz-row-3">
+                    <div className="wiz-row-4">
+                      <div className="wiz-field"><label className="wiz-label">Toilettes</label><input className="wiz-input" type="number" value={form.toilettes} onChange={e => setF("toilettes", e.target.value)} placeholder="1" /></div>
                       <div className="wiz-field"><label className="wiz-label">Baños de servicio</label><input className="wiz-input" type="number" value={form.banos_servicio} onChange={e => setF("banos_servicio", e.target.value)} /></div>
                       <div className="wiz-field"><label className="wiz-label">Estacionamientos</label><input className="wiz-input" type="number" value={form.estacionamientos} onChange={e => setF("estacionamientos", e.target.value)} /></div>
                       <div className="wiz-field"><label className="wiz-label">Año de construcción</label><input className="wiz-input" type="number" value={form.anio_construccion} onChange={e => setF("anio_construccion", e.target.value)} placeholder="1990" /></div>

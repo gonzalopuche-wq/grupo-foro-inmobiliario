@@ -94,12 +94,25 @@ function normalizarTokko(t: Record<string, any>): PropExtNorm {
     com_cowork: hasAmenity(amenities, "cowork", "coworking"),
     com_juegos_ninos: hasAmenity(amenities, "juegos", "playground", "niños", "infantil"),
     com_estac_visit: hasAmenity(amenities, "visitas", "visitors"),
+    com_bicicletero: hasAmenity(amenities, "bicicletero", "bicicleta", "bike"),
+    com_microcine: hasAmenity(amenities, "microcine", "cine", "cinema"),
+    com_sauna: hasAmenity(amenities, "sauna"),
+    com_conserjeria: hasAmenity(amenities, "conserjería", "conserjeria", "concierge"),
+    com_portero_electrico: hasAmenity(amenities, "portero eléctrico", "portero electrico", "interphone"),
+    com_wifi_comunes: hasAmenity(amenities, "wifi", "wi-fi", "internet comunes"),
+    com_espacio_verde: hasAmenity(amenities, "espacio verde", "parque"),
 
     // Ambientes
     amb_balcon: hasAmenity(amenities, "balcón", "balcon", "balcony"),
     amb_terraza: hasAmenity(amenities, "terraza", "terrace"),
     amb_jardin: hasAmenity(amenities, "jardín", "jardin", "garden"),
     amb_patio: hasAmenity(amenities, "patio"),
+
+    // Clasificación
+    toilettes: parseNum(t.toilet_amount ?? t.toilets ?? t.half_bathrooms),
+    disposicion: t.orientation_type ?? t.disposal ?? null,
+    tipo_unidad: t.unit_type ?? t.property_subtype ?? null,
+    ocupacion: t.occupancy ?? t.situation ?? null,
 
     // Multimedia
     video_url: t.video_url ?? t.video ?? null,

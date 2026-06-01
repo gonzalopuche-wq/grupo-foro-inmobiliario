@@ -1,6 +1,6 @@
 // Sync Propia.com.ar — feed de propiedades publicadas en la Red MLS y en el Portal
 import { createClient } from "@supabase/supabase-js";
-import { PropExtNorm, normalizeTipo, normalizeOperacion, parseNum } from "./types";
+import { PropExtNorm, normalizeTipo, normalizeOperacion, parseNum, hasAmenity, normalizeAmenities } from "./types";
 
 const PROPIA_BASE = (process.env.PROPIA_API_BASE ?? "https://propia.com.ar/api").replace(/\/$/, "");
 
@@ -10,9 +10,30 @@ interface PropiaFeedItem {
   address_to_show?: string;
   price?: string | number;
   area?: number;
+  covered_area?: number;
+  total_area?: number;
+  semi_covered_area?: number;
   bedrooms?: number;
   bathrooms?: number;
+  toilets?: number;
+  rooms?: number;
+  parking_lots?: number;
+  storage_room?: boolean;
+  floor?: number | string;
+  orientation?: string;
+  disposition?: string;
+  unit_type?: string;
+  occupancy?: string;
+  age?: number | string;
+  furnished?: boolean;
+  pets_allowed?: boolean;
+  mortgage_eligible?: boolean;
+  lat?: number | string;
+  lng?: number | string;
   slug?: string;
+  description?: string;
+  video_url?: string;
+  virtual_tour_url?: string;
   published_on_mls?: boolean;
   published_on_portal?: boolean;
   currency?: { id?: number; symbol?: string; iso?: string };
@@ -24,6 +45,9 @@ interface PropiaFeedItem {
   neighborhood?: string;
   province?: string;
   images?: { url_do?: string; url_thumb_do?: string }[];
+  amenities?: unknown[];
+  tags?: unknown[];
+  agent?: { name?: string; phone?: string; email?: string };
 }
 
 function normalizarPropia(item: PropiaFeedItem): PropExtNorm {
@@ -35,6 +59,11 @@ function normalizarPropia(item: PropiaFeedItem): PropExtNorm {
   const rawTipo = item.type_id?.name ?? item.type ?? "";
   const rawOp   = item.operation_id?.name ?? item.operation ?? "venta";
 
+  const amenities = normalizeAmenities([
+    ...(item.amenities ?? []),
+    ...(item.tags ?? []),
+  ]);
+
   return {
     portal_id: String(item.id),
     url: item.slug ? `https://propia.com.ar/propiedades/${item.slug}` : "",
@@ -45,19 +74,73 @@ function normalizarPropia(item: PropiaFeedItem): PropExtNorm {
     moneda: currency === "ARS" ? "ARS" : "USD",
     dormitorios: parseNum(item.bedrooms),
     banos: parseNum(item.bathrooms),
-    ambientes: null,
-    superficie_cubierta: parseNum(item.area),
-    sup_terreno: null,
+    toilettes: parseNum(item.toilets),
+    ambientes: parseNum(item.rooms),
+    superficie_cubierta: parseNum(item.covered_area ?? item.area),
+    sup_terreno: parseNum(item.total_area),
+    sup_semicubierta: parseNum(item.semi_covered_area),
     expensas: null,
     barrio: item.neighborhood ?? null,
     ciudad: item.city ?? "Rosario",
     provincia: item.province ?? "Santa Fe",
     direccion: item.address_to_show ?? null,
-    lat: null,
-    lng: null,
+    lat: parseNum(item.lat),
+    lng: parseNum(item.lng),
     imagenes: imgs,
-    descripcion: null,
+    descripcion: item.description ?? null,
     datos_raw: { propia_id: item.id, slug: item.slug },
+
+    // Características físicas
+    orientacion: item.orientation ?? null,
+    piso: parseNum(item.floor),
+    cocheras: parseNum(item.parking_lots),
+    baulera: !!(item.storage_room) || hasAmenity(amenities, "baulera"),
+    antiguedad: item.age != null ? String(item.age) : null,
+
+    // Condiciones
+    amoblado: !!(item.furnished) || hasAmenity(amenities, "amoblado", "furnished"),
+    acepta_mascotas: !!(item.pets_allowed) || hasAmenity(amenities, "mascotas"),
+    apto_credito: !!(item.mortgage_eligible) || hasAmenity(amenities, "crédito", "credito"),
+
+    // Amenities edificio
+    com_pileta: hasAmenity(amenities, "pileta", "piscina"),
+    com_gimnasio: hasAmenity(amenities, "gimnasio"),
+    com_sum: hasAmenity(amenities, "sum"),
+    com_ascensor: hasAmenity(amenities, "ascensor"),
+    com_seguridad: hasAmenity(amenities, "seguridad", "vigilancia"),
+    com_parrilla: hasAmenity(amenities, "parrilla", "bbq"),
+    com_quincho: hasAmenity(amenities, "quincho"),
+    com_solarium: hasAmenity(amenities, "solarium"),
+    com_laundry: hasAmenity(amenities, "lavandería", "laundry", "lavanderia"),
+    com_cowork: hasAmenity(amenities, "cowork"),
+    com_juegos_ninos: hasAmenity(amenities, "juegos", "infantil"),
+    com_bicicletero: hasAmenity(amenities, "bicicletero"),
+    com_microcine: hasAmenity(amenities, "microcine", "cine"),
+    com_sauna: hasAmenity(amenities, "sauna"),
+    com_conserjeria: hasAmenity(amenities, "conserjería", "conserjeria"),
+    com_portero_electrico: hasAmenity(amenities, "portero eléctrico", "portero electrico"),
+    com_wifi_comunes: hasAmenity(amenities, "wifi"),
+    com_espacio_verde: hasAmenity(amenities, "espacio verde"),
+
+    // Ambientes propios
+    amb_balcon: hasAmenity(amenities, "balcón", "balcon"),
+    amb_terraza: hasAmenity(amenities, "terraza"),
+    amb_jardin: hasAmenity(amenities, "jardín", "jardin"),
+    amb_patio: hasAmenity(amenities, "patio"),
+
+    // Multimedia
+    video_url: item.video_url ?? null,
+    tour_virtual_url: item.virtual_tour_url ?? null,
+
+    // Clasificación
+    disposicion: item.disposition ?? null,
+    tipo_unidad: item.unit_type ?? null,
+    ocupacion: item.occupancy ?? null,
+
+    // Agente
+    agente_nombre: item.agent?.name ?? null,
+    agente_telefono: item.agent?.phone ?? null,
+    agente_email: item.agent?.email ?? null,
   };
 }
 

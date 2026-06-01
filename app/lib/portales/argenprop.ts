@@ -1,7 +1,7 @@
 // Argenprop scraper — extrae __NEXT_DATA__ JSON del HTML
 // NOTA: Argenprop bloquea IPs de datacenter. Si retorna 0 es probable bloqueo.
 // URL pattern: /departamentos/venta/rosario-pagina-N
-import { PropExtNorm, normalizeTipo, parseNum } from "./types";
+import { PropExtNorm, normalizeTipo, parseNum, hasAmenity, normalizeAmenities } from "./types";
 
 const AP_BASE = "https://www.argenprop.com";
 const AP_HEADERS = {
@@ -76,6 +76,14 @@ function normalizeAP(item: any, operacion: string, tipo: string): PropExtNorm {
   const rawId = item.id ?? item.listingId ?? item.postingId;
   if (!rawId) return null as any;
 
+  const amenities = normalizeAmenities([
+    ...(item.amenities ?? []),
+    ...(item.tags ?? []),
+    ...(item.features ?? []),
+    ...(item.services ?? []),
+    ...(item.commonAreas ?? []),
+  ]);
+
   return {
     portal_id: String(rawId),
     url: item.url ? `${AP_BASE}${item.url}` : (item.link ?? ""),
@@ -86,9 +94,12 @@ function normalizeAP(item: any, operacion: string, tipo: string): PropExtNorm {
     moneda,
     dormitorios: parseNum(item.bedrooms ?? item.rooms),
     banos: parseNum(item.bathrooms),
+    toilettes: parseNum(item.toilettes ?? item.toilets ?? item.halfBathrooms),
     ambientes: parseNum(item.ambiences ?? item.totalRooms ?? item.environments),
     superficie_cubierta: parseNum(item.coveredSurface ?? item.coveredArea ?? item.superficie),
     sup_terreno: parseNum(item.totalSurface ?? item.totalArea),
+    sup_semicubierta: parseNum(item.semiCoveredSurface ?? item.semiCoveredArea),
+    sup_descubierta: parseNum(item.uncoveredSurface ?? item.uncoveredArea),
     expensas: parseNum(item.expenses ?? item.expensas),
     barrio: item.neighborhood ?? item.location?.neighborhood ?? item.barrio ?? null,
     ciudad: item.city ?? item.location?.city ?? "Rosario",
@@ -99,6 +110,58 @@ function normalizeAP(item: any, operacion: string, tipo: string): PropExtNorm {
     imagenes,
     descripcion: item.description ?? item.fullDescription ?? null,
     datos_raw: {},
+
+    // Características físicas
+    orientacion: item.orientation ?? item.cardinalOrientation ?? null,
+    piso: parseNum(item.floor ?? item.floorNumber),
+    cocheras: parseNum(item.parkingLots ?? item.garage ?? item.parking),
+    baulera: !!(item.storageRoom) || hasAmenity(amenities, "baulera", "storage"),
+    antiguedad: item.antiquity != null ? String(item.antiquity) : null,
+
+    // Condiciones
+    amoblado: !!(item.furnished) || hasAmenity(amenities, "amoblado", "furnished"),
+    acepta_mascotas: !!(item.petsAllowed) || hasAmenity(amenities, "mascotas", "pets"),
+    apto_credito: !!(item.mortgageEligible) || hasAmenity(amenities, "crédito", "credito"),
+
+    // Amenities edificio
+    com_pileta: !!(item.pool) || hasAmenity(amenities, "pileta", "piscina", "pool"),
+    com_gimnasio: !!(item.gym) || hasAmenity(amenities, "gimnasio", "gym"),
+    com_sum: hasAmenity(amenities, "sum", "salón de usos"),
+    com_ascensor: !!(item.elevator) || hasAmenity(amenities, "ascensor"),
+    com_seguridad: !!(item.security) || hasAmenity(amenities, "seguridad", "vigilancia"),
+    com_parrilla: hasAmenity(amenities, "parrilla", "bbq", "asador"),
+    com_quincho: hasAmenity(amenities, "quincho"),
+    com_solarium: hasAmenity(amenities, "solarium"),
+    com_laundry: hasAmenity(amenities, "lavandería", "laundry", "lavanderia"),
+    com_cowork: hasAmenity(amenities, "cowork", "coworking"),
+    com_juegos_ninos: hasAmenity(amenities, "juegos", "playground", "infantil"),
+    com_bicicletero: hasAmenity(amenities, "bicicletero", "bicicleta"),
+    com_microcine: hasAmenity(amenities, "microcine", "cine"),
+    com_sauna: hasAmenity(amenities, "sauna"),
+    com_conserjeria: hasAmenity(amenities, "conserjería", "conserjeria"),
+    com_portero_electrico: hasAmenity(amenities, "portero eléctrico", "portero electrico", "interphone"),
+    com_wifi_comunes: hasAmenity(amenities, "wifi", "wi-fi", "internet"),
+    com_espacio_verde: hasAmenity(amenities, "espacio verde", "parque"),
+
+    // Ambientes propios
+    amb_balcon: hasAmenity(amenities, "balcón", "balcon"),
+    amb_terraza: hasAmenity(amenities, "terraza"),
+    amb_jardin: hasAmenity(amenities, "jardín", "jardin"),
+    amb_patio: hasAmenity(amenities, "patio"),
+
+    // Clasificación
+    disposicion: item.orientation ?? item.disposal ?? item.unitOrientation ?? null,
+    tipo_unidad: item.unitType ?? item.propertySubtype ?? null,
+    ocupacion: item.occupancy ?? item.situation ?? null,
+
+    // Multimedia
+    video_url: item.videoUrl ?? item.video ?? null,
+    tour_virtual_url: item.virtualTour ?? item.tourUrl ?? null,
+
+    // Agente
+    agente_nombre: item.contact?.name ?? item.agent?.name ?? null,
+    agente_telefono: item.contact?.phone ?? item.agent?.phone ?? null,
+    agente_email: item.contact?.email ?? item.agent?.email ?? null,
   };
 }
 

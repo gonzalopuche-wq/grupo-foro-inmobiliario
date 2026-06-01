@@ -100,6 +100,13 @@ function normalizarKP(kp: Record<string, any>): PropExtNorm {
     com_cowork: !!(kp.coworking) || hasAmenity(amenities, "cowork", "coworking", "business center"),
     com_juegos_ninos: hasAmenity(amenities, "juegos", "playground", "niños", "ninos", "infantil"),
     com_estac_visit: hasAmenity(amenities, "visitas", "visitors", "estacionamiento visita"),
+    com_bicicletero: !!(kp.bike_room) || hasAmenity(amenities, "bicicletero", "bicicleta", "bike"),
+    com_microcine: hasAmenity(amenities, "microcine", "cine", "cinema", "home theater"),
+    com_sauna: hasAmenity(amenities, "sauna"),
+    com_conserjeria: hasAmenity(amenities, "conserjería", "conserjeria", "concierge"),
+    com_portero_electrico: hasAmenity(amenities, "portero eléctrico", "portero electrico", "interphone", "intercom"),
+    com_wifi_comunes: !!(kp.wifi) || hasAmenity(amenities, "wifi", "wi-fi", "internet comunes"),
+    com_espacio_verde: hasAmenity(amenities, "espacio verde", "parque", "jardín común", "green"),
 
     // Ambientes propios
     amb_balcon: !!(kp.has_balcony ?? kp.balcony) || hasAmenity(amenities, "balcón", "balcon", "balcony"),
@@ -110,6 +117,12 @@ function normalizarKP(kp: Record<string, any>): PropExtNorm {
     // Multimedia
     video_url: kp.video_url ?? kp.video ?? kp.youtube_url ?? null,
     tour_virtual_url: kp.virtual_tour_url ?? kp.virtual_tour ?? kp.matterport ?? kp.tour_url ?? null,
+
+    // Clasificación
+    toilettes: parseNum(kp.toilettes ?? kp.toilets ?? kp.half_bathrooms),
+    disposicion: kp.orientation_type ?? kp.disposal ?? kp.unit_orientation ?? null,
+    tipo_unidad: kp.unit_type ?? kp.property_subtype ?? null,
+    ocupacion: kp.occupancy ?? kp.situation ?? null,
 
     // Agente
     agente_nombre: agente.name ?? agente.full_name ?? agente.nombre ?? null,

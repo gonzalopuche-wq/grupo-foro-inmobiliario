@@ -44,6 +44,13 @@ interface PropDetail {
   com_laundry: boolean
   com_cowork: boolean
   com_juegos_ninos: boolean
+  com_bicicletero: boolean
+  com_microcine: boolean
+  com_sauna: boolean
+  com_conserjeria: boolean
+  com_portero_electrico: boolean
+  com_wifi_comunes: boolean
+  com_espacio_verde: boolean
   amb_balcon: boolean
   amb_terraza: boolean
   amb_jardin: boolean
@@ -53,6 +60,10 @@ interface PropDetail {
   agente_nombre: string | null
   agente_telefono: string | null
   agente_email: string | null
+  toilettes: number | null
+  disposicion: string | null
+  tipo_unidad: string | null
+  ocupacion: string | null
   descripcion: string | null
   imagenes: string[]
   url: string | null
@@ -148,6 +159,13 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
     prop.com_laundry && { k: 'Lavandería', i: '👕' },
     prop.com_cowork && { k: 'Coworking', i: '💻' },
     prop.com_juegos_ninos && { k: 'Juegos infantiles', i: '🎠' },
+    prop.com_bicicletero && { k: 'Bicicletero', i: '🚲' },
+    prop.com_microcine && { k: 'Microcine', i: '🎬' },
+    prop.com_sauna && { k: 'Sauna', i: '🧖' },
+    prop.com_conserjeria && { k: 'Conserjería', i: '🛎️' },
+    prop.com_portero_electrico && { k: 'Portero eléctrico', i: '🔔' },
+    prop.com_wifi_comunes && { k: 'WiFi en comunes', i: '📶' },
+    prop.com_espacio_verde && { k: 'Espacio verde', i: '🌳' },
   ].filter(Boolean) as { k: string; i: string }[] : []
 
   const ambientes = prop ? [
@@ -297,7 +315,7 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
               </div>
 
               {/* Detalles físicos */}
-              {(prop.orientacion || prop.piso != null || prop.cocheras != null || prop.baulera || prop.antiguedad) && (
+              {(prop.orientacion || prop.disposicion || prop.piso != null || prop.cocheras != null || prop.baulera || prop.antiguedad || prop.toilettes != null || prop.tipo_unidad || prop.ocupacion) && (
                 <>
                   <SectionTitle label="Detalles" />
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 4 }}>
@@ -305,6 +323,30 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
                       <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
                         <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Orientación</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🧭 {prop.orientacion}</div>
+                      </div>
+                    )}
+                    {prop.disposicion && (
+                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Disposición</div>
+                        <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>↔️ {prop.disposicion}</div>
+                      </div>
+                    )}
+                    {prop.toilettes != null && prop.toilettes > 0 && (
+                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Toilettes</div>
+                        <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🚽 {prop.toilettes}</div>
+                      </div>
+                    )}
+                    {prop.tipo_unidad && (
+                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Tipo unidad</div>
+                        <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🏠 {prop.tipo_unidad}</div>
+                      </div>
+                    )}
+                    {prop.ocupacion && (
+                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Ocupación</div>
+                        <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🔑 {prop.ocupacion}</div>
                       </div>
                     )}
                     {prop.piso != null && (

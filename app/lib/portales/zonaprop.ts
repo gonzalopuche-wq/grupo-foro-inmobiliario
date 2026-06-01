@@ -1,7 +1,7 @@
 // Zonaprop scraper — extrae __NEXT_DATA__ JSON del HTML
 // NOTA: Zonaprop bloquea IPs de datacenter (Cloudflare). Si retorna 0 es probable bloqueo.
 // URL pattern: /departamentos-venta-rosario-pagina-N.html
-import { PropExtNorm, normalizeTipo, parseNum } from "./types";
+import { PropExtNorm, normalizeTipo, parseNum, hasAmenity, normalizeAmenities } from "./types";
 
 const ZP_BASE = "https://www.zonaprop.com.ar";
 const ZP_HEADERS = {
@@ -69,6 +69,20 @@ function normalizeZP(item: any, operacion: string, tipo: string): PropExtNorm {
   const rawId = item.postingId ?? item.id ?? posting.id;
   if (!rawId) return null as any;
 
+  const amenities = normalizeAmenities([
+    ...(posting.tags ?? []),
+    ...(posting.amenities ?? []),
+    ...(posting.generalFeatures ?? []),
+    ...(posting.services ?? []),
+  ]);
+
+  // Disposición: Zonaprop lo expone en características principales
+  const disposicionRaw: string = mainFeatures.PROPERTY_ORIENTATION?.label
+    ?? mainFeatures.ORIENTATION?.label
+    ?? posting.orientation
+    ?? posting.disposal
+    ?? null;
+
   return {
     portal_id: String(rawId),
     url: `${ZP_BASE}${posting.url ?? item.url ?? ""}`,
@@ -79,9 +93,12 @@ function normalizeZP(item: any, operacion: string, tipo: string): PropExtNorm {
     moneda,
     dormitorios: parseNum(mainFeatures.BEDROOMS?.value ?? mainFeatures.rooms),
     banos: parseNum(mainFeatures.BATHROOMS?.value ?? mainFeatures.bathrooms),
+    toilettes: parseNum(mainFeatures.TOILETTES?.value ?? mainFeatures.toilets ?? posting.toilettes),
     ambientes: parseNum(mainFeatures.ROOMS?.value ?? mainFeatures.environments),
     superficie_cubierta: parseNum(mainFeatures.COVERED_AREA?.value ?? mainFeatures.coveredArea),
     sup_terreno: parseNum(mainFeatures.TOTAL_AREA?.value ?? mainFeatures.totalArea),
+    sup_semicubierta: parseNum(mainFeatures.SEMI_COVERED_AREA?.value),
+    sup_descubierta: parseNum(mainFeatures.UNCOVERED_AREA?.value),
     expensas: parseNum(priceData.expenses ?? posting.expenses),
     barrio: location.subdivision?.name ?? location.neighborhood ?? null,
     ciudad: location.city?.name ?? location.location?.city ?? "Rosario",
@@ -92,6 +109,49 @@ function normalizeZP(item: any, operacion: string, tipo: string): PropExtNorm {
     imagenes,
     descripcion: posting.description ?? null,
     datos_raw: {},
+
+    // Características físicas
+    orientacion: posting.cardinal ?? posting.cardinalDirection ?? null,
+    piso: parseNum(posting.floor ?? posting.floorNumber),
+    cocheras: parseNum(mainFeatures.PARKING?.value ?? posting.parkingLots),
+    baulera: hasAmenity(amenities, "baulera", "storage"),
+    antiguedad: posting.antiquity != null ? String(posting.antiquity) : null,
+
+    // Condiciones
+    amoblado: hasAmenity(amenities, "amoblado", "furnished"),
+    acepta_mascotas: hasAmenity(amenities, "mascotas", "pets"),
+    apto_credito: hasAmenity(amenities, "crédito", "credito", "hipoteca"),
+
+    // Amenities edificio
+    com_pileta: hasAmenity(amenities, "pileta", "piscina", "pool"),
+    com_gimnasio: hasAmenity(amenities, "gimnasio", "gym"),
+    com_sum: hasAmenity(amenities, "sum", "salón de usos"),
+    com_ascensor: hasAmenity(amenities, "ascensor", "elevator"),
+    com_seguridad: hasAmenity(amenities, "seguridad", "vigilancia", "portero"),
+    com_parrilla: hasAmenity(amenities, "parrilla", "bbq", "asador"),
+    com_quincho: hasAmenity(amenities, "quincho"),
+    com_solarium: hasAmenity(amenities, "solarium"),
+    com_laundry: hasAmenity(amenities, "lavandería", "laundry", "lavanderia"),
+    com_cowork: hasAmenity(amenities, "cowork", "coworking"),
+    com_juegos_ninos: hasAmenity(amenities, "juegos", "playground", "infantil"),
+    com_bicicletero: hasAmenity(amenities, "bicicletero", "bicicleta"),
+    com_microcine: hasAmenity(amenities, "microcine", "cine", "cinema"),
+    com_sauna: hasAmenity(amenities, "sauna"),
+    com_conserjeria: hasAmenity(amenities, "conserjería", "conserjeria"),
+    com_portero_electrico: hasAmenity(amenities, "portero eléctrico", "portero electrico", "interphone"),
+    com_wifi_comunes: hasAmenity(amenities, "wifi", "wi-fi", "internet comunes"),
+    com_espacio_verde: hasAmenity(amenities, "espacio verde", "parque", "jardín común"),
+
+    // Ambientes propios
+    amb_balcon: hasAmenity(amenities, "balcón", "balcon"),
+    amb_terraza: hasAmenity(amenities, "terraza"),
+    amb_jardin: hasAmenity(amenities, "jardín", "jardin"),
+    amb_patio: hasAmenity(amenities, "patio"),
+
+    // Clasificación
+    disposicion: disposicionRaw ?? null,
+    tipo_unidad: posting.unitType ?? null,
+    ocupacion: posting.occupancy ?? null,
   };
 }
 
