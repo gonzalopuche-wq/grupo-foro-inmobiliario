@@ -1,6 +1,6 @@
 // Sync global de Tokko Broker: recorre todas las API keys de la red GFI
 import { createClient } from "@supabase/supabase-js";
-import { PropExtNorm, normalizeTipo, parseNum } from "./types";
+import { PropExtNorm, normalizeTipo, parseNum, hasAmenity, normalizeAmenities } from "./types";
 import { extraerPublicaciones } from "./portal_urls";
 
 const TOKKO_BASE = "https://www.tokkobroker.com/api/v1";
@@ -34,6 +34,15 @@ function normalizarTokko(t: Record<string, any>): PropExtNorm {
     .map((p: any) => p.image ?? p.url ?? p)
     .filter((u: any) => typeof u === "string" && u.startsWith("http"));
 
+  // Tags y amenities de Tokko
+  const amenities = normalizeAmenities([
+    ...(t.tags ?? []),
+    ...(t.amenities ?? []),
+    ...(t.features ?? []),
+  ]);
+
+  const agente = t.contact ?? t.agent ?? t.broker ?? {};
+
   return {
     portal_id: String(t.id),
     url: t.web_url ?? t.url ?? "",
@@ -47,6 +56,8 @@ function normalizarTokko(t: Record<string, any>): PropExtNorm {
     ambientes: parseNum(t.room_amount ?? t.rooms),
     superficie_cubierta: parseNum(t.covered_area ?? t.total_surface),
     sup_terreno: parseNum(t.total_area ?? t.surface),
+    sup_semicubierta: parseNum(t.semi_covered_area),
+    sup_descubierta: parseNum(t.uncovered_area),
     expensas: parseNum(t.expenses),
     barrio: loc.neighbourhood ?? loc.neighborhood ?? loc.zone ?? null,
     ciudad: loc.city?.name ?? loc.city ?? "Rosario",
@@ -57,6 +68,47 @@ function normalizarTokko(t: Record<string, any>): PropExtNorm {
     imagenes,
     descripcion: t.description ?? t.details?.en ?? null,
     datos_raw: { tokko_id: t.id, type_code: t.type?.code },
+
+    // Características físicas
+    orientacion: t.orientation ?? null,
+    piso: parseNum(t.floor ?? t.floor_number),
+    cocheras: parseNum(t.parking_lot_amount ?? t.garage ?? t.parking),
+    baulera: !!(t.storage_room) || hasAmenity(amenities, "baulera", "storage"),
+    antiguedad: t.age != null ? String(t.age) : null,
+
+    // Condiciones
+    amoblado: !!(t.furnished) || hasAmenity(amenities, "amoblado", "furnished"),
+    acepta_mascotas: !!(t.pets_allowed) || hasAmenity(amenities, "mascotas", "pets"),
+    apto_credito: !!(t.is_mortgage_eligible) || hasAmenity(amenities, "crédito", "credito", "hipoteca"),
+
+    // Amenities
+    com_pileta: !!(t.pool) || hasAmenity(amenities, "pileta", "piscina", "pool"),
+    com_gimnasio: !!(t.gym) || hasAmenity(amenities, "gimnasio", "gym"),
+    com_sum: hasAmenity(amenities, "sum", "salón de usos", "salon"),
+    com_ascensor: !!(t.elevator) || hasAmenity(amenities, "ascensor", "elevator"),
+    com_seguridad: !!(t.security) || hasAmenity(amenities, "seguridad", "security", "vigilancia"),
+    com_parrilla: hasAmenity(amenities, "parrilla", "bbq", "barbecue", "asador"),
+    com_quincho: hasAmenity(amenities, "quincho"),
+    com_solarium: hasAmenity(amenities, "solarium", "solárium"),
+    com_laundry: hasAmenity(amenities, "lavandería", "laundry", "lavanderia"),
+    com_cowork: hasAmenity(amenities, "cowork", "coworking"),
+    com_juegos_ninos: hasAmenity(amenities, "juegos", "playground", "niños", "infantil"),
+    com_estac_visit: hasAmenity(amenities, "visitas", "visitors"),
+
+    // Ambientes
+    amb_balcon: hasAmenity(amenities, "balcón", "balcon", "balcony"),
+    amb_terraza: hasAmenity(amenities, "terraza", "terrace"),
+    amb_jardin: hasAmenity(amenities, "jardín", "jardin", "garden"),
+    amb_patio: hasAmenity(amenities, "patio"),
+
+    // Multimedia
+    video_url: t.video_url ?? t.video ?? null,
+    tour_virtual_url: t.virtual_tour_url ?? t.virtual_tour ?? null,
+
+    // Agente
+    agente_nombre: agente.name ?? agente.nombre ?? null,
+    agente_telefono: agente.phone ?? agente.mobile ?? agente.cel ?? null,
+    agente_email: agente.email ?? null,
   };
 }
 

@@ -11,6 +11,8 @@ export interface PropExtNorm {
   ambientes: number | null;
   superficie_cubierta: number | null;
   sup_terreno: number | null;
+  sup_semicubierta?: number | null;
+  sup_descubierta?: number | null;
   expensas: number | null;
   barrio: string | null;
   ciudad: string;
@@ -21,6 +23,41 @@ export interface PropExtNorm {
   imagenes: string[];
   descripcion: string | null;
   datos_raw: Record<string, unknown>;
+  // Características físicas (opcionales — solo portales que las proveen)
+  orientacion?: string | null;
+  piso?: number | null;
+  cocheras?: number | null;
+  baulera?: boolean;
+  antiguedad?: string | null;
+  // Condiciones
+  amoblado?: boolean;
+  acepta_mascotas?: boolean;
+  apto_credito?: boolean;
+  // Amenities edificio
+  com_pileta?: boolean;
+  com_gimnasio?: boolean;
+  com_sum?: boolean;
+  com_ascensor?: boolean;
+  com_seguridad?: boolean;
+  com_parrilla?: boolean;
+  com_quincho?: boolean;
+  com_solarium?: boolean;
+  com_laundry?: boolean;
+  com_cowork?: boolean;
+  com_juegos_ninos?: boolean;
+  com_estac_visit?: boolean;
+  // Ambientes propios
+  amb_balcon?: boolean;
+  amb_terraza?: boolean;
+  amb_jardin?: boolean;
+  amb_patio?: boolean;
+  // Multimedia
+  video_url?: string | null;
+  tour_virtual_url?: string | null;
+  // Agente
+  agente_nombre?: string | null;
+  agente_telefono?: string | null;
+  agente_email?: string | null;
 }
 
 export function normalizeTipo(raw: string | null | undefined): string {
@@ -50,4 +87,25 @@ export function parseNum(val: string | number | null | undefined): number | null
   if (typeof val === "number") return isNaN(val) ? null : val;
   const n = parseFloat(String(val).replace(/[^\d.]/g, ""));
   return isNaN(n) ? null : n;
+}
+
+// Busca keywords en un array de strings de amenities
+export function hasAmenity(list: string[], ...keywords: string[]): boolean {
+  return keywords.some(kw => list.some(a => a.includes(kw)));
+}
+
+// Normaliza un array crudo de amenities/features/tags a strings lowercase
+export function normalizeAmenities(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((a: unknown) => {
+      if (!a) return "";
+      if (typeof a === "string") return a.toLowerCase();
+      if (typeof a === "object") {
+        const obj = a as Record<string, unknown>;
+        return String(obj.name ?? obj.label ?? obj.value ?? obj.id ?? "").toLowerCase();
+      }
+      return "";
+    })
+    .filter(Boolean);
 }

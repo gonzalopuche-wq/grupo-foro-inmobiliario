@@ -1,7 +1,7 @@
 // Sync global de Kiteprop: recorre todas las API keys de la red GFI
 // y trae las propiedades de cada corredor a propiedades_externas
 import { createClient } from "@supabase/supabase-js";
-import { PropExtNorm, normalizeTipo, normalizeOperacion, parseNum } from "./types";
+import { PropExtNorm, normalizeTipo, normalizeOperacion, parseNum, hasAmenity, normalizeAmenities } from "./types";
 import { extraerPublicaciones } from "./portal_urls";
 
 const KP_BASE = "https://www.kiteprop.com/api/v1";
@@ -28,7 +28,26 @@ function normalizarKP(kp: Record<string, any>): PropExtNorm {
   const geo = kp.geo ?? kp.location ?? {};
 
   const rawId = kp.id ?? kp.internal_id ?? kp.portal_id;
-  if (!rawId) return null as any; // filtrado en el llamador
+  if (!rawId) return null as any;
+
+  // Normalizar amenities desde múltiples campos posibles de la API
+  const amenities = normalizeAmenities([
+    ...(kp.amenities ?? []),
+    ...(kp.features ?? []),
+    ...(kp.tags ?? []),
+    ...(kp.characteristics ?? []),
+    ...(kp.extras ?? []),
+  ]);
+
+  // Agente / corredor que publicó
+  const agente = kp.agent ?? kp.contact ?? kp.broker ?? kp.user ?? {};
+
+  // Antigüedad: puede venir como años, año de construcción, o texto
+  let antiguedad: string | null = null;
+  if (kp.age != null) antiguedad = String(kp.age);
+  else if (kp.antiquity != null) antiguedad = String(kp.antiquity);
+  else if (kp.year_built != null) antiguedad = String(new Date().getFullYear() - Number(kp.year_built)) + " años";
+  else if (kp.construction_year != null) antiguedad = String(kp.construction_year);
 
   return {
     portal_id: String(rawId),
@@ -38,21 +57,64 @@ function normalizarKP(kp: Record<string, any>): PropExtNorm {
     tipo: KP_TIPO[kp.type ?? ""] ?? normalizeTipo(kp.type),
     precio,
     moneda: ((kp.currency ?? "usd").toUpperCase() === "ARS") ? "ARS" : "USD",
-    dormitorios: parseNum(kp.bedrooms),
+    dormitorios: parseNum(kp.bedrooms ?? kp.suites),
     banos: parseNum(kp.bathrooms),
-    ambientes: parseNum(kp.rooms),
-    superficie_cubierta: parseNum(kp.covered_meters ?? kp.covered_area),
-    sup_terreno: parseNum(kp.total_meters ?? kp.total_area),
-    expensas: parseNum(kp.expenses ?? kp.expensas),
-    barrio: kp.neighborhood ?? kp.zone ?? null,
+    ambientes: parseNum(kp.rooms ?? kp.environments ?? kp.total_rooms),
+    superficie_cubierta: parseNum(kp.covered_meters ?? kp.covered_area ?? kp.built_area),
+    sup_terreno: parseNum(kp.total_meters ?? kp.total_area ?? kp.lot_size),
+    sup_semicubierta: parseNum(kp.semi_covered_area ?? kp.semi_covered_meters),
+    sup_descubierta: parseNum(kp.uncovered_area ?? kp.uncovered_meters ?? kp.outdoor_area),
+    expensas: parseNum(kp.expenses ?? kp.expensas ?? kp.maintenance),
+    barrio: kp.neighborhood ?? kp.zone ?? kp.suburb ?? null,
     ciudad: kp.city ?? "Rosario",
-    provincia: kp.state ?? "Santa Fe",
-    direccion: kp.address ?? null,
-    lat: parseNum(geo.lat ?? geo.latitude),
-    lng: parseNum(geo.lon ?? geo.longitude),
+    provincia: kp.state ?? kp.province ?? "Santa Fe",
+    direccion: kp.address ?? kp.street ?? null,
+    lat: parseNum(geo.lat ?? geo.latitude ?? kp.lat ?? kp.latitude),
+    lng: parseNum(geo.lon ?? geo.lng ?? geo.longitude ?? kp.lng ?? kp.longitude),
     imagenes: imgs,
-    descripcion: kp.description ?? null,
+    descripcion: kp.description ?? kp.details ?? null,
     datos_raw: { kp_id: kp.id, kp_status: kp.status },
+
+    // Características físicas
+    orientacion: kp.orientation ?? kp.cardinal_orientation ?? null,
+    piso: parseNum(kp.floor ?? kp.floor_number ?? kp.floor_level),
+    cocheras: parseNum(kp.parking ?? kp.parking_spaces ?? kp.garage ?? kp.garage_count ?? kp.parking_lots),
+    baulera: !!(kp.storage_room ?? kp.cellar ?? kp.baulera) || hasAmenity(amenities, "baulera", "storage"),
+    antiguedad,
+
+    // Condiciones
+    amoblado: !!(kp.furnished ?? kp.is_furnished) || hasAmenity(amenities, "amoblado", "furnished", "mobiliado"),
+    acepta_mascotas: !!(kp.pets_allowed ?? kp.allows_pets) || hasAmenity(amenities, "mascotas", "pets", "animales"),
+    apto_credito: !!(kp.mortgage ?? kp.is_mortgage_eligible ?? kp.accepts_credit) || hasAmenity(amenities, "crédito", "credito", "hipoteca", "mortgage"),
+
+    // Amenities edificio
+    com_pileta: !!(kp.pool ?? kp.swimming_pool) || hasAmenity(amenities, "pileta", "piscina", "pool", "natación"),
+    com_gimnasio: !!(kp.gym ?? kp.fitness) || hasAmenity(amenities, "gimnasio", "gym", "fitness"),
+    com_sum: !!(kp.event_room ?? kp.sum) || hasAmenity(amenities, "sum", "salón de usos", "salon de usos"),
+    com_ascensor: !!(kp.elevator ?? kp.lift) || hasAmenity(amenities, "ascensor", "elevator", "lift"),
+    com_seguridad: !!(kp.security ?? kp.surveillance) || hasAmenity(amenities, "seguridad", "security", "vigilancia", "portería", "portero"),
+    com_parrilla: !!(kp.barbecue ?? kp.bbq) || hasAmenity(amenities, "parrilla", "bbq", "barbecue", "asador"),
+    com_quincho: hasAmenity(amenities, "quincho"),
+    com_solarium: !!(kp.solarium) || hasAmenity(amenities, "solarium", "solárium"),
+    com_laundry: !!(kp.laundry) || hasAmenity(amenities, "lavandería", "laundry", "lavanderia"),
+    com_cowork: !!(kp.coworking) || hasAmenity(amenities, "cowork", "coworking", "business center"),
+    com_juegos_ninos: hasAmenity(amenities, "juegos", "playground", "niños", "ninos", "infantil"),
+    com_estac_visit: hasAmenity(amenities, "visitas", "visitors", "estacionamiento visita"),
+
+    // Ambientes propios
+    amb_balcon: !!(kp.has_balcony ?? kp.balcony) || hasAmenity(amenities, "balcón", "balcon", "balcony"),
+    amb_terraza: !!(kp.has_terrace ?? kp.terrace) || hasAmenity(amenities, "terraza", "terrace", "rooftop", "azotea"),
+    amb_jardin: !!(kp.has_garden ?? kp.garden) || hasAmenity(amenities, "jardín", "jardin", "garden"),
+    amb_patio: !!(kp.has_patio ?? kp.patio) || hasAmenity(amenities, "patio"),
+
+    // Multimedia
+    video_url: kp.video_url ?? kp.video ?? kp.youtube_url ?? null,
+    tour_virtual_url: kp.virtual_tour_url ?? kp.virtual_tour ?? kp.matterport ?? kp.tour_url ?? null,
+
+    // Agente
+    agente_nombre: agente.name ?? agente.full_name ?? agente.nombre ?? null,
+    agente_telefono: agente.phone ?? agente.mobile ?? agente.telefono ?? agente.cel ?? null,
+    agente_email: agente.email ?? agente.correo ?? null,
   };
 }
 
@@ -77,8 +139,6 @@ async function fetchAllKP(apiKey: string, baseUrl = KP_BASE): Promise<Record<str
     const total = json.count ?? json.total ?? json.total_count ?? null;
     const hasNextUrl = !!json.next;
     const hasMoreByCount = total !== null && all.length < total;
-    // Inferir page_size de la primera página para detectar páginas completas
-    // cuando la API no devuelve 'next' ni 'total'
     if (inferredPageSize === null) inferredPageSize = rows.length;
     const hasFullPage = rows.length >= inferredPageSize;
     if (!hasNextUrl && !hasMoreByCount && !hasFullPage) break;
@@ -100,7 +160,6 @@ export async function syncKitepropRed(): Promise<KPSyncResult> {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Obtener todas las API keys disponibles en la red
   const [{ data: creds }, { data: configs }] = await Promise.all([
     sb.from("portal_credenciales").select("kiteprop_key").not("kiteprop_key", "is", null),
     sb.from("crm_integraciones_config").select("config,activo")
@@ -133,7 +192,6 @@ export async function syncKitepropRed(): Promise<KPSyncResult> {
           seenIds.add(norm.portal_id);
           items.push(norm);
         }
-        // Extraer publicaciones en portales externos
         const pubs = extraerPublicaciones(kp);
         for (const pub of pubs) {
           publicaciones.push({
