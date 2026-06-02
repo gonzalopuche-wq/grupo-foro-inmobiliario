@@ -75,6 +75,18 @@
     {
       "path": "/api/noticias/fetch-ai",
       "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/cron/ajustes-alquiler",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/alertas-seguimiento",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/digest-semanal",
+      "schedule": "0 11 * * 1"
     }
   ]
 }

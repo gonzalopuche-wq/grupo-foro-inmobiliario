@@ -28,6 +28,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_nai_url ON noticias_ai_feed(url);
 -- RLS: solo admin puede leer/escribir desde la web
 ALTER TABLE noticias_ai_feed ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "admin lee noticias ai" ON noticias_ai_feed;
 CREATE POLICY "admin lee noticias ai" ON noticias_ai_feed
   FOR SELECT TO authenticated
   USING (
@@ -38,5 +39,6 @@ CREATE POLICY "admin lee noticias ai" ON noticias_ai_feed
     )
   );
 
+DROP POLICY IF EXISTS "service role all noticias ai" ON noticias_ai_feed;
 CREATE POLICY "service role all noticias ai" ON noticias_ai_feed
   FOR ALL TO service_role USING (true) WITH CHECK (true);

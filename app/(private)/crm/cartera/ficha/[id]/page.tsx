@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { PrintButton } from "./PrintButton";
 import { PostRedesButton } from "./PostRedesButton";
 import { PropiaPublicarButton } from "./PropiaPublicarButton";
+import { QRLinkButton } from "./QRLinkButton";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -370,6 +371,9 @@ export default async function FichaPage({ params }: Props) {
               </>
             );
           })()}
+
+          {/* QR y link rastreable */}
+          <QRLinkButton propiedadId={prop.id} titulo={prop.titulo ?? "Propiedad GFI"} />
 
           {/* Corredor */}
           <div className="ficha-corredor">
