@@ -1972,64 +1972,81 @@ export default function CarteraPage() {
               </div>
             ) : (
               <>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 14, marginBottom: 20 }}>
+                <div className="cart-lista" style={{ marginBottom: 20 }}>
                   {propsExternas.map((p: any) => {
                     const portal = PORTALES_EXT.find(x => x.id === p.portal);
-                    const precio = p.precio ? `${p.moneda === "ARS" ? "$" : "USD"} ${Number(p.precio).toLocaleString("es-AR", { maximumFractionDigits: 0 })}` : "A consultar";
-                    const specs: string[] = [];
-                    if (p.ambientes) specs.push(`${p.ambientes} amb.`);
-                    else if (p.dormitorios) specs.push(`${p.dormitorios} dorm.`);
-                    if (p.banos) specs.push(`${p.banos} baños`);
-                    if (p.superficie_cubierta) specs.push(`${p.superficie_cubierta} m²`);
-                    else if (p.sup_terreno) specs.push(`${p.sup_terreno} m²`);
+                    const monedaSym = p.moneda === "ARS" ? "$" : "USD";
+                    const precioFmt = p.precio ? `${monedaSym} ${Number(p.precio).toLocaleString("es-AR", { maximumFractionDigits: 0 })}` : "A consultar";
                     const imagenes: string[] = Array.isArray(p.imagenes) ? p.imagenes : [];
                     const img = imagenes[0] ?? null;
-                    const opColor = p.operacion === "venta" ? "#22c55e" : p.operacion === "alquiler" ? "#60a5fa" : "#f59e0b";
-                    const opLabel = p.operacion === "alquiler_temporal" ? "Alq. temp." : p.operacion;
+                    const opLower = (p.operacion ?? "").toLowerCase();
+                    const opBannerBg = opLower.includes("temp") ? "rgba(251,191,36,0.88)" : opLower.includes("alquiler") ? "rgba(59,130,246,0.88)" : "rgba(34,197,94,0.88)";
+                    const opLabel = opLower === "alquiler_temporal" ? "Alq. Temporal" : opLower === "alquiler" ? "Alquiler" : opLower === "venta" ? "Venta" : (p.operacion ?? "");
+                    const TIPO_MAP: Record<string, string> = {
+                      residential_lands: "Terreno residencial", lands: "Terreno", land: "Terreno",
+                      commercial_lands: "Terreno comercial", commercial: "Comercial",
+                      offices: "Oficina", office: "Oficina",
+                      stores: "Local comercial", store: "Local comercial",
+                      warehouses: "Depósito / Galpón", warehouse: "Depósito / Galpón",
+                      garage: "Cochera / Garaje", garages: "Cochera / Garaje",
+                      ph: "PH", department: "Departamento", departments: "Departamento",
+                      house: "Casa", houses: "Casa", quinta: "Quinta",
+                      campo: "Campo / Chacra", fields: "Campo", field: "Campo",
+                      hotel: "Hotel", hotels: "Hotel",
+                      emprendimiento: "Emprendimiento", developments: "Emprendimiento",
+                    };
+                    const tipoRaw = (p.tipo ?? "").toLowerCase();
+                    const tipoLabel = TIPO_MAP[tipoRaw] ?? (p.tipo ? p.tipo.charAt(0).toUpperCase() + p.tipo.slice(1).toLowerCase() : "");
                     const ubicacion = [p.barrio, p.ciudad].filter(Boolean).join(", ");
                     return (
-                      <div key={p.id} onClick={() => setSelectedPropExt({ id: p.id, fuente: p.portal })}
-                        style={{ cursor: "pointer" }}>
-                        <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "border-color 0.15s, box-shadow 0.15s" }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.18)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.5)"; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
-                        >
-                          {/* Imagen */}
-                          <div style={{ position: "relative", height: 170, background: "#111", flexShrink: 0, overflow: "hidden" }}>
-                            {img
-                              ? <img src={img} alt={p.titulo} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
-                                  loading="lazy"
-                                  onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                                  onMouseEnter={e => { (e.target as HTMLImageElement).style.transform = "scale(1.04)"; }}
-                                  onMouseLeave={e => { (e.target as HTMLImageElement).style.transform = "scale(1)"; }}
-                                />
-                              : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, color: "rgba(255,255,255,0.06)", background: "linear-gradient(135deg,#111,#0a0a0a)" }}>🏠</div>
-                            }
-                            {/* Badge operación */}
-                            <span style={{ position: "absolute", top: 8, left: 8, fontSize: 9, fontWeight: 700, padding: "3px 7px", borderRadius: 4, background: `${opColor}22`, color: opColor, border: `1px solid ${opColor}44`, fontFamily: "Montserrat,sans-serif", textTransform: "uppercase", letterSpacing: "0.05em", backdropFilter: "blur(4px)" }}>{opLabel}</span>
-                            {/* Badge portal */}
-                            {portal && <span style={{ position: "absolute", top: 8, right: 8, fontSize: 9, fontWeight: 700, padding: "3px 7px", borderRadius: 4, background: portal.bg, color: portal.color, border: `1px solid ${portal.color}44`, fontFamily: "Montserrat,sans-serif", backdropFilter: "blur(4px)" }}>{portal.label}</span>}
-                            {/* Contador de fotos */}
-                            {imagenes.length > 1 && <span style={{ position: "absolute", bottom: 7, right: 8, fontSize: 9, color: "rgba(255,255,255,0.6)", background: "rgba(0,0,0,0.55)", padding: "2px 6px", borderRadius: 3, backdropFilter: "blur(3px)" }}>📷 {imagenes.length}</span>}
-                          </div>
-                          {/* Contenido */}
-                          <div style={{ padding: "11px 13px", display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
-                            {/* Tipo */}
-                            {p.tipo && <span style={{ fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", textTransform: "uppercase", letterSpacing: "0.06em" }}>{p.tipo}</span>}
-                            {/* Título / dirección */}
-                            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.82)", fontWeight: 500, fontFamily: "Inter,sans-serif", margin: 0, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{p.titulo || p.direccion || "Sin título"}</p>
-                            {/* Precio */}
-                            <p style={{ fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "Montserrat,sans-serif", margin: 0, letterSpacing: "-0.02em" }}>{precio}</p>
-                            {/* Specs */}
-                            {specs.length > 0 && (
-                              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                                {specs.map((s, i) => (
-                                  <span key={i} style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif", background: "rgba(255,255,255,0.04)", padding: "2px 6px", borderRadius: 3, border: "1px solid rgba(255,255,255,0.06)" }}>{s}</span>
-                                ))}
+                      <div key={p.id} className="cart-card" onClick={() => setSelectedPropExt({ id: p.id, fuente: p.portal })} style={{ cursor: "pointer" }}>
+                        {/* Foto */}
+                        <div className="cart-card-foto">
+                          {img
+                            ? <img src={img} alt={p.titulo ?? "Propiedad"} loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            : <div className="cart-card-foto-empty">🏠</div>
+                          }
+                          {/* Badge portal arriba izq */}
+                          {portal && <span className="cart-estado-badge" style={{ background: portal.bg, color: portal.color, border: `1px solid ${portal.color}44` }}>{portal.label}</span>}
+                          {/* Banner operación abajo */}
+                          <div className="cart-op-banner" style={{ background: opBannerBg, color: "#fff" }}>{opLabel}</div>
+                          {imagenes.length > 1 && <span className="cart-foto-count">📷 {imagenes.length}</span>}
+                        </div>
+
+                        {/* Info */}
+                        <div className="cart-card-info">
+                          <div className="cart-card-top">
+                            <div style={{ minWidth: 0, flex: 1 }}>
+                              {tipoLabel && <div className="cart-card-tipo">{tipoLabel}{p.zona ? <> · <span style={{ color: "rgba(255,255,255,0.25)" }}>{p.zona}</span></> : ""}</div>}
+                              <div className="cart-card-titulo" style={{ fontSize: 14, marginTop: 2 }}>
+                                {p.titulo || p.direccion || "Sin título"}
                               </div>
+                            </div>
+                            <div className="cart-precio-block">
+                              <div className="cart-card-precio" style={{ fontSize: 16 }}>{precioFmt}</div>
+                              {p.expensas && <div className="cart-card-exp">+ Exp. {p.moneda === "ARS" ? "$" : "ARS"} {Number(p.expensas).toLocaleString("es-AR")}</div>}
+                            </div>
+                          </div>
+
+                          {ubicacion && <div className="cart-card-dir">📍 {ubicacion}</div>}
+
+                          <div className="cart-card-specs">
+                            {p.ambientes && <div className="cart-spec-item">🛋 {p.ambientes} amb.</div>}
+                            {!p.ambientes && p.dormitorios && <div className="cart-spec-item">🛏 {p.dormitorios} dorm.</div>}
+                            {p.banos && <div className="cart-spec-item">🚿 {p.banos} baños</div>}
+                            {p.superficie_cubierta && <div className="cart-spec-item">📐 {p.superficie_cubierta} m² cub.</div>}
+                            {!p.superficie_cubierta && p.sup_terreno && <div className="cart-spec-item">📐 {p.sup_terreno} m² terreno</div>}
+                          </div>
+
+                          <div className="cart-card-footer">
+                            <span className="cart-card-fecha">{p.portal?.toUpperCase() ?? ""}</span>
+                            {p.url_portal && (
+                              <a href={p.url_portal} target="_blank" rel="noopener noreferrer"
+                                onClick={e => e.stopPropagation()}
+                                style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", padding: "2px 8px", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 3 }}>
+                                Ver en portal ↗
+                              </a>
                             )}
-                            {/* Ubicación */}
-                            {ubicacion && <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", margin: 0, marginTop: "auto", display: "flex", alignItems: "center", gap: 4 }}>📍 {ubicacion}</p>}
                           </div>
                         </div>
                       </div>
