@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    GFI® — GLOBAL DESIGN SYSTEM
    Grupo Foro Inmobiliario · Professional Real Estate Platform
-   Inspired by: Bloomberg Terminal · Palantir · Vercel Dashboard
+   Palette: Colores Diosas — teal · coral · gold · mauve · ocean · navy
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Google Fonts ─────────────────────────────────────────────────────────── */
@@ -9,48 +9,87 @@
 
 /* ── Design Tokens ────────────────────────────────────────────────────────── */
 :root {
-  /* Background layers */
-  --gfi-bg-primary:     #080a0c;
-  --gfi-bg-secondary:   #0f1219;
-  --gfi-bg-card:        #111318;
-  --gfi-bg-elevated:    #161b24;
-  --gfi-bg-hover:       #1a1e26;
-  --gfi-bg-input:       #0d1017;
+  /* Background layers — dark with subtle navy undertone */
+  --gfi-bg-primary:     #090b0e;
+  --gfi-bg-secondary:   #0e1318;
+  --gfi-bg-card:        #121820;
+  --gfi-bg-elevated:    #182028;
+  --gfi-bg-hover:       #1c2530;
+  --gfi-bg-input:       #0c1018;
 
-  /* Borders */
-  --gfi-border:         #252a35;
-  --gfi-border-subtle:  #1c2030;
-  --gfi-border-bright:  #333b4d;
+  /* Borders — teal-tinted dark */
+  --gfi-border:         #243038;
+  --gfi-border-subtle:  #1a2530;
+  --gfi-border-bright:  #304050;
 
-  /* Accent — Red (primary brand) */
-  --gfi-red:            #cc0000;
-  --gfi-red-bright:     #e8002d;
-  --gfi-red-soft:       rgba(204, 0, 0, 0.10);
-  --gfi-red-border:     rgba(204, 0, 0, 0.30);
-  --gfi-red-glow:       rgba(204, 0, 0, 0.15);
-  --gfi-red-gradient:   linear-gradient(135deg, #cc0000 0%, #e8002d 100%);
+  /* Accent — Dark Red (primary brand) */
+  --gfi-red:            #990000;
+  --gfi-red-bright:     #b80000;
+  --gfi-red-soft:       rgba(153, 0, 0, 0.12);
+  --gfi-red-border:     rgba(153, 0, 0, 0.35);
+  --gfi-red-glow:       rgba(153, 0, 0, 0.18);
+  --gfi-red-gradient:   linear-gradient(135deg, #990000 0%, #b80000 100%);
 
-  /* Accent — Orange (warnings, secondary) */
-  --gfi-orange:         #c44a00;
-  --gfi-orange-soft:    rgba(196, 74, 0, 0.12);
-  --gfi-orange-border:  rgba(196, 74, 0, 0.30);
+  /* Accent — Teal (success, confirmation, USD prices) */
+  --gfi-teal:           #1a5e5c;
+  --gfi-teal-bright:    #22807c;
+  --gfi-teal-soft:      rgba(26, 94, 92, 0.18);
+  --gfi-teal-border:    rgba(26, 94, 92, 0.40);
+  --gfi-teal-text:      #3abab6;
 
-  /* Accent — Blue (stats, info) */
-  --gfi-blue:           #0a2540;
-  --gfi-blue-bright:    #1e4a7a;
-  --gfi-blue-soft:      rgba(10, 37, 64, 0.50);
+  /* Accent — Ocean (info, links) */
+  --gfi-ocean:          #14607a;
+  --gfi-ocean-bright:   #1880a0;
+  --gfi-ocean-soft:     rgba(20, 96, 122, 0.18);
+  --gfi-ocean-border:   rgba(20, 96, 122, 0.40);
+  --gfi-ocean-text:     #4ab8d8;
 
-  /* Accent — Green (success, confirmation) */
-  --gfi-green:          #0a3d2e;
-  --gfi-green-bright:   #0d6644;
-  --gfi-green-soft:     rgba(10, 61, 46, 0.50);
-  --gfi-green-text:     #10b981;
+  /* Accent — Gold (warnings, ARS prices) */
+  --gfi-gold:           #8c5a08;
+  --gfi-gold-bright:    #b07010;
+  --gfi-gold-soft:      rgba(140, 90, 8, 0.16);
+  --gfi-gold-border:    rgba(140, 90, 8, 0.38);
+  --gfi-gold-text:      #d4960c;
+
+  /* Accent — Coral (alerts, errors secondary) */
+  --gfi-coral:          #8c3a3a;
+  --gfi-coral-bright:   #b04848;
+  --gfi-coral-soft:     rgba(140, 58, 58, 0.16);
+  --gfi-coral-border:   rgba(140, 58, 58, 0.38);
+  --gfi-coral-text:     #d88080;
+
+  /* Accent — Mauve (subtle, metadata) */
+  --gfi-mauve:          #6a4e50;
+  --gfi-mauve-soft:     rgba(106, 78, 80, 0.18);
+  --gfi-mauve-text:     #b89090;
+
+  /* Accent — Navy (deep bg, elevated surfaces) */
+  --gfi-navy:           #1e2b3a;
+  --gfi-navy-bright:    #2a3c50;
+
+  /* Accent — Dark Gray */
+  --gfi-gray:           #3a4050;
+  --gfi-gray-bright:    #505868;
+  --gfi-gray-soft:      rgba(58, 64, 80, 0.28);
+  --gfi-gray-text:      #8892a4;
+
+  /* Legacy compat aliases */
+  --gfi-green:          #1a5e5c;
+  --gfi-green-bright:   #22807c;
+  --gfi-green-soft:     rgba(26, 94, 92, 0.25);
+  --gfi-green-text:     #3abab6;
+  --gfi-orange:         #8c5a08;
+  --gfi-orange-soft:    rgba(140, 90, 8, 0.16);
+  --gfi-orange-border:  rgba(140, 90, 8, 0.38);
+  --gfi-blue:           #14607a;
+  --gfi-blue-bright:    #1880a0;
+  --gfi-blue-soft:      rgba(20, 96, 122, 0.25);
 
   /* Typography */
-  --gfi-text-primary:   #f0f4f8;
-  --gfi-text-secondary: #8892a4;
-  --gfi-text-muted:     #4a5568;
-  --gfi-text-dim:       #2d3748;
+  --gfi-text-primary:   #eef2f6;
+  --gfi-text-secondary: #7a8898;
+  --gfi-text-muted:     #445060;
+  --gfi-text-dim:       #2a3040;
 
   /* Fonts */
   --font-display:       'Montserrat', sans-serif;
@@ -58,11 +97,12 @@
   --font-mono:          'JetBrains Mono', 'Courier New', monospace;
 
   /* Shadows */
-  --gfi-shadow-sm:      0 2px 8px rgba(0, 0, 0, 0.40);
-  --gfi-shadow-md:      0 8px 24px rgba(0, 0, 0, 0.50);
-  --gfi-shadow-lg:      0 16px 48px rgba(0, 0, 0, 0.60);
-  --gfi-shadow-red:     0 4px 20px rgba(204, 0, 0, 0.25);
-  --gfi-shadow-red-lg:  0 8px 40px rgba(204, 0, 0, 0.30);
+  --gfi-shadow-sm:      0 2px 8px rgba(0, 0, 0, 0.45);
+  --gfi-shadow-md:      0 8px 24px rgba(0, 0, 0, 0.55);
+  --gfi-shadow-lg:      0 16px 48px rgba(0, 0, 0, 0.65);
+  --gfi-shadow-red:     0 4px 20px rgba(153, 0, 0, 0.28);
+  --gfi-shadow-red-lg:  0 8px 40px rgba(153, 0, 0, 0.35);
+  --gfi-shadow-teal:    0 4px 20px rgba(26, 94, 92, 0.22);
 
   /* Transitions */
   --gfi-transition:     all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
@@ -96,31 +136,31 @@ html, body {
 
 /* ── Selection ────────────────────────────────────────────────────────────── */
 ::selection {
-  background: rgba(204, 0, 0, 0.35);
+  background: rgba(153, 0, 0, 0.38);
   color: var(--gfi-text-primary);
 }
 
 /* ── Custom Scrollbar ────────────────────────────────────────────────────── */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cc0000 #0f1219;
+  scrollbar-color: #1a5e5c #0e1318;
 }
 *::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 *::-webkit-scrollbar-track {
-  background: #0f1219;
+  background: #0e1318;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(204, 0, 0, 0.5);
+  background: rgba(26, 94, 92, 0.55);
   border-radius: 2px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: #cc0000;
+  background: #3abab6;
 }
 *::-webkit-scrollbar-corner {
-  background: #0f1219;
+  background: #0e1318;
 }
 
 /* ── Global Animations ───────────────────────────────────────────────────── */
@@ -149,8 +189,8 @@ html, body {
 }
 
 @keyframes gfi-glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(204, 0, 0, 0.3); }
-  50%       { box-shadow: 0 0 20px rgba(204, 0, 0, 0.6); }
+  0%, 100% { box-shadow: 0 0 8px rgba(153, 0, 0, 0.35); }
+  50%       { box-shadow: 0 0 20px rgba(153, 0, 0, 0.65); }
 }
 
 @keyframes gfi-dot {
@@ -191,7 +231,7 @@ html, body {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(204, 0, 0, 0.1) 70%, transparent 100%);
+  background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(153, 0, 0, 0.12) 70%, transparent 100%);
 }
 
 /* Button */
@@ -261,11 +301,13 @@ html, body {
   letter-spacing: 0.10em;
   text-transform: uppercase;
 }
-.gfi-badge--red    { background: var(--gfi-red-soft);    color: var(--gfi-red);        border: 1px solid var(--gfi-red-border); }
-.gfi-badge--green  { background: rgba(10,61,46,0.40);    color: var(--gfi-green-text);  border: 1px solid rgba(16,185,129,0.25); }
-.gfi-badge--orange { background: var(--gfi-orange-soft); color: #f97316;               border: 1px solid var(--gfi-orange-border); }
-.gfi-badge--blue   { background: rgba(30,74,122,0.30);   color: #60a5fa;               border: 1px solid rgba(96,165,250,0.25); }
-.gfi-badge--gray   { background: rgba(255,255,255,0.05); color: var(--gfi-text-secondary); border: 1px solid var(--gfi-border); }
+.gfi-badge--red    { background: var(--gfi-red-soft);    color: var(--gfi-red-bright);   border: 1px solid var(--gfi-red-border); }
+.gfi-badge--green  { background: var(--gfi-teal-soft);   color: var(--gfi-teal-text);    border: 1px solid var(--gfi-teal-border); }
+.gfi-badge--orange { background: var(--gfi-gold-soft);   color: var(--gfi-gold-text);    border: 1px solid var(--gfi-gold-border); }
+.gfi-badge--blue   { background: var(--gfi-ocean-soft);  color: var(--gfi-ocean-text);   border: 1px solid var(--gfi-ocean-border); }
+.gfi-badge--coral  { background: var(--gfi-coral-soft);  color: var(--gfi-coral-text);   border: 1px solid var(--gfi-coral-border); }
+.gfi-badge--mauve  { background: var(--gfi-mauve-soft);  color: var(--gfi-mauve-text);   border: 1px solid rgba(106,78,80,0.35); }
+.gfi-badge--gray   { background: var(--gfi-gray-soft);   color: var(--gfi-gray-text);    border: 1px solid var(--gfi-border); }
 .gfi-badge--dot::before {
   content: '';
   width: 5px;
@@ -289,8 +331,8 @@ html, body {
   transition: var(--gfi-transition);
 }
 .gfi-input:focus {
-  border-color: var(--gfi-red);
-  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.12);
+  border-color: var(--gfi-teal-bright);
+  box-shadow: 0 0 0 3px rgba(26, 94, 92, 0.18);
 }
 .gfi-input::placeholder {
   color: var(--gfi-text-muted);
@@ -319,8 +361,8 @@ html, body {
   transition: var(--gfi-transition);
 }
 .gfi-select:focus {
-  border-color: var(--gfi-red);
-  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.12);
+  border-color: var(--gfi-teal-bright);
+  box-shadow: 0 0 0 3px rgba(26, 94, 92, 0.18);
 }
 
 /* Table */
@@ -350,7 +392,7 @@ html, body {
   background: rgba(255, 255, 255, 0.012);
 }
 .gfi-table tbody tr:hover {
-  background: rgba(204, 0, 0, 0.04);
+  background: rgba(26, 94, 92, 0.07);
 }
 .gfi-table tbody td {
   padding: 11px 14px;
@@ -363,8 +405,8 @@ html, body {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
-.gfi-price-usd { font-family: var(--font-mono); color: var(--gfi-green-text); font-weight: 600; }
-.gfi-price-ars { font-family: var(--font-mono); color: #f97316; font-weight: 600; }
+.gfi-price-usd { font-family: var(--font-mono); color: var(--gfi-teal-text);  font-weight: 600; }
+.gfi-price-ars { font-family: var(--font-mono); color: var(--gfi-gold-text);  font-weight: 600; }
 
 /* Section title */
 .gfi-section-title {
@@ -459,9 +501,9 @@ html, body {
 }
 .gfi-filter-chip:hover,
 .gfi-filter-chip.active {
-  border-color: var(--gfi-red-border);
-  color: var(--gfi-red);
-  background: var(--gfi-red-soft);
+  border-color: var(--gfi-teal-border);
+  color: var(--gfi-teal-text);
+  background: var(--gfi-teal-soft);
 }
 
 /* ── Print ────────────────────────────────────────────────────────────────── */
