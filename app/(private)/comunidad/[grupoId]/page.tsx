@@ -418,7 +418,7 @@ export default function GrupoChatPage() {
         .gc-rb{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.15);border-radius:5px;}
         .gc-rb-t{flex:1;font-size:11px;color:rgba(255,255,255,0.4);font-family:'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .gc-adb{width:34px;height:34px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:6px;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
-        .gc-adb:hover{border-color:rgba(200,0,0,0.35);color:#cc0000;}
+        .gc-adb:hover,.gc-adb-on{border-color:rgba(200,0,0,0.35);color:#cc0000;background:rgba(200,0,0,0.07);}
         .gc-ta{flex:1;padding:9px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:'Inter',sans-serif;resize:none;line-height:1.5;max-height:120px;overflow-y:auto;}
         .gc-ta:focus{border-color:rgba(200,0,0,0.35);}
         .gc-ta::placeholder{color:rgba(255,255,255,0.2);}
@@ -675,7 +675,7 @@ export default function GrupoChatPage() {
               <input ref={fileImgRef} type="file" accept="image/*,video/*" multiple style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
               <input ref={fileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
               <input ref={fileCamRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
-              <button className="gc-adb" onClick={()=>setMenuAdj(v=>!v)} title="Adjuntar" style={{fontSize:20,fontWeight:700,color:menuAdj?"#cc0000":"rgba(255,255,255,0.5)"}}>+</button>
+              <button className={`gc-adb${menuAdj?" gc-adb-on":""}`} onClick={()=>setMenuAdj(v=>!v)} title="Adjuntar">📎</button>
               <textarea ref={inputRef} className="gc-ta" placeholder="Escribí un mensaje..." value={input} rows={1}
                 onChange={e=>{
                   setInput(e.target.value);
@@ -705,16 +705,18 @@ export default function GrupoChatPage() {
         <div onClick={()=>setMenuAdj(false)} style={{position:"fixed",inset:0,zIndex:600}}>
           <div onClick={e=>e.stopPropagation()} style={{position:"fixed",bottom:80,left:0,right:0,margin:"0 auto",maxWidth:500,background:"#181818",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"16px 16px 0 0",padding:"18px 14px 24px",zIndex:601}}>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
-              {[
-                {icon:"📸",label:"Cámara",action:()=>{setMenuAdj(false);fileCamRef.current?.click();}},
-                {icon:"🖼",label:"Galería",action:()=>{setMenuAdj(false);fileImgRef.current?.click();}},
-                {icon:"📎",label:"Documento",action:()=>{setMenuAdj(false);fileDocRef.current?.click();}},
-                {icon:"🎙",label:"Audio",action:()=>{setMenuAdj(false);iniciarGrab();}},
-                {icon:"👤",label:"Contacto",action:()=>{setMenuAdj(false);abrirModalContacto();}},
-                {icon:"📍",label:"Ubicación",action:compartirUbicacion},
-                {icon:"📊",label:"Encuesta",action:()=>{setMenuAdj(false);setModalEncuesta(true);}},
-                {icon:"📅",label:"Evento",action:()=>{setMenuAdj(false);setModalEvento(true);}},
-              ].map(({icon,label,action})=>(
+              {([
+                {icon:"📸",label:"Cámara",action:()=>{setMenuAdj(false);fileCamRef.current?.click();},soloForo:false},
+                {icon:"🖼",label:"Galería",action:()=>{setMenuAdj(false);fileImgRef.current?.click();},soloForo:false},
+                {icon:"📎",label:"Documento",action:()=>{setMenuAdj(false);fileDocRef.current?.click();},soloForo:false},
+                {icon:"🎙",label:"Audio",action:()=>{setMenuAdj(false);iniciarGrab();},soloForo:false},
+                {icon:"👤",label:"Contacto",action:()=>{setMenuAdj(false);abrirModalContacto();},soloForo:true},
+                {icon:"📍",label:"Ubicación",action:compartirUbicacion,soloForo:false},
+                {icon:"📊",label:"Encuesta",action:()=>{setMenuAdj(false);setModalEncuesta(true);},soloForo:false},
+                {icon:"📅",label:"Evento",action:()=>{setMenuAdj(false);setModalEvento(true);},soloForo:false},
+              ] as {icon:string;label:string;action:()=>void;soloForo:boolean}[])
+                .filter(op => !op.soloForo || grupo?.va_al_mir)
+                .map(({icon,label,action})=>(
                 <button key={label} onClick={action} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"12px 6px",cursor:"pointer"}}>
                   <div style={{width:46,height:46,borderRadius:"50%",background:"rgba(200,0,0,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{icon}</div>
                   <span style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontFamily:"Montserrat,sans-serif",fontWeight:600,textAlign:"center"}}>{label}</span>
