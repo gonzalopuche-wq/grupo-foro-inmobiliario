@@ -5,7 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
 interface Perfil { id: string; nombre: string; apellido: string; matricula: string | null; foto_url: string | null; }
-interface Adjunto { url: string; nombre: string; tipo: "imagen" | "video" | "documento" | "audio"; tamano?: number; }
+interface Adjunto {
+  url: string; nombre: string;
+  tipo: "imagen" | "video" | "documento" | "audio" | "contacto" | "ubicacion" | "encuesta" | "evento";
+  tamano?: number;
+  contacto_id?: string; contacto_matricula?: string; contacto_telefono?: string; contacto_instagram?: string;
+  ubicacion_lat?: number; ubicacion_lng?: number; ubicacion_nombre?: string;
+  encuesta_pregunta?: string; encuesta_opciones?: string[]; encuesta_votos?: Record<string, string[]>;
+  evento_titulo?: string; evento_fecha?: string; evento_descripcion?: string; evento_id?: string;
+}
 interface Mensaje {
   id: string; grupo_id: string; user_id: string; perfil_id?: string;
   texto: string | null; tipo?: string; mir_id?: string; mir_tipo?: string;
@@ -53,6 +61,18 @@ export default function GrupoChatPage() {
   const [toast, setToast] = useState<string|null>(null);
   const [modalMic, setModalMic] = useState(false);
   const [micEstado, setMicEstado] = useState<'ok'|'denegado'|'sin-soporte'|'desconocido'>('desconocido');
+  const [menuAdj, setMenuAdj] = useState(false);
+  const [modalContacto, setModalContacto] = useState(false);
+  const [busqContacto, setBusqContacto] = useState("");
+  const [miembros, setMiembros] = useState<(Perfil & { telefono?: string | null; instagram?: string | null })[]>([]);
+  const [loadingMiembros, setLoadingMiembros] = useState(false);
+  const [modalEncuesta, setModalEncuesta] = useState(false);
+  const [encuestaPregunta, setEncuestaPregunta] = useState("");
+  const [encuestaOpciones, setEncuestaOpciones] = useState(["", ""]);
+  const [modalEvento, setModalEvento] = useState(false);
+  const [eventoTitulo, setEventoTitulo] = useState("");
+  const [eventoFecha, setEventoFecha] = useState("");
+  const [eventoDescripcion, setEventoDescripcion] = useState("");
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
   const mrRef = useRef<MediaRecorder|null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
@@ -62,6 +82,7 @@ export default function GrupoChatPage() {
   const endRef = useRef<HTMLDivElement>(null);
   const fileImgRef = useRef<HTMLInputElement>(null);
   const fileDocRef = useRef<HTMLInputElement>(null);
+  const fileCamRef = useRef<HTMLInputElement>(null);
   const previewTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
 
   useEffect(() => {
@@ -237,6 +258,90 @@ export default function GrupoChatPage() {
 
   const editar = async (id: string) => { if (!editText.trim()) return; await supabase.from("mensajes_chat").update({texto:editText.trim(),editado:true}).eq("id",id); setEditandoId(null); setEditText(""); };
   const eliminar = async (id: string) => { if (!confirm("¿Eliminar este mensaje?")) return; await supabase.from("mensajes_chat").update({eliminado:true,texto:""}).eq("id",id); setMenuId(null); };
+
+  const abrirModalContacto = async () => {
+    setModalContacto(true); setBusqContacto("");
+    if (miembros.length > 0) return;
+    setLoadingMiembros(true);
+    const { data } = await supabase
+      .from("perfiles")
+      .select("id,nombre,apellido,matricula,foto_url,telefono,instagram")
+      .eq("estado", "activo")
+      .not("nombre", "is", null)
+      .order("apellido", { ascending: true });
+    setMiembros((data ?? []) as any);
+    setLoadingMiembros(false);
+  };
+
+  const compartirContacto = async (miembro: typeof miembros[0]) => {
+    if (!userId || !grupo) return;
+    setModalContacto(false);
+    const adjContacto: Adjunto = {
+      tipo: "contacto",
+      url: miembro.foto_url ?? "",
+      nombre: `${miembro.apellido ?? ""}, ${miembro.nombre ?? ""}`.replace(/^, /, ""),
+      tamano: 0,
+      contacto_id: miembro.id,
+      contacto_matricula: miembro.matricula ?? undefined,
+      contacto_telefono: (miembro as any).telefono ?? undefined,
+      contacto_instagram: (miembro as any).instagram ?? undefined,
+    };
+    const ins = { grupo_id: grupoId, user_id: userId, texto: null, adjuntos: [adjContacto] };
+    await supabase.from("mensajes_chat").insert(ins);
+  };
+  const compartirUbicacion = () => {
+    setMenuAdj(false);
+    if (!navigator.geolocation) { showToast("Tu navegador no soporta geolocalización"); return; }
+    showToast("Obteniendo ubicación...");
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      if (!userId || !grupo) return;
+      const lat = pos.coords.latitude; const lng = pos.coords.longitude;
+      const adj: Adjunto = { tipo:"ubicacion", url:`https://www.google.com/maps?q=${lat},${lng}`, nombre:"Mi ubicación", ubicacion_lat:lat, ubicacion_lng:lng, ubicacion_nombre:"Mi ubicación" };
+      await supabase.from("mensajes_chat").insert({ grupo_id:grupoId, user_id:userId, texto:null, adjuntos:[adj] });
+    }, () => showToast("No se pudo obtener la ubicación"));
+  };
+
+  const enviarEncuesta = async () => {
+    const opciones = encuestaOpciones.filter(o => o.trim());
+    if (!encuestaPregunta.trim() || opciones.length < 2) { showToast("Completá la pregunta y al menos 2 opciones"); return; }
+    if (!userId || !grupo) return;
+    setModalEncuesta(false);
+    const adj: Adjunto = { tipo:"encuesta", url:"", nombre:encuestaPregunta.trim(), encuesta_pregunta:encuestaPregunta.trim(), encuesta_opciones:opciones, encuesta_votos:{} };
+    await supabase.from("mensajes_chat").insert({ grupo_id:grupoId, user_id:userId, texto:null, adjuntos:[adj] });
+    setEncuestaPregunta(""); setEncuestaOpciones(["", ""]);
+  };
+
+  const votarEncuesta = async (msgId: string, adjIdx: number, opcionIdx: number) => {
+    if (!userId) return;
+    const msg = mensajes.find(m => m.id === msgId); if (!msg?.adjuntos) return;
+    const adjs = msg.adjuntos.map((a, i) => {
+      if (i !== adjIdx) return a;
+      const votos = { ...(a.encuesta_votos ?? {}) };
+      Object.keys(votos).forEach(k => { votos[k] = votos[k].filter(u => u !== userId); if (!votos[k].length) delete votos[k]; });
+      votos[opcionIdx.toString()] = [...(votos[opcionIdx.toString()] ?? []), userId];
+      return { ...a, encuesta_votos: votos };
+    });
+    setMensajes(prev => prev.map(m => m.id === msgId ? { ...m, adjuntos: adjs } : m));
+    await supabase.from("mensajes_chat").update({ adjuntos: adjs }).eq("id", msgId);
+  };
+
+  const enviarEvento = async () => {
+    if (!eventoTitulo.trim() || !eventoFecha) { showToast("Completá título y fecha"); return; }
+    if (!userId || !grupo) return;
+    setModalEvento(false);
+    // Crear en la tabla eventos (estado pendiente — admin lo publica)
+    const fechaISO = new Date(`${eventoFecha}T09:00:00`).toISOString();
+    const { data: ev } = await supabase.from("eventos").insert({
+      titulo: eventoTitulo.trim(), descripcion: eventoDescripcion.trim() || null,
+      fecha: fechaISO, tipo:"gfi", gratuito:true, plataforma:"presencial",
+      organizador_id: userId, estado:"pendiente",
+    }).select("id").single();
+    const adj: Adjunto = { tipo:"evento", url:"/eventos", nombre:eventoTitulo.trim(), evento_titulo:eventoTitulo.trim(), evento_fecha:eventoFecha, evento_descripcion:eventoDescripcion.trim()||undefined, evento_id:(ev as any)?.id };
+    await supabase.from("mensajes_chat").insert({ grupo_id:grupoId, user_id:userId, texto:null, adjuntos:[adj] });
+    setEventoTitulo(""); setEventoFecha(""); setEventoDescripcion("");
+    showToast("Evento enviado para revisión");
+  };
+
   const reaccionar = async (msgId: string, emoji: string) => {
     if (!userId) return;
     const msg = mensajes.find(m => m.id === msgId); if (!msg) return;
@@ -335,7 +440,7 @@ export default function GrupoChatPage() {
         @keyframes spin{to{transform:rotate(360deg);}}
       `}</style>
 
-      <div className="gc" onClick={() => setMenuId(null)}>
+      <div className="gc" onClick={() => { setMenuId(null); setMenuAdj(false); }}>
 
         {/* Header */}
         <div className="gc-hd">
@@ -403,6 +508,109 @@ export default function GrupoChatPage() {
                                 if (a.tipo==="audio") return <div key={i} className="gc-a-audio"><span style={{fontSize:18}}>🎙</span><audio controls style={{flex:1,height:32,minWidth:0}}><source src={a.url} type={a.nombre?.endsWith(".mp4")?"audio/mp4":a.nombre?.endsWith(".ogg")?"audio/ogg":"audio/webm"}/></audio></div>;
                                 if (a.tipo==="imagen") return <img key={i} src={a.url} alt={a.nombre} style={{maxWidth:"100%",maxHeight:200,borderRadius:8,display:"block",cursor:"pointer",marginTop:4}} onClick={e=>{e.stopPropagation();window.open(a.url,"_blank");}}/>;
                                 if (a.tipo==="video") return <video key={i} src={a.url} controls style={{maxWidth:"100%",maxHeight:200,borderRadius:8,marginTop:4,display:"block"}}/>;
+                                if (a.tipo==="contacto") {
+                                  const tel = a.contacto_telefono?.replace(/\D/g,"");
+                                  const waLink = tel ? `https://wa.me/${tel.startsWith("54")?tel:"54"+tel}` : null;
+                                  return (
+                                    <div key={i} style={{marginTop:4,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,overflow:"hidden",width:260}}>
+                                      {/* Header */}
+                                      <div style={{background:"rgba(200,0,0,0.12)",borderBottom:"1px solid rgba(200,0,0,0.15)",padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
+                                        {a.url
+                                          ? <img src={a.url} alt={a.nombre} referrerPolicy="no-referrer" style={{width:42,height:42,borderRadius:"50%",objectFit:"cover",border:"2px solid rgba(200,0,0,0.3)"}}/>
+                                          : <div style={{width:42,height:42,borderRadius:"50%",background:"rgba(200,0,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"rgba(200,0,0,0.7)",fontWeight:800,fontFamily:"Montserrat,sans-serif"}}>{a.nombre.split(",").map((p:string)=>p.trim().charAt(0)).join("").slice(0,2).toUpperCase()}</div>
+                                        }
+                                        <div style={{flex:1,minWidth:0}}>
+                                          <div style={{fontSize:13,fontWeight:700,color:"#fff",fontFamily:"Montserrat,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.nombre}</div>
+                                          {a.contacto_matricula && <div style={{fontSize:10,color:"rgba(200,0,0,0.8)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.05em"}}>Mat. {a.contacto_matricula}</div>}
+                                        </div>
+                                      </div>
+                                      {/* Info */}
+                                      <div style={{padding:"8px 12px",display:"flex",flexDirection:"column",gap:4}}>
+                                        {a.contacto_telefono && <div style={{fontSize:11,color:"rgba(255,255,255,0.6)",display:"flex",alignItems:"center",gap:6}}>📞 <span style={{fontFamily:"'Courier New',monospace"}}>{a.contacto_telefono}</span></div>}
+                                        {a.contacto_instagram && <div style={{fontSize:11,color:"rgba(255,255,255,0.6)",display:"flex",alignItems:"center",gap:6}}>📸 <span>@{a.contacto_instagram.replace(/^@/,"")}</span></div>}
+                                      </div>
+                                      {/* Acción WhatsApp */}
+                                      {waLink && (
+                                        <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}
+                                          style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,background:"rgba(37,211,102,0.12)",borderTop:"1px solid rgba(37,211,102,0.2)",padding:"8px 12px",textDecoration:"none",color:"#25d366",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em"}}>
+                                          💬 Escribir por WhatsApp
+                                        </a>
+                                      )}
+                                    </div>
+                                  );
+                                }
+                                if (a.tipo==="ubicacion") {
+                                  return (
+                                    <a key={i} href={a.url} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}
+                                      style={{display:"flex",alignItems:"center",gap:10,marginTop:4,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"10px 14px",textDecoration:"none",width:260}}>
+                                      <div style={{width:40,height:40,borderRadius:"50%",background:"rgba(34,197,94,0.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>📍</div>
+                                      <div>
+                                        <div style={{fontSize:13,fontWeight:600,color:"#fff",fontFamily:"Montserrat,sans-serif"}}>{a.ubicacion_nombre ?? "Ubicación compartida"}</div>
+                                        {a.ubicacion_lat!=null && <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"Inter,sans-serif"}}>{a.ubicacion_lat.toFixed(5)}, {a.ubicacion_lng?.toFixed(5)}</div>}
+                                        <div style={{fontSize:10,color:"#4ade80",fontFamily:"Montserrat,sans-serif",fontWeight:700,marginTop:2}}>Ver en Maps →</div>
+                                      </div>
+                                    </a>
+                                  );
+                                }
+                                if (a.tipo==="encuesta") {
+                                  const total = Object.values(a.encuesta_votos??{}).reduce((s,v)=>s+v.length,0);
+                                  const miVoto = Object.entries(a.encuesta_votos??{}).find(([,vs])=>(vs as string[]).includes(userId??""))?.[0];
+                                  return (
+                                    <div key={i} style={{marginTop:4,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,overflow:"hidden",width:260}}>
+                                      <div style={{background:"rgba(200,0,0,0.12)",borderBottom:"1px solid rgba(200,0,0,0.15)",padding:"10px 14px"}}>
+                                        <div style={{fontSize:10,color:"rgba(200,0,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",marginBottom:4}}>📊 ENCUESTA</div>
+                                        <div style={{fontSize:13,fontWeight:700,color:"#fff",fontFamily:"Montserrat,sans-serif"}}>{a.encuesta_pregunta}</div>
+                                      </div>
+                                      <div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:6}}>
+                                        {(a.encuesta_opciones??[]).map((op,oi)=>{
+                                          const vts=(a.encuesta_votos?.[oi.toString()]??[]).length;
+                                          const pct=total>0?Math.round(vts/total*100):0;
+                                          const sel=miVoto===oi.toString();
+                                          return (
+                                            <button key={oi} onClick={e=>{e.stopPropagation();votarEncuesta(m.id,i,oi);}}
+                                              style={{background:sel?"rgba(200,0,0,0.15)":"rgba(255,255,255,0.04)",border:`1px solid ${sel?"rgba(200,0,0,0.4)":"rgba(255,255,255,0.09)"}`,borderRadius:6,padding:"7px 10px",cursor:"pointer",textAlign:"left",position:"relative",overflow:"hidden"}}>
+                                              <div style={{position:"absolute",left:0,top:0,height:"100%",width:`${pct}%`,background:sel?"rgba(200,0,0,0.2)":"rgba(255,255,255,0.06)",transition:"width 0.4s"}}/>
+                                              <div style={{position:"relative",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                                                <span style={{fontSize:12,color:"#fff",fontFamily:"Inter,sans-serif"}}>{op}</span>
+                                                <span style={{fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"Montserrat,sans-serif",fontWeight:600}}>{pct}%</span>
+                                              </div>
+                                            </button>
+                                          );
+                                        })}
+                                        <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Inter,sans-serif",textAlign:"right",marginTop:2}}>{total} {total===1?"voto":"votos"}</div>
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                                if (a.tipo==="evento") {
+                                  const fecha=a.evento_fecha?new Date(a.evento_fecha+"T00:00:00").toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}):"";
+                                  const calLink=a.evento_fecha?`https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(a.evento_titulo??"")}&dates=${a.evento_fecha.replace(/-/g,"")}/${a.evento_fecha.replace(/-/g,"")}&details=${encodeURIComponent(a.evento_descripcion??"")}`:null;
+                                  return (
+                                    <div key={i} style={{marginTop:4,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,overflow:"hidden",width:260}}>
+                                      <div style={{background:"rgba(200,0,0,0.12)",borderBottom:"1px solid rgba(200,0,0,0.2)",padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+                                        <div style={{width:42,height:42,borderRadius:10,background:"rgba(200,0,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>📅</div>
+                                        <div style={{flex:1,minWidth:0}}>
+                                          <div style={{fontSize:10,color:"rgba(200,0,0,0.8)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",marginBottom:2}}>EVENTO GFI®</div>
+                                          <div style={{fontSize:13,fontWeight:700,color:"#fff",fontFamily:"Montserrat,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.evento_titulo}</div>
+                                          {fecha&&<div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:1,textTransform:"capitalize"}}>{fecha}</div>}
+                                        </div>
+                                      </div>
+                                      {a.evento_descripcion&&<div style={{padding:"8px 14px",fontSize:12,color:"rgba(255,255,255,0.6)",fontFamily:"Inter,sans-serif"}}>{a.evento_descripcion}</div>}
+                                      <div style={{display:"flex",borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                                        <a href="/eventos" onClick={e=>e.stopPropagation()}
+                                          style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:5,background:"rgba(200,0,0,0.08)",padding:"8px 10px",textDecoration:"none",color:"#cc0000",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700}}>
+                                          Ver en GFI
+                                        </a>
+                                        {calLink&&(
+                                          <a href={calLink} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}
+                                            style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:5,background:"rgba(59,130,246,0.08)",borderLeft:"1px solid rgba(255,255,255,0.06)",padding:"8px 10px",textDecoration:"none",color:"#60a5fa",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700}}>
+                                            + Calendario
+                                          </a>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                }
                                 return <a key={i} href={a.url} target="_blank" rel="noopener noreferrer" className="gc-a-doc" onClick={e=>e.stopPropagation()}><span style={{fontSize:16}}>📎</span><div style={{flex:1,minWidth:0}}><div style={{fontSize:11,color:"#fff",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.nombre}</div>{a.tamano&&<div style={{fontSize:9,color:"rgba(255,255,255,0.3)"}}>{fmtTam(a.tamano)}</div>}</div></a>;
                               })}
                               {pvData && pvData !== "loading" && pvData !== "error" && (pvData.title || pvData.image) && (
@@ -465,10 +673,9 @@ export default function GrupoChatPage() {
           {!grabando && !audioUrl && (
             <div style={{display:"flex",gap:6,alignItems:"flex-end"}}>
               <input ref={fileImgRef} type="file" accept="image/*,video/*" multiple style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
-              <button className="gc-adb" onClick={()=>fileImgRef.current?.click()} disabled={subiendoAdj} title="Fotos y videos">📷</button>
               <input ref={fileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
-              <button className="gc-adb" onClick={()=>fileDocRef.current?.click()} disabled={subiendoAdj} title="Documentos">📎</button>
-              <button className="gc-adb" onClick={iniciarGrab} title="Grabar audio" style={{color:"rgba(200,0,0,0.7)"}}>🎙</button>
+              <input ref={fileCamRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={e=>manejarArchivos(e.target.files)}/>
+              <button className="gc-adb" onClick={()=>setMenuAdj(v=>!v)} title="Adjuntar" style={{fontSize:20,fontWeight:700,color:menuAdj?"#cc0000":"rgba(255,255,255,0.5)"}}>+</button>
               <textarea ref={inputRef} className="gc-ta" placeholder="Escribí un mensaje..." value={input} rows={1}
                 onChange={e=>{
                   setInput(e.target.value);
@@ -490,6 +697,111 @@ export default function GrupoChatPage() {
       {toast && (
         <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "90vw", textAlign: "center" }}>
           {toast}
+        </div>
+      )}
+
+      {/* Popup menú adjuntar */}
+      {menuAdj && (
+        <div onClick={()=>setMenuAdj(false)} style={{position:"fixed",inset:0,zIndex:600}}>
+          <div onClick={e=>e.stopPropagation()} style={{position:"fixed",bottom:80,left:0,right:0,margin:"0 auto",maxWidth:500,background:"#181818",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"16px 16px 0 0",padding:"18px 14px 24px",zIndex:601}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+              {[
+                {icon:"📸",label:"Cámara",action:()=>{setMenuAdj(false);fileCamRef.current?.click();}},
+                {icon:"🖼",label:"Galería",action:()=>{setMenuAdj(false);fileImgRef.current?.click();}},
+                {icon:"📎",label:"Documento",action:()=>{setMenuAdj(false);fileDocRef.current?.click();}},
+                {icon:"🎙",label:"Audio",action:()=>{setMenuAdj(false);iniciarGrab();}},
+                {icon:"👤",label:"Contacto",action:()=>{setMenuAdj(false);abrirModalContacto();}},
+                {icon:"📍",label:"Ubicación",action:compartirUbicacion},
+                {icon:"📊",label:"Encuesta",action:()=>{setMenuAdj(false);setModalEncuesta(true);}},
+                {icon:"📅",label:"Evento",action:()=>{setMenuAdj(false);setModalEvento(true);}},
+              ].map(({icon,label,action})=>(
+                <button key={label} onClick={action} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"12px 6px",cursor:"pointer"}}>
+                  <div style={{width:46,height:46,borderRadius:"50%",background:"rgba(200,0,0,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{icon}</div>
+                  <span style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontFamily:"Montserrat,sans-serif",fontWeight:600,textAlign:"center"}}>{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal compartir contacto */}
+      {modalContacto && (
+        <div onClick={()=>setModalContacto(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#111",borderRadius:"12px 12px 0 0",width:"100%",maxWidth:500,maxHeight:"70vh",display:"flex",flexDirection:"column"}}>
+            <div style={{padding:"14px 16px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:13,color:"#fff"}}>👤 Compartir contacto</span>
+              <button onClick={()=>setModalContacto(false)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:22,cursor:"pointer"}}>×</button>
+            </div>
+            <div style={{padding:"10px 14px"}}>
+              <input value={busqContacto} onChange={e=>setBusqContacto(e.target.value)} placeholder="Buscar por nombre o matrícula..." autoFocus
+                style={{width:"100%",padding:"8px 10px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:6,color:"#fff",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none",boxSizing:"border-box"}}/>
+            </div>
+            <div style={{overflowY:"auto",flex:1}}>
+              {loadingMiembros ? (
+                <div style={{padding:24,textAlign:"center",color:"rgba(255,255,255,0.3)",fontSize:12}}>Cargando miembros...</div>
+              ) : (
+                miembros.filter(mm=>{const q=busqContacto.toLowerCase();return !q||`${mm.nombre} ${mm.apellido} ${mm.matricula??""}`.toLowerCase().includes(q);}).map(mm=>(
+                  <button key={mm.id} onClick={()=>compartirContacto(mm)} style={{width:"100%",display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"none",border:"none",borderBottom:"1px solid rgba(255,255,255,0.05)",cursor:"pointer",textAlign:"left"}}>
+                    {mm.foto_url
+                      ?<img src={mm.foto_url} alt={mm.nombre??"?"} referrerPolicy="no-referrer" style={{width:40,height:40,borderRadius:"50%",objectFit:"cover",flexShrink:0}}/>
+                      :<div style={{width:40,height:40,borderRadius:"50%",background:"rgba(200,0,0,0.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:800,color:"rgba(200,0,0,0.7)",fontFamily:"Montserrat,sans-serif",flexShrink:0}}>{`${mm.nombre?.charAt(0)??""}${mm.apellido?.charAt(0)??""}`.toUpperCase()}</div>
+                    }
+                    <div>
+                      <div style={{fontSize:13,fontWeight:600,color:"#fff",fontFamily:"Inter,sans-serif"}}>{mm.apellido}, {mm.nombre}</div>
+                      {mm.matricula&&<div style={{fontSize:10,color:"rgba(200,0,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Mat. {mm.matricula}</div>}
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal crear encuesta */}
+      {modalEncuesta && (
+        <div onClick={()=>setModalEncuesta(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#111",borderRadius:"12px 12px 0 0",width:"100%",maxWidth:500,padding:"20px 16px 28px",display:"flex",flexDirection:"column",gap:12}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:14,color:"#fff"}}>📊 Nueva encuesta</span>
+              <button onClick={()=>setModalEncuesta(false)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:22,cursor:"pointer"}}>×</button>
+            </div>
+            <input value={encuestaPregunta} onChange={e=>setEncuestaPregunta(e.target.value)} placeholder="¿Cuál es la pregunta?" autoFocus
+              style={{padding:"10px 12px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,color:"#fff",fontSize:13,fontFamily:"Inter,sans-serif",outline:"none"}}/>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {encuestaOpciones.map((op,i)=>(
+                <div key={i} style={{display:"flex",gap:6,alignItems:"center"}}>
+                  <input value={op} onChange={e=>setEncuestaOpciones(prev=>{const n=[...prev];n[i]=e.target.value;return n;})} placeholder={`Opción ${i+1}`}
+                    style={{flex:1,padding:"8px 10px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:6,color:"#fff",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none"}}/>
+                  {encuestaOpciones.length>2&&<button onClick={()=>setEncuestaOpciones(prev=>prev.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:"rgba(255,0,0,0.5)",fontSize:18,cursor:"pointer",flexShrink:0}}>×</button>}
+                </div>
+              ))}
+              {encuestaOpciones.length<6&&(
+                <button onClick={()=>setEncuestaOpciones(prev=>[...prev,""])} style={{background:"none",border:"1px dashed rgba(255,255,255,0.15)",borderRadius:6,padding:"7px",color:"rgba(255,255,255,0.35)",fontSize:12,cursor:"pointer",fontFamily:"Montserrat,sans-serif",fontWeight:600}}>+ Agregar opción</button>
+              )}
+            </div>
+            <button onClick={enviarEncuesta} style={{padding:"12px",background:"#cc0000",border:"none",borderRadius:8,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:800,cursor:"pointer",marginTop:4}}>Enviar encuesta</button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal crear evento */}
+      {modalEvento && (
+        <div onClick={()=>setModalEvento(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#111",borderRadius:"12px 12px 0 0",width:"100%",maxWidth:500,padding:"20px 16px 28px",display:"flex",flexDirection:"column",gap:12}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:14,color:"#fff"}}>📅 Nuevo evento</span>
+              <button onClick={()=>setModalEvento(false)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:22,cursor:"pointer"}}>×</button>
+            </div>
+            <input value={eventoTitulo} onChange={e=>setEventoTitulo(e.target.value)} placeholder="Título del evento" autoFocus
+              style={{padding:"10px 12px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,color:"#fff",fontSize:13,fontFamily:"Inter,sans-serif",outline:"none"}}/>
+            <input type="date" value={eventoFecha} onChange={e=>setEventoFecha(e.target.value)}
+              style={{padding:"10px 12px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,color:"#fff",fontSize:13,fontFamily:"Inter,sans-serif",outline:"none",colorScheme:"dark"}}/>
+            <textarea value={eventoDescripcion} onChange={e=>setEventoDescripcion(e.target.value)} placeholder="Descripción (opcional)" rows={2}
+              style={{padding:"10px 12px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,color:"#fff",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none",resize:"none"}}/>
+            <button onClick={enviarEvento} style={{padding:"12px",background:"#3b82f6",border:"none",borderRadius:8,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:800,cursor:"pointer",marginTop:4}}>Enviar evento</button>
+          </div>
         </div>
       )}
 
