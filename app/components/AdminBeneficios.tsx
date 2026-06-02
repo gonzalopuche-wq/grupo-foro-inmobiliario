@@ -168,7 +168,7 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
   }, [beneficios, perfilDetalle, filtroActivo]);
 
   const perfilSeleccionado = perfiles.find(p => p.id === perfilDetalle);
-  const precioBase = 10; // USD
+  const precioBase = 15; // USD
 
   const setF = (k: string, v: any) => setForm((p: any) => ({ ...p, [k]: v }));
 

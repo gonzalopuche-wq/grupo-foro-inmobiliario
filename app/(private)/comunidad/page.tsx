@@ -27,10 +27,27 @@ interface Lista {
 
 type Tab = "grupos" | "mensajes" | "listas";
 
+// Grupos de operaciones inmobiliarias que colaboradores pueden ver
+const NOMBRES_GRUPOS_COLABORADOR = [
+  "alquiler", "venta", "ventas", "alquileres",
+  "búsqueda", "busqueda", "ofrecido", "ofrecidos",
+  "comercial", "comerciales",
+  "permuta", "permutas",
+  "depósito", "deposito", "galpón", "galpon", "depósitos", "depositos", "galpones",
+  "terreno", "terrenos", "lote", "lotes",
+];
+
+function grupoPermitidoColaborador(g: Grupo): boolean {
+  if (g.tipo === "operaciones") return true;
+  const nombre = g.nombre.toLowerCase();
+  return NOMBRES_GRUPOS_COLABORADOR.some(k => nombre.includes(k));
+}
+
 export default function ComunidadPage() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("grupos");
   const [userId, setUserId] = useState<string | null>(null);
+  const [esColaborador, setEsColaborador] = useState(false);
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [dms, setDms] = useState<DMChat[]>([]);
   const [listas, setListas] = useState<Lista[]>([]);
@@ -48,23 +65,18 @@ export default function ComunidadPage() {
       const { data: perfil } = await supabase
         .from("perfiles").select("tipo").eq("id", session.user.id).single();
       const tipo = perfil?.tipo ?? "corredor";
+      const isColab = tipo === "colaborador";
+      setEsColaborador(isColab);
 
       let query = supabase.from("grupos_chat").select("*").eq("activo", true).order("orden");
-      if (tipo === "colaborador") query = query.eq("solo_matriculado", false);
+      if (isColab) query = query.eq("solo_matriculado", false);
       const { data: gruposRaw } = await query;
       if (!gruposRaw) { setLoading(false); return; }
 
-      let gruposData = gruposRaw;
-      if (tipo === "colaborador") {
-        const { data: colab } = await supabase
-          .from("colaboradores").select("sector").eq("user_id", session.user.id).single();
-        const sector = colab?.sector ?? "todos";
-        if (sector !== "todos") {
-          gruposData = gruposRaw.filter((g: any) =>
-            !g.sectores?.length || g.sectores.includes(sector)
-          );
-        }
-      }
+      // Colaboradores solo ven grupos de operaciones inmobiliarias
+      let gruposData = isColab
+        ? gruposRaw.filter((g: any) => grupoPermitidoColaborador(g))
+        : gruposRaw;
 
       const grupoIds = gruposData.map((g: any) => g.id);
       const { data: ultimos } = await supabase
@@ -306,12 +318,19 @@ export default function ComunidadPage() {
         </h1>
       </div>
 
+      {/* Aviso para colaboradores */}
+      {esColaborador && (
+        <div style={{ marginBottom: 16, padding: "10px 14px", background: "rgba(245,158,11,0.07)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 8, fontSize: 12, color: "rgba(245,158,11,0.8)", fontFamily: "Inter,sans-serif" }}>
+          Acceso limitado · Solo grupos de operaciones inmobiliarias. Los grupos de la comunidad profesional son exclusivos para Corredores Inmobiliarios matriculados.
+        </div>
+      )}
+
       {/* Tabs */}
       <div style={{ display: "flex", gap: 0, marginBottom: 20, background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
         {([
           { key: "grupos", label: "Grupos", badge: 0 },
           { key: "mensajes", label: "Mensajes", badge: totalNoLeidos },
-          { key: "listas", label: "Listas", badge: 0 },
+          ...(!esColaborador ? [{ key: "listas" as Tab, label: "Listas", badge: 0 }] : []),
         ] as { key: Tab; label: string; badge: number }[]).map(t => (
           <button
             key={t.key}

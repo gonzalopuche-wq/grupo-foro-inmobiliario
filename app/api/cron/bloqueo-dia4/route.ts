@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
     const fecha4dias = hace4dias.toISOString().split("T")[0];
 
     // Buscar suscripciones vencidas hace exactamente 4 días sin pago confirmado
+    // Solo CIs (corredores/admin) — los colaboradores son responsabilidad del CI
     const { data: vencidas } = await supabaseAdmin
       .from("suscripciones")
       .select(`
@@ -44,6 +45,7 @@ export async function GET(req: NextRequest) {
         )
       `)
       .eq("estado", "activa")
+      .neq("plan", "colaborador")
       .lte("fecha_vencimiento", fecha4dias);
 
     if (!vencidas || vencidas.length === 0) {
@@ -83,6 +85,31 @@ export async function GET(req: NextRequest) {
           url: "/suscripcion",
         });
 
+      // 2b. Suspender también las suscripciones activas de sus colaboradores
+      const { data: colabs } = await supabaseAdmin
+        .from("colaboradores")
+        .select("user_id")
+        .eq("corredor_id", s.perfil_id)
+        .eq("estado", "activo");
+      if (colabs?.length) {
+        const colabIds = colabs.map((c: any) => c.user_id);
+        await supabaseAdmin
+          .from("suscripciones")
+          .update({ estado: "suspendida" })
+          .in("perfil_id", colabIds)
+          .eq("estado", "activa");
+        // Notificar a cada colaborador
+        await supabaseAdmin.from("notificaciones").insert(
+          colabIds.map((uid: string) => ({
+            user_id: uid,
+            titulo: "Acceso suspendido",
+            mensaje: "El acceso fue suspendido porque la suscripción de tu corredor está vencida.",
+            tipo: "suscripcion",
+            url: "/suscripcion",
+          }))
+        );
+      }
+
       // 3. Buscar email del usuario (perfil_id = auth.users.id)
       const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(s.perfil_id);
       const email = authUser?.user?.email;
@@ -97,7 +124,16 @@ export async function GET(req: NextRequest) {
       const ind = Object.fromEntries((indicadores ?? []).map((r: any) => [r.clave, r.valor]));
       const cbu = ind.cbu_cvu ?? "CVU no configurado — contactar al administrador";
       const cbuAlias = ind.cbu_alias ?? "";
-      const precioEmail = s.plan === "colaborador" ? (ind.precio_colaborador_usd ?? 5) : (ind.precio_corredor_usd ?? 15);
+      const precioBase = Number(ind.precio_corredor_usd ?? 15);
+      const precioColab = Number(ind.precio_colaborador_usd ?? 5);
+      const { count: nColabs } = await supabaseAdmin
+        .from("colaboradores").select("id", { count: "exact", head: true })
+        .eq("corredor_id", s.perfil_id).eq("estado", "activo");
+      const cantColabs = nColabs ?? 0;
+      const precioEmail = precioBase + cantColabs * precioColab;
+      const desgloseEmail = cantColabs > 0
+        ? ` (USD ${precioBase} CI + USD ${cantColabs * precioColab} por ${cantColabs} colaborador${cantColabs > 1 ? "es" : ""})`
+        : "";
 
       // 5. Enviar email de suspensión
       if (email) {
@@ -181,7 +217,7 @@ export async function GET(req: NextRequest) {
                 <tr>
                   <td style="padding:16px 24px;">
                     <span style="font-size:12px;color:rgba(255,255,255,0.4);font-family:'Montserrat',Arial,sans-serif;">
-                      Monto: <strong style="color:#fff;">USD ${precioEmail} / mes</strong>
+                      Monto: <strong style="color:#fff;">USD ${precioEmail} / mes</strong>${desgloseEmail}
                       &nbsp;·&nbsp; Mat. ${perfil?.matricula ?? ""}
                     </span>
                   </td>

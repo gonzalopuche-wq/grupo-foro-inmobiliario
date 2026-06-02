@@ -102,7 +102,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const [suscripcionBlocked, setSuscripcionBlocked] = useState(false);
   const [suscripcionWarning, setSuscripcionWarning] = useState<"gracia" | "pendiente" | null>(null);
   const [cbuDatos, setCbuDatos] = useState({ titular: "Gonzalo Leandro Puche", cvu: "0000003100046173873221", alias: "foroinmobiliario.gp", cuit: "20-25750876-6", banco: "Mercado Pago" });
-  const [precioUsd, setPrecioUsd] = useState(10);
+  const [precioUsd, setPrecioUsd] = useState(15);
+  const [cantColabs, setCantColabs] = useState(0);
   const [dolarBlue, setDolarBlue] = useState<number | null>(null);
   const [pagoFecha, setPagoFecha] = useState("");
   const [pagoMonto, setPagoMonto] = useState("");
@@ -139,7 +140,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
       const { data: p } = await supabase
         .from("perfiles")
-        .select("nombre, apellido, matricula, foto_url, tipo")
+        .select("id, nombre, apellido, matricula, foto_url, tipo")
         .eq("id", auth.user.id)
         .single();
 
@@ -200,8 +201,22 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             ]);
             if (ind) {
               const get = (k: string) => ind.find((i: any) => i.clave === k)?.valor;
-              const precio = Number(get(p.tipo === "colaborador" ? "precio_colaborador_usd" : "precio_corredor_usd") ?? (p.tipo === "colaborador" ? 5 : 10));
-              setPrecioUsd(precio);
+              const precioBase = Number(get("precio_corredor_usd") ?? 15);
+              const precioColab = Number(get("precio_colaborador_usd") ?? 5);
+              if (p.tipo === "colaborador") {
+                // Los colaboradores no pagan — su acceso lo gestiona el CI
+                setPrecioUsd(0);
+              } else {
+                // Contar colaboradores activos del corredor
+                const { count: nColabs } = await supabase
+                  .from("colaboradores")
+                  .select("id", { count: "exact", head: true })
+                  .eq("corredor_id", p.id)
+                  .eq("estado", "activo");
+                const n = nColabs ?? 0;
+                setCantColabs(n);
+                setPrecioUsd(precioBase + n * precioColab);
+              }
               setCbuDatos({
                 titular: get("cbu_titular") ?? "Gonzalo Leandro Puche",
                 cvu: get("cbu_cvu") ?? "0000003100046173873221",
@@ -379,14 +394,28 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* Monto */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Cuota mensual</span>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", fontFamily: "'Montserrat',sans-serif" }}>USD {precioUsd}</div>
-              {montoArs && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>≈ $ {montoArs.toLocaleString("es-AR")} ARS</div>}
+          {/* Monto — solo CI paga */}
+          {tipoUsuario === "colaborador" ? (
+            <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 8, padding: "16px 18px", marginBottom: 16, textAlign: "center" }}>
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, color: "#f59e0b", marginBottom: 6 }}>Tu acceso es gestionado por tu corredor</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>El pago de tu suscripción lo realiza el corredor al que estás vinculado. Contactalo para regularizar el acceso.</div>
             </div>
-          </div>
+          ) : (
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px", marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: cantColabs > 0 ? 10 : 0 }}>
+                <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Cuota mensual</span>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", fontFamily: "'Montserrat',sans-serif" }}>USD {precioUsd}</div>
+                  {montoArs && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>≈ $ {montoArs.toLocaleString("es-AR")} ARS</div>}
+                </div>
+              </div>
+              {cantColabs > 0 && (
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 8 }}>
+                  USD 15 (CI) + USD {cantColabs * 5} ({cantColabs} colaborador{cantColabs > 1 ? "es" : ""} × USD 5)
+                </div>
+              )}
+            </div>
+          )}
 
           {/* CBU */}
           <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
