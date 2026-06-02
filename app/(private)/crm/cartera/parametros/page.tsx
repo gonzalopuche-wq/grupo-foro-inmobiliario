@@ -47,19 +47,19 @@ const CAMPOS_POSIBLES = [
 
 const s: Record<string, React.CSSProperties> = {
   root: { padding: "28px 32px", maxWidth: 720, margin: "0 auto" },
-  h1: { fontSize: 22, fontWeight: 700, color: "#111", marginBottom: 4 },
+  h1: { fontSize: 22, fontWeight: 700, color: "var(--gfi-bg-secondary)", marginBottom: 4 },
   sub: { fontSize: 13, color: "#6b7280", marginBottom: 28 },
   card: { background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, padding: "24px 28px", marginBottom: 20 },
-  cardH: { fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid #f3f4f6", display: "flex", alignItems: "center", gap: 8 },
+  cardH: { fontSize: 14, fontWeight: 700, color: "var(--gfi-bg-secondary)", marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid #f3f4f6", display: "flex", alignItems: "center", gap: 8 },
   grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 },
   grid3: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 },
   label: { display: "block", fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 5 },
-  input: { width: "100%", padding: "9px 12px", border: "1px solid #e5e7eb", borderRadius: 7, fontSize: 13, color: "#111", outline: "none", boxSizing: "border-box" as const },
-  select: { width: "100%", padding: "9px 12px", border: "1px solid #e5e7eb", borderRadius: 7, fontSize: 13, color: "#111", outline: "none", boxSizing: "border-box" as const, background: "#fff" },
+  input: { width: "100%", padding: "9px 12px", border: "1px solid #e5e7eb", borderRadius: 7, fontSize: 13, color: "var(--gfi-bg-secondary)", outline: "none", boxSizing: "border-box" as const },
+  select: { width: "100%", padding: "9px 12px", border: "1px solid #e5e7eb", borderRadius: 7, fontSize: 13, color: "var(--gfi-bg-secondary)", outline: "none", boxSizing: "border-box" as const, background: "#fff" },
   toggleRow: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0" },
   toggleLabel: { fontSize: 13, color: "#374151", fontWeight: 500 },
   checkGrid: { display: "flex", flexWrap: "wrap" as const, gap: 8 },
-  btn: { padding: "11px 24px", background: "#111", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer" },
+  btn: { padding: "11px 24px", background: "var(--gfi-bg-secondary)", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer" },
   info: { fontSize: 11, color: "#9ca3af", marginTop: 4 },
 };
 

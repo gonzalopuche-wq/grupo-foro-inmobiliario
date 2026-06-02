@@ -196,53 +196,53 @@ export default function BCRALivePage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .bl-wrap { max-width: 960px; display: flex; flex-direction: column; gap: 20px; font-family: 'Inter', sans-serif; }
-        .bl-titulo { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+        .bl-wrap { max-width: 960px; display: flex; flex-direction: column; gap: 20px; font-family: var(--font-body); }
+        .bl-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; }
         .bl-titulo span { color: #990000; }
-        .bl-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
-        .bl-status { display: flex; align-items: center; gap: 8px; font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; flex-wrap: wrap; }
+        .bl-sub { font-size: 13px; color: var(--gfi-text-muted); margin-top: 3px; }
+        .bl-status { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--gfi-text-muted); font-family: var(--font-display); flex-wrap: wrap; }
         .bl-dot { width: 7px; height: 7px; border-radius: 50%; background: #3abab6; animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        .bl-refresh { padding: 5px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; letter-spacing: 0.08em; }
-        .bl-refresh:hover { background: rgba(255,255,255,0.08); }
+        .bl-refresh { padding: 5px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; letter-spacing: 0.08em; }
+        .bl-refresh:hover { background: var(--gfi-border); }
         /* Tabs */
-        .bl-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .bl-tab { padding: 10px 18px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
+        .bl-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--gfi-border); }
+        .bl-tab { padding: 10px 18px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
         .bl-tab.on { color: #fff; border-bottom-color: #990000; }
         /* Cards grid */
         .bl-grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
         .bl-grid2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
-        .bl-card { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px 18px; }
-        .bl-card-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 6px; }
-        .bl-card-val { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #fff; line-height: 1; }
-        .bl-card-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 5px; }
-        .bl-card-acum { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; margin-top: 6px; }
+        .bl-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 16px 18px; }
+        .bl-card-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 6px; }
+        .bl-card-val { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #fff; line-height: 1; }
+        .bl-card-sub { font-size: 11px; color: var(--gfi-text-muted); margin-top: 5px; }
+        .bl-card-acum { font-family: var(--font-display); font-size: 11px; font-weight: 700; margin-top: 6px; }
         .bl-tendencia { font-size: 10px; font-weight: 800; }
         /* Historico mini bars */
         .bl-mini { display: flex; align-items: flex-end; gap: 2px; height: 40px; margin-top: 10px; }
         .bl-mini-bar { flex: 1; border-radius: 2px 2px 0 0; min-height: 2px; }
         /* UVA big */
-        .bl-uva-big { font-family: 'Montserrat',sans-serif; font-size: 56px; font-weight: 800; line-height: 1; }
-        .bl-uva-fecha { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 6px; }
+        .bl-uva-big { font-family: var(--font-display); font-size: 56px; font-weight: 800; line-height: 1; }
+        .bl-uva-fecha { font-size: 13px; color: var(--gfi-text-muted); margin-top: 6px; }
         /* Dólar list */
-        .bl-dolar-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .bl-dolar-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--gfi-border-subtle); }
         .bl-dolar-item:last-child { border-bottom: none; }
-        .bl-dolar-nombre { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; }
+        .bl-dolar-nombre { font-family: var(--font-display); font-size: 13px; font-weight: 700; }
         .bl-dolar-prices { display: flex; gap: 16px; align-items: center; }
-        .bl-dolar-c { font-size: 11px; color: rgba(255,255,255,0.35); }
-        .bl-dolar-v { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; }
+        .bl-dolar-c { font-size: 11px; color: var(--gfi-text-muted); }
+        .bl-dolar-v { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
         /* Tasas */
-        .bl-tasa-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; margin-bottom: 8px; }
-        .bl-tasa-nombre { font-size: 13px; color: rgba(255,255,255,0.7); font-family: 'Inter',sans-serif; }
-        .bl-tasa-val { font-family: 'Montserrat',sans-serif; font-size: 24px; font-weight: 800; color: #fff; }
-        .bl-tasa-pct { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+        .bl-tasa-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; margin-bottom: 8px; }
+        .bl-tasa-nombre { font-size: 13px; color: var(--gfi-text-primary); font-family: var(--font-body); }
+        .bl-tasa-val { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: #fff; }
+        .bl-tasa-pct { font-size: 11px; color: var(--gfi-text-muted); margin-top: 2px; }
         /* Loading */
-        .bl-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+        .bl-spinner { width: 14px; height: 14px; border: 2px solid var(--gfi-border); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
         /* Tabla historial */
         .bl-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .bl-tabla th { padding: 7px 10px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .bl-tabla td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.65); font-family: 'Inter',sans-serif; }
+        .bl-tabla th { padding: 7px 10px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-dim); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .bl-tabla td { padding: 8px 10px; border-bottom: 1px solid var(--gfi-border-subtle); color: rgba(255,255,255,0.65); font-family: var(--font-body); }
         @media (max-width: 700px) {
           .bl-grid4 { grid-template-columns: repeat(2,1fr); }
           .bl-grid2 { grid-template-columns: 1fr; }
@@ -287,7 +287,7 @@ export default function BCRALivePage() {
             {cargandoIndices ? (
               <div style={{ textAlign: "center", padding: 40 }}>
                 <div className="bl-spinner" style={{ width: 24, height: 24 }} />
-                <div style={{ marginTop: 10, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Conectando con BCRA...</div>
+                <div style={{ marginTop: 10, fontSize: 12, color: "var(--gfi-text-muted)" }}>Conectando con BCRA...</div>
               </div>
             ) : (
               <>
@@ -299,7 +299,7 @@ export default function BCRALivePage() {
                     if (!ult) return (
                       <div key={ind.id} className="bl-card" style={{ borderColor: `${ind.color}20` }}>
                         <div className="bl-card-label" style={{ color: ind.color }}>{ind.nombre}</div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>Sin datos disponibles</div>
+                        <div style={{ fontSize: 11, color: "var(--gfi-text-dim)" }}>Sin datos disponibles</div>
                       </div>
                     );
                     const tendencia = ult.anterior !== null
@@ -364,11 +364,11 @@ export default function BCRALivePage() {
                           });
                           return [...allMeses].sort().reverse().map(mes => (
                             <tr key={mes}>
-                              <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff" }}>{nombreMes(mes)}</td>
+                              <td style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>{nombreMes(mes)}</td>
                               {INDICES_INFO.map(ind => {
                                 const v = indices[ind.id][mes];
                                 return (
-                                  <td key={ind.id} style={{ color: v !== undefined ? ind.color : "rgba(255,255,255,0.2)", fontFamily: "Montserrat,sans-serif", fontWeight: v !== undefined ? 700 : 400 }}>
+                                  <td key={ind.id} style={{ color: v !== undefined ? ind.color : "var(--gfi-text-dim)", fontFamily: "var(--font-display)", fontWeight: v !== undefined ? 700 : 400 }}>
                                     {v !== undefined ? `+${v.toFixed(2)}%` : "—"}
                                   </td>
                                 );
@@ -393,7 +393,7 @@ export default function BCRALivePage() {
               {uva.cargando ? (
                 <div className="bl-spinner" style={{ width: 32, height: 32, margin: "0 auto" }} />
               ) : uva.error || uva.valor === null ? (
-                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.3)" }}>
+                <div style={{ fontSize: 14, color: "var(--gfi-text-muted)" }}>
                   No se pudo obtener el valor UVA del BCRA.
                   <div style={{ marginTop: 8 }}>
                     <button className="bl-refresh" onClick={cargarUVA}>Reintentar</button>
@@ -415,7 +415,7 @@ export default function BCRALivePage() {
               <div className="bl-grid2">
                 <div className="bl-card">
                   <div className="bl-card-label">¿Qué es la UVA?</div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", lineHeight: 1.7 }}>
                     La Unidad de Valor Adquisitivo es una unidad de cuenta que se actualiza diariamente según la variación del CER (que sigue al IPC). Se usa para indexar créditos hipotecarios UVA y contratos en pesos.
                   </div>
                 </div>
@@ -434,10 +434,10 @@ export default function BCRALivePage() {
             {cargandoDolar ? (
               <div style={{ textAlign: "center", padding: 40 }}>
                 <div className="bl-spinner" style={{ width: 24, height: 24 }} />
-                <div style={{ marginTop: 10, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Obteniendo cotizaciones...</div>
+                <div style={{ marginTop: 10, fontSize: 12, color: "var(--gfi-text-muted)" }}>Obteniendo cotizaciones...</div>
               </div>
             ) : dolares.length === 0 ? (
-              <div style={{ textAlign: "center", padding: 40, fontSize: 13, color: "rgba(255,255,255,0.3)" }}>
+              <div style={{ textAlign: "center", padding: 40, fontSize: 13, color: "var(--gfi-text-muted)" }}>
                 No se pudo obtener cotizaciones. Intentá más tarde.
               </div>
             ) : (
@@ -445,21 +445,21 @@ export default function BCRALivePage() {
                 <div key={d.nombre} className="bl-dolar-item">
                   <div>
                     <div className="bl-dolar-nombre" style={{ color: d.color }}>{d.nombre}</div>
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 1, fontFamily: "Montserrat,sans-serif" }}>
+                    <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 1, fontFamily: "var(--font-display)" }}>
                       Compra: {d.compra !== null ? `$${d.compra.toLocaleString("es-AR")}` : "—"}
                     </div>
                   </div>
                   <div className="bl-dolar-prices">
                     <div>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", marginBottom: 2 }}>VENTA</div>
-                      <div className="bl-dolar-v" style={{ color: d.venta !== null ? "#fff" : "rgba(255,255,255,0.3)" }}>
+                      <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", marginBottom: 2 }}>VENTA</div>
+                      <div className="bl-dolar-v" style={{ color: d.venta !== null ? "#fff" : "var(--gfi-text-muted)" }}>
                         {d.venta !== null ? `$${d.venta.toLocaleString("es-AR")}` : "—"}
                       </div>
                     </div>
                     {d.compra !== null && d.venta !== null && (
                       <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", marginBottom: 2 }}>SPREAD</div>
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 12, color: "#d4960c" }}>
+                        <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", marginBottom: 2 }}>SPREAD</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#d4960c" }}>
                           {((d.venta - d.compra) / d.compra * 100).toFixed(1)}%
                         </div>
                       </div>
@@ -474,7 +474,7 @@ export default function BCRALivePage() {
         {/* ═══ TASAS ═══ */}
         {tabActiva === "tasas" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", marginBottom: 4 }}>
+            <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", marginBottom: 4 }}>
               Tasas nominales anuales (TNA) publicadas por el BCRA. Se actualizan en días hábiles.
             </div>
             {tasas.map((t, i) => (
@@ -489,12 +489,12 @@ export default function BCRALivePage() {
                       <div className="bl-tasa-pct">TNA</div>
                     </>
                   ) : (
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)" }}>No disponible</div>
+                    <div style={{ fontSize: 12, color: "var(--gfi-text-dim)" }}>No disponible</div>
                   )}
                 </div>
               </div>
             ))}
-            <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 6, fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
+            <div style={{ marginTop: 8, padding: "10px 14px", background: "var(--gfi-bg-card)", borderRadius: 6, fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>
               Fuente: BCRA API estadísticas v4.0. Variables 6, 7 y 34. Los datos se actualizan cada día hábil.
             </div>
           </div>
@@ -523,11 +523,11 @@ function UVACalculator({ valorUVA }: { valorUVA: number }) {
             onClick={() => setModo(m)}
             style={{
               flex: 1, padding: "6px 8px",
-              background: modo === m ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${modo === m ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.1)"}`,
+              background: modo === m ? "rgba(153,0,0,0.15)" : "var(--gfi-border-subtle)",
+              border: `1px solid ${modo === m ? "rgba(153,0,0,0.3)" : "var(--gfi-border)"}`,
               borderRadius: 4, cursor: "pointer",
-              color: modo === m ? "#990000" : "rgba(255,255,255,0.4)",
-              fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700,
+              color: modo === m ? "#990000" : "var(--gfi-text-muted)",
+              fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700,
             }}
           >
             {m === "uva-a-pesos" ? "UVA → $" : "$ → UVA"}
@@ -539,12 +539,12 @@ function UVACalculator({ valorUVA }: { valorUVA: number }) {
           <input
             type="number" placeholder="Cantidad de UVAs" value={uvas}
             onChange={e => setUvas(e.target.value)}
-            style={{ width: "100%", padding: "9px 11px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+            style={{ width: "100%", padding: "9px 11px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
           />
           {uvasNum > 0 && (
             <div style={{ padding: "8px 12px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 5 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: 3 }}>EQUIVALE A</div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#990000" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, color: "var(--gfi-text-muted)", marginBottom: 3 }}>EQUIVALE A</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#990000" }}>
                 $ {(uvasNum * valorUVA).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
@@ -555,12 +555,12 @@ function UVACalculator({ valorUVA }: { valorUVA: number }) {
           <input
             type="number" placeholder="Monto en pesos $" value={pesos}
             onChange={e => setPesos(e.target.value)}
-            style={{ width: "100%", padding: "9px 11px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+            style={{ width: "100%", padding: "9px 11px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
           />
           {pesosNum > 0 && (
             <div style={{ padding: "8px 12px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 5 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: 3 }}>EQUIVALE A</div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#990000" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, color: "var(--gfi-text-muted)", marginBottom: 3 }}>EQUIVALE A</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#990000" }}>
                 {(pesosNum / valorUVA).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} UVA
               </div>
             </div>

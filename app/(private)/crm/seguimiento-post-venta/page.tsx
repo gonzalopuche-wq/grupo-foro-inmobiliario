@@ -612,11 +612,11 @@ export default function SeguimientoPostVentaPage() {
                     <div style={S.segMeta}>
                       <span>Cierre: {fmtFecha(seg.fechaCierre)}</span>
                       <span style={S.metaSep}>·</span>
-                      <span style={{ color: "rgba(255,255,255,0.5)" }}>{diasCierre}d desde cierre</span>
+                      <span style={{ color: "var(--gfi-text-secondary)" }}>{diasCierre}d desde cierre</span>
                       {diasUltimo !== null && (
                         <>
                           <span style={S.metaSep}>·</span>
-                          <span style={{ color: "rgba(255,255,255,0.5)" }}>
+                          <span style={{ color: "var(--gfi-text-secondary)" }}>
                             Último contacto hace {diasUltimo}d
                           </span>
                         </>
@@ -638,7 +638,7 @@ export default function SeguimientoPostVentaPage() {
                     <button style={S.btnSecundario} onClick={e => { e.stopPropagation(); }}>
                       Contactar
                     </button>
-                    <span style={{ color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>{isOpen ? "▲" : "▼"}</span>
+                    <span style={{ color: "var(--gfi-text-muted)", marginLeft: 4 }}>{isOpen ? "▲" : "▼"}</span>
                   </div>
                 </div>
 
@@ -906,7 +906,7 @@ export default function SeguimientoPostVentaPage() {
                     </div>
                   ))}
                   {eventos.length > 3 && (
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>+{eventos.length - 3}</div>
+                    <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>+{eventos.length - 3}</div>
                   )}
                 </div>
               );
@@ -937,7 +937,7 @@ export default function SeguimientoPostVentaPage() {
                     <rect x={x} y={barY} width={60} height={barH} rx={4} fill={color} fillOpacity={0.8} />
                     <text x={x + 30} y={barY - 4} textAnchor="middle" fill={color} fontSize={12} fontWeight={700}>{val}</text>
                     {label.split("\n").map((line, li) => (
-                      <text key={li} x={x + 30} y={112 + li * 14} textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize={10}>{line}</text>
+                      <text key={li} x={x + 30} y={112 + li * 14} textAnchor="middle" fill="var(--gfi-text-secondary)" fontSize={10}>{line}</text>
                     ))}
                   </g>
                 );
@@ -981,7 +981,7 @@ export default function SeguimientoPostVentaPage() {
                     {count > 0 && (
                       <text x={x + barW / 2} y={barY - 4} textAnchor="middle" fill="#990000" fontSize={11} fontWeight={700}>{count}</text>
                     )}
-                    <text x={x + barW / 2} y={110} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={10}>{label}</text>
+                    <text x={x + barW / 2} y={110} textAnchor="middle" fill="var(--gfi-text-secondary)" fontSize={10}>{label}</text>
                   </g>
                 );
               })}
@@ -1171,14 +1171,14 @@ function KpiCard({ titulo, valor, color, subtitulo }: {
       borderRadius: 10,
       padding: "18px 20px",
     }}>
-      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
+      <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
         {titulo}
       </div>
-      <div style={{ fontSize: 32, fontWeight: 800, color, fontFamily: "Montserrat, sans-serif", lineHeight: 1 }}>
+      <div style={{ fontSize: 32, fontWeight: 800, color, fontFamily: "var(--font-display)", lineHeight: 1 }}>
         {valor}
       </div>
       {subtitulo && (
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 4, fontFamily: "Inter, sans-serif" }}>
+        <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4, fontFamily: "Inter, sans-serif" }}>
           {subtitulo}
         </div>
       )}
@@ -1209,7 +1209,7 @@ const styles = {
   } as React.CSSProperties,
 
   titulo: {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 26,
     color: "#ffffff",
@@ -1315,7 +1315,7 @@ const styles = {
   label: {
     display: "block",
     fontSize: 11,
-    color: "rgba(255,255,255,0.5)",
+    color: "var(--gfi-text-secondary)",
     marginBottom: 4,
     textTransform: "uppercase" as const,
     letterSpacing: "0.04em",
@@ -1332,7 +1332,7 @@ const styles = {
 
   empty: {
     textAlign: "center" as const,
-    color: "rgba(255,255,255,0.35)",
+    color: "var(--gfi-text-muted)",
     fontSize: 13,
     padding: "24px 0",
   } as React.CSSProperties,
@@ -1361,7 +1361,7 @@ const styles = {
   } as React.CSSProperties,
 
   segNombre: {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 15,
     color: "#ffffff",
@@ -1373,7 +1373,7 @@ const styles = {
     flexWrap: "wrap" as const,
     gap: 6,
     fontSize: 12,
-    color: "rgba(255,255,255,0.6)",
+    color: "var(--gfi-text-secondary)",
     alignItems: "center",
   } as React.CSSProperties,
 
@@ -1383,7 +1383,7 @@ const styles = {
   } as React.CSSProperties,
 
   metaSep: {
-    color: "rgba(255,255,255,0.2)",
+    color: "var(--gfi-text-dim)",
   } as React.CSSProperties,
 
   segCardChips: {
@@ -1419,10 +1419,10 @@ const styles = {
   } as React.CSSProperties,
 
   panelSectionTitle: {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 12,
-    color: "rgba(255,255,255,0.4)",
+    color: "var(--gfi-text-muted)",
     textTransform: "uppercase" as const,
     letterSpacing: "0.08em",
     marginBottom: 10,
@@ -1442,14 +1442,14 @@ const styles = {
 
   infoLabel: {
     fontSize: 10,
-    color: "rgba(255,255,255,0.35)",
+    color: "var(--gfi-text-muted)",
     textTransform: "uppercase" as const,
     letterSpacing: "0.04em",
   } as React.CSSProperties,
 
   notasTexto: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.5)",
+    color: "var(--gfi-text-secondary)",
     margin: "8px 0 0",
     fontStyle: "italic",
   } as React.CSSProperties,
@@ -1489,19 +1489,19 @@ const styles = {
 
   timelineFecha: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.35)",
+    color: "var(--gfi-text-muted)",
     marginLeft: "auto",
   } as React.CSSProperties,
 
   timelineDesc: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.7)",
+    color: "var(--gfi-text-primary)",
     margin: 0,
   } as React.CSSProperties,
 
   timelineNotas: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.4)",
+    color: "var(--gfi-text-muted)",
     margin: "3px 0 0",
     fontStyle: "italic",
   } as React.CSSProperties,
@@ -1523,7 +1523,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     fontSize: 10,
-    color: "rgba(255,255,255,0.35)",
+    color: "var(--gfi-text-muted)",
     marginTop: 2,
   } as React.CSSProperties,
 
@@ -1541,7 +1541,7 @@ const styles = {
 
   btnSecundario: {
     background: "transparent",
-    color: "rgba(255,255,255,0.7)",
+    color: "var(--gfi-text-primary)",
     border: "1px solid #2a2a2a",
     borderRadius: 6,
     padding: "8px 16px",
@@ -1578,7 +1578,7 @@ const styles = {
   calDiaHeader: {
     textAlign: "center" as const,
     fontSize: 11,
-    color: "rgba(255,255,255,0.4)",
+    color: "var(--gfi-text-muted)",
     padding: "6px 0",
     fontWeight: 600,
     letterSpacing: "0.04em",
@@ -1599,7 +1599,7 @@ const styles = {
 
   calDiaNum: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.5)",
+    color: "var(--gfi-text-secondary)",
     marginBottom: 4,
     fontWeight: 600,
   } as React.CSSProperties,
@@ -1630,10 +1630,10 @@ const styles = {
   } as React.CSSProperties,
 
   analyticsTitle: {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 13,
-    color: "rgba(255,255,255,0.7)",
+    color: "var(--gfi-text-primary)",
     marginBottom: 14,
     textTransform: "uppercase" as const,
     letterSpacing: "0.05em",
@@ -1649,7 +1649,7 @@ const styles = {
   tasaLabel: {
     width: 90,
     fontSize: 12,
-    color: "rgba(255,255,255,0.7)",
+    color: "var(--gfi-text-primary)",
     flexShrink: 0,
   } as React.CSSProperties,
 
@@ -1678,7 +1678,7 @@ const styles = {
 
   tasaTotal: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.35)",
+    color: "var(--gfi-text-muted)",
     width: 28,
   } as React.CSSProperties,
 
@@ -1698,7 +1698,7 @@ const styles = {
 
   alertSub: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.4)",
+    color: "var(--gfi-text-muted)",
     marginTop: 2,
   } as React.CSSProperties,
 
@@ -1735,7 +1735,7 @@ const styles = {
   } as React.CSSProperties,
 
   modalTitulo: {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 17,
     color: "#ffffff",
@@ -1745,7 +1745,7 @@ const styles = {
   btnCerrar: {
     background: "transparent",
     border: "none",
-    color: "rgba(255,255,255,0.5)",
+    color: "var(--gfi-text-secondary)",
     fontSize: 18,
     cursor: "pointer",
     lineHeight: 1,

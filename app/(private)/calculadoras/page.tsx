@@ -258,82 +258,82 @@ export default function CalculadorasPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .c-wrap { max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
-        .c-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+        .c-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; }
         .c-titulo span { color: #990000; }
-        .c-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
-        .c-fuente { font-size: 10px; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+        .c-sub { font-size: 13px; color: var(--gfi-text-muted); margin-top: 3px; }
+        .c-fuente { font-size: 10px; color: var(--gfi-text-dim); font-family: var(--font-display); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
         .c-fuente-dot { width: 6px; height: 6px; border-radius: 50%; background: #3abab6; }
         .c-fuente-dot.err { background: #d4960c; }
         /* Índices */
         .c-indices { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
-        .c-ind { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: all 0.15s; }
+        .c-ind { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: all 0.15s; }
         .c-ind:hover { border-color: rgba(255,255,255,0.15); }
         .c-ind.on { border-width: 2px; }
-        .c-ind-nombre { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; }
-        .c-ind-desc { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 3px; line-height: 1.4; }
-        .c-ind-val { font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; margin-top: 6px; }
-        .c-ind-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 8px; font-weight: 700; font-family: 'Montserrat',sans-serif; letter-spacing: 0.08em; margin-top: 4px; }
+        .c-ind-nombre { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+        .c-ind-desc { font-size: 10px; color: var(--gfi-text-muted); margin-top: 3px; line-height: 1.4; }
+        .c-ind-val { font-family: var(--font-display); font-size: 12px; font-weight: 700; margin-top: 6px; }
+        .c-ind-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 8px; font-weight: 700; font-family: var(--font-display); letter-spacing: 0.08em; margin-top: 4px; }
         /* Tabs */
-        .c-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .c-tab { padding: 10px 18px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
+        .c-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--gfi-border); }
+        .c-tab { padding: 10px 18px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
         .c-tab.on { color: #fff; border-bottom-color: #990000; }
         /* Grid */
         .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .c-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 22px; }
-        .c-card-t { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 14px; }
+        .c-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 20px 22px; }
+        .c-card-t { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 14px; }
         .c-field { margin-bottom: 12px; }
-        .c-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
-        .c-input { width: 100%; padding: 11px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 16px; font-family: 'Inter',sans-serif; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
+        .c-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
+        .c-input { width: 100%; padding: 11px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 16px; font-family: var(--font-body); outline: none; transition: border-color 0.2s; box-sizing: border-box; }
         .c-input:focus { border-color: rgba(200,0,0,0.5); }
-        .c-input::placeholder { color: rgba(255,255,255,0.2); }
-        .c-select { width: 100%; padding: 11px 13px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; }
+        .c-input::placeholder { color: var(--gfi-text-dim); }
+        .c-select { width: 100%; padding: 11px 13px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; }
         /* Mini gráfico */
         .c-grafico { display: flex; align-items: flex-end; gap: 3px; height: 60px; margin: 12px 0 4px; }
         .c-barra-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; height: 100%; }
         .c-barra { width: 100%; border-radius: 2px 2px 0 0; min-height: 3px; transition: height 0.3s; }
-        .c-barra-lbl { font-size: 7px; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; }
+        .c-barra-lbl { font-size: 7px; color: var(--gfi-text-dim); font-family: var(--font-display); }
         /* Resultado */
         .c-resultado { border-radius: 8px; padding: 22px; }
-        .c-res-label { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
-        .c-res-monto { font-family: 'Montserrat',sans-serif; font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
-        .c-res-original { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+        .c-res-label { font-size: 11px; color: var(--gfi-text-muted); font-family: var(--font-display); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+        .c-res-monto { font-family: var(--font-display); font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+        .c-res-original { font-size: 13px; color: var(--gfi-text-muted); margin-bottom: 16px; }
         .c-res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-        .c-res-stat { background: rgba(255,255,255,0.04); border-radius: 6px; padding: 12px 14px; }
-        .c-res-stat-val { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; }
-        .c-res-stat-label { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 3px; font-family: 'Montserrat',sans-serif; }
+        .c-res-stat { background: var(--gfi-border-subtle); border-radius: 6px; padding: 12px 14px; }
+        .c-res-stat-val { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+        .c-res-stat-label { font-size: 10px; color: var(--gfi-text-muted); margin-top: 3px; font-family: var(--font-display); }
         .c-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-        .c-btn-wa { flex: 1; padding: 10px; background: #25d366; border: none; border-radius: 5px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; }
-        .c-btn-copy { flex: 1; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 5px; color: rgba(255,255,255,0.6); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .c-btn-wa { flex: 1; padding: 10px; background: #25d366; border: none; border-radius: 5px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; }
+        .c-btn-copy { flex: 1; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--gfi-border); border-radius: 5px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; }
         /* Desglose */
         .c-tabla { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 14px; }
-        .c-tabla th { padding: 6px 10px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .c-tabla td { padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'Inter',sans-serif; color: rgba(255,255,255,0.65); }
+        .c-tabla th { padding: 6px 10px; text-align: left; font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-dim); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .c-tabla td { padding: 7px 10px; border-bottom: 1px solid var(--gfi-border-subtle); font-family: var(--font-body); color: rgba(255,255,255,0.65); }
         .c-tabla tr:last-child td { border-bottom: none; }
         /* Vacío */
         .c-vacio { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; gap: 10px; text-align: center; }
         .c-vacio-icon { font-size: 32px; }
-        .c-vacio-txt { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.3); }
-        .c-vacio-sub { font-size: 12px; color: rgba(255,255,255,0.2); max-width: 240px; line-height: 1.6; }
+        .c-vacio-txt { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--gfi-text-muted); }
+        .c-vacio-sub { font-size: 12px; color: var(--gfi-text-dim); max-width: 240px; line-height: 1.6; }
         /* Comparar */
-        .c-comp-item { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
-        .c-comp-nombre { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; width: 52px; flex-shrink: 0; }
+        .c-comp-item { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+        .c-comp-nombre { font-family: var(--font-display); font-size: 14px; font-weight: 800; width: 52px; flex-shrink: 0; }
         .c-comp-barra-wrap { flex: 1; }
         .c-comp-barra-bg { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; margin-bottom: 3px; }
         .c-comp-barra { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-        .c-comp-desc { font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
+        .c-comp-desc { font-size: 10px; color: var(--gfi-text-muted); font-family: var(--font-body); }
         .c-comp-monto { text-align: right; flex-shrink: 0; }
-        .c-comp-monto-val { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
-        .c-comp-monto-pct { font-size: 11px; margin-top: 2px; font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .c-comp-monto-val { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: #fff; }
+        .c-comp-monto-pct { font-size: 11px; margin-top: 2px; font-family: var(--font-display); font-weight: 700; }
         /* Próximos */
-        .c-ajuste { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 18px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-        .c-ajuste-n { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
-        .c-ajuste-periodo { font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'Inter',sans-serif; margin-top: 2px; }
+        .c-ajuste { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 14px 18px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+        .c-ajuste-n { font-size: 10px; font-weight: 700; color: var(--gfi-text-muted); font-family: var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; }
+        .c-ajuste-periodo { font-size: 12px; color: var(--gfi-text-secondary); font-family: var(--font-body); margin-top: 2px; }
         .c-ajuste-derecha { text-align: right; }
-        .c-ajuste-monto { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #fff; }
-        .c-ajuste-pct { font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: #3abab6; margin-top: 2px; }
+        .c-ajuste-monto { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: #fff; }
+        .c-ajuste-pct { font-size: 11px; font-family: var(--font-display); font-weight: 700; color: #3abab6; margin-top: 2px; }
         /* Loading */
-        .c-loading { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
-        .c-spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .c-loading { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--gfi-text-muted); font-family: var(--font-body); }
+        .c-spinner { width: 12px; height: 12px; border: 2px solid var(--gfi-border); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 700px) {
           .c-grid { grid-template-columns: 1fr; }
@@ -352,7 +352,7 @@ export default function CalculadorasPage() {
             { href: "/calculadoras/honorarios-inmobiliarios", label: "Honorarios Inmobiliarios", icon: "🤝", active: false },
             { href: "/calculadoras/bcra-live", label: "BCRA Live", icon: "📡", active: false },
           ].map(({ href, label, icon, active }) => (
-            <Link key={href} href={href} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, background: active ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${active ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, color: active ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}>
+            <Link key={href} href={href} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, background: active ? "rgba(153,0,0,0.15)" : "var(--gfi-border-subtle)", border: `1px solid ${active ? "rgba(153,0,0,0.3)" : "var(--gfi-border)"}`, color: active ? "#990000" : "var(--gfi-text-muted)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}>
               <span style={{ fontSize: 13 }}>{icon}</span> {label}
             </Link>
           ))}
@@ -391,7 +391,7 @@ export default function CalculadorasPage() {
                 <div className="c-ind-desc">{ind.descripcion}</div>
                 {ultimo !== null && (
                   <div className="c-ind-val" style={{ color: ind.color }}>
-                    +{ultimo.toFixed(2)}% <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontWeight: 400 }}>último mes</span>
+                    +{ultimo.toFixed(2)}% <span style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontWeight: 400 }}>último mes</span>
                   </div>
                 )}
                 <div className="c-ind-badge" style={{ background: `${ind.color}20`, color: ind.color, border: `1px solid ${ind.color}40` }}>
@@ -464,7 +464,7 @@ export default function CalculadorasPage() {
                       </div>
                     ))}
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>
                     <span>Último: <strong style={{ color: indiceInfo.color }}>+{ultimoValor?.toFixed(2)}% {tendencia}</strong></span>
                     <span>Acum. 12m: <strong style={{ color: "#3abab6" }}>+{(acum12 * 100).toFixed(1)}%</strong></span>
                   </div>
@@ -473,15 +473,15 @@ export default function CalculadorasPage() {
 
               {/* Info */}
               <div style={{ padding: "10px 12px", background: `${indiceInfo.color}10`, border: `1px solid ${indiceInfo.color}25`, borderRadius: 6, marginTop: 12 }}>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: indiceInfo.color, marginBottom: 3 }}>{indiceInfo.nombre}</div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>{indiceInfo.detalle}</div>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, color: indiceInfo.color, marginBottom: 3 }}>{indiceInfo.nombre}</div>
+                <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>{indiceInfo.detalle}</div>
               </div>
 
               {/* Botón calcular — útil en mobile para bajar al resultado */}
               {montoNum > 0 && (
                 <button
                   onClick={() => document.getElementById("resultado-alquiler")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                  style={{ width: "100%", marginTop: 14, padding: "13px", background: "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
+                  style={{ width: "100%", marginTop: 14, padding: "13px", background: "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
                 >
                   Ver resultado ↓
                 </button>
@@ -519,7 +519,7 @@ export default function CalculadorasPage() {
                   </div>
                   {/* Desglose */}
                   <div style={{ marginTop: 14 }}>
-                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>
+                    <div style={{ fontSize: 9, color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>
                       Desglose mes a mes
                     </div>
                     <div style={{ maxHeight: 260, overflowY: "auto" }}>
@@ -534,9 +534,9 @@ export default function CalculadorasPage() {
                         <tbody>
                           {calculo.desglose.map((d, i) => (
                             <tr key={i}>
-                              <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: "#fff" }}>{nombreMes(d.mes)}</td>
+                              <td style={{ fontFamily: "var(--font-display)", fontWeight: 600, color: "#fff" }}>{nombreMes(d.mes)}</td>
                               <td style={{ color: "#3abab6" }}>+{d.variacion.toFixed(2)}%</td>
-                              <td style={{ color: "rgba(255,255,255,0.5)" }}>+{d.acumulado.toFixed(2)}%</td>
+                              <td style={{ color: "var(--gfi-text-secondary)" }}>+{d.acumulado.toFixed(2)}%</td>
                             </tr>
                           ))}
                         </tbody>
@@ -556,7 +556,7 @@ export default function CalculadorasPage() {
               <div className="c-card"><div className="c-vacio"><div className="c-vacio-icon">📅</div><div className="c-vacio-txt">Ingresá un monto en la calculadora</div></div></div>
             ) : (
               <>
-                <div style={{ marginBottom: 10, fontSize: 12, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
+                <div style={{ marginBottom: 10, fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                   Proyección de los próximos 4 ajustes por <strong style={{ color: indiceInfo.color }}>{indiceInfo.nombre}</strong> cada {periodoAjuste} meses
                 </div>
                 {proximosAjustes.map((a, i) => (
@@ -564,7 +564,7 @@ export default function CalculadorasPage() {
                     <div>
                       <div className="c-ajuste-n">Ajuste {i + 1}</div>
                       <div className="c-ajuste-periodo">{a.periodo}</div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>
                         Anterior: {formatARS(a.montoAnterior)}
                       </div>
                     </div>
@@ -591,7 +591,7 @@ export default function CalculadorasPage() {
               <div className="c-card"><div className="c-vacio"><div className="c-vacio-icon">⚖️</div><div className="c-vacio-txt">Ingresá un monto en la calculadora</div></div></div>
             ) : (
               <>
-                <div style={{ marginBottom: 10, fontSize: 12, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
+                <div style={{ marginBottom: 10, fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                   {formatARS(montoNum)} actualizado por cada índice · {periodoAjuste} meses
                 </div>
                 {comparacion.map((c: any) => {
@@ -612,7 +612,7 @@ export default function CalculadorasPage() {
                     </div>
                   );
                 })}
-                <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 6, fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
+                <div style={{ marginTop: 10, padding: "10px 14px", background: "var(--gfi-bg-card)", borderRadius: 6, fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>
                   💡 Datos tomados de la API oficial del BCRA. Para contratos legales verificá los valores vigentes.
                 </div>
               </>
@@ -760,18 +760,18 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
       <style>{`
         .act-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .act-card { border-radius: 10px; padding: 0 0 14px; overflow: hidden; position: relative; text-align: center; }
-        .act-card-badge { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 20px; display: inline-block; border-radius: 0 0 10px 10px; margin-bottom: 10px; }
-        .act-card-mes { font-size: 13px; font-family: 'Montserrat',sans-serif; font-weight: 600; text-transform: capitalize; color: rgba(255,255,255,0.55); margin-bottom: 4px; }
-        .act-card-monto { font-family: 'Montserrat',sans-serif; font-size: 28px; font-weight: 800; }
+        .act-card-badge { font-family: var(--font-display); font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 20px; display: inline-block; border-radius: 0 0 10px 10px; margin-bottom: 10px; }
+        .act-card-mes { font-size: 13px; font-family: var(--font-display); font-weight: 600; text-transform: capitalize; color: rgba(255,255,255,0.55); margin-bottom: 4px; }
+        .act-card-monto { font-family: var(--font-display); font-size: 28px; font-weight: 800; }
         .act-tabla { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .act-tabla th { padding: 8px 10px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .act-tabla td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+        .act-tabla th { padding: 8px 10px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-dim); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .act-tabla td { padding: 9px 10px; border-bottom: 1px solid var(--gfi-border-subtle); vertical-align: middle; }
         .act-tabla tr:last-child td { border-bottom: none; }
         .act-det-tabla { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .act-det-tabla th { padding: 5px 8px; text-align: left; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .act-det-tabla td { padding: 5px 8px; color: rgba(255,255,255,0.5); border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .act-expand-btn { background: rgba(255,255,255,0.07); border: none; border-radius: 4px; color: rgba(255,255,255,0.4); cursor: pointer; padding: 4px 8px; font-size: 10px; transition: background 0.15s; }
-        .act-expand-btn:hover { background: rgba(255,255,255,0.12); }
+        .act-det-tabla th { padding: 5px 8px; text-align: left; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-dim); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .act-det-tabla td { padding: 5px 8px; color: var(--gfi-text-secondary); border-bottom: 1px solid var(--gfi-border-subtle); }
+        .act-expand-btn { background: var(--gfi-border-subtle); border: none; border-radius: 4px; color: var(--gfi-text-muted); cursor: pointer; padding: 4px 8px; font-size: 10px; transition: background 0.15s; }
+        .act-expand-btn:hover { background: var(--gfi-border); }
         @media (max-width: 600px) {
           .act-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
           .act-card-monto { font-size: 20px; }
@@ -809,9 +809,9 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
               {INDICES_INFO.map(ind => (
                 <button key={ind.id} onClick={() => setIndiceAct(ind.id)}
-                  style={{ padding: "8px 10px", background: indiceAct === ind.id ? `${ind.color}20` : "rgba(255,255,255,0.03)", border: `1.5px solid ${indiceAct === ind.id ? ind.color : "rgba(255,255,255,0.08)"}`, borderRadius: 6, cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 800, color: indiceAct === ind.id ? ind.color : "#fff" }}>{ind.id}</div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{ind.descripcion}</div>
+                  style={{ padding: "8px 10px", background: indiceAct === ind.id ? `${ind.color}20` : "var(--gfi-bg-card)", border: `1.5px solid ${indiceAct === ind.id ? ind.color : "var(--gfi-border)"}`, borderRadius: 6, cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 800, color: indiceAct === ind.id ? ind.color : "#fff" }}>{ind.id}</div>
+                  <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", marginTop: 2 }}>{ind.descripcion}</div>
                 </button>
               ))}
             </div>
@@ -822,9 +822,9 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
               {PERIODOS_ACT.map(p => (
                 <button key={p.value} onClick={() => setPeriodicidad(p.value)}
-                  style={{ padding: "8px 10px", background: periodicidad === p.value ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.03)", border: `1.5px solid ${periodicidad === p.value ? "#990000" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, cursor: "pointer", textAlign: "center", transition: "all 0.15s" }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: periodicidad === p.value ? "#990000" : "rgba(255,255,255,0.6)" }}>{p.label}</div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>c/ {p.meses} meses</div>
+                  style={{ padding: "8px 10px", background: periodicidad === p.value ? "rgba(153,0,0,0.12)" : "var(--gfi-bg-card)", border: `1.5px solid ${periodicidad === p.value ? "#990000" : "var(--gfi-border)"}`, borderRadius: 6, cursor: "pointer", textAlign: "center", transition: "all 0.15s" }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: periodicidad === p.value ? "#990000" : "var(--gfi-text-secondary)" }}>{p.label}</div>
+                  <div style={{ fontSize: 9, color: "var(--gfi-text-muted)" }}>c/ {p.meses} meses</div>
                 </button>
               ))}
             </div>
@@ -846,14 +846,14 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
 
               {/* HASTA / DESDE — estilo arquiler.com */}
               <div className="act-cards">
-                <div className="act-card" style={{ background: "rgba(14,14,14,0.9)", border: "1.5px solid rgba(255,100,0,0.25)" }}>
+                <div className="act-card" style={{ background: "var(--gfi-bg-card)", border: "1.5px solid rgba(255,100,0,0.25)" }}>
                   <div className="act-card-badge" style={{ background: "rgba(255,100,0,0.6)", color: "#fff" }}>HASTA</div>
                   <div className="act-card-mes">{ajustes.length > 0 ? mesAnteriorLabel : "—"}</div>
-                  <div className="act-card-monto" style={{ color: "rgba(255,255,255,0.7)" }}>
+                  <div className="act-card-monto" style={{ color: "var(--gfi-text-primary)" }}>
                     {ajustes.length > 0 ? formatARS(montoAnterior) : formatARS(montoNum)}
                   </div>
                 </div>
-                <div className="act-card" style={{ background: "rgba(14,14,14,0.9)", border: `1.5px solid ${indiceInfo.color}40` }}>
+                <div className="act-card" style={{ background: "var(--gfi-bg-card)", border: `1.5px solid ${indiceInfo.color}40` }}>
                   <div className="act-card-badge" style={{ background: indiceInfo.color, color: "#fff" }}>DESDE</div>
                   <div className="act-card-mes">{ajustes.length > 0 ? mesActualLabel : nombreMes(fechaContratoMes)}</div>
                   <div className="act-card-monto" style={{ color: "#3abab6" }}>
@@ -867,7 +867,7 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
 
               {/* Resumen */}
               <div className="c-card" style={{ padding: "12px 16px" }}>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                   <span>📅 {new Date(fechaContrato + "T12:00:00").toLocaleDateString("es-AR")}</span>
                   <span>·</span>
                   <span>💰 {formatARS(montoNum)}</span>
@@ -903,13 +903,13 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
               {/* Próximo ajuste */}
               {proximoAjuste && (
                 <div style={{ padding: "12px 14px", background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 7 }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(99,102,241,0.7)", marginBottom: 6 }}>Próximo ajuste estimado</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(99,102,241,0.7)", marginBottom: 6 }}>Próximo ajuste estimado</div>
                   <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
                     <div>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#818cf8" }}>{formatARS(proximoAjuste.montoEstimado)} <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>~</span></div>
-                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{nombreMes(proximoAjuste.fechaAjuste)}</div>
+                      <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#818cf8" }}>{formatARS(proximoAjuste.montoEstimado)} <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>~</span></div>
+                      <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 2 }}>{nombreMes(proximoAjuste.fechaAjuste)}</div>
                     </div>
-                    <div style={{ fontSize: 14, color: "#818cf8", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>+{proximoAjuste.variacionEstimada.toFixed(1)}%</div>
+                    <div style={{ fontSize: 14, color: "#818cf8", fontFamily: "var(--font-display)", fontWeight: 700 }}>+{proximoAjuste.variacionEstimada.toFixed(1)}%</div>
                   </div>
                 </div>
               )}
@@ -945,30 +945,30 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
               <tbody>
                 {/* Fila inicial */}
                 <tr>
-                  <td style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Inicio</td>
-                  <td style={{ color: "rgba(255,255,255,0.5)" }}>{nombreMes(fechaContratoMes)}</td>
-                  <td style={{ color: "rgba(255,255,255,0.2)" }}>—</td>
-                  <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>{formatARS(montoNum)}</td>
-                  <td style={{ color: "rgba(255,255,255,0.2)" }}>—</td>
+                  <td style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Inicio</td>
+                  <td style={{ color: "var(--gfi-text-secondary)" }}>{nombreMes(fechaContratoMes)}</td>
+                  <td style={{ color: "var(--gfi-text-dim)" }}>—</td>
+                  <td style={{ fontFamily: "var(--font-display)", fontWeight: 600, color: "var(--gfi-text-primary)" }}>{formatARS(montoNum)}</td>
+                  <td style={{ color: "var(--gfi-text-dim)" }}>—</td>
                   <td></td>
                 </tr>
                 {ajustes.map((aj, i) => (
                   <>
                     <tr key={`aj-${i}`} style={{ background: i === ajustes.length - 1 ? "rgba(34,197,94,0.05)" : undefined }}>
                       <td>
-                        <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: i === ajustes.length - 1 ? "#3abab6" : "rgba(255,255,255,0.5)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, color: i === ajustes.length - 1 ? "#3abab6" : "var(--gfi-text-secondary)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                           {PERIODOS_ACT.find(p => p.value === periodicidad)?.label} {aj.numero}
                           {aj.estimado && <span style={{ marginLeft: 4, color: "#d4960c" }}>~</span>}
                         </span>
                       </td>
-                      <td style={{ color: i === ajustes.length - 1 ? "#fff" : "rgba(255,255,255,0.6)" }}>
+                      <td style={{ color: i === ajustes.length - 1 ? "#fff" : "var(--gfi-text-secondary)" }}>
                         {nombreMes(aj.fechaHasta)}
                       </td>
-                      <td style={{ color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>+{aj.variacion.toFixed(2)}%</td>
-                      <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: i === ajustes.length - 1 ? 800 : 500, color: i === ajustes.length - 1 ? "#3abab6" : "rgba(255,255,255,0.8)", fontSize: i === ajustes.length - 1 ? 15 : 13 }}>
+                      <td style={{ color: "#3abab6", fontFamily: "var(--font-display)", fontWeight: 700 }}>+{aj.variacion.toFixed(2)}%</td>
+                      <td style={{ fontFamily: "var(--font-display)", fontWeight: i === ajustes.length - 1 ? 800 : 500, color: i === ajustes.length - 1 ? "#3abab6" : "rgba(255,255,255,0.8)", fontSize: i === ajustes.length - 1 ? 15 : 13 }}>
                         {formatARS(aj.monto)}
                       </td>
-                      <td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>+{aj.acumuladoPct.toFixed(1)}%</td>
+                      <td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>+{aj.acumuladoPct.toFixed(1)}%</td>
                       <td>
                         <button className="act-expand-btn" onClick={() => toggleExpand(i)}>
                           {expandidos.has(i) ? "▲" : "▼"}
@@ -989,12 +989,12 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
                             <tbody>
                               {aj.detalles.map((det, j) => (
                                 <tr key={j} style={{ background: det.estimado ? "rgba(234,179,8,0.05)" : undefined }}>
-                                  <td style={{ color: det.estimado ? "#d4960c" : "rgba(255,255,255,0.6)" }}>
+                                  <td style={{ color: det.estimado ? "#d4960c" : "var(--gfi-text-secondary)" }}>
                                     {nombreMes(det.mes)}
                                     {det.estimado && <span style={{ fontSize: 9, marginLeft: 4, color: "#d4960c" }}>est.</span>}
                                   </td>
                                   <td style={{ color: "#3abab6" }}>+{det.variacion.toFixed(2)}%</td>
-                                  <td style={{ color: "rgba(255,255,255,0.4)" }}>+{det.acumulado.toFixed(2)}%</td>
+                                  <td style={{ color: "var(--gfi-text-muted)" }}>+{det.acumulado.toFixed(2)}%</td>
                                 </tr>
                               ))}
                             </tbody>

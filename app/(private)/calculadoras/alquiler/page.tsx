@@ -203,16 +203,16 @@ export default function CalculadoraAlquilerPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .alq-input { width:100%; padding:9px 11px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:14px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
+        .alq-input { width:100%; padding:9px 11px; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:4px; color:#fff; font-size:14px; font-family:var(--font-body); outline:none; box-sizing:border-box; }
         .alq-input:focus { border-color:rgba(153,0,0,0.5); }
-        .alq-select { width:100%; padding:9px 11px; background:rgba(14,14,14,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:14px; font-family:'Inter',sans-serif; outline:none; }
-        .alq-label { display:block; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:5px; font-family:'Montserrat',sans-serif; }
-        .alq-btn { padding:8px 16px; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:opacity 0.15s; }
-        .alq-card { background:rgba(14,14,14,0.9); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:18px; }
+        .alq-select { width:100%; padding:9px 11px; background:var(--gfi-bg-card); border:1px solid var(--gfi-border); border-radius:4px; color:#fff; font-size:14px; font-family:var(--font-body); outline:none; }
+        .alq-label { display:block; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gfi-text-muted); margin-bottom:5px; font-family:var(--font-display); }
+        .alq-btn { padding:8px 16px; border:none; border-radius:5px; font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:opacity 0.15s; }
+        .alq-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:8px; padding:18px; }
         .alq-kpi { text-align:center; }
-        .alq-kpi-n { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; }
-        .alq-kpi-l { font-size:10px; color:rgba(255,255,255,0.35); font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-top:3px; }
-        .alq-tab { padding:7px 16px; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:all 0.15s; }
+        .alq-kpi-n { font-family:var(--font-display); font-size:18px; font-weight:800; }
+        .alq-kpi-l { font-size:10px; color:var(--gfi-text-muted); font-family:var(--font-display); font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-top:3px; }
+        .alq-tab { padding:7px 16px; border-radius:4px; font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:all 0.15s; }
         @media(max-width:700px){.alq-cols{flex-direction:column!important;}}
       `}</style>
 
@@ -229,11 +229,11 @@ export default function CalculadoraAlquilerPage() {
           ].map(({ href, label, icon, active }) => (
             <Link key={href} href={href} style={{
               display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 14px",
-              borderRadius: 6, fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
+              borderRadius: 6, fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700,
               letterSpacing: "0.06em", textDecoration: "none", transition: "all 0.15s",
-              background: active ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${active ? "rgba(153,0,0,0.35)" : "rgba(255,255,255,0.08)"}`,
-              color: active ? "#990000" : "rgba(255,255,255,0.5)",
+              background: active ? "rgba(153,0,0,0.12)" : "var(--gfi-border-subtle)",
+              border: `1px solid ${active ? "rgba(153,0,0,0.35)" : "var(--gfi-border)"}`,
+              color: active ? "#990000" : "var(--gfi-text-secondary)",
             }}><span style={{ fontSize: 13 }}>{icon}</span>{label}</Link>
           ))}
         </div>
@@ -241,14 +241,14 @@ export default function CalculadoraAlquilerPage() {
         {/* ── Header ── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#fff" }}>
               Ajuste de <span style={{ color: "#990000" }}>Alquiler</span>
             </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 3 }}>
               Proyección de cuotas por ICL / índice personalizado · Ley 27.737
             </div>
           </div>
-          <button className="alq-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={exportPDF}>
+          <button className="alq-btn" style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)" }} onClick={exportPDF}>
             ↓ Exportar PDF
           </button>
         </div>
@@ -260,7 +260,7 @@ export default function CalculadoraAlquilerPage() {
           <div style={{ flex: "0 0 300px", display: "flex", flexDirection: "column", gap: 14 }}>
 
             <div className="alq-card">
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
                 Datos del contrato
               </div>
 
@@ -298,15 +298,15 @@ export default function CalculadoraAlquilerPage() {
 
             {/* ── Método ── */}
             <div className="alq-card">
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
                 Método de ajuste
               </div>
               <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
                 <button className="alq-tab"
-                  style={{ background: activeTab === "pct" ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)", color: activeTab === "pct" ? "#990000" : "rgba(255,255,255,0.45)", border: `1px solid ${activeTab === "pct" ? "rgba(153,0,0,0.35)" : "rgba(255,255,255,0.08)"}` }}
+                  style={{ background: activeTab === "pct" ? "rgba(153,0,0,0.12)" : "var(--gfi-border-subtle)", color: activeTab === "pct" ? "#990000" : "rgba(255,255,255,0.45)", border: `1px solid ${activeTab === "pct" ? "rgba(153,0,0,0.35)" : "var(--gfi-border)"}` }}
                   onClick={() => setActiveTab("pct")}>% Proyectado</button>
                 <button className="alq-tab"
-                  style={{ background: activeTab === "icl" ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)", color: activeTab === "icl" ? "#990000" : "rgba(255,255,255,0.45)", border: `1px solid ${activeTab === "icl" ? "rgba(153,0,0,0.35)" : "rgba(255,255,255,0.08)"}` }}
+                  style={{ background: activeTab === "icl" ? "rgba(153,0,0,0.12)" : "var(--gfi-border-subtle)", color: activeTab === "icl" ? "#990000" : "rgba(255,255,255,0.45)", border: `1px solid ${activeTab === "icl" ? "rgba(153,0,0,0.35)" : "var(--gfi-border)"}` }}
                   onClick={() => setActiveTab("icl")}>ICL / Índice</button>
               </div>
 
@@ -315,7 +315,7 @@ export default function CalculadoraAlquilerPage() {
                   <label className="alq-label">Variación esperada por período (%)</label>
                   <input className="alq-input" type="text" inputMode="decimal" value={proyeccion}
                     onChange={e => setProyeccion(e.target.value.replace(/[^0-9,.]/g, ""))} />
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 6, fontFamily: "Inter,sans-serif" }}>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", marginTop: 6, fontFamily: "Inter,sans-serif" }}>
                     Ej: 15% trimestral ≈ 77% anual
                   </div>
                 </div>
@@ -323,7 +323,7 @@ export default function CalculadoraAlquilerPage() {
 
               {activeTab === "icl" && (
                 <div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif", marginBottom: 10, lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginBottom: 10, lineHeight: 1.5 }}>
                     Ingresá el valor del ICL para cada mes de ajuste. Consultá en <span style={{ color: "#4ab8d8" }}>bcra.gob.ar</span>. Los períodos sin dato usarán {proyeccion}% proyectado.
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 240, overflowY: "auto" }}>
@@ -331,11 +331,11 @@ export default function CalculadoraAlquilerPage() {
                       const p = periodos.find(x => x.mesISO === mes);
                       return (
                         <div key={mes} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <div style={{ fontSize: 11, color: i === 0 ? "#3abab6" : "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, minWidth: 68 }}>
+                          <div style={{ fontSize: 11, color: i === 0 ? "#3abab6" : "var(--gfi-text-secondary)", fontFamily: "var(--font-display)", fontWeight: 700, minWidth: 68 }}>
                             {i === 0 ? "Inicio" : fmtMes(mes)}
                           </div>
                           {i === 0 ? (
-                            <div style={{ flex: 1, fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>Cuota base</div>
+                            <div style={{ flex: 1, fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>Cuota base</div>
                           ) : (
                             <input
                               className="alq-input"
@@ -384,7 +384,7 @@ export default function CalculadoraAlquilerPage() {
             {/* ── Gráfico de barras ── */}
             {cuotas.length > 0 && (
               <div className="alq-card">
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
                   Evolución de cuotas
                 </div>
                 <svg width="100%" height={160} viewBox={`0 0 ${cuotas.length * 60} 160`} preserveAspectRatio="none">
@@ -400,7 +400,7 @@ export default function CalculadoraAlquilerPage() {
                         <rect x={x} y={y} width={barW} height={barH}
                           fill={color} stroke={borderColor} strokeWidth={0.5} rx={3} />
                         <text x={x + barW/2} y={155} textAnchor="middle"
-                          fill="rgba(255,255,255,0.3)" fontSize={8} fontFamily="Montserrat,sans-serif">
+                          fill="var(--gfi-text-muted)" fontSize={8} fontFamily="Montserrat,sans-serif">
                           {fmtMes(c.desde).replace(" ", "\n")}
                         </text>
                       </g>
@@ -410,11 +410,11 @@ export default function CalculadoraAlquilerPage() {
                 <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ width: 12, height: 12, background: "#990000", borderRadius: 2 }} />
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>Real</span>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>Real</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ width: 12, height: 12, background: "rgba(74,184,216,0.5)", borderRadius: 2 }} />
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>Proyección</span>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>Proyección</span>
                   </div>
                 </div>
               </div>
@@ -422,41 +422,41 @@ export default function CalculadoraAlquilerPage() {
 
             {/* ── Tabla de cuotas ── */}
             <div className="alq-card">
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
                 Cuotas por período
               </div>
 
               {cuotas.length === 0 ? (
-                <div style={{ textAlign: "center", color: "rgba(255,255,255,0.2)", padding: "32px 0", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
+                <div style={{ textAlign: "center", color: "var(--gfi-text-dim)", padding: "32px 0", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
                   Completá los datos del contrato para calcular
                 </div>
               ) : (
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: "Inter,sans-serif" }}>
                     <thead>
-                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                      <tr style={{ borderBottom: "1px solid var(--gfi-border)" }}>
                         {["#", "Desde", "Hasta", "Cuota mensual", "Variación", "Tipo"].map(h => (
-                          <th key={h} style={{ padding: "8px 10px", textAlign: h === "Cuota mensual" || h === "Variación" ? "right" : "left", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>{h}</th>
+                          <th key={h} style={{ padding: "8px 10px", textAlign: h === "Cuota mensual" || h === "Variación" ? "right" : "left", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {cuotas.map((c, i) => (
-                        <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.1s" }}
-                          onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+                        <tr key={i} style={{ borderBottom: "1px solid var(--gfi-border-subtle)", transition: "background 0.1s" }}
+                          onMouseEnter={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
                           onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                          <td style={{ padding: "10px 10px", color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{i + 1}</td>
-                          <td style={{ padding: "10px 10px", color: "rgba(255,255,255,0.7)" }}>{fmtMes(c.desde)}</td>
-                          <td style={{ padding: "10px 10px", color: "rgba(255,255,255,0.5)" }}>{fmtMes(c.hasta)}</td>
-                          <td style={{ padding: "10px 10px", textAlign: "right", fontWeight: 700, color: "#fff", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.04em" }}>
+                          <td style={{ padding: "10px 10px", color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>{i + 1}</td>
+                          <td style={{ padding: "10px 10px", color: "var(--gfi-text-primary)" }}>{fmtMes(c.desde)}</td>
+                          <td style={{ padding: "10px 10px", color: "var(--gfi-text-secondary)" }}>{fmtMes(c.hasta)}</td>
+                          <td style={{ padding: "10px 10px", textAlign: "right", fontWeight: 700, color: "#fff", fontFamily: "var(--font-display)", letterSpacing: "0.04em" }}>
                             {fmtARS(c.monto)}
                           </td>
-                          <td style={{ padding: "10px 10px", textAlign: "right", fontWeight: 600, color: i === 0 ? "rgba(255,255,255,0.3)" : c.variacion >= 0 ? "#3abab6" : "#b80000" }}>
+                          <td style={{ padding: "10px 10px", textAlign: "right", fontWeight: 600, color: i === 0 ? "var(--gfi-text-muted)" : c.variacion >= 0 ? "#3abab6" : "#b80000" }}>
                             {i === 0 ? "—" : fmtPct(c.variacion * 100)}
                           </td>
                           <td style={{ padding: "10px 10px" }}>
                             <span style={{
-                              fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
+                              fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "var(--font-display)", fontWeight: 700,
                               background: c.esProyeccion ? "rgba(74,184,216,0.1)" : "rgba(153,0,0,0.1)",
                               color: c.esProyeccion ? "#4ab8d8" : "#990000",
                               border: `1px solid ${c.esProyeccion ? "rgba(74,184,216,0.25)" : "rgba(153,0,0,0.25)"}`,
@@ -468,11 +468,11 @@ export default function CalculadoraAlquilerPage() {
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}>
-                        <td colSpan={3} style={{ padding: "12px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                      <tr style={{ borderTop: "1px solid var(--gfi-border)" }}>
+                        <td colSpan={3} style={{ padding: "12px 10px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: "var(--gfi-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                           Total pagado ({duracion} meses)
                         </td>
-                        <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 14, color: "#4ab8d8" }}>
+                        <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, color: "#4ab8d8" }}>
                           {fmtARS(totales.totalPagado)}
                         </td>
                         <td style={{ padding: "12px 10px", textAlign: "right", fontWeight: 700, color: totales.variacionTotal >= 0 ? "#3abab6" : "#b80000" }}>

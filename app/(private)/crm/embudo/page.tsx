@@ -137,7 +137,7 @@ export default function EmbudoPage() {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>
               🔻 Embudo de Conversión
             </h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>
@@ -148,7 +148,7 @@ export default function EmbudoPage() {
         </div>
 
         {/* Config */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 24, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 24, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
           <div>
             <label style={{ fontSize: 11, color: "#6b7280", display: "block", marginBottom: 3 }}>Período</label>
             <select value={periodo} onChange={e => setPeriodo(Number(e.target.value))}
@@ -189,17 +189,17 @@ export default function EmbudoPage() {
             { label: "Cerrado (valor)", value: `USD ${fmt(cerradosValor)}`, sub: `${porEtapa["cerrado"]?.length ?? 0} operaciones`, color: "#3abab6" },
             { label: "Honorarios Reales", value: `USD ${fmt(cerradosHon)}`, sub: "operaciones cerradas", color: "#990000" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "14px 16px" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "14px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 18, color: k.color }}>{k.value}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: k.color }}>{k.value}</div>
               <div style={{ fontSize: 11, color: "#4b5563", marginTop: 2 }}>{k.sub}</div>
             </div>
           ))}
         </div>
 
         {/* Embudo visual */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 24, marginBottom: 24 }}>
-          <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, color: "#fff", marginBottom: 20 }}>Etapas del Pipeline</div>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 24, marginBottom: 24 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff", marginBottom: 20 }}>Etapas del Pipeline</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {ETAPAS.map((etapa, idx) => {
               const count = porEtapa[etapa.key]?.length ?? 0;
@@ -214,7 +214,7 @@ export default function EmbudoPage() {
                     </div>
                   )}
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 110, textAlign: "right", fontSize: 12, color: etapa.color, fontFamily: "Montserrat, sans-serif", fontWeight: 700, flexShrink: 0 }}>
+                    <div style={{ width: 110, textAlign: "right", fontSize: 12, color: etapa.color, fontFamily: "var(--font-display)", fontWeight: 700, flexShrink: 0 }}>
                       {etapa.label}
                     </div>
                     <div style={{ flex: 1, background: "#1a1a1a", borderRadius: 6, height: 36, position: "relative", overflow: "hidden" }}>
@@ -235,9 +235,9 @@ export default function EmbudoPage() {
 
         {/* Detalle por etapa */}
         {ETAPAS.filter(e => (porEtapa[e.key]?.length ?? 0) > 0).map(etapa => (
-          <div key={etapa.key} style={{ background: "#111", border: `1px solid ${etapa.color}33`, borderRadius: 10, padding: 16, marginBottom: 12 }}>
+          <div key={etapa.key} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${etapa.color}33`, borderRadius: 10, padding: 16, marginBottom: 12 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: etapa.color }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: etapa.color }}>
                 {etapa.label} ({porEtapa[etapa.key]?.length ?? 0})
               </span>
               <span style={{ fontSize: 12, color: "#6b7280" }}>
@@ -246,7 +246,7 @@ export default function EmbudoPage() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {(porEtapa[etapa.key] ?? []).map(n => (
-                <div key={n.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#0f0f0f", borderRadius: 6, padding: "8px 12px" }}>
+                <div key={n.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--gfi-bg-primary)", borderRadius: 6, padding: "8px 12px" }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#e5e5e5" }}>{n.titulo}</div>
                     <div style={{ fontSize: 11, color: "#6b7280" }}>{n.tipo_operacion}</div>

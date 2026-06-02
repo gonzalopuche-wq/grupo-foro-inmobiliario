@@ -113,8 +113,8 @@ export default function NotificacionesWidget() {
 
   return (
     <div style={{
-      background: "rgba(14,14,14,0.9)",
-      border: `1px solid ${estado === "activo" ? "rgba(34,197,94,0.25)" : "rgba(255,255,255,0.07)"}`,
+      background: "var(--gfi-bg-card)",
+      border: `1px solid ${estado === "activo" ? "rgba(34,197,94,0.25)" : "var(--gfi-border-subtle)"}`,
       borderRadius: 6,
       padding: "14px 18px",
       display: "flex",
@@ -126,10 +126,10 @@ export default function NotificacionesWidget() {
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <span style={{ fontSize: 18 }}>{estado === "activo" ? "🔔" : "🔕"}</span>
         <div>
-          <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 12, fontWeight: 700, color: "#fff" }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "#fff" }}>
             Notificaciones push
           </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>
+          <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
             {estado === "activo"
               ? "Activadas · Recibirás alertas de nuevos eventos"
               : estado === "denegado"
@@ -147,8 +147,8 @@ export default function NotificacionesWidget() {
             background: estado === "activo" ? "transparent" : "#990000",
             border: estado === "activo" ? "1px solid rgba(255,255,255,0.15)" : "none",
             borderRadius: 4,
-            color: estado === "activo" ? "rgba(255,255,255,0.5)" : "#fff",
-            fontFamily: "'Montserrat',sans-serif",
+            color: estado === "activo" ? "var(--gfi-text-secondary)" : "#fff",
+            fontFamily: "var(--font-display)",
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: "0.12em",

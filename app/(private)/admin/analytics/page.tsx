@@ -108,15 +108,15 @@ function BarChart({ data, color = "#990000", height = 120 }: {
               {d.value > 0 && (
                 <div style={{
                   position: "absolute", top: -16, left: "50%", transform: "translateX(-50%)",
-                  fontSize: 9, color: "rgba(255,255,255,0.5)", whiteSpace: "nowrap",
-                  fontFamily: "Montserrat,sans-serif", fontWeight: 700,
+                  fontSize: 9, color: "var(--gfi-text-secondary)", whiteSpace: "nowrap",
+                  fontFamily: "var(--font-display)", fontWeight: 700,
                 }}>
                   {d.value}
                 </div>
               )}
             </div>
           </div>
-          <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", textAlign: "center", fontFamily: "Montserrat,sans-serif", transform: "rotate(-30deg)", transformOrigin: "top center", whiteSpace: "nowrap", marginTop: 4 }}>
+          <div style={{ fontSize: 8, color: "var(--gfi-text-muted)", textAlign: "center", fontFamily: "var(--font-display)", transform: "rotate(-30deg)", transformOrigin: "top center", whiteSpace: "nowrap", marginTop: 4 }}>
             {d.label}
           </div>
         </div>
@@ -134,11 +134,11 @@ function HBarChart({ data, color = "#990000" }: {
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {data.map((d, i) => (
         <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 18, fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textAlign: "right" }}>{i + 1}</div>
+          <div style={{ width: 18, fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, textAlign: "right" }}>{i + 1}</div>
           <div style={{ flex: 1 }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
               <span style={{ fontSize: 12, color: "#fff" }}>{d.label}</span>
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{d.value.toLocaleString("es-AR")}{d.sub ? ` ${d.sub}` : ""}</span>
+              <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{d.value.toLocaleString("es-AR")}{d.sub ? ` ${d.sub}` : ""}</span>
             </div>
             <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3 }}>
               <div style={{ height: "100%", width: `${(d.value / max) * 100}%`, background: color, borderRadius: 3 }} />
@@ -155,9 +155,9 @@ function KPI({ label, value, icon, color, bg, sub }: {
 }) {
   return (
     <div style={{ background: bg, border: `1px solid ${color}33`, borderRadius: 10, padding: "16px 18px" }}>
-      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>{icon} {label}</div>
-      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color, lineHeight: 1 }}>{value.toLocaleString !== undefined && typeof value === "number" ? value.toLocaleString("es-AR") : value}</div>
-      {sub && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>{sub}</div>}
+      <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>{icon} {label}</div>
+      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "var(--font-display)", color, lineHeight: 1 }}>{value.toLocaleString !== undefined && typeof value === "number" ? value.toLocaleString("es-AR") : value}</div>
+      {sub && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 4 }}>{sub}</div>}
     </div>
   );
 }
@@ -311,7 +311,7 @@ export default function AnalyticsPage() {
 
   if (loading || !stats || !derived) {
     return (
-      <div style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.3)" }}>
+      <div style={{ padding: 40, textAlign: "center", color: "var(--gfi-text-muted)" }}>
         <div style={{ fontSize: 24, marginBottom: 8 }}>📊</div>
         Cargando analytics…
       </div>
@@ -324,18 +324,18 @@ export default function AnalyticsPage() {
     <div style={{ fontFamily: "Inter,sans-serif", color: "#fff" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
-        .an-section { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 20px 22px; margin-bottom: 18px; }
-        .an-title { font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .an-section { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 20px 22px; margin-bottom: 18px; }
+        .an-title { font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .an-title span { color: #990000; }
         .an-h1 { font-family: Montserrat,sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 4px; }
-        .an-sub { font-size: 12px; color: rgba(255,255,255,0.3); }
+        .an-sub { font-size: 12px; color: var(--gfi-text-muted); }
         .an-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .an-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
         @media (max-width: 700px) { .an-grid2, .an-grid3 { grid-template-columns: 1fr; } }
         .kit-box { background: rgba(153,0,0,0.06); border: 1px solid rgba(153,0,0,0.2); border-radius: 10px; padding: 22px; margin-bottom: 18px; }
-        .kit-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+        .kit-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gfi-border-subtle); font-size: 13px; }
         .kit-stat:last-child { border-bottom: none; }
-        .kit-stat-label { color: rgba(255,255,255,0.5); }
+        .kit-stat-label { color: var(--gfi-text-secondary); }
         .kit-stat-val { font-weight: 700; color: #fff; font-family: Montserrat,sans-serif; }
         @media print {
           .no-print { display: none !important; }
@@ -348,7 +348,7 @@ export default function AnalyticsPage() {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <div>
           <div className="no-print">
-            <Link href="/admin" style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>← Admin</Link>
+            <Link href="/admin" style={{ fontSize: 12, color: "var(--gfi-text-muted)", textDecoration: "none" }}>← Admin</Link>
           </div>
           <h1 className="an-h1" style={{ marginTop: 6 }}>📊 Analytics <span style={{ color: "#990000" }}>GFI®</span></h1>
           <p className="an-sub">Métricas de plataforma · Actualizado: {hoy}</p>
@@ -356,7 +356,7 @@ export default function AnalyticsPage() {
         <button
           className="no-print"
           onClick={() => window.print()}
-          style={{ padding: "10px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
+          style={{ padding: "10px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
         >
           🖨 Kit de medios
         </button>
@@ -371,7 +371,7 @@ export default function AnalyticsPage() {
         <KPI label="Propiedades en CRM" value={stats.totalProps} icon="🏠" color="#06b6d4" bg="rgba(6,182,212,0.08)" sub="Gestionadas activamente" />
         <KPI label="Entradas MIR activas" value={stats.totalMIR} icon="🔁" color="#d4960c" bg="rgba(234,179,8,0.08)" />
         <KPI label="Negocios totales" value={stats.totalNegocios} icon="🤝" color="#990000" bg="rgba(153,0,0,0.08)" />
-        <KPI label="Visitas rastreadas (30d)" value={derived.totalPageViews} icon="👁" color="rgba(255,255,255,0.6)" bg="rgba(255,255,255,0.04)" sub="Desde activación del tracking" />
+        <KPI label="Visitas rastreadas (30d)" value={derived.totalPageViews} icon="👁" color="var(--gfi-text-secondary)" bg="var(--gfi-border-subtle)" sub="Desde activación del tracking" />
       </div>
 
       {/* Crecimiento mensual */}
@@ -393,7 +393,7 @@ export default function AnalyticsPage() {
           {derived.topSecciones.length > 0 ? (
             <HBarChart data={derived.topSecciones} color="#990000" />
           ) : (
-            <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, textAlign: "center", padding: "20px 0" }}>
+            <div style={{ color: "var(--gfi-text-dim)", fontSize: 12, textAlign: "center", padding: "20px 0" }}>
               Sin datos aún — el tracking de páginas acumula a partir de ahora
             </div>
           )}
@@ -403,7 +403,7 @@ export default function AnalyticsPage() {
         <div className="an-section">
           <div className="an-title">🕐 <span>Horarios</span> de mayor actividad (30d)</div>
           <BarChart data={derived.horasData} color="#d4960c" height={120} />
-          <div style={{ marginTop: 12, fontSize: 11, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>
+          <div style={{ marginTop: 12, fontSize: 11, color: "var(--gfi-text-muted)", textAlign: "center" }}>
             Pico:{" "}
             <strong style={{ color: "#d4960c" }}>
               {derived.horasData.indexOf(derived.horasData.reduce((m, d) => d.value > m.value ? d : m, derived.horasData[0]))}h
@@ -418,7 +418,7 @@ export default function AnalyticsPage() {
           <div className="an-title">📍 <span>Ciudades</span> — distribución de usuarios</div>
           {derived.topCiudades.length > 0
             ? <HBarChart data={derived.topCiudades} color="#4ab8d8" />
-            : <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>Sin datos de ciudad registrados</div>
+            : <div style={{ color: "var(--gfi-text-dim)", fontSize: 12 }}>Sin datos de ciudad registrados</div>
           }
         </div>
 
@@ -426,7 +426,7 @@ export default function AnalyticsPage() {
         <div className="an-section">
           <div className="an-title">🎓 <span>Experiencia</span> del público</div>
           <HBarChart data={derived.expData} color="#c084fc" />
-          <div style={{ marginTop: 12, fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+          <div style={{ marginTop: 12, fontSize: 11, color: "var(--gfi-text-muted)" }}>
             {stats.perfilesDem.filter(p => (p.anos_experiencia ?? 0) >= 5).length} usuarios (
             {Math.round(stats.perfilesDem.filter(p => (p.anos_experiencia ?? 0) >= 5).length / Math.max(stats.totalUsuarios, 1) * 100)}%)
             con 5+ años de experiencia
@@ -436,10 +436,10 @@ export default function AnalyticsPage() {
 
       {/* Kit de medios para patrocinadores */}
       <div className="kit-box">
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 800, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
           🎯 Kit de medios — <span style={{ color: "#990000" }}>GFI® Grupo Foro Inmobiliario</span>
         </div>
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 16 }}>
           Métricas de alcance para propuestas comerciales a patrocinadores · {hoy}
         </div>
         <div className="kit-stat">
@@ -488,7 +488,7 @@ export default function AnalyticsPage() {
             {Math.max(stats.activosMes * 8, stats.totalUsuarios * 3).toLocaleString("es-AR")} impresiones/mes *
           </span>
         </div>
-        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", marginTop: 12, fontStyle: "italic" }}>
+        <div style={{ fontSize: 10, color: "var(--gfi-text-dim)", marginTop: 12, fontStyle: "italic" }}>
           * Estimación basada en sesiones activas × promedio de páginas visitadas por sesión.
           Los datos de visitas de página se acumulan desde la activación del tracking.
         </div>

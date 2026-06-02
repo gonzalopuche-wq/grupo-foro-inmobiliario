@@ -103,22 +103,22 @@ export default function TendenciasWidget({ uid }: Props) {
   const sparArea = `${sparPath} L ${sparW} ${sparH} L 0 ${sparH} Z`;
 
   return (
-    <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "18px 22px", marginBottom: 20 }}>
+    <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "18px 22px", marginBottom: 20 }}>
       <style>{`
-        .td-tab { background: none; border: none; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; transition: all 0.15s; }
+        .td-tab { background: none; border: none; cursor: pointer; font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; transition: all 0.15s; }
         .td-tab.active { background: rgba(153,0,0,0.15); color: #990000; }
-        .td-tab:not(.active) { color: rgba(255,255,255,0.25); }
-        .td-tab:not(.active):hover { color: rgba(255,255,255,0.5); }
+        .td-tab:not(.active) { color: var(--gfi-text-dim); }
+        .td-tab:not(.active):hover { color: var(--gfi-text-secondary); }
         .td-bar:hover { opacity: 0.85 !important; }
       `}</style>
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.26em", textTransform: "uppercase", color: "rgba(255,255,255,0.22)", fontFamily: "'Montserrat',sans-serif" }}>
+          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.26em", textTransform: "uppercase", color: "rgba(255,255,255,0.22)", fontFamily: "var(--font-display)" }}>
             Pipeline
           </div>
-          <div style={{ flex: 1, height: 1, width: 40, background: "linear-gradient(90deg, rgba(255,255,255,0.07) 0%, transparent 100%)" }} />
+          <div style={{ flex: 1, height: 1, width: 40, background: "linear-gradient(90deg, var(--gfi-border-subtle) 0%, transparent 100%)" }} />
         </div>
         <div style={{ display: "flex", gap: 4 }}>
           <button className={`td-tab${tab === "funnel" ? " active" : ""}`} onClick={() => setTab("funnel")}>Funnel</button>
@@ -127,26 +127,26 @@ export default function TendenciasWidget({ uid }: Props) {
       </div>
 
       {loading ? (
-        <div style={{ height: 100, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.2)", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
+        <div style={{ height: 100, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gfi-text-dim)", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
           Cargando pipeline...
         </div>
       ) : tab === "funnel" ? (
         /* ── FUNNEL VIEW ── */
         <div>
           {etapas.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "28px 0", color: "rgba(255,255,255,0.2)", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
+            <div style={{ textAlign: "center", padding: "28px 0", color: "var(--gfi-text-dim)", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
               No hay negocios activos todavía
             </div>
           ) : (
             <>
               <div style={{ display: "flex", gap: 20, marginBottom: 12 }}>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#990000", lineHeight: 1 }}>{totalFunnel}</div>
-                  <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Activos</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 900, color: "#990000", lineHeight: 1 }}>{totalFunnel}</div>
+                  <div style={{ fontSize: 8, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Activos</div>
                 </div>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#3abab6", lineHeight: 1 }}>{etapas.find(e => e.etapa === "cerrado")?.count ?? 0}</div>
-                  <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Cerrados</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 900, color: "#3abab6", lineHeight: 1 }}>{etapas.find(e => e.etapa === "cerrado")?.count ?? 0}</div>
+                  <div style={{ fontSize: 8, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Cerrados</div>
                 </div>
               </div>
 
@@ -157,16 +157,16 @@ export default function TendenciasWidget({ uid }: Props) {
                   const pct = Math.round((e.count / funnelMax) * 100);
                   return (
                     <div key={e.etapa} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: 80, fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "right", flexShrink: 0 }}>
+                      <div style={{ width: 80, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "right", flexShrink: 0 }}>
                         {cfg.label}
                       </div>
-                      <div style={{ flex: 1, height: 14, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden", position: "relative" }}>
+                      <div style={{ flex: 1, height: 14, background: "var(--gfi-border-subtle)", borderRadius: 4, overflow: "hidden", position: "relative" }}>
                         <div
                           className="td-bar"
                           style={{ height: "100%", width: `${pct}%`, background: cfg.color, borderRadius: 4, opacity: 0.75, transition: "width 0.6s ease", minWidth: e.count > 0 ? 18 : 0 }}
                         />
                       </div>
-                      <div style={{ width: 22, fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: cfg.color, textAlign: "right", flexShrink: 0 }}>
+                      <div style={{ width: 22, fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 800, color: cfg.color, textAlign: "right", flexShrink: 0 }}>
                         {e.count}
                       </div>
                     </div>
@@ -181,12 +181,12 @@ export default function TendenciasWidget({ uid }: Props) {
         <div>
           <div style={{ display: "flex", gap: 20, marginBottom: 14 }}>
             <div>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#3b82f6", lineHeight: 1 }}>{totalLeads}</div>
-              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Leads (6m)</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 900, color: "#3b82f6", lineHeight: 1 }}>{totalLeads}</div>
+              <div style={{ fontSize: 8, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Leads (6m)</div>
             </div>
             <div>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#3abab6", lineHeight: 1 }}>{totalCerrados}</div>
-              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Cierres (6m)</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 900, color: "#3abab6", lineHeight: 1 }}>{totalCerrados}</div>
+              <div style={{ fontSize: 8, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Cierres (6m)</div>
             </div>
           </div>
 
@@ -201,7 +201,7 @@ export default function TendenciasWidget({ uid }: Props) {
                     <div title={`${m.leads} leads`} style={{ width: 8, height: lH, background: "#3b82f6", borderRadius: "2px 2px 0 0", opacity: 0.7, transition: "height 0.5s ease" }} />
                     <div title={`${m.cerrados} cierres`} style={{ width: 8, height: cH, background: "#3abab6", borderRadius: "2px 2px 0 0", opacity: 0.8, transition: "height 0.5s ease" }} />
                   </div>
-                  <div style={{ fontSize: 8, color: "rgba(255,255,255,0.22)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, marginTop: 4, letterSpacing: "0.04em" }}>{m.label}</div>
+                  <div style={{ fontSize: 8, color: "rgba(255,255,255,0.22)", fontFamily: "var(--font-display)", fontWeight: 700, marginTop: 4, letterSpacing: "0.04em" }}>{m.label}</div>
                 </div>
               );
             })}
@@ -210,7 +210,7 @@ export default function TendenciasWidget({ uid }: Props) {
           {/* Legend */}
           <div style={{ display: "flex", gap: 14, marginTop: 4 }}>
             {[{ color: "#3b82f6", label: "Leads" }, { color: "#3abab6", label: "Cierres" }].map(l => (
-              <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 <div style={{ width: 8, height: 8, borderRadius: 2, background: l.color, opacity: 0.8 }} />
                 {l.label}
               </div>

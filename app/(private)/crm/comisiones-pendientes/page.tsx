@@ -179,7 +179,7 @@ export default function ComisionesPendientesPage() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>💰 Comisiones Pendientes</h1>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>💰 Comisiones Pendientes</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Seguimiento de cobro de honorarios por negocio cerrado</p>
           </div>
           <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
@@ -193,16 +193,16 @@ export default function ComisionesPendientesPage() {
             { label: "Pendiente de cobro", value: `USD ${fmt(Math.round(totales.totalPendienteUSD))}`, color: "#990000" },
             { label: "Pendiente en ARS", value: `ARS ${fmt(Math.round(totales.totalPendienteUSD * tc / 1000))}k`, color: "#3b82f6" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, color: k.color }}>{k.value}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, color: k.color }}>{k.value}</div>
             </div>
           ))}
         </div>
 
         {/* Barra cobrado vs pendiente */}
         {totales.totalComisionesMeUSD > 0 && (
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6b7280", marginBottom: 6 }}>
               <span>Cobrado: {((totales.totalCobradoUSD / totales.totalComisionesMeUSD) * 100).toFixed(1)}%</span>
               <span>Pendiente: {((totales.totalPendienteUSD / totales.totalComisionesMeUSD) * 100).toFixed(1)}%</span>
@@ -215,7 +215,7 @@ export default function ComisionesPendientesPage() {
         )}
 
         {/* Filtros */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <label style={{ fontSize: 11, color: "#6b7280" }}>TC:</label>
             <input type="number" value={tc} step={50}
@@ -225,14 +225,14 @@ export default function ComisionesPendientesPage() {
           <span style={{ color: "#374151" }}>|</span>
           {(["todos", "pendiente", "parcial", "cobrado"] as const).map(e => (
             <button key={e} onClick={() => setFiltroEstado(e)}
-              style={{ background: filtroEstado === e ? "#1f2937" : "transparent", border: `1px solid ${filtroEstado === e ? "#374151" : "#1f2937"}`, borderRadius: 6, color: e === "todos" ? "#e5e5e5" : estadoColor(e), padding: "4px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+              style={{ background: filtroEstado === e ? "#1f2937" : "transparent", border: `1px solid ${filtroEstado === e ? "#374151" : "var(--gfi-border)"}`, borderRadius: 6, color: e === "todos" ? "#e5e5e5" : estadoColor(e), padding: "4px 12px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
               {e === "todos" ? "Todos" : estadoLabel(e)}
             </button>
           ))}
           <span style={{ color: "#374151" }}>|</span>
           {([{ id: "todos", label: "Todos" }, { id: "30d", label: "30d" }, { id: "90d", label: "90d" }, { id: "anio", label: "Este año" }] as const).map(p => (
             <button key={p.id} onClick={() => setFiltroPeriodo(p.id)}
-              style={{ background: filtroPeriodo === p.id ? "#1f2937" : "transparent", border: `1px solid ${filtroPeriodo === p.id ? "#374151" : "#1f2937"}`, borderRadius: 6, color: "#9ca3af", padding: "4px 10px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+              style={{ background: filtroPeriodo === p.id ? "#1f2937" : "transparent", border: `1px solid ${filtroPeriodo === p.id ? "#374151" : "var(--gfi-border)"}`, borderRadius: 6, color: "#9ca3af", padding: "4px 10px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
               {p.label}
             </button>
           ))}
@@ -241,21 +241,21 @@ export default function ComisionesPendientesPage() {
         {loading ? (
           <div style={{ textAlign: "center", color: "#6b7280", padding: 48 }}>Cargando negocios...</div>
         ) : items.length === 0 ? (
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 48, textAlign: "center" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 48, textAlign: "center" }}>
             <div style={{ fontSize: 36, marginBottom: 10 }}>💳</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin comisiones pendientes</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin comisiones pendientes</div>
             <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>Los negocios en etapa de reserva, escritura o cierre aparecen aquí</div>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {items.map(item => (
               <div key={item.negocio.id}
-                style={{ background: "#111", border: `1px solid ${estadoColor(item.estado)}33`, borderRadius: 10, padding: "14px 16px" }}>
+                style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${estadoColor(item.estado)}33`, borderRadius: 10, padding: "14px 16px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>{item.negocio.titulo}</span>
-                      <span style={{ background: `${estadoColor(item.estado)}22`, color: estadoColor(item.estado), padding: "2px 8px", borderRadius: 4, fontSize: 10, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff" }}>{item.negocio.titulo}</span>
+                      <span style={{ background: `${estadoColor(item.estado)}22`, color: estadoColor(item.estado), padding: "2px 8px", borderRadius: 4, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                         {estadoLabel(item.estado)}
                       </span>
                       <span style={{ fontSize: 10, color: "#4b5563" }}>{item.negocio.tipo_operacion} · {item.negocio.etapa}</span>
@@ -278,14 +278,14 @@ export default function ComisionesPendientesPage() {
                     </div>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 20, color: item.pendienteUSD > 0 ? "#990000" : "#3abab6" }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: item.pendienteUSD > 0 ? "#990000" : "#3abab6" }}>
                       {item.pendienteUSD > 0 ? `USD ${fmt(Math.round(item.pendienteUSD))}` : "✓"}
                     </div>
                     {item.pendienteUSD > 0 && (
                       <div style={{ fontSize: 11, color: "#3b82f6" }}>ARS {fmt(Math.round(item.pendienteUSD * tc / 1000))}k</div>
                     )}
                     <button onClick={() => setNegocioModal(item.negocio.id)}
-                      style={{ background: "#990000", border: "none", borderRadius: 6, color: "#fff", padding: "6px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                      style={{ background: "#990000", border: "none", borderRadius: 6, color: "#fff", padding: "6px 12px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       {item.estado === "cobrado" ? "Ver cobros" : "Registrar cobro"}
                     </button>
                   </div>
@@ -296,7 +296,7 @@ export default function ComisionesPendientesPage() {
                     {(cobros[item.negocio.id] ?? []).map((c, i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6b7280", padding: "2px 0" }}>
                         <span>{new Date(c.fechaCobro + "T12:00:00").toLocaleDateString("es-AR")} {c.nota && `— ${c.nota}`}</span>
-                        <span style={{ color: "#3abab6", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>+USD {fmt(c.montoCobrado)}</span>
+                        <span style={{ color: "#3abab6", fontFamily: "var(--font-display)", fontWeight: 700 }}>+USD {fmt(c.montoCobrado)}</span>
                       </div>
                     ))}
                   </div>
@@ -310,8 +310,8 @@ export default function ComisionesPendientesPage() {
         {negocioModal && itemModal && (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}
             onClick={e => { if (e.target === e.currentTarget) setNegocioModal(null); }}>
-            <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 14, padding: 24, width: 400, maxWidth: "calc(100vw - 48px)" }}>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 6 }}>Registrar cobro</div>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 14, padding: 24, width: 400, maxWidth: "calc(100vw - 48px)" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 6 }}>Registrar cobro</div>
               <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 16 }}>{itemModal.negocio.titulo} · Pendiente: USD {fmt(Math.round(itemModal.pendienteUSD))}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
                 <div>
@@ -335,7 +335,7 @@ export default function ComisionesPendientesPage() {
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={registrarCobro}
-                  style={{ flex: 1, background: "#3abab6", border: "none", borderRadius: 8, color: "#000", padding: "10px", fontSize: 13, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>
+                  style={{ flex: 1, background: "#3abab6", border: "none", borderRadius: 8, color: "#000", padding: "10px", fontSize: 13, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 800 }}>
                   Confirmar cobro
                 </button>
                 <button onClick={() => setNegocioModal(null)}

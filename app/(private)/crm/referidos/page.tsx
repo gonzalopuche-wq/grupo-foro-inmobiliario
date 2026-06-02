@@ -143,7 +143,7 @@ export default function ReferidosPage() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🤝 Gestión de Referidos</h1>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🤝 Gestión de Referidos</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Seguimiento de contactos referidos y recompensas</p>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
@@ -164,7 +164,7 @@ export default function ReferidosPage() {
             { label: "Recompensas pendientes", val: `USD ${fmt(stats.totalRecompPend)}`, color: "#d4960c" },
             { label: "Recompensas pagadas", val: `USD ${fmt(stats.totalRecompPag)}`, color: "#3abab6" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "10px 16px", display: "flex", gap: 8, alignItems: "center" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "10px 16px", display: "flex", gap: 8, alignItems: "center" }}>
               <span style={{ fontSize: 20, fontWeight: 800, color: k.color }}>{k.val}</span>
               <span style={{ fontSize: 11, color: "#6b7280" }}>{k.label}</span>
             </div>
@@ -173,14 +173,14 @@ export default function ReferidosPage() {
 
         {/* Top referentes */}
         {Object.keys(stats.porRef).length > 0 && (
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 18, marginBottom: 20 }}>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 12 }}>🏆 Top Referentes</div>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 18, marginBottom: 20 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 12 }}>🏆 Top Referentes</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {Object.entries(stats.porRef)
                 .sort((a, b) => b[1].cerrados - a[1].cerrados || b[1].total - a[1].total)
                 .slice(0, 5)
                 .map(([nombre, d]) => (
-                  <div key={nombre} style={{ display: "flex", alignItems: "center", gap: 12, background: "#0f0f0f", borderRadius: 6, padding: "8px 12px" }}>
+                  <div key={nombre} style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--gfi-bg-primary)", borderRadius: 6, padding: "8px 12px" }}>
                     <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: "#e5e5e5" }}>{nombre}</div>
                     <div style={{ fontSize: 12, color: "#3b82f6" }}>{d.total} ref.</div>
                     <div style={{ fontSize: 12, color: "#3abab6", fontWeight: 700 }}>{d.cerrados} cierres</div>
@@ -197,14 +197,14 @@ export default function ReferidosPage() {
         {/* Filtros */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
           <input placeholder="Buscar…" value={filtroBusq} onChange={e => setFiltroBusq(e.target.value)}
-            style={{ background: "#111", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 13, width: 180 }} />
+            style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 13, width: 180 }} />
           <select value={filtroEst} onChange={e => setFiltroEst(e.target.value)}
-            style={{ background: "#111", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "6px 8px", fontSize: 13 }}>
+            style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "6px 8px", fontSize: 13 }}>
             <option value="todos">Todos los estados</option>
             {ESTADOS.map(e => <option key={e.val} value={e.val}>{e.label}</option>)}
           </select>
           <select value={filtroRef} onChange={e => setFiltroRef(e.target.value)}
-            style={{ background: "#111", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "6px 8px", fontSize: 13 }}>
+            style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "6px 8px", fontSize: 13 }}>
             <option value="todos">Todos los referentes</option>
             {referentes.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
@@ -219,7 +219,7 @@ export default function ReferidosPage() {
               <div style={{ textAlign: "center", color: "#4b5563", padding: 60 }}>Sin referidos. Agregá el primero.</div>
             )}
             {filtrados.map(r => (
-              <div key={r.id} style={{ background: "#111", border: `1px solid ${colEst(r.estado)}33`, borderLeft: `3px solid ${colEst(r.estado)}`, borderRadius: 10, padding: "14px 18px", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+              <div key={r.id} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${colEst(r.estado)}33`, borderLeft: `3px solid ${colEst(r.estado)}`, borderRadius: 10, padding: "14px 18px", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                 <div style={{ flex: 2, minWidth: 160 }}>
                   <div style={{ fontWeight: 700, fontSize: 14, color: "#e5e5e5" }}>{r.nombre} {r.apellido}</div>
                   <div style={{ fontSize: 11, color: "#6b7280" }}>Referido por: <span style={{ color: "#9ca3af" }}>{r.referidoPor || "—"}</span> · {r.fecha}</div>
@@ -272,9 +272,9 @@ export default function ReferidosPage() {
         {/* Modal formulario */}
         {formOpen && (
           <div style={{ position: "fixed", inset: 0, background: "#000000cc", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 24 }}>
-            <div style={{ background: "#111", border: "1px solid #333", borderRadius: 14, padding: 28, width: "100%", maxWidth: 640, maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 14, padding: 28, width: "100%", maxWidth: 640, maxHeight: "90vh", overflowY: "auto" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-                <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#fff" }}>{editId ? "Editar Referido" : "Nuevo Referido"}</span>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>{editId ? "Editar Referido" : "Nuevo Referido"}</span>
                 <button onClick={() => setFormOpen(false)} style={{ background: "transparent", border: "none", color: "#6b7280", cursor: "pointer", fontSize: 18 }}>✕</button>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>

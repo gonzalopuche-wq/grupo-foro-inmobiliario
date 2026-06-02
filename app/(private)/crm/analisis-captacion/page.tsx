@@ -163,10 +163,10 @@ export default function AnalisisCaptacion() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>🎣 Análisis de Captación</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>🎣 Análisis de Captación</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Nuevos contactos, fuentes y tasas de conversión</p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -194,8 +194,8 @@ export default function AnalisisCaptacion() {
                 { label: "Días captac. → negocio", val: tiempoCaptNeg !== null ? `${tiempoCaptNeg.toFixed(0)}d` : "—", sub: "Promedio", color: "#d4960c" },
                 { label: "Fuentes", val: porOrigen.length.toString(), sub: "Orígenes distintos", color: "#d4960c" },
               ].map((kpi, i) => (
-                <div key={i} style={{ background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px" }}>
-                  <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
+                <div key={i} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px" }}>
+                  <div style={{ fontSize: 10, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
                   <div style={{ fontSize: 18, fontWeight: 700, color: kpi.color, marginTop: 4 }}>{kpi.val}</div>
                   <div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>{kpi.sub}</div>
                 </div>
@@ -203,8 +203,8 @@ export default function AnalisisCaptacion() {
             </div>
 
             {/* Evolución mensual */}
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-              <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+              <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                 Nuevos contactos por mes
               </h2>
               {porMes.length === 0 ? (
@@ -224,8 +224,8 @@ export default function AnalisisCaptacion() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               {/* Por origen */}
-              <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-                <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+                <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                   Fuente de captación
                 </h2>
                 {porOrigen.length === 0 ? (
@@ -250,8 +250,8 @@ export default function AnalisisCaptacion() {
               </div>
 
               {/* Conversión por origen */}
-              <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-                <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+                <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                   Conversión por fuente
                 </h2>
                 {convPorOrigen.length === 0 ? (
@@ -261,7 +261,7 @@ export default function AnalisisCaptacion() {
                     <thead>
                       <tr>
                         {["Fuente","Total","C/ Neg.","Tasa"].map(h => (
-                          <th key={h} style={{ padding: "6px 8px", textAlign: "left", fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>{h}</th>
+                          <th key={h} style={{ padding: "6px 8px", textAlign: "left", fontSize: 10, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700 }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -283,8 +283,8 @@ export default function AnalisisCaptacion() {
             </div>
 
             {/* Embudo */}
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-              <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+              <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                 Embudo de conversión
               </h2>
               {embudoPasos.map((step, i) => {

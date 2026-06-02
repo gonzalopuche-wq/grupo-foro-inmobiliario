@@ -186,7 +186,7 @@ export default function ForecastPipelinePage() {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, margin: 0 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, margin: 0 }}>
               Forecast de Pipeline
             </h1>
             <p style={{ color: "#999", fontSize: 13, margin: "6px 0 0" }}>
@@ -194,7 +194,7 @@ export default function ForecastPipelinePage() {
             </p>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
+            <div style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>
               TC (ARS/USD)
             </div>
             <input
@@ -210,9 +210,9 @@ export default function ForecastPipelinePage() {
               style={{
                 padding: "8px 16px", borderRadius: 8,
                 border: editingProb ? "1px solid #990000" : "1px solid #333",
-                background: editingProb ? "rgba(153,0,0,0.15)" : "#111",
+                background: editingProb ? "rgba(153,0,0,0.15)" : "var(--gfi-bg-secondary)",
                 color: editingProb ? "#990000" : "#888",
-                fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 12,
+                fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12,
                 cursor: "pointer", textTransform: "uppercase",
               }}
             >
@@ -223,14 +223,14 @@ export default function ForecastPipelinePage() {
 
         {/* Prob editor */}
         {editingProb && (
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: "#990000" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 12, padding: 20, marginBottom: 24 }}>
+            <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: "#990000" }}>
               Probabilidades de cierre por etapa (%)
             </h3>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               {ETAPAS_CONFIG.map((e) => (
                 <div key={e.value} style={{ width: 140 }}>
-                  <div style={{ fontSize: 10, color: e.color, fontFamily: "Montserrat, sans-serif", fontWeight: 700, marginBottom: 4, textTransform: "uppercase" }}>
+                  <div style={{ fontSize: 10, color: e.color, fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 4, textTransform: "uppercase" }}>
                     {e.label}
                   </div>
                   <input
@@ -254,11 +254,11 @@ export default function ForecastPipelinePage() {
             { label: "Hon. neto total", value: fmtUSD(totalNeto), color: "#fff" },
             { label: "Forecast ponderado", value: fmtUSD(totalPonderado), color: "#990000" },
           ].map((k) => (
-            <div key={k.label} style={{ background: "#111", border: k.color === "#990000" ? "1px solid rgba(153,0,0,0.4)" : "1px solid #222", borderRadius: 12, padding: "18px 20px" }}>
-              <div style={{ fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: k.color === "#990000" ? "1px solid rgba(153,0,0,0.4)" : "1px solid #222", borderRadius: 12, padding: "18px 20px" }}>
+              <div style={{ fontSize: 10, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>
                 {k.label}
               </div>
-              <div style={{ fontSize: 22, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: k.color }}>
+              <div style={{ fontSize: 22, fontFamily: "var(--font-display)", fontWeight: 800, color: k.color }}>
                 {k.value}
               </div>
             </div>
@@ -267,8 +267,8 @@ export default function ForecastPipelinePage() {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}>
           {/* Por etapa */}
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
-            <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, margin: "0 0 16px", color: "#fff" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, margin: "0 0 16px", color: "#fff" }}>
               Pipeline por Etapa
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -280,12 +280,12 @@ export default function ForecastPipelinePage() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <div style={{ width: 8, height: 8, borderRadius: "50%", background: e.color }} />
                         <span style={{ fontSize: 12, color: "#aaa" }}>{e.label}</span>
-                        <span style={{ fontSize: 11, color: "#555", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                        <span style={{ fontSize: 11, color: "#555", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                           {e.count} neg.
                         </span>
                       </div>
                       <div style={{ textAlign: "right" }}>
-                        <span style={{ fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: "#fff" }}>
+                        <span style={{ fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>
                           {fmtUSD(e.totalNeto)}
                         </span>
                         <span style={{ fontSize: 11, color: e.color, marginLeft: 8 }}>
@@ -303,8 +303,8 @@ export default function ForecastPipelinePage() {
           </div>
 
           {/* Forecast mensual SVG */}
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
-            <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, margin: "0 0 4px", color: "#fff" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, margin: "0 0 4px", color: "#fff" }}>
               Forecast Mensual (12 meses)
             </h2>
             <p style={{ color: "#666", fontSize: 11, margin: "0 0 16px" }}>
@@ -348,8 +348,8 @@ export default function ForecastPipelinePage() {
         </div>
 
         {/* Tabla de negocios */}
-        <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
-          <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, margin: "0 0 16px", color: "#fff" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 12, padding: 20 }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, margin: "0 0 16px", color: "#fff" }}>
             Detalle por Negocio
           </h2>
           <div style={{ overflowX: "auto" }}>
@@ -357,7 +357,7 @@ export default function ForecastPipelinePage() {
               <thead>
                 <tr>
                   {["Negocio", "Tipo", "Etapa", "Prob.", "Hon. neto", "Pond.", "Fecha est."].map((h) => (
-                    <th key={h} style={{ textAlign: "left", padding: "8px 12px", color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 10, textTransform: "uppercase", borderBottom: "1px solid #222" }}>
+                    <th key={h} style={{ textAlign: "left", padding: "8px 12px", color: "#666", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, textTransform: "uppercase", borderBottom: "1px solid #222" }}>
                       {h}
                     </th>
                   ))}
@@ -371,24 +371,24 @@ export default function ForecastPipelinePage() {
                     const fechaRef = n.fecha_cierre ?? n.fecha_escritura ?? n.fecha_reserva;
                     return (
                       <tr key={n.id} style={{ borderBottom: "1px solid #1a1a1a" }}>
-                        <td style={{ padding: "9px 12px", color: "#fff", fontFamily: "Montserrat, sans-serif", fontWeight: 600, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <td style={{ padding: "9px 12px", color: "#fff", fontFamily: "var(--font-display)", fontWeight: 600, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {n.titulo}
                         </td>
                         <td style={{ padding: "9px 12px", color: "#888" }}>
                           {n.tipo_operacion.replace("_", " ")}
                         </td>
                         <td style={{ padding: "9px 12px" }}>
-                          <span style={{ color: etapaConf?.color ?? "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 11 }}>
+                          <span style={{ color: etapaConf?.color ?? "#888", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11 }}>
                             {etapaConf?.label ?? n.etapa}
                           </span>
                         </td>
-                        <td style={{ padding: "9px 12px", fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: "#fff" }}>
+                        <td style={{ padding: "9px 12px", fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>
                           {Math.round(prob * 100)}%
                         </td>
                         <td style={{ padding: "9px 12px", color: "#fff" }}>
                           {neto > 0 ? fmtUSD(neto) : "—"}
                         </td>
-                        <td style={{ padding: "9px 12px", fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000" }}>
+                        <td style={{ padding: "9px 12px", fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000" }}>
                           {ponderado > 0 ? fmtUSD(ponderado) : "—"}
                         </td>
                         <td style={{ padding: "9px 12px", color: "#666" }}>

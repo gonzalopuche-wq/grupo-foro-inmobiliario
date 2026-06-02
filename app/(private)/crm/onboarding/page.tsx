@@ -101,7 +101,7 @@ export default function Onboarding() {
     return { completadas, total: TAREAS_BASE.length, alta, pct };
   }, [estados]);
 
-  const prioridadColor = { alta: "#990000", media: "#d4960c", baja: "rgba(255,255,255,0.3)" };
+  const prioridadColor = { alta: "#990000", media: "#d4960c", baja: "var(--gfi-text-muted)" };
   const responsableLabel = { corredor: "Corredor", vendedor: "Propietario", administracion: "Admin." };
   const responsableColor = { corredor: "#3b82f6", vendedor: "#3abab6", administracion: "#a78bfa" };
 
@@ -123,34 +123,34 @@ export default function Onboarding() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "var(--font-body)" }}>
       {/* Header */}
-      <div style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
-        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "-0.02em" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
+        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "-0.02em" }}>
           Onboarding de Inmueble
         </h1>
-        <span style={{ marginLeft: "auto", fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{stats.completadas}/{stats.total} tareas completadas</span>
+        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--gfi-text-muted)" }}>{stats.completadas}/{stats.total} tareas completadas</span>
       </div>
 
       <div style={{ padding: "24px", maxWidth: 1000, margin: "0 auto" }}>
         {/* ID propiedad + barra progreso */}
-        <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 180 }}>
-              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 8 }}>Propiedad / Expediente:</span>
-              <input type="text" value={propiedadId} onChange={e => setPropiedadId(e.target.value || "nueva")} placeholder="ID o dirección" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", padding: "5px 10px", fontFamily: "'Inter',sans-serif", fontSize: 12, width: 200 }} />
+              <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 8 }}>Propiedad / Expediente:</span>
+              <input type="text" value={propiedadId} onChange={e => setPropiedadId(e.target.value || "nueva")} placeholder="ID o dirección" style={{ background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", padding: "5px 10px", fontFamily: "var(--font-body)", fontSize: 12, width: 200 }} />
             </div>
-            <button onClick={exportarPDF} style={{ padding: "6px 16px", borderRadius: 8, background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>PDF</button>
-            <button onClick={resetear} style={{ padding: "6px 12px", borderRadius: 8, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 11, cursor: "pointer" }}>Resetear</button>
+            <button onClick={exportarPDF} style={{ padding: "6px 16px", borderRadius: 8, background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>PDF</button>
+            <button onClick={resetear} style={{ padding: "6px 12px", borderRadius: 8, background: "transparent", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)", fontSize: 11, cursor: "pointer" }}>Resetear</button>
           </div>
 
           {/* Barra progreso */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ flex: 1, height: 10, background: "rgba(255,255,255,0.05)", borderRadius: 5, overflow: "hidden" }}>
+            <div style={{ flex: 1, height: 10, background: "var(--gfi-border-subtle)", borderRadius: 5, overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${stats.pct}%`, background: stats.pct === 100 ? "#3abab6" : stats.pct >= 60 ? "#d4960c" : "#990000", borderRadius: 5, transition: "width 0.4s" }} />
             </div>
-            <span style={{ fontSize: 14, fontWeight: 800, fontFamily: "'Montserrat',sans-serif", color: stats.pct === 100 ? "#3abab6" : "#fff", minWidth: 40 }}>{stats.pct}%</span>
+            <span style={{ fontSize: 14, fontWeight: 800, fontFamily: "var(--font-display)", color: stats.pct === 100 ? "#3abab6" : "#fff", minWidth: 40 }}>{stats.pct}%</span>
           </div>
           {stats.alta > 0 && (
             <p style={{ margin: "8px 0 0 0", fontSize: 11, color: "#990000" }}>⚠ {stats.alta} tarea{stats.alta !== 1 ? "s" : ""} de ALTA prioridad pendiente{stats.alta !== 1 ? "s" : ""}</p>
@@ -160,13 +160,13 @@ export default function Onboarding() {
         {/* Filtros */}
         <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
           {["Todos", ...GRUPOS].map(g => (
-            <button key={g} onClick={() => setFiltroGrupo(g)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${filtroGrupo === g ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: filtroGrupo === g ? "rgba(153,0,0,0.12)" : "transparent", color: filtroGrupo === g ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+            <button key={g} onClick={() => setFiltroGrupo(g)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${filtroGrupo === g ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`, background: filtroGrupo === g ? "rgba(153,0,0,0.12)" : "transparent", color: filtroGrupo === g ? "#990000" : "var(--gfi-text-muted)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
               {g}
             </button>
           ))}
           <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
             {(["todos", "corredor", "vendedor", "administracion"] as const).map(r => (
-              <button key={r} onClick={() => setFiltroResponsable(r)} style={{ padding: "5px 10px", borderRadius: 20, border: `1px solid ${filtroResponsable === r ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.08)"}`, background: filtroResponsable === r ? "rgba(255,255,255,0.08)" : "transparent", color: filtroResponsable === r ? "#fff" : "rgba(255,255,255,0.3)", fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              <button key={r} onClick={() => setFiltroResponsable(r)} style={{ padding: "5px 10px", borderRadius: 20, border: `1px solid ${filtroResponsable === r ? "var(--gfi-text-muted)" : "var(--gfi-border)"}`, background: filtroResponsable === r ? "var(--gfi-border)" : "transparent", color: filtroResponsable === r ? "#fff" : "var(--gfi-text-muted)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", letterSpacing: "0.06em", textTransform: "uppercase" }}>
                 {r === "todos" ? "Todos" : r === "corredor" ? "Corredor" : r === "vendedor" ? "Propietario" : "Admin"}
               </button>
             ))}
@@ -179,13 +179,13 @@ export default function Onboarding() {
           if (tareasGrupo.length === 0) return null;
           const completadasGrupo = tareasGrupo.filter(t => estados[t.id]).length;
           return (
-            <div key={grupo} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
-              <div style={{ padding: "12px 20px", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "0.05em", textTransform: "uppercase" }}>{grupo}</span>
-                <span style={{ fontSize: 11, color: completadasGrupo === tareasGrupo.length ? "#3abab6" : "rgba(255,255,255,0.3)" }}>{completadasGrupo}/{tareasGrupo.length}</span>
+            <div key={grupo} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
+              <div style={{ padding: "12px 20px", background: "var(--gfi-bg-card)", borderBottom: "1px solid var(--gfi-border-subtle)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-primary)", letterSpacing: "0.05em", textTransform: "uppercase" }}>{grupo}</span>
+                <span style={{ fontSize: 11, color: completadasGrupo === tareasGrupo.length ? "#3abab6" : "var(--gfi-text-muted)" }}>{completadasGrupo}/{tareasGrupo.length}</span>
               </div>
               {tareasGrupo.map((tarea, idx) => (
-                <div key={tarea.id} onClick={() => toggleTarea(tarea.id)} style={{ padding: "14px 20px", borderBottom: idx < tareasGrupo.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none", display: "flex", gap: 14, alignItems: "flex-start", cursor: "pointer", background: estados[tarea.id] ? "rgba(34,197,94,0.03)" : "transparent", transition: "background 0.15s" }}>
+                <div key={tarea.id} onClick={() => toggleTarea(tarea.id)} style={{ padding: "14px 20px", borderBottom: idx < tareasGrupo.length - 1 ? "1px solid var(--gfi-border-subtle)" : "none", display: "flex", gap: 14, alignItems: "flex-start", cursor: "pointer", background: estados[tarea.id] ? "rgba(34,197,94,0.03)" : "transparent", transition: "background 0.15s" }}>
                   {/* Checkbox */}
                   <div style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${estados[tarea.id] ? "#3abab6" : "rgba(255,255,255,0.15)"}`, background: estados[tarea.id] ? "#3abab6" : "transparent", flexShrink: 0, marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}>
                     {estados[tarea.id] && <span style={{ color: "#fff", fontSize: 12 }}>✓</span>}
@@ -193,13 +193,13 @@ export default function Onboarding() {
                   {/* Contenido */}
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: estados[tarea.id] ? "rgba(255,255,255,0.3)" : "#fff", textDecoration: estados[tarea.id] ? "line-through" : "none" }}>{tarea.titulo}</span>
-                      <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 8, background: `${prioridadColor[tarea.prioridad]}22`, color: prioridadColor[tarea.prioridad], fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{tarea.prioridad}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: estados[tarea.id] ? "var(--gfi-text-muted)" : "#fff", textDecoration: estados[tarea.id] ? "line-through" : "none" }}>{tarea.titulo}</span>
+                      <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 8, background: `${prioridadColor[tarea.prioridad]}22`, color: prioridadColor[tarea.prioridad], fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>{tarea.prioridad}</span>
                     </div>
-                    <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.4)", lineHeight: 1.4 }}>{tarea.descripcion}</p>
+                    <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-muted)", lineHeight: 1.4 }}>{tarea.descripcion}</p>
                     <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
-                      <span style={{ fontSize: 9, padding: "1px 8px", borderRadius: 8, background: `${responsableColor[tarea.responsable]}18`, color: responsableColor[tarea.responsable], fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{responsableLabel[tarea.responsable]}</span>
-                      <span style={{ fontSize: 9, color: "rgba(255,255,255,0.2)" }}>{tarea.plazo}</span>
+                      <span style={{ fontSize: 9, padding: "1px 8px", borderRadius: 8, background: `${responsableColor[tarea.responsable]}18`, color: responsableColor[tarea.responsable], fontFamily: "var(--font-display)", fontWeight: 700 }}>{responsableLabel[tarea.responsable]}</span>
+                      <span style={{ fontSize: 9, color: "var(--gfi-text-dim)" }}>{tarea.plazo}</span>
                     </div>
                   </div>
                 </div>

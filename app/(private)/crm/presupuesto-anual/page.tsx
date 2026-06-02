@@ -153,14 +153,14 @@ const S = {
     marginBottom: 16,
   } as React.CSSProperties,
   h1: {
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 28,
     color: "#e0e0e0",
     margin: 0,
   } as React.CSSProperties,
   h2: {
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 18,
     color: "#e0e0e0",
@@ -174,7 +174,7 @@ const S = {
     marginBottom: 4,
   },
   kpiValue: {
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 24,
     color: "#e0e0e0",
@@ -219,7 +219,7 @@ const S = {
     cursor: "pointer",
     fontWeight: active ? 700 : 400,
     fontSize: 14,
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
   }),
   checkbox: {
     accentColor: "#990000",
@@ -348,7 +348,7 @@ export default function PresupuestoAnualPage() {
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <button style={S.btnSec} onClick={() => cambiarAnio(-1)}>←</button>
-          <span style={{ fontFamily:"'Montserrat',sans-serif", fontWeight:700, fontSize:22, minWidth:60, textAlign:"center" }}>
+          <span style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:22, minWidth:60, textAlign:"center" }}>
             {anio}
           </span>
           <button style={S.btnSec} onClick={() => cambiarAnio(1)}>→</button>
@@ -879,7 +879,7 @@ function TabGastos({ pres, setPres, gastosPorMes, totalGastos }: TabGastosProps)
         return (
           <div key={cat} style={{ marginBottom:8 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 0 4px" }}>
-              <span style={{ fontFamily:"'Montserrat',sans-serif", fontWeight:700, fontSize:14, color: CAT_COLORES[cat] ?? "#e0e0e0" }}>
+              <span style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:14, color: CAT_COLORES[cat] ?? "#e0e0e0" }}>
                 {cat}
               </span>
               <span style={{ fontSize:12, color:"#888" }}>Total anual: {fmtARS(catTotal)}</span>

@@ -192,8 +192,8 @@ export default function ConversionPage() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   const cardSt = {
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    background: "var(--gfi-bg-card)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: 10,
     padding: "18px 20px",
     marginBottom: 14,
@@ -201,7 +201,7 @@ export default function ConversionPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+      <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
         Calculando análisis de conversión...
       </div>
     );
@@ -211,9 +211,9 @@ export default function ConversionPage() {
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter,sans-serif", paddingBottom: 60 }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap');
-        .per-btn { background: none; border: 1px solid rgba(255,255,255,0.12); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); transition: all 0.15s; }
+        .per-btn { background: none; border: 1px solid var(--gfi-border); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); transition: all 0.15s; }
         .per-btn.on { background: rgba(153,0,0,0.15); border-color: rgba(153,0,0,0.4); color: #990000; }
-        .per-btn:hover:not(.on) { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
+        .per-btn:hover:not(.on) { color: var(--gfi-text-secondary); border-color: var(--gfi-text-dim); }
         .funnel-row:hover { opacity: 0.9 !important; }
         @media (max-width: 700px) { .two-col { grid-template-columns: 1fr !important; } }
       `}</style>
@@ -221,13 +221,13 @@ export default function ConversionPage() {
       {/* Header */}
       <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 20px", maxWidth: 960, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <Link href="/crm" style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", textDecoration: "none" }}>
+          <Link href="/crm" style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gfi-text-muted)", textDecoration: "none" }}>
             ← CRM
           </Link>
-          <div style={{ marginTop: 6, fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: 18 }}>
+          <div style={{ marginTop: 6, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18 }}>
             Análisis de <span style={{ color: "#990000" }}>Conversión</span>
           </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
+          <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
             Tasas de conversión del pipeline · Tiempo de cierre · Predicción
           </div>
         </div>
@@ -251,8 +251,8 @@ export default function ConversionPage() {
             { label: "Tiempo prom. cierre", val: tiempoPromedio ? fmtDias(tiempoPromedio.promedio) : "—", color: "#a78bfa" },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...cardSt, marginBottom: 0, textAlign: "center" }}>
-              <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 6 }}>{label}</div>
-              <div style={{ fontSize: 26, fontFamily: "'Montserrat',sans-serif", fontWeight: 900, color }}>{val}</div>
+              <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 6 }}>{label}</div>
+              <div style={{ fontSize: 26, fontFamily: "var(--font-display)", fontWeight: 900, color }}>{val}</div>
             </div>
           ))}
         </div>
@@ -261,11 +261,11 @@ export default function ConversionPage() {
 
           {/* ── Funnel SVG ── */}
           <div style={cardSt}>
-            <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", marginBottom: 16 }}>
+            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 16 }}>
               Funnel de conversión
             </div>
             {totalActivos === 0 ? (
-              <div style={{ textAlign: "center", padding: "24px 0", color: "rgba(255,255,255,0.2)", fontSize: 12 }}>Sin deals en el período</div>
+              <div style={{ textAlign: "center", padding: "24px 0", color: "var(--gfi-text-dim)", fontSize: 12 }}>Sin deals en el período</div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                 {ETAPAS_ORDEN.map(etapa => {
@@ -274,22 +274,22 @@ export default function ConversionPage() {
                   const valUSD = valorPorEtapa[etapa.key]?.usd ?? 0;
                   return (
                     <div key={etapa.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 90, fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "right", flexShrink: 0 }}>
+                      <div style={{ width: 90, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "right", flexShrink: 0 }}>
                         {etapa.label}
                       </div>
-                      <div style={{ flex: 1, height: 22, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden", position: "relative" }}>
+                      <div style={{ flex: 1, height: 22, background: "var(--gfi-border-subtle)", borderRadius: 4, overflow: "hidden", position: "relative" }}>
                         <div
                           className="funnel-row"
                           style={{ height: "100%", width: `${pct}%`, background: etapa.color, borderRadius: 4, opacity: 0.75, transition: "width 0.6s ease", display: "flex", alignItems: "center", paddingLeft: 6 }}
                         >
                           {count > 0 && pct > 15 && (
-                            <span style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#fff" }}>{count}</span>
+                            <span style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>{count}</span>
                           )}
                         </div>
                       </div>
-                      <div style={{ width: 30, fontSize: 13, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: count > 0 ? etapa.color : "rgba(255,255,255,0.15)", textAlign: "right", flexShrink: 0 }}>{count}</div>
+                      <div style={{ width: 30, fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: count > 0 ? etapa.color : "rgba(255,255,255,0.15)", textAlign: "right", flexShrink: 0 }}>{count}</div>
                       {valUSD > 0 && (
-                        <div style={{ width: 70, fontSize: 9, color: "rgba(255,255,255,0.25)", textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ width: 70, fontSize: 9, color: "var(--gfi-text-dim)", textAlign: "right", flexShrink: 0 }}>
                           {valUSD >= 1_000_000 ? `${(valUSD/1_000_000).toFixed(1)}M` : `${Math.round(valUSD/1000)}K`}
                         </div>
                       )}
@@ -298,11 +298,11 @@ export default function ConversionPage() {
                 })}
                 {perdidos > 0 && (
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4, paddingTop: 8, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                    <div style={{ width: 90, fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(239,68,68,0.6)", textTransform: "uppercase", textAlign: "right", flexShrink: 0 }}>Perdidos</div>
-                    <div style={{ flex: 1, height: 10, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ width: 90, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, color: "rgba(239,68,68,0.6)", textTransform: "uppercase", textAlign: "right", flexShrink: 0 }}>Perdidos</div>
+                    <div style={{ flex: 1, height: 10, background: "var(--gfi-border-subtle)", borderRadius: 4, overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${Math.max((perdidos / funnelMax) * 100, 4)}%`, background: "#b80000", borderRadius: 4, opacity: 0.4 }} />
                     </div>
-                    <div style={{ width: 30, fontSize: 13, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#b80000", opacity: 0.6, textAlign: "right" }}>{perdidos}</div>
+                    <div style={{ width: 30, fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#b80000", opacity: 0.6, textAlign: "right" }}>{perdidos}</div>
                   </div>
                 )}
               </div>
@@ -311,29 +311,29 @@ export default function ConversionPage() {
 
           {/* ── Tasas de conversión entre etapas ── */}
           <div style={cardSt}>
-            <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", marginBottom: 16 }}>
+            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 16 }}>
               Conversión por paso
             </div>
             {tasasConversion.filter(t => (etapaCount[t.desde.key] ?? 0) > 0 || (etapaCount[t.hasta.key] ?? 0) > 0).length === 0 ? (
-              <div style={{ textAlign: "center", padding: "24px 0", color: "rgba(255,255,255,0.2)", fontSize: 12 }}>Sin datos suficientes</div>
+              <div style={{ textAlign: "center", padding: "24px 0", color: "var(--gfi-text-dim)", fontSize: 12 }}>Sin datos suficientes</div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {tasasConversion
                   .filter(t => (etapaCount[t.desde.key] ?? 0) > 0 || (etapaCount[t.hasta.key] ?? 0) > 0)
                   .map(({ desde, hasta, tasa }) => (
-                    <div key={`${desde.key}-${hasta.key}`} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: 8 }}>
+                    <div key={`${desde.key}-${hasta.key}`} style={{ borderBottom: "1px solid var(--gfi-border-subtle)", paddingBottom: 8 }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                        <div style={{ fontSize: 11, color: "var(--gfi-text-secondary)" }}>
                           <span style={{ color: desde.color }}>{desde.label}</span>
-                          <span style={{ margin: "0 5px", color: "rgba(255,255,255,0.2)" }}>→</span>
+                          <span style={{ margin: "0 5px", color: "var(--gfi-text-dim)" }}>→</span>
                           <span style={{ color: hasta.color }}>{hasta.label}</span>
                         </div>
-                        <div style={{ fontSize: 13, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: tasa === null ? "rgba(255,255,255,0.2)" : tasa >= 50 ? "#3abab6" : tasa >= 25 ? "#d4960c" : "#b80000" }}>
+                        <div style={{ fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: tasa === null ? "var(--gfi-text-dim)" : tasa >= 50 ? "#3abab6" : tasa >= 25 ? "#d4960c" : "#b80000" }}>
                           {tasa === null ? "—" : `${tasa.toFixed(0)}%`}
                         </div>
                       </div>
                       {tasa !== null && (
-                        <div style={{ height: 4, background: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
+                        <div style={{ height: 4, background: "var(--gfi-border-subtle)", borderRadius: 2, overflow: "hidden" }}>
                           <div style={{ height: "100%", width: `${tasa}%`, background: tasa >= 50 ? "#3abab6" : tasa >= 25 ? "#d4960c" : "#b80000", borderRadius: 2, transition: "width 0.5s", opacity: 0.7 }} />
                         </div>
                       )}
@@ -345,7 +345,7 @@ export default function ConversionPage() {
 
           {/* ── Cierres por mes ── */}
           <div style={cardSt}>
-            <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", marginBottom: 16 }}>
+            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 16 }}>
               Cierres — últimos 6 meses
             </div>
             <div style={{ display: "flex", gap: 8, alignItems: "flex-end", height: 80, marginBottom: 6 }}>
@@ -354,18 +354,18 @@ export default function ConversionPage() {
                 return (
                   <div key={m.mes} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
                     <div title={`${m.count} cierres${m.valor > 0 ? ` · USD ${m.valor.toLocaleString("es-AR")}` : ""}`} style={{ width: "100%", height: h, background: "#3abab6", borderRadius: "3px 3px 0 0", opacity: 0.75, transition: "height 0.5s" }} />
-                    <div style={{ fontSize: 8, color: "rgba(255,255,255,0.25)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, marginTop: 5 }}>{m.label}</div>
-                    <div style={{ fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: m.count > 0 ? "#3abab6" : "rgba(255,255,255,0.15)" }}>{m.count}</div>
+                    <div style={{ fontSize: 8, color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)", fontWeight: 700, marginTop: 5 }}>{m.label}</div>
+                    <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 800, color: m.count > 0 ? "#3abab6" : "rgba(255,255,255,0.15)" }}>{m.count}</div>
                   </div>
                 );
               })}
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
                 Total: <strong style={{ color: "#3abab6" }}>{cierresPorMes.reduce((s, m) => s + m.count, 0)} cierres</strong>
               </div>
               {cierresPorMes.some(m => m.valor > 0) && (
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
                   Valor: <strong style={{ color: "#4ab8d8" }}>USD {cierresPorMes.reduce((s, m) => s + m.valor, 0).toLocaleString("es-AR", { maximumFractionDigits: 0 })}</strong>
                 </div>
               )}
@@ -374,14 +374,14 @@ export default function ConversionPage() {
 
           {/* ── Métricas de tiempo y predicción ── */}
           <div style={cardSt}>
-            <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", marginBottom: 16 }}>
+            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 16 }}>
               Velocidad de cierre & predicción
             </div>
 
             {/* Tiempo promedio */}
             {tiempoPromedio ? (
               <div style={{ marginBottom: 16, paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 10 }}>
+                <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 10 }}>
                   Tiempo de cierre (deals cerrados)
                 </div>
                 <div style={{ display: "flex", gap: 20 }}>
@@ -391,39 +391,39 @@ export default function ConversionPage() {
                     { label: "Máximo", val: fmtDias(tiempoPromedio.max), color: "#b80000" },
                   ].map(({ label, val, color }) => (
                     <div key={label}>
-                      <div style={{ fontSize: 8, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 4 }}>{label}</div>
-                      <div style={{ fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 900, color }}>{val}</div>
+                      <div style={{ fontSize: 8, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 4 }}>{label}</div>
+                      <div style={{ fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 900, color }}>{val}</div>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.2)", fontSize: 12 }}>
+              <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.06)", color: "var(--gfi-text-dim)", fontSize: 12 }}>
                 Sin deals cerrados para calcular tiempo promedio
               </div>
             )}
 
             {/* Predicción pipeline */}
             <div>
-              <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 10 }}>
+              <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 10 }}>
                 Pipeline caliente (en reserva/escritura/oferta/negociación)
               </div>
               <div style={{ display: "flex", gap: 20, alignItems: "baseline" }}>
                 <div>
-                  <div style={{ fontSize: 32, fontFamily: "'Montserrat',sans-serif", fontWeight: 900, color: "#d4960c" }}>{prediccion.count}</div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>deals</div>
+                  <div style={{ fontSize: 32, fontFamily: "var(--font-display)", fontWeight: 900, color: "#d4960c" }}>{prediccion.count}</div>
+                  <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>deals</div>
                 </div>
                 {prediccion.valor > 0 && (
                   <div>
-                    <div style={{ fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#4ab8d8" }}>
+                    <div style={{ fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, color: "#4ab8d8" }}>
                       USD {prediccion.valor.toLocaleString("es-AR", { maximumFractionDigits: 0 })}
                     </div>
-                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>en pipeline</div>
+                    <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>en pipeline</div>
                   </div>
                 )}
               </div>
               {valorTotalPipeline > 0 && (
-                <div style={{ marginTop: 10, fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.5 }}>
+                <div style={{ marginTop: 10, fontSize: 11, color: "var(--gfi-text-muted)", lineHeight: 1.5 }}>
                   El valor total del pipeline activo (excl. cerrados) es{" "}
                   <strong style={{ color: "#4ab8d8" }}>{fmtMon(valorTotalPipeline, "USD")}</strong>.
                   {totalCerrados > 0 && tasaConversionGlobal > 0 && (
@@ -438,8 +438,8 @@ export default function ConversionPage() {
             {valorTotalPipeline > 0 && (
               <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>Valor cartera activa en USD</span>
-                  <span style={{ fontSize: 15, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#fff" }}>
+                  <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>Valor cartera activa en USD</span>
+                  <span style={{ fontSize: 15, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>
                     {fmtMon(valorTotalPipeline, "USD")}
                   </span>
                 </div>
@@ -450,10 +450,10 @@ export default function ConversionPage() {
 
         {/* Navegación */}
         <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-          <Link href="/crm/negocios" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>
+          <Link href="/crm/negocios" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>
             → Gestionar negocios
           </Link>
-          <Link href="/crm/estadisticas" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>
+          <Link href="/crm/estadisticas" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>
             → Estadísticas cartera
           </Link>
         </div>

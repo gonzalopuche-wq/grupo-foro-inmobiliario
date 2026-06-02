@@ -239,7 +239,7 @@ export default function CampanaReactivacionPage() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>📣 Campaña de Reactivación</h1>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>📣 Campaña de Reactivación</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Identificá contactos inactivos y enviá mensajes personalizados</p>
           </div>
           <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
@@ -254,9 +254,9 @@ export default function CampanaReactivacionPage() {
             { label: "🔴 Perdidos", value: stats.perdida, color: "#990000" },
             { label: "✅ Reactivados", value: stats.reactivados, color: "#3abab6" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: k.color }}>{k.value}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: k.color }}>{k.value}</div>
             </div>
           ))}
         </div>
@@ -265,8 +265,8 @@ export default function CampanaReactivacionPage() {
           {/* Panel izquierdo */}
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {/* Umbral de inactividad */}
-            <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 14 }}>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 11, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Configuración</div>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 14 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Configuración</div>
               <label style={{ fontSize: 11, color: "#6b7280", display: "block", marginBottom: 4 }}>Umbral de inactividad (días)</label>
               <input type="number" value={umbral} min={7} max={365} step={7}
                 onChange={e => setUmbral(parseInt(e.target.value) || 30)}
@@ -274,7 +274,7 @@ export default function CampanaReactivacionPage() {
               <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                 {[30, 60, 90].map(d => (
                   <button key={d} onClick={() => setUmbral(d)}
-                    style={{ background: umbral === d ? "#990000" : "#1f2937", border: "none", borderRadius: 4, color: umbral === d ? "#fff" : "#9ca3af", padding: "4px 10px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                    style={{ background: umbral === d ? "#990000" : "var(--gfi-border)", border: "none", borderRadius: 4, color: umbral === d ? "#fff" : "#9ca3af", padding: "4px 10px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                     {d}d
                   </button>
                 ))}
@@ -282,13 +282,13 @@ export default function CampanaReactivacionPage() {
             </div>
 
             {/* Filtros */}
-            <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 14 }}>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 11, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Filtros</div>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 14 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Filtros</div>
               <label style={{ fontSize: 11, color: "#6b7280", display: "block", marginBottom: 4 }}>Categoría</label>
               <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
                 {(["todos", "tibia", "fria", "perdida"] as const).map(cat => (
                   <button key={cat} onClick={() => setFiltroCategoria(cat)}
-                    style={{ background: filtroCategoria === cat ? "#1f2937" : "transparent", border: `1px solid ${filtroCategoria === cat ? "#374151" : "#1f2937"}`, borderRadius: 6, color: cat === "todos" ? "#e5e5e5" : CAT_CONFIG[cat]?.color ?? "#e5e5e5", padding: "6px 10px", fontSize: 11, cursor: "pointer", textAlign: "left", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                    style={{ background: filtroCategoria === cat ? "#1f2937" : "transparent", border: `1px solid ${filtroCategoria === cat ? "#374151" : "var(--gfi-border)"}`, borderRadius: 6, color: cat === "todos" ? "#e5e5e5" : CAT_CONFIG[cat]?.color ?? "#e5e5e5", padding: "6px 10px", fontSize: 11, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                     {cat === "todos" ? "Todos" : `${CAT_CONFIG[cat].icon} ${CAT_CONFIG[cat].label} · ${CAT_CONFIG[cat].dias}`}
                   </button>
                 ))}
@@ -301,9 +301,9 @@ export default function CampanaReactivacionPage() {
             </div>
 
             {/* Plantilla WA */}
-            <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 14 }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 11, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase" }}>Plantilla WA</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase" }}>Plantilla WA</div>
                 <button onClick={() => setMostrarEditorPlantilla(v => !v)}
                   style={{ background: "transparent", border: "none", color: "#6b7280", fontSize: 11, cursor: "pointer" }}>
                   {mostrarEditorPlantilla ? "Ocultar" : "Editar"}
@@ -312,7 +312,7 @@ export default function CampanaReactivacionPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 8 }}>
                 {PLANTILLAS_DEFAULT.map(p => (
                   <button key={p.id} onClick={() => seleccionarPlantilla(p.id)}
-                    style={{ background: plantillaId === p.id ? "rgba(37,211,102,0.1)" : "transparent", border: `1px solid ${plantillaId === p.id ? "rgba(37,211,102,0.3)" : "#1f2937"}`, borderRadius: 6, color: plantillaId === p.id ? "#3abab6" : "#6b7280", padding: "6px 10px", fontSize: 11, cursor: "pointer", textAlign: "left", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                    style={{ background: plantillaId === p.id ? "rgba(37,211,102,0.1)" : "transparent", border: `1px solid ${plantillaId === p.id ? "rgba(37,211,102,0.3)" : "var(--gfi-border)"}`, borderRadius: 6, color: plantillaId === p.id ? "#3abab6" : "#6b7280", padding: "6px 10px", fontSize: 11, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                     {p.label}
                   </button>
                 ))}
@@ -329,7 +329,7 @@ export default function CampanaReactivacionPage() {
 
             {reactivados.size > 0 && (
               <button onClick={limpiarReactivados}
-                style={{ background: "transparent", border: "1px solid #99000044", borderRadius: 8, color: "#990000", padding: "8px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                style={{ background: "transparent", border: "1px solid #99000044", borderRadius: 8, color: "#990000", padding: "8px 12px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                 Limpiar {reactivados.size} reactivados
               </button>
             )}
@@ -338,17 +338,17 @@ export default function CampanaReactivacionPage() {
           {/* Lista de contactos */}
           <div>
             {/* Barra de búsqueda + acciones bulk */}
-            <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 14px", marginBottom: 12, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 14px", marginBottom: 12, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <input type="text" value={busqueda} onChange={e => setBusqueda(e.target.value)}
                 placeholder="Buscar por nombre o teléfono..."
                 style={{ flex: 1, background: "#0a0a0a", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "7px 10px", fontSize: 13, minWidth: 160 }} />
               <button onClick={seleccionarTodos}
-                style={{ background: "#1f2937", border: "1px solid #374151", borderRadius: 6, color: "#9ca3af", padding: "7px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700, whiteSpace: "nowrap" }}>
+                style={{ background: "var(--gfi-border)", border: "1px solid #374151", borderRadius: 6, color: "#9ca3af", padding: "7px 12px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700, whiteSpace: "nowrap" }}>
                 {seleccionados.size === visibles.length && visibles.length > 0 ? "Deseleccionar todo" : `Seleccionar ${visibles.length}`}
               </button>
               {seleccionados.size > 0 && (
                 <button onClick={enviarWABatch}
-                  style={{ background: "#25d366", border: "none", borderRadius: 6, color: "#fff", padding: "7px 14px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700, whiteSpace: "nowrap" }}>
+                  style={{ background: "#25d366", border: "none", borderRadius: 6, color: "#fff", padding: "7px 14px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700, whiteSpace: "nowrap" }}>
                   💬 WA a {seleccionados.size} seleccionados
                 </button>
               )}
@@ -358,9 +358,9 @@ export default function CampanaReactivacionPage() {
             {loading ? (
               <div style={{ textAlign: "center", color: "#6b7280", padding: 48 }}>Cargando contactos...</div>
             ) : visibles.length === 0 ? (
-              <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 48, textAlign: "center" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 48, textAlign: "center" }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🎉</div>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>
                   {stats.total === 0 ? "No hay contactos inactivos" : "No hay resultados para este filtro"}
                 </div>
                 <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>
@@ -376,7 +376,7 @@ export default function CampanaReactivacionPage() {
                   return (
                     <div key={c.id}
                       onClick={() => toggleSeleccion(c.id)}
-                      style={{ background: isSelected ? "rgba(37,211,102,0.05)" : "#111", border: `1px solid ${isSelected ? "rgba(37,211,102,0.3)" : `${cfg.color}33`}`, borderRadius: 10, padding: "14px 16px", cursor: "pointer", transition: "all 0.15s" }}>
+                      style={{ background: isSelected ? "rgba(37,211,102,0.05)" : "var(--gfi-bg-secondary)", border: `1px solid ${isSelected ? "rgba(37,211,102,0.3)" : `${cfg.color}33`}`, borderRadius: 10, padding: "14px 16px", cursor: "pointer", transition: "all 0.15s" }}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                         {/* Checkbox */}
                         <div style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${isSelected ? "#3abab6" : "#374151"}`, background: isSelected ? "#3abab6" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2, transition: "all 0.15s" }}>
@@ -385,20 +385,20 @@ export default function CampanaReactivacionPage() {
                         <div style={{ flex: 1 }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                             <div>
-                              <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, color: "#fff" }}>
+                              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>
                                 {c.nombre} {c.apellido}
                               </span>
                               {c.tipo && (
-                                <span style={{ marginLeft: 8, fontSize: 10, color: "#6b7280", background: "#1f2937", padding: "2px 7px", borderRadius: 4, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                                <span style={{ marginLeft: 8, fontSize: 10, color: "#6b7280", background: "var(--gfi-border)", padding: "2px 7px", borderRadius: 4, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                   {c.tipo}
                                 </span>
                               )}
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <span style={{ background: `${cfg.color}22`, color: cfg.color, padding: "3px 10px", borderRadius: 4, fontSize: 11, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                              <span style={{ background: `${cfg.color}22`, color: cfg.color, padding: "3px 10px", borderRadius: 4, fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                 {cfg.icon} {cfg.label}
                               </span>
-                              <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 13, color: cfg.color }}>
+                              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, color: cfg.color }}>
                                 {c.diasSinContacto === 9999 ? "Sin contacto" : `${c.diasSinContacto}d`}
                               </span>
                             </div>
@@ -424,16 +424,16 @@ export default function CampanaReactivacionPage() {
                         <div style={{ display: "flex", gap: 6, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
                           {c.telefono && (
                             <button onClick={() => enviarWAIndividual(c)} title="Enviar WhatsApp"
-                              style={{ background: "#25d366", border: "none", borderRadius: 6, color: "#fff", padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                              style={{ background: "#25d366", border: "none", borderRadius: 6, color: "#fff", padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                               WA
                             </button>
                           )}
                           <button onClick={() => marcarReactivado(c.id)} title="Marcar como reactivado"
-                            style={{ background: "#1f2937", border: "1px solid #374151", borderRadius: 6, color: "#9ca3af", padding: "6px 10px", fontSize: 11, cursor: "pointer" }}>
+                            style={{ background: "var(--gfi-border)", border: "1px solid #374151", borderRadius: 6, color: "#9ca3af", padding: "6px 10px", fontSize: 11, cursor: "pointer" }}>
                             ✓
                           </button>
                           <Link href={`/crm/contactos?id=${c.id}`} onClick={e => e.stopPropagation()}
-                            style={{ background: "#1f2937", border: "1px solid #374151", borderRadius: 6, color: "#3b82f6", padding: "6px 10px", fontSize: 11, textDecoration: "none", display: "flex", alignItems: "center" }}>
+                            style={{ background: "var(--gfi-border)", border: "1px solid #374151", borderRadius: 6, color: "#3b82f6", padding: "6px 10px", fontSize: 11, textDecoration: "none", display: "flex", alignItems: "center" }}>
                             →
                           </Link>
                         </div>
@@ -446,7 +446,7 @@ export default function CampanaReactivacionPage() {
           </div>
         </div>
 
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 20, fontSize: 12, color: "#6b7280" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 20, fontSize: 12, color: "#6b7280" }}>
           <strong style={{ color: "#9ca3af" }}>📌 Nota:</strong> La inactividad se calcula desde la última interacción registrada en el CRM. Los contactos marcados como reactivados se ocultan de la lista y se guardan en la base de datos.
         </div>
       </div>

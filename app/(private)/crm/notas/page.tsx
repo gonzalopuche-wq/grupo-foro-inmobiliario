@@ -156,16 +156,16 @@ export default function CrmNotasPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .nt-wrap { max-width: 860px; display: flex; flex-direction: column; gap: 16px; }
-        .nt-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px; transition: border-color 0.15s; cursor: pointer; }
+        .nt-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 16px; transition: border-color 0.15s; cursor: pointer; }
         .nt-card:hover { border-color: rgba(255,255,255,0.14); }
         .nt-card.fijada { border-left: 3px solid #d4960c; }
-        .nt-input { width: 100%; padding: 9px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; box-sizing: border-box; }
+        .nt-input { width: 100%; padding: 9px 11px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; box-sizing: border-box; }
         .nt-input:focus { border-color: rgba(200,0,0,0.5); }
-        .nt-select { width: 100%; padding: 9px 11px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; }
-        .nt-btn { padding: 8px 14px; border: none; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
-        .nt-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
+        .nt-select { width: 100%; padding: 9px 11px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; }
+        .nt-btn { padding: 8px 14px; border: none; border-radius: 5px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
+        .nt-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
         .nt-field { margin-bottom: 12px; }
-        .nt-contenido { white-space: pre-wrap; font-size: 13px; color: rgba(255,255,255,0.7); font-family: 'Inter',sans-serif; line-height: 1.6; }
+        .nt-contenido { white-space: pre-wrap; font-size: 13px; color: var(--gfi-text-primary); font-family: var(--font-body); line-height: 1.6; }
         .nt-contenido.colapsado { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
       `}</style>
 
@@ -173,10 +173,10 @@ export default function CrmNotasPage() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: "#fff" }}>
               Notas <span style={{ color: "#990000" }}>CRM</span>
             </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 3 }}>
               {notas.length} nota{notas.length !== 1 ? "s" : ""} · {notas.filter(n => n.fijada).length} fijada{notas.filter(n => n.fijada).length !== 1 ? "s" : ""}
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function CrmNotasPage() {
           </select>
           <button
             className="nt-btn"
-            style={{ background: soloFijadas ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.06)", color: soloFijadas ? "#d4960c" : "rgba(255,255,255,0.5)", border: soloFijadas ? "1px solid rgba(245,158,11,0.4)" : "1px solid rgba(255,255,255,0.1)" }}
+            style={{ background: soloFijadas ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.06)", color: soloFijadas ? "#d4960c" : "var(--gfi-text-secondary)", border: soloFijadas ? "1px solid rgba(245,158,11,0.4)" : "1px solid var(--gfi-border)" }}
             onClick={() => setSoloFijadas(v => !v)}
           >
             📌 Fijadas
@@ -203,9 +203,9 @@ export default function CrmNotasPage() {
 
         {/* Lista */}
         {loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 40, fontFamily: "Inter,sans-serif" }}>Cargando notas...</div>
+          <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 40, fontFamily: "Inter,sans-serif" }}>Cargando notas...</div>
         ) : notasFiltradas.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px 20px", color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif" }}>
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)" }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>📝</div>
             <div style={{ fontWeight: 700 }}>No hay notas{busqueda ? " que coincidan" : ""}</div>
           </div>
@@ -223,24 +223,24 @@ export default function CrmNotasPage() {
                       <span style={{ fontSize: 14 }}>{tipo.icon}</span>
                       <div style={{ minWidth: 0 }}>
                         {n.titulo && (
-                          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{n.titulo}</div>
+                          <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{n.titulo}</div>
                         )}
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>{tipo.label}</span>
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>{fmtFechaHora(n.updated_at)}</span>
-                          {contactoNombre(n.contacto_id) && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>👤 {contactoNombre(n.contacto_id)}</span>}
-                          {negocioTitulo(n.negocio_id) && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>🤝 {negocioTitulo(n.negocio_id)}</span>}
+                          <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>{tipo.label}</span>
+                          <span style={{ fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>{fmtFechaHora(n.updated_at)}</span>
+                          {contactoNombre(n.contacto_id) && <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>👤 {contactoNombre(n.contacto_id)}</span>}
+                          {negocioTitulo(n.negocio_id) && <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>🤝 {negocioTitulo(n.negocio_id)}</span>}
                         </div>
                       </div>
                     </div>
                     {/* Acciones */}
                     <div style={{ display: "flex", gap: 5, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
                       <button className="nt-btn"
-                        style={{ background: n.fijada ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.05)", color: n.fijada ? "#d4960c" : "rgba(255,255,255,0.4)", border: n.fijada ? "1px solid rgba(245,158,11,0.3)" : "1px solid rgba(255,255,255,0.08)", padding: "4px 8px", fontSize: 12 }}
+                        style={{ background: n.fijada ? "rgba(245,158,11,0.2)" : "var(--gfi-border-subtle)", color: n.fijada ? "#d4960c" : "var(--gfi-text-muted)", border: n.fijada ? "1px solid rgba(245,158,11,0.3)" : "1px solid var(--gfi-border)", padding: "4px 8px", fontSize: 12 }}
                         onClick={() => toggleFijada(n)} title={n.fijada ? "Desfijar" : "Fijar"}>
                         📌
                       </button>
-                      <button className="nt-btn" style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.08)", padding: "4px 8px", fontSize: 10 }}
+                      <button className="nt-btn" style={{ background: "var(--gfi-border-subtle)", color: "rgba(255,255,255,0.55)", border: "1px solid var(--gfi-border)", padding: "4px 8px", fontSize: 10 }}
                         onClick={() => abrirEditar(n)}>Editar</button>
                       <button className="nt-btn" style={{ background: "rgba(239,68,68,0.1)", color: "#b80000", border: "1px solid rgba(239,68,68,0.2)", padding: "4px 8px", fontSize: 10 }}
                         onClick={() => eliminar(n.id)}>×</button>
@@ -265,8 +265,8 @@ export default function CrmNotasPage() {
       {/* Modal */}
       {modal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: 24, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 20 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 10, padding: 24, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 20 }}>
               {editId ? "Editar nota" : "Nueva nota"}
             </div>
 
@@ -305,7 +305,7 @@ export default function CrmNotasPage() {
             </div>
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
-              <button className="nt-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={() => setModal(false)}>Cancelar</button>
+              <button className="nt-btn" style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)" }} onClick={() => setModal(false)}>Cancelar</button>
               <button className="nt-btn" style={{ background: "#990000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardar} disabled={guardando}>
                 {guardando ? "Guardando..." : editId ? "Actualizar" : "Crear nota"}
               </button>
@@ -315,7 +315,7 @@ export default function CrmNotasPage() {
       )}
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
           {toast}
         </div>
       )}

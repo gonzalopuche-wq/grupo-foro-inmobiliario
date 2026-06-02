@@ -449,7 +449,7 @@ export default function PerfilPage() {
         .cir-label { font-size: 13px; color: var(--gfi-text-secondary); flex: 1; }
         .cir-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; font-family: var(--font-display); }
         .cir-badge.on { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
-        .cir-badge.off { background: rgba(255,255,255,0.04); border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); }
+        .cir-badge.off { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); }
         .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-fade-in 0.3s ease; }
         .toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(58,186,182,0.35); color: var(--gfi-green-text); }
         .toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
@@ -528,7 +528,7 @@ export default function PerfilPage() {
                         </button>
                       )}
                       {cocirSyncState === "loading" && (
-                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontStyle: "italic" }}>Consultando COCIR…</span>
+                        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontStyle: "italic" }}>Consultando COCIR…</span>
                       )}
                       {cocirSyncError && (
                         <span style={{ fontSize: 11, color: "var(--gfi-red)" }}>{cocirSyncError}</span>
@@ -790,22 +790,22 @@ export default function PerfilPage() {
                   {perfil.foto_url ? (
                     <img src={perfil.foto_url} alt="Foto" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover" }} />
                   ) : (
-                    <div style={{ width: 52, height: 52, borderRadius: 10, background: "rgba(153,0,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#990000" }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 10, background: "rgba(153,0,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: "#990000" }}>
                       {perfil.nombre?.charAt(0)}{perfil.apellido?.charAt(0)}
                     </div>
                   )}
                   <div>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 15, color: "#fff" }}>{perfil.nombre} {perfil.apellido}</div>
-                    {perfil.inmobiliaria && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{perfil.inmobiliaria}</div>}
-                    <div style={{ fontSize: 10, color: "#990000", marginTop: 2, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em" }}>Mat. {perfil.matricula} · COCIR</div>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, color: "#fff" }}>{perfil.nombre} {perfil.apellido}</div>
+                    {perfil.inmobiliaria && <div style={{ fontSize: 11, color: "var(--gfi-text-secondary)", marginTop: 2 }}>{perfil.inmobiliaria}</div>}
+                    <div style={{ fontSize: 10, color: "#990000", marginTop: 2, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.06em" }}>Mat. {perfil.matricula} · COCIR</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {perfil.telefono && (
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.05)", padding: "3px 10px", borderRadius: 4 }}>📞 {perfil.telefono}</span>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)", background: "var(--gfi-border-subtle)", padding: "3px 10px", borderRadius: 4 }}>📞 {perfil.telefono}</span>
                   )}
                   {perfil.instagram && (
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.05)", padding: "3px 10px", borderRadius: 4 }}>📷 @{perfil.instagram}</span>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)", background: "var(--gfi-border-subtle)", padding: "3px 10px", borderRadius: 4 }}>📷 @{perfil.instagram}</span>
                   )}
                 </div>
               </div>
@@ -816,9 +816,9 @@ export default function PerfilPage() {
                   <img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`https://wa.me/${(perfil.telefono ?? "").replace(/\D/g, "")}`)}&bgcolor=0a0a0a&color=ffffff&margin=10`}
                     alt="QR WhatsApp"
-                    style={{ width: 120, height: 120, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)" }}
+                    style={{ width: 120, height: 120, borderRadius: 8, border: "1px solid var(--gfi-border)" }}
                   />
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 4, fontFamily: "Montserrat,sans-serif" }}>QR WhatsApp</div>
+                  <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 4, fontFamily: "var(--font-display)" }}>QR WhatsApp</div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {perfil.telefono && (
@@ -826,7 +826,7 @@ export default function PerfilPage() {
                       href={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://wa.me/${(perfil.telefono).replace(/\D/g, "")}`)}&bgcolor=0a0a0a&color=ffffff&margin=10`}
                       download={`QR-${perfil.apellido}-GFI.png`}
                       target="_blank" rel="noreferrer"
-                      style={{ padding: "8px 16px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#25d366", textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>
+                      style={{ padding: "8px 16px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#25d366", textDecoration: "none", fontFamily: "var(--font-display)" }}>
                       ⬇ Descargar QR
                     </a>
                   )}
@@ -847,7 +847,7 @@ export default function PerfilPage() {
                       a.href = url; a.download = `${perfil.apellido}-GFI.vcf`; a.click();
                       URL.revokeObjectURL(url);
                     }}
-                    style={{ padding: "8px 16px", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#818cf8", cursor: "pointer", fontFamily: "Montserrat,sans-serif" }}>
+                    style={{ padding: "8px 16px", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#818cf8", cursor: "pointer", fontFamily: "var(--font-display)" }}>
                     📱 Exportar vCard
                   </button>
                 </div>
@@ -1009,7 +1009,7 @@ export default function PerfilPage() {
                 {/* 2FA */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "var(--gfi-bg-secondary)", borderRadius: "var(--gfi-radius-sm)", border: `1px solid ${perfil.mfa_habilitado ? "rgba(58,186,182,0.3)" : "var(--gfi-red-border)"}` }}>
                   <div>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>2FA — Doble autenticación</span>
+                    <span style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>2FA — Doble autenticación</span>
                     {!perfil.mfa_habilitado && (
                       <div style={{ fontSize: 10, color: "var(--gfi-red)", marginTop: 2 }}>No configurado — requerido para corredores GFI®</div>
                     )}
@@ -1038,7 +1038,7 @@ export default function PerfilPage() {
                   <div className="sus-plan-sub">Acceso completo a todos los módulos</div>
                 </div>
                 <div>
-                  <div className="sus-plan-precio">USD {perfil.tipo === "colaborador" ? "5" : "15"}<span style={{ fontSize: 13, fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>/mes</span></div>
+                  <div className="sus-plan-precio">USD {perfil.tipo === "colaborador" ? "5" : "15"}<span style={{ fontSize: 13, fontWeight: 400, color: "var(--gfi-text-muted)" }}>/mes</span></div>
                   <div className="sus-plan-sub">{perfil.tipo === "colaborador" ? "Gestionado por tu corredor" : "Equivalente en ARS al tipo de cambio del día"}</div>
                 </div>
               </div>
@@ -1053,17 +1053,17 @@ export default function PerfilPage() {
                   <>
                     {bonConfig.length > 0 && (
                       <div style={{ marginTop: 16, padding: "12px 16px", background: "rgba(153,0,0,0.06)", border: "1px solid rgba(153,0,0,0.15)", borderRadius: 8 }}>
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 800, color: "#990000", letterSpacing: "0.12em", marginBottom: 8 }}>MI ABONO INTELIGENTE — ESTE MES</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 800, color: "#990000", letterSpacing: "0.12em", marginBottom: 8 }}>MI ABONO INTELIGENTE — ESTE MES</div>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff" }}>USD {precioFinal.toFixed(2)}</span>
+                          <span style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "#fff" }}>USD {precioFinal.toFixed(2)}</span>
                           {totalDescuento > 0 && (
-                            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>USD {precioBase}</span>
+                            <span style={{ fontSize: 12, color: "var(--gfi-text-muted)", textDecoration: "line-through" }}>USD {precioBase}</span>
                           )}
                           {totalDescuento > 0 && (
-                            <span style={{ fontSize: 11, fontWeight: 700, color: "#3abab6", fontFamily: "Montserrat,sans-serif" }}>−USD {totalDescuento.toFixed(2)}</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#3abab6", fontFamily: "var(--font-display)" }}>−USD {totalDescuento.toFixed(2)}</span>
                           )}
                         </div>
-                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>
+                        <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>
                           {totalDescuento > 0 ? `Bonificación activa: USD ${totalDescuento.toFixed(2)} este mes por tu colaboración` : "Contribuí para reducir tu abono mensual"}
                         </div>
                       </div>
@@ -1072,11 +1072,11 @@ export default function PerfilPage() {
                       {bonConfig.map((b) => {
                         const aplicado = bonHistorial.find(h => h.accion === b.accion);
                         return (
-                          <div key={b.accion} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: aplicado ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.03)", border: `1px solid ${aplicado ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.07)"}`, borderRadius: 6 }}>
+                          <div key={b.accion} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: aplicado ? "rgba(34,197,94,0.06)" : "var(--gfi-bg-card)", border: `1px solid ${aplicado ? "rgba(34,197,94,0.2)" : "var(--gfi-border-subtle)"}`, borderRadius: 6 }}>
                             <span style={{ fontSize: 18 }}>{icoMap[b.accion] ?? "🎯"}</span>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{b.label}</div>
-                              <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: aplicado ? "#3abab6" : "rgba(153,0,0,0.7)" }}>
+                              <div style={{ fontSize: 12, color: "var(--gfi-text-primary)", fontWeight: 500 }}>{b.label}</div>
+                              <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: aplicado ? "#3abab6" : "rgba(153,0,0,0.7)" }}>
                                 {aplicado ? `✓ −USD ${aplicado.descuento_aplicado.toFixed(2)} aplicado` : `Bonifica USD ${b.descuento_usd.toFixed(2)}`}
                               </div>
                             </div>
@@ -1090,11 +1090,11 @@ export default function PerfilPage() {
                         { label: "Seniority GFI", ico: "⭐" },
                         { label: "Referidos suscriptos", ico: "👥" },
                       ].map((b, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 6 }}>
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 6 }}>
                           <span style={{ fontSize: 18 }}>{b.ico}</span>
                           <div>
-                            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{b.label}</div>
-                            <div style={{ fontSize: 10, color: "rgba(200,0,0,0.7)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>Bonifica suscripción</div>
+                            <div style={{ fontSize: 12, color: "var(--gfi-text-primary)", fontWeight: 500 }}>{b.label}</div>
+                            <div style={{ fontSize: 10, color: "rgba(200,0,0,0.7)", fontFamily: "var(--font-display)", fontWeight: 700 }}>Bonifica suscripción</div>
                           </div>
                         </div>
                       ))}
@@ -1103,8 +1103,8 @@ export default function PerfilPage() {
                 );
               })()}
 
-              <div style={{ marginTop: 16, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 6, fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
-                💳 El pago se realiza por <strong style={{ color: "rgba(255,255,255,0.7)" }}>transferencia bancaria</strong>. El admin verifica el mismo día hábil. 3 días de gracia ante vencimiento.
+              <div style={{ marginTop: 16, padding: "12px 16px", background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 6, fontSize: 12, color: "var(--gfi-text-muted)", lineHeight: 1.6 }}>
+                💳 El pago se realiza por <strong style={{ color: "var(--gfi-text-primary)" }}>transferencia bancaria</strong>. El admin verifica el mismo día hábil. 3 días de gracia ante vencimiento.
               </div>
             </div>
           )}

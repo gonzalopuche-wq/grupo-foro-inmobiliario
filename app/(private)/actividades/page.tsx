@@ -152,22 +152,22 @@ export default function ActividadesPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
-        .act-root { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; }
+        .act-root { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: var(--font-body); }
         .act-header { margin-bottom: 28px; }
-        .act-title { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+        .act-title { font-family: var(--font-display); font-size: 24px; font-weight: 800; margin-bottom: 6px; }
         .act-title span { color: #990000; }
-        .act-subtitle { font-size: 13px; color: rgba(255,255,255,0.35); }
+        .act-subtitle { font-size: 13px; color: var(--gfi-text-muted); }
         .act-layout { display: flex; gap: 24px; align-items: flex-start; }
         .act-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; position: sticky; top: 24px; }
-        .act-sidebar-title { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 8px; padding: 0 2px; }
-        .act-filter-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(14,14,14,0.8); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(255,255,255,0.5); transition: all 0.15s; text-align: left; }
+        .act-sidebar-title { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-dim); margin-bottom: 8px; padding: 0 2px; }
+        .act-filter-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; cursor: pointer; font-family: var(--font-body); font-size: 13px; color: var(--gfi-text-secondary); transition: all 0.15s; text-align: left; }
         .act-filter-btn:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
         .act-filter-btn.active { border-color: #990000; background: rgba(200,0,0,0.08); color: #fff; }
-        .act-filter-count { margin-left: auto; font-size: 11px; font-weight: 700; font-family: 'Montserrat', sans-serif; background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 10px; }
+        .act-filter-count { margin-left: auto; font-size: 11px; font-weight: 700; font-family: var(--font-display); background: var(--gfi-border); padding: 2px 8px; border-radius: 10px; }
         .act-filter-btn.active .act-filter-count { background: rgba(200,0,0,0.25); }
         .act-feed { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
-        .act-item { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; transition: border-color 0.15s; }
-        .act-item:hover { border-color: rgba(255,255,255,0.12); }
+        .act-item { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; transition: border-color 0.15s; }
+        .act-item:hover { border-color: var(--gfi-border); }
         .act-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .act-icon-interaccion { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.2); }
         .act-icon-tarea { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.2); }
@@ -175,19 +175,19 @@ export default function ActividadesPage() {
         .act-icon-negocio { background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.2); }
         .act-body { flex: 1; min-width: 0; }
         .act-item-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
-        .act-badge { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; }
+        .act-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; }
         .act-badge-interaccion { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #818cf8; }
         .act-badge-tarea { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.3); color: #d4960c; }
         .act-badge-contacto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #3abab6; }
         .act-badge-negocio { background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); color: #ff6666; }
         .act-item-title { font-size: 14px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
-        .act-item-sub { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 3px; line-height: 1.4; }
-        .act-item-desc { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .act-item-sub { font-size: 12px; color: var(--gfi-text-muted); margin-top: 3px; line-height: 1.4; }
+        .act-item-desc { font-size: 12px; color: var(--gfi-text-secondary); margin-top: 4px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .act-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
-        .act-date { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; }
-        .act-link { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(200,0,0,0.7); text-decoration: none; padding: 4px 10px; border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; transition: all 0.15s; }
+        .act-date { font-size: 11px; color: var(--gfi-text-dim); white-space: nowrap; }
+        .act-link { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(200,0,0,0.7); text-decoration: none; padding: 4px 10px; border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; transition: all 0.15s; }
         .act-link:hover { color: #990000; border-color: rgba(200,0,0,0.5); background: rgba(200,0,0,0.06); }
-        .act-empty { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.25); font-size: 14px; font-style: italic; }
+        .act-empty { text-align: center; padding: 60px 20px; color: var(--gfi-text-dim); font-size: 14px; font-style: italic; }
         .act-loading { display: flex; align-items: center; justify-content: center; padding: 60px; }
         .act-spinner { width: 32px; height: 32px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -252,7 +252,7 @@ export default function ActividadesPage() {
                         <div className="act-body">
                           <div className="act-item-top">
                             <span className="act-badge act-badge-interaccion">Interacción</span>
-                            <span className="act-badge" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)" }}>
+                            <span className="act-badge" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)" }}>
                               {TIPO_INT_LABELS[i.tipo] ?? i.tipo}
                             </span>
                           </div>
@@ -282,7 +282,7 @@ export default function ActividadesPage() {
                           <div className="act-item-top">
                             <span className="act-badge act-badge-tarea">Tarea</span>
                             {t.prioridad && (
-                              <span className="act-badge" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)" }}>
+                              <span className="act-badge" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)" }}>
                                 {t.prioridad}
                               </span>
                             )}
@@ -315,7 +315,7 @@ export default function ActividadesPage() {
                           <div className="act-item-top">
                             <span className="act-badge act-badge-contacto">Contacto nuevo</span>
                             {c.tipo && (
-                              <span className="act-badge" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)" }}>
+                              <span className="act-badge" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)" }}>
                                 {c.tipo}
                               </span>
                             )}
@@ -338,7 +338,7 @@ export default function ActividadesPage() {
                         <div className="act-body">
                           <div className="act-item-top">
                             <span className="act-badge act-badge-negocio">Negocio</span>
-                            <span className="act-badge" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)" }}>
+                            <span className="act-badge" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)" }}>
                               {n.etapa}
                             </span>
                           </div>

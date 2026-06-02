@@ -89,8 +89,8 @@ function GaugeCircle({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "var(--gfi-bg-card)",
+        border: "1px solid var(--gfi-border)",
         borderRadius: 16,
         padding: "24px 20px",
         flex: "1 1 200px",
@@ -109,7 +109,7 @@ function GaugeCircle({
           cy={60}
           r={45}
           fill="none"
-          stroke="rgba(255,255,255,0.08)"
+          stroke="var(--gfi-border)"
           strokeWidth={10}
         />
         {/* progress arc */}
@@ -142,10 +142,10 @@ function GaugeCircle({
 
       <div
         style={{
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
           fontWeight: 700,
           fontSize: 13,
-          color: "rgba(255,255,255,0.7)",
+          color: "var(--gfi-text-primary)",
           textAlign: "center",
           marginTop: 10,
         }}
@@ -168,7 +168,7 @@ function GaugeCircle({
         style={{
           fontFamily: "Inter, sans-serif",
           fontSize: 11,
-          color: "rgba(255,255,255,0.35)",
+          color: "var(--gfi-text-muted)",
           marginTop: 2,
         }}
       >
@@ -216,7 +216,7 @@ function BarChart({
         y1={PAD_T}
         x2={PAD_L}
         y2={PAD_T + chartH}
-        stroke="rgba(255,255,255,0.1)"
+        stroke="var(--gfi-border)"
         strokeWidth={1}
       />
 
@@ -241,7 +241,7 @@ function BarChart({
               x={x + barW / 2}
               y={PAD_T + chartH + 16}
               textAnchor="middle"
-              fill="rgba(255,255,255,0.4)"
+              fill="var(--gfi-text-muted)"
               fontSize={11}
               fontFamily="Inter, sans-serif"
             >
@@ -253,7 +253,7 @@ function BarChart({
                 x={x + barW / 2}
                 y={y - 4}
                 textAnchor="middle"
-                fill="rgba(255,255,255,0.6)"
+                fill="var(--gfi-text-secondary)"
                 fontSize={9}
                 fontFamily="Inter, sans-serif"
               >
@@ -268,14 +268,14 @@ function BarChart({
       <polyline
         points={metaLinePoints}
         fill="none"
-        stroke="rgba(255,255,255,0.3)"
+        stroke="var(--gfi-text-muted)"
         strokeWidth={1.5}
         strokeDasharray="6,4"
       />
       <text
         x={PAD_L + chartW + 4}
         y={metaY + 4}
-        fill="rgba(255,255,255,0.4)"
+        fill="var(--gfi-text-muted)"
         fontSize={9}
         fontFamily="Inter, sans-serif"
       >
@@ -306,7 +306,7 @@ function ProgressRow({
       <td
         style={{
           padding: "12px 14px",
-          color: "rgba(255,255,255,0.7)",
+          color: "var(--gfi-text-primary)",
           fontFamily: "Inter, sans-serif",
           fontSize: 13,
           whiteSpace: "nowrap",
@@ -341,7 +341,7 @@ function ProgressRow({
           <div
             style={{
               flex: 1,
-              background: "rgba(255,255,255,0.08)",
+              background: "var(--gfi-border)",
               borderRadius: 100,
               height: 6,
               overflow: "hidden",
@@ -360,7 +360,7 @@ function ProgressRow({
           <span
             style={{
               color,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: 12,
               minWidth: 36,
@@ -374,7 +374,7 @@ function ProgressRow({
       <td
         style={{
           padding: "12px 14px",
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--gfi-text-secondary)",
           fontFamily: "Inter, sans-serif",
           fontSize: 13,
           textAlign: "right",
@@ -544,7 +544,7 @@ export default function MetasPersonalesPage() {
 
   // ── Styles ────────────────────────────────────────────────────────────────
   const inputStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--gfi-border-subtle)",
     border: "1px solid rgba(255,255,255,0.15)",
     borderRadius: 8,
     color: "#fff",
@@ -565,7 +565,7 @@ export default function MetasPersonalesPage() {
   };
 
   const sectionTitle: React.CSSProperties = {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 15,
     color: "#fff",
@@ -600,7 +600,7 @@ export default function MetasPersonalesPage() {
         <div>
           <h1
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 26,
               color: "#fff",
@@ -612,7 +612,7 @@ export default function MetasPersonalesPage() {
           <p
             style={{
               fontSize: 13,
-              color: "rgba(255,255,255,0.4)",
+              color: "var(--gfi-text-muted)",
               margin: "6px 0 0",
             }}
           >
@@ -630,7 +630,7 @@ export default function MetasPersonalesPage() {
               style={{ ...inputStyle, width: 100, cursor: "pointer" }}
             >
               {[añoActual - 1, añoActual, añoActual + 1].map((y) => (
-                <option key={y} value={y} style={{ background: "#111" }}>
+                <option key={y} value={y} style={{ background: "var(--gfi-bg-secondary)" }}>
                   {y}
                 </option>
               ))}
@@ -656,11 +656,11 @@ export default function MetasPersonalesPage() {
                 setEditOpen((v) => !v);
               }}
               style={{
-                background: editOpen ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.07)",
+                background: editOpen ? "rgba(153,0,0,0.2)" : "var(--gfi-border-subtle)",
                 border: `1px solid ${editOpen ? "#990000" : "rgba(255,255,255,0.15)"}`,
                 borderRadius: 8,
                 color: editOpen ? "#990000" : "rgba(255,255,255,0.8)",
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 13,
                 padding: "9px 18px",
@@ -682,7 +682,7 @@ export default function MetasPersonalesPage() {
             borderRadius: 10,
             padding: "12px 18px",
             marginBottom: 28,
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: 14,
             color: motivacion.color,
@@ -696,8 +696,8 @@ export default function MetasPersonalesPage() {
       {editOpen && (
         <div
           style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            background: "var(--gfi-bg-card)",
+            border: "1px solid var(--gfi-border)",
             borderRadius: 14,
             padding: 24,
             marginBottom: 32,
@@ -823,7 +823,7 @@ export default function MetasPersonalesPage() {
                 background: "transparent",
                 border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: 8,
-                color: "rgba(255,255,255,0.5)",
+                color: "var(--gfi-text-secondary)",
                 fontFamily: "Inter, sans-serif",
                 fontSize: 13,
                 padding: "9px 20px",
@@ -839,7 +839,7 @@ export default function MetasPersonalesPage() {
                 border: "none",
                 borderRadius: 8,
                 color: "#fff",
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 14,
                 padding: "9px 24px",
@@ -857,7 +857,7 @@ export default function MetasPersonalesPage() {
           style={{
             textAlign: "center",
             padding: 60,
-            color: "rgba(255,255,255,0.3)",
+            color: "var(--gfi-text-muted)",
             fontFamily: "Inter, sans-serif",
           }}
         >
@@ -909,8 +909,8 @@ export default function MetasPersonalesPage() {
           {/* ── Bar chart mensual ────────────────────────────────────────── */}
           <div
             style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "var(--gfi-bg-card)",
+              border: "1px solid var(--gfi-border)",
               borderRadius: 14,
               padding: "20px 16px",
               marginBottom: 36,
@@ -922,7 +922,7 @@ export default function MetasPersonalesPage() {
             <p
               style={{
                 fontSize: 12,
-                color: "rgba(255,255,255,0.3)",
+                color: "var(--gfi-text-muted)",
                 marginBottom: 12,
                 fontFamily: "Inter, sans-serif",
               }}
@@ -939,8 +939,8 @@ export default function MetasPersonalesPage() {
           {/* ── Tabla de análisis ────────────────────────────────────────── */}
           <div
             style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "var(--gfi-bg-card)",
+              border: "1px solid var(--gfi-border)",
               borderRadius: 14,
               marginBottom: 36,
               overflow: "hidden",
@@ -961,7 +961,7 @@ export default function MetasPersonalesPage() {
                 <thead>
                   <tr
                     style={{
-                      borderBottom: "1px solid rgba(255,255,255,0.08)",
+                      borderBottom: "1px solid var(--gfi-border)",
                     }}
                   >
                     {["Métrica", "Meta", "Real", "Progreso", "Proyección"].map(
@@ -970,10 +970,10 @@ export default function MetasPersonalesPage() {
                           key={h}
                           style={{
                             padding: "10px 14px",
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             fontSize: 11,
-                            color: "rgba(255,255,255,0.35)",
+                            color: "var(--gfi-text-muted)",
                             textAlign: h === "Métrica" ? "left" : "right",
                             letterSpacing: 0.5,
                             textTransform: "uppercase",
@@ -1000,7 +1000,7 @@ export default function MetasPersonalesPage() {
                     proyeccion={proyeccionHonorarios}
                   />
                   <tr
-                    style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
+                    style={{ borderTop: "1px solid var(--gfi-border-subtle)" }}
                   >
                     <td colSpan={5} style={{ padding: 0 }} />
                   </tr>
@@ -1012,7 +1012,7 @@ export default function MetasPersonalesPage() {
                     proyeccion={proyeccionOperaciones}
                   />
                   <tr
-                    style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
+                    style={{ borderTop: "1px solid var(--gfi-border-subtle)" }}
                   >
                     <td colSpan={5} style={{ padding: 0 }} />
                   </tr>
@@ -1041,7 +1041,7 @@ export default function MetasPersonalesPage() {
             >
               <div
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   fontSize: 12,
                   color: "#990000",
@@ -1056,7 +1056,7 @@ export default function MetasPersonalesPage() {
                 style={{
                   fontFamily: "Inter, sans-serif",
                   fontSize: 14,
-                  color: "rgba(255,255,255,0.6)",
+                  color: "var(--gfi-text-secondary)",
                   margin: 0,
                   lineHeight: 1.6,
                   whiteSpace: "pre-line",

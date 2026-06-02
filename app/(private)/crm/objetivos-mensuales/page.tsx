@@ -273,7 +273,7 @@ function ModalEdicion({ objetivos, onGuardar, onCerrar }: ModalEdicionProps) {
         padding: 28,
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <h2 style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 20, color: "#e0e0e0", margin: 0 }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "#e0e0e0", margin: 0 }}>
             Editar metas del mes
           </h2>
           <button onClick={onCerrar} style={{ background: "none", border: "none", color: "#888", fontSize: 22, cursor: "pointer" }}>✕</button>
@@ -536,7 +536,7 @@ export default function ObjetivosMensualesPage() {
       {/* Header mes */}
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
         <button onClick={() => navMes(-1)} style={navBtnStyle}>◀</button>
-        <h2 style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 22, color: "#e0e0e0", margin: 0, minWidth: 200, textAlign: "center" }}>
+        <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, color: "#e0e0e0", margin: 0, minWidth: 200, textAlign: "center" }}>
           {MESES[mes - 1]} {anio}
         </h2>
         <button onClick={() => navMes(1)} style={navBtnStyle}>▶</button>
@@ -545,19 +545,19 @@ export default function ObjetivosMensualesPage() {
       {/* KPIs */}
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 28 }}>
         <div style={kpiCard}>
-          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#e0e0e0" }}>
+          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "var(--font-display)", color: "#e0e0e0" }}>
             {completados}/{objetivos.length}
           </div>
           <div style={{ fontSize: 12, color: "#888", marginTop: 4, fontFamily: "Inter,sans-serif" }}>Objetivos logrados</div>
         </div>
         <div style={kpiCard}>
-          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: colorScore(score) }}>
+          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "var(--font-display)", color: colorScore(score) }}>
             {score}%
           </div>
           <div style={{ fontSize: 12, color: "#888", marginTop: 4, fontFamily: "Inter,sans-serif" }}>Score general</div>
         </div>
         <div style={kpiCard}>
-          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#e0e0e0" }}>
+          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "var(--font-display)", color: "#e0e0e0" }}>
             {diasTrans}/{diasTotal}
           </div>
           <div style={{ fontSize: 12, color: "#888", marginTop: 4, fontFamily: "Inter,sans-serif" }}>Días transcurridos</div>
@@ -585,7 +585,7 @@ export default function ObjetivosMensualesPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                 <div>
                   <span style={{ fontSize: 20, marginRight: 8 }}>{CATEGORIA_EMOJI[obj.categoria]}</span>
-                  <span style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#e0e0e0" }}>{obj.nombre}</span>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#e0e0e0" }}>{obj.nombre}</span>
                   <span style={{ fontSize: 11, color: "#555", marginLeft: 8, fontFamily: "Inter,sans-serif" }}>{obj.categoria}</span>
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -646,7 +646,7 @@ export default function ObjetivosMensualesPage() {
                   )}
                 </span>
                 <span style={{
-                  marginLeft: "auto", fontFamily: "Montserrat,sans-serif", fontWeight: 800,
+                  marginLeft: "auto", fontFamily: "var(--font-display)", fontWeight: 800,
                   fontSize: 16, color: logrado ? "#3abab6" : colorScore(p),
                 }}>
                   {p}%
@@ -662,7 +662,7 @@ export default function ObjetivosMensualesPage() {
         style={{
           background: "#1a1a1a", border: "1px solid #333", borderRadius: 8,
           color: "#e0e0e0", padding: "10px 22px", cursor: "pointer",
-          fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14,
+          fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
         }}
       >
         ✏️ Editar metas
@@ -674,7 +674,7 @@ export default function ObjetivosMensualesPage() {
 
   const renderHistorico = () => (
     <div>
-      <h2 style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 20, color: "#e0e0e0", marginBottom: 24 }}>
+      <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "#e0e0e0", marginBottom: 24 }}>
         Evolución histórica — últimos 6 meses
       </h2>
 
@@ -726,7 +726,7 @@ export default function ObjetivosMensualesPage() {
 
     return (
       <div>
-        <h2 style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 20, color: "#e0e0e0", marginBottom: 8 }}>
+        <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "#e0e0e0", marginBottom: 8 }}>
           Proyección y análisis
         </h2>
         <p style={{ color: "#888", fontFamily: "Inter,sans-serif", fontSize: 13, marginBottom: 24 }}>
@@ -739,7 +739,7 @@ export default function ObjetivosMensualesPage() {
             background: "#1a0a0a", border: "1px solid #990000", borderRadius: 10,
             padding: "16px 20px", marginBottom: 24,
           }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#990000", marginBottom: 8 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#990000", marginBottom: 8 }}>
               ⚠️ Objetivos en riesgo
             </div>
             <ul style={{ margin: 0, padding: "0 0 0 18px", color: "#e0e0e0", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
@@ -760,10 +760,10 @@ export default function ObjetivosMensualesPage() {
                 background: "#111111", border: `1px solid ${alcanza ? "#1a3a1a" : "#3a1a1a"}`,
                 borderRadius: 10, padding: "16px 18px", minWidth: 220, flex: "1 1 220px",
               }}>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, color: "#e0e0e0", marginBottom: 6 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#e0e0e0", marginBottom: 6 }}>
                   {CATEGORIA_EMOJI[obj.categoria]} {obj.nombre}
                 </div>
-                <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: alcanza ? "#3abab6" : "#990000" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "var(--font-display)", color: alcanza ? "#3abab6" : "#990000" }}>
                   {proy.toLocaleString("es-AR")} <span style={{ fontSize: 12 }}>{obj.unidad}</span>
                 </div>
                 <div style={{ fontSize: 11, color: "#888", marginTop: 4, fontFamily: "Inter,sans-serif" }}>
@@ -832,7 +832,7 @@ export default function ObjetivosMensualesPage() {
       {/* Page header */}
       <div style={{ marginBottom: 32 }}>
         <h1 style={{
-          fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 28,
+          fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28,
           color: "#e0e0e0", margin: "0 0 6px",
         }}>
           🎯 Objetivos Mensuales
@@ -850,7 +850,7 @@ export default function ObjetivosMensualesPage() {
             onClick={() => setTab(id)}
             style={{
               background: "none", border: "none", cursor: "pointer",
-              fontFamily: "Montserrat,sans-serif", fontWeight: tab === id ? 800 : 600,
+              fontFamily: "var(--font-display)", fontWeight: tab === id ? 800 : 600,
               fontSize: 14, color: tab === id ? "#e0e0e0" : "#555",
               padding: "10px 18px",
               borderBottom: tab === id ? "2px solid #990000" : "2px solid transparent",

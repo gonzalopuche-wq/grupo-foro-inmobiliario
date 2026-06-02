@@ -266,13 +266,13 @@ export default function VencimientosPage() {
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
         <div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 18, color: "#fff" }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>
             Vencimientos <span style={{ color: "#990000" }}>CRM</span>
           </div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>Reservas, escrituras, cierres y recordatorios</div>
+          <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 3 }}>Reservas, escrituras, cierres y recordatorios</div>
         </div>
         <button onClick={() => setMostrarForm(v => !v)}
-          style={{ background: "#990000", border: "none", borderRadius: 8, color: "#fff", padding: "8px 14px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+          style={{ background: "#990000", border: "none", borderRadius: 8, color: "#fff", padding: "8px 14px", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
           + Agregar
         </button>
       </div>
@@ -285,17 +285,17 @@ export default function VencimientosPage() {
           { label: "🟠 Críticas ≤3d", value: stats.critico, color: "#d4960c" },
           { label: "🟡 Próximas ≤14d", value: stats.proximo, color: "#d4960c" },
         ].map(k => (
-          <div key={k.label} style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 16px" }}>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginBottom: 4 }}>{k.label}</div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 26, color: k.color }}>{k.value}</div>
+          <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "12px 16px" }}>
+            <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 4 }}>{k.label}</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: k.color }}>{k.value}</div>
           </div>
         ))}
       </div>
 
       {/* Formulario agregar */}
       {mostrarForm && (
-        <div style={{ background: "#111", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 12, padding: 16, marginBottom: 16 }}>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 11, color: "#990000", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Nuevo recordatorio</div>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: "#990000", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Nuevo recordatorio</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
             {[
               { label: "Título *", key: "titulo" as const, type: "text", ph: "Ej: Vence contrato García" },
@@ -304,36 +304,36 @@ export default function VencimientosPage() {
               { label: "Descripción", key: "descripcion" as const, type: "text", ph: "Detalles opcionales" },
             ].map(f => (
               <div key={f.key}>
-                <label style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", display: "block", marginBottom: 3 }}>{f.label}</label>
+                <label style={{ fontSize: 11, color: "var(--gfi-text-muted)", display: "block", marginBottom: 3 }}>{f.label}</label>
                 <input type={f.type} placeholder={f.ph}
                   value={form[f.key] as string}
                   onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
-                  style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 13, width: "100%", boxSizing: "border-box" }} />
+                  style={{ background: "#0a0a0a", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 13, width: "100%", boxSizing: "border-box" }} />
               </div>
             ))}
             <div>
-              <label style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", display: "block", marginBottom: 3 }}>Tipo</label>
+              <label style={{ fontSize: 11, color: "var(--gfi-text-muted)", display: "block", marginBottom: 3 }}>Tipo</label>
               <select value={form.tipo} onChange={e => setForm(f => ({ ...f, tipo: e.target.value as VencimientoCustom["tipo"] }))}
-                style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 12, width: "100%", boxSizing: "border-box" }}>
+                style={{ background: "#0a0a0a", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 12, width: "100%", boxSizing: "border-box" }}>
                 {(["contrato","documento","pago","llamada","otro"] as const).map(t => (
                   <option key={t} value={t}>{TIPO_LABELS[t]}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", display: "block", marginBottom: 3 }}>Alertar N días antes</label>
+              <label style={{ fontSize: 11, color: "var(--gfi-text-muted)", display: "block", marginBottom: 3 }}>Alertar N días antes</label>
               <input type="number" step={1} min={0} value={form.alerta_dias}
                 onChange={e => setForm(f => ({ ...f, alerta_dias: parseInt(e.target.value) || 0 }))}
-                style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 13, width: "100%", boxSizing: "border-box" }} />
+                style={{ background: "#0a0a0a", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 13, width: "100%", boxSizing: "border-box" }} />
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <button onClick={agregarCustom} disabled={guardando}
-              style={{ background: "#990000", border: "none", borderRadius: 6, color: "#fff", padding: "8px 16px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700, opacity: guardando ? 0.6 : 1 }}>
+              style={{ background: "#990000", border: "none", borderRadius: 6, color: "#fff", padding: "8px 16px", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700, opacity: guardando ? 0.6 : 1 }}>
               {guardando ? "Guardando..." : "Guardar"}
             </button>
             <button onClick={() => { setMostrarForm(false); setForm(FORM_DEFAULT); }}
-              style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "rgba(255,255,255,0.5)", padding: "8px 14px", fontSize: 12, cursor: "pointer" }}>
+              style={{ background: "transparent", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "var(--gfi-text-secondary)", padding: "8px 14px", fontSize: 12, cursor: "pointer" }}>
               Cancelar
             </button>
           </div>
@@ -341,29 +341,29 @@ export default function VencimientosPage() {
       )}
 
       {/* Filtros */}
-      <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>Urgencia:</span>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>Urgencia:</span>
         {(["todos","vencido","critico","proximo","normal"] as const).map(u => (
           <button key={u} onClick={() => setFiltroUrgencia(u)}
-            style={{ background: filtroUrgencia === u ? "rgba(255,255,255,0.08)" : "transparent", border: `1px solid ${filtroUrgencia === u ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.07)"}`, borderRadius: 6, color: u === "todos" ? "#e5e5e5" : URG_CONFIG[u]?.color ?? "#e5e5e5", padding: "4px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+            style={{ background: filtroUrgencia === u ? "var(--gfi-border)" : "transparent", border: `1px solid ${filtroUrgencia === u ? "rgba(255,255,255,0.15)" : "var(--gfi-border-subtle)"}`, borderRadius: 6, color: u === "todos" ? "#e5e5e5" : URG_CONFIG[u]?.color ?? "#e5e5e5", padding: "4px 12px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             {u === "todos" ? "Todos" : URG_CONFIG[u].label}
           </button>
         ))}
-        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginLeft: 8 }}>Tipo:</span>
+        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginLeft: 8 }}>Tipo:</span>
         <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)}
-          style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#e5e5e5", padding: "4px 8px", fontSize: 11 }}>
+          style={{ background: "#0a0a0a", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#e5e5e5", padding: "4px 8px", fontSize: 11 }}>
           {tiposUnicos.map(t => <option key={t} value={t}>{t === "todos" ? "Todos los tipos" : TIPO_LABELS[t] ?? t}</option>)}
         </select>
       </div>
 
       {/* Lista */}
       {loading ? (
-        <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 48 }}>Cargando fechas...</div>
+        <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 48 }}>Cargando fechas...</div>
       ) : visibles.length === 0 ? (
-        <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 48, textAlign: "center" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 12, padding: 48, textAlign: "center" }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>🗓️</div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin vencimientos pendientes</div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>Completá fechas en tus negocios o agregá recordatorios</div>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin vencimientos pendientes</div>
+          <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4 }}>Completá fechas en tus negocios o agregá recordatorios</div>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -375,15 +375,15 @@ export default function VencimientosPage() {
                 style={{ background: urg.bg, border: `1px solid ${urg.color}33`, borderRadius: 10, padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                    <span style={{ background: `${tipColor}22`, color: tipColor, padding: "2px 8px", borderRadius: 4, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                    <span style={{ background: `${tipColor}22`, color: tipColor, padding: "2px 8px", borderRadius: 4, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       {TIPO_LABELS[item.tipo] ?? item.tipo}
                     </span>
                     {item.esCustom && (
-                      <span style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.35)", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>CUSTOM</span>
+                      <span style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-muted)", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700 }}>CUSTOM</span>
                     )}
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, color: "#e5e5e5" }}>{item.titulo}</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#e5e5e5" }}>{item.titulo}</span>
                   </div>
-                  <div style={{ display: "flex", gap: 14, fontSize: 12, color: "rgba(255,255,255,0.4)", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: 14, fontSize: 12, color: "var(--gfi-text-muted)", flexWrap: "wrap" }}>
                     <span>📅 {new Date(item.fecha + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })}</span>
                     {item.contactoNombre && <span>👤 {item.contactoNombre}</span>}
                     {item.descripcion && <span>· {item.descripcion}</span>}
@@ -391,7 +391,7 @@ export default function VencimientosPage() {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 20, color: urg.color }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: urg.color }}>
                       {item.diasRestantes < 0 ? `${Math.abs(item.diasRestantes)}d` : item.diasRestantes === 0 ? "HOY" : `${item.diasRestantes}d`}
                     </div>
                     <div style={{ fontSize: 10, color: urg.color }}>{item.diasRestantes < 0 ? "vencido" : item.diasRestantes === 0 ? "hoy" : "restantes"}</div>
@@ -399,13 +399,13 @@ export default function VencimientosPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                     {item.telefono && (
                       <button onClick={() => waRec(item)}
-                        style={{ background: "#25d366", border: "none", borderRadius: 5, color: "#fff", padding: "5px 8px", fontSize: 10, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                        style={{ background: "#25d366", border: "none", borderRadius: 5, color: "#fff", padding: "5px 8px", fontSize: 10, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                         WA
                       </button>
                     )}
                     {item.negocioId && (
                       <Link href={`/crm/negocios?id=${item.negocioId}`}
-                        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "#3b82f6", padding: "5px 8px", fontSize: 10, textDecoration: "none", textAlign: "center" }}>
+                        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "#3b82f6", padding: "5px 8px", fontSize: 10, textDecoration: "none", textAlign: "center" }}>
                         →
                       </Link>
                     )}
@@ -429,7 +429,7 @@ export default function VencimientosPage() {
       )}
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999 }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999 }}>
           {toast}
         </div>
       )}

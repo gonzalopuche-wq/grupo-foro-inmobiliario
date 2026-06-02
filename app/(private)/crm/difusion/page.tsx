@@ -111,7 +111,7 @@ function DifusionInner() {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50vh", color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50vh", color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
         Cargando contactos...
       </div>
     );
@@ -123,50 +123,50 @@ function DifusionInner() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .dif-wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
         .dif-header { margin-bottom: 28px; }
-        .dif-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #990000; font-family: 'Montserrat',sans-serif; margin-bottom: 6px; }
-        .dif-titulo { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 6px; }
-        .dif-desc { font-size: 13px; color: rgba(255,255,255,0.4); font-family: 'Inter',sans-serif; }
+        .dif-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #990000; font-family: var(--font-display); margin-bottom: 6px; }
+        .dif-titulo { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+        .dif-desc { font-size: 13px; color: var(--gfi-text-muted); font-family: var(--font-body); }
         .dif-cols { display: grid; grid-template-columns: 2fr 3fr; gap: 20px; }
-        .dif-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow: hidden; }
-        .dif-card-header { padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; }
-        .dif-card-titulo { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; }
-        .dif-search { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 12px; outline: none; font-family: 'Inter',sans-serif; box-sizing: border-box; }
+        .dif-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; overflow: hidden; }
+        .dif-card-header { padding: 16px 18px; border-bottom: 1px solid var(--gfi-border-subtle); display: flex; align-items: center; justify-content: space-between; }
+        .dif-card-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #fff; }
+        .dif-search { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 12px; outline: none; font-family: var(--font-body); box-sizing: border-box; }
         .dif-search:focus { border-color: rgba(200,0,0,0.4); }
-        .dif-search::placeholder { color: rgba(255,255,255,0.2); }
+        .dif-search::placeholder { color: var(--gfi-text-dim); }
         .dif-list { overflow-y: auto; max-height: 420px; }
-        .dif-contacto { display: flex; align-items: center; gap: 10px; padding: 10px 18px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
-        .dif-contacto:hover { background: rgba(255,255,255,0.03); }
+        .dif-contacto { display: flex; align-items: center; gap: 10px; padding: 10px 18px; cursor: pointer; border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.15s; }
+        .dif-contacto:hover { background: var(--gfi-bg-card); }
         .dif-contacto.sel { background: rgba(200,0,0,0.06); }
-        .dif-checkbox { width: 16px; height: 16px; border-radius: 3px; border: 1.5px solid rgba(255,255,255,0.2); background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+        .dif-checkbox { width: 16px; height: 16px; border-radius: 3px; border: 1.5px solid var(--gfi-text-dim); background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
         .dif-checkbox.checked { background: #990000; border-color: #990000; }
-        .dif-nombre { font-size: 13px; color: #fff; font-family: 'Inter',sans-serif; flex: 1; }
-        .dif-badge { padding: 2px 7px; border-radius: 99px; font-size: 10px; font-weight: 600; font-family: 'Montserrat',sans-serif; text-transform: capitalize; }
-        .dif-footer-list { padding: 12px 18px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; }
-        .dif-count { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'Inter',sans-serif; }
-        .dif-btn-toggle { padding: 5px 10px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; color: rgba(255,255,255,0.5); font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; letter-spacing: 0.08em; transition: all 0.15s; }
-        .dif-btn-toggle:hover { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); }
-        .dif-textarea { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; box-sizing: border-box; resize: vertical; line-height: 1.6; }
+        .dif-nombre { font-size: 13px; color: #fff; font-family: var(--font-body); flex: 1; }
+        .dif-badge { padding: 2px 7px; border-radius: 99px; font-size: 10px; font-weight: 600; font-family: var(--font-display); text-transform: capitalize; }
+        .dif-footer-list { padding: 12px 18px; border-top: 1px solid var(--gfi-border-subtle); display: flex; align-items: center; justify-content: space-between; }
+        .dif-count { font-size: 11px; color: var(--gfi-text-muted); font-family: var(--font-body); }
+        .dif-btn-toggle { padding: 5px 10px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-secondary); font-size: 10px; font-family: var(--font-display); font-weight: 700; cursor: pointer; letter-spacing: 0.08em; transition: all 0.15s; }
+        .dif-btn-toggle:hover { border-color: var(--gfi-text-dim); color: rgba(255,255,255,0.8); }
+        .dif-textarea { width: 100%; padding: 12px 14px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); box-sizing: border-box; resize: vertical; line-height: 1.6; }
         .dif-textarea:focus { border-color: rgba(200,0,0,0.4); }
-        .dif-textarea::placeholder { color: rgba(255,255,255,0.2); }
+        .dif-textarea::placeholder { color: var(--gfi-text-dim); }
         .dif-vars { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .dif-var-chip { padding: 4px 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); border-radius: 4px; font-size: 11px; color: #990000; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+        .dif-var-chip { padding: 4px 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); border-radius: 4px; font-size: 11px; color: #990000; font-family: var(--font-display); font-weight: 700; cursor: pointer; transition: background 0.15s; }
         .dif-var-chip:hover { background: rgba(200,0,0,0.18); }
-        .dif-btn-enviar { width: 100%; padding: 13px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 16px; }
+        .dif-btn-enviar { width: 100%; padding: 13px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 16px; }
         .dif-btn-enviar:hover:not(:disabled) { background: #e60000; }
         .dif-btn-enviar:disabled { opacity: 0.5; cursor: not-allowed; }
         .dif-reporte { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); border-radius: 8px; padding: 20px; margin-top: 16px; }
-        .dif-reporte-titulo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #3abab6; margin-bottom: 6px; }
-        .dif-reporte-stat { font-size: 28px; font-weight: 800; color: #fff; font-family: 'Montserrat',sans-serif; margin-bottom: 12px; }
+        .dif-reporte-titulo { font-family: var(--font-display); font-size: 14px; font-weight: 800; color: #3abab6; margin-bottom: 6px; }
+        .dif-reporte-stat { font-size: 28px; font-weight: 800; color: #fff; font-family: var(--font-display); margin-bottom: 12px; }
         .dif-reporte-stat span { color: #3abab6; }
         .dif-reporte-list { display: flex; flex-wrap: wrap; gap: 6px; }
-        .dif-reporte-nombre { padding: 4px 10px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 4px; font-size: 11px; color: rgba(255,255,255,0.7); font-family: 'Inter',sans-serif; }
+        .dif-reporte-nombre { padding: 4px 10px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 4px; font-size: 11px; color: var(--gfi-text-primary); font-family: var(--font-body); }
         .dif-right-body { padding: 20px; }
-        .dif-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 8px; display: block; font-family: 'Montserrat',sans-serif; }
-        .dif-vars-hint { font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; margin-bottom: 6px; }
+        .dif-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 8px; display: block; font-family: var(--font-display); }
+        .dif-vars-hint { font-size: 11px; color: var(--gfi-text-muted); font-family: var(--font-body); margin-bottom: 6px; }
         .dif-prop-banner { display: flex; align-items: center; gap: 12px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; }
-        .dif-prop-banner-text { font-size: 12px; color: rgba(255,255,255,0.6); font-family: 'Inter',sans-serif; }
-        .dif-prop-banner-titulo { font-size: 13px; font-weight: 600; color: #fff; font-family: 'Montserrat',sans-serif; }
-        .dif-prop-back { font-size: 11px; color: rgba(59,130,246,0.8); text-decoration: none; font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .dif-prop-banner-text { font-size: 12px; color: var(--gfi-text-secondary); font-family: var(--font-body); }
+        .dif-prop-banner-titulo { font-size: 13px; font-weight: 600; color: #fff; font-family: var(--font-display); }
+        .dif-prop-back { font-size: 11px; color: rgba(59,130,246,0.8); text-decoration: none; font-family: var(--font-display); font-weight: 700; }
         .dif-prop-back:hover { color: #3b82f6; }
         @media (max-width: 768px) { .dif-cols { grid-template-columns: 1fr; } }
       `}</style>
@@ -195,11 +195,11 @@ function DifusionInner() {
           <div className="dif-card">
             <div className="dif-card-header">
               <div className="dif-card-titulo">Contactos</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                 {contactos.length} total
               </div>
             </div>
-            <div style={{ padding: "12px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <div style={{ padding: "12px 18px", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
               <input
                 className="dif-search"
                 placeholder="Buscar por nombre o email..."
@@ -209,13 +209,13 @@ function DifusionInner() {
             </div>
             <div className="dif-list">
               {contactosFiltrados.length === 0 && (
-                <div style={{ padding: "32px 18px", textAlign: "center", color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
+                <div style={{ padding: "32px 18px", textAlign: "center", color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
                   {filtroBusqueda ? "Sin resultados para esa búsqueda" : "No hay contactos en tu CRM"}
                 </div>
               )}
               {contactosFiltrados.map(c => {
                 const sel = seleccionados.has(c.id);
-                const color = TIPO_COLORES[c.tipo?.toLowerCase()] ?? "rgba(255,255,255,0.3)";
+                const color = TIPO_COLORES[c.tipo?.toLowerCase()] ?? "var(--gfi-text-muted)";
                 return (
                   <div
                     key={c.id}
@@ -300,7 +300,7 @@ function DifusionInner() {
                   <div className="dif-reporte-stat">
                     <span>{reporte.total}</span> contacto{reporte.total !== 1 ? "s" : ""} alcanzado{reporte.total !== 1 ? "s" : ""}
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
                     Contactados:
                   </div>
                   <div className="dif-reporte-list">
@@ -321,7 +321,7 @@ function DifusionInner() {
 
 export default function DifusionPage() {
   return (
-    <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50vh", color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>Cargando...</div>}>
+    <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50vh", color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>Cargando...</div>}>
       <DifusionInner />
     </Suspense>
   );

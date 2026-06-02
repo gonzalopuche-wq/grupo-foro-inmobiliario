@@ -128,15 +128,15 @@ export default function Negociacion() {
   const maxMonto = useMemo(() => Math.max(precioPedido * 1.02, ...movimientos.map(m => m.monto)), [movimientos, precioPedido]);
   const minMonto = useMemo(() => Math.min(ofertaInicial * 0.98, ...movimientos.map(m => m.monto)), [movimientos, ofertaInicial]);
 
-  const inputStyle: React.CSSProperties = { width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", padding: "7px 10px", fontFamily: "'Inter',sans-serif", fontSize: 12, boxSizing: "border-box" };
-  const labelStyle: React.CSSProperties = { display: "block", fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 };
+  const inputStyle: React.CSSProperties = { width: "100%", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, color: "#fff", padding: "7px 10px", fontFamily: "var(--font-body)", fontSize: 12, boxSizing: "border-box" };
+  const labelStyle: React.CSSProperties = { display: "block", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "var(--font-body)" }}>
       {/* Header */}
-      <div style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
-        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "-0.02em" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
+        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "-0.02em" }}>
           Simulador de Negociación
         </h1>
       </div>
@@ -144,8 +144,8 @@ export default function Negociacion() {
       <div style={{ padding: "24px", maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "300px 1fr", gap: 20 }}>
         {/* Panel configuración */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 18 }}>
-            <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Parámetros</p>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 18 }}>
+            <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Parámetros</p>
             {[
               { label: "Precio pedido (USD)", val: precioPedido, set: setPrecioPedido },
               { label: "Objetivo mínimo vendedor (USD)", val: objetivoVendedor, set: setObjetivoVendedor },
@@ -162,42 +162,42 @@ export default function Negociacion() {
               <label style={labelStyle}>Estrategia</label>
               <div style={{ display: "flex", gap: 6 }}>
                 {(["agresiva", "moderada", "conservadora"] as const).map(e => (
-                  <button key={e} onClick={() => setEstrategia(e)} style={{ flex: 1, padding: "6px 0", borderRadius: 8, border: `1px solid ${estrategia === e ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: estrategia === e ? "rgba(153,0,0,0.12)" : "transparent", color: estrategia === e ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "capitalize" }}>
+                  <button key={e} onClick={() => setEstrategia(e)} style={{ flex: 1, padding: "6px 0", borderRadius: 8, border: `1px solid ${estrategia === e ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`, background: estrategia === e ? "rgba(153,0,0,0.12)" : "transparent", color: estrategia === e ? "#990000" : "var(--gfi-text-muted)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "capitalize" }}>
                     {e}
                   </button>
                 ))}
               </div>
-              <p style={{ margin: "6px 0 0 0", fontSize: 9, color: "rgba(255,255,255,0.3)", lineHeight: 1.4 }}>
+              <p style={{ margin: "6px 0 0 0", fontSize: 9, color: "var(--gfi-text-muted)", lineHeight: 1.4 }}>
                 {estrategia === "agresiva" ? "Movimientos pequeños — mantiene presión, puede alargar la negociación." :
                  estrategia === "moderada" ? "Movimientos equilibrados — muestra buena fe sin ceder demasiado." :
                  "Movimientos amplios — prioriza velocidad de cierre sobre precio."}
               </p>
             </div>
 
-            <button onClick={iniciarNegociacion} style={{ width: "100%", padding: "9px", borderRadius: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.4)", color: "#990000", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+            <button onClick={iniciarNegociacion} style={{ width: "100%", padding: "9px", borderRadius: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.4)", color: "#990000", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
               {movimientos.length > 0 ? "↺ Reiniciar" : "▶ Iniciar Negociación"}
             </button>
           </div>
 
           {/* Rangos de referencia */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 16 }}>
-            <p style={{ margin: "0 0 10px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Rangos</p>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 16 }}>
+            <p style={{ margin: "0 0 10px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Rangos</p>
             {[
               { label: "Precio pedido", val: precioPedido, color: "#990000" },
               { label: "Piso vendedor", val: objetivoVendedor, color: "#d4960c" },
               { label: "Oferta inicial", val: ofertaInicial, color: "#3b82f6" },
-              { label: "Brecha total", val: precioPedido - ofertaInicial, color: "rgba(255,255,255,0.4)" },
+              { label: "Brecha total", val: precioPedido - ofertaInicial, color: "var(--gfi-text-muted)" },
             ].map(r => (
-              <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{r.label}</span>
+              <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{r.label}</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: r.color }}>USD {fmt(r.val)}</span>
               </div>
             ))}
             <div style={{ marginTop: 10 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>Brecha: {((precioPedido - ofertaInicial) / precioPedido * 100).toFixed(1)}%</span>
+                <span style={{ fontSize: 9, color: "var(--gfi-text-muted)" }}>Brecha: {((precioPedido - ofertaInicial) / precioPedido * 100).toFixed(1)}%</span>
               </div>
-              <div style={{ height: 8, background: "rgba(255,255,255,0.05)", borderRadius: 4, position: "relative", overflow: "visible" }}>
+              <div style={{ height: 8, background: "var(--gfi-border-subtle)", borderRadius: 4, position: "relative", overflow: "visible" }}>
                 {/* Oferta inicial */}
                 <div style={{ position: "absolute", left: `${((ofertaInicial - ofertaInicial * 0.98) / (precioPedido * 1.02 - ofertaInicial * 0.98)) * 100}%`, top: -2, width: 3, height: 12, background: "#3b82f6", borderRadius: 2 }} />
                 {/* Piso vendedor */}
@@ -212,47 +212,47 @@ export default function Negociacion() {
         {/* Panel negociación */}
         <div>
           {movimientos.length === 0 ? (
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 60, textAlign: "center" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 60, textAlign: "center" }}>
               <p style={{ margin: "0 0 8px 0", fontSize: 32 }}>🤝</p>
-              <p style={{ margin: 0, fontSize: 14, color: "rgba(255,255,255,0.3)" }}>Configurá los parámetros e iniciá la negociación</p>
+              <p style={{ margin: 0, fontSize: 14, color: "var(--gfi-text-muted)" }}>Configurá los parámetros e iniciá la negociación</p>
             </div>
           ) : (
             <>
               {/* Estado actual */}
               {estado && (
-                <div style={{ background: estado.posibleCierre ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.02)", border: `1px solid ${estado.posibleCierre ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.06)"}`, borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                <div style={{ background: estado.posibleCierre ? "rgba(34,197,94,0.06)" : "var(--gfi-bg-secondary)", border: `1px solid ${estado.posibleCierre ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.06)"}`, borderRadius: 12, padding: 20, marginBottom: 16 }}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 16 }}>
                     {[
                       { label: "Última oferta", val: `USD ${fmt(estado.ultima.monto)}`, color: estado.ultima.parte === "comprador" ? "#3b82f6" : "#990000" },
                       { label: "Brecha restante", val: `USD ${fmt(estado.brecha)}`, color: estado.brechaPct < 3 ? "#3abab6" : "#d4960c" },
-                      { label: "Diferencia precio", val: `${pct(estado.ultima.monto, precioPedido).toFixed(1)}%`, color: "rgba(255,255,255,0.6)" },
+                      { label: "Diferencia precio", val: `${pct(estado.ultima.monto, precioPedido).toFixed(1)}%`, color: "var(--gfi-text-secondary)" },
                       { label: "Honorarios est.", val: `USD ${fmt(estado.honorariosUSD)}`, color: "#a78bfa" },
                     ].map(kpi => (
                       <div key={kpi.label} style={{ textAlign: "center" }}>
-                        <p style={{ margin: "0 0 4px 0", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>{kpi.label}</p>
-                        <p style={{ margin: 0, fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
+                        <p style={{ margin: "0 0 4px 0", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>{kpi.label}</p>
+                        <p style={{ margin: 0, fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
                       </div>
                     ))}
                   </div>
 
                   {/* Zona */}
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>ZONA:</span>
-                    <span style={{ fontSize: 12, padding: "3px 12px", borderRadius: 20, background: estado.zona === "zona de acuerdo" ? "rgba(34,197,94,0.15)" : estado.zona === "cerca del piso" ? "rgba(249,115,22,0.15)" : "rgba(153,0,0,0.15)", color: estado.zona === "zona de acuerdo" ? "#3abab6" : estado.zona === "cerca del piso" ? "#d4960c" : "#990000", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                    <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>ZONA:</span>
+                    <span style={{ fontSize: 12, padding: "3px 12px", borderRadius: 20, background: estado.zona === "zona de acuerdo" ? "rgba(34,197,94,0.15)" : estado.zona === "cerca del piso" ? "rgba(249,115,22,0.15)" : "rgba(153,0,0,0.15)", color: estado.zona === "zona de acuerdo" ? "#3abab6" : estado.zona === "cerca del piso" ? "#d4960c" : "#990000", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       {estado.zona.toUpperCase()}
                     </span>
                     {estado.posibleCierre && <span style={{ fontSize: 12, color: "#3abab6", fontWeight: 700 }}>✅ Supera piso del vendedor — posible cierre</span>}
                   </div>
 
                   {/* Sugerencia */}
-                  <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
-                    <p style={{ margin: "0 0 4px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  <div style={{ background: "var(--gfi-bg-card)", borderRadius: 8, padding: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <p style={{ margin: "0 0 4px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                       Sugerencia ({estrategia}) — próxima jugada del {estado.ultima.parte === "comprador" ? "VENDEDOR" : "COMPRADOR"}
                     </p>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <span style={{ fontSize: 20, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#d4960c" }}>USD {fmt(estado.sugerencia.monto)}</span>
-                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", flex: 1 }}>{estado.sugerencia.mensaje}</span>
-                      <button onClick={() => { setNuevaOferta(estado.sugerencia.monto); setNuevaParte(estado.ultima.parte === "comprador" ? "vendedor" : "comprador"); setNuevaNota(estado.sugerencia.mensaje); }} style={{ padding: "5px 12px", borderRadius: 8, background: "rgba(249,115,22,0.12)", border: "1px solid rgba(249,115,22,0.3)", color: "#d4960c", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+                      <span style={{ fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800, color: "#d4960c" }}>USD {fmt(estado.sugerencia.monto)}</span>
+                      <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)", flex: 1 }}>{estado.sugerencia.mensaje}</span>
+                      <button onClick={() => { setNuevaOferta(estado.sugerencia.monto); setNuevaParte(estado.ultima.parte === "comprador" ? "vendedor" : "comprador"); setNuevaNota(estado.sugerencia.mensaje); }} style={{ padding: "5px 12px", borderRadius: 8, background: "rgba(249,115,22,0.12)", border: "1px solid rgba(249,115,22,0.3)", color: "#d4960c", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
                         Usar
                       </button>
                     </div>
@@ -261,8 +261,8 @@ export default function Negociacion() {
               )}
 
               {/* Timeline gráfico */}
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 16 }}>
-                <p style={{ margin: "0 0 16px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Evolución de la Negociación</p>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                <p style={{ margin: "0 0 16px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Evolución de la Negociación</p>
                 <div style={{ position: "relative", padding: "0 40px" }}>
                   {/* Líneas de referencia */}
                   {[precioPedido, objetivoVendedor].map((ref, i) => {
@@ -292,7 +292,7 @@ export default function Negociacion() {
                       return (
                         <g key={m.id}>
                           <circle cx={x} cy={y} r={6} fill={color} stroke="#0a0a0a" strokeWidth={2} />
-                          <text x={x} y={y - 10} textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize={8}>
+                          <text x={x} y={y - 10} textAnchor="middle" fill="var(--gfi-text-secondary)" fontSize={8}>
                             {(m.monto / 1000).toFixed(0)}k
                           </text>
                         </g>
@@ -303,30 +303,30 @@ export default function Negociacion() {
               </div>
 
               {/* Timeline lista */}
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 16 }}>
-                <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Historial</p>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Historial</p>
                 {movimientos.map((m, idx) => {
                   const anterior = idx > 0 ? movimientos[idx - 1].monto : null;
                   const diff = anterior !== null ? m.monto - anterior : null;
                   return (
-                    <div key={m.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 0", borderBottom: idx < movimientos.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
+                    <div key={m.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 0", borderBottom: idx < movimientos.length - 1 ? "1px solid var(--gfi-border-subtle)" : "none" }}>
                       <div style={{ width: 32, height: 32, borderRadius: "50%", background: m.parte === "comprador" ? "rgba(59,130,246,0.15)" : "rgba(153,0,0,0.15)", border: `1px solid ${m.parte === "comprador" ? "rgba(59,130,246,0.3)" : "rgba(153,0,0,0.3)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12 }}>
                         {m.parte === "comprador" ? "🏠" : "🤝"}
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <span style={{ fontSize: 11, color: m.parte === "comprador" ? "#3b82f6" : "#990000", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{m.parte === "comprador" ? "Comprador" : "Vendedor"}</span>
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>{m.fecha}</span>
+                          <span style={{ fontSize: 11, color: m.parte === "comprador" ? "#3b82f6" : "#990000", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>{m.parte === "comprador" ? "Comprador" : "Vendedor"}</span>
+                          <span style={{ fontSize: 10, color: "var(--gfi-text-dim)" }}>{m.fecha}</span>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <span style={{ fontSize: 18, fontWeight: 800, fontFamily: "'Montserrat',sans-serif" }}>USD {fmt(m.monto)}</span>
+                          <span style={{ fontSize: 18, fontWeight: 800, fontFamily: "var(--font-display)" }}>USD {fmt(m.monto)}</span>
                           {diff !== null && (
                             <span style={{ fontSize: 11, color: diff > 0 ? "#3abab6" : "#990000", fontWeight: 700 }}>
                               {diff > 0 ? "+" : ""}USD {fmt(diff)}
                             </span>
                           )}
                         </div>
-                        {m.nota && <p style={{ margin: "2px 0 0 0", fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{m.nota}</p>}
+                        {m.nota && <p style={{ margin: "2px 0 0 0", fontSize: 10, color: "var(--gfi-text-muted)" }}>{m.nota}</p>}
                       </div>
                     </div>
                   );
@@ -334,8 +334,8 @@ export default function Negociacion() {
               </div>
 
               {/* Agregar movimiento */}
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 16 }}>
-                <p style={{ margin: "0 0 12px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Registrar Movimiento</p>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 16 }}>
+                <p style={{ margin: "0 0 12px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Registrar Movimiento</p>
                 <div style={{ display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>
                   <div style={{ flex: 1, minWidth: 100 }}>
                     <label style={labelStyle}>Parte</label>
@@ -352,7 +352,7 @@ export default function Negociacion() {
                     <label style={labelStyle}>Nota</label>
                     <input type="text" value={nuevaNota} onChange={e => setNuevaNota(e.target.value)} placeholder="Comentario opcional" style={inputStyle} />
                   </div>
-                  <button onClick={agregarMovimiento} style={{ padding: "7px 20px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                  <button onClick={agregarMovimiento} style={{ padding: "7px 20px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
                     + Agregar
                   </button>
                 </div>

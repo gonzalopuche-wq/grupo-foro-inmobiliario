@@ -141,8 +141,8 @@ export default function PropuestaCaptacionPage() {
 
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "9px 12px", borderRadius: 8,
-    border: "1px solid rgba(255,255,255,0.12)",
-    background: "rgba(255,255,255,0.04)", color: "#fff",
+    border: "1px solid var(--gfi-border)",
+    background: "var(--gfi-border-subtle)", color: "#fff",
     fontFamily: "Inter,sans-serif", fontSize: 13,
     boxSizing: "border-box",
   };
@@ -155,13 +155,13 @@ export default function PropuestaCaptacionPage() {
   };
 
   const sectionStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.07)",
+    background: "var(--gfi-bg-card)",
+    border: "1px solid var(--gfi-border-subtle)",
     borderRadius: 12, padding: "20px 24px", marginBottom: 20,
   };
 
   const sectionTitle: React.CSSProperties = {
-    fontFamily: "Montserrat,sans-serif", fontSize: 13,
+    fontFamily: "var(--font-display)", fontSize: 13,
     fontWeight: 700, color: "#990000",
     letterSpacing: "0.1em", textTransform: "uppercase",
     marginBottom: 16,
@@ -172,12 +172,12 @@ export default function PropuestaCaptacionPage() {
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{
-          fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800,
+          fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800,
           color: "#fff", margin: 0, letterSpacing: "-0.01em",
         }}>
           Propuesta de Captación IA
         </h1>
-        <p style={{ color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", fontSize: 13, marginTop: 6 }}>
+        <p style={{ color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", fontSize: 13, marginTop: 6 }}>
           Generá una propuesta profesional personalizada para presentar a propietarios
         </p>
       </div>
@@ -232,9 +232,9 @@ export default function PropuestaCaptacionPage() {
                 {(["venta", "alquiler"] as const).map(op => (
                   <button key={op} onClick={() => setForm(f => ({ ...f, operacion: op }))} style={{
                     flex: 1, padding: "9px 0", borderRadius: 8,
-                    border: `1px solid ${form.operacion === op ? "#990000" : "rgba(255,255,255,0.1)"}`,
+                    border: `1px solid ${form.operacion === op ? "#990000" : "var(--gfi-border)"}`,
                     background: form.operacion === op ? "rgba(200,0,0,0.12)" : "transparent",
-                    color: form.operacion === op ? "#fff" : "rgba(255,255,255,0.4)",
+                    color: form.operacion === op ? "#fff" : "var(--gfi-text-muted)",
                     fontFamily: "Inter,sans-serif", fontSize: 13, fontWeight: 600,
                     cursor: "pointer", textTransform: "capitalize",
                   }}>
@@ -292,7 +292,7 @@ export default function PropuestaCaptacionPage() {
               width: "100%", padding: "14px 0",
               background: generando ? "rgba(200,0,0,0.3)" : "#990000",
               color: "#fff", border: "none", borderRadius: 10,
-              fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700,
+              fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700,
               letterSpacing: "0.05em", cursor: generando ? "not-allowed" : "pointer",
               transition: "background 0.2s",
             }}
@@ -325,8 +325,8 @@ export default function PropuestaCaptacionPage() {
                   <button onClick={copiar} style={{
                     padding: "6px 14px", borderRadius: 7,
                     border: "1px solid rgba(255,255,255,0.15)",
-                    background: copiado ? "rgba(0,200,100,0.12)" : "rgba(255,255,255,0.05)",
-                    color: copiado ? "#4ade80" : "rgba(255,255,255,0.7)",
+                    background: copiado ? "rgba(0,200,100,0.12)" : "var(--gfi-border-subtle)",
+                    color: copiado ? "#4ade80" : "var(--gfi-text-primary)",
                     fontFamily: "Inter,sans-serif", fontSize: 12, fontWeight: 600,
                     cursor: "pointer",
                   }}>
@@ -335,8 +335,8 @@ export default function PropuestaCaptacionPage() {
                   <button onClick={imprimir} style={{
                     padding: "6px 14px", borderRadius: 7,
                     border: "1px solid rgba(255,255,255,0.15)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "rgba(255,255,255,0.7)",
+                    background: "var(--gfi-border-subtle)",
+                    color: "var(--gfi-text-primary)",
                     fontFamily: "Inter,sans-serif", fontSize: 12, fontWeight: 600,
                     cursor: "pointer",
                   }}>
@@ -354,7 +354,7 @@ export default function PropuestaCaptacionPage() {
                   borderTopColor: "#990000",
                   animation: "spin 0.8s linear infinite",
                 }} />
-                <p style={{ color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", fontSize: 13, margin: 0 }}>
+                <p style={{ color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", fontSize: 13, margin: 0 }}>
                   Analizando mercado y redactando propuesta...
                 </p>
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -374,7 +374,7 @@ export default function PropuestaCaptacionPage() {
             ) : (
               <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 12 }}>
                 <div style={{ fontSize: 40 }}>📋</div>
-                <p style={{ color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", fontSize: 13, textAlign: "center", margin: 0 }}>
+                <p style={{ color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", fontSize: 13, textAlign: "center", margin: 0 }}>
                   Completá los datos del corredor y la propiedad,<br />luego presioná el botón para generar la propuesta.
                 </p>
               </div>

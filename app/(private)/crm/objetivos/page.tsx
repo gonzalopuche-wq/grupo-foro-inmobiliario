@@ -270,20 +270,20 @@ export default function ObjetivosPage() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🎯 Objetivos del Mes</h1>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🎯 Objetivos del Mes</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Seguimiento de metas mensuales — {mesLabel}</p>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
             <button onClick={() => setEditMode(!editMode)}
-              style={{ background: editMode ? "#99000033" : "#1f2937", color: editMode ? "#990000" : "#e5e5e5", border: `1px solid ${editMode ? "#99000066" : "#374151"}`, borderRadius: 6, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}>
+              style={{ background: editMode ? "#99000033" : "var(--gfi-border)", color: editMode ? "#990000" : "#e5e5e5", border: `1px solid ${editMode ? "#99000066" : "#374151"}`, borderRadius: 6, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}>
               {editMode ? "✓ Listo" : "✏️ Editar metas"}
             </button>
           </div>
         </div>
 
         {/* Config */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 20, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 20, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
           <div>
             <label style={{ fontSize: 11, color: "#6b7280", display: "block", marginBottom: 3 }}>Mes</label>
             <select value={mes} onChange={e => setMes(e.target.value)}
@@ -306,14 +306,14 @@ export default function ObjetivosPage() {
           </div>
           <div style={{ marginLeft: "auto", textAlign: "right" }}>
             <div style={{ fontSize: 11, color: "#6b7280" }}>Cumplimiento global</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, color: cumplimiento >= 80 ? "#3abab6" : cumplimiento >= 50 ? "#d4960c" : "#990000" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, color: cumplimiento >= 80 ? "#3abab6" : cumplimiento >= 50 ? "#d4960c" : "#990000" }}>
               {cumplimiento.toFixed(0)}%
             </div>
           </div>
         </div>
 
         {/* Barra cumplimiento global */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 18px", marginBottom: 24 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 18px", marginBottom: 24 }}>
           <div style={{ background: "#1a1a1a", borderRadius: 8, height: 14, overflow: "hidden", marginBottom: 6 }}>
             <div style={{ width: `${Math.min(100, cumplimiento)}%`, height: "100%", background: cumplimiento >= 80 ? "#3abab6" : cumplimiento >= 50 ? "#d4960c" : "#990000", transition: "width 0.5s" }} />
           </div>
@@ -335,17 +335,17 @@ export default function ObjetivosPage() {
             const restante = Math.max(0, meta - realV);
             const isAuto = getRealManual(obj) === undefined;
             return (
-              <div key={obj.id} style={{ background: "#111", border: `1px solid ${obj.color}33`, borderRadius: 12, padding: 20 }}>
+              <div key={obj.id} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${obj.color}33`, borderRadius: 12, padding: 20 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                   <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                     <span style={{ fontSize: 24 }}>{obj.icono}</span>
                     <div>
-                      <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>{obj.label}</div>
+                      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff" }}>{obj.label}</div>
                       <div style={{ fontSize: 11, color: "#4b5563" }}>{isAuto ? "Auto desde CRM" : "Ingresado manualmente"}</div>
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, color: obj.color }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, color: obj.color }}>
                       {obj.tipo === "monto" ? `USD ${fmt(realV)}` : realV}
                     </div>
                     <div style={{ fontSize: 12, color: "#6b7280" }}>
@@ -381,7 +381,7 @@ export default function ObjetivosPage() {
         </div>
 
         {/* Tip */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 24, fontSize: 12, color: "#6b7280" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 24, fontSize: 12, color: "#6b7280" }}>
           <strong style={{ color: "#9ca3af" }}>📌 Tip:</strong> Los valores de cierres, honorarios, nuevos negocios e interacciones se calculan automáticamente desde el CRM.
           Los indicadores de visitas y propiedades captadas pueden ingresarse manualmente en modo edición.
         </div>

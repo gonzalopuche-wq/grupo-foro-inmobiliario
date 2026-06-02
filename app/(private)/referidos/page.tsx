@@ -20,7 +20,7 @@ const TIPOS = {
   proveedor:  { label: 'Proveedor', color: '#d4960c', bg: 'rgba(245,158,11,0.1)' },
 }
 const ESTADOS = {
-  pendiente: { label: 'Pendiente', color: 'rgba(255,255,255,0.4)' },
+  pendiente: { label: 'Pendiente', color: 'var(--gfi-text-muted)' },
   activo:    { label: 'Activo',    color: '#3abab6' },
   inactivo:  { label: 'Inactivo',  color: '#b80000' },
 }
@@ -84,7 +84,7 @@ export default function ReferidosPage() {
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 0 64px' }}>
 
       {toast && (
-        <div style={{ position: 'fixed', bottom: 24, right: 24, background: '#111', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
+        <div style={{ position: 'fixed', bottom: 24, right: 24, background: 'var(--gfi-bg-secondary)', border: '1px solid var(--gfi-border)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
           {toast}
         </div>
       )}
@@ -92,9 +92,9 @@ export default function ReferidosPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>Módulo 109</div>
+          <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gfi-text-dim)', marginBottom: 6 }}>Módulo 109</div>
           <h1 style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>Gestión de Referidos</h1>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: 'var(--gfi-text-muted)', marginTop: 4 }}>
             {items.length} referido{items.length !== 1 ? 's' : ''} · {activos} activo{activos !== 1 ? 's' : ''}
           </p>
         </div>
@@ -110,26 +110,26 @@ export default function ReferidosPage() {
           { label: 'Activos', value: activos, color: '#3abab6' },
           { label: 'Pendientes', value: pendientes, color: '#d4960c' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '16px 20px' }}>
+          <div key={s.label} style={{ background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border-subtle)', borderRadius: 10, padding: '16px 20px' }}>
             <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: 2 }}>{s.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: 2 }}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Info recompensa */}
-      <div style={{ background: 'rgba(153,0,0,0.06)', border: '1px solid rgba(153,0,0,0.15)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+      <div style={{ background: 'rgba(153,0,0,0.06)', border: '1px solid rgba(153,0,0,0.15)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 12, color: 'var(--gfi-text-secondary)', lineHeight: 1.6 }}>
         <strong style={{ color: '#990000' }}>EL QUE APORTA, GANA</strong> — Cada referido que se suscribe aplica un descuento en tu abono mensual + puntos de reputación. El admin verifica y activa la recompensa.
       </div>
 
       {/* Lista */}
       {cargando ? (
-        <div style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
+        <div style={{ color: 'var(--gfi-text-muted)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
       ) : items.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '56px 0' }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>🤝</div>
-          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, marginBottom: 8 }}>Todavía no registraste referidos</div>
-          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>Referí colegas, clientes o proveedores y ganá descuentos en tu suscripción</div>
+          <div style={{ color: 'var(--gfi-text-muted)', fontSize: 14, marginBottom: 8 }}>Todavía no registraste referidos</div>
+          <div style={{ color: 'var(--gfi-text-dim)', fontSize: 12 }}>Referí colegas, clientes o proveedores y ganá descuentos en tu suscripción</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -137,7 +137,7 @@ export default function ReferidosPage() {
             const tipo = TIPOS[r.tipo]
             const estado = ESTADOS[r.estado]
             return (
-              <div key={r.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div key={r.id} style={{ background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border-subtle)', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
                 <div style={{ width: 42, height: 42, borderRadius: 10, background: tipo.bg, border: `1px solid ${tipo.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
                   {r.tipo === 'corredor' ? '🏠' : r.tipo === 'cliente' ? '👤' : '🏢'}
                 </div>
@@ -153,7 +153,7 @@ export default function ReferidosPage() {
                     {r.recompensa_aplicada && (
                       <span style={{ fontSize: 10, color: '#3abab6', fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>✓ Recompensa aplicada</span>
                     )}
-                    {r.referido_email && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{r.referido_email}</span>}
+                    {r.referido_email && <span style={{ fontSize: 11, color: 'var(--gfi-text-muted)' }}>{r.referido_email}</span>}
                     {r.referido_telefono && (
                       <a href={`https://wa.me/${r.referido_telefono.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: 'rgba(34,197,94,0.7)', textDecoration: 'none' }}>
                         💬 {r.referido_telefono}
@@ -161,7 +161,7 @@ export default function ReferidosPage() {
                     )}
                   </div>
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', fontFamily: 'Montserrat,sans-serif', flexShrink: 0 }}>
+                <div style={{ fontSize: 11, color: 'var(--gfi-text-dim)', fontFamily: 'Montserrat,sans-serif', flexShrink: 0 }}>
                   {new Date(r.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short' })}
                 </div>
               </div>
@@ -173,30 +173,30 @@ export default function ReferidosPage() {
       {/* Modal */}
       {modal && (
         <div onClick={e => { if (e.target === e.currentTarget) setModal(false) }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 28, width: '100%', maxWidth: 460 }}>
+          <div style={{ background: '#141414', border: '1px solid var(--gfi-border)', borderRadius: 14, padding: 28, width: '100%', maxWidth: 460 }}>
             <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Nuevo referido</div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Nombre y apellido *</label>
-              <input value={form.referido_nombre} onChange={e => setForm(f => ({ ...f, referido_nombre: e.target.value }))} placeholder="Ej: María González" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Nombre y apellido *</label>
+              <input value={form.referido_nombre} onChange={e => setForm(f => ({ ...f, referido_nombre: e.target.value }))} placeholder="Ej: María González" style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Email</label>
-                <input value={form.referido_email} onChange={e => setForm(f => ({ ...f, referido_email: e.target.value }))} placeholder="email@ejemplo.com" type="email" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Email</label>
+                <input value={form.referido_email} onChange={e => setForm(f => ({ ...f, referido_email: e.target.value }))} placeholder="email@ejemplo.com" type="email" style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Teléfono</label>
-                <input value={form.referido_telefono} onChange={e => setForm(f => ({ ...f, referido_telefono: e.target.value }))} placeholder="+54 341 ..." style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Teléfono</label>
+                <input value={form.referido_telefono} onChange={e => setForm(f => ({ ...f, referido_telefono: e.target.value }))} placeholder="+54 341 ..." style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
             </div>
 
             <div style={{ marginBottom: 20 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Tipo de referido</label>
+              <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Tipo de referido</label>
               <div style={{ display: 'flex', gap: 8 }}>
                 {(['corredor', 'cliente', 'proveedor'] as const).map(t => (
-                  <button key={t} onClick={() => setForm(f => ({ ...f, tipo: t }))} style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 12, fontWeight: 700, background: form.tipo === t ? TIPOS[t].color + '22' : 'rgba(255,255,255,0.04)', color: form.tipo === t ? TIPOS[t].color : 'rgba(255,255,255,0.4)', outline: form.tipo === t ? `1px solid ${TIPOS[t].color}44` : 'none' }}>
+                  <button key={t} onClick={() => setForm(f => ({ ...f, tipo: t }))} style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 12, fontWeight: 700, background: form.tipo === t ? TIPOS[t].color + '22' : 'var(--gfi-border-subtle)', color: form.tipo === t ? TIPOS[t].color : 'var(--gfi-text-muted)', outline: form.tipo === t ? `1px solid ${TIPOS[t].color}44` : 'none' }}>
                     {TIPOS[t].label}
                   </button>
                 ))}
@@ -204,7 +204,7 @@ export default function ReferidosPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
+              <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'var(--gfi-text-secondary)', border: '1px solid var(--gfi-border)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
               <button onClick={guardar} disabled={guardando || !form.referido_nombre.trim()} style={{ padding: '10px 24px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.referido_nombre.trim() ? 0.5 : 1 }}>
                 {guardando ? 'Guardando...' : 'Registrar'}
               </button>

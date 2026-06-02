@@ -381,7 +381,7 @@ function ModalNuevaOferta({ onClose, onSave }: ModalNuevaOfertaProps) {
         borderRadius: "10px", padding: "24px",
         width: "100%", maxWidth: "560px", maxHeight: "90vh", overflowY: "auto",
       }}>
-        <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: "18px", margin: "0 0 20px" }}>
+        <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "18px", margin: "0 0 20px" }}>
           Nueva oferta
         </h2>
 
@@ -522,7 +522,7 @@ function ModalNuevaRonda({ oferta, onClose, onSave }: ModalNuevaRondaProps) {
         borderRadius: "10px", padding: "24px",
         width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto",
       }}>
-        <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: "18px", margin: "0 0 6px" }}>
+        <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "18px", margin: "0 0 6px" }}>
           Nueva ronda — R{siguienteNumero}
         </h2>
         <p style={{ color: C.muted, fontSize: "12px", margin: "0 0 20px" }}>
@@ -910,7 +910,7 @@ export default function SeguimientoOfertas() {
         {/* Encabezado */}
         <div style={{ marginBottom: "24px" }}>
           <h1 style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: "clamp(20px, 4vw, 28px)",
             margin: "0 0 4px",
@@ -927,19 +927,19 @@ export default function SeguimientoOfertas() {
         <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "24px" }}>
           <div style={kpiCardStyle}>
             <div style={{ color: C.muted, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Total activas</div>
-            <div style={{ fontSize: "26px", fontWeight: 800, fontFamily: "Montserrat, sans-serif", color: C.yellow }}>{kpis.activas}</div>
+            <div style={{ fontSize: "26px", fontWeight: 800, fontFamily: "var(--font-display)", color: C.yellow }}>{kpis.activas}</div>
           </div>
           <div style={kpiCardStyle}>
             <div style={{ color: C.muted, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Tasa de cierre</div>
-            <div style={{ fontSize: "26px", fontWeight: 800, fontFamily: "Montserrat, sans-serif", color: C.green }}>{fmtPct(kpis.tasaCierre)}</div>
+            <div style={{ fontSize: "26px", fontWeight: 800, fontFamily: "var(--font-display)", color: C.green }}>{fmtPct(kpis.tasaCierre)}</div>
           </div>
           <div style={kpiCardStyle}>
             <div style={{ color: C.muted, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Brecha promedio cierre</div>
-            <div style={{ fontSize: "26px", fontWeight: 800, fontFamily: "Montserrat, sans-serif", color: C.text }}>{fmtPct(kpis.brechasPromedio)}</div>
+            <div style={{ fontSize: "26px", fontWeight: 800, fontFamily: "var(--font-display)", color: C.text }}>{fmtPct(kpis.brechasPromedio)}</div>
           </div>
           <div style={kpiCardStyle}>
             <div style={{ color: C.muted, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Total ofertas</div>
-            <div style={{ fontSize: "26px", fontWeight: 800, fontFamily: "Montserrat, sans-serif", color: C.text }}>{kpis.total}</div>
+            <div style={{ fontSize: "26px", fontWeight: 800, fontFamily: "var(--font-display)", color: C.text }}>{kpis.total}</div>
           </div>
         </div>
 
@@ -1204,7 +1204,7 @@ export default function SeguimientoOfertas() {
               ].map(k => (
                 <div key={k.label} style={{ ...kpiCardStyle, minWidth: "120px" }}>
                   <div style={{ color: C.muted, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{k.label}</div>
-                  <div style={{ fontSize: "22px", fontWeight: 800, fontFamily: "Montserrat, sans-serif", color: k.color }}>{k.value}</div>
+                  <div style={{ fontSize: "22px", fontWeight: 800, fontFamily: "var(--font-display)", color: k.color }}>{k.value}</div>
                 </div>
               ))}
             </div>
@@ -1214,7 +1214,7 @@ export default function SeguimientoOfertas() {
               background: C.card, border: `1px solid ${C.border}`,
               borderRadius: "10px", padding: "18px", marginBottom: "20px",
             }}>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "13px", marginBottom: "14px" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "13px", marginBottom: "14px" }}>
                 Ofertas por mes (últimos 6 meses)
               </div>
               <GraficoBarras ofertas={ofertas} />

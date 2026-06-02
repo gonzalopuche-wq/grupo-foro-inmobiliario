@@ -86,13 +86,13 @@ export default function BeneficiosPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .bn-wrap{display:flex;flex-direction:column;gap:20px}
         .bn-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
-        .bn-titulo{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:#fff}
+        .bn-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;color:#fff}
         .bn-titulo span{color:#990000}
-        .bn-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:4px}
+        .bn-sub{font-size:13px;color:var(--gfi-text-muted);margin-top:4px}
         .bn-filtros{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-        .bn-filtro{padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+        .bn-filtro{padding:6px 14px;border-radius:20px;border:1px solid var(--gfi-border);background:transparent;color:var(--gfi-text-muted);font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
         .bn-filtro.activo{border-color:rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#990000}
-        .bn-count{font-size:11px;color:rgba(255,255,255,0.25);margin-left:4px}
+        .bn-count{font-size:11px;color:var(--gfi-text-dim);margin-left:4px}
         .bn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
         .bn-card{background:#0f0f0f;border:1px solid rgba(200,0,0,0.2);border-radius:10px;overflow:hidden;transition:border-color 0.2s;position:relative}
         .bn-card:hover{border-color:rgba(200,0,0,0.4)}
@@ -101,28 +101,28 @@ export default function BeneficiosPage() {
         .bn-imagen-ph{width:100%;height:180px;background:linear-gradient(135deg,rgba(200,0,0,0.08),rgba(0,0,0,0.3));display:flex;align-items:center;justify-content:center;font-size:48px}
         .bn-body{padding:16px}
         .bn-sponsor-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-        .bn-sponsor-logo{width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+        .bn-sponsor-logo{width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid var(--gfi-border);flex-shrink:0}
         .bn-sponsor-logo-ph{width:28px;height:28px;border-radius:6px;background:rgba(200,0,0,0.1);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
-        .bn-sponsor-nombre{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#990000}
-        .bn-sponsor-rubro{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-left:auto}
-        .bn-titulo-b{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.3}
+        .bn-sponsor-nombre{font-family:var(--font-display);font-size:10px;font-weight:700;color:#990000}
+        .bn-sponsor-rubro{font-family:var(--font-display);font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gfi-text-muted);margin-left:auto}
+        .bn-titulo-b{font-family:var(--font-display);font-size:15px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.3}
         .bn-desc{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:12px}
-        .bn-venc{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'Inter',sans-serif;padding:3px 9px;border-radius:20px;margin-bottom:12px}
+        .bn-venc{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:var(--font-body);padding:3px 9px;border-radius:20px;margin-bottom:12px}
         .bn-venc.ok{background:rgba(34,197,94,0.08);color:rgba(34,197,94,0.8);border:1px solid rgba(34,197,94,0.2)}
         .bn-venc.pronto{background:rgba(245,158,11,0.08);color:#d4960c;border:1px solid rgba(245,158,11,0.2)}
-        .bn-venc.sin{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.08)}
+        .bn-venc.sin{background:var(--gfi-border-subtle);color:var(--gfi-text-muted);border:1px solid var(--gfi-border)}
         .bn-actions{display:flex;gap:8px;flex-wrap:wrap}
-        .bn-btn-interes{flex:1;padding:9px 14px;border-radius:5px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border:1px solid rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#990000;white-space:nowrap}
+        .bn-btn-interes{flex:1;padding:9px 14px;border-radius:5px;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border:1px solid rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#990000;white-space:nowrap}
         .bn-btn-interes:hover:not(:disabled){background:rgba(200,0,0,0.2)}
         .bn-btn-interes.registrado{border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.08);color:#3abab6}
         .bn-btn-interes:disabled{opacity:0.5;cursor:not-allowed}
-        .bn-btn-web{padding:9px 14px;border-radius:5px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:rgba(255,255,255,0.5);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:all 0.2s}
-        .bn-btn-web:hover{border-color:rgba(255,255,255,0.25);color:#fff}
-        .bn-empty{padding:64px 32px;text-align:center;color:rgba(255,255,255,0.2);font-size:14px;font-style:italic;background:rgba(14,14,14,0.9);border:1px solid rgba(255,255,255,0.07);border-radius:8px}
+        .bn-btn-web{padding:9px 14px;border-radius:5px;border:1px solid var(--gfi-border);background:transparent;color:var(--gfi-text-secondary);font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:all 0.2s}
+        .bn-btn-web:hover{border-color:var(--gfi-text-dim);color:#fff}
+        .bn-empty{padding:64px 32px;text-align:center;color:var(--gfi-text-dim);font-size:14px;font-style:italic;background:var(--gfi-bg-card);border:1px solid var(--gfi-border-subtle);border-radius:8px}
         .bn-spinner{display:flex;justify-content:center;padding:48px}
         .bn-spin{width:28px;height:28px;border:2px solid rgba(200,0,0,0.2);border-top-color:#990000;border-radius:50%;animation:spin 0.7s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
-        .toast{position:fixed;bottom:28px;right:28px;padding:12px 20px;border-radius:5px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;z-index:999;animation:toastIn 0.3s ease}
+        .toast{position:fixed;bottom:28px;right:28px;padding:12px 20px;border-radius:5px;font-family:var(--font-display);font-size:12px;font-weight:700;z-index:999;animation:toastIn 0.3s ease}
         .toast.ok{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#3abab6}
         .toast.err{background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.35);color:#ff6666}
         @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}

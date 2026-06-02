@@ -432,25 +432,25 @@ export default function AgendaPage() {
   const celdas: (Date|null)[] = [...Array(offset).fill(null), ...diasMes, ...Array(totalCeldas-offset-diasMes.length).fill(null)]
 
   const S = {
-    input: { width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:7, color:'#fff', padding:'9px 12px', fontSize:13, fontFamily:'Inter,sans-serif', boxSizing:'border-box' as const },
-    label: { fontSize:10, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' as const, color:'rgba(255,255,255,0.3)', display:'block', marginBottom:5 },
-    btn: (primary?:boolean) => ({ background:primary?'#990000':'rgba(255,255,255,0.07)', border:primary?'none':'1px solid rgba(255,255,255,0.1)', color:'#fff', padding:'9px 18px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer' }),
+    input: { width:'100%', background:'var(--gfi-border-subtle)', border:'1px solid var(--gfi-border)', borderRadius:7, color:'#fff', padding:'9px 12px', fontSize:13, fontFamily:'Inter,sans-serif', boxSizing:'border-box' as const },
+    label: { fontSize:10, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' as const, color:'var(--gfi-text-muted)', display:'block', marginBottom:5 },
+    btn: (primary?:boolean) => ({ background:primary?'#990000':'var(--gfi-border-subtle)', border:primary?'none':'1px solid var(--gfi-border)', color:'#fff', padding:'9px 18px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer' }),
   }
 
   return (
     <div style={{maxWidth:900,margin:'0 auto',padding:'24px 0 64px',fontFamily:'Inter,sans-serif',color:'#fff'}}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
-        .ag-row:hover{background:rgba(255,255,255,0.05)!important;}
+        .ag-row:hover{background:var(--gfi-border-subtle)!important;}
         .cal-tab:hover{background:rgba(255,255,255,0.06)!important;}
         .day-cell:hover .day-add{opacity:1!important;}
         select option{background:#1a1a1a;}
         .gcal-iframe{border:none;border-radius:0 0 10px 10px;width:100%;height:600px;display:block;}
         @media(max-width:600px){.gcal-iframe{height:420px;}}
-        .quick-tipo-btn:hover{background:rgba(255,255,255,0.08)!important;}
+        .quick-tipo-btn:hover{background:var(--gfi-border)!important;}
       `}</style>
 
       {toast && (
-        <div style={{position:'fixed',bottom:24,right:24,background:'#1a1a1a',border:'1px solid rgba(255,255,255,0.12)',padding:'10px 18px',borderRadius:10,fontSize:13,color:'#fff',zIndex:200,boxShadow:'0 4px 20px rgba(0,0,0,0.5)'}}>
+        <div style={{position:'fixed',bottom:24,right:24,background:'#1a1a1a',border:'1px solid var(--gfi-border)',padding:'10px 18px',borderRadius:10,fontSize:13,color:'#fff',zIndex:200,boxShadow:'0 4px 20px rgba(0,0,0,0.5)'}}>
           {toast}
         </div>
       )}
@@ -468,7 +468,7 @@ export default function AgendaPage() {
               left: Math.min(Math.max(quickAdd.anchorX, 8), window.innerWidth - 320),
               width: 300,
               background:'#1a1a1a',
-              border:'1px solid rgba(255,255,255,0.12)',
+              border:'1px solid var(--gfi-border)',
               borderRadius:12,
               boxShadow:'0 8px 40px rgba(0,0,0,0.6)',
               padding:16,
@@ -477,7 +477,7 @@ export default function AgendaPage() {
             onClick={e=>e.stopPropagation()}
           >
             {/* Date chip */}
-            <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'rgba(255,255,255,0.35)',marginBottom:10,textTransform:'uppercase',letterSpacing:'0.1em'}}>
+            <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'var(--gfi-text-muted)',marginBottom:10,textTransform:'uppercase',letterSpacing:'0.1em'}}>
               {labelFechaCorta(quickAdd.fecha)}
             </div>
 
@@ -493,12 +493,12 @@ export default function AgendaPage() {
 
             {/* Hora */}
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
-              <span style={{fontSize:12,color:'rgba(255,255,255,0.3)'}}>🕐</span>
+              <span style={{fontSize:12,color:'var(--gfi-text-muted)'}}>🕐</span>
               <input
                 type="time"
                 value={quickHora}
                 onChange={e=>setQuickHora(e.target.value)}
-                style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,color:'#fff',padding:'5px 8px',fontSize:12,fontFamily:'Inter,sans-serif',flex:1}}
+                style={{background:'var(--gfi-border-subtle)',border:'1px solid var(--gfi-border)',borderRadius:6,color:'#fff',padding:'5px 8px',fontSize:12,fontFamily:'Inter,sans-serif',flex:1}}
               />
             </div>
 
@@ -511,7 +511,7 @@ export default function AgendaPage() {
                     key={t}
                     className="quick-tipo-btn"
                     onClick={()=>setQuickTipo(t)}
-                    style={{padding:'3px 9px',borderRadius:12,border:`1px solid ${quickTipo===t?tc.color:'rgba(255,255,255,0.08)'}`,background:quickTipo===t?tc.bg:'transparent',color:quickTipo===t?tc.color:'rgba(255,255,255,0.3)',cursor:'pointer',fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,lineHeight:1.5}}
+                    style={{padding:'3px 9px',borderRadius:12,border:`1px solid ${quickTipo===t?tc.color:'var(--gfi-border)'}`,background:quickTipo===t?tc.bg:'transparent',color:quickTipo===t?tc.color:'var(--gfi-text-muted)',cursor:'pointer',fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,lineHeight:1.5}}
                   >
                     {tc.icon} {tc.label}
                   </button>
@@ -523,7 +523,7 @@ export default function AgendaPage() {
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
               <button
                 onClick={abrirFullModalDesdeQuick}
-                style={{fontSize:11,color:'rgba(255,255,255,0.4)',background:'none',border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700,padding:0,textDecoration:'underline'}}
+                style={{fontSize:11,color:'var(--gfi-text-muted)',background:'none',border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700,padding:0,textDecoration:'underline'}}
               >
                 Más opciones
               </button>
@@ -542,18 +542,18 @@ export default function AgendaPage() {
       {/* ── AFTER-SAVE: Agregar a GCal ── */}
       {afterSave.show && afterSave.item && (
         <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.6)',zIndex:250,display:'flex',alignItems:'center',justifyContent:'center',padding:16}} onClick={()=>setAfterSave({show:false,item:null})}>
-          <div style={{background:'#1a1a1a',border:'1px solid rgba(255,255,255,0.1)',borderRadius:14,padding:24,maxWidth:380,width:'100%'}} onClick={e=>e.stopPropagation()}>
+          <div style={{background:'#1a1a1a',border:'1px solid var(--gfi-border)',borderRadius:14,padding:24,maxWidth:380,width:'100%'}} onClick={e=>e.stopPropagation()}>
             <div style={{fontSize:20,marginBottom:8}}>✅</div>
             <div style={{fontFamily:'Montserrat,sans-serif',fontSize:15,fontWeight:800,color:'#fff',marginBottom:4}}>
               {afterSave.item.titulo}
             </div>
-            <div style={{fontSize:12,color:'rgba(255,255,255,0.35)',marginBottom:20}}>
+            <div style={{fontSize:12,color:'var(--gfi-text-muted)',marginBottom:20}}>
               {labelFechaCorta(afterSave.item.fecha)}{afterSave.item.hora ? ` · ${afterSave.item.hora}` : ''}
             </div>
 
             {gcalCals.length > 0 && (
               <>
-                <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:10}}>
+                <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--gfi-text-dim)',marginBottom:10}}>
                   ¿Agregar a Google Calendar?
                 </div>
                 <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:16}}>
@@ -576,7 +576,7 @@ export default function AgendaPage() {
                       <span style={{width:10,height:10,borderRadius:'50%',background:cal.color,flexShrink:0,display:'inline-block'}}/>
                       <GoogleLogo/>
                       <span style={{flex:1}}>{cal.nombre}</span>
-                      <span style={{fontSize:11,color:'rgba(255,255,255,0.3)'}}>Agregar →</span>
+                      <span style={{fontSize:11,color:'var(--gfi-text-muted)'}}>Agregar →</span>
                     </a>
                   ))}
                   {/* Agregar a cualquier GCal sin calendario específico */}
@@ -585,7 +585,7 @@ export default function AgendaPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={()=>setAfterSave({show:false,item:null})}
-                    style={{display:'flex',alignItems:'center',gap:10,padding:'8px 14px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:8,textDecoration:'none',color:'rgba(255,255,255,0.4)',fontSize:12,fontFamily:'Inter,sans-serif'}}
+                    style={{display:'flex',alignItems:'center',gap:10,padding:'8px 14px',background:'var(--gfi-border-subtle)',border:'1px solid var(--gfi-border)',borderRadius:8,textDecoration:'none',color:'var(--gfi-text-muted)',fontSize:12,fontFamily:'Inter,sans-serif'}}
                   >
                     <GoogleLogo size={12}/>
                     <span>Otro calendario...</span>
@@ -596,7 +596,7 @@ export default function AgendaPage() {
 
             <button
               onClick={()=>setAfterSave({show:false,item:null})}
-              style={{width:'100%',padding:'8px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:8,color:'rgba(255,255,255,0.4)',fontSize:12,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}
+              style={{width:'100%',padding:'8px',background:'var(--gfi-border-subtle)',border:'1px solid var(--gfi-border)',borderRadius:8,color:'var(--gfi-text-muted)',fontSize:12,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}
             >
               Cerrar
             </button>
@@ -607,9 +607,9 @@ export default function AgendaPage() {
       {/* Header */}
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:20,flexWrap:'wrap',gap:12}}>
         <div>
-          <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:6}}>Organización</div>
+          <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.18em',textTransform:'uppercase',color:'var(--gfi-text-dim)',marginBottom:6}}>Organización</div>
           <h1 style={{fontFamily:'Montserrat,sans-serif',fontSize:22,fontWeight:800,color:'#fff',margin:0}}>Agenda</h1>
-          <p style={{fontSize:12,color:'rgba(255,255,255,0.35)',margin:'4px 0 0'}}>Citas · Recordatorios CRM · Tareas · Google Calendar</p>
+          <p style={{fontSize:12,color:'var(--gfi-text-muted)',margin:'4px 0 0'}}>Citas · Recordatorios CRM · Tareas · Google Calendar</p>
         </div>
         <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
           {([
@@ -617,7 +617,7 @@ export default function AgendaPage() {
             {k:'mes' as const,l:'▦ Mes'},
             {k:'gcal' as const,l:'Google Calendar'},
           ]).map(v => (
-            <button key={v.k} onClick={()=>setVista(v.k)} style={{padding:'8px 14px',borderRadius:8,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:vista===v.k?'rgba(66,133,244,0.2)':'rgba(255,255,255,0.06)',color:vista===v.k?'#7aa4f7':'rgba(255,255,255,0.4)',display:'flex',alignItems:'center',gap:6}}>
+            <button key={v.k} onClick={()=>setVista(v.k)} style={{padding:'8px 14px',borderRadius:8,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:vista===v.k?'rgba(66,133,244,0.2)':'rgba(255,255,255,0.06)',color:vista===v.k?'#7aa4f7':'var(--gfi-text-muted)',display:'flex',alignItems:'center',gap:6}}>
               {v.k==='gcal'&&<GoogleLogo/>}
               {v.l}
               {v.k==='gcal'&&gcalCals.length>0&&<span style={{background:'rgba(66,133,244,0.25)',color:'#7aa4f7',borderRadius:10,padding:'1px 6px',fontSize:10}}>{gcalCals.length}</span>}
@@ -626,7 +626,7 @@ export default function AgendaPage() {
           <button onClick={()=>setModal(true)} style={S.btn(true)}>+ Nueva cita</button>
           <button
             onClick={()=>downloadIcs(items.map(i=>({titulo:i.titulo,fecha:i.fecha,hora:i.hora,hora_fin:i.hora_fin,descripcion:i.descripcion,lugar:i.lugar})))}
-            style={{padding:'8px 14px',background:'transparent',border:'1px solid rgba(255,255,255,0.12)',borderRadius:8,color:'rgba(255,255,255,0.45)',fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',gap:5}}
+            style={{padding:'8px 14px',background:'transparent',border:'1px solid var(--gfi-border)',borderRadius:8,color:'rgba(255,255,255,0.45)',fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',gap:5}}
             title="Exportar agenda como .ics (compatible Google Calendar, Outlook, Apple Calendar)"
           >
             📥 .ics
@@ -641,9 +641,9 @@ export default function AgendaPage() {
           {label:'Próximos 7 días',value:proxCount,color:'#d4960c',key:'proximos'},
           {label:'Vencidos',value:vencCount,color:'#b80000',key:'vencidos'},
         ].map(s=>(
-          <div key={s.key} onClick={()=>{setFiltro(s.key);setVista('lista')}} style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${s.value>0?`${s.color}30`:'rgba(255,255,255,0.07)'}`,borderRadius:10,padding:'12px 16px',cursor:'pointer'}}>
-            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:22,fontWeight:800,color:s.value>0?s.color:'rgba(255,255,255,0.2)'}}>{s.value}</div>
-            <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.08em',textTransform:'uppercase',marginTop:2}}>{s.label}</div>
+          <div key={s.key} onClick={()=>{setFiltro(s.key);setVista('lista')}} style={{background:'var(--gfi-bg-card)',border:`1px solid ${s.value>0?`${s.color}30`:'var(--gfi-border-subtle)'}`,borderRadius:10,padding:'12px 16px',cursor:'pointer'}}>
+            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:22,fontWeight:800,color:s.value>0?s.color:'var(--gfi-text-dim)'}}>{s.value}</div>
+            <div style={{fontSize:10,color:'var(--gfi-text-muted)',fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.08em',textTransform:'uppercase',marginTop:2}}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -664,8 +664,8 @@ export default function AgendaPage() {
               >
                 <GoogleLogo/> Vincular primer calendario
               </button>
-              <div style={{marginTop:32,background:'rgba(255,255,255,0.03)',borderRadius:10,padding:'20px 24px',textAlign:'left',maxWidth:520,margin:'32px auto 0'}}>
-                <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:14}}>Cómo obtener el link</div>
+              <div style={{marginTop:32,background:'var(--gfi-bg-card)',borderRadius:10,padding:'20px 24px',textAlign:'left',maxWidth:520,margin:'32px auto 0'}}>
+                <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--gfi-text-dim)',marginBottom:14}}>Cómo obtener el link</div>
                 {[
                   { n:'1', t:'Abrí Google Calendar', d:'calendar.google.com' },
                   { n:'2', t:'Entrá a Configuración ⚙️', d:'Ícono de engranaje → Configuración' },
@@ -677,7 +677,7 @@ export default function AgendaPage() {
                     <div style={{width:22,height:22,borderRadius:'50%',background:'rgba(66,133,244,0.2)',border:'1px solid rgba(66,133,244,0.3)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:'#7aa4f7',flexShrink:0,marginTop:1}}>{s.n}</div>
                     <div>
                       <div style={{fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.8)',marginBottom:2}}>{s.t}</div>
-                      <div style={{fontSize:11,color:'rgba(255,255,255,0.35)'}}>{s.d}</div>
+                      <div style={{fontSize:11,color:'var(--gfi-text-muted)'}}>{s.d}</div>
                     </div>
                   </div>
                 ))}
@@ -687,7 +687,7 @@ export default function AgendaPage() {
             <div>
               <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:0,flexWrap:'wrap'}}>
                 {gcalCals.map((cal,i) => (
-                  <button key={cal.id} className="cal-tab" onClick={()=>setGcalActivo(i)} style={{padding:'8px 16px',borderRadius:'8px 8px 0 0',border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:12,fontWeight:700,background:gcalActivo===i?'#111':'rgba(255,255,255,0.04)',color:gcalActivo===i?cal.color:'rgba(255,255,255,0.4)',borderTop:gcalActivo===i?`2px solid ${cal.color}`:'2px solid transparent',display:'flex',alignItems:'center',gap:7}}>
+                  <button key={cal.id} className="cal-tab" onClick={()=>setGcalActivo(i)} style={{padding:'8px 16px',borderRadius:'8px 8px 0 0',border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:12,fontWeight:700,background:gcalActivo===i?'#111':'var(--gfi-border-subtle)',color:gcalActivo===i?cal.color:'var(--gfi-text-muted)',borderTop:gcalActivo===i?`2px solid ${cal.color}`:'2px solid transparent',display:'flex',alignItems:'center',gap:7}}>
                     <span style={{width:8,height:8,borderRadius:'50%',background:cal.color,display:'inline-block',flexShrink:0}}/>
                     {cal.nombre}
                   </button>
@@ -697,24 +697,24 @@ export default function AgendaPage() {
                 </button>
               </div>
               {gcalCals[gcalActivo] && (
-                <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'0 8px 10px 10px',overflow:'hidden'}}>
+                <div style={{background:'#111',border:'1px solid var(--gfi-border)',borderRadius:'0 8px 10px 10px',overflow:'hidden'}}>
                   <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
                     <div style={{display:'flex',alignItems:'center',gap:8}}>
                       <span style={{width:10,height:10,borderRadius:'50%',background:gcalCals[gcalActivo].color,display:'inline-block'}}/>
                       <span style={{fontFamily:'Montserrat,sans-serif',fontSize:13,fontWeight:700,color:'#fff'}}>{gcalCals[gcalActivo].nombre}</span>
                     </div>
                     <div style={{display:'flex',gap:8}}>
-                      <button onClick={()=>editarCalendario(gcalCals[gcalActivo])} style={{padding:'5px 12px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,color:'rgba(255,255,255,0.5)',fontSize:11,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>Editar</button>
+                      <button onClick={()=>editarCalendario(gcalCals[gcalActivo])} style={{padding:'5px 12px',background:'var(--gfi-border-subtle)',border:'1px solid var(--gfi-border)',borderRadius:6,color:'var(--gfi-text-secondary)',fontSize:11,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>Editar</button>
                       <a href="https://calendar.google.com" target="_blank" rel="noopener noreferrer" style={{padding:'5px 12px',background:'rgba(66,133,244,0.08)',border:'1px solid rgba(66,133,244,0.2)',borderRadius:6,color:'#7aa4f7',fontSize:11,textDecoration:'none',fontFamily:'Montserrat,sans-serif',fontWeight:700,display:'flex',alignItems:'center',gap:5}}>
                         <GoogleLogo/> Abrir GCal
                       </a>
-                      <button onClick={()=>desvincularCalendario(gcalCals[gcalActivo].id)} style={{padding:'5px 12px',background:'none',border:'1px solid rgba(255,255,255,0.08)',borderRadius:6,color:'rgba(200,0,0,0.5)',fontSize:11,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>Desvincular</button>
+                      <button onClick={()=>desvincularCalendario(gcalCals[gcalActivo].id)} style={{padding:'5px 12px',background:'none',border:'1px solid var(--gfi-border)',borderRadius:6,color:'rgba(200,0,0,0.5)',fontSize:11,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>Desvincular</button>
                     </div>
                   </div>
                   <iframe key={gcalCals[gcalActivo].id} src={buildEmbedUrl(gcalCals[gcalActivo].embedUrl)} className="gcal-iframe" title={gcalCals[gcalActivo].nombre} sandbox="allow-scripts allow-same-origin allow-popups allow-forms"/>
                 </div>
               )}
-              <div style={{marginTop:12,display:'flex',alignItems:'center',gap:8,fontSize:11,color:'rgba(255,255,255,0.2)'}}>
+              <div style={{marginTop:12,display:'flex',alignItems:'center',gap:8,fontSize:11,color:'var(--gfi-text-dim)'}}>
                 <GoogleLogo size={12}/>
                 <span>Vista de solo lectura. Para agregar eventos a GCal, creá una cita en GFI y después elegís a qué calendario enviarlo.</span>
               </div>
@@ -731,9 +731,9 @@ export default function AgendaPage() {
             <div style={{fontFamily:'Montserrat,sans-serif',fontSize:15,fontWeight:700,color:'#fff'}}>{MESES[mesVista.getMonth()]} {mesVista.getFullYear()}</div>
             <button onClick={()=>setMesVista(new Date(mesVista.getFullYear(),mesVista.getMonth()+1))} style={{padding:'6px 14px',background:'rgba(255,255,255,0.06)',border:'none',borderRadius:6,color:'#fff',cursor:'pointer',fontSize:16}}>›</button>
           </div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:1,background:'rgba(255,255,255,0.05)',borderRadius:10,overflow:'hidden'}}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:1,background:'var(--gfi-border-subtle)',borderRadius:10,overflow:'hidden'}}>
             {DIAS_SEMANA.map(d=>(
-              <div key={d} style={{padding:'8px 4px',textAlign:'center',fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'rgba(255,255,255,0.35)',letterSpacing:'0.1em',background:'#0a0a0a'}}>{d}</div>
+              <div key={d} style={{padding:'8px 4px',textAlign:'center',fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'var(--gfi-text-muted)',letterSpacing:'0.1em',background:'#0a0a0a'}}>{d}</div>
             ))}
             {celdas.map((dia,i)=>{
               if (!dia) return <div key={i} style={{background:'#0a0a0a',minHeight:80}}/>
@@ -748,7 +748,7 @@ export default function AgendaPage() {
                   style={{background:esHoyDia?'rgba(153,0,0,0.08)':'#0a0a0a',padding:'6px 4px',minHeight:80,cursor:'pointer',border:esHoyDia?'1px solid rgba(153,0,0,0.3)':undefined,position:'relative'}}
                 >
                   <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:3}}>
-                    <span style={{fontSize:12,fontWeight:esHoyDia?800:400,color:esHoyDia?'#990000':'rgba(255,255,255,0.4)',fontFamily:'Montserrat,sans-serif'}}>{dia.getDate()}</span>
+                    <span style={{fontSize:12,fontWeight:esHoyDia?800:400,color:esHoyDia?'#990000':'var(--gfi-text-muted)',fontFamily:'Montserrat,sans-serif'}}>{dia.getDate()}</span>
                     {/* "+" hint on hover */}
                     <span className="day-add" style={{fontSize:11,color:'rgba(153,0,0,0.5)',opacity:0,transition:'opacity 0.15s',lineHeight:1}}>+</span>
                   </div>
@@ -756,12 +756,12 @@ export default function AgendaPage() {
                     const tc=TIPOS_COLOR[it.tipo]
                     return <div key={j} style={{fontSize:9,color:tc.color,background:tc.bg,padding:'2px 4px',borderRadius:3,marginBottom:2,overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{it.titulo}</div>
                   })}
-                  {dItems.length>3&&<div style={{fontSize:9,color:'rgba(255,255,255,0.3)'}}>+{dItems.length-3}</div>}
+                  {dItems.length>3&&<div style={{fontSize:9,color:'var(--gfi-text-muted)'}}>+{dItems.length-3}</div>}
                 </div>
               )
             })}
           </div>
-          <div style={{marginTop:10,fontSize:11,color:'rgba(255,255,255,0.2)',textAlign:'center'}}>Hacé clic en cualquier día para crear un evento</div>
+          <div style={{marginTop:10,fontSize:11,color:'var(--gfi-text-dim)',textAlign:'center'}}>Hacé clic en cualquier día para crear un evento</div>
         </div>
       )}
 
@@ -770,17 +770,17 @@ export default function AgendaPage() {
         <>
           <div style={{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap'}}>
             {[{k:'proximos',l:'Próximos 7 días'},{k:'hoy',l:'Hoy'},{k:'vencidos',l:'Vencidos'},{k:'todos',l:'Todos'}].map(f=>(
-              <button key={f.k} onClick={()=>setFiltro(f.k)} style={{padding:'5px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:filtro===f.k?'#990000':'rgba(255,255,255,0.06)',color:filtro===f.k?'#fff':'rgba(255,255,255,0.4)'}}>
+              <button key={f.k} onClick={()=>setFiltro(f.k)} style={{padding:'5px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:filtro===f.k?'#990000':'rgba(255,255,255,0.06)',color:filtro===f.k?'#fff':'var(--gfi-text-muted)'}}>
                 {f.l}
               </button>
             ))}
           </div>
           {cargando ? (
-            <div style={{color:'rgba(255,255,255,0.3)',textAlign:'center',padding:'48px 0'}}>Cargando agenda...</div>
+            <div style={{color:'var(--gfi-text-muted)',textAlign:'center',padding:'48px 0'}}>Cargando agenda...</div>
           ) : filtrados.length===0 ? (
             <div style={{textAlign:'center',padding:'56px 0'}}>
               <div style={{fontSize:36,marginBottom:10}}>📅</div>
-              <div style={{color:'rgba(255,255,255,0.3)',fontSize:14,marginBottom:12}}>
+              <div style={{color:'var(--gfi-text-muted)',fontSize:14,marginBottom:12}}>
                 {filtro==='hoy'?'Sin compromisos para hoy':filtro==='proximos'?'Sin eventos próximos':filtro==='vencidos'?'¡Todo al día!':'Sin eventos'}
               </div>
               <button onClick={()=>setModal(true)} style={S.btn(true)}>+ Nueva cita</button>
@@ -795,25 +795,25 @@ export default function AgendaPage() {
                 return (
                   <div key={item.id}>
                     {item.fecha!==prevFecha&&(
-                      <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:esHoyItem?'#990000':vencido?'#b80000':'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.1em',padding:'12px 0 6px',display:'flex',alignItems:'center',gap:8}}>
+                      <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:esHoyItem?'#990000':vencido?'#b80000':'var(--gfi-text-muted)',textTransform:'uppercase',letterSpacing:'0.1em',padding:'12px 0 6px',display:'flex',alignItems:'center',gap:8}}>
                         {labelFecha(item.fecha)}
                         {esHoyItem&&<span style={{background:'#990000',color:'#fff',padding:'1px 7px',borderRadius:10,fontSize:9}}>HOY</span>}
                         {vencido&&<span style={{background:'rgba(239,68,68,0.15)',color:'#b80000',padding:'1px 7px',borderRadius:10,fontSize:9}}>VENCIDO</span>}
                       </div>
                     )}
-                    <div className="ag-row" style={{background:vencido?'rgba(239,68,68,0.03)':'rgba(255,255,255,0.03)',border:`1px solid ${vencido?'rgba(239,68,68,0.15)':esHoyItem?'rgba(153,0,0,0.2)':'rgba(255,255,255,0.07)'}`,borderRadius:10,padding:'12px 14px',display:'flex',alignItems:'center',gap:12}}>
+                    <div className="ag-row" style={{background:vencido?'rgba(239,68,68,0.03)':'var(--gfi-bg-card)',border:`1px solid ${vencido?'rgba(239,68,68,0.15)':esHoyItem?'rgba(153,0,0,0.2)':'var(--gfi-border-subtle)'}`,borderRadius:10,padding:'12px 14px',display:'flex',alignItems:'center',gap:12}}>
                       <div style={{width:36,height:36,borderRadius:8,background:tc.bg,border:`1px solid ${tc.color}30`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,flexShrink:0}}>
                         {tc.icon}
                       </div>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:13,fontWeight:600,color:vencido?'rgba(255,255,255,0.5)':'#fff',marginBottom:3}}>{item.titulo}</div>
+                        <div style={{fontSize:13,fontWeight:600,color:vencido?'var(--gfi-text-secondary)':'#fff',marginBottom:3}}>{item.titulo}</div>
                         <div style={{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}}>
                           <span style={{fontSize:10,color:tc.color,background:tc.bg,padding:'2px 7px',borderRadius:10,fontFamily:'Montserrat,sans-serif',fontWeight:700}}>{tc.label}</span>
-                          {item.hora&&<span style={{fontSize:11,color:'rgba(255,255,255,0.4)'}}>🕐 {item.hora}{item.hora_fin?` – ${item.hora_fin}`:''}</span>}
-                          {item.lugar&&<span style={{fontSize:11,color:'rgba(255,255,255,0.35)'}}>📍 {item.lugar}</span>}
-                          {item.contacto_nombre&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)'}}>👤 {item.contacto_nombre}</span>}
+                          {item.hora&&<span style={{fontSize:11,color:'var(--gfi-text-muted)'}}>🕐 {item.hora}{item.hora_fin?` – ${item.hora_fin}`:''}</span>}
+                          {item.lugar&&<span style={{fontSize:11,color:'var(--gfi-text-muted)'}}>📍 {item.lugar}</span>}
+                          {item.contacto_nombre&&<span style={{fontSize:11,color:'var(--gfi-text-muted)'}}>👤 {item.contacto_nombre}</span>}
                         </div>
-                        {item.descripcion&&<div style={{fontSize:11,color:'rgba(255,255,255,0.25)',marginTop:3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.descripcion}</div>}
+                        {item.descripcion&&<div style={{fontSize:11,color:'var(--gfi-text-dim)',marginTop:3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.descripcion}</div>}
                       </div>
                       <div style={{display:'flex',gap:6,flexShrink:0}}>
                         {item.contacto_telefono&&(
@@ -833,7 +833,7 @@ export default function AgendaPage() {
                           </a>
                         )}
                         {item.fuente==='agenda'&&(
-                          <button onClick={()=>eliminarCita(item)} style={{padding:'6px 10px',background:'none',border:'1px solid rgba(255,255,255,0.08)',borderRadius:7,color:'rgba(200,0,0,0.5)',cursor:'pointer',fontSize:11}}>✕</button>
+                          <button onClick={()=>eliminarCita(item)} style={{padding:'6px 10px',background:'none',border:'1px solid var(--gfi-border)',borderRadius:7,color:'rgba(200,0,0,0.5)',cursor:'pointer',fontSize:11}}>✕</button>
                         )}
                       </div>
                     </div>
@@ -848,7 +848,7 @@ export default function AgendaPage() {
       {/* ── MODAL NUEVA CITA (full) ── */}
       {modal&&(
         <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',zIndex:100,display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'24px 16px',overflowY:'auto'}} onClick={()=>setModal(false)}>
-          <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.1)',borderRadius:14,padding:28,width:'100%',maxWidth:500}} onClick={e=>e.stopPropagation()}>
+          <div style={{background:'#111',border:'1px solid var(--gfi-border)',borderRadius:14,padding:28,width:'100%',maxWidth:500}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:'Montserrat,sans-serif',fontSize:16,fontWeight:800,color:'#fff',marginBottom:20}}>📌 Nueva cita</div>
             <div style={{display:'grid',gap:14}}>
               <div>
@@ -861,7 +861,7 @@ export default function AgendaPage() {
                   {(Object.keys(TIPOS_COLOR) as TipoEvento[]).map(t=>{
                     const tc=TIPOS_COLOR[t]
                     return (
-                      <button key={t} onClick={()=>setF('tipo',t)} style={{padding:'6px 12px',borderRadius:20,border:`1px solid ${form.tipo===t?tc.color:'rgba(255,255,255,0.1)'}`,background:form.tipo===t?tc.bg:'transparent',color:form.tipo===t?tc.color:'rgba(255,255,255,0.4)',cursor:'pointer',fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700}}>
+                      <button key={t} onClick={()=>setF('tipo',t)} style={{padding:'6px 12px',borderRadius:20,border:`1px solid ${form.tipo===t?tc.color:'var(--gfi-border)'}`,background:form.tipo===t?tc.bg:'transparent',color:form.tipo===t?tc.color:'var(--gfi-text-muted)',cursor:'pointer',fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700}}>
                         {tc.icon} {tc.label}
                       </button>
                     )
@@ -932,14 +932,14 @@ export default function AgendaPage() {
                 <label style={S.label}>URL del calendario</label>
                 <textarea value={gcalForm.embedUrl} onChange={e=>setGF('embedUrl',e.target.value)} rows={3} placeholder={'Pegá acá la URL de integración\nEj: https://calendar.google.com/calendar/embed?src=tucorreo%40gmail.com&ctz=America...'} style={{...S.input,resize:'vertical',fontFamily:'monospace',fontSize:11}}/>
               </div>
-              <div style={{background:'rgba(255,255,255,0.03)',borderRadius:8,padding:'14px 16px'}}>
-                <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:10}}>Dónde encontrar la URL</div>
+              <div style={{background:'var(--gfi-bg-card)',borderRadius:8,padding:'14px 16px'}}>
+                <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--gfi-text-dim)',marginBottom:10}}>Dónde encontrar la URL</div>
                 <ol style={{margin:0,padding:'0 0 0 16px',display:'grid',gap:6}}>
                   {['Google Calendar → ⚙️ Configuración','Sidebar izquierdo → elegí el calendario','Scrolleá a "Integrar el calendario"','Copiá la "Dirección pública en formato HTML"'].map((s,i)=>(
-                    <li key={i} style={{fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.5}}>{s}</li>
+                    <li key={i} style={{fontSize:12,color:'var(--gfi-text-secondary)',lineHeight:1.5}}>{s}</li>
                   ))}
                 </ol>
-                <div style={{marginTop:8,fontSize:11,color:'rgba(255,255,255,0.25)'}}>
+                <div style={{marginTop:8,fontSize:11,color:'var(--gfi-text-dim)'}}>
                   También podés pegar el código HTML del iframe completo.
                 </div>
               </div>

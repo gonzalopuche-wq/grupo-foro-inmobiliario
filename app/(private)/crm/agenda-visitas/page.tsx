@@ -248,8 +248,8 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "9px 12px",
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    background: "var(--gfi-border-subtle)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: 6,
     color: "#e0e0e0",
     fontSize: 13,
@@ -260,7 +260,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
 
   const labelStyle: React.CSSProperties = {
     display: "block",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontSize: 10,
     fontWeight: 700,
     letterSpacing: "0.1em",
@@ -300,7 +300,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
       >
         <div
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontSize: 17,
             fontWeight: 800,
             color: "#e0e0e0",
@@ -318,7 +318,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
               type="date"
               value={form.fecha}
               onChange={(e) => set("fecha", e.target.value)}
-              style={{ ...inputStyle, borderColor: errores.fecha ? "#f87171" : "rgba(255,255,255,0.12)" }}
+              style={{ ...inputStyle, borderColor: errores.fecha ? "#f87171" : "var(--gfi-border)" }}
             />
             {errores.fecha && <div style={errorStyle}>{errores.fecha}</div>}
           </div>
@@ -328,7 +328,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
               type="time"
               value={form.hora}
               onChange={(e) => set("hora", e.target.value)}
-              style={{ ...inputStyle, borderColor: errores.hora ? "#f87171" : "rgba(255,255,255,0.12)" }}
+              style={{ ...inputStyle, borderColor: errores.hora ? "#f87171" : "var(--gfi-border)" }}
             />
             {errores.hora && <div style={errorStyle}>{errores.hora}</div>}
           </div>
@@ -440,7 +440,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
               color: "#fff",
               border: "none",
               borderRadius: 6,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.08em",
@@ -455,11 +455,11 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
             style={{
               flex: 1,
               padding: "10px 0",
-              background: "rgba(255,255,255,0.05)",
+              background: "var(--gfi-border-subtle)",
               color: "rgba(224,224,224,0.5)",
               border: "1px solid #222222",
               borderRadius: 6,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.08em",
@@ -480,7 +480,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
                 color: "#f87171",
                 border: "1px solid rgba(153,0,0,0.3)",
                 borderRadius: 6,
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontSize: 11,
                 fontWeight: 700,
                 letterSpacing: "0.08em",
@@ -693,11 +693,11 @@ export default function AgendaVisitasPage() {
   // ── Estilos comunes ─────────────────────────────────────────────────────────
   const btnAccionStyle = (color?: string): React.CSSProperties => ({
     padding: "4px 10px",
-    background: "rgba(255,255,255,0.04)",
-    border: `1px solid ${color ? color + "44" : "rgba(255,255,255,0.1)"}`,
+    background: "var(--gfi-border-subtle)",
+    border: `1px solid ${color ? color + "44" : "var(--gfi-border)"}`,
     borderRadius: 4,
     color: color ?? "rgba(224,224,224,0.55)",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontSize: 9,
     fontWeight: 700,
     letterSpacing: "0.08em",
@@ -733,7 +733,7 @@ export default function AgendaVisitasPage() {
         input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb { background: var(--gfi-border); border-radius: 2px; }
       `}</style>
 
       <div
@@ -763,7 +763,7 @@ export default function AgendaVisitasPage() {
           <a
             href="/crm"
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 10,
               fontWeight: 700,
               letterSpacing: "0.1em",
@@ -776,7 +776,7 @@ export default function AgendaVisitasPage() {
           </a>
           <div
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 15,
               fontWeight: 800,
               color: "#e0e0e0",
@@ -807,7 +807,7 @@ export default function AgendaVisitasPage() {
             <div>
               <div
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontSize: 12,
                   fontWeight: 700,
                   color: "#d4960c",
@@ -853,7 +853,7 @@ export default function AgendaVisitasPage() {
                 border: "none",
                 borderBottom: tab === key ? "2px solid #990000" : "2px solid transparent",
                 color: tab === key ? "#e0e0e0" : "rgba(224,224,224,0.35)",
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontSize: 11,
                 fontWeight: 700,
                 letterSpacing: "0.08em",
@@ -909,7 +909,7 @@ export default function AgendaVisitasPage() {
               </button>
               <span
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontSize: 12,
                   fontWeight: 700,
                   color: semanaOffset === 0 ? "#990000" : "rgba(224,224,224,0.6)",
@@ -963,7 +963,7 @@ export default function AgendaVisitasPage() {
                     {/* Encabezado del día */}
                     <div
                       style={{
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontSize: 10,
                         fontWeight: 700,
                         letterSpacing: "0.06em",
@@ -1020,7 +1020,7 @@ export default function AgendaVisitasPage() {
                           <span style={{ fontSize: 11 }}>{TIPO_EMOJI[v.tipo]}</span>
                           <span
                             style={{
-                              fontFamily: "Montserrat, sans-serif",
+                              fontFamily: "var(--font-display)",
                               fontSize: 10,
                               fontWeight: 700,
                               color: "#e0e0e0",
@@ -1049,7 +1049,7 @@ export default function AgendaVisitasPage() {
                             borderRadius: 3,
                             padding: "1px 5px",
                             fontSize: 8,
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             color: ESTADO_COLOR[v.estado],
                             textTransform: "uppercase",
@@ -1099,7 +1099,7 @@ export default function AgendaVisitasPage() {
                 onChange={(e) => setFiltroEstado(e.target.value)}
                 style={{
                   padding: "7px 10px",
-                  background: "rgba(255,255,255,0.05)",
+                  background: "var(--gfi-border-subtle)",
                   border: "1px solid #222222",
                   borderRadius: 6,
                   color: "#e0e0e0",
@@ -1122,7 +1122,7 @@ export default function AgendaVisitasPage() {
                 onChange={(e) => setFiltroTipo(e.target.value)}
                 style={{
                   padding: "7px 10px",
-                  background: "rgba(255,255,255,0.05)",
+                  background: "var(--gfi-border-subtle)",
                   border: "1px solid #222222",
                   borderRadius: 6,
                   color: "#e0e0e0",
@@ -1145,7 +1145,7 @@ export default function AgendaVisitasPage() {
                   style={{
                     fontSize: 11,
                     color: "rgba(224,224,224,0.4)",
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     textTransform: "uppercase",
                     letterSpacing: "0.07em",
@@ -1159,7 +1159,7 @@ export default function AgendaVisitasPage() {
                   onChange={(e) => setFiltroDesde(e.target.value)}
                   style={{
                     padding: "6px 8px",
-                    background: "rgba(255,255,255,0.05)",
+                    background: "var(--gfi-border-subtle)",
                     border: "1px solid #222222",
                     borderRadius: 6,
                     color: "#e0e0e0",
@@ -1172,7 +1172,7 @@ export default function AgendaVisitasPage() {
                   style={{
                     fontSize: 11,
                     color: "rgba(224,224,224,0.4)",
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     textTransform: "uppercase",
                     letterSpacing: "0.07em",
@@ -1186,7 +1186,7 @@ export default function AgendaVisitasPage() {
                   onChange={(e) => setFiltroHasta(e.target.value)}
                   style={{
                     padding: "6px 8px",
-                    background: "rgba(255,255,255,0.05)",
+                    background: "var(--gfi-border-subtle)",
                     border: "1px solid #222222",
                     borderRadius: 6,
                     color: "#e0e0e0",
@@ -1231,7 +1231,7 @@ export default function AgendaVisitasPage() {
                   {/* Separador de día */}
                   <div
                     style={{
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontSize: 11,
                       fontWeight: 700,
                       letterSpacing: "0.08em",
@@ -1284,7 +1284,7 @@ export default function AgendaVisitasPage() {
                       >
                         <div
                           style={{
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontSize: 13,
                             fontWeight: 800,
                             color: "#e0e0e0",
@@ -1299,7 +1299,7 @@ export default function AgendaVisitasPage() {
                       <div style={{ flex: 1 }}>
                         <div
                           style={{
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontSize: 13,
                             fontWeight: 700,
                             color: "#e0e0e0",
@@ -1335,7 +1335,7 @@ export default function AgendaVisitasPage() {
                             borderRadius: 4,
                             padding: "2px 7px",
                             fontSize: 9,
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             color: ESTADO_COLOR[v.estado],
                             textTransform: "uppercase",
@@ -1431,7 +1431,7 @@ export default function AgendaVisitasPage() {
                 >
                   <div
                     style={{
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontSize: 9,
                       fontWeight: 700,
                       letterSpacing: "0.1em",
@@ -1444,7 +1444,7 @@ export default function AgendaVisitasPage() {
                   </div>
                   <div
                     style={{
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontSize: 22,
                       fontWeight: 800,
                       color,
@@ -1468,7 +1468,7 @@ export default function AgendaVisitasPage() {
             >
               <div
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: "0.08em",
@@ -1613,7 +1613,7 @@ export default function AgendaVisitasPage() {
             >
               <div
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: "0.08em",
@@ -1644,7 +1644,7 @@ export default function AgendaVisitasPage() {
                           key={h}
                           style={{
                             textAlign: "left",
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontSize: 9,
                             fontWeight: 700,
                             letterSpacing: "0.08em",
@@ -1670,7 +1670,7 @@ export default function AgendaVisitasPage() {
                           <td
                             style={{
                               padding: "10px 0",
-                              borderBottom: "1px solid rgba(255,255,255,0.04)",
+                              borderBottom: "1px solid var(--gfi-border-subtle)",
                               fontFamily: "Inter, sans-serif",
                               fontSize: 13,
                               color: "#e0e0e0",
@@ -1681,8 +1681,8 @@ export default function AgendaVisitasPage() {
                           <td
                             style={{
                               padding: "10px 0",
-                              borderBottom: "1px solid rgba(255,255,255,0.04)",
-                              fontFamily: "Montserrat, sans-serif",
+                              borderBottom: "1px solid var(--gfi-border-subtle)",
+                              fontFamily: "var(--font-display)",
                               fontSize: 13,
                               fontWeight: 700,
                               color: "#e0e0e0",
@@ -1693,8 +1693,8 @@ export default function AgendaVisitasPage() {
                           <td
                             style={{
                               padding: "10px 0",
-                              borderBottom: "1px solid rgba(255,255,255,0.04)",
-                              fontFamily: "Montserrat, sans-serif",
+                              borderBottom: "1px solid var(--gfi-border-subtle)",
+                              fontFamily: "var(--font-display)",
                               fontSize: 13,
                               fontWeight: 700,
                               color: pct >= 70 ? "#4ade80" : pct >= 40 ? "#d4960c" : "#f87171",
@@ -1705,7 +1705,7 @@ export default function AgendaVisitasPage() {
                           <td
                             style={{
                               padding: "10px 0",
-                              borderBottom: "1px solid rgba(255,255,255,0.04)",
+                              borderBottom: "1px solid var(--gfi-border-subtle)",
                               fontFamily: "Inter, sans-serif",
                               fontSize: 13,
                               color: "rgba(224,224,224,0.55)",

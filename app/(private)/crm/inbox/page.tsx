@@ -172,36 +172,36 @@ export default function InboxPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0a0a; color: #fff; font-family: Inter,sans-serif; }
         .in-wrap { min-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; }
-        .in-top { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .in-back { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); text-decoration: none; text-transform: uppercase; }
+        .in-top { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--gfi-border-subtle); }
+        .in-back { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--gfi-text-muted); text-decoration: none; text-transform: uppercase; }
         .in-back:hover { color: #fff; }
         .in-titulo { font-family: Montserrat,sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
         .in-badge { background: #990000; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; font-family: Montserrat,sans-serif; }
         .in-spacer { flex: 1; }
         .in-btn-primary { padding: 8px 16px; border-radius: 6px; background: #990000; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: none; }
-        .in-toolbar { display: flex; gap: 8px; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
-        .in-search { flex: 1; min-width: 180px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
-        .in-sel { padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 12px; outline: none; cursor: pointer; }
+        .in-toolbar { display: flex; gap: 8px; padding: 10px 20px; border-bottom: 1px solid var(--gfi-border-subtle); flex-wrap: wrap; }
+        .in-search { flex: 1; min-width: 180px; padding: 8px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
+        .in-sel { padding: 8px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 12px; outline: none; cursor: pointer; }
         .in-list { flex: 1; overflow-y: auto; padding: 14px 20px; display: flex; flex-direction: column; gap: 8px; }
-        .in-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 14px 16px; }
+        .in-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 14px 16px; }
         .in-card:hover { border-color: rgba(255,255,255,0.14); }
         .in-card-top { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
         .in-card-body { flex: 1; }
         .in-nombre { font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 700; color: #fff; }
-        .in-prop { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+        .in-prop { font-size: 11px; color: var(--gfi-text-muted); margin-top: 2px; }
         .in-msg { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 6px; line-height: 1.4; }
-        .in-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; font-size: 11px; color: rgba(255,255,255,0.35); }
+        .in-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; font-size: 11px; color: var(--gfi-text-muted); }
         .in-badge-estado { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 700; font-family: Montserrat,sans-serif; text-transform: uppercase; }
         .in-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-        .in-act-btn { padding: 4px 10px; border-radius: 4px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.55); }
-        .in-act-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .in-empty { text-align: center; color: rgba(255,255,255,0.3); font-size: 14px; padding: 60px 20px; }
+        .in-act-btn { padding: 4px 10px; border-radius: 4px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--gfi-border); background: var(--gfi-border-subtle); color: rgba(255,255,255,0.55); }
+        .in-act-btn:hover { background: var(--gfi-border); color: #fff; }
+        .in-empty { text-align: center; color: var(--gfi-text-muted); font-size: 14px; padding: 60px 20px; }
         .in-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .in-modal { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+        .in-modal { background: #111; border: 1px solid var(--gfi-border); border-radius: 12px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
         .in-modal-title { font-family: Montserrat,sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 18px; }
         .in-field { margin-bottom: 12px; }
-        .in-label { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 4px; display: block; }
-        .in-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; font-family: Inter,sans-serif; }
+        .in-label { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 4px; display: block; }
+        .in-input { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 13px; outline: none; font-family: Inter,sans-serif; }
         .in-input:focus { border-color: rgba(153,0,0,0.5); }
         .in-row { display: flex; gap: 10px; }
         .in-row .in-field { flex: 1; }
@@ -260,7 +260,7 @@ export default function InboxPage() {
                       <span>{timeAgo(l.created_at)}</span>
                       <span style={{ textTransform: "capitalize" }}>{l.origen}</span>
                     </div>
-                    {l.notas && <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>{l.notas}</div>}
+                    {l.notas && <div style={{ marginTop: 6, fontSize: 11, color: "var(--gfi-text-muted)", fontStyle: "italic" }}>{l.notas}</div>}
                     <div className="in-actions">
                       <button className="in-act-btn" onClick={() => abrirEditar(l)}>✏️ Editar</button>
                       {l.estado === "nuevo" && <button className="in-act-btn" style={{ color: "#d4960c", borderColor: "rgba(234,179,8,0.3)" }} onClick={() => cambiarEstado(l.id, "contactado")}>📞 Contactado</button>}
@@ -268,7 +268,7 @@ export default function InboxPage() {
                       {l.estado === "en_seguimiento" && <button className="in-act-btn" style={{ color: "#a78bfa", borderColor: "rgba(167,139,250,0.3)" }} onClick={() => cambiarEstado(l.id, "visita_coordinada")}>🗓 Visita</button>}
                       {!["cerrado", "descartado"].includes(l.estado) && <button className="in-act-btn" style={{ color: "#3abab6", borderColor: "rgba(34,197,94,0.3)" }} onClick={() => cambiarEstado(l.id, "cerrado")}>✓ Cerrado</button>}
                       {l.telefono && <button className="in-act-btn" style={{ color: "#25d366", borderColor: "rgba(37,211,102,0.3)" }} onClick={() => contactarWhatsApp(l)}>📲 WA</button>}
-                      <button className="in-act-btn" style={{ color: "rgba(255,255,255,0.2)" }} onClick={() => eliminar(l.id)}>🗑</button>
+                      <button className="in-act-btn" style={{ color: "var(--gfi-text-dim)" }} onClick={() => eliminar(l.id)}>🗑</button>
                     </div>
                   </div>
                 </div>
@@ -335,7 +335,7 @@ export default function InboxPage() {
             </div>
             <div className="in-modal-actions">
               <button className="in-btn-primary" onClick={guardar} disabled={guardando}>{guardando ? "Guardando..." : editandoId ? "Guardar" : "Crear lead"}</button>
-              <button style={{ padding: "8px 16px", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700 }} onClick={() => setMostrarForm(false)}>Cancelar</button>
+              <button style={{ padding: "8px 16px", background: "var(--gfi-border-subtle)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 6, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700 }} onClick={() => setMostrarForm(false)}>Cancelar</button>
             </div>
           </div>
         </div>

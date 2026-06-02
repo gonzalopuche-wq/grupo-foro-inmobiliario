@@ -200,7 +200,7 @@ export default function LeadsPage() {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
             <span style={{ fontSize: 22 }}>📬</span>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: "#111", margin: 0 }}>Leads de mi web</h1>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--gfi-bg-secondary)", margin: 0 }}>Leads de mi web</h1>
             {noLeidos > 0 && (
               <span style={{ background: "#b80000", color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
                 {noLeidos} nuevo{noLeidos > 1 ? "s" : ""}
@@ -262,7 +262,7 @@ export default function LeadsPage() {
               <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flexWrap: "wrap" }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>{lead.nombre}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--gfi-bg-secondary)" }}>{lead.nombre}</span>
                     <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: TIPO_COLOR[lead.tipo] + "20", color: TIPO_COLOR[lead.tipo], border: `1px solid ${TIPO_COLOR[lead.tipo]}40` }}>
                       {TIPO_LABEL[lead.tipo]}
                     </span>

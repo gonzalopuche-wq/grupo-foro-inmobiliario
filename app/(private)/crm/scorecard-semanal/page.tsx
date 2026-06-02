@@ -195,7 +195,7 @@ function ScoreCircle({ score }: { score: number }) {
         x={cx}
         y={cy + 22}
         textAnchor="middle"
-        fill="rgba(255,255,255,0.5)"
+        fill="var(--gfi-text-secondary)"
         fontSize={11}
         fontFamily="Inter, sans-serif"
       >
@@ -218,7 +218,7 @@ function HistoricoChart({ semanas }: { semanas: SemanaScore[] }) {
   const chartH = H - padT - padB;
 
   const n = semanas.length;
-  if (n === 0) return <div style={{ color: "rgba(255,255,255,0.4)", padding: 40, textAlign: "center" }}>Sin datos históricos</div>;
+  if (n === 0) return <div style={{ color: "var(--gfi-text-muted)", padding: 40, textAlign: "center" }}>Sin datos históricos</div>;
 
   const xOf = (i: number) => padL + (i / (n - 1 || 1)) * chartW;
   const yOf = (score: number) => padT + chartH - (score / 100) * chartH;
@@ -240,7 +240,7 @@ function HistoricoChart({ semanas }: { semanas: SemanaScore[] }) {
       {yLabels.map((v) => (
         <g key={v}>
           <line x1={padL} y1={yOf(v)} x2={padL + chartW} y2={yOf(v)} stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
-          <text x={padL - 6} y={yOf(v)} textAnchor="end" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize={10} fontFamily="Inter, sans-serif">
+          <text x={padL - 6} y={yOf(v)} textAnchor="end" dominantBaseline="middle" fill="var(--gfi-text-muted)" fontSize={10} fontFamily="Inter, sans-serif">
             {v}
           </text>
         </g>
@@ -505,17 +505,17 @@ export default function ScorecardSemanal() {
       borderRadius: 20,
       border: "none",
       cursor: "pointer",
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       fontSize: 13,
       background: active ? "#990000" : "#1a1a1a",
-      color: active ? "#fff" : "rgba(255,255,255,0.6)",
+      color: active ? "#fff" : "var(--gfi-text-secondary)",
       transition: "background 0.2s",
     };
   }
 
   const cardStyle: React.CSSProperties = {
-    background: "#111",
+    background: "var(--gfi-bg-secondary)",
     border: "1px solid #222",
     borderRadius: 12,
     padding: 24,
@@ -523,7 +523,7 @@ export default function ScorecardSemanal() {
   };
 
   const sectionTitleStyle: React.CSSProperties = {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 15,
     color: "rgba(255,255,255,0.85)",
@@ -560,7 +560,7 @@ export default function ScorecardSemanal() {
     border: "none",
     borderRadius: 8,
     padding: "10px 24px",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 14,
     cursor: "pointer",
@@ -569,7 +569,7 @@ export default function ScorecardSemanal() {
   const labelStyle: React.CSSProperties = {
     fontFamily: "Inter, sans-serif",
     fontSize: 12,
-    color: "rgba(255,255,255,0.5)",
+    color: "var(--gfi-text-secondary)",
     marginBottom: 4,
     display: "block",
   };
@@ -580,7 +580,7 @@ export default function ScorecardSemanal() {
     <div style={containerStyle}>
       {/* Header */}
       <div style={headerStyle}>
-        <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#fff", margin: 0 }}>
+        <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: "#fff", margin: 0 }}>
           Scorecard Semanal
         </h1>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -618,7 +618,7 @@ export default function ScorecardSemanal() {
           {/* Score Circle */}
           <div style={{ ...cardStyle, textAlign: "center", paddingTop: 32, paddingBottom: 32 }}>
             <ScoreCircle score={scoreActual} />
-            <p style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "rgba(255,255,255,0.7)", marginTop: 12, marginBottom: 0 }}>
+            <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "var(--gfi-text-primary)", marginTop: 12, marginBottom: 0 }}>
               Rendimiento semanal
             </p>
             <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: scoreColor(scoreActual), marginTop: 4, marginBottom: 0 }}>
@@ -630,7 +630,7 @@ export default function ScorecardSemanal() {
           <div style={cardStyle}>
             <p style={sectionTitleStyle}>Actividad semanal</p>
             {loading && (
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>
+              <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 12 }}>
                 Cargando datos de Supabase...
               </p>
             )}
@@ -656,12 +656,12 @@ export default function ScorecardSemanal() {
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
+                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "var(--gfi-text-secondary)" }}>
                         {label}
                       </span>
-                      <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: "#fff" }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "#fff" }}>
                         {real}
-                        <span style={{ color: "rgba(255,255,255,0.35)", fontWeight: 400 }}> / {meta}</span>
+                        <span style={{ color: "var(--gfi-text-muted)", fontWeight: 400 }}> / {meta}</span>
                       </span>
                     </div>
                     {/* Barra de progreso */}
@@ -698,28 +698,28 @@ export default function ScorecardSemanal() {
           {/* KPIs Supabase */}
           <div style={{ ...cardStyle, display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center" }}>
             <div>
-              <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "var(--gfi-text-secondary)" }}>
                 Negocios cerrados
               </span>
-              <p style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#990000", margin: "4px 0 0" }}>
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: "#990000", margin: "4px 0 0" }}>
                 {semanaData.negociosCerrados}
               </p>
             </div>
             <div style={{ width: 1, background: "#333", alignSelf: "stretch" }} />
             <div>
-              <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "var(--gfi-text-secondary)" }}>
                 Honorarios generados
               </span>
-              <p style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, color: "#27ae60", margin: "4px 0 0" }}>
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, color: "#27ae60", margin: "4px 0 0" }}>
                 {formatARS(semanaData.honorariosGenerados)}
               </p>
             </div>
             <div style={{ width: 1, background: "#333", alignSelf: "stretch" }} />
             <div>
-              <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "var(--gfi-text-secondary)" }}>
                 Contactos nuevos
               </span>
-              <p style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#f5a623", margin: "4px 0 0" }}>
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: "#f5a623", margin: "4px 0 0" }}>
                 {semanaData.contactosNuevos}
               </p>
             </div>
@@ -772,7 +772,7 @@ export default function ScorecardSemanal() {
                         style={{
                           textAlign: "left",
                           padding: "8px 12px",
-                          color: "rgba(255,255,255,0.5)",
+                          color: "var(--gfi-text-secondary)",
                           fontWeight: 600,
                           borderBottom: "1px solid #222",
                           whiteSpace: "nowrap",
@@ -809,7 +809,7 @@ export default function ScorecardSemanal() {
                       <td style={{ padding: "10px 12px" }}>
                         <span
                           style={{
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             fontSize: 14,
                             color: scoreColor(s.score),
@@ -861,7 +861,7 @@ export default function ScorecardSemanal() {
                     style={inputStyle}
                   />
                   {PESOS[key] > 0 && (
-                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "rgba(255,255,255,0.3)", display: "block", marginTop: 4 }}>
+                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "var(--gfi-text-muted)", display: "block", marginTop: 4 }}>
                       Peso en score: {PESOS[key]}%
                     </span>
                   )}

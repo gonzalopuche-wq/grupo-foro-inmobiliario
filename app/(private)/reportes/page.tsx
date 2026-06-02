@@ -253,13 +253,13 @@ ${comisiones.length > 0 ? `<div class="section">
       {/* Header */}
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:28,flexWrap:'wrap',gap:12}}>
         <div>
-          <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:6}}>Panel de Reportes</div>
+          <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.18em',textTransform:'uppercase',color:'var(--gfi-text-dim)',marginBottom:6}}>Panel de Reportes</div>
           <h1 style={{fontFamily:'Montserrat,sans-serif',fontSize:22,fontWeight:800,color:'#fff',margin:0}}>Tu actividad como corredor</h1>
-          <p style={{fontSize:12,color:'rgba(255,255,255,0.35)',marginTop:4,margin:'4px 0 0'}}>Métricas clave · Comisiones · Pipeline · Actividad</p>
+          <p style={{fontSize:12,color:'var(--gfi-text-muted)',marginTop:4,margin:'4px 0 0'}}>Métricas clave · Comisiones · Pipeline · Actividad</p>
         </div>
         <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center'}}>
           {PERIODOS.map(p => (
-            <button key={p.key} onClick={()=>cambiarPeriodo(p.key)} style={{padding:'7px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:periodo===p.key?'rgba(153,0,0,0.15)':'rgba(255,255,255,0.04)',color:periodo===p.key?'#ff6666':'rgba(255,255,255,0.4)',outline:periodo===p.key?'1px solid rgba(153,0,0,0.35)':'none'}}>
+            <button key={p.key} onClick={()=>cambiarPeriodo(p.key)} style={{padding:'7px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:periodo===p.key?'rgba(153,0,0,0.15)':'var(--gfi-border-subtle)',color:periodo===p.key?'#ff6666':'var(--gfi-text-muted)',outline:periodo===p.key?'1px solid rgba(153,0,0,0.35)':'none'}}>
               {p.label}
             </button>
           ))}
@@ -272,26 +272,26 @@ ${comisiones.length > 0 ? `<div class="section">
       </div>
 
       {cargando ? (
-        <div style={{textAlign:'center',padding:'64px 0',color:'rgba(255,255,255,0.3)'}}>Cargando métricas...</div>
+        <div style={{textAlign:'center',padding:'64px 0',color:'var(--gfi-text-muted)'}}>Cargando métricas...</div>
       ) : (<>
 
         {/* KPI Grid */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:12,marginBottom:28}}>
           {KPI_CARDS.map(m => (
-            <div key={m.label} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:'18px 20px'}}>
+            <div key={m.label} style={{background:'var(--gfi-bg-card)',border:'1px solid var(--gfi-border-subtle)',borderRadius:12,padding:'18px 20px'}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
                 <span style={{fontSize:18}}>{m.icon}</span>
-                <span style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase',color:'rgba(255,255,255,0.3)'}}>{m.label}</span>
+                <span style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase',color:'var(--gfi-text-muted)'}}>{m.label}</span>
               </div>
               <div style={{fontFamily:'Montserrat,sans-serif',fontSize:32,fontWeight:800,color:m.color,lineHeight:1}}>{m.valor}</div>
-              <div style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginTop:4}}>{m.sub}</div>
+              <div style={{fontSize:11,color:'var(--gfi-text-muted)',marginTop:4}}>{m.sub}</div>
             </div>
           ))}
         </div>
 
         {/* Resumen de comisiones */}
-        <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:'20px 24px',marginBottom:20}}>
-          <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',marginBottom:16}}>Resumen de honorarios</div>
+        <div style={{background:'var(--gfi-bg-card)',border:'1px solid var(--gfi-border-subtle)',borderRadius:12,padding:'20px 24px',marginBottom:20}}>
+          <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'var(--gfi-text-muted)',textTransform:'uppercase',marginBottom:16}}>Resumen de honorarios</div>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))',gap:16}}>
             {[
               {label:'Total registrado',valor:fmtMoneda(comTotal),color:'#fff',sub:`${comisiones.length} operaciones`},
@@ -299,9 +299,9 @@ ${comisiones.length > 0 ? `<div class="section">
               {label:'Pendiente de cobro',valor:fmtMoneda(comPendientes),color:'#d4960c',sub:`${comisiones.filter(c=>c.estado==='pendiente').length} operaciones`},
             ].map(card => (
               <div key={card.label} style={{background:'rgba(0,0,0,0.3)',borderRadius:10,padding:'14px 16px'}}>
-                <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginBottom:6}}>{card.label}</div>
+                <div style={{fontSize:11,color:'var(--gfi-text-muted)',marginBottom:6}}>{card.label}</div>
                 <div style={{fontFamily:'Montserrat,sans-serif',fontSize:20,fontWeight:800,color:card.color}}>{card.valor}</div>
-                <div style={{fontSize:10,color:'rgba(255,255,255,0.25)',marginTop:3}}>{card.sub}</div>
+                <div style={{fontSize:10,color:'var(--gfi-text-dim)',marginTop:3}}>{card.sub}</div>
               </div>
             ))}
           </div>
@@ -310,7 +310,7 @@ ${comisiones.length > 0 ? `<div class="section">
           {comTotal > 0 && (
             <div style={{marginTop:16}}>
               <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
-                <span style={{fontSize:11,color:'rgba(255,255,255,0.4)'}}>Ratio de cobro</span>
+                <span style={{fontSize:11,color:'var(--gfi-text-muted)'}}>Ratio de cobro</span>
                 <span style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'#3abab6'}}>{Math.round((comCobradas/comTotal)*100)}%</span>
               </div>
               <div style={{height:8,background:'rgba(255,255,255,0.06)',borderRadius:4,overflow:'hidden'}}>
@@ -322,13 +322,13 @@ ${comisiones.length > 0 ? `<div class="section">
           {/* Últimas comisiones */}
           {comisiones.length > 0 && (
             <div style={{marginTop:16}}>
-              <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.2)',marginBottom:10}}>Últimas operaciones</div>
+              <div style={{fontSize:10,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--gfi-text-dim)',marginBottom:10}}>Últimas operaciones</div>
               <div style={{display:'flex',flexDirection:'column',gap:6}}>
                 {comisiones.slice(0,5).map(c => (
-                  <div key={c.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',background:'rgba(255,255,255,0.02)',borderRadius:7,gap:12}}>
+                  <div key={c.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',background:'var(--gfi-bg-secondary)',borderRadius:7,gap:12}}>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontSize:12,color:'rgba(255,255,255,0.75)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.descripcion}</div>
-                      <div style={{fontSize:10,color:'rgba(255,255,255,0.3)',marginTop:2}}>
+                      <div style={{fontSize:10,color:'var(--gfi-text-muted)',marginTop:2}}>
                         {c.tipo_operacion} · {c.fecha_operacion ? new Date(c.fecha_operacion+'T12:00').toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'}) : '—'}
                       </div>
                     </div>
@@ -336,7 +336,7 @@ ${comisiones.length > 0 ? `<div class="section">
                       <div style={{fontFamily:'Montserrat,sans-serif',fontSize:13,fontWeight:700,color:c.estado==='cobrada'?'#3abab6':'#d4960c'}}>
                         {fmtMoneda(c.monto_comision, c.moneda_comision)}
                       </div>
-                      <div style={{fontSize:9,color:c.estado==='cobrada'?'#3abab6':'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.05em'}}>{c.estado}</div>
+                      <div style={{fontSize:9,color:c.estado==='cobrada'?'#3abab6':'var(--gfi-text-muted)',textTransform:'uppercase',letterSpacing:'0.05em'}}>{c.estado}</div>
                     </div>
                   </div>
                 ))}
@@ -349,32 +349,32 @@ ${comisiones.length > 0 ? `<div class="section">
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
 
           {/* Actividad mensual — barras */}
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:'20px 20px'}}>
-            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',marginBottom:16}}>Actividad mensual</div>
+          <div style={{background:'var(--gfi-bg-card)',border:'1px solid var(--gfi-border-subtle)',borderRadius:12,padding:'20px 20px'}}>
+            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'var(--gfi-text-muted)',textTransform:'uppercase',marginBottom:16}}>Actividad mensual</div>
             <div style={{display:'flex',alignItems:'flex-end',gap:6,height:100}}>
               {barras.map(b => {
                 const pct = Math.round((b.interacciones/maxBarra)*100)
                 return (
                   <div key={b.mes} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
                     <div style={{width:'100%',background:'rgba(139,92,246,0.25)',borderRadius:'3px 3px 0 0',height:`${Math.max(pct,3)}%`,position:'relative',display:'flex',alignItems:'flex-end',justifyContent:'center',minHeight:3}}>
-                      {b.interacciones > 0 && <span style={{position:'absolute',top:-16,fontSize:9,color:'rgba(255,255,255,0.4)',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>{b.interacciones}</span>}
+                      {b.interacciones > 0 && <span style={{position:'absolute',top:-16,fontSize:9,color:'var(--gfi-text-muted)',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>{b.interacciones}</span>}
                     </div>
-                    <span style={{fontSize:9,color:'rgba(255,255,255,0.3)',fontFamily:'Montserrat,sans-serif'}}>{b.label}</span>
+                    <span style={{fontSize:9,color:'var(--gfi-text-muted)',fontFamily:'Montserrat,sans-serif'}}>{b.label}</span>
                   </div>
                 )
               })}
             </div>
             <div style={{display:'flex',alignItems:'center',gap:6,marginTop:12}}>
               <div style={{width:10,height:10,borderRadius:2,background:'rgba(139,92,246,0.5)'}}/>
-              <span style={{fontSize:10,color:'rgba(255,255,255,0.3)'}}>Interacciones CRM</span>
+              <span style={{fontSize:10,color:'var(--gfi-text-muted)'}}>Interacciones CRM</span>
             </div>
           </div>
 
           {/* Pipeline de negocios */}
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:'20px 20px'}}>
-            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',marginBottom:16}}>Pipeline de negocios</div>
+          <div style={{background:'var(--gfi-bg-card)',border:'1px solid var(--gfi-border-subtle)',borderRadius:12,padding:'20px 20px'}}>
+            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'var(--gfi-text-muted)',textTransform:'uppercase',marginBottom:16}}>Pipeline de negocios</div>
             {etapas.length === 0 ? (
-              <div style={{color:'rgba(255,255,255,0.2)',fontSize:12,textAlign:'center',padding:'24px 0'}}>Sin negocios registrados</div>
+              <div style={{color:'var(--gfi-text-dim)',fontSize:12,textAlign:'center',padding:'24px 0'}}>Sin negocios registrados</div>
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:10}}>
                 {etapas.map(e => {
@@ -383,7 +383,7 @@ ${comisiones.length > 0 ? `<div class="section">
                   return (
                     <div key={e.etapa}>
                       <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
-                        <span style={{fontSize:12,color:'rgba(255,255,255,0.6)',textTransform:'capitalize'}}>{e.etapa}</span>
+                        <span style={{fontSize:12,color:'var(--gfi-text-secondary)',textTransform:'capitalize'}}>{e.etapa}</span>
                         <span style={{fontSize:12,fontFamily:'Montserrat,sans-serif',fontWeight:700,color}}>{e.count}</span>
                       </div>
                       <div style={{height:5,background:'rgba(255,255,255,0.06)',borderRadius:3,overflow:'hidden'}}>
@@ -401,34 +401,34 @@ ${comisiones.length > 0 ? `<div class="section">
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
 
           {/* Comisiones por mes */}
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:'20px 20px'}}>
-            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',marginBottom:16}}>Honorarios por mes</div>
+          <div style={{background:'var(--gfi-bg-card)',border:'1px solid var(--gfi-border-subtle)',borderRadius:12,padding:'20px 20px'}}>
+            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'var(--gfi-text-muted)',textTransform:'uppercase',marginBottom:16}}>Honorarios por mes</div>
             <div style={{display:'flex',alignItems:'flex-end',gap:6,height:100}}>
               {barras.map(b => {
                 const pct = maxCom > 0 ? Math.round((b.comisiones/maxCom)*100) : 0
                 return (
                   <div key={b.mes} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
                     <div style={{width:'100%',background:'rgba(34,197,94,0.25)',borderRadius:'3px 3px 0 0',height:`${Math.max(pct,3)}%`,position:'relative',minHeight:3}}>
-                      {b.comisiones > 0 && <span style={{position:'absolute',top:-14,fontSize:7,color:'rgba(255,255,255,0.35)',fontFamily:'Montserrat,sans-serif',fontWeight:700,left:'50%',transform:'translateX(-50%)',whiteSpace:'nowrap'}}>
+                      {b.comisiones > 0 && <span style={{position:'absolute',top:-14,fontSize:7,color:'var(--gfi-text-muted)',fontFamily:'Montserrat,sans-serif',fontWeight:700,left:'50%',transform:'translateX(-50%)',whiteSpace:'nowrap'}}>
                         {b.comisiones >= 1000000 ? `${(b.comisiones/1000000).toFixed(1)}M` : b.comisiones >= 1000 ? `${(b.comisiones/1000).toFixed(0)}K` : b.comisiones}
                       </span>}
                     </div>
-                    <span style={{fontSize:9,color:'rgba(255,255,255,0.3)',fontFamily:'Montserrat,sans-serif'}}>{b.label}</span>
+                    <span style={{fontSize:9,color:'var(--gfi-text-muted)',fontFamily:'Montserrat,sans-serif'}}>{b.label}</span>
                   </div>
                 )
               })}
             </div>
             <div style={{display:'flex',alignItems:'center',gap:6,marginTop:12}}>
               <div style={{width:10,height:10,borderRadius:2,background:'rgba(34,197,94,0.5)'}}/>
-              <span style={{fontSize:10,color:'rgba(255,255,255,0.3)'}}>Honorarios ARS</span>
+              <span style={{fontSize:10,color:'var(--gfi-text-muted)'}}>Honorarios ARS</span>
             </div>
           </div>
 
           {/* Propiedades por zona */}
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:'20px 20px'}}>
-            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',marginBottom:14}}>Cartera por zona</div>
+          <div style={{background:'var(--gfi-bg-card)',border:'1px solid var(--gfi-border-subtle)',borderRadius:12,padding:'20px 20px'}}>
+            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'var(--gfi-text-muted)',textTransform:'uppercase',marginBottom:14}}>Cartera por zona</div>
             {zonas.length === 0 ? (
-              <div style={{color:'rgba(255,255,255,0.2)',fontSize:12,textAlign:'center',padding:'24px 0'}}>Sin propiedades en cartera</div>
+              <div style={{color:'var(--gfi-text-dim)',fontSize:12,textAlign:'center',padding:'24px 0'}}>Sin propiedades en cartera</div>
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:8}}>
                 {zonas.map(z => {
@@ -452,22 +452,22 @@ ${comisiones.length > 0 ? `<div class="section">
 
         {/* Tareas + Productividad */}
         {kpis && kpis.tareas_total > 0 && (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:'20px 24px',marginBottom:20}}>
-            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',marginBottom:14}}>Productividad — Tareas CRM</div>
+          <div style={{background:'var(--gfi-bg-card)',border:'1px solid var(--gfi-border-subtle)',borderRadius:12,padding:'20px 24px',marginBottom:20}}>
+            <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'var(--gfi-text-muted)',textTransform:'uppercase',marginBottom:14}}>Productividad — Tareas CRM</div>
             <div style={{display:'flex',gap:24,alignItems:'center',flexWrap:'wrap'}}>
               {[
                 {label:'Completadas',valor:kpis.tareas_completadas,color:'#3abab6'},
                 {label:'Pendientes',valor:kpis.tareas_total-kpis.tareas_completadas,color:'#d4960c'},
-                {label:'Total',valor:kpis.tareas_total,color:'rgba(255,255,255,0.6)'},
+                {label:'Total',valor:kpis.tareas_total,color:'var(--gfi-text-secondary)'},
               ].map(s=>(
                 <div key={s.label} style={{textAlign:'center'}}>
                   <div style={{fontFamily:'Montserrat,sans-serif',fontSize:26,fontWeight:800,color:s.color}}>{s.valor}</div>
-                  <div style={{fontSize:10,color:'rgba(255,255,255,0.3)',marginTop:2}}>{s.label}</div>
+                  <div style={{fontSize:10,color:'var(--gfi-text-muted)',marginTop:2}}>{s.label}</div>
                 </div>
               ))}
               <div style={{flex:1,minWidth:140}}>
                 <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
-                  <span style={{fontSize:11,color:'rgba(255,255,255,0.4)'}}>Completadas</span>
+                  <span style={{fontSize:11,color:'var(--gfi-text-muted)'}}>Completadas</span>
                   <span style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'#3abab6'}}>{Math.round((kpis.tareas_completadas/kpis.tareas_total)*100)}%</span>
                 </div>
                 <div style={{height:8,background:'rgba(255,255,255,0.06)',borderRadius:4,overflow:'hidden'}}>
@@ -484,7 +484,7 @@ ${comisiones.length > 0 ? `<div class="section">
             {href:'/crm',label:'Ir al CRM',icon:'👥'},
             {href:'/cartera',label:'Ver cartera',icon:'🏠'},
           ].map(l=>(
-            <a key={l.href} href={l.href} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:8,color:'rgba(255,255,255,0.5)',fontSize:12,textDecoration:'none',fontFamily:'Montserrat,sans-serif',fontWeight:600,transition:'all 0.15s'}}>
+            <a key={l.href} href={l.href} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',background:'var(--gfi-border-subtle)',border:'1px solid var(--gfi-border)',borderRadius:8,color:'var(--gfi-text-secondary)',fontSize:12,textDecoration:'none',fontFamily:'Montserrat,sans-serif',fontWeight:600,transition:'all 0.15s'}}>
               <span>{l.icon}</span>{l.label}
             </a>
           ))}

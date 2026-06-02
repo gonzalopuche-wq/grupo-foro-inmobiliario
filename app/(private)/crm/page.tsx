@@ -140,7 +140,7 @@ export default function CrmDashboard() {
     <>
       <style>{`
         .dash-titulo {
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
           font-size: 20px; font-weight: 800; color: #fff;
           margin-bottom: 20px;
         }
@@ -153,7 +153,7 @@ export default function CrmDashboard() {
           gap: 12px; margin-bottom: 24px;
         }
         .dash-kpi {
-          background: #111; border: 1px solid rgba(255,255,255,0.08);
+          background: #111; border: 1px solid var(--gfi-border);
           border-radius: 10px; padding: 16px 18px;
           display: flex; flex-direction: column; gap: 6px;
           transition: border-color 0.2s;
@@ -161,20 +161,20 @@ export default function CrmDashboard() {
         }
         .dash-kpi:hover { border-color: rgba(153,0,0,0.3); }
         .dash-kpi-num {
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
           font-size: 28px; font-weight: 800; color: #fff;
         }
         .dash-kpi-lbl {
           font-size: 11px; color: rgba(255,255,255,0.45);
-          font-family: 'Inter', sans-serif; font-weight: 500;
+          font-family: var(--font-body); font-weight: 500;
         }
         .dash-kpi-ico { font-size: 20px; }
 
         /* Acciones rápidas */
         .dash-acciones-titulo {
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
           font-size: 9px; font-weight: 700; letter-spacing: 0.2em;
-          text-transform: uppercase; color: rgba(255,255,255,0.3);
+          text-transform: uppercase; color: var(--gfi-text-muted);
           margin-bottom: 10px; margin-top: 4px;
         }
         .dash-acciones {
@@ -183,13 +183,13 @@ export default function CrmDashboard() {
           gap: 10px; margin-bottom: 24px;
         }
         .dash-accion {
-          background: #111; border: 1px solid rgba(255,255,255,0.08);
+          background: #111; border: 1px solid var(--gfi-border);
           border-radius: 10px; padding: 14px 16px;
           display: flex; align-items: center; gap: 12px;
           text-decoration: none;
           transition: background 0.15s, border-color 0.15s;
         }
-        .dash-accion:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.15); }
+        .dash-accion:hover { background: var(--gfi-border-subtle); border-color: rgba(255,255,255,0.15); }
         .dash-accion-ico {
           width: 36px; height: 36px; border-radius: 8px;
           display: flex; align-items: center; justify-content: center;
@@ -198,7 +198,7 @@ export default function CrmDashboard() {
         .dash-accion-lbl {
           font-size: 12px; font-weight: 600;
           color: rgba(255,255,255,0.8);
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
         }
 
         /* Grid inferior */
@@ -206,19 +206,19 @@ export default function CrmDashboard() {
 
         /* Sección card */
         .dash-card {
-          background: #111; border: 1px solid rgba(255,255,255,0.08);
+          background: #111; border: 1px solid var(--gfi-border);
           border-radius: 10px; overflow: hidden;
         }
         .dash-card-head {
           display: flex; align-items: center; justify-content: space-between;
           padding: 14px 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
+          border-bottom: 1px solid var(--gfi-border-subtle);
         }
         .dash-card-head-lbl {
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
           font-size: 10px; font-weight: 700;
           letter-spacing: 0.16em; text-transform: uppercase;
-          color: rgba(255,255,255,0.5);
+          color: var(--gfi-text-secondary);
         }
         .dash-card-head a {
           font-size: 11px; color: #990000; text-decoration: none;
@@ -229,7 +229,7 @@ export default function CrmDashboard() {
         .dash-tarea {
           display: flex; align-items: flex-start; gap: 10px;
           padding: 12px 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--gfi-border-subtle);
         }
         .dash-tarea:last-child { border-bottom: none; }
         .dash-tarea-dot {
@@ -242,16 +242,16 @@ export default function CrmDashboard() {
           color: rgba(255,255,255,0.85);
           overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-        .dash-tarea-meta { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+        .dash-tarea-meta { font-size: 11px; color: var(--gfi-text-muted); margin-top: 2px; }
         .dash-tarea-vence {
           font-size: 11px; font-weight: 600; flex-shrink: 0;
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
         }
 
         /* Ítem de actividad */
         .dash-act-item {
           display: flex; gap: 10px; padding: 11px 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--gfi-border-subtle);
         }
         .dash-act-item:last-child { border-bottom: none; }
         .dash-act-ico { font-size: 15px; flex-shrink: 0; padding-top: 1px; }
@@ -260,11 +260,11 @@ export default function CrmDashboard() {
           font-size: 12px; color: rgba(255,255,255,0.75);
           overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-        .dash-act-meta { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+        .dash-act-meta { font-size: 10px; color: var(--gfi-text-muted); margin-top: 2px; }
 
         .dash-empty {
           padding: 24px 16px; text-align: center;
-          font-size: 12px; color: rgba(255,255,255,0.2);
+          font-size: 12px; color: var(--gfi-text-dim);
           font-style: italic;
         }
 
@@ -337,7 +337,7 @@ export default function CrmDashboard() {
             ) : tareasPendientes.map(t => {
               const fechaLabel = formatFechaCorta(t.fecha_vencimiento);
               const venceColor = t.fecha_vencimiento && new Date(t.fecha_vencimiento) < new Date()
-                ? "#b80000" : "rgba(255,255,255,0.4)";
+                ? "#b80000" : "var(--gfi-text-muted)";
               return (
                 <Link key={t.id} href={`/crm/tareas#${t.id}`} style={{textDecoration:"none"}}>
                   <div className="dash-tarea">

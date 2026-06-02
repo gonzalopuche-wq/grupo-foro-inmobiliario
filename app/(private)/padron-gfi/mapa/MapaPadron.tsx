@@ -42,7 +42,7 @@ function makeZonaIcon(count: number, activos: number) {
       display:flex;align-items:center;justify-content:center;
       font-family:Montserrat,sans-serif;font-weight:800;
       font-size:${count > 99 ? 11 : 13}px;
-      border:2px solid rgba(255,255,255,0.3);
+      border:2px solid var(--gfi-text-muted);
       box-shadow:0 2px 8px rgba(0,0,0,0.4);
     ">${count}</div>`
   const size = Math.min(20 + count * 2, 56)
@@ -180,24 +180,24 @@ export default function MapaPadron() {
   const s = {
     page: { minHeight: '100vh', color: '#fff', fontFamily: 'Inter,sans-serif' },
     topBar: { padding: '16px 20px 0', maxWidth: 1400, margin: '0 auto' },
-    breadcrumb: { fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 },
+    breadcrumb: { fontSize: 12, color: 'var(--gfi-text-muted)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 },
     titulo: { margin: '0 0 12px', fontSize: 18, fontWeight: 800, fontFamily: 'Montserrat,sans-serif' },
     barra: { display: 'flex', gap: 8, flexWrap: 'wrap' as const, marginBottom: 12, alignItems: 'center' },
-    input: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#fff', padding: '6px 12px', fontSize: 12, outline: 'none', flex: 1, minWidth: 160 },
-    sel: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#fff', padding: '6px 10px', fontSize: 12, outline: 'none' },
+    input: { background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 6, color: '#fff', padding: '6px 12px', fontSize: 12, outline: 'none', flex: 1, minWidth: 160 },
+    sel: { background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 6, color: '#fff', padding: '6px 10px', fontSize: 12, outline: 'none' },
     mapWrap: { width: '100%', height: '55vh', minHeight: 340 },
     panel: { maxWidth: 1400, margin: '0 auto', padding: '16px 20px', display: 'grid', gridTemplateColumns: zonaSeleccionada ? '1fr 360px' : '1fr', gap: 16 },
-    zonaCard: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '12px 16px', marginBottom: 8 },
-    corrCard: { display: 'flex', gap: 10, padding: '8px 12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, marginBottom: 6 },
+    zonaCard: { background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border-subtle)', borderRadius: 8, padding: '12px 16px', marginBottom: 8 },
+    corrCard: { display: 'flex', gap: 10, padding: '8px 12px', background: 'var(--gfi-bg-secondary)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, marginBottom: 6 },
   }
 
   return (
     <div style={s.page}>
       <div style={s.topBar}>
         <div style={s.breadcrumb}>
-          <a href="/padron-gfi" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Padrón COCIR</a>
+          <a href="/padron-gfi" style={{ color: 'var(--gfi-text-muted)', textDecoration: 'none' }}>Padrón COCIR</a>
           <span>/</span>
-          <span style={{ color: 'rgba(255,255,255,0.6)' }}>Mapa de zonas</span>
+          <span style={{ color: 'var(--gfi-text-secondary)' }}>Mapa de zonas</span>
         </div>
         <h1 style={s.titulo}>📍 Mapa de corredores por zona</h1>
 
@@ -213,7 +213,7 @@ export default function MapaPadron() {
             <option value="habilitado">Habilitados</option>
             <option value="suspendido">Suspendidos</option>
           </select>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
+          <span style={{ fontSize: 11, color: 'var(--gfi-text-dim)' }}>
             {cargando ? 'Cargando…' : `${corredores.length} con ubicación · ${pendientes} sin geocodificar`}
           </span>
           {esAdmin && pendientes > 0 && (
@@ -243,7 +243,7 @@ export default function MapaPadron() {
           </MapContainer>
         )}
         {cargando && (
-          <div style={{ width: '100%', height: '100%', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>
+          <div style={{ width: '100%', height: '100%', background: 'var(--gfi-bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gfi-text-muted)', fontSize: 13 }}>
             Cargando mapa…
           </div>
         )}
@@ -252,13 +252,13 @@ export default function MapaPadron() {
       <div style={s.panel}>
         {/* Lista de zonas */}
         <div>
-          <div style={{ fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
+          <div style={{ fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'var(--gfi-text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
             {zonasFiltradas.length} zona{zonasFiltradas.length !== 1 ? 's' : ''} con ubicación
           </div>
           {zonasFiltradas.slice(0, 20).map(z => (
             <div
               key={z.localidad}
-              style={{ ...s.zonaCard, cursor: 'pointer', borderColor: zonaSeleccionada?.localidad === z.localidad ? 'rgba(153,0,0,0.4)' : 'rgba(255,255,255,0.07)' }}
+              style={{ ...s.zonaCard, cursor: 'pointer', borderColor: zonaSeleccionada?.localidad === z.localidad ? 'rgba(153,0,0,0.4)' : 'var(--gfi-border-subtle)' }}
               onClick={() => setZonaSeleccionada(zonaSeleccionada?.localidad === z.localidad ? null : z)}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -267,7 +267,7 @@ export default function MapaPadron() {
                   {z.corredores.length}
                 </span>
               </div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>
+              <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', marginTop: 3 }}>
                 {z.corredores.filter(c => c.estado?.toLowerCase().includes('habilitado') || c.estado?.toLowerCase().includes('activo')).length} habilitados
               </div>
             </div>
@@ -280,9 +280,9 @@ export default function MapaPadron() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div>
                 <div style={{ fontFamily: 'Montserrat,sans-serif', fontWeight: 800, fontSize: 15 }}>{zonaSeleccionada.localidad}</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{zonaSeleccionada.corredores.length} corredores</div>
+                <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)' }}>{zonaSeleccionada.corredores.length} corredores</div>
               </div>
-              <button onClick={() => setZonaSeleccionada(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 18, cursor: 'pointer' }}>✕</button>
+              <button onClick={() => setZonaSeleccionada(null)} style={{ background: 'none', border: 'none', color: 'var(--gfi-text-muted)', fontSize: 18, cursor: 'pointer' }}>✕</button>
             </div>
             <div style={{ maxHeight: '50vh', overflowY: 'auto' }}>
               {zonaSeleccionada.corredores.map(c => (
@@ -290,19 +290,19 @@ export default function MapaPadron() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, fontSize: 12 }}>
                       {c.apellido}, {c.nombre}
-                      {c.matricula && <span style={{ marginLeft: 6, fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>Mat. {c.matricula}</span>}
+                      {c.matricula && <span style={{ marginLeft: 6, fontSize: 10, color: 'var(--gfi-text-muted)' }}>Mat. {c.matricula}</span>}
                     </div>
-                    {c.inmobiliaria && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 1 }}>{c.inmobiliaria}</div>}
-                    {c.direccion && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 1 }}>📍 {c.direccion}</div>}
-                    {c.telefono && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>📞 {c.telefono}</div>}
+                    {c.inmobiliaria && <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', marginTop: 1 }}>{c.inmobiliaria}</div>}
+                    {c.direccion && <div style={{ fontSize: 10, color: 'var(--gfi-text-dim)', marginTop: 1 }}>📍 {c.direccion}</div>}
+                    {c.telefono && <div style={{ fontSize: 10, color: 'var(--gfi-text-dim)' }}>📞 {c.telefono}</div>}
                   </div>
                   <div style={{ flexShrink: 0, textAlign: 'right' }}>
                     <span style={{
                       fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
                       background: c.estado?.toLowerCase().includes('habilitado') || c.estado?.toLowerCase().includes('activo')
-                        ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
+                        ? 'rgba(34,197,94,0.15)' : 'var(--gfi-border-subtle)',
                       color: c.estado?.toLowerCase().includes('habilitado') || c.estado?.toLowerCase().includes('activo')
-                        ? '#3abab6' : 'rgba(255,255,255,0.3)',
+                        ? '#3abab6' : 'var(--gfi-text-muted)',
                     }}>
                       {c.estado ?? 'Sin estado'}
                     </span>

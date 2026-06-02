@@ -102,12 +102,12 @@ const S = {
     fontWeight: 600,
     padding: "9px 20px",
     borderRadius: 6,
-    border: variant === "ghost" ? "1px solid rgba(255,255,255,0.12)" : "none",
+    border: variant === "ghost" ? "1px solid var(--gfi-border)" : "none",
     cursor: "pointer",
     transition: "opacity 0.15s",
     background:
       variant === "primary" ? "#990000"
-      : variant === "secondary" ? "rgba(255,255,255,0.07)"
+      : variant === "secondary" ? "var(--gfi-border-subtle)"
       : "transparent",
     color: "#fff",
   }),
@@ -117,13 +117,13 @@ const S = {
     fontWeight: 600,
     letterSpacing: "0.1em",
     textTransform: "uppercase" as const,
-    color: "rgba(255,255,255,0.35)",
+    color: "var(--gfi-text-muted)",
     marginBottom: 6,
     display: "block",
   }),
   select: (): React.CSSProperties => ({
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    background: "var(--gfi-border-subtle)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: 5,
     color: "#fff",
     fontFamily: "Inter,sans-serif",
@@ -131,8 +131,8 @@ const S = {
     padding: "5px 8px",
   }),
   input: (): React.CSSProperties => ({
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    background: "var(--gfi-border-subtle)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: 5,
     color: "#fff",
     fontFamily: "Inter,sans-serif",
@@ -142,8 +142,8 @@ const S = {
     boxSizing: "border-box" as const,
   }),
   card: (): React.CSSProperties => ({
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    background: "var(--gfi-bg-card)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: 10,
     padding: "20px 24px",
   }),
@@ -177,11 +177,11 @@ function PasoIndicator({ paso }: { paso: number }) {
               <div style={{
                 width: 32, height: 32, borderRadius: "50%",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontFamily: "Montserrat,sans-serif",
+                fontFamily: "var(--font-display)",
                 fontSize: 13, fontWeight: 700,
                 background: completado ? "#990000" : activo ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.06)",
-                border: activo ? "2px solid #990000" : completado ? "2px solid #990000" : "2px solid rgba(255,255,255,0.1)",
-                color: completado ? "#fff" : activo ? "#990000" : "rgba(255,255,255,0.3)",
+                border: activo ? "2px solid #990000" : completado ? "2px solid #990000" : "2px solid var(--gfi-border)",
+                color: completado ? "#fff" : activo ? "#990000" : "var(--gfi-text-muted)",
               }}>
                 {completado ? "✓" : num}
               </div>
@@ -189,7 +189,7 @@ function PasoIndicator({ paso }: { paso: number }) {
                 fontFamily: "Inter,sans-serif",
                 fontSize: 11,
                 fontWeight: activo ? 600 : 400,
-                color: activo ? "#fff" : "rgba(255,255,255,0.35)",
+                color: activo ? "#fff" : "var(--gfi-text-muted)",
                 whiteSpace: "nowrap",
               }}>
                 {label}
@@ -198,7 +198,7 @@ function PasoIndicator({ paso }: { paso: number }) {
             {i < pasos.length - 1 && (
               <div style={{
                 flex: 1, height: 1,
-                background: completado ? "#990000" : "rgba(255,255,255,0.08)",
+                background: completado ? "#990000" : "var(--gfi-border)",
                 margin: "-18px 8px 0",
               }} />
             )}
@@ -415,7 +415,7 @@ export default function CargaMasivaPage() {
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{
-          fontFamily: "Montserrat,sans-serif",
+          fontFamily: "var(--font-display)",
           fontSize: 22,
           fontWeight: 800,
           color: "#fff",
@@ -424,7 +424,7 @@ export default function CargaMasivaPage() {
         }}>
           Importación Masiva de Contactos
         </h1>
-        <p style={{ margin: "6px 0 0", fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+        <p style={{ margin: "6px 0 0", fontSize: 13, color: "var(--gfi-text-muted)" }}>
           Cargá contactos al CRM desde un archivo CSV o pegando texto de Excel
         </p>
       </div>
@@ -448,21 +448,21 @@ export default function CargaMasivaPage() {
                 padding: "52px 32px",
                 textAlign: "center",
                 cursor: "pointer",
-                background: dragging ? "rgba(153,0,0,0.04)" : "rgba(255,255,255,0.02)",
+                background: dragging ? "rgba(153,0,0,0.04)" : "var(--gfi-bg-secondary)",
                 transition: "all 0.2s",
                 marginBottom: 16,
               }}
             >
               <div style={{ fontSize: 40, marginBottom: 12, opacity: 0.6 }}>⬆</div>
               <p style={{
-                fontFamily: "Montserrat,sans-serif",
+                fontFamily: "var(--font-display)",
                 fontSize: 15, fontWeight: 700,
                 color: "rgba(255,255,255,0.85)",
                 margin: "0 0 8px",
               }}>
                 Arrastrá tu archivo CSV aquí
               </p>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", margin: 0 }}>
+              <p style={{ fontSize: 13, color: "var(--gfi-text-muted)", margin: 0 }}>
                 o hacé clic para seleccionar un archivo .csv / .txt
               </p>
               <input
@@ -531,7 +531,7 @@ export default function CargaMasivaPage() {
             <pre style={{
               fontFamily: "monospace",
               fontSize: 12,
-              color: "rgba(255,255,255,0.6)",
+              color: "var(--gfi-text-secondary)",
               margin: 0,
               lineHeight: 1.7,
               overflowX: "auto",
@@ -550,7 +550,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                   fontFamily: "Inter,sans-serif",
                   background: "rgba(255,255,255,0.06)",
                   color: "rgba(255,255,255,0.55)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  border: "1px solid var(--gfi-border)",
                 }}>
                   tipo: {t}
                 </span>
@@ -565,13 +565,13 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
         <div style={{ maxWidth: 700 }}>
           <div style={S.card()}>
             <h2 style={{
-              fontFamily: "Montserrat,sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 15, fontWeight: 700,
               margin: "0 0 6px",
             }}>
               Mapeo de columnas
             </h2>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", margin: "0 0 20px" }}>
+            <p style={{ fontSize: 13, color: "var(--gfi-text-muted)", margin: "0 0 20px" }}>
               Se detectaron {rawHeaders.length} columnas y {rawRows.length} filas.
               Confirmá cómo se mapean las columnas del archivo con los campos del CRM.
             </p>
@@ -599,7 +599,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
 
             {/* Preview primera fila */}
             {rawRows.length > 0 && (
-              <div style={{ marginTop: 20, padding: "14px 16px", background: "rgba(255,255,255,0.03)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ marginTop: 20, padding: "14px 16px", background: "var(--gfi-bg-card)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)" }}>
                 <div style={{ ...S.label(), marginBottom: 10 }}>Previsualización — fila 1</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "8px 16px" }}>
                   {CAMPOS_ESPERADOS.map(campo => {
@@ -607,8 +607,8 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                     const val = idx >= 0 ? (rawRows[0]?.[idx] ?? "") : "—";
                     return (
                       <div key={campo}>
-                        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>{campo}</span>
-                        <div style={{ fontSize: 13, color: val ? "#fff" : "rgba(255,255,255,0.2)", marginTop: 2 }}>{val || "vacío"}</div>
+                        <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>{campo}</span>
+                        <div style={{ fontSize: 13, color: val ? "#fff" : "var(--gfi-text-dim)", marginTop: 2 }}>{val || "vacío"}</div>
                       </div>
                     );
                   })}
@@ -636,19 +636,19 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
           {/* Estadísticas */}
           <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" as const }}>
             {[
-              { label: "Total", val: total, color: "rgba(255,255,255,0.7)" },
+              { label: "Total", val: total, color: "var(--gfi-text-primary)" },
               { label: "Válidos", val: totalValidos, color: "#4ade80" },
               { label: "Con errores", val: totalErrores, color: "#f87171" },
             ].map(stat => (
               <div key={stat.label} style={{
                 padding: "14px 20px",
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "var(--gfi-bg-card)",
+                border: "1px solid var(--gfi-border)",
                 borderRadius: 8,
                 minWidth: 110,
               }}>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 24, fontWeight: 800, color: stat.color }}>{stat.val}</div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{stat.label}</div>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, color: stat.color }}>{stat.val}</div>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>{stat.label}</div>
               </div>
             ))}
 
@@ -662,7 +662,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                     fontSize: 12,
                     padding: "7px 14px",
                     background: filtroVista === f ? "rgba(153,0,0,0.15)" : "transparent",
-                    border: filtroVista === f ? "1px solid rgba(153,0,0,0.4)" : "1px solid rgba(255,255,255,0.1)",
+                    border: filtroVista === f ? "1px solid rgba(153,0,0,0.4)" : "1px solid var(--gfi-border)",
                   }}
                 >
                   {f === "todos" ? "Todos" : f === "validos" ? "Solo válidos" : "Solo errores"}
@@ -681,10 +681,10 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
           )}
 
           {/* Tabla */}
-          <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid var(--gfi-border)" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" as const, minWidth: 800 }}>
               <thead>
-                <tr style={{ background: "rgba(255,255,255,0.03)" }}>
+                <tr style={{ background: "var(--gfi-bg-card)" }}>
                   {["#", "Nombre", "Apellido", "Teléfono", "Email", "Tipo", "Estado"].map(h => (
                     <th key={h} style={{
                       padding: "10px 14px",
@@ -694,8 +694,8 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                       fontWeight: 700,
                       letterSpacing: "0.08em",
                       textTransform: "uppercase" as const,
-                      color: "rgba(255,255,255,0.3)",
-                      borderBottom: "1px solid rgba(255,255,255,0.07)",
+                      color: "var(--gfi-text-muted)",
+                      borderBottom: "1px solid var(--gfi-border-subtle)",
                       whiteSpace: "nowrap" as const,
                     }}>
                       {h}
@@ -745,7 +745,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                         title="Clic para editar"
                         style={{
                           cursor: "text",
-                          color: !valor ? "rgba(255,255,255,0.2)" : tieneError ? "#f87171" : "rgba(255,255,255,0.85)",
+                          color: !valor ? "var(--gfi-text-dim)" : tieneError ? "#f87171" : "rgba(255,255,255,0.85)",
                           fontSize: 13,
                           display: "block",
                           minWidth: 60,
@@ -765,14 +765,14 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                     <tr
                       key={c.rowIndex}
                       style={{
-                        borderBottom: "1px solid rgba(255,255,255,0.05)",
+                        borderBottom: "1px solid var(--gfi-border-subtle)",
                         background: c._importado ? "rgba(34,197,94,0.04)" : "transparent",
                         transition: "background 0.15s",
                       }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = c._importado ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.02)"; }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = c._importado ? "rgba(34,197,94,0.06)" : "var(--gfi-bg-secondary)"; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = c._importado ? "rgba(34,197,94,0.04)" : "transparent"; }}
                     >
-                      <td style={{ padding: "9px 14px", fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "monospace" }}>{c.rowIndex}</td>
+                      <td style={{ padding: "9px 14px", fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "monospace" }}>{c.rowIndex}</td>
                       <td style={{ padding: "9px 14px" }}><CeldaEdit campo="nombre" valor={c.nombre} /></td>
                       <td style={{ padding: "9px 14px" }}><CeldaEdit campo="apellido" valor={c.apellido} /></td>
                       <td style={{ padding: "9px 14px" }}><CeldaEdit campo="telefono" valor={c.telefono} /></td>
@@ -792,7 +792,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
               </tbody>
             </table>
             {contactosFiltrados.length === 0 && (
-              <div style={{ padding: "32px", textAlign: "center", color: "rgba(255,255,255,0.25)", fontSize: 13 }}>
+              <div style={{ padding: "32px", textAlign: "center", color: "var(--gfi-text-dim)", fontSize: 13 }}>
                 No hay registros con este filtro
               </div>
             )}
@@ -814,7 +814,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
               Importar {totalValidos} contacto{totalValidos !== 1 ? "s" : ""} válido{totalValidos !== 1 ? "s" : ""}
             </button>
             {totalErrores > 0 && (
-              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+              <span style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>
                 {totalErrores} no se importarán
               </span>
             )}
@@ -827,12 +827,12 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
         <div style={{ maxWidth: 600 }}>
           {estado === "importing" && (
             <div style={S.card()}>
-              <h2 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 700, margin: "0 0 20px" }}>
+              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, margin: "0 0 20px" }}>
                 Importando contactos...
               </h2>
               <div style={{
                 height: 8,
-                background: "rgba(255,255,255,0.08)",
+                background: "var(--gfi-border)",
                 borderRadius: 4,
                 overflow: "hidden",
                 marginBottom: 14,
@@ -845,7 +845,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                   transition: "width 0.3s ease",
                 }} />
               </div>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", margin: 0 }}>
+              <p style={{ fontSize: 13, color: "var(--gfi-text-muted)", margin: 0 }}>
                 {Math.min(progress, 100)}% completado
               </p>
             </div>
@@ -863,10 +863,10 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                   {resultadoImport.ok > 0 ? "✓" : "✕"}
                 </div>
                 <div>
-                  <h2 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, margin: 0 }}>
+                  <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, margin: 0 }}>
                     Importación completada
                   </h2>
-                  <p style={{ margin: "4px 0 0", fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+                  <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--gfi-text-muted)" }}>
                     {resultadoImport.ok} importados exitosamente
                     {resultadoImport.err > 0 && `, ${resultadoImport.err} lote${resultadoImport.err !== 1 ? "s" : ""} con errores`}
                   </p>
@@ -876,13 +876,13 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
               {/* Detalle stats */}
               <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
                 <div style={{ flex: 1, padding: "14px 16px", background: "rgba(34,197,94,0.08)", borderRadius: 8, border: "1px solid rgba(34,197,94,0.2)" }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 28, fontWeight: 800, color: "#4ade80" }}>{resultadoImport.ok}</div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>Importados</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, color: "#4ade80" }}>{resultadoImport.ok}</div>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>Importados</div>
                 </div>
                 {resultadoImport.err > 0 && (
                   <div style={{ flex: 1, padding: "14px 16px", background: "rgba(153,0,0,0.08)", borderRadius: 8, border: "1px solid rgba(153,0,0,0.2)" }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 28, fontWeight: 800, color: "#f87171" }}>{resultadoImport.err}</div>
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>Lotes con error</div>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, color: "#f87171" }}>{resultadoImport.err}</div>
+                    <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>Lotes con error</div>
                   </div>
                 )}
               </div>

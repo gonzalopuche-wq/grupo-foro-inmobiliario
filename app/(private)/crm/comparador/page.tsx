@@ -125,10 +125,10 @@ export default function ComparadorPropiedades() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>
             🔍 Comparador de Propiedades
           </h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Seleccioná hasta 4 propiedades de la cartera activa para comparar</p>
@@ -193,8 +193,8 @@ export default function ComparadorPropiedades() {
           ) : (
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 400 }}>
               <thead>
-                <tr style={{ background: "#111", borderBottom: "2px solid #222" }}>
-                  <th style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, width: 160, position: "sticky", left: 0, background: "#111" }}>
+                <tr style={{ background: "var(--gfi-bg-secondary)", borderBottom: "2px solid #222" }}>
+                  <th style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700, width: 160, position: "sticky", left: 0, background: "var(--gfi-bg-secondary)" }}>
                     ATRIBUTO
                   </th>
                   {comparadas.map(p => (
@@ -234,11 +234,11 @@ export default function ComparadorPropiedades() {
                   }
 
                   return (
-                    <tr key={fi} style={{ background: fi % 2 === 0 ? "#0d0d0d" : "#0a0a0a", borderBottom: "1px solid #1a1a1a" }}>
+                    <tr key={fi} style={{ background: fi % 2 === 0 ? "var(--gfi-bg-primary)" : "#0a0a0a", borderBottom: "1px solid #1a1a1a" }}>
                       <td style={{
-                        padding: "10px 16px", fontSize: 12, color: "#888", fontFamily: "Montserrat, sans-serif",
+                        padding: "10px 16px", fontSize: 12, color: "#888", fontFamily: "var(--font-display)",
                         fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em",
-                        position: "sticky", left: 0, background: fi % 2 === 0 ? "#0d0d0d" : "#0a0a0a",
+                        position: "sticky", left: 0, background: fi % 2 === 0 ? "var(--gfi-bg-primary)" : "#0a0a0a",
                       }}>
                         {fila.label}
                       </td>
@@ -289,7 +289,7 @@ export default function ComparadorPropiedades() {
             style={{
               background: "#990000", color: "#fff", border: "none", borderRadius: 8,
               padding: "12px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer",
-              fontFamily: "Montserrat, sans-serif", boxShadow: "0 4px 16px #99000040",
+              fontFamily: "var(--font-display)", boxShadow: "0 4px 16px #99000040",
             }}
           >
             📄 Exportar PDF

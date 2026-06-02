@@ -112,7 +112,7 @@ function calcVariacion(actual: number, anterior: number): number {
 function arrowColor(v: number): string {
   if (v > 0) return "#3abab6";
   if (v < 0) return "#b80000";
-  return "rgba(255,255,255,0.35)";
+  return "var(--gfi-text-muted)";
 }
 
 function arrowSymbol(v: number): string {
@@ -493,19 +493,19 @@ export default function ReporteMensualPage() {
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
-        .rm-input { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:7px; color:#fff; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; }
+        .rm-input { background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; }
         .rm-input:focus { border-color:rgba(153,0,0,0.45); }
-        .rm-select { background:#111; border:1px solid rgba(255,255,255,0.12); border-radius:7px; color:#fff; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; cursor:pointer; }
+        .rm-select { background:var(--gfi-bg-secondary); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; cursor:pointer; }
         .rm-tab { padding:8px 18px; border-radius:7px; font-family:Montserrat,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:background 0.15s,color 0.15s; }
-        .rm-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:20px; }
-        .rm-section-title { font-family:Montserrat,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:16px; }
+        .rm-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:12px; padding:20px; }
+        .rm-section-title { font-family:Montserrat,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gfi-text-muted); margin-bottom:16px; }
         @keyframes rmFadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         .rm-fadein { animation:rmFadeIn 0.3s ease both; }
         @keyframes rmSkeleton { 0%,100%{opacity:0.5} 50%{opacity:1} }
-        .rm-skeleton { animation:rmSkeleton 1.2s ease-in-out infinite; background:rgba(255,255,255,0.07); border-radius:10px; }
+        .rm-skeleton { animation:rmSkeleton 1.2s ease-in-out infinite; background:var(--gfi-border-subtle); border-radius:10px; }
         .rm-tbl { width:100%; border-collapse:collapse; font-size:12px; font-family:Inter,sans-serif; }
-        .rm-tbl th { padding:8px 12px; text-align:left; font-size:9px; font-family:Montserrat,sans-serif; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.3); border-bottom:1px solid rgba(255,255,255,0.08); }
-        .rm-tbl td { padding:9px 12px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+        .rm-tbl th { padding:8px 12px; text-align:left; font-size:9px; font-family:Montserrat,sans-serif; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--gfi-text-muted); border-bottom:1px solid var(--gfi-border); }
+        .rm-tbl td { padding:9px 12px; border-bottom:1px solid var(--gfi-border-subtle); vertical-align:middle; }
         @media(max-width:640px){
           .rm-kpi-grid { grid-template-columns:repeat(2,1fr) !important; }
         }
@@ -526,7 +526,7 @@ export default function ReporteMensualPage() {
           <div
             style={{
               fontSize: 10,
-              fontFamily: "Montserrat,sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
@@ -538,7 +538,7 @@ export default function ReporteMensualPage() {
           </div>
           <h1
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 28,
               color: "#fff",
@@ -559,11 +559,11 @@ export default function ReporteMensualPage() {
             <span
               style={{
                 fontSize: 9,
-                fontFamily: "Montserrat,sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.3)",
+                color: "var(--gfi-text-muted)",
               }}
             >
               Período
@@ -584,11 +584,11 @@ export default function ReporteMensualPage() {
             <span
               style={{
                 fontSize: 9,
-                fontFamily: "Montserrat,sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.3)",
+                color: "var(--gfi-text-muted)",
               }}
             >
               USD/ARS
@@ -613,7 +613,7 @@ export default function ReporteMensualPage() {
               background: "#990000",
               color: "#fff",
               border: "none",
-              fontFamily: "Montserrat,sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 12,
               fontWeight: 700,
               cursor: "pointer",
@@ -632,9 +632,9 @@ export default function ReporteMensualPage() {
             key={t}
             className="rm-tab"
             style={{
-              background: tab === t ? "#990000" : "rgba(255,255,255,0.05)",
-              color:      tab === t ? "#fff"    : "rgba(255,255,255,0.4)",
-              border:     tab === t ? "1px solid #990000" : "1px solid rgba(255,255,255,0.08)",
+              background: tab === t ? "#990000" : "var(--gfi-border-subtle)",
+              color:      tab === t ? "#fff"    : "var(--gfi-text-muted)",
+              border:     tab === t ? "1px solid #990000" : "1px solid var(--gfi-border)",
             }}
             onClick={() => setTab(t)}
           >
@@ -672,7 +672,7 @@ export default function ReporteMensualPage() {
                 <div>
                   <h2
                     style={{
-                      fontFamily: "Montserrat,sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 800,
                       fontSize: 20,
                       color: "#fff",
@@ -726,11 +726,11 @@ export default function ReporteMensualPage() {
                     <div
                       style={{
                         fontSize: 9,
-                        fontFamily: "Montserrat,sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 700,
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
-                        color: "rgba(255,255,255,0.3)",
+                        color: "var(--gfi-text-muted)",
                         marginBottom: 10,
                       }}
                     >
@@ -738,7 +738,7 @@ export default function ReporteMensualPage() {
                     </div>
                     <div
                       style={{
-                        fontFamily: "Montserrat,sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontSize: 22,
                         fontWeight: 800,
                         color: card.color,
@@ -749,7 +749,7 @@ export default function ReporteMensualPage() {
                     >
                       {card.valor}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-dim)" }}>
                       {card.sub}
                     </div>
                   </div>
@@ -766,7 +766,7 @@ export default function ReporteMensualPage() {
                 </div>
 
                 {negociosCerrados.length === 0 && negociosNuevos.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "32px 0", color: "rgba(255,255,255,0.25)", fontSize: 13 }}>
+                  <div style={{ textAlign: "center", padding: "32px 0", color: "var(--gfi-text-dim)", fontSize: 13 }}>
                     Sin negocios registrados en este período
                   </div>
                 ) : (
@@ -794,7 +794,7 @@ export default function ReporteMensualPage() {
                                   borderRadius: 4,
                                   padding: "2px 7px",
                                   color: "#3abab6",
-                                  fontFamily: "Montserrat,sans-serif",
+                                  fontFamily: "var(--font-display)",
                                   fontWeight: 700,
                                   whiteSpace: "nowrap",
                                 }}
@@ -802,13 +802,13 @@ export default function ReporteMensualPage() {
                                 Cerrado
                               </span>
                             </td>
-                            <td style={{ color: "rgba(255,255,255,0.5)" }}>{n.tipo_operacion ?? "—"}</td>
+                            <td style={{ color: "var(--gfi-text-secondary)" }}>{n.tipo_operacion ?? "—"}</td>
                             <td style={{ color: "#fff", fontWeight: 500 }}>{n.titulo}</td>
-                            <td style={{ color: "rgba(255,255,255,0.4)" }}>Cierre</td>
+                            <td style={{ color: "var(--gfi-text-muted)" }}>Cierre</td>
                             <td
                               style={{
                                 textAlign: "right",
-                                fontFamily: "Montserrat,sans-serif",
+                                fontFamily: "var(--font-display)",
                                 fontWeight: 700,
                                 color: "#3abab6",
                                 whiteSpace: "nowrap",
@@ -816,7 +816,7 @@ export default function ReporteMensualPage() {
                             >
                               {fmtARS(honorariosNegCerradoARS(n))}
                             </td>
-                            <td style={{ color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>
+                            <td style={{ color: "var(--gfi-text-muted)", whiteSpace: "nowrap" }}>
                               {fmtFecha(n.updated_at)}
                             </td>
                           </tr>
@@ -832,7 +832,7 @@ export default function ReporteMensualPage() {
                                   borderRadius: 4,
                                   padding: "2px 7px",
                                   color: "#3b82f6",
-                                  fontFamily: "Montserrat,sans-serif",
+                                  fontFamily: "var(--font-display)",
                                   fontWeight: 700,
                                   whiteSpace: "nowrap",
                                 }}
@@ -840,13 +840,13 @@ export default function ReporteMensualPage() {
                                 Nuevo
                               </span>
                             </td>
-                            <td style={{ color: "rgba(255,255,255,0.5)" }}>{n.tipo_operacion ?? "—"}</td>
+                            <td style={{ color: "var(--gfi-text-secondary)" }}>{n.tipo_operacion ?? "—"}</td>
                             <td style={{ color: "#fff", fontWeight: 500 }}>{n.titulo}</td>
-                            <td style={{ color: "rgba(255,255,255,0.4)" }}>{n.etapa ?? "—"}</td>
+                            <td style={{ color: "var(--gfi-text-muted)" }}>{n.etapa ?? "—"}</td>
                             <td
                               style={{
                                 textAlign: "right",
-                                fontFamily: "Montserrat,sans-serif",
+                                fontFamily: "var(--font-display)",
                                 fontWeight: 700,
                                 color: "#3b82f6",
                                 whiteSpace: "nowrap",
@@ -854,7 +854,7 @@ export default function ReporteMensualPage() {
                             >
                               {fmtARS(honorariosNegNuevoARS(n))}
                             </td>
-                            <td style={{ color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>
+                            <td style={{ color: "var(--gfi-text-muted)", whiteSpace: "nowrap" }}>
                               {fmtFecha(n.created_at)}
                             </td>
                           </tr>
@@ -875,7 +875,7 @@ export default function ReporteMensualPage() {
                   {/* Tabla */}
                   <div style={{ flex: 1, minWidth: 260, overflowX: "auto" }}>
                     {contactosNuevos.length === 0 ? (
-                      <div style={{ textAlign: "center", padding: "28px 0", color: "rgba(255,255,255,0.25)", fontSize: 13 }}>
+                      <div style={{ textAlign: "center", padding: "28px 0", color: "var(--gfi-text-dim)", fontSize: 13 }}>
                         Sin contactos nuevos en este período
                       </div>
                     ) : (
@@ -904,18 +904,18 @@ export default function ReporteMensualPage() {
                                       background: `${DONUT_COLORS[c.tipo] ?? "#6b7280"}18`,
                                       border: `1px solid ${DONUT_COLORS[c.tipo] ?? "#6b7280"}40`,
                                       color: DONUT_COLORS[c.tipo] ?? "#9ca3af",
-                                      fontFamily: "Montserrat,sans-serif",
+                                      fontFamily: "var(--font-display)",
                                       fontWeight: 700,
                                     }}
                                   >
                                     {TIPO_CONTACTO_LABEL[c.tipo] ?? c.tipo}
                                   </span>
                                 ) : (
-                                  <span style={{ color: "rgba(255,255,255,0.25)" }}>—</span>
+                                  <span style={{ color: "var(--gfi-text-dim)" }}>—</span>
                                 )}
                               </td>
-                              <td style={{ color: "rgba(255,255,255,0.4)" }}>{c.origen ?? "—"}</td>
-                              <td style={{ color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>
+                              <td style={{ color: "var(--gfi-text-muted)" }}>{c.origen ?? "—"}</td>
+                              <td style={{ color: "var(--gfi-text-muted)", whiteSpace: "nowrap" }}>
                                 {fmtFecha(c.created_at)}
                               </td>
                             </tr>
@@ -975,9 +975,9 @@ export default function ReporteMensualPage() {
                                 flexShrink: 0,
                               }}
                             />
-                            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.5)" }}>
+                            <span style={{ fontSize: 10, color: "var(--gfi-text-secondary)" }}>
                               {TIPO_CONTACTO_LABEL[seg.tipo] ?? seg.tipo}{" "}
-                              <span style={{ color: "rgba(255,255,255,0.25)" }}>({seg.count})</span>
+                              <span style={{ color: "var(--gfi-text-dim)" }}>({seg.count})</span>
                             </span>
                           </div>
                         ))}
@@ -1002,7 +1002,7 @@ export default function ReporteMensualPage() {
                     preserveAspectRatio="none"
                     style={{ display: "block", minWidth: 400 }}
                   >
-                    <line x1={0} y1={62} x2={600} y2={62} stroke="rgba(255,255,255,0.07)" strokeWidth={1} />
+                    <line x1={0} y1={62} x2={600} y2={62} stroke="var(--gfi-border-subtle)" strokeWidth={1} />
                     {ETAPAS_ORDEN.map((etapa, i) => {
                       const count = pipelineEtapas[etapa] ?? 0;
                       const slotW = 600 / ETAPAS_ORDEN.length;
@@ -1033,7 +1033,7 @@ export default function ReporteMensualPage() {
                             x={x + w / 2}
                             y={74}
                             textAnchor="middle"
-                            fill="rgba(255,255,255,0.3)"
+                            fill="var(--gfi-text-muted)"
                             fontSize={8}
                             fontFamily="Montserrat,sans-serif"
                           >
@@ -1063,7 +1063,7 @@ export default function ReporteMensualPage() {
                       >
                         <div
                           style={{
-                            fontFamily: "Montserrat,sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontSize: 18,
                             fontWeight: 800,
                             color: count > 0 ? color : "rgba(255,255,255,0.15)",
@@ -1071,7 +1071,7 @@ export default function ReporteMensualPage() {
                         >
                           {count}
                         </div>
-                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>
+                        <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                           {ETAPA_LABEL[etapa]}
                         </div>
                       </div>
@@ -1105,7 +1105,7 @@ export default function ReporteMensualPage() {
                           <tr key={row.metrica}>
                             <td
                               style={{
-                                fontFamily: "Montserrat,sans-serif",
+                                fontFamily: "var(--font-display)",
                                 fontWeight: 600,
                                 color: "#fff",
                               }}
@@ -1115,7 +1115,7 @@ export default function ReporteMensualPage() {
                             <td
                               style={{
                                 textAlign: "right",
-                                fontFamily: "Montserrat,sans-serif",
+                                fontFamily: "var(--font-display)",
                                 fontWeight: 700,
                                 color: "#fff",
                                 whiteSpace: "nowrap",
@@ -1123,13 +1123,13 @@ export default function ReporteMensualPage() {
                             >
                               {row.fmt(row.actual)}
                             </td>
-                            <td style={{ textAlign: "right", color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>
+                            <td style={{ textAlign: "right", color: "var(--gfi-text-muted)", whiteSpace: "nowrap" }}>
                               {row.fmt(row.anterior)}
                             </td>
                             <td
                               style={{
                                 textAlign: "right",
-                                fontFamily: "Montserrat,sans-serif",
+                                fontFamily: "var(--font-display)",
                                 fontWeight: 700,
                                 color,
                                 whiteSpace: "nowrap",
@@ -1164,7 +1164,7 @@ export default function ReporteMensualPage() {
               <div style={{ borderBottom: "3px solid #990000", paddingBottom: 18, marginBottom: 28 }}>
                 <h1
                   style={{
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 800,
                     fontSize: 26,
                     color: "#000",
@@ -1206,7 +1206,7 @@ export default function ReporteMensualPage() {
                     <div
                       style={{
                         fontSize: 9,
-                        fontFamily: "Montserrat,sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 700,
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
@@ -1218,7 +1218,7 @@ export default function ReporteMensualPage() {
                     </div>
                     <div
                       style={{
-                        fontFamily: "Montserrat,sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontSize: 18,
                         fontWeight: 800,
                         color: card.color,
@@ -1234,10 +1234,10 @@ export default function ReporteMensualPage() {
               {/* Negocios preview */}
               <h2
                 style={{
-                  fontFamily: "Montserrat,sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 800,
                   fontSize: 13,
-                  color: "#111",
+                  color: "var(--gfi-bg-secondary)",
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
                   borderBottom: "1px solid #e5e7eb",
@@ -1260,7 +1260,7 @@ export default function ReporteMensualPage() {
                           padding: "8px 10px",
                           textAlign: "left",
                           fontSize: 10,
-                          fontFamily: "Montserrat,sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           letterSpacing: "0.08em",
                           textTransform: "uppercase",
@@ -1277,14 +1277,14 @@ export default function ReporteMensualPage() {
                   {negociosCerrados.map(n => (
                     <tr key={n.id} style={{ borderBottom: "1px solid #f3f4f6", background: "#f9fafb" }}>
                       <td style={{ padding: "8px 10px" }}>
-                        <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "#dcfce7", color: "#15803d", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                        <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "#dcfce7", color: "#15803d", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                           Cerrado
                         </span>
                       </td>
                       <td style={{ padding: "8px 10px", color: "#6b7280" }}>{n.tipo_operacion ?? "—"}</td>
-                      <td style={{ padding: "8px 10px", color: "#111", fontWeight: 600 }}>{n.titulo}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--gfi-bg-secondary)", fontWeight: 600 }}>{n.titulo}</td>
                       <td style={{ padding: "8px 10px", color: "#6b7280" }}>Cierre</td>
-                      <td style={{ padding: "8px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#15803d" }}>
+                      <td style={{ padding: "8px 10px", fontFamily: "var(--font-display)", fontWeight: 700, color: "#15803d" }}>
                         {fmtARS(honorariosNegCerradoARS(n))}
                       </td>
                       <td style={{ padding: "8px 10px", color: "#9ca3af" }}>{fmtFecha(n.updated_at)}</td>
@@ -1293,14 +1293,14 @@ export default function ReporteMensualPage() {
                   {negociosNuevos.map(n => (
                     <tr key={n.id} style={{ borderBottom: "1px solid #f3f4f6", background: "#eff6ff" }}>
                       <td style={{ padding: "8px 10px" }}>
-                        <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "#dbeafe", color: "#1d4ed8", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                        <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "#dbeafe", color: "#1d4ed8", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                           Nuevo
                         </span>
                       </td>
                       <td style={{ padding: "8px 10px", color: "#6b7280" }}>{n.tipo_operacion ?? "—"}</td>
-                      <td style={{ padding: "8px 10px", color: "#111", fontWeight: 600 }}>{n.titulo}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--gfi-bg-secondary)", fontWeight: 600 }}>{n.titulo}</td>
                       <td style={{ padding: "8px 10px", color: "#6b7280" }}>{n.etapa ?? "—"}</td>
-                      <td style={{ padding: "8px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#1d4ed8" }}>
+                      <td style={{ padding: "8px 10px", fontFamily: "var(--font-display)", fontWeight: 700, color: "#1d4ed8" }}>
                         {fmtARS(honorariosNegNuevoARS(n))}
                       </td>
                       <td style={{ padding: "8px 10px", color: "#9ca3af" }}>{fmtFecha(n.created_at)}</td>
@@ -1319,10 +1319,10 @@ export default function ReporteMensualPage() {
               {/* Contactos preview */}
               <h2
                 style={{
-                  fontFamily: "Montserrat,sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 800,
                   fontSize: 13,
-                  color: "#111",
+                  color: "var(--gfi-bg-secondary)",
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
                   borderBottom: "1px solid #e5e7eb",
@@ -1345,7 +1345,7 @@ export default function ReporteMensualPage() {
                           padding: "8px 10px",
                           textAlign: "left",
                           fontSize: 10,
-                          fontFamily: "Montserrat,sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           letterSpacing: "0.08em",
                           textTransform: "uppercase",
@@ -1361,7 +1361,7 @@ export default function ReporteMensualPage() {
                 <tbody>
                   {contactosNuevos.map(c => (
                     <tr key={c.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                      <td style={{ padding: "8px 10px", color: "#111", fontWeight: 500 }}>
+                      <td style={{ padding: "8px 10px", color: "var(--gfi-bg-secondary)", fontWeight: 500 }}>
                         {[c.nombre, c.apellido].filter(Boolean).join(" ") || "—"}
                       </td>
                       <td style={{ padding: "8px 10px", color: "#6b7280" }}>
@@ -1384,10 +1384,10 @@ export default function ReporteMensualPage() {
               {/* Comparativa preview */}
               <h2
                 style={{
-                  fontFamily: "Montserrat,sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 800,
                   fontSize: 13,
-                  color: "#111",
+                  color: "var(--gfi-bg-secondary)",
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
                   borderBottom: "1px solid #e5e7eb",
@@ -1410,7 +1410,7 @@ export default function ReporteMensualPage() {
                           padding: "8px 10px",
                           textAlign: "left",
                           fontSize: 10,
-                          fontFamily: "Montserrat,sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           letterSpacing: "0.08em",
                           textTransform: "uppercase",
@@ -1432,12 +1432,12 @@ export default function ReporteMensualPage() {
                     const arr       = arrowSymbol(variacion);
                     return (
                       <tr key={row.metrica} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                        <td style={{ padding: "8px 10px", color: "#111", fontWeight: 600 }}>{row.metrica}</td>
-                        <td style={{ padding: "8px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#111" }}>
+                        <td style={{ padding: "8px 10px", color: "var(--gfi-bg-secondary)", fontWeight: 600 }}>{row.metrica}</td>
+                        <td style={{ padding: "8px 10px", fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-bg-secondary)" }}>
                           {row.fmt(row.actual)}
                         </td>
                         <td style={{ padding: "8px 10px", color: "#9ca3af" }}>{row.fmt(row.anterior)}</td>
-                        <td style={{ padding: "8px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: col }}>
+                        <td style={{ padding: "8px 10px", fontFamily: "var(--font-display)", fontWeight: 700, color: col }}>
                           {arr}{" "}
                           {Math.abs(variacion) > 0 ? `${Math.abs(variacion).toFixed(1)}%` : "—"}
                         </td>

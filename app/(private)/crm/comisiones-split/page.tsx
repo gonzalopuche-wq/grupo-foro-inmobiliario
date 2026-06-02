@@ -311,7 +311,7 @@ function ModalEditar({ op, tc, onGuardar, onCerrar }: ModalEditarProps) {
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
       <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, width: "100%", maxWidth: 700, maxHeight: "90vh", overflowY: "auto", padding: 28 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <h2 style={{ margin: 0, fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 20, color: C.text }}>Editar Operación</h2>
+          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: C.text }}>Editar Operación</h2>
           <button onClick={onCerrar} style={{ ...s.btnOutline(), padding: "6px 12px" }}>✕</button>
         </div>
 
@@ -346,14 +346,14 @@ function ModalEditar({ op, tc, onGuardar, onCerrar }: ModalEditarProps) {
           </div>
         </div>
 
-        <div style={{ background: "#0d0d0d", border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
+        <div style={{ background: "var(--gfi-bg-primary)", border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
           <p style={{ margin: "0 0 4px", fontSize: 12, color: C.muted }}>Comisión total calculada</p>
-          <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: C.red, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(comisionCalc)}</p>
+          <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: C.red, fontFamily: "var(--font-display)" }}>{fmtUSD(comisionCalc)}</p>
           <p style={{ margin: "2px 0 0", fontSize: 13, color: C.muted }}>{fmtARS(comisionCalc * tc)}</p>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <h3 style={{ margin: 0, fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, color: C.text }}>Participantes</h3>
+          <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: C.text }}>Participantes</h3>
           <span style={{ fontSize: 13, color: totalPct === 100 ? C.green : C.red, fontWeight: 600 }}>Total: {fmtPct(totalPct)} {totalPct !== 100 && "⚠ debe ser 100%"}</span>
         </div>
 
@@ -692,7 +692,7 @@ export default function ComisionesSplitPage() {
     <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Inter, sans-serif", padding: "24px 16px" }}>
       {/* Header */}
       <div style={{ maxWidth: 900, margin: "0 auto 28px" }}>
-        <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, margin: "0 0 4px", color: C.text }}>
+        <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, margin: "0 0 4px", color: C.text }}>
           Comisiones & Split
         </h1>
         <p style={{ margin: "0 0 20px", color: C.muted, fontSize: 14 }}>Calculadora y registro de divisiones entre agentes</p>
@@ -741,7 +741,7 @@ export default function ComisionesSplitPage() {
         {tab === "nueva" && (
           <div>
             <div style={s.card}>
-              <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, margin: "0 0 20px", color: C.text }}>Datos de la operación</h2>
+              <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, margin: "0 0 20px", color: C.text }}>Datos de la operación</h2>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
                 <div style={{ gridColumn: "1 / -1" }}>
@@ -802,16 +802,16 @@ export default function ComisionesSplitPage() {
 
               {/* Preview comisión */}
               {comisionCalc > 0 && (
-                <div style={{ background: "#0d0d0d", border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 20 }}>
+                <div style={{ background: "var(--gfi-bg-primary)", border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 20 }}>
                   <p style={{ margin: "0 0 4px", fontSize: 12, color: C.muted }}>Comisión total ({fmtPct(draft.comision_total_pct)} sobre {fmtUSD(draft.valor_operacion)})</p>
-                  <p style={{ margin: 0, fontSize: 26, fontWeight: 800, color: C.red, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(comisionCalc)}</p>
+                  <p style={{ margin: 0, fontSize: 26, fontWeight: 800, color: C.red, fontFamily: "var(--font-display)" }}>{fmtUSD(comisionCalc)}</p>
                   <p style={{ margin: "2px 0 0", fontSize: 13, color: C.muted }}>{fmtARS(comisionCalc * tc)}</p>
                 </div>
               )}
 
               {/* Participantes */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
-                <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, margin: 0, color: C.text }}>Participantes</h3>
+                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, margin: 0, color: C.text }}>Participantes</h3>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   <button onClick={presetTipico} style={s.btnOutline()}>Preset típico (40/40/20)</button>
                   <button onClick={distribuirEquitativamente} style={s.btnOutline()}>Distribuir equitativamente</button>
@@ -872,13 +872,13 @@ export default function ComisionesSplitPage() {
               {/* Preview por participante */}
               {draft.participantes.some(p => p.monto_usd > 0) && (
                 <div style={{ marginBottom: 20 }}>
-                  <h4 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: C.muted, margin: "0 0 10px", textTransform: "uppercase", letterSpacing: 1 }}>Preview de cobros</h4>
+                  <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: C.muted, margin: "0 0 10px", textTransform: "uppercase", letterSpacing: 1 }}>Preview de cobros</h4>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
                     {draft.participantes.filter(p => p.nombre).map(p => (
-                      <div key={p.id} style={{ background: "#0d0d0d", border: `1px solid ${C.border}`, borderRadius: 8, padding: 12 }}>
+                      <div key={p.id} style={{ background: "var(--gfi-bg-primary)", border: `1px solid ${C.border}`, borderRadius: 8, padding: 12 }}>
                         <p style={{ margin: "0 0 2px", fontSize: 12, color: C.muted }}>{p.nombre}</p>
                         <p style={{ margin: "0 0 2px", fontSize: 11 }}><span style={s.badge(C.blue)}>{ROL_LABELS[p.rol]}</span></p>
-                        <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 700, color: C.red, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(p.monto_usd)}</p>
+                        <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 700, color: C.red, fontFamily: "var(--font-display)" }}>{fmtUSD(p.monto_usd)}</p>
                         <p style={{ margin: "1px 0 0", fontSize: 12, color: C.muted }}>{fmtARS(p.monto_usd * tc)}</p>
                       </div>
                     ))}
@@ -895,12 +895,12 @@ export default function ComisionesSplitPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 14, marginTop: 20 }}>
               <div style={s.card}>
                 <p style={{ margin: "0 0 4px", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Comisión total</p>
-                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.red, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(comisionCalc)}</p>
+                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.red, fontFamily: "var(--font-display)" }}>{fmtUSD(comisionCalc)}</p>
                 <p style={{ margin: 0, fontSize: 13, color: C.muted }}>{fmtARS(comisionCalc * tc)}</p>
               </div>
               <div style={s.card}>
                 <p style={{ margin: "0 0 4px", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Tu participación</p>
-                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.text, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(miParticipacion)}</p>
+                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.text, fontFamily: "var(--font-display)" }}>{fmtUSD(miParticipacion)}</p>
                 <p style={{ margin: 0, fontSize: 13, color: C.muted }}>{fmtARS(miParticipacion * tc)}</p>
                 <p style={{ margin: "4px 0 0", fontSize: 11, color: C.muted }}>(primer participante)</p>
               </div>
@@ -917,7 +917,7 @@ export default function ComisionesSplitPage() {
                   >R. Inscripto</button>
                 </div>
                 <p style={{ margin: "0 0 2px", fontSize: 12, color: C.muted }}>IVA: {retencion === "ri" ? "21%" : "0%"}</p>
-                <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.green, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(miParticipacionNeta)}</p>
+                <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.green, fontFamily: "var(--font-display)" }}>{fmtUSD(miParticipacionNeta)}</p>
                 <p style={{ margin: "1px 0 0", fontSize: 12, color: C.muted }}>{fmtARS(miParticipacionNeta * tc)} neto</p>
               </div>
             </div>
@@ -959,7 +959,7 @@ export default function ComisionesSplitPage() {
                 {/* Cabecera de la card */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
                   <div>
-                    <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, margin: "0 0 6px", color: C.text }}>{op.descripcion}</h3>
+                    <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, margin: "0 0 6px", color: C.text }}>{op.descripcion}</h3>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                       <span style={s.badge(TIPO_COLORS[op.tipo])}>{TIPO_LABELS[op.tipo]}</span>
                       <span style={s.badge(ESTADO_COLORS[op.estado])}>{ESTADO_LABELS[op.estado]}</span>
@@ -968,7 +968,7 @@ export default function ComisionesSplitPage() {
                   </div>
                   <div style={{ textAlign: "right" }}>
                     <p style={{ margin: "0 0 2px", fontSize: 12, color: C.muted }}>Valor: {fmtUSD(op.valor_operacion)}</p>
-                    <p style={{ margin: 0, fontSize: 18, fontWeight: 700, color: C.red, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(op.comision_total_usd)}</p>
+                    <p style={{ margin: 0, fontSize: 18, fontWeight: 700, color: C.red, fontFamily: "var(--font-display)" }}>{fmtUSD(op.comision_total_usd)}</p>
                     <p style={{ margin: "1px 0 0", fontSize: 12, color: C.muted }}>{fmtARS(op.comision_total_usd * tc)}</p>
                   </div>
                 </div>
@@ -1019,29 +1019,29 @@ export default function ComisionesSplitPage() {
         ═══════════════════════════════════════════════════════════════ */}
         {tab === "resumen" && (
           <div>
-            <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, margin: "0 0 16px", color: C.muted }}>Año {anioActual}</h2>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, margin: "0 0 16px", color: C.muted }}>Año {anioActual}</h2>
 
             {/* KPIs */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 14, marginBottom: 28 }}>
               <div style={s.card}>
                 <p style={{ margin: "0 0 4px", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Cobradas</p>
-                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.green, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(kpis.cobradas)}</p>
+                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.green, fontFamily: "var(--font-display)" }}>{fmtUSD(kpis.cobradas)}</p>
                 <p style={{ margin: 0, fontSize: 13, color: C.muted }}>{fmtARS(kpis.cobradas * tc)}</p>
               </div>
               <div style={s.card}>
                 <p style={{ margin: "0 0 4px", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Pendientes</p>
-                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.yellow, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(kpis.pendiente)}</p>
+                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.yellow, fontFamily: "var(--font-display)" }}>{fmtUSD(kpis.pendiente)}</p>
                 <p style={{ margin: 0, fontSize: 13, color: C.muted }}>{fmtARS(kpis.pendiente * tc)}</p>
               </div>
               <div style={s.card}>
                 <p style={{ margin: "0 0 4px", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Promedio / op.</p>
-                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.text, fontFamily: "Montserrat, sans-serif" }}>{fmtUSD(kpis.promedio)}</p>
+                <p style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 800, color: C.text, fontFamily: "var(--font-display)" }}>{fmtUSD(kpis.promedio)}</p>
                 <p style={{ margin: 0, fontSize: 13, color: C.muted }}>{opsAnio.length} operaciones</p>
               </div>
               {kpis.topNombre && (
                 <div style={s.card}>
                   <p style={{ margin: "0 0 4px", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Mayor volumen</p>
-                  <p style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 700, color: C.text, fontFamily: "Montserrat, sans-serif" }}>{kpis.topNombre}</p>
+                  <p style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 700, color: C.text, fontFamily: "var(--font-display)" }}>{kpis.topNombre}</p>
                   <p style={{ margin: 0, fontSize: 13, color: C.red, fontWeight: 600 }}>{fmtUSD(kpis.topMonto)}</p>
                 </div>
               )}
@@ -1049,7 +1049,7 @@ export default function ComisionesSplitPage() {
 
             {/* Gráfico de barras */}
             <div style={{ ...s.card, marginBottom: 20, overflowX: "auto" }}>
-              <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: C.text }}>Comisiones cobradas por mes — {anioActual}</h3>
+              <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: C.text }}>Comisiones cobradas por mes — {anioActual}</h3>
               <svg width={700} height={280} viewBox="0 0 700 280" style={{ maxWidth: "100%", display: "block" }}>
                 {/* Grid lines */}
                 {[0.25, 0.5, 0.75, 1].map(f => (
@@ -1085,7 +1085,7 @@ export default function ComisionesSplitPage() {
             {/* Donut + tabla tipos */}
             <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 20, marginBottom: 20, alignItems: "start" }}>
               <div style={s.card}>
-                <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 12px", color: C.text }}>Por tipo</h3>
+                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, margin: "0 0 12px", color: C.text }}>Por tipo</h3>
                 <DonutSVG />
                 <div style={{ marginTop: 12 }}>
                   {donutData.filter(d => d.val > 0).map(d => (
@@ -1100,7 +1100,7 @@ export default function ComisionesSplitPage() {
 
               {/* Tabla participantes */}
               <div style={s.card}>
-                <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 12px", color: C.text }}>Participantes — {anioActual}</h3>
+                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, margin: "0 0 12px", color: C.text }}>Participantes — {anioActual}</h3>
                 {tablaParticipantes.length === 0 ? (
                   <p style={{ color: C.muted, fontSize: 13 }}>Sin datos para el año.</p>
                 ) : (

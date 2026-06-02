@@ -120,9 +120,9 @@ export default function DirectoriosPage() {
 
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>Módulos 46 / 47 / 48</div>
+        <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gfi-text-dim)', marginBottom: 6 }}>Módulos 46 / 47 / 48</div>
         <h1 style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>Directorios Profesionales</h1>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+        <p style={{ fontSize: 12, color: 'var(--gfi-text-muted)', marginTop: 4 }}>
           Escribanos, abogados y contadores recomendados por la comunidad GFI
         </p>
       </div>
@@ -130,12 +130,12 @@ export default function DirectoriosPage() {
       {/* Stats rápidos */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 20 }}>
         {Object.entries(PROFESIONES).map(([k, v]) => (
-          <div key={k} onClick={() => setFiltro(filtro === k ? 'todos' : k)} style={{ background: filtro === k ? v.bg : 'rgba(255,255,255,0.03)', border: `1px solid ${filtro === k ? v.color + '40' : 'rgba(255,255,255,0.07)'}`, borderRadius: 10, padding: '12px 16px', cursor: 'pointer', transition: 'all 0.15s' }}>
+          <div key={k} onClick={() => setFiltro(filtro === k ? 'todos' : k)} style={{ background: filtro === k ? v.bg : 'var(--gfi-bg-card)', border: `1px solid ${filtro === k ? v.color + '40' : 'var(--gfi-border-subtle)'}`, borderRadius: 10, padding: '12px 16px', cursor: 'pointer', transition: 'all 0.15s' }}>
             <div style={{ fontSize: 20, marginBottom: 4 }}>{v.icon}</div>
             <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 18, fontWeight: 800, color: filtro === k ? v.color : '#fff' }}>
               {profesionales.filter(p => p.profesion === k).length}
             </div>
-            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{v.plural}</div>
+            <div style={{ fontSize: 10, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{v.plural}</div>
           </div>
         ))}
       </div>
@@ -143,21 +143,21 @@ export default function DirectoriosPage() {
       {/* Búsqueda y filtros */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
-          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>🔍</span>
-          <input value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Buscar por nombre o especialidad..." style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', padding: '9px 12px 9px 32px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--gfi-text-muted)', fontSize: 14 }}>🔍</span>
+          <input value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Buscar por nombre o especialidad..." style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 8, color: '#fff', padding: '9px 12px 9px 32px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
         </div>
-        <select value={zonaFiltro} onChange={e => setZonaFiltro(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', padding: '9px 12px', fontSize: 13, fontFamily: 'inherit' }}>
+        <select value={zonaFiltro} onChange={e => setZonaFiltro(e.target.value)} style={{ background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 8, color: '#fff', padding: '9px 12px', fontSize: 13, fontFamily: 'inherit' }}>
           {zonas.map(z => <option key={z} value={z} style={{ background: '#141414' }}>{z}</option>)}
         </select>
       </div>
 
       {/* Filtros profesión */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
-        <button onClick={() => setFiltro('todos')} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === 'todos' ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === 'todos' ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+        <button onClick={() => setFiltro('todos')} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === 'todos' ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === 'todos' ? '#fff' : 'var(--gfi-text-muted)' }}>
           Todos
         </button>
         {Object.entries(PROFESIONES).map(([k, v]) => (
-          <button key={k} onClick={() => setFiltro(filtro === k ? 'todos' : k)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === k ? v.color + '22' : 'rgba(255,255,255,0.06)', color: filtro === k ? v.color : 'rgba(255,255,255,0.4)', outline: filtro === k ? `1px solid ${v.color}44` : 'none' }}>
+          <button key={k} onClick={() => setFiltro(filtro === k ? 'todos' : k)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === k ? v.color + '22' : 'rgba(255,255,255,0.06)', color: filtro === k ? v.color : 'var(--gfi-text-muted)', outline: filtro === k ? `1px solid ${v.color}44` : 'none' }}>
             {v.icon} {v.plural}
           </button>
         ))}
@@ -165,18 +165,18 @@ export default function DirectoriosPage() {
 
       {/* Lista */}
       {cargando ? (
-        <div style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
+        <div style={{ color: 'var(--gfi-text-muted)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
       ) : filtrados.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '56px 0' }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>🔍</div>
-          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>No se encontraron profesionales</div>
+          <div style={{ color: 'var(--gfi-text-muted)', fontSize: 14 }}>No se encontraron profesionales</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {filtrados.map(p => {
             const prof = PROFESIONES[p.profesion]
             return (
-              <div key={p.id} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${p.destacado ? `${prof.color}25` : 'rgba(255,255,255,0.07)'}`, borderRadius: 10, padding: '16px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+              <div key={p.id} style={{ background: 'var(--gfi-bg-card)', border: `1px solid ${p.destacado ? `${prof.color}25` : 'var(--gfi-border-subtle)'}`, borderRadius: 10, padding: '16px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                 {/* Avatar */}
                 <div style={{ width: 48, height: 48, borderRadius: 10, background: prof.bg, border: `1px solid ${prof.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
                   {prof.icon}
@@ -192,15 +192,15 @@ export default function DirectoriosPage() {
 
                   <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 10, color: prof.color, background: prof.bg, padding: '2px 8px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>{prof.label}</span>
-                    {p.especialidad && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: 10 }}>{p.especialidad}</span>}
-                    {p.zona && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>📍 {p.zona}</span>}
+                    {p.especialidad && <span style={{ fontSize: 10, color: 'var(--gfi-text-muted)', background: 'var(--gfi-border-subtle)', padding: '2px 8px', borderRadius: 10 }}>{p.especialidad}</span>}
+                    {p.zona && <span style={{ fontSize: 10, color: 'var(--gfi-text-muted)' }}>📍 {p.zona}</span>}
                   </div>
 
                   {p.descripcion && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5, marginBottom: 8 }}>{p.descripcion}</div>}
 
-                  {p.matricula && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginBottom: 8 }}>Mat. {p.matricula}</div>}
+                  {p.matricula && <div style={{ fontSize: 11, color: 'var(--gfi-text-dim)', marginBottom: 8 }}>Mat. {p.matricula}</div>}
 
-                  {p.direccion && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 8 }}>📍 {p.direccion}</div>}
+                  {p.direccion && <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', marginBottom: 8 }}>📍 {p.direccion}</div>}
 
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {p.telefono && (
@@ -222,7 +222,7 @@ export default function DirectoriosPage() {
       )}
 
       {/* Nota de contribución */}
-      <div style={{ marginTop: 28, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '14px 16px', fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
+      <div style={{ marginTop: 28, background: 'var(--gfi-bg-secondary)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '14px 16px', fontSize: 12, color: 'var(--gfi-text-muted)', lineHeight: 1.6 }}>
         ¿Querés sugerir un profesional para el directorio? Escribinos al grupo de comunidad GFI o contactá al administrador de la plataforma.
       </div>
     </div>

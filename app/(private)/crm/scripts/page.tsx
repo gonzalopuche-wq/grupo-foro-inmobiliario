@@ -169,10 +169,10 @@ export default function ScriptsLlamada() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>📞 Scripts de Llamada</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>📞 Scripts de Llamada</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Guiones y objeciones para cada etapa del proceso</p>
         </div>
       </div>
@@ -232,7 +232,7 @@ export default function ScriptsLlamada() {
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
                   <span style={{ fontSize: 32 }}>{scriptSeleccionado.icono}</span>
                   <div>
-                    <h2 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>{scriptSeleccionado.titulo}</h2>
+                    <h2 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>{scriptSeleccionado.titulo}</h2>
                     <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>{scriptSeleccionado.subtitulo}</div>
                   </div>
                 </div>
@@ -245,7 +245,7 @@ export default function ScriptsLlamada() {
                     style={{
                       marginLeft: "auto", background: modoEnsayo ? "#990000" : "#1a1a1a", border: "1px solid #333",
                       borderRadius: 6, color: "#fff", padding: "6px 14px", fontSize: 12, cursor: "pointer",
-                      fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                      fontFamily: "var(--font-display)", fontWeight: 700,
                     }}
                   >
                     {modoEnsayo ? "✓ Modo ensayo activo" : "🎭 Modo ensayo"}
@@ -265,7 +265,7 @@ export default function ScriptsLlamada() {
                         background: pasoActivo === i ? "#990000" : "#1a1a1a",
                         border: `1px solid ${pasoActivo === i ? "#990000" : "#333"}`,
                         color: pasoActivo === i ? "#fff" : "#888",
-                        fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                        fontFamily: "var(--font-display)", fontWeight: 700,
                       }}
                     >
                       {i + 1}. {paso.titulo}
@@ -282,7 +282,7 @@ export default function ScriptsLlamada() {
                     }}
                   >
                     <div style={{
-                      background: pasoActivo === i ? "#111" : "#0d0d0d",
+                      background: pasoActivo === i ? "var(--gfi-bg-secondary)" : "var(--gfi-bg-primary)",
                       border: `1px solid ${pasoActivo === i ? "#990000" : "#1a1a1a"}`,
                       borderRadius: 10, padding: "16px 20px",
                       cursor: "pointer",
@@ -296,7 +296,7 @@ export default function ScriptsLlamada() {
                           display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0,
                           color: pasoActivo === i ? "#fff" : "#666",
                         }}>{i + 1}</div>
-                        <span style={{ fontSize: 14, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: pasoActivo === i ? "#fff" : "#888" }}>
+                        <span style={{ fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: pasoActivo === i ? "#fff" : "#888" }}>
                           {paso.titulo}
                         </span>
                       </div>
@@ -335,11 +335,11 @@ export default function ScriptsLlamada() {
               {/* Objeciones */}
               {scriptSeleccionado.objeciones && scriptSeleccionado.objeciones.length > 0 && (
                 <div>
-                  <h3 style={{ margin: "0 0 12px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  <h3 style={{ margin: "0 0 12px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                     🛡 Manejo de objeciones
                   </h3>
                   {scriptSeleccionado.objeciones.map((obj, i) => (
-                    <div key={i} style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: "14px 16px", marginBottom: 10 }}>
+                    <div key={i} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: "14px 16px", marginBottom: 10 }}>
                       <div style={{ fontSize: 13, color: "#d4960c", fontWeight: 600, marginBottom: 8 }}>
                         🔴 "{obj.objecion}"
                       </div>

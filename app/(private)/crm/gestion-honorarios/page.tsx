@@ -341,7 +341,7 @@ export default function GestionHonorariosPage() {
       return (
         <svg width={220} height={220} viewBox="0 0 220 220">
           <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={stroke} />
-          <text x={cx} y={cy + 5} textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize={12} fontFamily="Montserrat,sans-serif">Sin datos</text>
+          <text x={cx} y={cy + 5} textAnchor="middle" fill="var(--gfi-text-muted)" fontSize={12} fontFamily="Montserrat,sans-serif">Sin datos</text>
         </svg>
       );
     }
@@ -366,7 +366,7 @@ export default function GestionHonorariosPage() {
 
     return (
       <svg width={220} height={220} viewBox="0 0 220 220">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={stroke} />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--gfi-border-subtle)" strokeWidth={stroke} />
         {paths.map((p, i) => (
           <circle
             key={i}
@@ -381,7 +381,7 @@ export default function GestionHonorariosPage() {
           />
         ))}
         <text x={cx} y={cy - 8} textAnchor="middle" fill="#fff" fontSize={22} fontFamily="Montserrat,sans-serif" fontWeight="800">{pctCobrado}%</text>
-        <text x={cx} y={cy + 12} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize={11} fontFamily="Inter,sans-serif">cobrado</text>
+        <text x={cx} y={cy + 12} textAnchor="middle" fill="var(--gfi-text-muted)" fontSize={11} fontFamily="Inter,sans-serif">cobrado</text>
       </svg>
     );
   };
@@ -416,7 +416,7 @@ export default function GestionHonorariosPage() {
     const fechas = Object.keys(byDate).sort();
     if (fechas.length === 0) {
       return (
-        <div style={{ textAlign: "center", padding: "40px 0", color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
+        <div style={{ textAlign: "center", padding: "40px 0", color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
           Sin cuotas en los próximos 90 días
         </div>
       );
@@ -433,10 +433,10 @@ export default function GestionHonorariosPage() {
     return (
       <svg width="100%" viewBox={`0 0 ${W} ${H + 60}`} style={{ display: "block" }}>
         {/* Eje X */}
-        <line x1={pad} y1={H} x2={W - pad} y2={H} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+        <line x1={pad} y1={H} x2={W - pad} y2={H} stroke="var(--gfi-border)" strokeWidth={1} />
         {/* Hoy */}
         <line x1={pad} y1={20} x2={pad} y2={H} stroke="rgba(255,255,255,0.15)" strokeWidth={1} strokeDasharray="4 3" />
-        <text x={pad} y={14} fill="rgba(255,255,255,0.4)" fontSize={9} fontFamily="Inter,sans-serif" textAnchor="middle">Hoy</text>
+        <text x={pad} y={14} fill="var(--gfi-text-muted)" fontSize={9} fontFamily="Inter,sans-serif" textAnchor="middle">Hoy</text>
 
         {allFechas.map(fecha => {
           const entries = byDate[fecha];
@@ -461,7 +461,7 @@ export default function GestionHonorariosPage() {
           return (
             <g key={fecha}>
               <rect x={x} y={y} width={barW} height={barH} fill={color} rx={3} opacity={0.85} />
-              <text x={x + barW / 2} y={H + 14} fill="rgba(255,255,255,0.4)" fontSize={8} fontFamily="Inter,sans-serif" textAnchor="middle" transform={`rotate(-45 ${x + barW / 2} ${H + 14})`}>
+              <text x={x + barW / 2} y={H + 14} fill="var(--gfi-text-muted)" fontSize={8} fontFamily="Inter,sans-serif" textAnchor="middle" transform={`rotate(-45 ${x + barW / 2} ${H + 14})`}>
                 {fmtFecha(fecha)}
               </text>
               <text x={x + barW / 2} y={y - 4} fill={color} fontSize={8} fontFamily="Montserrat,sans-serif" textAnchor="middle">
@@ -472,7 +472,7 @@ export default function GestionHonorariosPage() {
         })}
 
         {/* Etiqueta +90d */}
-        <text x={W - pad} y={H + 14} fill="rgba(255,255,255,0.3)" fontSize={9} fontFamily="Inter,sans-serif" textAnchor="end">+90 días</text>
+        <text x={W - pad} y={H + 14} fill="var(--gfi-text-muted)" fontSize={9} fontFamily="Inter,sans-serif" textAnchor="end">+90 días</text>
       </svg>
     );
   };
@@ -484,7 +484,7 @@ export default function GestionHonorariosPage() {
     borderRadius: 20,
     border: "none",
     cursor: "pointer",
-    fontFamily: "Montserrat,sans-serif",
+    fontFamily: "var(--font-display)",
     fontSize: 12,
     fontWeight: 700,
     background: active ? "#990000" : "rgba(255,255,255,0.06)",
@@ -493,15 +493,15 @@ export default function GestionHonorariosPage() {
   });
 
   const cardStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.07)",
+    background: "var(--gfi-bg-card)",
+    border: "1px solid var(--gfi-border-subtle)",
     borderRadius: 12,
     padding: "18px 20px",
   };
 
   const inputStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--gfi-border-subtle)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: 7,
     color: "#fff",
     padding: "8px 12px",
@@ -513,13 +513,13 @@ export default function GestionHonorariosPage() {
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 0 80px", fontFamily: "Inter,sans-serif", color: "#fff" }}>
       <style>{`
-        .gh-input { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:7px 10px; font-size:12px; font-family:Inter,sans-serif; outline:none; }
+        .gh-input { background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:7px 10px; font-size:12px; font-family:Inter,sans-serif; outline:none; }
         .gh-input:focus { border-color:rgba(153,0,0,0.4); }
         .gh-table { width:100%; border-collapse:collapse; }
-        .gh-table th { padding:10px 12px; text-align:left; font-size:10px; font-family:Montserrat,sans-serif; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,255,255,0.3); border-bottom:1px solid rgba(255,255,255,0.07); }
-        .gh-table td { padding:10px 12px; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+        .gh-table th { padding:10px 12px; text-align:left; font-size:10px; font-family:Montserrat,sans-serif; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--gfi-text-muted); border-bottom:1px solid var(--gfi-border-subtle); }
+        .gh-table td { padding:10px 12px; font-size:12px; border-bottom:1px solid var(--gfi-border-subtle); vertical-align:middle; }
         .gh-table tr:last-child td { border-bottom:none; }
-        .gh-table tr:hover td { background:rgba(255,255,255,0.02); }
+        .gh-table tr:hover td { background:var(--gfi-bg-secondary); }
         .gh-check { width:16px; height:16px; accent-color:#3abab6; cursor:pointer; }
       `}</style>
 
@@ -527,7 +527,7 @@ export default function GestionHonorariosPage() {
       {toast && (
         <div style={{
           position: "fixed", bottom: 24, right: 24, padding: "10px 20px",
-          borderRadius: 8, fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
+          borderRadius: 8, fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 700,
           zIndex: 9999,
           background: toast.tipo === "err" ? "rgba(153,0,0,0.15)" : "rgba(34,197,94,0.15)",
           border: `1px solid ${toast.tipo === "err" ? "rgba(153,0,0,0.4)" : "rgba(34,197,94,0.4)"}`,
@@ -539,15 +539,15 @@ export default function GestionHonorariosPage() {
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 6 }}>
+        <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 6 }}>
           CRM — Operaciones Cerradas
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", justifyContent: "space-between" }}>
-          <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#fff", margin: 0 }}>
+          <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: "#fff", margin: 0 }}>
             Gestión de Honorarios
           </h1>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+            <span style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>
               USD 1 =
             </span>
             <input
@@ -556,10 +556,10 @@ export default function GestionHonorariosPage() {
               onChange={e => setTipoCambio(Number(e.target.value))}
               style={{ ...inputStyle, width: 90, textAlign: "right" }}
             />
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>ARS</span>
+            <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>ARS</span>
           </div>
         </div>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 6 }}>
+        <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 6 }}>
           {negocios.length} operación{negocios.length !== 1 ? "es" : ""} cerrada{negocios.length !== 1 ? "s" : ""}
         </p>
       </div>
@@ -572,12 +572,12 @@ export default function GestionHonorariosPage() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: "64px 0", color: "rgba(255,255,255,0.3)", fontSize: 14 }}>Cargando...</div>
+        <div style={{ textAlign: "center", padding: "64px 0", color: "var(--gfi-text-muted)", fontSize: 14 }}>Cargando...</div>
       ) : negocios.length === 0 ? (
         <div style={{ textAlign: "center", padding: "64px 0" }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🏦</div>
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 14, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Sin operaciones cerradas</div>
-          <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, marginTop: 6 }}>Las operaciones cerradas aparecerán aquí</div>
+          <div style={{ color: "var(--gfi-text-muted)", fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 700 }}>Sin operaciones cerradas</div>
+          <div style={{ color: "var(--gfi-text-dim)", fontSize: 12, marginTop: 6 }}>Las operaciones cerradas aparecerán aquí</div>
         </div>
       ) : (
         <>
@@ -593,10 +593,10 @@ export default function GestionHonorariosPage() {
                   { label: "Vencido", valor: fmtARS(kpis.vencido), color: "#990000" },
                 ].map(k => (
                   <div key={k.label} style={cardStyle}>
-                    <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
+                    <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>
                       {k.label}
                     </div>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 24, fontWeight: 800, color: k.color, lineHeight: 1 }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, color: k.color, lineHeight: 1 }}>
                       {k.valor}
                     </div>
                   </div>
@@ -614,10 +614,10 @@ export default function GestionHonorariosPage() {
                       { label: "Pendiente", color: "#d4960c", val: kpis.pendiente },
                       { label: "Vencido",   color: "#990000", val: kpis.vencido   },
                     ].map(l => (
-                      <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                      <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: "var(--gfi-text-secondary)" }}>
                         <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color, flexShrink: 0 }} />
                         <span>{l.label}</span>
-                        <span style={{ marginLeft: "auto", color: l.color, fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 11 }}>
+                        <span style={{ marginLeft: "auto", color: l.color, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11 }}>
                           {fmtARS(l.val)}
                         </span>
                       </div>
@@ -647,22 +647,22 @@ export default function GestionHonorariosPage() {
                           <tr key={r.negocio_id}>
                             <td>
                               <div style={{ fontSize: 13, color: "#fff", fontWeight: 600, maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.titulo}</div>
-                              {r.proximaFecha && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>Vence: {fmtFecha(r.proximaFecha)}</div>}
+                              {r.proximaFecha && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 2 }}>Vence: {fmtFecha(r.proximaFecha)}</div>}
                             </td>
-                            <td style={{ color: "rgba(255,255,255,0.5)", maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.contacto}</td>
-                            <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff" }}>{fmtARS(r.honorariosTotal)}</td>
+                            <td style={{ color: "var(--gfi-text-secondary)", maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.contacto}</td>
+                            <td style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>{fmtARS(r.honorariosTotal)}</td>
                             <td style={{ color: "#3abab6" }}>{fmtARS(r.cobrado)}</td>
                             <td style={{ color: "#d4960c" }}>{fmtARS(r.pendiente)}</td>
                             <td style={{ color: "#990000" }}>{r.vencido > 0 ? fmtARS(r.vencido) : "—"}</td>
                             <td>
-                              <span style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "3px 10px", borderRadius: 10, background: meta.bg, color: meta.color }}>
+                              <span style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "3px 10px", borderRadius: 10, background: meta.bg, color: meta.color }}>
                                 {meta.label}
                               </span>
                             </td>
                             <td>
                               <button
                                 onClick={() => { setNegocioSelId(r.negocio_id); setTab("detalle"); }}
-                                style={{ padding: "5px 12px", background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 6, color: "#990000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
+                                style={{ padding: "5px 12px", background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 6, color: "#990000", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
                               >
                                 Gestionar
                               </button>
@@ -682,7 +682,7 @@ export default function GestionHonorariosPage() {
             <div>
               {/* Selector negocio */}
               <div style={{ marginBottom: 24 }}>
-                <label style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", display: "block", marginBottom: 6 }}>
+                <label style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", display: "block", marginBottom: 6 }}>
                   Negocio
                 </label>
                 <select
@@ -701,13 +701,13 @@ export default function GestionHonorariosPage() {
                   {/* Header negocio */}
                   <div style={{ ...cardStyle, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
                     <div>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>{negSel.titulo}</div>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
+                      <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: "#fff" }}>{negSel.titulo}</div>
+                      <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4 }}>
                         Total honorarios: <span style={{ color: "#fff", fontWeight: 700 }}>{fmtARS(resumenSel.honorariosTotal)}</span>
                       </div>
                     </div>
                     <span style={{
-                      fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
+                      fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700,
                       padding: "5px 14px", borderRadius: 12,
                       background: ESTADO_META[resumenSel.estado].bg,
                       color: ESTADO_META[resumenSel.estado].color,
@@ -718,7 +718,7 @@ export default function GestionHonorariosPage() {
 
                   {/* Cuotas */}
                   <div style={{ ...cardStyle, marginBottom: 20 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "var(--gfi-text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>
                       Cuotas de honorarios
                     </div>
                     <div style={{ overflowX: "auto" }}>
@@ -738,7 +738,7 @@ export default function GestionHonorariosPage() {
                             const esVencida = !cuota.cobrado && cuota.fechaVencimiento < hoy();
                             return (
                               <tr key={idx} style={{ background: cuota.cobrado ? "rgba(34,197,94,0.04)" : esVencida ? "rgba(153,0,0,0.04)" : "transparent" }}>
-                                <td style={{ color: "rgba(255,255,255,0.5)" }}>{cuota.numero}</td>
+                                <td style={{ color: "var(--gfi-text-secondary)" }}>{cuota.numero}</td>
                                 <td>
                                   <input
                                     type="number"
@@ -774,14 +774,14 @@ export default function GestionHonorariosPage() {
                                       onChange={e => actualizarCuota(idx, "fechaCobro", e.target.value)}
                                     />
                                   ) : (
-                                    <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 11 }}>—</span>
+                                    <span style={{ color: "var(--gfi-text-dim)", fontSize: 11 }}>—</span>
                                   )}
                                 </td>
                                 <td>
                                   {!cuota.cobrado && (
                                     <button
                                       onClick={() => marcarCobrado(idx, true)}
-                                      style={{ padding: "4px 10px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 6, color: "#3abab6", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
+                                      style={{ padding: "4px 10px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 6, color: "#3abab6", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
                                     >
                                       Cobrar
                                     </button>
@@ -795,7 +795,7 @@ export default function GestionHonorariosPage() {
                     </div>
                     <button
                       onClick={agregarCuota}
-                      style={{ marginTop: 14, padding: "7px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.6)", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
+                      style={{ marginTop: 14, padding: "7px 16px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 7, color: "var(--gfi-text-secondary)", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
                     >
                       + Agregar cuota
                     </button>
@@ -803,7 +803,7 @@ export default function GestionHonorariosPage() {
 
                   {/* Notas */}
                   <div style={{ ...cardStyle, marginBottom: 20 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "var(--gfi-text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
                       Notas internas
                     </div>
                     <textarea
@@ -826,7 +826,7 @@ export default function GestionHonorariosPage() {
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
                       <button
                         onClick={marcarIncobrable}
-                        style={{ padding: "9px 20px", background: "rgba(127,29,29,0.18)", border: "1px solid rgba(127,29,29,0.4)", borderRadius: 8, color: "#b80000", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
+                        style={{ padding: "9px 20px", background: "rgba(127,29,29,0.18)", border: "1px solid rgba(127,29,29,0.4)", borderRadius: 8, color: "#b80000", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
                       >
                         Marcar incobrable
                       </button>
@@ -842,7 +842,7 @@ export default function GestionHonorariosPage() {
             <div>
               {/* SVG Timeline */}
               <div style={{ ...cardStyle, marginBottom: 24, overflowX: "auto" }}>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "var(--gfi-text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>
                   Próximos 90 días
                 </div>
                 <div style={{ display: "flex", gap: 16, marginBottom: 14 }}>
@@ -851,7 +851,7 @@ export default function GestionHonorariosPage() {
                     { color: "#d4960c", label: "Pendiente" },
                     { color: "#990000", label: "Vencido"  },
                   ].map(l => (
-                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--gfi-text-secondary)" }}>
                       <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
                       {l.label}
                     </div>
@@ -874,7 +874,7 @@ export default function GestionHonorariosPage() {
                   <tbody>
                     {timelineItems.length === 0 ? (
                       <tr>
-                        <td colSpan={4} style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 32 }}>
+                        <td colSpan={4} style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 32 }}>
                           Sin cuotas registradas
                         </td>
                       </tr>
@@ -884,11 +884,11 @@ export default function GestionHonorariosPage() {
                       const label = item.cuota.cobrado ? "Cobrado" : esVencida ? "Vencido" : "Pendiente";
                       return (
                         <tr key={`${item.negocioId}-${idx}`}>
-                          <td style={{ color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap" }}>{fmtFecha(item.cuota.fechaVencimiento)}</td>
+                          <td style={{ color: "var(--gfi-text-secondary)", whiteSpace: "nowrap" }}>{fmtFecha(item.cuota.fechaVencimiento)}</td>
                           <td style={{ color: "#fff" }}>{item.titulo}</td>
-                          <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff" }}>{fmtARS(item.cuota.monto)}</td>
+                          <td style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>{fmtARS(item.cuota.monto)}</td>
                           <td>
-                            <span style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 10px", borderRadius: 10, background: `${color}18`, color }}>
+                            <span style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 10px", borderRadius: 10, background: `${color}18`, color }}>
                               {label}
                             </span>
                           </td>

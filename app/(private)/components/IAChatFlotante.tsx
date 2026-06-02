@@ -145,7 +145,7 @@ export default function IAChatFlotante() {
           border-top: 1px solid rgba(153,0,0,0.25);
           border-radius: 14px;
           z-index: 9000; display: flex; flex-direction: column;
-          box-shadow: 0 16px 56px rgba(0,0,0,0.70), 0 0 0 1px rgba(255,255,255,0.03) inset;
+          box-shadow: 0 16px 56px rgba(0,0,0,0.70), 0 0 0 1px var(--gfi-bg-card) inset;
           animation: chatSlideIn 0.22s cubic-bezier(0.4,0,0.2,1);
           overflow: hidden;
         }
@@ -177,7 +177,7 @@ export default function IAChatFlotante() {
         .gfi-msg {
           max-width: 86%; padding: 9px 13px;
           border-radius: 10px; font-size: 13px; line-height: 1.55;
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
         }
         .gfi-msg-user {
           background: rgba(153,0,0,0.14);
@@ -207,7 +207,7 @@ export default function IAChatFlotante() {
           flex: 1; background: #111318;
           border: 1px solid #252a35; border-radius: 8px;
           color: #f0f4f8; padding: 9px 12px;
-          font-size: 13px; font-family: 'Inter', sans-serif;
+          font-size: 13px; font-family: var(--font-body);
           outline: none; transition: border-color 0.15s;
         }
         .gfi-chat-input:focus {
@@ -259,8 +259,8 @@ export default function IAChatFlotante() {
                 fontSize: 18, boxShadow: '0 0 12px rgba(153,0,0,0.20)',
               }}>◈</div>
               <div>
-                <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 13, fontWeight: 800, color: '#f0f4f8', letterSpacing: '0.04em' }}>Asistente GFI®</div>
-                <div style={{ fontSize: 9, color: '#3abab6', fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: '0.10em', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 800, color: '#f0f4f8', letterSpacing: '0.04em' }}>Asistente GFI®</div>
+                <div style={{ fontSize: 9, color: '#3abab6', fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: '0.10em', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#3abab6', boxShadow: '0 0 5px #3abab6', display: 'inline-block' }} />
                   EN LÍNEA
                 </div>
@@ -272,7 +272,7 @@ export default function IAChatFlotante() {
                   background: 'transparent', border: '1px solid #252a35',
                   borderRadius: 6, color: '#8892a4', fontSize: 10,
                   padding: '4px 10px', cursor: 'pointer',
-                  fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+                  fontFamily: "var(--font-display)", fontWeight: 700,
                   letterSpacing: '0.06em', textTransform: 'uppercase', transition: 'all 0.15s',
                 }}>
                   Limpiar

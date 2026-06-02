@@ -424,7 +424,7 @@ export default function MapaActividadCorredor() {
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif", fontSize: 14 }}>
+        <span style={{ color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif", fontSize: 14 }}>
           Cargando actividad...
         </span>
       </div>
@@ -450,7 +450,7 @@ export default function MapaActividadCorredor() {
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
       <div style={{
-        background: "rgba(255,255,255,0.02)",
+        background: "var(--gfi-bg-secondary)",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
         padding: "16px 24px",
         display: "flex",
@@ -458,12 +458,12 @@ export default function MapaActividadCorredor() {
         gap: 16,
         flexWrap: "wrap",
       }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: 12 }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12 }}>
           ← CRM
         </Link>
         <h1 style={{
           margin: 0,
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
           fontWeight: 800,
           fontSize: 28,
           color: "#fff",
@@ -471,7 +471,7 @@ export default function MapaActividadCorredor() {
         }}>
           Mapa de Actividad
         </h1>
-        <span style={{ marginLeft: "auto", fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--gfi-text-muted)" }}>
           {diasConActividad.length} días activos en el último año
         </span>
       </div>
@@ -493,8 +493,8 @@ export default function MapaActividadCorredor() {
                 background: "transparent",
                 border: "none",
                 borderBottom: `2px solid ${tab === t.id ? "#990000" : "transparent"}`,
-                color: tab === t.id ? "#fff" : "rgba(255,255,255,0.4)",
-                fontFamily: "Montserrat, sans-serif",
+                color: tab === t.id ? "#fff" : "var(--gfi-text-muted)",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 12,
                 cursor: "pointer",
@@ -514,7 +514,7 @@ export default function MapaActividadCorredor() {
           <div>
             {/* Heatmap */}
             <div style={{
-              background: "rgba(255,255,255,0.02)",
+              background: "var(--gfi-bg-secondary)",
               border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: 12,
               padding: "20px 24px",
@@ -534,8 +534,8 @@ export default function MapaActividadCorredor() {
                         left: col * CELL_STEP,
                         top: 0,
                         fontSize: 10,
-                        color: "rgba(255,255,255,0.4)",
-                        fontFamily: "Montserrat, sans-serif",
+                        color: "var(--gfi-text-muted)",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 700,
                         letterSpacing: "0.04em",
                         userSelect: "none",
@@ -560,8 +560,8 @@ export default function MapaActividadCorredor() {
                         alignItems: "center",
                         justifyContent: "center",
                         fontSize: 9,
-                        color: idx % 2 === 0 ? "rgba(255,255,255,0.3)" : "transparent",
-                        fontFamily: "Montserrat, sans-serif",
+                        color: idx % 2 === 0 ? "var(--gfi-text-muted)" : "transparent",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 700,
                         userSelect: "none",
                       }}
@@ -602,7 +602,7 @@ export default function MapaActividadCorredor() {
                               background: COLORES[nivel],
                               cursor: nivel > 0 ? "pointer" : "default",
                               transition: "opacity 0.1s",
-                              border: "1px solid rgba(255,255,255,0.04)",
+                              border: "1px solid var(--gfi-border-subtle)",
                             }}
                           />
                         );
@@ -614,7 +614,7 @@ export default function MapaActividadCorredor() {
 
               {/* Leyenda */}
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 14 }}>
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                   Menos
                 </span>
                 {([0, 1, 2, 3, 4] as const).map((n) => (
@@ -625,11 +625,11 @@ export default function MapaActividadCorredor() {
                       height: CELL_SIZE,
                       borderRadius: 2,
                       background: COLORES[n],
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      border: "1px solid var(--gfi-border)",
                     }}
                   />
                 ))}
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                   Más
                 </span>
               </div>
@@ -646,19 +646,19 @@ export default function MapaActividadCorredor() {
                 <div
                   key={stat.label}
                   style={{
-                    background: "rgba(255,255,255,0.02)",
+                    background: "var(--gfi-bg-secondary)",
                     border: `1px solid ${stat.highlight ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.06)"}`,
                     borderRadius: 10,
                     padding: "14px 16px",
                   }}
                 >
-                  <p style={{ margin: "0 0 4px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  <p style={{ margin: "0 0 4px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                     {stat.label}
                   </p>
-                  <p style={{ margin: "0 0 2px 0", fontSize: 22, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: stat.highlight ? "#990000" : "#fff" }}>
+                  <p style={{ margin: "0 0 2px 0", fontSize: 22, fontFamily: "var(--font-display)", fontWeight: 800, color: stat.highlight ? "#990000" : "#fff" }}>
                     {stat.valor}
                   </p>
-                  <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+                  <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-muted)" }}>
                     {stat.sub}
                   </p>
                 </div>
@@ -666,7 +666,7 @@ export default function MapaActividadCorredor() {
             </div>
 
             {/* Nota privacidad */}
-            <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, margin: 0 }}>
+            <p style={{ color: "var(--gfi-text-muted)", fontSize: 11, margin: 0 }}>
               Solo visible para vos. Basado en tu actividad registrada en el CRM.
             </p>
           </div>
@@ -675,23 +675,23 @@ export default function MapaActividadCorredor() {
         {/* ── TAB 2: Por semana ─────────────────────────────────────────────── */}
         {tab === "semanas" && (
           <div style={{
-            background: "rgba(255,255,255,0.02)",
+            background: "var(--gfi-bg-secondary)",
             border: "1px solid rgba(255,255,255,0.06)",
             borderRadius: 12,
             overflow: "hidden",
           }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ background: "rgba(255,255,255,0.03)" }}>
-                  <th style={{ padding: "10px 14px", textAlign: "left", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <tr style={{ background: "var(--gfi-bg-card)" }}>
+                  <th style={{ padding: "10px 14px", textAlign: "left", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                     Semana
                   </th>
                   {DIAS_SEMANA.map((d) => (
-                    <th key={d} style={{ padding: "10px 8px", textAlign: "center", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    <th key={d} style={{ padding: "10px 8px", textAlign: "center", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                       {d}
                     </th>
                   ))}
-                  <th style={{ padding: "10px 14px", textAlign: "center", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  <th style={{ padding: "10px 14px", textAlign: "center", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                     Total
                   </th>
                 </tr>
@@ -704,7 +704,7 @@ export default function MapaActividadCorredor() {
                   const inicioStr = `${sd}/${sm}`;
                   return (
                     <tr key={semana.inicio} style={{ background: sIdx % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)" }}>
-                      <td style={{ padding: "8px 14px", fontSize: 11, color: "rgba(255,255,255,0.5)", whiteSpace: "nowrap" }}>
+                      <td style={{ padding: "8px 14px", fontSize: 11, color: "var(--gfi-text-secondary)", whiteSpace: "nowrap" }}>
                         {inicioStr} — {finStr}
                       </td>
                       {semana.dias.map(({ fecha, dia }) => (
@@ -723,7 +723,7 @@ export default function MapaActividadCorredor() {
                               alignItems: "center",
                               justifyContent: "center",
                               fontSize: 10,
-                              color: dia.nivel > 0 ? "rgba(255,255,255,0.7)" : "transparent",
+                              color: dia.nivel > 0 ? "var(--gfi-text-primary)" : "transparent",
                               cursor: dia.nivel > 0 ? "pointer" : "default",
                               fontWeight: 700,
                             }}
@@ -737,10 +737,10 @@ export default function MapaActividadCorredor() {
                           <div style={{
                             height: 8,
                             width: Math.max(4, (semana.total / maxTotalSemana) * 80),
-                            background: semana.total > 0 ? "#990000" : "rgba(255,255,255,0.05)",
+                            background: semana.total > 0 ? "#990000" : "var(--gfi-border-subtle)",
                             borderRadius: 4,
                           }} />
-                          <span style={{ fontSize: 12, fontWeight: 700, color: semana.total > 0 ? "#fff" : "rgba(255,255,255,0.2)", minWidth: 20 }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: semana.total > 0 ? "#fff" : "var(--gfi-text-dim)", minWidth: 20 }}>
                             {semana.total}
                           </span>
                         </div>
@@ -751,7 +751,7 @@ export default function MapaActividadCorredor() {
               </tbody>
             </table>
             <div style={{ padding: "12px 14px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <p style={{ margin: 0, color: "rgba(255,255,255,0.3)", fontSize: 11 }}>
+              <p style={{ margin: 0, color: "var(--gfi-text-muted)", fontSize: 11 }}>
                 Solo visible para vos. Basado en tu actividad registrada en el CRM.
               </p>
             </div>
@@ -773,11 +773,11 @@ export default function MapaActividadCorredor() {
                   style={{
                     padding: "6px 14px",
                     borderRadius: 20,
-                    border: `1px solid ${filtroDetalle === f.id ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`,
+                    border: `1px solid ${filtroDetalle === f.id ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`,
                     background: filtroDetalle === f.id ? "rgba(153,0,0,0.15)" : "transparent",
-                    color: filtroDetalle === f.id ? "#990000" : "rgba(255,255,255,0.5)",
+                    color: filtroDetalle === f.id ? "#990000" : "var(--gfi-text-secondary)",
                     fontSize: 11,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     cursor: "pointer",
                     letterSpacing: "0.04em",
@@ -791,12 +791,12 @@ export default function MapaActividadCorredor() {
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {diasFiltradosDetalle.length === 0 ? (
                 <div style={{
-                  background: "rgba(255,255,255,0.02)",
+                  background: "var(--gfi-bg-secondary)",
                   border: "1px solid rgba(255,255,255,0.06)",
                   borderRadius: 12,
                   padding: 40,
                   textAlign: "center",
-                  color: "rgba(255,255,255,0.2)",
+                  color: "var(--gfi-text-dim)",
                   fontSize: 13,
                 }}>
                   Sin actividad en los últimos 30 días
@@ -813,7 +813,7 @@ export default function MapaActividadCorredor() {
                         alignItems: "center",
                         gap: 14,
                         padding: "12px 16px",
-                        background: "rgba(255,255,255,0.02)",
+                        background: "var(--gfi-bg-secondary)",
                         border: `1px solid ${esHoy ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.06)"}`,
                         borderLeft: `3px solid ${COLORES[dia.nivel]}`,
                         borderRadius: 10,
@@ -828,10 +828,10 @@ export default function MapaActividadCorredor() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         fontSize: 14,
-                        color: dia.nivel > 0 ? "#fff" : "rgba(255,255,255,0.2)",
+                        color: dia.nivel > 0 ? "#fff" : "var(--gfi-text-dim)",
                         flexShrink: 0,
                       }}>
                         {dia.nivel > 0 ? dia.detalle.total : "—"}
@@ -843,11 +843,11 @@ export default function MapaActividadCorredor() {
                           {esHoy ? "Hoy — " : ""}{fechaLabel}
                         </p>
                         {dia.nivel > 0 ? (
-                          <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                          <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-muted)" }}>
                             {dia.detalle.total} puntos de actividad
                           </p>
                         ) : (
-                          <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.2)" }}>
+                          <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-dim)" }}>
                             Sin actividad
                           </p>
                         )}
@@ -863,7 +863,7 @@ export default function MapaActividadCorredor() {
                             border: "1px solid rgba(59,130,246,0.25)",
                             fontSize: 10,
                             color: "#93c5fd",
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             whiteSpace: "nowrap",
                           }}>
@@ -878,7 +878,7 @@ export default function MapaActividadCorredor() {
                             border: "1px solid rgba(249,115,22,0.25)",
                             fontSize: 10,
                             color: "#fdba74",
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             whiteSpace: "nowrap",
                           }}>
@@ -893,7 +893,7 @@ export default function MapaActividadCorredor() {
                             border: "1px solid rgba(153,0,0,0.3)",
                             fontSize: 10,
                             color: "#ff9999",
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             whiteSpace: "nowrap",
                           }}>
@@ -908,7 +908,7 @@ export default function MapaActividadCorredor() {
             </div>
 
             <div style={{ marginTop: 16 }}>
-              <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, margin: 0 }}>
+              <p style={{ color: "var(--gfi-text-muted)", fontSize: 11, margin: 0 }}>
                 Solo visible para vos. Basado en tu actividad registrada en el CRM.
               </p>
             </div>
@@ -926,7 +926,7 @@ export default function MapaActividadCorredor() {
             top: tooltip.y - 90,
             zIndex: 9999,
             background: "#1a1a1a",
-            border: "1px solid rgba(255,255,255,0.12)",
+            border: "1px solid var(--gfi-border)",
             borderRadius: 8,
             padding: "10px 14px",
             pointerEvents: "none",
@@ -935,11 +935,11 @@ export default function MapaActividadCorredor() {
             transform: "translateX(-50%)",
           }}
         >
-          <p style={{ margin: "0 0 6px 0", fontSize: 11, color: "rgba(255,255,255,0.5)", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <p style={{ margin: "0 0 6px 0", fontSize: 11, color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             {formatFechaLarga(tooltip.dia.fecha)}
           </p>
           {tooltip.dia.nivel === 0 ? (
-            <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Sin actividad</p>
+            <p style={{ margin: 0, fontSize: 12, color: "var(--gfi-text-muted)" }}>Sin actividad</p>
           ) : (
             <>
               {tooltip.dia.detalle.contactosNuevos > 0 && (
@@ -957,7 +957,7 @@ export default function MapaActividadCorredor() {
                   {tooltip.dia.detalle.negociosCerrados} cierre{tooltip.dia.detalle.negociosCerrados > 1 ? "s" : ""}
                 </p>
               )}
-              <p style={{ margin: "4px 0 0 0", fontSize: 11, color: "rgba(255,255,255,0.4)", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 4 }}>
+              <p style={{ margin: "4px 0 0 0", fontSize: 11, color: "var(--gfi-text-muted)", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 4 }}>
                 Total: {tooltip.dia.detalle.total} pts
               </p>
             </>

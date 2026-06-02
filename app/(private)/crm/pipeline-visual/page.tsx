@@ -210,7 +210,7 @@ export default function PipelineVisualPage() {
       <div style={{ borderBottom: "1px solid #1a1a1a", padding: "20px 24px" }}>
         <div style={{ maxWidth: 1600, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, margin: 0 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, margin: 0 }}>
               Pipeline Visual
             </h1>
             <p style={{ color: "#666", fontSize: 13, margin: "4px 0 0" }}>
@@ -227,10 +227,10 @@ export default function PipelineVisualPage() {
               { label: "En cierre", value: resumen.enCierre.toString(), highlight: true },
             ].map((k) => (
               <div key={k.label} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 18, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: k.highlight ? "#3abab6" : "#fff" }}>
+                <div style={{ fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, color: k.highlight ? "#3abab6" : "#fff" }}>
                   {k.value}
                 </div>
-                <div style={{ fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
+                <div style={{ fontSize: 10, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>
                   {k.label}
                 </div>
               </div>
@@ -247,10 +247,10 @@ export default function PipelineVisualPage() {
                   padding: "6px 14px",
                   borderRadius: 20,
                   border: filtroTipo === f.v ? "1px solid #990000" : "1px solid #333",
-                  background: filtroTipo === f.v ? "rgba(153,0,0,0.15)" : "#111",
+                  background: filtroTipo === f.v ? "rgba(153,0,0,0.15)" : "var(--gfi-bg-secondary)",
                   color: filtroTipo === f.v ? "#990000" : "#888",
                   fontSize: 12,
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   cursor: "pointer",
                   textTransform: "uppercase",
@@ -265,7 +265,7 @@ export default function PipelineVisualPage() {
       </div>
 
       {saving && (
-        <div style={{ background: "rgba(153,0,0,0.1)", borderBottom: "1px solid rgba(153,0,0,0.3)", padding: "6px 24px", fontSize: 12, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+        <div style={{ background: "rgba(153,0,0,0.1)", borderBottom: "1px solid rgba(153,0,0,0.3)", padding: "6px 24px", fontSize: 12, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700 }}>
           Guardando...
         </div>
       )}
@@ -283,7 +283,7 @@ export default function PipelineVisualPage() {
                 onDragLeave={() => setDragOver(null)}
                 style={{
                   width: 220,
-                  background: isOver ? "rgba(255,255,255,0.04)" : "#0f0f0f",
+                  background: isOver ? "var(--gfi-border-subtle)" : "var(--gfi-bg-primary)",
                   border: isOver ? `2px solid ${col.color}` : "2px solid #1a1a1a",
                   borderRadius: 14,
                   display: "flex",
@@ -296,11 +296,11 @@ export default function PipelineVisualPage() {
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <span style={{ fontSize: 14 }}>{col.icon}</span>
-                      <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 11, color: col.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: col.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                         {col.label}
                       </span>
                     </div>
-                    <div style={{ background: `${col.color}22`, border: `1px solid ${col.color}55`, borderRadius: 10, padding: "2px 8px", fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 12, color: col.color }}>
+                    <div style={{ background: `${col.color}22`, border: `1px solid ${col.color}55`, borderRadius: 10, padding: "2px 8px", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, color: col.color }}>
                       {col.items.length}
                     </div>
                   </div>
@@ -336,7 +336,7 @@ export default function PipelineVisualPage() {
                       >
                         {/* Tipo badge */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                          <div style={{ fontSize: 9, fontFamily: "Montserrat, sans-serif", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: TIPOS_COLORS[n.tipo_operacion] ?? "#888", background: `${TIPOS_COLORS[n.tipo_operacion] ?? "#888"}22`, borderRadius: 4, padding: "2px 6px" }}>
+                          <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: TIPOS_COLORS[n.tipo_operacion] ?? "#888", background: `${TIPOS_COLORS[n.tipo_operacion] ?? "#888"}22`, borderRadius: 4, padding: "2px 6px" }}>
                             {n.tipo_operacion.replace("_", " ")}
                           </div>
                           <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
@@ -346,7 +346,7 @@ export default function PipelineVisualPage() {
                         </div>
 
                         {/* Título */}
-                        <div style={{ fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: "#fff", lineHeight: 1.3, marginBottom: 4, wordBreak: "break-word" }}>
+                        <div style={{ fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff", lineHeight: 1.3, marginBottom: 4, wordBreak: "break-word" }}>
                           {n.titulo}
                         </div>
 
@@ -359,7 +359,7 @@ export default function PipelineVisualPage() {
 
                         {/* Valor */}
                         {n.valor_operacion && (
-                          <div style={{ fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: "#fff" }}>
+                          <div style={{ fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>
                             {fmtValor(n.valor_operacion, n.moneda)}
                             {n.honorarios_pct && (
                               <span style={{ color: "#3abab6", marginLeft: 6, fontSize: 10 }}>
@@ -395,12 +395,12 @@ export default function PipelineVisualPage() {
       {detalle && (
         <div style={{
           position: "fixed", right: 0, top: 0, bottom: 0, width: 340,
-          background: "#111", borderLeft: "1px solid #222",
+          background: "var(--gfi-bg-secondary)", borderLeft: "1px solid #222",
           overflowY: "auto", padding: 24, zIndex: 100,
           boxShadow: "-8px 0 32px rgba(0,0,0,0.5)",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-            <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 16, margin: 0, color: "#fff" }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, margin: 0, color: "#fff" }}>
               Detalle
             </h2>
             <button
@@ -413,7 +413,7 @@ export default function PipelineVisualPage() {
 
           {/* Etapa selector */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 11, color: "#666", marginBottom: 8, fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
+            <div style={{ fontSize: 11, color: "#666", marginBottom: 8, fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>
               Etapa actual
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -428,7 +428,7 @@ export default function PipelineVisualPage() {
                     background: detalle.etapa === e.value ? `${e.color}22` : "transparent",
                     color: detalle.etapa === e.value ? e.color : "#666",
                     fontSize: 11,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     cursor: "pointer",
                   }}
@@ -472,7 +472,7 @@ export default function PipelineVisualPage() {
             },
           ].map((row) => (
             <div key={row.label} style={{ borderBottom: "1px solid #1a1a1a", paddingBottom: 12, marginBottom: 12 }}>
-              <div style={{ fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", marginBottom: 3 }}>
+              <div style={{ fontSize: 10, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", marginBottom: 3 }}>
                 {row.label}
               </div>
               <div style={{ fontSize: 14, color: "#fff" }}>{row.value}</div>
@@ -481,7 +481,7 @@ export default function PipelineVisualPage() {
 
           {detalle.notas && (
             <div>
-              <div style={{ fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>
+              <div style={{ fontSize: 10, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>
                 Notas
               </div>
               <div style={{ fontSize: 13, color: "#aaa", lineHeight: 1.6, background: "#161616", borderRadius: 8, padding: 12 }}>
@@ -501,7 +501,7 @@ export default function PipelineVisualPage() {
                   {prev && (
                     <button
                       onClick={() => moverEtapa(detalle.id, prev.value)}
-                      style={{ flex: 1, padding: "10px 0", background: "#161616", border: `1px solid ${prev.color}55`, borderRadius: 8, color: prev.color, fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 700, cursor: "pointer" }}
+                      style={{ flex: 1, padding: "10px 0", background: "#161616", border: `1px solid ${prev.color}55`, borderRadius: 8, color: prev.color, fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
                     >
                       ← {prev.label}
                     </button>
@@ -509,7 +509,7 @@ export default function PipelineVisualPage() {
                   {next && (
                     <button
                       onClick={() => moverEtapa(detalle.id, next.value)}
-                      style={{ flex: 1, padding: "10px 0", background: `${next.color}22`, border: `1px solid ${next.color}`, borderRadius: 8, color: next.color, fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 700, cursor: "pointer" }}
+                      style={{ flex: 1, padding: "10px 0", background: `${next.color}22`, border: `1px solid ${next.color}`, borderRadius: 8, color: next.color, fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
                     >
                       {next.label} →
                     </button>

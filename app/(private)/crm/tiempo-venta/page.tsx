@@ -81,24 +81,24 @@ const fmtNum = (n: number) => n.toLocaleString("es-AR", { maximumFractionDigits:
 // ── Estilos reutilizables ─────────────────────────────────────────────────────
 
 const card: React.CSSProperties = {
-  background: "#0d0d0d",
-  border: "1px solid rgba(255,255,255,0.07)",
+  background: "var(--gfi-bg-primary)",
+  border: "1px solid var(--gfi-border-subtle)",
   borderRadius: 10,
   padding: "16px 18px",
 };
 
 const labelStyle: React.CSSProperties = {
-  fontFamily: "Montserrat,sans-serif",
+  fontFamily: "var(--font-display)",
   fontSize: 9,
   fontWeight: 700,
   letterSpacing: "0.1em",
   textTransform: "uppercase",
-  color: "rgba(255,255,255,0.35)",
+  color: "var(--gfi-text-muted)",
 };
 
 const selectStyle: React.CSSProperties = {
-  background: "#111",
-  border: "1px solid rgba(255,255,255,0.1)",
+  background: "var(--gfi-bg-secondary)",
+  border: "1px solid var(--gfi-border)",
   borderRadius: 5,
   color: "rgba(255,255,255,0.55)",
   fontSize: 11,
@@ -107,17 +107,17 @@ const selectStyle: React.CSSProperties = {
 };
 
 const thStyle: React.CSSProperties = {
-  fontFamily: "Montserrat,sans-serif",
+  fontFamily: "var(--font-display)",
   fontSize: 9,
   fontWeight: 700,
   letterSpacing: "0.08em",
   textTransform: "uppercase",
-  color: "rgba(255,255,255,0.35)",
+  color: "var(--gfi-text-muted)",
   padding: "6px 10px",
   textAlign: "left",
   cursor: "pointer",
   userSelect: "none",
-  borderBottom: "1px solid rgba(255,255,255,0.07)",
+  borderBottom: "1px solid var(--gfi-border-subtle)",
   whiteSpace: "nowrap",
 };
 
@@ -125,7 +125,7 @@ const tdStyle: React.CSSProperties = {
   fontSize: 12,
   color: "rgba(255,255,255,0.8)",
   padding: "8px 10px",
-  borderBottom: "1px solid rgba(255,255,255,0.04)",
+  borderBottom: "1px solid var(--gfi-border-subtle)",
 };
 
 // ── Grupos derivados ──────────────────────────────────────────────────────────
@@ -443,11 +443,11 @@ export default function TiempoVenta() {
           const col = d.color ?? "#990000";
           return (
             <g key={d.label}>
-              <text x={leftW - 6} y={y + rowH / 2 + 4} textAnchor="end" fontSize={10} fill="rgba(255,255,255,0.6)" fontFamily="Inter,sans-serif">
+              <text x={leftW - 6} y={y + rowH / 2 + 4} textAnchor="end" fontSize={10} fill="var(--gfi-text-secondary)" fontFamily="Inter,sans-serif">
                 {d.label.length > 14 ? d.label.slice(0, 13) + "…" : d.label}
               </text>
               <rect x={leftW} y={y + 2} width={barW} height={rowH - 6} rx={3} fill={col} opacity={0.75} />
-              <text x={leftW + barW + 5} y={y + rowH / 2 + 4} fontSize={10} fill="rgba(255,255,255,0.5)" fontFamily="Montserrat,sans-serif" fontWeight={700}>
+              <text x={leftW + barW + 5} y={y + rowH / 2 + 4} fontSize={10} fill="var(--gfi-text-secondary)" fontFamily="Montserrat,sans-serif" fontWeight={700}>
                 {fmtNum(d.value)}d
               </text>
             </g>
@@ -479,8 +479,8 @@ export default function TiempoVenta() {
           const y = padT + innerH * (1 - r);
           return (
             <g key={i}>
-              <line x1={padL} y1={y} x2={padL + innerW} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
-              <text x={padL - 4} y={y + 4} textAnchor="end" fontSize={8} fill="rgba(255,255,255,0.3)" fontFamily="Inter,sans-serif">
+              <line x1={padL} y1={y} x2={padL + innerW} y2={y} stroke="var(--gfi-border-subtle)" strokeWidth={1} />
+              <text x={padL - 4} y={y + 4} textAnchor="end" fontSize={8} fill="var(--gfi-text-muted)" fontFamily="Inter,sans-serif">
                 {Math.round(maxV * r)}
               </text>
             </g>
@@ -494,7 +494,7 @@ export default function TiempoVenta() {
         {pts.map((p, i) => (
           <g key={i}>
             <circle cx={p.x} cy={p.y} r={3} fill="#990000" />
-            <text x={p.x} y={padT + innerH + 18} textAnchor="middle" fontSize={8} fill="rgba(255,255,255,0.4)" fontFamily="Inter,sans-serif" transform={`rotate(-30,${p.x},${padT + innerH + 18})`}>
+            <text x={p.x} y={padT + innerH + 18} textAnchor="middle" fontSize={8} fill="var(--gfi-text-muted)" fontFamily="Inter,sans-serif" transform={`rotate(-30,${p.x},${padT + innerH + 18})`}>
               {p.d.label}
             </text>
           </g>
@@ -522,8 +522,8 @@ export default function TiempoVenta() {
           const y = padT + innerH * (1 - r);
           return (
             <g key={i}>
-              <line x1={padL} y1={y} x2={padL + innerW} y2={y} stroke="rgba(255,255,255,0.04)" strokeWidth={1} />
-              <text x={padL - 4} y={y + 4} textAnchor="end" fontSize={8} fill="rgba(255,255,255,0.3)" fontFamily="Inter,sans-serif">
+              <line x1={padL} y1={y} x2={padL + innerW} y2={y} stroke="var(--gfi-border-subtle)" strokeWidth={1} />
+              <text x={padL - 4} y={y + 4} textAnchor="end" fontSize={8} fill="var(--gfi-text-muted)" fontFamily="Inter,sans-serif">
                 {Math.round(maxDias * r)}d
               </text>
             </g>
@@ -534,7 +534,7 @@ export default function TiempoVenta() {
           const x = padL + innerW * r;
           const val = Math.round(maxPrecio * r);
           return (
-            <text key={i} x={x} y={padT + innerH + 18} textAnchor="middle" fontSize={8} fill="rgba(255,255,255,0.3)" fontFamily="Inter,sans-serif">
+            <text key={i} x={x} y={padT + innerH + 18} textAnchor="middle" fontSize={8} fill="var(--gfi-text-muted)" fontFamily="Inter,sans-serif">
               {val >= 1000 ? `${Math.round(val / 1000)}k` : val}
             </text>
           );
@@ -546,8 +546,8 @@ export default function TiempoVenta() {
           return <circle key={i} cx={cx} cy={cy} r={3} fill="rgba(153,0,0,0.55)" stroke="rgba(153,0,0,0.2)" strokeWidth={0.5} />;
         })}
         {/* Axis labels */}
-        <text x={padL + innerW / 2} y={height - 2} textAnchor="middle" fontSize={9} fill="rgba(255,255,255,0.3)" fontFamily="Inter,sans-serif">Precio USD</text>
-        <text x={10} y={padT + innerH / 2} textAnchor="middle" fontSize={9} fill="rgba(255,255,255,0.3)" fontFamily="Inter,sans-serif" transform={`rotate(-90,10,${padT + innerH / 2})`}>Días</text>
+        <text x={padL + innerW / 2} y={height - 2} textAnchor="middle" fontSize={9} fill="var(--gfi-text-muted)" fontFamily="Inter,sans-serif">Precio USD</text>
+        <text x={10} y={padT + innerH / 2} textAnchor="middle" fontSize={9} fill="var(--gfi-text-muted)" fontFamily="Inter,sans-serif" transform={`rotate(-90,10,${padT + innerH / 2})`}>Días</text>
       </svg>
     );
   }
@@ -573,7 +573,7 @@ export default function TiempoVenta() {
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", fontSize: 14 }}>
+        <div style={{ color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", fontSize: 14 }}>
           Calculando tiempos en mercado…
         </div>
       </div>
@@ -587,12 +587,12 @@ export default function TiempoVenta() {
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
-        <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, margin: 0 }}>Tiempo en Mercado</h1>
-        <span style={{ background: "#990000", color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>ANÁLISIS</span>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, margin: 0 }}>Tiempo en Mercado</h1>
+        <span style={{ background: "#990000", color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: "var(--font-display)", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>ANÁLISIS</span>
       </div>
-      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 22 }}>
+      <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 22 }}>
         ¿Cuánto tardan las propiedades en venderse o alquilarse? — {filtradas.length} propiedades analizadas
       </div>
 
@@ -620,7 +620,7 @@ export default function TiempoVenta() {
             onChange={(e) => setTipoCambio(Number(e.target.value))}
             style={{ ...selectStyle, width: 80, textAlign: "right" }}
           />
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>ARS/USD</span>
+          <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>ARS/USD</span>
         </div>
       </div>
 
@@ -653,9 +653,9 @@ export default function TiempoVenta() {
           },
         ].map((k, i) => (
           <div key={i} style={{ ...card, textAlign: "center", padding: "18px 14px" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 26, fontWeight: 800, color: k.color, lineHeight: 1.1 }}>{k.val}</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 800, color: k.color, lineHeight: 1.1 }}>{k.val}</div>
             <div style={{ ...labelStyle, marginTop: 8, marginBottom: 4 }}>{k.label}</div>
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{k.sub}</div>
+            <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{k.sub}</div>
           </div>
         ))}
       </div>
@@ -664,13 +664,13 @@ export default function TiempoVenta() {
       {cerradas.length > 0 && (
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24, padding: "10px 16px", background: `${velocidad.color}18`, border: `1px solid ${velocidad.color}40`, borderRadius: 8, width: "fit-content" }}>
           <div style={{ width: 10, height: 10, borderRadius: "50%", background: velocidad.color }} />
-          <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: velocidad.color }}>{velocidad.label}</span>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>— promedio de {fmtNum(tiempoPromedioGlobal)} días en mercado</span>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: velocidad.color }}>{velocidad.label}</span>
+          <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>— promedio de {fmtNum(tiempoPromedioGlobal)} días en mercado</span>
         </div>
       )}
 
       {/* Tabs */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 20, borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: 0 }}>
+      <div style={{ display: "flex", gap: 4, marginBottom: 20, borderBottom: "1px solid var(--gfi-border)", paddingBottom: 0 }}>
         {([
           { id: "zona" as TabId, label: "Por Zona" },
           { id: "tipo" as TabId, label: "Por Tipo" },
@@ -684,8 +684,8 @@ export default function TiempoVenta() {
               background: "transparent",
               border: "none",
               borderBottom: tab === t.id ? "2px solid #990000" : "2px solid transparent",
-              color: tab === t.id ? "#fff" : "rgba(255,255,255,0.4)",
-              fontFamily: "Montserrat,sans-serif",
+              color: tab === t.id ? "#fff" : "var(--gfi-text-muted)",
+              fontFamily: "var(--font-display)",
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.06em",
@@ -707,7 +707,7 @@ export default function TiempoVenta() {
           <div style={card}>
             <div style={{ ...labelStyle, marginBottom: 14 }}>Tiempo por barrio — {porBarrio.length} zonas</div>
             {porBarrio.length === 0 ? (
-              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, textAlign: "center", padding: "20px 0" }}>Sin datos</div>
+              <div style={{ color: "var(--gfi-text-muted)", fontSize: 13, textAlign: "center", padding: "20px 0" }}>Sin datos</div>
             ) : (
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -733,19 +733,19 @@ export default function TiempoVenta() {
                       return (
                         <tr key={g.barrio} style={{ background: `${colorPorDias(g.promedio)}08` }}>
                           <td style={{ ...tdStyle, fontWeight: 600 }}>{g.barrio}</td>
-                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{g.count}</td>
+                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700 }}>{g.count}</td>
                           <td style={{ ...tdStyle, textAlign: "center" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden", minWidth: 40 }}>
+                              <div style={{ flex: 1, height: 6, background: "var(--gfi-border-subtle)", borderRadius: 3, overflow: "hidden", minWidth: 40 }}>
                                 <div style={{ height: "100%", width: `${Math.min(100, (g.promedio / 120) * 100)}%`, background: colorPorDias(g.promedio), borderRadius: 3 }} />
                               </div>
-                              <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: colorPorDias(g.promedio), minWidth: 32 }}>{g.promedio}d</span>
+                              <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: colorPorDias(g.promedio), minWidth: 32 }}>{g.promedio}d</span>
                             </div>
                           </td>
-                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{g.mediana}d</td>
+                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700 }}>{g.mediana}d</td>
                           <td style={{ ...tdStyle, textAlign: "right" }}>{g.precioPromedio > 0 ? `USD ${fmtNum(g.precioPromedio)}` : "—"}</td>
                           <td style={{ ...tdStyle }}>
-                            <span style={{ background: `${vel.color}20`, color: vel.color, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
+                            <span style={{ background: `${vel.color}20`, color: vel.color, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
                               {vel.label}
                             </span>
                           </td>
@@ -764,19 +764,19 @@ export default function TiempoVenta() {
               <div style={{ ...labelStyle, marginBottom: 14 }}>Top 10 zonas por operaciones</div>
               {top10Barrios.length > 0
                 ? barChart(top10Barrios.map((b) => ({ label: b.barrio, value: b.promedio, color: colorPorDias(b.promedio) })), 320, 24)
-                : <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Sin datos</div>}
+                : <div style={{ color: "var(--gfi-text-muted)", fontSize: 12 }}>Sin datos</div>}
             </div>
             {porAmbientes.length > 0 && (
               <div style={card}>
                 <div style={{ ...labelStyle, marginBottom: 14 }}>Por ambientes</div>
                 {porAmbientes.map((g) => (
                   <div key={g.ambientes} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <div style={{ width: 28, textAlign: "center", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>{g.ambientes}</div>
-                    <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
+                    <div style={{ width: 28, textAlign: "center", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: "var(--gfi-text-secondary)" }}>{g.ambientes}</div>
+                    <div style={{ flex: 1, height: 6, background: "var(--gfi-border-subtle)", borderRadius: 3, overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${Math.min(100, (g.promedio / 120) * 100)}%`, background: colorPorDias(g.promedio), borderRadius: 3 }} />
                     </div>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: colorPorDias(g.promedio), minWidth: 36, textAlign: "right" }}>{g.promedio}d</span>
-                    <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", minWidth: 24 }}>({g.count})</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: colorPorDias(g.promedio), minWidth: 36, textAlign: "right" }}>{g.promedio}d</span>
+                    <span style={{ fontSize: 9, color: "var(--gfi-text-muted)", minWidth: 24 }}>({g.count})</span>
                   </div>
                 ))}
               </div>
@@ -791,7 +791,7 @@ export default function TiempoVenta() {
           <div style={card}>
             <div style={{ ...labelStyle, marginBottom: 14 }}>Tiempo por tipo de propiedad</div>
             {porTipo.length === 0 ? (
-              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, textAlign: "center", padding: "20px 0" }}>Sin datos</div>
+              <div style={{ color: "var(--gfi-text-muted)", fontSize: 13, textAlign: "center", padding: "20px 0" }}>Sin datos</div>
             ) : (
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -810,19 +810,19 @@ export default function TiempoVenta() {
                       const pct = Math.round((g.promedio / maxPromedioTipo) * 100);
                       return (
                         <tr key={g.tipo}>
-                          <td style={{ ...tdStyle, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "capitalize" }}>{g.tipo}</td>
-                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{g.count}</td>
+                          <td style={{ ...tdStyle, fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "capitalize" }}>{g.tipo}</td>
+                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700 }}>{g.count}</td>
                           <td style={{ ...tdStyle }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <div style={{ flex: 1, height: 8, background: "rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden", minWidth: 80 }}>
+                              <div style={{ flex: 1, height: 8, background: "var(--gfi-border-subtle)", borderRadius: 4, overflow: "hidden", minWidth: 80 }}>
                                 <div style={{ height: "100%", width: `${pct}%`, background: colorPorDias(g.promedio), borderRadius: 4 }} />
                               </div>
-                              <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, color: colorPorDias(g.promedio), minWidth: 40 }}>{g.promedio}d</span>
+                              <span style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 800, color: colorPorDias(g.promedio), minWidth: 40 }}>{g.promedio}d</span>
                             </div>
                           </td>
-                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{g.mediana}d</td>
+                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700 }}>{g.mediana}d</td>
                           <td style={tdStyle}>
-                            <span style={{ background: `${vel.color}20`, color: vel.color, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
+                            <span style={{ background: `${vel.color}20`, color: vel.color, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
                               {vel.label}
                             </span>
                           </td>
@@ -839,7 +839,7 @@ export default function TiempoVenta() {
             <div style={{ ...labelStyle, marginBottom: 14 }}>Comparativa visual (días promedio)</div>
             {porTipo.length > 0
               ? barChart(porTipo.map((g) => ({ label: g.tipo, value: g.promedio, color: colorPorDias(g.promedio) })), 320, 26)
-              : <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Sin datos</div>}
+              : <div style={{ color: "var(--gfi-text-muted)", fontSize: 12 }}>Sin datos</div>}
           </div>
         </div>
       )}
@@ -850,7 +850,7 @@ export default function TiempoVenta() {
           <div style={card}>
             <div style={{ ...labelStyle, marginBottom: 14 }}>Tiempo por rango de precio (USD)</div>
             {porRango.length === 0 ? (
-              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, textAlign: "center", padding: "20px 0" }}>Sin datos</div>
+              <div style={{ color: "var(--gfi-text-muted)", fontSize: 13, textAlign: "center", padding: "20px 0" }}>Sin datos</div>
             ) : (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
@@ -866,20 +866,20 @@ export default function TiempoVenta() {
                     const vel = velocidadMercado(g.promedio);
                     return (
                       <tr key={g.rango} style={{ background: bgPorDias(g.promedio) }}>
-                        <td style={{ ...tdStyle, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{g.rango}</td>
-                        <td style={{ ...tdStyle, textAlign: "center", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{g.count}</td>
+                        <td style={{ ...tdStyle, fontFamily: "var(--font-display)", fontWeight: 700 }}>{g.rango}</td>
+                        <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700 }}>{g.count}</td>
                         <td style={tdStyle}>
-                          <span style={{ color: vel.color, fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13 }}>{g.promedio}d</span>
-                          <span style={{ marginLeft: 6, background: `${vel.color}20`, color: vel.color, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "1px 6px", borderRadius: 3 }}>{vel.label}</span>
+                          <span style={{ color: vel.color, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13 }}>{g.promedio}d</span>
+                          <span style={{ marginLeft: 6, background: `${vel.color}20`, color: vel.color, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "1px 6px", borderRadius: 3 }}>{vel.label}</span>
                         </td>
-                        <td style={{ ...tdStyle, textAlign: "center", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{g.mediana}d</td>
+                        <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700 }}>{g.mediana}d</td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             )}
-            <div style={{ marginTop: 12, fontSize: 10, color: "rgba(255,255,255,0.25)", lineHeight: 1.6 }}>
+            <div style={{ marginTop: 12, fontSize: 10, color: "var(--gfi-text-dim)", lineHeight: 1.6 }}>
               Precios normalizados a USD usando TC: ${fmtNum(tipoCambio)}
             </div>
           </div>
@@ -888,8 +888,8 @@ export default function TiempoVenta() {
             <div style={{ ...labelStyle, marginBottom: 14 }}>Scatter: precio vs. días en mercado</div>
             {scatterData.length > 0
               ? scatterPlot(scatterData, 520, 280)
-              : <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12, textAlign: "center", padding: "40px 0" }}>Sin datos suficientes</div>}
-            <div style={{ marginTop: 8, fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
+              : <div style={{ color: "var(--gfi-text-muted)", fontSize: 12, textAlign: "center", padding: "40px 0" }}>Sin datos suficientes</div>}
+            <div style={{ marginTop: 8, fontSize: 10, color: "var(--gfi-text-dim)" }}>
               Cada punto representa una propiedad cerrada. Eje X: precio USD · Eje Y: días en mercado.
             </div>
           </div>
@@ -901,11 +901,11 @@ export default function TiempoVenta() {
         <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 24 }}>
           <div style={card}>
             <div style={{ ...labelStyle, marginBottom: 4 }}>Tiempo promedio mensual — últimos 12 meses</div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 16 }}>¿Hay estacionalidad en el mercado?</div>
+            <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 16 }}>¿Hay estacionalidad en el mercado?</div>
             {historico.length >= 2
               ? lineChart(historico, 900, 220)
               : (
-                <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, textAlign: "center", padding: "40px 0" }}>
+                <div style={{ color: "var(--gfi-text-muted)", fontSize: 13, textAlign: "center", padding: "40px 0" }}>
                   Se necesitan al menos 2 meses con datos para mostrar el gráfico.
                 </div>
               )}
@@ -928,18 +928,18 @@ export default function TiempoVenta() {
                     const vel = velocidadMercado(m.promedio);
                     return (
                       <tr key={m.mes}>
-                        <td style={{ ...tdStyle, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{m.label}</td>
+                        <td style={{ ...tdStyle, fontFamily: "var(--font-display)", fontWeight: 700 }}>{m.label}</td>
                         <td style={{ ...tdStyle, textAlign: "center" }}>{m.count}</td>
                         <td style={tdStyle}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <div style={{ width: 80, height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
+                            <div style={{ width: 80, height: 6, background: "var(--gfi-border-subtle)", borderRadius: 3, overflow: "hidden" }}>
                               <div style={{ height: "100%", width: `${Math.min(100, (m.promedio / 150) * 100)}%`, background: vel.color, borderRadius: 3 }} />
                             </div>
-                            <span style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 12, color: vel.color }}>{m.promedio}d</span>
+                            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: vel.color }}>{m.promedio}d</span>
                           </div>
                         </td>
                         <td style={tdStyle}>
-                          <span style={{ background: `${vel.color}20`, color: vel.color, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
+                          <span style={{ background: `${vel.color}20`, color: vel.color, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
                             {vel.label}
                           </span>
                         </td>
@@ -957,7 +957,7 @@ export default function TiempoVenta() {
       <div style={{ ...card, marginTop: 8 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div style={{ ...labelStyle }}>Detalle de propiedades — {tablaDetalle.length} registros</div>
-          <div style={{ display: "flex", gap: 8, fontSize: 10, color: "rgba(255,255,255,0.3)" }}>
+          <div style={{ display: "flex", gap: 8, fontSize: 10, color: "var(--gfi-text-muted)" }}>
             <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <div style={{ width: 10, height: 10, background: "rgba(153,0,0,0.3)", borderRadius: 2 }} /> &gt;90 días
             </span>
@@ -968,7 +968,7 @@ export default function TiempoVenta() {
         </div>
         <div style={{ overflowX: "auto", maxHeight: 400, overflowY: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
-            <thead style={{ position: "sticky", top: 0, background: "#0d0d0d", zIndex: 1 }}>
+            <thead style={{ position: "sticky", top: 0, background: "var(--gfi-bg-primary)", zIndex: 1 }}>
               <tr>
                 {[
                   { key: "tipo" as const, label: "Tipo" },
@@ -989,10 +989,10 @@ export default function TiempoVenta() {
                 <tr key={p.id} style={{ background: bgPorDias(p.dias) }}>
                   <td style={{ ...tdStyle, textTransform: "capitalize" }}>{p.tipo ?? "—"}</td>
                   <td style={tdStyle}>{p.barrio ?? "—"}</td>
-                  <td style={{ ...tdStyle, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.7)" }}>
+                  <td style={{ ...tdStyle, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-primary)" }}>
                     {p.precioUSD > 0 ? `USD ${fmtNum(p.precioUSD)}` : "—"}
                   </td>
-                  <td style={{ ...tdStyle, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: colorPorDias(p.dias) }}>
+                  <td style={{ ...tdStyle, fontFamily: "var(--font-display)", fontWeight: 700, color: colorPorDias(p.dias) }}>
                     {p.dias} días
                   </td>
                   <td style={tdStyle}>
@@ -1000,7 +1000,7 @@ export default function TiempoVenta() {
                       background: p.estado === "vendido" || p.estado === "alquilado" ? "rgba(34,197,94,0.15)" : "rgba(59,130,246,0.15)",
                       color: p.estado === "vendido" || p.estado === "alquilado" ? "#3abab6" : "#3b82f6",
                       fontSize: 9,
-                      fontFamily: "Montserrat,sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 700,
                       padding: "2px 7px",
                       borderRadius: 3,
@@ -1009,14 +1009,14 @@ export default function TiempoVenta() {
                       {p.estado ?? "—"}
                     </span>
                   </td>
-                  <td style={{ ...tdStyle, textTransform: "capitalize", color: "rgba(255,255,255,0.5)" }}>{p.operacion ?? "—"}</td>
+                  <td style={{ ...tdStyle, textTransform: "capitalize", color: "var(--gfi-text-secondary)" }}>{p.operacion ?? "—"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         {tablaDetalle.length > 200 && (
-          <div style={{ marginTop: 10, fontSize: 11, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>
+          <div style={{ marginTop: 10, fontSize: 11, color: "var(--gfi-text-muted)", textAlign: "center" }}>
             Mostrando 200 de {tablaDetalle.length} registros
           </div>
         )}

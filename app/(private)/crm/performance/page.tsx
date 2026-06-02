@@ -123,10 +123,10 @@ export default function PerformanceCartera() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>📈 Performance de Cartera</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>📈 Performance de Cartera</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Días en cartera, reducciones de precio y propiedades estancadas</p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -161,16 +161,16 @@ export default function PerformanceCartera() {
             { label: "Reducción promedio", val: kpis.reduccionPromedio > 0 ? `−${kpis.reduccionPromedio.toFixed(1)}%` : "—", color: "#b80000" },
             { label: "Estancadas (+90d)", val: kpis.estancadas.toString(), color: kpis.estancadas > 0 ? "#b80000" : "#3abab6" },
           ].map((kpi, i) => (
-            <div key={i} style={{ background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px" }}>
-              <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
+            <div key={i} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px" }}>
+              <div style={{ fontSize: 10, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: kpi.color, marginTop: 4 }}>{kpi.val}</div>
             </div>
           ))}
         </div>
 
         {/* Distribución por tiempo en cartera */}
-        <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-          <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+          <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
             Distribución por tiempo en cartera (activas)
           </h2>
           <div style={{ display: "flex", gap: 12, alignItems: "flex-end", height: 80 }}>
@@ -191,12 +191,12 @@ export default function PerformanceCartera() {
         {loading ? (
           <div style={{ textAlign: "center", color: "#666", padding: 48 }}>Cargando...</div>
         ) : (
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, overflow: "hidden" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #222" }}>
                   {["Propiedad","Tipo / Zona","Precio actual","Variación","Días","Estado"].map(h => (
-                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>{h}</th>
+                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -209,7 +209,7 @@ export default function PerformanceCartera() {
                   const variacion = variacionPrecio(p.precio, p.precio_anterior);
                   const sym = p.moneda === "ARS" ? "$" : "USD";
                   return (
-                    <tr key={p.id} style={{ borderBottom: "1px solid #111", background: i % 2 === 0 ? "#0d0d0d" : "transparent" }}>
+                    <tr key={p.id} style={{ borderBottom: "1px solid #111", background: i % 2 === 0 ? "var(--gfi-bg-primary)" : "transparent" }}>
                       <td style={{ padding: "10px 16px" }}>
                         <div style={{ fontSize: 13, color: "#fff" }}>{p.direccion}</div>
                         <div style={{ fontSize: 11, color: "#666" }}>{p.operacion ?? "—"}</div>
@@ -242,7 +242,7 @@ export default function PerformanceCartera() {
                       </td>
                       <td style={{ padding: "10px 16px" }}>
                         <span style={{
-                          fontSize: 11, fontFamily: "Montserrat, sans-serif", fontWeight: 700, padding: "2px 8px",
+                          fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 8px",
                           borderRadius: 4, background: "#1a1a1a", color: "#888",
                         }}>{p.estado ?? "—"}</span>
                       </td>

@@ -52,7 +52,7 @@ function DemandaBadge({ d }: { d: string }) {
       padding: "2px 9px",
       borderRadius: 12,
       fontSize: 10,
-      fontFamily: "Montserrat,sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       letterSpacing: "0.06em",
       textTransform: "capitalize",
@@ -99,39 +99,39 @@ export default function BarriosPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .bar-wrap { display: flex; flex-direction: column; gap: 20px; }
         .bar-header { }
-        .bar-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .bar-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
         .bar-titulo span { color: #990000; }
-        .bar-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+        .bar-sub { font-size: 13px; color: var(--gfi-text-muted); margin-top: 4px; }
         .bar-controles { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-        .bar-search { flex: 1; min-width: 180px; padding: 9px 12px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
+        .bar-search { flex: 1; min-width: 180px; padding: 9px 12px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); }
         .bar-search:focus { border-color: rgba(200,0,0,0.4); }
-        .bar-search::placeholder { color: rgba(255,255,255,0.2); }
-        .bar-select { padding: 9px 10px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.6); font-size: 12px; outline: none; font-family: 'Inter',sans-serif; cursor: pointer; }
+        .bar-search::placeholder { color: var(--gfi-text-dim); }
+        .bar-select { padding: 9px 10px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-secondary); font-size: 12px; outline: none; font-family: var(--font-body); cursor: pointer; }
         .bar-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-        .bar-chip { padding: 6px 14px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); transition: all 0.2s; }
+        .bar-chip { padding: 6px 14px; border-radius: 20px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); transition: all 0.2s; }
         .bar-chip.activo { background: rgba(200,0,0,0.1); border-color: rgba(200,0,0,0.4); color: #ff6666; }
-        .bar-chip:hover:not(.activo) { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.7); }
-        .bar-count { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; align-self: center; }
+        .bar-chip:hover:not(.activo) { border-color: var(--gfi-text-dim); color: var(--gfi-text-primary); }
+        .bar-count { font-size: 11px; color: var(--gfi-text-dim); white-space: nowrap; align-self: center; }
         /* Tabla */
-        .bar-tabla-wrap { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: auto; }
+        .bar-tabla-wrap { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; overflow: auto; }
         .bar-tabla { width: 100%; border-collapse: collapse; min-width: 700px; }
-        .bar-tabla thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .bar-tabla th { padding: 11px 14px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); white-space: nowrap; }
-        .bar-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; cursor: pointer; }
+        .bar-tabla thead tr { background: var(--gfi-bg-card); border-bottom: 1px solid var(--gfi-border-subtle); }
+        .bar-tabla th { padding: 11px 14px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-dim); white-space: nowrap; }
+        .bar-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.15s; cursor: pointer; }
         .bar-tabla tbody tr:last-child { border-bottom: none; }
         .bar-tabla tbody tr:hover { background: rgba(255,255,255,0.025); }
         .bar-tabla tbody tr.expandido-row { background: rgba(200,0,0,0.04); border-bottom: none; }
         .bar-tabla td { padding: 12px 14px; font-size: 13px; color: rgba(255,255,255,0.75); vertical-align: middle; }
-        .bar-barrio-name { font-family: 'Montserrat',sans-serif; font-weight: 700; color: #fff; font-size: 13px; }
-        .bar-zona-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
-        .bar-precio { font-family: 'Montserrat',sans-serif; font-weight: 700; color: #4ab8d8; }
-        .bar-precio-alq { font-family: 'Montserrat',sans-serif; font-weight: 700; color: #a78bfa; }
+        .bar-barrio-name { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 13px; }
+        .bar-zona-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); }
+        .bar-precio { font-family: var(--font-display); font-weight: 700; color: #4ab8d8; }
+        .bar-precio-alq { font-family: var(--font-display); font-weight: 700; color: #a78bfa; }
         /* Detail card */
         .bar-detail-row td { padding: 0 14px 14px; }
         .bar-detail { background: rgba(200,0,0,0.04); border: 1px solid rgba(200,0,0,0.15); border-radius: 6px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
-        .bar-detail-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 2px; }
-        .bar-detail-value { font-size: 13px; color: rgba(255,255,255,0.7); }
-        .bar-empty { padding: 60px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
+        .bar-detail-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 2px; }
+        .bar-detail-value { font-size: 13px; color: var(--gfi-text-primary); }
+        .bar-empty { padding: 60px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; font-style: italic; }
         @media (max-width: 768px) {
           .bar-filters { flex-wrap: wrap; }
           .bar-tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -228,7 +228,7 @@ export default function BarriosPage() {
                         </td>
                         <td><TendenciaIcon t={b.tendencia} /></td>
                         <td><DemandaBadge d={b.demanda} /></td>
-                        <td style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", maxWidth: 200, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <td style={{ fontSize: 11, color: "var(--gfi-text-muted)", maxWidth: 200, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {b.perfil}
                         </td>
                       </tr>
@@ -275,7 +275,7 @@ export default function BarriosPage() {
         </div>
 
         {/* Disclaimer */}
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontStyle: "italic", textAlign: "center" }}>
+        <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontStyle: "italic", textAlign: "center" }}>
           Datos de referencia orientativos. Los valores reales varían según ubicación exacta, estado y características del inmueble.
         </div>
       </div>

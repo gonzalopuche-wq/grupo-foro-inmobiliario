@@ -144,31 +144,31 @@ export default function ImportarPreciosPage() {
         .ip-btn { padding: 10px 22px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
         .ip-btn:hover { background: #e60000; }
         .ip-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .ip-btn-sec { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
-        .ip-btn-sec:hover { border-color: rgba(255,255,255,0.35); color: #fff; background: transparent; }
+        .ip-btn-sec { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--gfi-text-secondary); }
+        .ip-btn-sec:hover { border-color: var(--gfi-text-muted); color: #fff; background: transparent; }
         .ip-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .ip-table th { text-align: left; padding: 8px 12px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .ip-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.75); vertical-align: top; }
+        .ip-table th { text-align: left; padding: 8px 12px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); border-bottom: 1px solid var(--gfi-border-subtle); }
+        .ip-table td { padding: 8px 12px; border-bottom: 1px solid var(--gfi-border-subtle); color: rgba(255,255,255,0.75); vertical-align: top; }
         .ip-table tr:last-child td { border-bottom: none; }
         .ip-table .precio-nuevo { color: #3abab6; font-weight: 600; }
         .ip-table .precio-baja { color: #d4960c; }
-        .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--gfi-text-dim); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
       <header style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 40, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 24, fontWeight: 800, marginBottom: 4 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, marginBottom: 4 }}>
             Importar <span style={{ color: "#990000" }}>precios</span>
           </div>
-          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)" }}>
+          <div style={{ fontSize: 13, color: "var(--gfi-text-muted)" }}>
             Actualizá los precios de las unidades desde un archivo Excel enviado por la constructora.
           </div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
           <a
             href="/admin"
-            style={{ padding: "8px 16px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", textDecoration: "none" }}
+            style={{ padding: "8px 16px", background: "transparent", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", textDecoration: "none" }}
           >
             ← Admin
           </a>
@@ -178,16 +178,16 @@ export default function ImportarPreciosPage() {
       {/* Filtro opcional por constructora */}
       {estado === "idle" && (
         <div style={{ marginBottom: 28, maxWidth: 480 }}>
-          <label style={{ display: "block", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>
+          <label style={{ display: "block", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>
             ID de constructora (opcional)
           </label>
           <input
             value={constructoraId}
             onChange={(e) => setConstructoraId(e.target.value)}
             placeholder="UUID del perfil — si se deja vacío busca en todas las carteras"
-            style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none", boxSizing: "border-box" }}
+            style={{ width: "100%", padding: "10px 14px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none", boxSizing: "border-box" }}
           />
-          <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.2)" }}>
+          <div style={{ marginTop: 6, fontSize: 11, color: "var(--gfi-text-dim)" }}>
             Dejalo vacío para buscar coincidencias en toda la base de propiedades.
           </div>
         </div>
@@ -216,21 +216,21 @@ export default function ImportarPreciosPage() {
             }}
           >
             <div style={{ fontSize: 32 }}>📊</div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "var(--gfi-text-primary)" }}>
               Arrastrá o hacé clic para subir el archivo
             </div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>
+            <div style={{ fontSize: 11, color: "var(--gfi-text-dim)" }}>
               Formatos: .xlsx · .xls · .csv
             </div>
             <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" onChange={aceptaArchivo} style={{ display: "none" }} />
           </label>
 
-          <div style={{ marginTop: 20, padding: "14px 18px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 4, maxWidth: 480 }}>
-            <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 8 }}>
+          <div style={{ marginTop: 20, padding: "14px 18px", background: "var(--gfi-bg-card)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 4, maxWidth: 480 }}>
+            <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 8 }}>
               Formato del archivo
             </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}>
-              El archivo debe tener al menos una columna de <strong style={{ color: "rgba(255,255,255,0.6)" }}>unidad o código</strong> y una de <strong style={{ color: "rgba(255,255,255,0.6)" }}>precio</strong>.<br />
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", lineHeight: 1.7 }}>
+              El archivo debe tener al menos una columna de <strong style={{ color: "var(--gfi-text-secondary)" }}>unidad o código</strong> y una de <strong style={{ color: "var(--gfi-text-secondary)" }}>precio</strong>.<br />
               Columnas reconocidas automáticamente: <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Código</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Piso</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Unidad / Depto</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Torre</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Precio / Valor</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Moneda</code>.
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function ImportarPreciosPage() {
 
       {/* Analizando */}
       {estado === "analizando" && (
-        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 24, fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 24, fontSize: 14, color: "var(--gfi-text-secondary)" }}>
           <span className="spin" />
           Analizando {archivoNombre}...
         </div>
@@ -265,9 +265,9 @@ export default function ImportarPreciosPage() {
               { label: "Con coincidencia", valor: preview.matches, ok: true },
               { label: "Sin coincidencia", valor: preview.sin_match, warn: preview.sin_match > 0 },
             ].map((s) => (
-              <div key={s.label} style={{ padding: "14px 20px", background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 6, minWidth: 140 }}>
-                <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>{s.label}</div>
-                <div style={{ fontSize: 28, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: s.ok ? "#3abab6" : s.warn ? "#d4960c" : "#fff" }}>{s.valor}</div>
+              <div key={s.label} style={{ padding: "14px 20px", background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 6, minWidth: 140 }}>
+                <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>{s.label}</div>
+                <div style={{ fontSize: 28, fontFamily: "var(--font-display)", fontWeight: 800, color: s.ok ? "#3abab6" : s.warn ? "#d4960c" : "#fff" }}>{s.valor}</div>
               </div>
             ))}
           </div>
@@ -275,10 +275,10 @@ export default function ImportarPreciosPage() {
           {/* Preview table */}
           {preview.preview.length > 0 && (
             <div style={{ marginBottom: 28 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 12 }}>
                 Cambios a aplicar
               </div>
-              <div style={{ overflowX: "auto", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4 }}>
+              <div style={{ overflowX: "auto", border: "1px solid var(--gfi-border-subtle)", borderRadius: 4 }}>
                 <table className="ip-table">
                   <thead>
                     <tr>
@@ -294,7 +294,7 @@ export default function ImportarPreciosPage() {
                       return (
                         <tr key={m.id}>
                           <td style={{ whiteSpace: "nowrap" }}>{fmtUnidad(m)}</td>
-                          <td style={{ color: "rgba(255,255,255,0.4)", maxWidth: 260 }}>{m.titulo ?? "—"}</td>
+                          <td style={{ color: "var(--gfi-text-muted)", maxWidth: 260 }}>{m.titulo ?? "—"}</td>
                           <td style={{ color: "rgba(255,255,255,0.45)", whiteSpace: "nowrap" }}>
                             {fmtPrecio(m.precio_actual, m.moneda_actual)}
                           </td>
@@ -309,7 +309,7 @@ export default function ImportarPreciosPage() {
                   </tbody>
                 </table>
                 {preview.preview.length > 200 && (
-                  <div style={{ padding: "10px 14px", fontSize: 11, color: "rgba(255,255,255,0.3)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div style={{ padding: "10px 14px", fontSize: 11, color: "var(--gfi-text-muted)", borderTop: "1px solid var(--gfi-border-subtle)" }}>
                     Mostrando 200 de {preview.preview.length} registros.
                   </div>
                 )}
@@ -320,7 +320,7 @@ export default function ImportarPreciosPage() {
           {/* Sin match */}
           {preview.sin_match_detalle.length > 0 && (
             <div style={{ marginBottom: 28 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,165,0,0.5)", marginBottom: 12 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,165,0,0.5)", marginBottom: 12 }}>
                 Sin coincidencia en la base ({preview.sin_match} filas)
               </div>
               <div style={{ overflowX: "auto", border: "1px solid rgba(255,165,0,0.1)", borderRadius: 4 }}>
@@ -347,7 +347,7 @@ export default function ImportarPreciosPage() {
                   </tbody>
                 </table>
               </div>
-              <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.25)" }}>
+              <div style={{ marginTop: 8, fontSize: 11, color: "var(--gfi-text-dim)" }}>
                 Estas filas no se actualizarán. Verificá que las propiedades existan en la cartera y que los campos piso/unidad/código coincidan exactamente.
               </div>
             </div>
@@ -374,7 +374,7 @@ export default function ImportarPreciosPage() {
 
       {/* Aplicando */}
       {estado === "aplicando" && (
-        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 24, fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 24, fontSize: 14, color: "var(--gfi-text-secondary)" }}>
           <span className="spin" />
           Actualizando precios...
         </div>
@@ -384,7 +384,7 @@ export default function ImportarPreciosPage() {
       {estado === "listo" && resultado && (
         <div style={{ maxWidth: 480 }}>
           <div style={{ padding: "20px 24px", background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, marginBottom: 20 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#3abab6", marginBottom: 6 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#3abab6", marginBottom: 6 }}>
               ✓ {resultado.actualizados} unidades actualizadas
             </div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
@@ -393,7 +393,7 @@ export default function ImportarPreciosPage() {
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             <button className="ip-btn ip-btn-sec" onClick={reiniciar}>Subir otro archivo</button>
-            <a href="/admin" style={{ padding: "10px 22px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
+            <a href="/admin" style={{ padding: "10px 22px", background: "transparent", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
               ← Admin
             </a>
           </div>

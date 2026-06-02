@@ -117,7 +117,7 @@ const S = {
     minHeight: "100vh",
     background: "#0a0a0a",
     color: "#e0e0e0",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     padding: "0 0 60px",
   } as React.CSSProperties,
   card: {
@@ -131,18 +131,18 @@ const S = {
     fontWeight: 600,
     color: "rgba(224,224,224,0.5)",
     marginBottom: 5,
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     letterSpacing: "0.07em",
     textTransform: "uppercase" as const,
   } as React.CSSProperties,
   input: {
     width: "100%",
-    background: "rgba(255,255,255,0.04)",
+    background: "var(--gfi-border-subtle)",
     border: "1px solid #222222",
     borderRadius: 6,
     padding: "9px 12px",
     color: "#e0e0e0",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontSize: 13,
     outline: "none",
     boxSizing: "border-box" as const,
@@ -153,7 +153,7 @@ const S = {
     color: "#fff",
     border: "none",
     borderRadius: 7,
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 12,
     letterSpacing: "0.08em",
@@ -162,11 +162,11 @@ const S = {
   } as React.CSSProperties,
   btnSecondary: {
     padding: "9px 16px",
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--gfi-border-subtle)",
     color: "rgba(224,224,224,0.7)",
     border: "1px solid #222222",
     borderRadius: 7,
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 11,
     letterSpacing: "0.06em",
@@ -174,7 +174,7 @@ const S = {
     cursor: "pointer",
   } as React.CSSProperties,
   sectionTitle: {
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 13,
     color: "#e0e0e0",
@@ -283,7 +283,7 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
   const amenitiesHtml = ficha.amenities
     .map(
       (a) =>
-        `<span style="display:inline-block;background:${ficha.color_primario}22;border:1px solid ${ficha.color_primario}44;color:${ficha.color_primario};padding:4px 12px;border-radius:20px;font-size:11px;font-family:'Montserrat',sans-serif;font-weight:700;margin:3px;">${a}</span>`
+        `<span style="display:inline-block;background:${ficha.color_primario}22;border:1px solid ${ficha.color_primario}44;color:${ficha.color_primario};padding:4px 12px;border-radius:20px;font-size:11px;font-family:var(--font-display);font-weight:700;margin:3px;">${a}</span>`
     )
     .join("");
 
@@ -309,8 +309,8 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
     .map(
       (c) => `
       <div style="background:#f8f8f8;border:1px solid #e8e8e8;border-radius:8px;padding:12px 16px;text-align:center;">
-        <div style="font-size:10px;font-family:'Montserrat',sans-serif;font-weight:700;color:#999;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">${c.label}</div>
-        <div style="font-size:16px;font-family:'Montserrat',sans-serif;font-weight:800;color:#111;">${c.value}</div>
+        <div style="font-size:10px;font-family:var(--font-display);font-weight:700;color:#999;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">${c.label}</div>
+        <div style="font-size:16px;font-family:var(--font-display);font-weight:800;color:#111;">${c.value}</div>
       </div>`
     )
     .join("");
@@ -323,7 +323,7 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #fff; color: #222; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-family: var(--font-body); background: #fff; color: #222; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .page { max-width: 794px; margin: 0 auto; padding: 0; }
     @media print { body { margin: 0; } .page { max-width: 100%; } }
   </style>
@@ -333,29 +333,29 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
     <!-- Header -->
     <div style="background:${ficha.color_primario};padding:28px 36px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
       <div>
-        <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:26px;color:#fff;letter-spacing:0.08em;">${ficha.logo_agencia}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:3px;font-family:'Montserrat',sans-serif;letter-spacing:0.08em;text-transform:uppercase;">${ficha.operacion} · ${ficha.tipo}</div>
+        <div style="font-family:var(--font-display);font-weight:800;font-size:26px;color:#fff;letter-spacing:0.08em;">${ficha.logo_agencia}</div>
+        <div style="font-size:11px;color:var(--gfi-text-primary);margin-top:3px;font-family:var(--font-display);letter-spacing:0.08em;text-transform:uppercase;">${ficha.operacion} · ${ficha.tipo}</div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:12px;color:rgba(255,255,255,0.9);font-family:'Inter',sans-serif;">${ficha.telefono_corredor}</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.9);font-family:'Inter',sans-serif;">${ficha.email_corredor}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.9);font-family:var(--font-body);">${ficha.telefono_corredor}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.9);font-family:var(--font-body);">${ficha.email_corredor}</div>
       </div>
     </div>
 
     <!-- Título y precio -->
     <div style="padding:28px 36px 20px;border-bottom:2px solid ${ficha.color_primario}22;">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:22px;color:#111;line-height:1.2;margin-bottom:6px;">${ficha.titulo}</div>
-      <div style="font-size:13px;color:#666;font-family:'Inter',sans-serif;margin-bottom:14px;">${ficha.subtitulo}</div>
+      <div style="font-family:var(--font-display);font-weight:800;font-size:22px;color:#111;line-height:1.2;margin-bottom:6px;">${ficha.titulo}</div>
+      <div style="font-size:13px;color:#666;font-family:var(--font-body);margin-bottom:14px;">${ficha.subtitulo}</div>
       <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-        <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:24px;color:${ficha.color_primario};">${formatPrecio(ficha.precio, ficha.moneda)}</div>
-        ${ficha.zona ? `<div style="font-size:13px;color:#555;font-family:'Inter',sans-serif;">📍 ${ficha.zona}${ficha.ciudad ? `, ${ficha.ciudad}` : ""}</div>` : ""}
+        <div style="font-family:var(--font-display);font-weight:800;font-size:24px;color:${ficha.color_primario};">${formatPrecio(ficha.precio, ficha.moneda)}</div>
+        ${ficha.zona ? `<div style="font-size:13px;color:#555;font-family:var(--font-body);">📍 ${ficha.zona}${ficha.ciudad ? `, ${ficha.ciudad}` : ""}</div>` : ""}
       </div>
     </div>
 
     <!-- Características -->
     ${caract.length > 0 ? `
     <div style="padding:24px 36px;border-bottom:1px solid #eee;">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;color:#999;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;">Características</div>
+      <div style="font-family:var(--font-display);font-weight:700;font-size:10px;color:#999;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;">Características</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;">
         ${caractHtml}
       </div>
@@ -364,33 +364,33 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
     <!-- Amenities -->
     ${ficha.amenities.length > 0 ? `
     <div style="padding:20px 36px;border-bottom:1px solid #eee;">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;color:#999;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:12px;">Amenities</div>
+      <div style="font-family:var(--font-display);font-weight:700;font-size:10px;color:#999;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:12px;">Amenities</div>
       <div>${amenitiesHtml}</div>
     </div>` : ""}
 
     <!-- Descripción -->
     ${ficha.descripcion_larga ? `
     <div style="padding:20px 36px;border-bottom:1px solid #eee;">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;color:#999;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">Descripción</div>
-      <p style="font-size:13px;color:#444;line-height:1.7;font-family:'Inter',sans-serif;">${ficha.descripcion_larga.replace(/\n/g, "<br/>")}</p>
+      <div style="font-family:var(--font-display);font-weight:700;font-size:10px;color:#999;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">Descripción</div>
+      <p style="font-size:13px;color:#444;line-height:1.7;font-family:var(--font-body);">${ficha.descripcion_larga.replace(/\n/g, "<br/>")}</p>
     </div>` : ""}
 
     <!-- Puntos destacados -->
     ${ficha.puntos_destacados.length > 0 ? `
     <div style="padding:20px 36px;border-bottom:1px solid #eee;">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;color:#999;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">Puntos destacados</div>
+      <div style="font-family:var(--font-display);font-weight:700;font-size:10px;color:#999;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">Puntos destacados</div>
       <ul style="padding-left:18px;list-style-type:disc;">${puntosHtml}</ul>
     </div>` : ""}
 
     <!-- Footer corredor -->
     <div style="padding:24px 36px;background:#f8f8f8;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
       <div>
-        <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;color:#111;">${ficha.nombre_corredor}</div>
-        <div style="font-size:11px;color:#888;font-family:'Inter',sans-serif;margin-top:2px;">Corredor inmobiliario</div>
+        <div style="font-family:var(--font-display);font-weight:800;font-size:14px;color:#111;">${ficha.nombre_corredor}</div>
+        <div style="font-size:11px;color:#888;font-family:var(--font-body);margin-top:2px;">Corredor inmobiliario</div>
       </div>
       <div style="text-align:right;">
-        ${ficha.telefono_corredor ? `<div style="font-size:12px;color:#555;font-family:'Inter',sans-serif;">📞 ${ficha.telefono_corredor}</div>` : ""}
-        ${ficha.email_corredor ? `<div style="font-size:12px;color:#555;font-family:'Inter',sans-serif;">✉️ ${ficha.email_corredor}</div>` : ""}
+        ${ficha.telefono_corredor ? `<div style="font-size:12px;color:#555;font-family:var(--font-body);">📞 ${ficha.telefono_corredor}</div>` : ""}
+        ${ficha.email_corredor ? `<div style="font-size:12px;color:#555;font-family:var(--font-body);">✉️ ${ficha.email_corredor}</div>` : ""}
       </div>
     </div>
   </div>
@@ -605,9 +605,9 @@ export default function FichaPropiedadPage() {
         input:focus, textarea:focus, select:focus { border-color: rgba(153,0,0,0.5) !important; outline: none; }
         button:active { opacity: 0.82; }
         @keyframes pulse-skeleton {
-          0% { background: rgba(255,255,255,0.04); }
-          50% { background: rgba(255,255,255,0.08); }
-          100% { background: rgba(255,255,255,0.04); }
+          0% { background: var(--gfi-border-subtle); }
+          50% { background: var(--gfi-border); }
+          100% { background: var(--gfi-border-subtle); }
         }
         .skel { animation: pulse-skeleton 1.4s ease-in-out infinite; border-radius: 6px; }
       `}</style>
@@ -621,7 +621,7 @@ export default function FichaPropiedadPage() {
       >
         <div
           style={{
-            fontFamily: "'Montserrat', sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: 20,
             color: "#fff",
@@ -634,7 +634,7 @@ export default function FichaPropiedadPage() {
           style={{
             fontSize: 13,
             color: "rgba(224,224,224,0.4)",
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-body)",
           }}
         >
           Generá fichas técnicas para compartir con clientes o imprimir
@@ -669,7 +669,7 @@ export default function FichaPropiedadPage() {
                 tab === t.key
                   ? "#fff"
                   : "rgba(224,224,224,0.4)",
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: 12,
               letterSpacing: "0.06em",
@@ -740,7 +740,7 @@ export default function FichaPropiedadPage() {
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🏠</div>
                 <div
                   style={{
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     fontSize: 14,
                     color: "rgba(224,224,224,0.6)",
@@ -753,7 +753,7 @@ export default function FichaPropiedadPage() {
                   style={{
                     fontSize: 12,
                     color: "rgba(224,224,224,0.3)",
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "var(--font-body)",
                   }}
                 >
                   Creá tu primera ficha desde la cartera o manualmente
@@ -791,7 +791,7 @@ export default function FichaPropiedadPage() {
                     <div>
                       <div
                         style={{
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 800,
                           fontSize: 14,
                           color: "#fff",
@@ -806,7 +806,7 @@ export default function FichaPropiedadPage() {
                           style={{
                             fontSize: 11,
                             color: "rgba(224,224,224,0.45)",
-                            fontFamily: "'Inter', sans-serif",
+                            fontFamily: "var(--font-body)",
                           }}
                         >
                           {f.subtitulo}
@@ -825,7 +825,7 @@ export default function FichaPropiedadPage() {
                       {f.precio > 0 && (
                         <span
                           style={{
-                            fontFamily: "'Montserrat', sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             fontSize: 13,
                             color: f.color_primario,
@@ -850,7 +850,7 @@ export default function FichaPropiedadPage() {
                       style={{
                         fontSize: 10,
                         color: "rgba(224,224,224,0.25)",
-                        fontFamily: "'Inter', sans-serif",
+                        fontFamily: "var(--font-body)",
                       }}
                     >
                       Creada {formatFecha(f.created_at)}
@@ -917,7 +917,7 @@ export default function FichaPropiedadPage() {
                           fontSize: 10,
                           padding: "6px 10px",
                           cursor: "pointer",
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                         }}
                       >
@@ -947,7 +947,7 @@ export default function FichaPropiedadPage() {
                 <div style={{ fontSize: 36, marginBottom: 12 }}>✏️</div>
                 <div
                   style={{
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     fontSize: 14,
                     color: "rgba(224,224,224,0.6)",
@@ -987,7 +987,7 @@ export default function FichaPropiedadPage() {
                   <div>
                     <div
                       style={{
-                        fontFamily: "'Montserrat', sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         fontSize: 14,
                         color: "#fff",
@@ -1241,11 +1241,11 @@ export default function FichaPropiedadPage() {
                             border: `1px solid ${activo ? "#990000" : "#333"}`,
                             background: activo
                               ? "rgba(153,0,0,0.12)"
-                              : "rgba(255,255,255,0.03)",
+                              : "var(--gfi-bg-card)",
                             color: activo
                               ? "#990000"
                               : "rgba(224,224,224,0.5)",
-                            fontFamily: "'Montserrat', sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             fontSize: 11,
                             cursor: "pointer",
@@ -1316,7 +1316,7 @@ export default function FichaPropiedadPage() {
                                 display: "flex",
                                 alignItems: "center",
                                 gap: 8,
-                                background: "rgba(255,255,255,0.03)",
+                                background: "var(--gfi-bg-card)",
                                 border: "1px solid #1e1e1e",
                                 borderRadius: 6,
                                 padding: "7px 12px",
@@ -1590,7 +1590,7 @@ export default function FichaPropiedadPage() {
                 <div style={{ fontSize: 36, marginBottom: 12 }}>👁️</div>
                 <div
                   style={{
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     fontSize: 14,
                     color: "rgba(224,224,224,0.6)",
@@ -1623,7 +1623,7 @@ export default function FichaPropiedadPage() {
                 >
                   <div
                     style={{
-                      fontFamily: "'Montserrat', sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 700,
                       fontSize: 13,
                       color: "rgba(224,224,224,0.5)",
@@ -1676,7 +1676,7 @@ export default function FichaPropiedadPage() {
                     <div>
                       <div
                         style={{
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 800,
                           fontSize: 24,
                           color: "#fff",
@@ -1688,9 +1688,9 @@ export default function FichaPropiedadPage() {
                       <div
                         style={{
                           fontSize: 10,
-                          color: "rgba(255,255,255,0.7)",
+                          color: "var(--gfi-text-primary)",
                           marginTop: 3,
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           letterSpacing: "0.1em",
                           textTransform: "uppercase",
                         }}
@@ -1735,10 +1735,10 @@ export default function FichaPropiedadPage() {
                   >
                     <div
                       style={{
-                        fontFamily: "'Montserrat', sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         fontSize: 20,
-                        color: "#111",
+                        color: "var(--gfi-bg-secondary)",
                         lineHeight: 1.2,
                         marginBottom: 5,
                       }}
@@ -1767,7 +1767,7 @@ export default function FichaPropiedadPage() {
                       {fichaActual.precio > 0 && (
                         <div
                           style={{
-                            fontFamily: "'Montserrat', sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 800,
                             fontSize: 22,
                             color: fichaActual.color_primario,
@@ -1803,7 +1803,7 @@ export default function FichaPropiedadPage() {
                     >
                       <div
                         style={{
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 9,
                           color: "#aaa",
@@ -1895,7 +1895,7 @@ export default function FichaPropiedadPage() {
                               <div
                                 style={{
                                   fontSize: 9,
-                                  fontFamily: "'Montserrat', sans-serif",
+                                  fontFamily: "var(--font-display)",
                                   fontWeight: 700,
                                   color: "#aaa",
                                   letterSpacing: "0.1em",
@@ -1908,9 +1908,9 @@ export default function FichaPropiedadPage() {
                               <div
                                 style={{
                                   fontSize: 15,
-                                  fontFamily: "'Montserrat', sans-serif",
+                                  fontFamily: "var(--font-display)",
                                   fontWeight: 800,
-                                  color: "#111",
+                                  color: "var(--gfi-bg-secondary)",
                                 }}
                               >
                                 {c.value}
@@ -1931,7 +1931,7 @@ export default function FichaPropiedadPage() {
                     >
                       <div
                         style={{
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 9,
                           color: "#aaa",
@@ -1953,7 +1953,7 @@ export default function FichaPropiedadPage() {
                               color: fichaActual.color_primario,
                               padding: "4px 12px",
                               borderRadius: 20,
-                              fontFamily: "'Montserrat', sans-serif",
+                              fontFamily: "var(--font-display)",
                               fontWeight: 700,
                               fontSize: 11,
                             }}
@@ -1975,7 +1975,7 @@ export default function FichaPropiedadPage() {
                     >
                       <div
                         style={{
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 9,
                           color: "#aaa",
@@ -2010,7 +2010,7 @@ export default function FichaPropiedadPage() {
                     >
                       <div
                         style={{
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 9,
                           color: "#aaa",
@@ -2060,10 +2060,10 @@ export default function FichaPropiedadPage() {
                     <div>
                       <div
                         style={{
-                          fontFamily: "'Montserrat', sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 800,
                           fontSize: 13,
-                          color: "#111",
+                          color: "var(--gfi-bg-secondary)",
                         }}
                       >
                         {fichaActual.nombre_corredor || "Corredor inmobiliario"}
@@ -2121,7 +2121,7 @@ export default function FichaPropiedadPage() {
         >
           <div
             style={{
-              background: "#111",
+              background: "var(--gfi-bg-secondary)",
               border: "1px solid #222",
               borderRadius: 12,
               padding: 28,
@@ -2154,7 +2154,7 @@ export default function FichaPropiedadPage() {
 
             <div
               style={{
-                fontFamily: "'Montserrat', sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 800,
                 fontSize: 14,
                 color: "#fff",
@@ -2168,7 +2168,7 @@ export default function FichaPropiedadPage() {
                 fontSize: 12,
                 color: "rgba(224,224,224,0.35)",
                 marginBottom: 18,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-body)",
               }}
             >
               Los datos disponibles se pre-cargarán en la ficha
@@ -2218,7 +2218,7 @@ export default function FichaPropiedadPage() {
                     key={p.id}
                     onClick={() => crearFichaDesdePropiedad(p)}
                     style={{
-                      background: "rgba(255,255,255,0.03)",
+                      background: "var(--gfi-bg-card)",
                       border: "1px solid #222",
                       borderRadius: 8,
                       padding: "12px 16px",
@@ -2237,12 +2237,12 @@ export default function FichaPropiedadPage() {
                       (e.currentTarget as HTMLButtonElement).style.borderColor =
                         "#222";
                       (e.currentTarget as HTMLButtonElement).style.background =
-                        "rgba(255,255,255,0.03)";
+                        "var(--gfi-bg-card)";
                     }}
                   >
                     <div
                       style={{
-                        fontFamily: "'Montserrat', sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 700,
                         fontSize: 13,
                         color: "#e0e0e0",
@@ -2267,7 +2267,7 @@ export default function FichaPropiedadPage() {
                           style={{
                             fontSize: 10,
                             color: "rgba(224,224,224,0.4)",
-                            fontFamily: "'Montserrat', sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                           }}
                         >
@@ -2298,7 +2298,7 @@ export default function FichaPropiedadPage() {
                         <span
                           style={{
                             fontSize: 11,
-                            fontFamily: "'Montserrat', sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             color: "#990000",
                           }}
@@ -2315,7 +2315,7 @@ export default function FichaPropiedadPage() {
                             borderRadius: 4,
                             padding: "2px 7px",
                             color: "rgba(224,224,224,0.3)",
-                            fontFamily: "'Montserrat', sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             textTransform: "uppercase",
                           }}
@@ -2338,7 +2338,7 @@ export default function FichaPropiedadPage() {
                 color: "rgba(224,224,224,0.25)",
                 fontSize: 12,
                 cursor: "pointer",
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-body)",
                 textAlign: "center",
               }}
             >

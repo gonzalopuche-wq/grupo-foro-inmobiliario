@@ -44,7 +44,7 @@ const ESTADO_COLORS: Record<EstadoContrato, { bg: string; text: string; border: 
   por_vencer: { bg: "rgba(245,158,11,0.12)",    text: "#d4960c", border: "rgba(245,158,11,0.3)" },
   vencido:    { bg: "rgba(239,68,68,0.12)",     text: "#b80000", border: "rgba(239,68,68,0.3)" },
   renovado:   { bg: "rgba(59,130,246,0.12)",    text: "#3b82f6", border: "rgba(59,130,246,0.3)" },
-  rescindido: { bg: "rgba(255,255,255,0.05)",   text: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
+  rescindido: { bg: "var(--gfi-border-subtle)",   text: "var(--gfi-text-muted)", border: "var(--gfi-border)" },
 };
 
 const CONTRATOS_DEMO: Contrato[] = [
@@ -512,7 +512,7 @@ export default function ContratosActivosPage() {
     } as React.CSSProperties,
 
     heading: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 800,
       fontSize: 26,
       color: "#fff",
@@ -521,23 +521,23 @@ export default function ContratosActivosPage() {
     } as React.CSSProperties,
 
     subheading: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       fontSize: 15,
-      color: "rgba(255,255,255,0.7)",
+      color: "var(--gfi-text-primary)",
       margin: 0,
     } as React.CSSProperties,
 
     card: {
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.08)",
+      background: "var(--gfi-border-subtle)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 12,
       padding: "16px 20px",
     } as React.CSSProperties,
 
     kpiCard: {
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.08)",
+      background: "var(--gfi-border-subtle)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 12,
       padding: "18px 20px",
       flex: 1,
@@ -545,7 +545,7 @@ export default function ContratosActivosPage() {
     } as React.CSSProperties,
 
     kpiVal: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 800,
       fontSize: 24,
       color: "#fff",
@@ -562,8 +562,8 @@ export default function ContratosActivosPage() {
 
     tabBtn: (active: boolean): React.CSSProperties => ({
       background: active ? "rgba(153,0,0,0.18)" : "transparent",
-      border: active ? "1px solid rgba(153,0,0,0.5)" : "1px solid rgba(255,255,255,0.1)",
-      color: active ? "#ff4444" : "rgba(255,255,255,0.6)",
+      border: active ? "1px solid rgba(153,0,0,0.5)" : "1px solid var(--gfi-border)",
+      color: active ? "#ff4444" : "var(--gfi-text-secondary)",
       borderRadius: 8,
       padding: "7px 18px",
       fontSize: 13,
@@ -574,8 +574,8 @@ export default function ContratosActivosPage() {
     }),
 
     filtroBtn: (active: boolean): React.CSSProperties => ({
-      background: active ? "rgba(255,255,255,0.1)" : "transparent",
-      border: "1px solid rgba(255,255,255,0.1)",
+      background: active ? "var(--gfi-border)" : "transparent",
+      border: "1px solid var(--gfi-border)",
       color: active ? "#fff" : "rgba(255,255,255,0.45)",
       borderRadius: 6,
       padding: "4px 12px",
@@ -599,7 +599,7 @@ export default function ContratosActivosPage() {
 
     btnOutline: {
       background: "transparent",
-      color: "rgba(255,255,255,0.6)",
+      color: "var(--gfi-text-secondary)",
       border: "1px solid rgba(255,255,255,0.15)",
       borderRadius: 8,
       padding: "8px 16px",
@@ -623,7 +623,7 @@ export default function ContratosActivosPage() {
 
     input: {
       background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       color: "#fff",
       fontSize: 13,
@@ -643,7 +643,7 @@ export default function ContratosActivosPage() {
     } as React.CSSProperties,
 
     divider: {
-      borderTop: "1px solid rgba(255,255,255,0.07)",
+      borderTop: "1px solid var(--gfi-border-subtle)",
       margin: "16px 0",
     } as React.CSSProperties,
   };
@@ -653,7 +653,7 @@ export default function ContratosActivosPage() {
   if (loading) {
     return (
       <div style={{ ...s.page, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 14 }}>Cargando contratos...</span>
+        <span style={{ color: "var(--gfi-text-muted)", fontSize: 14 }}>Cargando contratos...</span>
       </div>
     );
   }
@@ -692,7 +692,7 @@ export default function ContratosActivosPage() {
         </div>
 
         {/* Por vencer */}
-        <div style={{ ...s.kpiCard, borderColor: porVencerCount > 0 ? "rgba(153,0,0,0.4)" : "rgba(255,255,255,0.08)" }}>
+        <div style={{ ...s.kpiCard, borderColor: porVencerCount > 0 ? "rgba(153,0,0,0.4)" : "var(--gfi-border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ ...s.kpiVal, color: porVencerCount > 0 ? "#b80000" : "#fff" }}>{porVencerCount}</div>
             {porVencerCount > 0 && (
@@ -772,7 +772,7 @@ export default function ContratosActivosPage() {
                   {f === "todos" ? "Todos" : f === "vigente" ? "Vigentes" : f === "por_vencer" ? "Por vencer" : "Vencidos"}
                 </button>
               ))}
-              <span style={{ marginLeft: "auto", fontSize: 12, color: "rgba(255,255,255,0.3)", alignSelf: "center" }}>
+              <span style={{ marginLeft: "auto", fontSize: 12, color: "var(--gfi-text-muted)", alignSelf: "center" }}>
                 {filtrados.length} contrato{filtrados.length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -780,7 +780,7 @@ export default function ContratosActivosPage() {
             {/* Cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {filtrados.length === 0 && (
-                <div style={{ ...s.card, color: "rgba(255,255,255,0.3)", fontSize: 13, textAlign: "center", padding: "32px 20px" }}>
+                <div style={{ ...s.card, color: "var(--gfi-text-muted)", fontSize: 13, textAlign: "center", padding: "32px 20px" }}>
                   No hay contratos para mostrar
                 </div>
               )}
@@ -795,8 +795,8 @@ export default function ContratosActivosPage() {
                     style={{
                       ...s.card,
                       cursor: "pointer",
-                      borderColor: isSelected ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.08)",
-                      background: isSelected ? "rgba(153,0,0,0.07)" : "rgba(255,255,255,0.04)",
+                      borderColor: isSelected ? "rgba(153,0,0,0.5)" : "var(--gfi-border)",
+                      background: isSelected ? "rgba(153,0,0,0.07)" : "var(--gfi-border-subtle)",
                       transition: "all 0.15s",
                     }}
                   >
@@ -809,21 +809,21 @@ export default function ContratosActivosPage() {
                         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", marginBottom: 2 }}>
                           {c.direccion} — {c.barrio}
                         </div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+                        <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
                           Prop: {c.propietario_nombre}
                         </div>
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 16, color: "#fff" }}>
+                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff" }}>
                           {c.moneda === "USD" ? "USD " : "$ "}{fmt(c.alquiler_actual)}
                         </div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>/mes</div>
+                        <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>/mes</div>
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 16, marginTop: 10, flexWrap: "wrap" }}>
                       <span style={{
                         fontSize: 11,
-                        color: dias < 0 ? "#b80000" : dias < 30 ? "#d4960c" : "rgba(255,255,255,0.4)",
+                        color: dias < 0 ? "#b80000" : dias < 30 ? "#d4960c" : "var(--gfi-text-muted)",
                         fontWeight: dias < 30 ? 700 : 400,
                       }}>
                         {dias < 0 ? `Vencido hace ${Math.abs(dias)} días` : `Vence en ${dias} días (${fmtFecha(c.fecha_fin)})`}
@@ -831,13 +831,13 @@ export default function ContratosActivosPage() {
                       {c.indice_ajuste !== "fijo" && dAjuste >= 0 && (
                         <span style={{
                           fontSize: 11,
-                          color: dAjuste <= 7 ? "#d4960c" : "rgba(255,255,255,0.35)",
+                          color: dAjuste <= 7 ? "#d4960c" : "var(--gfi-text-muted)",
                           fontWeight: dAjuste <= 7 ? 700 : 400,
                         }}>
                           Ajuste {c.indice_ajuste} en {dAjuste} días
                         </span>
                       )}
-                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginLeft: "auto" }}>
+                      <span style={{ fontSize: 11, color: "var(--gfi-text-dim)", marginLeft: "auto" }}>
                         Admin: ${fmt(honorariosAdmin(c))}/mes
                       </span>
                     </div>
@@ -855,10 +855,10 @@ export default function ContratosActivosPage() {
               position: "sticky",
               top: 20,
               ...s.card,
-              borderColor: "rgba(255,255,255,0.12)",
+              borderColor: "var(--gfi-border)",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>Detalle</span>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff" }}>Detalle</span>
                 <button
                   style={{ ...s.btnOutline, padding: "3px 10px", fontSize: 12 }}
                   onClick={() => setSelectedId(null)}
@@ -893,7 +893,7 @@ export default function ContratosActivosPage() {
                 {selected.notas && (
                   <div>
                     <div style={s.label}>Notas</div>
-                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontStyle: "italic" }}>{selected.notas}</div>
+                    <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", fontStyle: "italic" }}>{selected.notas}</div>
                   </div>
                 )}
               </div>
@@ -932,7 +932,7 @@ export default function ContratosActivosPage() {
           <div style={s.card}>
             <h3 style={{ ...s.subheading, marginBottom: 16 }}>Eventos próximos — 6 meses</h3>
             {eventosTimeline.length === 0 && (
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", margin: 0 }}>
+              <p style={{ fontSize: 13, color: "var(--gfi-text-muted)", margin: 0 }}>
                 Sin vencimientos ni ajustes próximos en 6 meses.
               </p>
             )}
@@ -943,7 +943,7 @@ export default function ContratosActivosPage() {
                   gap: 14,
                   alignItems: "center",
                   padding: "10px 14px",
-                  background: "rgba(255,255,255,0.03)",
+                  background: "var(--gfi-bg-card)",
                   borderRadius: 8,
                   border: `1px solid ${ev.tipo === "vencimiento" ? "rgba(239,68,68,0.2)" : "rgba(245,158,11,0.2)"}`,
                 }}>
@@ -957,14 +957,14 @@ export default function ContratosActivosPage() {
                       {" — "}
                       {ev.contrato.inquilino_nombre}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                       {ev.contrato.direccion} · {fmtFecha(ev.fecha)}
                     </div>
                   </div>
                   <div style={{
                     fontSize: 12,
                     fontWeight: 700,
-                    color: diasEntre(hoy(), ev.fecha) <= 7 ? "#b80000" : "rgba(255,255,255,0.5)",
+                    color: diasEntre(hoy(), ev.fecha) <= 7 ? "#b80000" : "var(--gfi-text-secondary)",
                   }}>
                     {diasEntre(hoy(), ev.fecha)} días
                   </div>
@@ -989,7 +989,7 @@ export default function ContratosActivosPage() {
                       })()}
                     </div>
                     {items.length === 0 ? (
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", paddingLeft: 8 }}>Sin vencimientos</div>
+                      <div style={{ fontSize: 12, color: "var(--gfi-text-dim)", paddingLeft: 8 }}>Sin vencimientos</div>
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         {items.map(c => (
@@ -998,19 +998,19 @@ export default function ContratosActivosPage() {
                             justifyContent: "space-between",
                             alignItems: "center",
                             padding: "8px 12px",
-                            background: "rgba(255,255,255,0.03)",
+                            background: "var(--gfi-bg-card)",
                             borderRadius: 7,
                             borderLeft: `3px solid ${ESTADO_COLORS[c.estado].text}`,
                           }}>
                             <div>
                               <div style={{ fontSize: 13, color: "#fff" }}>{c.inquilino_nombre}</div>
-                              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{c.direccion}</div>
+                              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{c.direccion}</div>
                             </div>
                             <div style={{ textAlign: "right" }}>
                               <div style={{ fontSize: 12, color: ESTADO_COLORS[c.estado].text, fontWeight: 700 }}>
                                 {diasParaVencer(c)} días
                               </div>
-                              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>{fmtFecha(c.fecha_fin)}</div>
+                              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{fmtFecha(c.fecha_fin)}</div>
                             </div>
                           </div>
                         ))}
@@ -1064,7 +1064,7 @@ export default function ContratosActivosPage() {
                   const col = ESTADO_COLORS[c.estado];
                   return (
                     <g key={c.id}>
-                      <text x={0} y={y + 9} fill="rgba(255,255,255,0.5)" fontSize={10} fontFamily="Inter, sans-serif">
+                      <text x={0} y={y + 9} fill="var(--gfi-text-secondary)" fontSize={10} fontFamily="Inter, sans-serif">
                         {c.inquilino_nombre.split(",")[0].trim().slice(0, 12)}
                       </text>
                       <rect x={x1} y={y} width={Math.max(2, x2 - x1)} height={18} rx={4} fill={col.bg} stroke={col.border} strokeWidth={1} />
@@ -1086,7 +1086,7 @@ export default function ContratosActivosPage() {
           {/* Chart SVG honorarios proyectados */}
           <div style={s.card}>
             <h3 style={{ ...s.subheading, marginBottom: 4 }}>Proyección de honorarios admin — 12 meses</h3>
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", margin: "0 0 16px" }}>
+            <p style={{ fontSize: 11, color: "var(--gfi-text-muted)", margin: "0 0 16px" }}>
               Considera ajustes por índice y contratos activos
             </p>
             <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} style={{ display: "block" }}>
@@ -1096,7 +1096,7 @@ export default function ContratosActivosPage() {
                 return (
                   <g key={t}>
                     <line x1={padL} y1={y} x2={padL + innerW} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
-                    <text x={padL - 4} y={y + 4} fill="rgba(255,255,255,0.3)" fontSize={9} textAnchor="end" fontFamily="Inter, sans-serif">
+                    <text x={padL - 4} y={y + 4} fill="var(--gfi-text-muted)" fontSize={9} textAnchor="end" fontFamily="Inter, sans-serif">
                       {fmt(maxHonorarios * t)}
                     </text>
                   </g>
@@ -1109,8 +1109,8 @@ export default function ContratosActivosPage() {
                 const MESES_SHORT = ["E","F","M","A","M","J","J","A","S","O","N","D"];
                 return (
                   <g key={i}>
-                    <line x1={x} y1={padT} x2={x} y2={padT + innerH} stroke="rgba(255,255,255,0.04)" strokeWidth={1} />
-                    <text x={x} y={padT + innerH + 14} fill="rgba(255,255,255,0.3)" fontSize={9} textAnchor="middle" fontFamily="Inter, sans-serif">
+                    <line x1={x} y1={padT} x2={x} y2={padT + innerH} stroke="var(--gfi-border-subtle)" strokeWidth={1} />
+                    <text x={x} y={padT + innerH + 14} fill="var(--gfi-text-muted)" fontSize={9} textAnchor="middle" fontFamily="Inter, sans-serif">
                       {MESES_SHORT[parseInt(m) - 1]}
                     </text>
                   </g>
@@ -1137,9 +1137,9 @@ export default function ContratosActivosPage() {
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
-                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                  <tr style={{ borderBottom: "1px solid var(--gfi-border)" }}>
                     {["Mes", "Alquiler cartera", "Honorarios admin", "Contratos activos"].map(h => (
-                      <th key={h} style={{ textAlign: "left", padding: "8px 12px", color: "rgba(255,255,255,0.4)", fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                      <th key={h} style={{ textAlign: "left", padding: "8px 12px", color: "var(--gfi-text-muted)", fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                         {h}
                       </th>
                     ))}
@@ -1147,22 +1147,22 @@ export default function ContratosActivosPage() {
                 </thead>
                 <tbody>
                   {/* Mes actual */}
-                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(153,0,0,0.05)" }}>
+                  <tr style={{ borderBottom: "1px solid var(--gfi-border-subtle)", background: "rgba(153,0,0,0.05)" }}>
                     <td style={{ padding: "10px 12px", color: "#990000", fontWeight: 700 }}>Actual</td>
                     <td style={{ padding: "10px 12px", color: "#fff", fontWeight: 600 }}>$ {fmt(totalCartera)}</td>
                     <td style={{ padding: "10px 12px", color: "#3abab6", fontWeight: 600 }}>$ {fmt(totalHonorarios)}</td>
-                    <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.5)" }}>{vigentes.length}</td>
+                    <td style={{ padding: "10px 12px", color: "var(--gfi-text-secondary)" }}>{vigentes.length}</td>
                   </tr>
                   {proyeccion12.map((p, i) => {
                     const [y, m] = p.targetDate.split("-");
                     const MESES_FULL = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
                     const activosEnMes = vigentes.filter(c => c.fecha_fin >= p.targetDate).length;
                     return (
-                      <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                        <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.6)" }}>{MESES_FULL[parseInt(m) - 1]} {y}</td>
+                      <tr key={i} style={{ borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                        <td style={{ padding: "9px 12px", color: "var(--gfi-text-secondary)" }}>{MESES_FULL[parseInt(m) - 1]} {y}</td>
                         <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.85)" }}>$ {fmt(p.totalMes)}</td>
                         <td style={{ padding: "9px 12px", color: "#3abab6" }}>$ {fmt(p.honorariosMes)}</td>
-                        <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.5)" }}>{activosEnMes}</td>
+                        <td style={{ padding: "9px 12px", color: "var(--gfi-text-secondary)" }}>{activosEnMes}</td>
                       </tr>
                     );
                   })}
@@ -1202,8 +1202,8 @@ export default function ContratosActivosPage() {
           padding: 20,
         }}>
           <div style={{
-            background: "#111",
-            border: "1px solid rgba(255,255,255,0.1)",
+            background: "var(--gfi-bg-secondary)",
+            border: "1px solid var(--gfi-border)",
             borderRadius: 16,
             padding: "28px 28px 24px",
             width: "100%",

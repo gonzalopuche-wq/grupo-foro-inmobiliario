@@ -523,13 +523,13 @@ export default function ForoPage() {
     if (!data || data === "loading" || data === "error" || (!data.title && !data.image)) return null;
     return (
       <a href={url} target="_blank" rel="noopener noreferrer"
-        style={{ display: "flex", gap: 8, marginTop: 6, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.3)", textDecoration: "none", minHeight: 60 }}
+        style={{ display: "flex", gap: 8, marginTop: 6, borderRadius: 6, overflow: "hidden", border: "1px solid var(--gfi-border)", background: "rgba(0,0,0,0.3)", textDecoration: "none", minHeight: 60 }}
         onClick={e => e.stopPropagation()}>
         {data.image && <div style={{ width: 60, minWidth: 60, background: "#000", flexShrink: 0 }}><img src={data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = "none"; }} /></div>}
         <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           {data.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.title}</div>}
-          {data.description && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.description}</div>}
-          <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginTop: 2 }}>{(() => { try { return new URL(url).hostname; } catch { return url; } })()}</div>
+          {data.description && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.description}</div>}
+          <div style={{ fontSize: 9, color: "var(--gfi-text-dim)", marginTop: 2 }}>{(() => { try { return new URL(url).hostname; } catch { return url; } })()}</div>
         </div>
       </a>
     );
@@ -541,11 +541,11 @@ export default function ForoPage() {
       {adjuntos.map((adj, i) => {
         if (adj.tipo === "imagen") return (
           <a key={i} href={adj.url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-            <img src={adj.url} alt={adj.nombre} style={{ maxWidth: 220, maxHeight: 180, borderRadius: 6, display: "block", objectFit: "cover", border: "1px solid rgba(255,255,255,0.1)" }} />
+            <img src={adj.url} alt={adj.nombre} style={{ maxWidth: 220, maxHeight: 180, borderRadius: 6, display: "block", objectFit: "cover", border: "1px solid var(--gfi-border)" }} />
           </a>
         );
         if (adj.tipo === "video") return (
-          <video key={i} src={adj.url} controls style={{ maxWidth: 260, borderRadius: 6, display: "block", border: "1px solid rgba(255,255,255,0.1)" }} onClick={e => e.stopPropagation()} />
+          <video key={i} src={adj.url} controls style={{ maxWidth: 260, borderRadius: 6, display: "block", border: "1px solid var(--gfi-border)" }} onClick={e => e.stopPropagation()} />
         );
         if (adj.tipo === "audio") return (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "8px 10px" }} onClick={e => e.stopPropagation()}>
@@ -557,11 +557,11 @@ export default function ForoPage() {
         );
         return (
           <a key={i} href={adj.url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-            style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, textDecoration: "none" }}>
+            style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, textDecoration: "none" }}>
             <span style={{ fontSize: 18, flexShrink: 0 }}>{adj.nombre.match(/\.pdf$/i) ? "📄" : adj.nombre.match(/\.(xls|xlsx)$/i) ? "📊" : "📎"}</span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 11, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{adj.nombre}</div>
-              {adj.tamano && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)" }}>{formatTamano(adj.tamano)}</div>}
+              {adj.tamano && <div style={{ fontSize: 9, color: "var(--gfi-text-muted)" }}>{formatTamano(adj.tamano)}</div>}
             </div>
             <span style={{ fontSize: 12, color: "#990000" }}>↓</span>
           </a>
@@ -644,7 +644,7 @@ export default function ForoPage() {
         .f-topic-footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .f-meta { font-size: 10px; color: var(--gfi-text-dim); font-family: var(--font-mono); }
         .f-tags-row { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
-        .f-tag { font-size: 9px; color: var(--gfi-text-muted); background: rgba(255,255,255,0.03); border: 1px solid var(--gfi-border-subtle); padding: 2px 6px; border-radius: 10px; }
+        .f-tag { font-size: 9px; color: var(--gfi-text-muted); background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); padding: 2px 6px; border-radius: 10px; }
         .f-save { background: none; border: none; font-size: 13px; cursor: pointer; color: var(--gfi-text-dim); transition: color var(--gfi-transition-fast); padding: 2px; flex-shrink: 0; }
         .f-save.saved { color: var(--gfi-red); }
         .f-chat { display: flex; flex-direction: column; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); overflow: hidden; height: calc(100vh - 200px); min-height: 400px; }
@@ -720,7 +720,7 @@ export default function ForoPage() {
         .fn-submit { padding: 9px 22px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-sm); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; box-shadow: var(--gfi-shadow-red); transition: var(--gfi-transition); }
         .fn-submit:hover:not(:disabled) { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
         .fn-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-        .fn-spinner { display: inline-block; width: 11px; height: 11px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: gfi-spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
+        .fn-spinner { display: inline-block; width: 11px; height: 11px; border: 2px solid var(--gfi-text-muted); border-top-color: #fff; border-radius: 50%; animation: gfi-spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
         .f-right { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 80px; }
         .f-right-box { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); overflow: hidden; }
         .f-right-title { font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; padding: 10px 14px; border-bottom: 1px solid var(--gfi-border-subtle); display: flex; align-items: center; gap: 6px; }
@@ -801,8 +801,8 @@ export default function ForoPage() {
                 <div className="f-card-meta">
                   <div className="f-avatar" onClick={() => setPerfilRapidoId(topic.author_id)}>{initials(topic.perfiles)}</div>
                   <div style={{cursor:"pointer"}} onClick={() => setPerfilRapidoId(topic.author_id)}>
-                    <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.7)"}}>{fullName(topic.perfiles)}</div>
-                    {topic.perfiles?.matricula && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'Montserrat',sans-serif"}}>Mat. {topic.perfiles.matricula}</div>}
+                    <div style={{fontSize:12,fontWeight:600,color:"var(--gfi-text-primary)"}}>{fullName(topic.perfiles)}</div>
+                    {topic.perfiles?.matricula && <div style={{fontSize:10,color:"var(--gfi-text-muted)",fontFamily:"var(--font-display)"}}>Mat. {topic.perfiles.matricula}</div>}
                   </div>
                   <span className="f-meta" style={{marginLeft:6}}>{timeAgo(topic.created_at)}</span>
                   <span className="f-meta">👁 {topic.view_count}</span>
@@ -813,7 +813,7 @@ export default function ForoPage() {
                   <div>{(topic.forum_topic_tags ?? []).length > 0 && <div className="f-tags-row">{(topic.forum_topic_tags ?? []).map((tt: any) => <span key={tt.forum_tags?.id} className="f-tag">{tt.forum_tags?.name}</span>)}</div>}</div>
                   {topic.author_id !== userId && (
                     <button onClick={() => setDenunciaTarget({ id: topic.id, tipo: "forum_topic" })}
-                      style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.25)",cursor:"pointer",fontSize:11,padding:"2px 6px"}} title="Denunciar post">
+                      style={{background:"transparent",border:"none",color:"var(--gfi-text-dim)",cursor:"pointer",fontSize:11,padding:"2px 6px"}} title="Denunciar post">
                       ⚑ Denunciar
                     </button>
                   )}
@@ -827,8 +827,8 @@ export default function ForoPage() {
                       <div className="f-reply-meta">
                         <div className="f-avatar" onClick={() => setPerfilRapidoId(r.author_id)}>{initials(r.perfiles)}</div>
                         <div style={{cursor:"pointer"}} onClick={() => setPerfilRapidoId(r.author_id)}>
-                          <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.7)"}}>{fullName(r.perfiles)}</div>
-                          {r.perfiles?.matricula && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'Montserrat',sans-serif"}}>Mat. {r.perfiles.matricula}</div>}
+                          <div style={{fontSize:12,fontWeight:600,color:"var(--gfi-text-primary)"}}>{fullName(r.perfiles)}</div>
+                          {r.perfiles?.matricula && <div style={{fontSize:10,color:"var(--gfi-text-muted)",fontFamily:"var(--font-display)"}}>Mat. {r.perfiles.matricula}</div>}
                         </div>
                         <span className="f-meta" style={{marginLeft:6}}>{timeAgo(r.created_at)}</span>
                       </div>
@@ -851,7 +851,7 @@ export default function ForoPage() {
                   </button>
                 </div>
               ) : (
-                <div style={{padding:"12px 16px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6,fontSize:12,color:"rgba(255,255,255,0.3)",textAlign:"center"}}>🔒 Tema cerrado</div>
+                <div style={{padding:"12px 16px",background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border-subtle)",borderRadius:6,fontSize:12,color:"var(--gfi-text-muted)",textAlign:"center"}}>🔒 Tema cerrado</div>
               )}
             </div>
           )}
@@ -884,7 +884,7 @@ export default function ForoPage() {
                 <div className={`fn-urg${nUrgent?" active":""}`} onClick={() => setNUrgent(u=>!u)}>
                   <span style={{fontSize:16}}>⚡</span>
                   <div style={{flex:1}}><div className="fn-urg-t">Marcar como urgente</div><div className="fn-urg-d">Notifica a todos y aparece destacado</div></div>
-                  <div style={{width:34,height:18,borderRadius:9,background:nUrgent?"#d4960c":"rgba(255,255,255,0.1)",position:"relative",transition:"background 0.2s",flexShrink:0}}>
+                  <div style={{width:34,height:18,borderRadius:9,background:nUrgent?"#d4960c":"var(--gfi-border)",position:"relative",transition:"background 0.2s",flexShrink:0}}>
                     <div style={{position:"absolute",top:2,left:nUrgent?18:2,width:14,height:14,borderRadius:"50%",background:"#fff",transition:"left 0.2s"}}/>
                   </div>
                 </div>
@@ -906,10 +906,10 @@ export default function ForoPage() {
               <div className="f-chat-header">
                 <div className="f-chat-live"/>
                 <span className="f-chat-header-title">Chat General — En vivo</span>
-                <span style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginLeft:"auto"}}>Tocá un mensaje para ver opciones</span>
+                <span style={{fontSize:10,color:"var(--gfi-text-dim)",marginLeft:"auto"}}>Tocá un mensaje para ver opciones</span>
               </div>
               <div className="f-chat-msgs">
-                {chatMsgs.length === 0 && <div style={{textAlign:"center",color:"rgba(255,255,255,0.2)",fontSize:13,fontStyle:"italic",marginTop:32}}>No hay mensajes todavía. ¡Sé el primero!</div>}
+                {chatMsgs.length === 0 && <div style={{textAlign:"center",color:"var(--gfi-text-dim)",fontSize:13,fontStyle:"italic",marginTop:32}}>No hay mensajes todavía. ¡Sé el primero!</div>}
                 {chatMsgs.map(m => {
                   const esMio = m.user_id === userId;
                   const eliminado = m.eliminado;
@@ -919,8 +919,8 @@ export default function ForoPage() {
                       onClick={() => !eliminado && setChatMenuId(prev => prev === m.id ? null : m.id)}>
                       {chatMenuId === m.id && !eliminado && chatEditId !== m.id && (
                         <div data-chat-menu onClick={e => e.stopPropagation()}
-                          style={{ position: "absolute", [esMio ? "right" : "left"]: 0, bottom: "100%", marginBottom: 6, background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 12, padding: "8px 6px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", gap: 2, minWidth: 160 }}>
-                          <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 2, flexWrap: "wrap" }}>
+                          style={{ position: "absolute", [esMio ? "right" : "left"]: 0, bottom: "100%", marginBottom: 6, background: "#1e1e1e", border: "1px solid var(--gfi-border)", borderRadius: 12, padding: "8px 6px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", gap: 2, minWidth: 160 }}>
+                          <div style={{ display: "flex", gap: 2, padding: "2px 4px 6px", borderBottom: "1px solid var(--gfi-border-subtle)", marginBottom: 2, flexWrap: "wrap" }}>
                             {["👍","❤️","😂","😮","😢","🙏","🔥","✅","👀","😡","💯","🎉"].map(emoji => (
                               <button key={emoji} onClick={() => reaccionarChat(m.id, emoji)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, padding: "2px 4px", borderRadius: 6 }}>{emoji}</button>
                             ))}
@@ -947,32 +947,32 @@ export default function ForoPage() {
                       )}
                       <div style={{ maxWidth: "75%", position: "relative" }}>
                         {!eliminado && (
-                          <div style={{ position: "absolute", right: 4, top: -10, background: "rgba(40,40,40,0.9)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 6.5L5 3.5L8 6.5" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <div style={{ position: "absolute", right: 4, top: -10, background: "rgba(40,40,40,0.9)", border: "1px solid var(--gfi-border)", borderRadius: 10, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 6.5L5 3.5L8 6.5" stroke="var(--gfi-text-secondary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           </div>
                         )}
                         {!esMio && !eliminado && (
-                          <div style={{ fontSize: 10, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, cursor: "pointer" }} onClick={e => { e.stopPropagation(); setPerfilRapidoId(m.user_id); }}>
-                            {fullName(m.perfiles)}{m.perfiles?.matricula && <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
+                          <div style={{ fontSize: 10, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 3, cursor: "pointer" }} onClick={e => { e.stopPropagation(); setPerfilRapidoId(m.user_id); }}>
+                            {fullName(m.perfiles)}{m.perfiles?.matricula && <span style={{ color: "var(--gfi-text-muted)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
                           </div>
                         )}
-                        <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${chatMenuId === m.id ? "rgba(200,0,0,0.5)" : "rgba(200,0,0,0.25)"}` : `1px solid ${chatMenuId === m.id ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", transition: "border-color 0.15s" }}>
+                        <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${chatMenuId === m.id ? "rgba(200,0,0,0.5)" : "rgba(200,0,0,0.25)"}` : `1px solid ${chatMenuId === m.id ? "var(--gfi-text-dim)" : "var(--gfi-border)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", transition: "border-color 0.15s" }}>
                           {m.reply && !eliminado && (
-                            <div style={{ background: "rgba(255,255,255,0.04)", borderLeft: "2px solid #990000", borderRadius: "0 4px 4px 0", padding: "4px 8px", marginBottom: 6, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
-                              <div style={{ fontSize: 9, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>{(m.reply as any).perfiles?.nombre ?? ""}</div>
+                            <div style={{ background: "var(--gfi-border-subtle)", borderLeft: "2px solid #990000", borderRadius: "0 4px 4px 0", padding: "4px 8px", marginBottom: 6, fontSize: 11, color: "var(--gfi-text-secondary)" }}>
+                              <div style={{ fontSize: 9, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 2 }}>{(m.reply as any).perfiles?.nombre ?? ""}</div>
                               <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>{(m.reply as any).body}</div>
                             </div>
                           )}
                           {eliminado ? (
-                            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>Mensaje eliminado</p>
+                            <p style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontStyle: "italic" }}>Mensaje eliminado</p>
                           ) : chatEditId === m.id ? (
                             <div onClick={e => e.stopPropagation()}>
                               <textarea ref={chatEditRef} value={chatEditText} onChange={e => setChatEditText(e.target.value)}
                                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); editarChatMsg(m.id); } if (e.key === "Escape") { setChatEditId(null); setChatEditText(""); } }}
-                                style={{ width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(200,0,0,0.4)", borderRadius: 4, color: "#fff", fontSize: 12, padding: "6px 8px", outline: "none", resize: "none", minHeight: 60, fontFamily: "Inter,sans-serif" }} autoFocus />
+                                style={{ width: "100%", background: "var(--gfi-border-subtle)", border: "1px solid rgba(200,0,0,0.4)", borderRadius: 4, color: "#fff", fontSize: 12, padding: "6px 8px", outline: "none", resize: "none", minHeight: 60, fontFamily: "Inter,sans-serif" }} autoFocus />
                               <div style={{ display: "flex", gap: 6, marginTop: 5, justifyContent: "flex-end" }}>
-                                <button onClick={() => { setChatEditId(null); setChatEditText(""); }} style={{ fontSize: 10, background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, color: "rgba(255,255,255,0.4)", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Cancelar</button>
-                                <button onClick={() => editarChatMsg(m.id)} style={{ fontSize: 10, background: "#990000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Guardar</button>
+                                <button onClick={() => { setChatEditId(null); setChatEditText(""); }} style={{ fontSize: 10, background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, color: "var(--gfi-text-muted)", padding: "3px 8px", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>Cancelar</button>
+                                <button onClick={() => editarChatMsg(m.id)} style={{ fontSize: 10, background: "#990000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>Guardar</button>
                               </div>
                             </div>
                           ) : (
@@ -983,7 +983,7 @@ export default function ForoPage() {
                           )}
                           {!eliminado && extraerUrl(m.body ?? "") && <ChatLinkPreview url={extraerUrl(m.body ?? "")!} />}
                           {!eliminado && (
-                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", textAlign: "right", marginTop: 4, display: "flex", gap: 5, justifyContent: "flex-end" }}>
+                            <div style={{ fontSize: 9, color: "var(--gfi-text-dim)", textAlign: "right", marginTop: 4, display: "flex", gap: 5, justifyContent: "flex-end" }}>
                               {m.editado && <span style={{ fontStyle: "italic" }}>editado</span>}
                               {adjuntos.length > 0 && <span>📎 {adjuntos.length}</span>}
                               {timeAgo(m.created_at)}
@@ -994,8 +994,8 @@ export default function ForoPage() {
                           <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4, justifyContent: esMio ? "flex-end" : "flex-start" }}>
                             {Object.entries(m.reacciones).map(([emoji, users]) => (
                               <button key={emoji} onClick={e => { e.stopPropagation(); reaccionarChat(m.id, emoji); }}
-                                style={{ background: (users as string[]).includes(userId ?? "") ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: (users as string[]).includes(userId ?? "") ? "1px solid rgba(200,0,0,0.3)" : "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "2px 7px", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
-                                {emoji} <span style={{ fontSize: 10, color: "rgba(255,255,255,0.5)" }}>{(users as string[]).length}</span>
+                                style={{ background: (users as string[]).includes(userId ?? "") ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: (users as string[]).includes(userId ?? "") ? "1px solid rgba(200,0,0,0.3)" : "1px solid var(--gfi-border)", borderRadius: 12, padding: "2px 7px", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                                {emoji} <span style={{ fontSize: 10, color: "var(--gfi-text-secondary)" }}>{(users as string[]).length}</span>
                               </button>
                             ))}
                           </div>
@@ -1011,27 +1011,27 @@ export default function ForoPage() {
               {chatReplyMsg && (
                 <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: "rgba(200,0,0,0.06)", borderTop: "1px solid rgba(200,0,0,0.15)" }}>
                   <div style={{ borderLeft: "2px solid #990000", paddingLeft: 8, flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 9, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>Respondiendo a {fullName(chatReplyMsg.perfiles)}</div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatReplyMsg.body}</div>
+                    <div style={{ fontSize: 9, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 2 }}>Respondiendo a {fullName(chatReplyMsg.perfiles)}</div>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatReplyMsg.body}</div>
                   </div>
-                  <button onClick={() => setChatReplyMsg(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16, padding: 4 }}>×</button>
+                  <button onClick={() => setChatReplyMsg(null)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 16, padding: 4 }}>×</button>
                 </div>
               )}
 
               {/* Preview adjuntos pendientes */}
               {chatAdjuntos.length > 0 && (
-                <div style={{ padding: "8px 14px", background: "rgba(255,255,255,0.03)", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Adjuntos:</span>
+                <div style={{ padding: "8px 14px", background: "var(--gfi-bg-card)", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                  <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Adjuntos:</span>
                   {chatAdjuntos.map((adj, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, padding: "4px 8px 4px 6px" }}>
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, padding: "4px 8px 4px 6px" }}>
                       {adj.tipo === "imagen" && <img src={adj.url} alt="" style={{ width: 28, height: 28, borderRadius: 4, objectFit: "cover" }} />}
                       {adj.tipo === "video" && <span style={{ fontSize: 16 }}>🎬</span>}
                       {adj.tipo === "documento" && <span style={{ fontSize: 16 }}>📎</span>}
                       <div style={{ maxWidth: 90 }}>
                         <div style={{ fontSize: 10, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{adj.nombre}</div>
-                        {adj.tamano && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{formatTamano(adj.tamano)}</div>}
+                        {adj.tamano && <div style={{ fontSize: 9, color: "var(--gfi-text-muted)" }}>{formatTamano(adj.tamano)}</div>}
                       </div>
-                      <button onClick={() => setChatAdjuntos(prev => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 14, padding: "0 2px", lineHeight: 1 }}>×</button>
+                      <button onClick={() => setChatAdjuntos(prev => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 14, padding: "0 2px", lineHeight: 1 }}>×</button>
                     </div>
                   ))}
                   {subiendoChatAdj && <div style={{ width: 14, height: 14, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
@@ -1041,7 +1041,7 @@ export default function ForoPage() {
               <div className="f-chat-input-area">
                 {/* Preview link */}
                 {chatInputPreview && (
-                  <div style={{ display: "flex", gap: 8, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.35)", position: "relative", minHeight: 56 }}>
+                  <div style={{ display: "flex", gap: 8, borderRadius: 6, overflow: "hidden", border: "1px solid var(--gfi-border)", background: "rgba(0,0,0,0.35)", position: "relative", minHeight: 56 }}>
                     {chatInputPreview.data.image && <div style={{ width: 56, minWidth: 56, background: "#000", flexShrink: 0 }}><img src={chatInputPreview.data.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></div>}
                     <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                       {chatInputPreview.data.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatInputPreview.data.title}</div>}
@@ -1053,9 +1053,9 @@ export default function ForoPage() {
                 {grabando && (
                   <div className="f-audio-grabando">
                     <div className="f-audio-dot" />
-                    <span style={{fontSize:12,color:"rgba(255,255,255,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Grabando {fmtSegundos(audioSegundos)}</span>
+                    <span style={{fontSize:12,color:"var(--gfi-text-primary)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Grabando {fmtSegundos(audioSegundos)}</span>
                     <button onClick={detenerGrabacion} style={{marginLeft:"auto",padding:"4px 12px",background:"#990000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>⏹ Detener</button>
-                    <button onClick={cancelarAudio} style={{padding:"4px 10px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:4,color:"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>✕ Cancelar</button>
+                    <button onClick={cancelarAudio} style={{padding:"4px 10px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:4,color:"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>✕ Cancelar</button>
                   </div>
                 )}
                 {/* UI preview audio grabado */}
@@ -1063,7 +1063,7 @@ export default function ForoPage() {
                   <div className="f-audio-preview">
                     <span style={{fontSize:16}}>🎙</span>
                     <audio src={audioUrl} controls style={{flex:1,height:32,minWidth:0}} />
-                    <span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif"}}>{fmtSegundos(audioSegundos)}</span>
+                    <span style={{fontSize:10,color:"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif"}}>{fmtSegundos(audioSegundos)}</span>
                     <button onClick={enviarAudio} disabled={subiendoAudio} style={{padding:"5px 12px",background:"#990000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>
                       {subiendoAudio ? "Enviando..." : "Enviar"}
                     </button>
@@ -1083,7 +1083,7 @@ export default function ForoPage() {
                     {/* Grabar audio in-app */}
                     <button onClick={iniciarGrabacion} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Grabar audio" style={{color:"rgba(200,0,0,0.7)"}}>🎙</button>
                     <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
-                      style={{ flex: 1, padding: "9px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
+                      style={{ flex: 1, padding: "9px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
                       onChange={e => {
                         const val = e.target.value; setChatInput(val);
                         const urlMatch = val.match(/https?:\/\/[^\s]+/);
@@ -1107,7 +1107,7 @@ export default function ForoPage() {
           {mainTab === "faq" && (
             <>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
-                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.4)"}}>Últimas consultas resueltas</div>
+                <div style={{fontFamily:"var(--font-display)",fontSize:11,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)"}}>Últimas consultas resueltas</div>
                 <button className="f-btn-nuevo" onClick={() => { setMainTab("temas"); setVista("nuevo"); }}>+ Nueva consulta</button>
               </div>
               {faqTopics.length === 0 ? <div className="f-empty">No hay consultas resueltas todavía.</div> :
@@ -1135,7 +1135,7 @@ export default function ForoPage() {
                 <div className="f-faq-meta">{t.forum_categories?.name} · {timeAgo(t.last_activity_at)}</div>
               </div>
             ))}
-            {faqTopics.length === 0 && <div style={{padding:"12px 14px",fontSize:11,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>Sin resueltas todavía</div>}
+            {faqTopics.length === 0 && <div style={{padding:"12px 14px",fontSize:11,color:"var(--gfi-text-dim)",fontStyle:"italic"}}>Sin resueltas todavía</div>}
           </div>
         </aside>
       </div>
@@ -1144,39 +1144,39 @@ export default function ForoPage() {
       {mostrarModalEvento && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 500, padding: 20 }}
           onClick={e => { if (e.target === e.currentTarget) setMostrarModalEvento(false); }}>
-          <div style={{ background: "#0f0f0f", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "28px 32px", width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
+          <div style={{ background: "var(--gfi-bg-primary)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "28px 32px", width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#990000,transparent)", borderRadius: "8px 8px 0 0" }} />
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>Proponer <span style={{ color: "#990000" }}>evento</span></div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>💡 Tu propuesta será revisada por el admin antes de publicarse en el módulo de Eventos.</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>Proponer <span style={{ color: "#990000" }}>evento</span></div>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>💡 Tu propuesta será revisada por el admin antes de publicarse en el módulo de Eventos.</div>
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Tipo</label>
+              <label style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>Tipo</label>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {[["gfi","GFI®","#990000"],["cocir","COCIR","#d4960c"],["cir","CIR","#818cf8"],["externo","Externo","#64748b"]].map(([k,l,c]) => (
-                  <button key={k} type="button" onClick={() => setEF("tipo", k)} style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${eventoForm.tipo === k ? c : "rgba(255,255,255,0.1)"}`, background: eventoForm.tipo === k ? `${c}22` : "transparent", color: eventoForm.tipo === k ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>{l}</button>
+                  <button key={k} type="button" onClick={() => setEF("tipo", k)} style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${eventoForm.tipo === k ? c : "var(--gfi-border)"}`, background: eventoForm.tipo === k ? `${c}22` : "transparent", color: eventoForm.tipo === k ? c : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>{l}</button>
                 ))}
               </div>
             </div>
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Título *</label>
-              <input value={eventoForm.titulo} onChange={e => setEF("titulo", e.target.value)} placeholder="Ej: Desayuno GFI® — Agosto" style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+              <label style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>Título *</label>
+              <input value={eventoForm.titulo} onChange={e => setEF("titulo", e.target.value)} placeholder="Ej: Desayuno GFI® — Agosto" style={{ width: "100%", padding: "9px 13px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
             </div>
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Descripción</label>
-              <textarea value={eventoForm.descripcion} onChange={e => setEF("descripcion", e.target.value)} placeholder="¿De qué trata el evento?" style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", resize: "vertical", minHeight: 80 }} />
+              <label style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>Descripción</label>
+              <textarea value={eventoForm.descripcion} onChange={e => setEF("descripcion", e.target.value)} placeholder="¿De qué trata el evento?" style={{ width: "100%", padding: "9px 13px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", resize: "vertical", minHeight: 80 }} />
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
               <div>
-                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Fecha *</label>
-                <input type="date" value={eventoForm.fecha} onChange={e => setEF("fecha", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <label style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>Fecha *</label>
+                <input type="date" value={eventoForm.fecha} onChange={e => setEF("fecha", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
               <div>
-                <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Hora</label>
-                <input type="time" value={eventoForm.hora} onChange={e => setEF("hora", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
+                <label style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>Hora</label>
+                <input type="time" value={eventoForm.hora} onChange={e => setEF("hora", e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }} />
               </div>
             </div>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20, borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 16 }}>
-              <button onClick={() => setMostrarModalEvento(false)} style={{ padding: "9px 20px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer" }}>Cancelar</button>
-              <button onClick={guardarEventoDesdeChat} disabled={guardandoEvento || !eventoForm.titulo || !eventoForm.fecha} style={{ padding: "9px 24px", background: "#990000", border: "none", borderRadius: 3, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoEvento || !eventoForm.titulo || !eventoForm.fecha ? 0.6 : 1 }}>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20, borderTop: "1px solid var(--gfi-border-subtle)", paddingTop: 16 }}>
+              <button onClick={() => setMostrarModalEvento(false)} style={{ padding: "9px 20px", background: "transparent", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer" }}>Cancelar</button>
+              <button onClick={guardarEventoDesdeChat} disabled={guardandoEvento || !eventoForm.titulo || !eventoForm.fecha} style={{ padding: "9px 24px", background: "#990000", border: "none", borderRadius: 3, color: "#fff", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoEvento || !eventoForm.titulo || !eventoForm.fecha ? 0.6 : 1 }}>
                 {guardandoEvento ? "Enviando..." : "Enviar propuesta"}
               </button>
             </div>
@@ -1187,17 +1187,17 @@ export default function ForoPage() {
       {perfilRapidoId && <PerfilRapidoModal perfilId={perfilRapidoId} miUserId={userId} onClose={() => setPerfilRapidoId(null)} />}
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "90vw", textAlign: "center" }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "90vw", textAlign: "center" }}>
           {toast}
         </div>
       )}
 
       {modalMic && (
         <div onClick={() => setModalMic(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 10000, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: "#1a1a1a", borderRadius: "16px 16px 0 0", padding: "24px 20px 32px", width: "100%", maxWidth: 480, border: "1px solid rgba(255,255,255,0.1)", borderBottom: "none" }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#1a1a1a", borderRadius: "16px 16px 0 0", padding: "24px 20px 32px", width: "100%", maxWidth: 480, border: "1px solid var(--gfi-border)", borderBottom: "none" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff" }}>🎙 Habilitar micrófono</div>
-              <button onClick={() => setModalMic(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "#fff" }}>🎙 Habilitar micrófono</div>
+              <button onClick={() => setModalMic(false)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 12, lineHeight: 1.6 }}>
               El navegador bloqueó el acceso al micrófono.
@@ -1205,17 +1205,17 @@ export default function ForoPage() {
             <div style={{background:"rgba(255,200,0,0.08)",border:"1px solid rgba(255,200,0,0.3)",borderRadius:8,padding:"10px 12px",marginBottom:14}}>
               <div style={{fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:800,color:"#ffc800",letterSpacing:"0.1em",marginBottom:4}}>⚠ IMPORTANTE — Dominio a habilitar:</div>
               <div style={{fontSize:13,color:"#fff",fontFamily:"monospace",fontWeight:700,wordBreak:"break-all"}}>{typeof window !== "undefined" ? window.location.host : ""}</div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:6,lineHeight:1.4}}>Si ves <b>foroinmobiliario.com.ar</b> en Chrome y le pusiste Permitir, ese es el dominio equivocado. Tenés que habilitarlo en el de arriba.</div>
+              <div style={{fontSize:11,color:"var(--gfi-text-secondary)",marginTop:6,lineHeight:1.4}}>Si ves <b>foroinmobiliario.com.ar</b> en Chrome y le pusiste Permitir, ese es el dominio equivocado. Tenés que habilitarlo en el de arriba.</div>
             </div>
             {typeof window !== "undefined" && window.self !== window.top && (
               <div style={{background:"rgba(255,80,80,0.1)",border:"1px solid rgba(255,80,80,0.3)",borderRadius:8,padding:"10px 12px",marginBottom:14}}>
                 <div style={{fontSize:11,color:"#ff8080",fontFamily:"Inter,sans-serif",lineHeight:1.5}}>🪟 Estás viendo la app embebida en otro sitio (iframe). Probá abrirla en pestaña nueva — el mic puede no funcionar dentro del iframe.</div>
               </div>
             )}
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>Pasos:</p>
+            <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 10 }}>Pasos:</p>
 
             <div style={{ background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#990000", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción A — Desde Chrome Android</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 800, color: "#990000", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción A — Desde Chrome Android</div>
               {[
                 "Tocá los 3 puntitos ⋮ arriba a la derecha de Chrome",
                 "Ir a Configuración → Configuración del sitio",
@@ -1224,30 +1224,30 @@ export default function ForoPage() {
                 "Volvé atrás y recargá la página",
               ].map((txt, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#990000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff", flexShrink: 0 }}>{i + 1}</div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#990000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "var(--font-display)", color: "#fff", flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ fontSize: 13, color: "var(--gfi-text-primary)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
                 </div>
               ))}
             </div>
 
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción B — Ajustes de Android</div>
+            <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 800, color: "var(--gfi-text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción B — Ajustes de Android</div>
               {[
                 "Abrí Ajustes del teléfono",
                 "Aplicaciones → Chrome",
                 "Permisos → Micrófono → Permitir",
               ].map((txt, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.5)", flexShrink: 0 }}>{i + 1}</div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "var(--gfi-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "var(--font-display)", color: "var(--gfi-text-secondary)", flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
                 </div>
               ))}
             </div>
 
-            <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 18, lineHeight: 1.5 }}>
+            <div style={{ background: "var(--gfi-bg-card)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 18, lineHeight: 1.5 }}>
               📱 iPhone: Ajustes → Chrome → Micrófono → Activar
             </div>
-            <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#990000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
+            <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#990000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
               Recargar página
             </button>
           </div>

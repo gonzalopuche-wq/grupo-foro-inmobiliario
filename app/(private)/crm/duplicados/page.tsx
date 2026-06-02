@@ -165,7 +165,7 @@ export default function DuplicadosPage() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🔍 Detector de Duplicados</h1>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🔍 Detector de Duplicados</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Contactos con mismo teléfono, email o nombre similar</p>
           </div>
           <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
@@ -179,19 +179,19 @@ export default function DuplicadosPage() {
             { label: "Alta confianza", value: paresVisibles.filter(p => p.score >= 50).length, color: "#d4960c" },
             { label: "Descartados", value: descartados.size, color: "#6b7280" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: k.color }}>{k.value}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: k.color }}>{k.value}</div>
             </div>
           ))}
         </div>
 
         {/* Filtros */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 10, alignItems: "center" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 10, alignItems: "center" }}>
           <span style={{ fontSize: 12, color: "#6b7280" }}>Filtrar por confianza:</span>
           {(["todos", "alta", "media"] as const).map(f => (
             <button key={f} onClick={() => setFiltro(f)}
-              style={{ background: filtro === f ? "#1f2937" : "transparent", border: `1px solid ${filtro === f ? "#374151" : "#1f2937"}`, borderRadius: 6, color: filtro === f ? "#e5e5e5" : "#6b7280", padding: "5px 14px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "capitalize" }}>
+              style={{ background: filtro === f ? "#1f2937" : "transparent", border: `1px solid ${filtro === f ? "#374151" : "var(--gfi-border)"}`, borderRadius: 6, color: filtro === f ? "#e5e5e5" : "#6b7280", padding: "5px 14px", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "capitalize" }}>
               {f === "todos" ? "Todos" : f === "alta" ? "🔴 Alta" : "🟠 Media"}
             </button>
           ))}
@@ -206,9 +206,9 @@ export default function DuplicadosPage() {
         {loading ? (
           <div style={{ textAlign: "center", color: "#6b7280", padding: 40 }}>Analizando contactos...</div>
         ) : paresVisibles.length === 0 ? (
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 40, textAlign: "center" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 40, textAlign: "center" }}>
             <div style={{ fontSize: 36, marginBottom: 10 }}>✅</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin duplicados detectados</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin duplicados detectados</div>
             <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>
               {descartados.size > 0 ? `${descartados.size} pares marcados como distintos.` : "Tu base de contactos está limpia."}
             </div>
@@ -216,21 +216,21 @@ export default function DuplicadosPage() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {paresVisibles.map(par => (
-              <div key={`${par.a.id}_${par.b.id}`} style={{ background: "#111", border: `1px solid ${scoreColor(par.score)}33`, borderRadius: 12, padding: 18 }}>
+              <div key={`${par.a.id}_${par.b.id}`} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${scoreColor(par.score)}33`, borderRadius: 12, padding: 18 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {par.razon.map(r => (
-                      <span key={r} style={{ background: `${scoreColor(par.score)}22`, color: scoreColor(par.score), padding: "3px 10px", borderRadius: 4, fontSize: 11, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                      <span key={r} style={{ background: `${scoreColor(par.score)}22`, color: scoreColor(par.score), padding: "3px 10px", borderRadius: 4, fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                         {r}
                       </span>
                     ))}
                   </div>
                   <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 14, color: scoreColor(par.score) }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, color: scoreColor(par.score) }}>
                       {scoreLabel(par.score)} ({par.score})
                     </span>
                     <button onClick={() => descartar(par.a, par.b)}
-                      style={{ background: "#1f2937", border: "1px solid #374151", borderRadius: 6, color: "#9ca3af", padding: "4px 12px", fontSize: 11, cursor: "pointer" }}>
+                      style={{ background: "var(--gfi-border)", border: "1px solid #374151", borderRadius: 6, color: "#9ca3af", padding: "4px 12px", fontSize: 11, cursor: "pointer" }}>
                       No son duplicados
                     </button>
                   </div>
@@ -239,7 +239,7 @@ export default function DuplicadosPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   {[par.a, par.b].map(c => (
                     <div key={c.id} style={{ background: "#0a0a0a", borderRadius: 8, padding: "12px 14px" }}>
-                      <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 6 }}>
+                      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 6 }}>
                         {c.nombre} {c.apellido}
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: 12 }}>
@@ -261,7 +261,7 @@ export default function DuplicadosPage() {
           </div>
         )}
 
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 20, fontSize: 12, color: "#6b7280" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 20, fontSize: 12, color: "#6b7280" }}>
           <strong style={{ color: "#9ca3af" }}>📌 Nota:</strong> La detección se basa en teléfono idéntico, email idéntico y similitud de nombre. Revisá cada par antes de decidir. La herramienta no elimina contactos automáticamente.
         </div>
       </div>

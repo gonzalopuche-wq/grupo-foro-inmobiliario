@@ -106,9 +106,9 @@ export default function ModeracionPage() {
   return (
     <div style={{ fontFamily: "Inter,sans-serif", color: "#fff", maxWidth: 960, margin: "0 auto" }}>
       <style>{`
-        .mod-tab { padding: 8px 18px; border: none; border-bottom: 2px solid transparent; background: transparent; color: rgba(255,255,255,0.4); font-family: Montserrat,sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .mod-tab { padding: 8px 18px; border: none; border-bottom: 2px solid transparent; background: transparent; color: var(--gfi-text-muted); font-family: Montserrat,sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .mod-tab.active { color: #fff; border-bottom-color: #990000; }
-        .mod-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; font-family: Inter,sans-serif; box-sizing: border-box; }
+        .mod-input { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 13px; font-family: Inter,sans-serif; box-sizing: border-box; }
         .mod-input:focus { outline: none; border-color: rgba(200,0,0,0.5); }
       `}</style>
 
@@ -116,18 +116,18 @@ export default function ModeracionPage() {
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
         <span style={{ fontSize: 28 }}>🛡️</span>
         <div>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "Montserrat,sans-serif" }}>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "var(--font-display)" }}>
             Panel de Moderación
             {filtroEstado === "pendiente" && totalPendientes > 0 && (
               <span style={{ marginLeft: 10, fontSize: 13, background: "#990000", color: "#fff", borderRadius: 10, padding: "2px 8px", verticalAlign: "middle" }}>{totalPendientes}</span>
             )}
           </h1>
-          <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.4)" }}>Gestión de denuncias y moderación de contenidos GFI®</p>
+          <p style={{ margin: 0, fontSize: 12, color: "var(--gfi-text-muted)" }}>Gestión de denuncias y moderación de contenidos GFI®</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: 24, display: "flex", gap: 0 }}>
+      <div style={{ borderBottom: "1px solid var(--gfi-border)", marginBottom: 24, display: "flex", gap: 0 }}>
         {["pendiente","revisado","resuelto","rechazado","todas"].map(e => (
           <button key={e} className={`mod-tab${filtroEstado === e ? " active" : ""}`} onClick={() => cambiarFiltro(e)}>
             {e.charAt(0).toUpperCase() + e.slice(1)}
@@ -136,9 +136,9 @@ export default function ModeracionPage() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>Cargando denuncias...</div>
+        <div style={{ textAlign: "center", padding: 60, color: "var(--gfi-text-muted)" }}>Cargando denuncias...</div>
       ) : denuncias.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>
+        <div style={{ textAlign: "center", padding: 60, color: "var(--gfi-text-muted)" }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
           <p>No hay denuncias {filtroEstado !== "todas" ? `en estado "${filtroEstado}"` : ""}</p>
         </div>
@@ -147,19 +147,19 @@ export default function ModeracionPage() {
           {denuncias.map(d => {
             const est = ESTADO_COLORS[d.estado] ?? ESTADO_COLORS.pendiente;
             return (
-              <div key={d.id} style={{ padding: "14px 18px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, display: "flex", gap: 14, alignItems: "flex-start" }}>
+              <div key={d.id} style={{ padding: "14px 18px", background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 12, display: "flex", gap: 14, alignItems: "flex-start" }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
                     <span style={{ fontSize: 12, fontWeight: 700, padding: "2px 10px", borderRadius: 10, color: est.color, background: est.bg }}>
                       {d.estado.toUpperCase()}
                     </span>
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: 8 }}>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: 8 }}>
                       {TIPO_LABELS[d.tipo_contenido] ?? d.tipo_contenido}
                     </span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--gfi-text-primary)" }}>
                       {MOTIVO_LABELS[d.motivo] ?? d.motivo}
                     </span>
-                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginLeft: "auto" }}>
+                    <span style={{ fontSize: 10, color: "var(--gfi-text-dim)", marginLeft: "auto" }}>
                       {new Date(d.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}
                     </span>
                   </div>
@@ -168,7 +168,7 @@ export default function ModeracionPage() {
                     {" · "}ID: <code style={{ fontSize: 10, background: "rgba(255,255,255,0.06)", padding: "1px 5px", borderRadius: 3 }}>{d.contenido_id.slice(0, 8)}…</code>
                   </div>
                   {d.descripcion && (
-                    <p style={{ margin: "4px 0 0", fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.5, fontStyle: "italic" }}>
+                    <p style={{ margin: "4px 0 0", fontSize: 12, color: "var(--gfi-text-secondary)", lineHeight: 1.5, fontStyle: "italic" }}>
                       "{d.descripcion}"
                     </p>
                   )}
@@ -182,7 +182,7 @@ export default function ModeracionPage() {
                 {d.estado === "pendiente" && (
                   <button
                     onClick={() => { setDenunciaActiva(d); setResolucionNotas(""); setAccionTomada(""); }}
-                    style={{ padding: "7px 14px", background: "rgba(200,0,0,0.15)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 6, color: "#990000", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", fontFamily: "Montserrat,sans-serif" }}>
+                    style={{ padding: "7px 14px", background: "rgba(200,0,0,0.15)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 6, color: "#990000", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", fontFamily: "var(--font-display)" }}>
                     Revisar
                   </button>
                 )}
@@ -196,25 +196,25 @@ export default function ModeracionPage() {
       {denunciaActiva && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
           onClick={e => { if (e.target === e.currentTarget) setDenunciaActiva(null); }}>
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: 26, width: "100%", maxWidth: 500, position: "relative" }}>
-            <button style={{ position: "absolute", top: 12, right: 12, background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 20, cursor: "pointer" }} onClick={() => setDenunciaActiva(null)}>&times;</button>
-            <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 800, fontFamily: "Montserrat,sans-serif" }}>Revisar denuncia</h3>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 16, padding: 26, width: "100%", maxWidth: 500, position: "relative" }}>
+            <button style={{ position: "absolute", top: 12, right: 12, background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 20, cursor: "pointer" }} onClick={() => setDenunciaActiva(null)}>&times;</button>
+            <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 800, fontFamily: "var(--font-display)" }}>Revisar denuncia</h3>
 
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "12px 14px", marginBottom: 18 }}>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>
+            <div style={{ background: "var(--gfi-bg-card)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "12px 14px", marginBottom: 18 }}>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", marginBottom: 4 }}>
                 Tipo: <strong style={{ color: "#fff" }}>{TIPO_LABELS[denunciaActiva.tipo_contenido]}</strong>
                 {" · "}Motivo: <strong style={{ color: "#fff" }}>{MOTIVO_LABELS[denunciaActiva.motivo]}</strong>
               </div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
                 Denunciante: {denunciaActiva.perfiles?.nombre} {denunciaActiva.perfiles?.apellido}
               </div>
               {denunciaActiva.descripcion && (
-                <p style={{ margin: "8px 0 0", fontSize: 12, color: "rgba(255,255,255,0.6)", fontStyle: "italic" }}>"{denunciaActiva.descripcion}"</p>
+                <p style={{ margin: "8px 0 0", fontSize: 12, color: "var(--gfi-text-secondary)", fontStyle: "italic" }}>"{denunciaActiva.descripcion}"</p>
               )}
             </div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>
                 Notas de resolución
               </label>
               <textarea
@@ -228,7 +228,7 @@ export default function ModeracionPage() {
             </div>
 
             <div style={{ marginBottom: 20 }}>
-              <label style={{ display: "block", fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>
                 Acción tomada
               </label>
               <select className="mod-input" value={accionTomada} onChange={e => setAccionTomada(e.target.value)} style={{ cursor: "pointer" }}>
@@ -241,7 +241,7 @@ export default function ModeracionPage() {
             </div>
 
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => resolver("rechazado")} disabled={procesando} style={{ flex: 1, padding: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
+              <button onClick={() => resolver("rechazado")} disabled={procesando} style={{ flex: 1, padding: "10px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, color: "var(--gfi-text-secondary)", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
                 Rechazar
               </button>
               <button onClick={() => resolver("revisado")} disabled={procesando} style={{ flex: 1, padding: "10px", background: "rgba(74,184,216,0.15)", border: "1px solid rgba(74,184,216,0.3)", borderRadius: 8, color: "#4ab8d8", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>

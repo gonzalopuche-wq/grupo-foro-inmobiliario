@@ -224,60 +224,60 @@ export default function CanalEducativoPage() {
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", padding: "0" }}>
       <style>{`
         .ce-header { background: linear-gradient(135deg, #1a0a0a 0%, #0f0a1a 100%); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 32px 24px 24px; }
-        .ce-titulo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; font-family: 'Montserrat', sans-serif; }
+        .ce-titulo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; font-family: var(--font-display); }
         .ce-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 4px; }
         .ce-body { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
-        .ce-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+        .ce-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
         .ce-card-live { border-color: rgba(255,50,50,0.4); background: rgba(255,30,30,0.06); }
         .ce-card-proxima { border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.05); }
         .ce-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; }
         .ce-badge-live { background: rgba(255,30,30,0.15); color: #ff4444; border: 1px solid rgba(255,30,30,0.3); }
         .ce-badge-proxima { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.25); }
-        .ce-badge-grabada { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.1); }
+        .ce-badge-grabada { background: rgba(255,255,255,0.06); color: var(--gfi-text-muted); border: 1px solid var(--gfi-border); }
         .ce-mentor { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 8px; }
         .ce-mentor strong { color: rgba(255,255,255,0.85); }
-        .ce-fecha { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 6px; }
-        .ce-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-top: 12px; }
+        .ce-fecha { font-size: 13px; color: var(--gfi-text-muted); margin-top: 6px; }
+        .ce-desc { font-size: 14px; color: var(--gfi-text-secondary); line-height: 1.6; margin-top: 12px; }
         .ce-btn { padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
         .ce-btn-live { background: #ff4444; color: #fff; }
         .ce-btn-live:hover { background: #ff2222; }
-        .ce-btn-plat { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.1); }
-        .ce-btn-plat:hover { background: rgba(255,255,255,0.1); }
+        .ce-btn-plat { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); border: 1px solid var(--gfi-border); }
+        .ce-btn-plat:hover { background: var(--gfi-border); }
         .ce-btn-primary { background: #990000; color: #fff; }
         .ce-btn-primary:hover { background: #aa0000; }
-        .ce-btn-ghost { background: transparent; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
-        .ce-btn-ghost:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
-        .ce-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 14px; }
-        .ce-consulta-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; padding: 12px 14px; font-size: 14px; resize: vertical; min-height: 80px; font-family: inherit; box-sizing: border-box; }
+        .ce-btn-ghost { background: transparent; color: var(--gfi-text-secondary); border: 1px solid var(--gfi-border); }
+        .ce-btn-ghost:hover { color: #fff; border-color: var(--gfi-text-dim); }
+        .ce-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 14px; }
+        .ce-consulta-input { width: 100%; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 8px; color: #fff; padding: 12px 14px; font-size: 14px; resize: vertical; min-height: 80px; font-family: inherit; box-sizing: border-box; }
         .ce-consulta-input:focus { outline: none; border-color: rgba(99,102,241,0.4); }
-        .ce-consulta-item { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 12px; align-items: flex-start; }
+        .ce-consulta-item { padding: 12px 0; border-bottom: 1px solid var(--gfi-border-subtle); display: flex; gap: 12px; align-items: flex-start; }
         .ce-consulta-item:last-child { border-bottom: none; }
         .ce-consulta-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #818cf8; flex-shrink: 0; }
-        .ce-consulta-nombre { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+        .ce-consulta-nombre { font-size: 12px; color: var(--gfi-text-muted); margin-bottom: 4px; }
         .ce-consulta-texto { font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.5; }
         .ce-consulta-destacada { border-left: 2px solid #d4960c; padding-left: 12px; }
         .ce-tag-destacada { font-size: 10px; font-weight: 700; color: #d4960c; letter-spacing: 0.05em; text-transform: uppercase; margin-left: 8px; }
-        .ce-archivo-item { padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; margin-bottom: 10px; display: flex; gap: 16px; align-items: center; }
-        .ce-archivo-fecha { min-width: 56px; text-align: center; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 8px 6px; }
+        .ce-archivo-item { padding: 16px; background: var(--gfi-bg-secondary); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; margin-bottom: 10px; display: flex; gap: 16px; align-items: center; }
+        .ce-archivo-fecha { min-width: 56px; text-align: center; background: var(--gfi-border-subtle); border-radius: 8px; padding: 8px 6px; }
         .ce-archivo-fecha-dia { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
-        .ce-archivo-fecha-mes { font-size: 10px; text-transform: uppercase; color: rgba(255,255,255,0.35); letter-spacing: 0.08em; margin-top: 2px; }
+        .ce-archivo-fecha-mes { font-size: 10px; text-transform: uppercase; color: var(--gfi-text-muted); letter-spacing: 0.08em; margin-top: 2px; }
         .ce-archivo-info { flex: 1; }
         .ce-archivo-titulo { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
-        .ce-archivo-mentor { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+        .ce-archivo-mentor { font-size: 12px; color: var(--gfi-text-muted); margin-top: 3px; }
         .ce-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
-        .ce-tab { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.45); transition: all 0.15s; }
+        .ce-tab { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--gfi-border); background: transparent; color: rgba(255,255,255,0.45); transition: all 0.15s; }
         .ce-tab.active { background: rgba(153,0,0,0.15); border-color: rgba(153,0,0,0.4); color: #ff6666; }
         .ce-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
-        .ce-modal { background: #141414; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+        .ce-modal { background: #141414; border: 1px solid var(--gfi-border); border-radius: 14px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
         .ce-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
         .ce-field { margin-bottom: 14px; }
-        .ce-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 6px; display: block; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-        .ce-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
+        .ce-label { font-size: 12px; color: var(--gfi-text-muted); margin-bottom: 6px; display: block; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+        .ce-input { width: 100%; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
         .ce-input:focus { outline: none; border-color: rgba(153,0,0,0.4); }
-        .ce-select { width: 100%; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
+        .ce-select { width: 100%; background: #1a1a1a; border: 1px solid var(--gfi-border); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
         .ce-row { display: flex; gap: 12px; }
         .ce-row .ce-field { flex: 1; }
-        .ce-empty { text-align: center; padding: 48px 16px; color: rgba(255,255,255,0.25); }
+        .ce-empty { text-align: center; padding: 48px 16px; color: var(--gfi-text-dim); }
         .ce-plat-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         .ce-toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 9999; }
         .ce-toast-ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
@@ -364,11 +364,11 @@ export default function CanalEducativoPage() {
                           /* Zoom/Meet: no se puede embedir, botón grande */
                           <div style={{ background: "rgba(255,30,30,0.08)", border: "1px solid rgba(255,30,30,0.25)", borderRadius: 10, padding: "20px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
                             <div style={{ flex: 1 }}>
-                              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Transmisión en vivo</div>
+                              <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 4, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Transmisión en vivo</div>
                               <div style={{ fontSize: 14, color: "#fff" }}>
                                 {PLATAFORMA_META[sesionActiva.plataforma]?.label} · Hacé clic para unirte
                               </div>
-                              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, wordBreak: "break-all" }}>{sesionActiva.link_live}</div>
+                              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4, wordBreak: "break-all" }}>{sesionActiva.link_live}</div>
                             </div>
                             <a href={sesionActiva.link_live} target="_blank" rel="noreferrer">
                               <button className="ce-btn ce-btn-live" style={{ fontSize: 16, padding: "14px 28px" }}>
@@ -386,14 +386,14 @@ export default function CanalEducativoPage() {
                         )}
                       </div>
                     ) : (
-                      <div style={{ marginTop: 12, fontSize: 13, color: "rgba(255,255,255,0.3)" }}>El link se publicará antes de la sesión.</div>
+                      <div style={{ marginTop: 12, fontSize: 13, color: "var(--gfi-text-muted)" }}>El link se publicará antes de la sesión.</div>
                     )}
                   </div>
                 ) : (
                   <div className="ce-card" style={{ textAlign: "center", padding: "48px 24px" }}>
                     <div style={{ fontSize: 40, marginBottom: 12 }}>📡</div>
-                    <div style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.6)" }}>No hay sesiones programadas</div>
-                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", marginTop: 8 }}>Las sesiones se publican con anticipación. Volvé en breve.</div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: "var(--gfi-text-secondary)" }}>No hay sesiones programadas</div>
+                    <div style={{ fontSize: 13, color: "var(--gfi-text-muted)", marginTop: 8 }}>Las sesiones se publican con anticipación. Volvé en breve.</div>
                   </div>
                 )}
 
@@ -426,7 +426,7 @@ export default function CanalEducativoPage() {
                 {sesionActiva && sesionActiva.estado !== "grabada" && (
                   <div className="ce-card" style={{ marginTop: 20 }}>
                     <div className="ce-section-title">Consultas para esta sesión</div>
-                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 14 }}>
+                    <div style={{ fontSize: 13, color: "var(--gfi-text-muted)", marginBottom: 14 }}>
                       Publicá tu consulta antes de la sesión. El Mentor las revisará y responderá en vivo.
                     </div>
 
@@ -441,7 +441,7 @@ export default function CanalEducativoPage() {
                           maxLength={400}
                         />
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-                          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.25)" }}>{nuevaConsulta.length}/400</span>
+                          <span style={{ fontSize: 12, color: "var(--gfi-text-dim)" }}>{nuevaConsulta.length}/400</span>
                           <button
                             className="ce-btn ce-btn-primary"
                             onClick={enviarConsulta}
@@ -453,14 +453,14 @@ export default function CanalEducativoPage() {
                         </div>
                       </div>
                     ) : (
-                      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 16, padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>
+                      <div style={{ fontSize: 13, color: "var(--gfi-text-muted)", marginBottom: 16, padding: "10px 14px", background: "var(--gfi-bg-card)", borderRadius: 8 }}>
                         ✓ Ya publicaste tu consulta para esta sesión.
                       </div>
                     )}
 
                     {/* Lista de consultas */}
                     {consultas.length === 0 ? (
-                      <div style={{ fontSize: 14, color: "rgba(255,255,255,0.25)", textAlign: "center", padding: "20px 0" }}>
+                      <div style={{ fontSize: 14, color: "var(--gfi-text-dim)", textAlign: "center", padding: "20px 0" }}>
                         Todavía no hay consultas. Sé el primero en publicar.
                       </div>
                     ) : (
@@ -482,7 +482,7 @@ export default function CanalEducativoPage() {
                               {esAdmin && (
                                 <button
                                   onClick={() => toggleDestacada(c)}
-                                  style={{ background: "none", border: "none", cursor: "pointer", color: c.destacada ? "#d4960c" : "rgba(255,255,255,0.2)", fontSize: 16, padding: "4px 6px" }}
+                                  style={{ background: "none", border: "none", cursor: "pointer", color: c.destacada ? "#d4960c" : "var(--gfi-text-dim)", fontSize: 16, padding: "4px 6px" }}
                                   title={c.destacada ? "Quitar destacada" : "Destacar"}
                                 >
                                   ★
@@ -520,7 +520,7 @@ export default function CanalEducativoPage() {
                           <div className="ce-archivo-info">
                             <div className="ce-archivo-titulo">{s.titulo}</div>
                             <div className="ce-archivo-mentor">Mentor: {s.mentor_nombre} · {formatFechaCorta(s.fecha)}</div>
-                            {s.descripcion && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>{s.descripcion}</div>}
+                            {s.descripcion && <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4 }}>{s.descripcion}</div>}
                           </div>
                           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                             {s.link_grabacion ? (
@@ -540,7 +540,7 @@ export default function CanalEducativoPage() {
                                 </a>
                               )
                             ) : (
-                              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.2)" }}>Sin grabación</span>
+                              <span style={{ fontSize: 12, color: "var(--gfi-text-dim)" }}>Sin grabación</span>
                             )}
                             {esAdmin && (
                               <>

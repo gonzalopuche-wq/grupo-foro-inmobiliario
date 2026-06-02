@@ -138,24 +138,24 @@ export default function PipelineVelocity() {
   const maxValorEtapa = Math.max(...statsPorEtapa.map(e => e.valorPipeline), 1);
 
   const cardStyle: React.CSSProperties = {
-    background: "#0d0d0d", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "16px 18px",
+    background: "var(--gfi-bg-primary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "16px 18px",
   };
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>Analizando pipeline…</div>
+      <div style={{ color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>Analizando pipeline…</div>
     </div>
   );
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter,sans-serif", padding: "28px 24px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
-        <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, margin: 0 }}>Pipeline Velocity</h1>
-        <span style={{ background: "#d4960c", color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>ANÁLISIS</span>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, margin: 0 }}>Pipeline Velocity</h1>
+        <span style={{ background: "#d4960c", color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: "var(--font-display)", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>ANÁLISIS</span>
       </div>
-      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 20 }}>Velocidad y salud de {negocios.length} negocios activos</div>
+      <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 20 }}>Velocidad y salud de {negocios.length} negocios activos</div>
 
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 12, marginBottom: 20 }}>
@@ -167,8 +167,8 @@ export default function PipelineVelocity() {
           { label: "Valor pipeline", val: totalValor > 0 ? fmtUSD(totalValor) : "—", color: "#a78bfa" },
         ].map((k, i) => (
           <div key={i} style={{ ...cardStyle, textAlign: "center", padding: "14px 12px" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: k.color }}>{k.val}</div>
-            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 4 }}>{k.label}</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: k.color }}>{k.val}</div>
+            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginTop: 4 }}>{k.label}</div>
           </div>
         ))}
       </div>
@@ -178,17 +178,17 @@ export default function PipelineVelocity() {
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Funnel por etapa */}
           <div style={cardStyle}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>Estado por etapa</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 14 }}>Estado por etapa</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {statsPorEtapa.map(e => (
                 <div key={e.value} style={{ display: "grid", gridTemplateColumns: "140px 40px 1fr 100px 80px", alignItems: "center", gap: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ width: 8, height: 8, borderRadius: "50%", background: e.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>{e.label}</span>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-primary)" }}>{e.label}</span>
                   </div>
-                  <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: e.color, textAlign: "right" }}>{e.count}</span>
+                  <span style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: e.color, textAlign: "right" }}>{e.count}</span>
                   <div style={{ position: "relative" }}>
-                    <div style={{ height: 8, background: "rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ height: 8, background: "var(--gfi-border-subtle)", borderRadius: 4, overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${(e.valorPipeline / maxValorEtapa) * 100}%`, background: e.color, opacity: 0.8, borderRadius: 4 }} />
                     </div>
                     {e.estancados > 0 && (
@@ -197,14 +197,14 @@ export default function PipelineVelocity() {
                       </div>
                     )}
                   </div>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textAlign: "right" }}>
+                  <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", textAlign: "right" }}>
                     {e.valorPipeline > 0 ? fmtUSD(e.valorPipeline) : "—"}
                   </span>
                   <div style={{ textAlign: "right" }}>
-                    <span style={{ fontSize: 10, color: e.avgDias > e.maxDias ? "#b80000" : e.avgDias > e.maxDias * 0.7 ? "#d4960c" : "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 600 }}>
+                    <span style={{ fontSize: 10, color: e.avgDias > e.maxDias ? "#b80000" : e.avgDias > e.maxDias * 0.7 ? "#d4960c" : "#3abab6", fontFamily: "var(--font-display)", fontWeight: 600 }}>
                       {e.count > 0 ? `~${e.avgDias}d` : "—"}
                     </span>
-                    <span style={{ fontSize: 9, color: "rgba(255,255,255,0.25)" }}> /lím.{e.maxDias}d</span>
+                    <span style={{ fontSize: 9, color: "var(--gfi-text-dim)" }}> /lím.{e.maxDias}d</span>
                   </div>
                 </div>
               ))}
@@ -214,17 +214,17 @@ export default function PipelineVelocity() {
           {/* Lista de negocios */}
           <div style={cardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>
                 Negocios ({filtrados.length})
               </div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 <select value={filtroEtapa} onChange={e => setFiltroEtapa(e.target.value)}
-                  style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "rgba(255,255,255,0.5)", fontSize: 11, padding: "4px 8px" }}>
+                  style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "var(--gfi-text-secondary)", fontSize: 11, padding: "4px 8px" }}>
                   <option value="todas">Todas las etapas</option>
                   {ETAPAS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
                 </select>
                 <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
-                  style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "rgba(255,255,255,0.5)", fontSize: 11, padding: "4px 8px" }}>
+                  style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "var(--gfi-text-secondary)", fontSize: 11, padding: "4px 8px" }}>
                   <option value="estancado">Más estancados</option>
                   <option value="valor">Mayor valor</option>
                   <option value="etapa">Por etapa</option>
@@ -234,7 +234,7 @@ export default function PipelineVelocity() {
             </div>
 
             {filtrados.length === 0 ? (
-              <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "24px 0", fontSize: 13 }}>Sin negocios activos</div>
+              <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: "24px 0", fontSize: 13 }}>Sin negocios activos</div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {filtrados.map(n => {
@@ -242,20 +242,20 @@ export default function PipelineVelocity() {
                   const critColor = n.criticidad === "critico" ? "#b80000" : n.criticidad === "atencion" ? "#d4960c" : "#3abab6";
                   const pctUsado = Math.min(100, (n.diasSinActividad / n.maxDias) * 100);
                   return (
-                    <div key={n.id} style={{ background: "#111", borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${critColor}` }}>
+                    <div key={n.id} style={{ background: "var(--gfi-bg-secondary)", borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${critColor}` }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                            <span style={{ background: (etapaConf?.color ?? "#6b7280") + "22", color: etapaConf?.color ?? "#6b7280", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
+                            <span style={{ background: (etapaConf?.color ?? "#6b7280") + "22", color: etapaConf?.color ?? "#6b7280", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
                               {etapaConf?.label ?? n.etapa}
                             </span>
-                            {n.criticidad === "critico" && <span style={{ background: "#b8000020", color: "#b80000", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 7px", borderRadius: 3 }}>🔴 CRÍTICO</span>}
-                            {n.criticidad === "atencion" && <span style={{ background: "#d4960c20", color: "#d4960c", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 7px", borderRadius: 3 }}>⚠ ATENCIÓN</span>}
+                            {n.criticidad === "critico" && <span style={{ background: "#b8000020", color: "#b80000", fontSize: 9, fontWeight: 700, fontFamily: "var(--font-display)", padding: "2px 7px", borderRadius: 3 }}>🔴 CRÍTICO</span>}
+                            {n.criticidad === "atencion" && <span style={{ background: "#d4960c20", color: "#d4960c", fontSize: 9, fontWeight: 700, fontFamily: "var(--font-display)", padding: "2px 7px", borderRadius: 3 }}>⚠ ATENCIÓN</span>}
                           </div>
-                          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.titulo}</div>
-                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>
+                          <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.titulo}</div>
+                          <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>
                             Sin actividad: <span style={{ color: critColor, fontWeight: 600 }}>{diasLabel(n.diasSinActividad)}</span>
-                            <span style={{ color: "rgba(255,255,255,0.25)" }}> · límite: {n.maxDias}d · en pipeline: {diasLabel(n.diasEnPipeline)}</span>
+                            <span style={{ color: "var(--gfi-text-dim)" }}> · límite: {n.maxDias}d · en pipeline: {diasLabel(n.diasEnPipeline)}</span>
                           </div>
                           <div style={{ marginTop: 6, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
                             <div style={{ height: "100%", width: `${pctUsado}%`, background: critColor, borderRadius: 2, transition: "width 0.3s" }} />
@@ -263,9 +263,9 @@ export default function PipelineVelocity() {
                         </div>
                         <div style={{ textAlign: "right", flexShrink: 0 }}>
                           {n.valor_operacion ? (
-                            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#a78bfa" }}>{fmtUSD(n.valor_operacion)}</div>
+                            <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "#a78bfa" }}>{fmtUSD(n.valor_operacion)}</div>
                           ) : null}
-                          <Link href={`/crm/negocios/${n.id}`} style={{ display: "inline-block", marginTop: 4, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 10, padding: "3px 8px", borderRadius: 4, textDecoration: "none" }}>
+                          <Link href={`/crm/negocios/${n.id}`} style={{ display: "inline-block", marginTop: 4, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)", fontSize: 10, padding: "3px 8px", borderRadius: 4, textDecoration: "none" }}>
                             Ficha ↗
                           </Link>
                         </div>
@@ -283,37 +283,37 @@ export default function PipelineVelocity() {
           {/* Alertas críticas */}
           {criticos.length > 0 && (
             <div style={{ ...cardStyle, borderColor: "rgba(239,68,68,0.25)" }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#b80000", marginBottom: 12 }}>🔴 Críticos — Acción urgente</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#b80000", marginBottom: 12 }}>🔴 Críticos — Acción urgente</div>
               {criticos.slice(0, 6).map(n => (
-                <div key={n.id} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, marginBottom: 2 }}>{n.titulo}</div>
+                <div key={n.id} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, marginBottom: 2 }}>{n.titulo}</div>
                   <div style={{ fontSize: 10, color: "#b80000" }}>{diasLabel(n.diasSinActividad)} sin actividad · {ETAPA_MAP[n.etapa]?.label ?? n.etapa}</div>
                 </div>
               ))}
-              {criticos.length > 6 && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>+ {criticos.length - 6} más</div>}
+              {criticos.length > 6 && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 4 }}>+ {criticos.length - 6} más</div>}
             </div>
           )}
 
           {/* Límites de tiempo por etapa */}
           <div style={cardStyle}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Límites de tiempo por etapa</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 12 }}>Límites de tiempo por etapa</div>
             {ETAPAS.map(e => (
               <div key={e.value} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <div style={{ width: 6, height: 6, borderRadius: "50%", background: e.color }} />
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>{e.label}</span>
+                  <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)" }}>{e.label}</span>
                 </div>
-                <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>{e.maxDias} días</span>
+                <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: "var(--gfi-text-secondary)" }}>{e.maxDias} días</span>
               </div>
             ))}
-            <div style={{ marginTop: 10, padding: "8px 10px", background: "#111", borderRadius: 6, fontSize: 9, color: "rgba(255,255,255,0.3)", lineHeight: 1.6 }}>
+            <div style={{ marginTop: 10, padding: "8px 10px", background: "var(--gfi-bg-secondary)", borderRadius: 6, fontSize: 9, color: "var(--gfi-text-muted)", lineHeight: 1.6 }}>
               Límites basados en benchmarks del sector. Un negocio es "estancado" cuando supera el límite sin actividad registrada.
             </div>
           </div>
 
           {/* Distribución de salud */}
           <div style={cardStyle}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>Salud del pipeline</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 14 }}>Salud del pipeline</div>
             {negocios.length > 0 ? (
               <>
                 <svg viewBox="0 0 100 100" width="120" height="120" style={{ display: "block", margin: "0 auto 16px" }}>
@@ -343,7 +343,7 @@ export default function PipelineVelocity() {
                       );
                     });
                   })()}
-                  <circle cx="50" cy="50" r="24" fill="#0d0d0d" />
+                  <circle cx="50" cy="50" r="24" fill="var(--gfi-bg-primary)" />
                   <text x="50" y="53" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#fff" fontFamily="Montserrat,sans-serif">{negocios.length}</text>
                 </svg>
                 {[
@@ -354,14 +354,14 @@ export default function PipelineVelocity() {
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <div style={{ width: 10, height: 10, borderRadius: 2, background: k.color }} />
-                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>{k.label}</span>
+                      <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)" }}>{k.label}</span>
                     </div>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: k.color }}>{k.n}</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: k.color }}>{k.n}</span>
                   </div>
                 ))}
               </>
             ) : (
-              <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, padding: "16px 0" }}>Sin negocios activos</div>
+              <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 12, padding: "16px 0" }}>Sin negocios activos</div>
             )}
           </div>
         </div>

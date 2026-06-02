@@ -144,7 +144,7 @@ function Donut({ slices, title }: { slices: DonutSlice[]; title: string }) {
   if (total === 0) {
     return (
       <div style={{ textAlign: "center", padding: 24, color: "#555" }}>
-        <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, marginBottom: 8, color: "#e0e0e0", fontSize: 14 }}>{title}</div>
+        <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 8, color: "#e0e0e0", fontSize: 14 }}>{title}</div>
         Sin datos
       </div>
     );
@@ -156,7 +156,7 @@ function Donut({ slices, title }: { slices: DonutSlice[]; title: string }) {
 
   return (
     <div style={{ flex: 1, minWidth: 200 }}>
-      <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#e0e0e0", textAlign: "center", marginBottom: 12 }}>{title}</div>
+      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#e0e0e0", textAlign: "center", marginBottom: 12 }}>{title}</div>
       <svg width="180" height="180" viewBox="0 0 180 180" style={{ display: "block", margin: "0 auto" }}>
         {slices.map((s, i) => {
           const pct = s.count / total;
@@ -311,7 +311,7 @@ function KpiCard({ label, value, sub }: { label: string; value: string; sub?: st
       padding: "20px 24px",
     }}>
       <div style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#888", marginBottom: 8 }}>{label}</div>
-      <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#990000" }}>{value}</div>
+      <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: "#990000" }}>{value}</div>
       {sub && <div style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#555", marginTop: 6 }}>{sub}</div>}
     </div>
   );
@@ -323,7 +323,7 @@ function EmptyState() {
   return (
     <div style={{ textAlign: "center", padding: "64px 24px", color: "#555" }}>
       <div style={{ fontSize: 56, marginBottom: 16 }}>🏠</div>
-      <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 20, color: "#e0e0e0", marginBottom: 12 }}>Sin propiedades en cartera</div>
+      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 20, color: "#e0e0e0", marginBottom: 12 }}>Sin propiedades en cartera</div>
       <div style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#666", maxWidth: 380, margin: "0 auto" }}>
         Aún no cargaste propiedades. Comenzá a registrar captaciones para ver tus estadísticas aquí.
       </div>
@@ -493,7 +493,7 @@ export default function EstadisticasCaptacionPage() {
   };
 
   const titleStyle: React.CSSProperties = {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 28,
     color: "#e0e0e0",
@@ -519,7 +519,7 @@ export default function EstadisticasCaptacionPage() {
     border: "none",
     borderBottom: active ? "2px solid #990000" : "2px solid transparent",
     color: active ? "#e0e0e0" : "#666",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 13,
     padding: "10px 18px",
@@ -529,7 +529,7 @@ export default function EstadisticasCaptacionPage() {
   });
 
   const sectionTitle: React.CSSProperties = {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 16,
     color: "#e0e0e0",
@@ -547,7 +547,7 @@ export default function EstadisticasCaptacionPage() {
   const thStyle: React.CSSProperties = {
     padding: "10px 16px",
     textAlign: "left",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 12,
     color: "#666",

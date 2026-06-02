@@ -184,27 +184,27 @@ export default function MapaRedGFI() {
   const s: Record<string, React.CSSProperties> = {
     page: { minHeight: '100vh', color: '#fff', fontFamily: 'Inter,sans-serif' },
     topBar: { padding: '16px 20px 0', maxWidth: 1200, margin: '0 auto' },
-    breadcrumb: { fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 },
+    breadcrumb: { fontSize: 12, color: 'var(--gfi-text-muted)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 },
     titulo: { margin: '0 0 12px', fontSize: 18, fontWeight: 800, fontFamily: 'Montserrat,sans-serif' },
     filtros: { display: 'flex', gap: 8, flexWrap: 'wrap' as const, marginBottom: 12, alignItems: 'center' },
-    sel: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#fff', padding: '6px 10px', fontSize: 12, outline: 'none', cursor: 'pointer' },
+    sel: { background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 6, color: '#fff', padding: '6px 10px', fontSize: 12, outline: 'none', cursor: 'pointer' },
     mapWrap: { position: 'relative' as const, width: '100%', height: '58vh', minHeight: 360 },
     buscarBtn: { position: 'absolute' as const, bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 999, background: '#990000', border: 'none', color: '#fff', padding: '10px 22px', borderRadius: 24, fontSize: 13, fontWeight: 800, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' as const },
     buscarBtnInactive: { background: 'rgba(40,40,40,0.9)', border: '1px solid rgba(255,255,255,0.15)' },
-    panelBtn: { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' },
-    cuadrantePanel: { margin: '0 20px 0', maxWidth: 1200, marginLeft: 'auto', marginRight: 'auto', background: 'rgba(30,30,30,0.97)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0 0 10px 10px', padding: '16px 20px' },
-    inputCalle: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#fff', padding: '8px 12px', fontSize: 13, outline: 'none', flex: 1, fontFamily: 'Inter,sans-serif' },
+    panelBtn: { background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' },
+    cuadrantePanel: { margin: '0 20px 0', maxWidth: 1200, marginLeft: 'auto', marginRight: 'auto', background: 'rgba(30,30,30,0.97)', border: '1px solid var(--gfi-border)', borderRadius: '0 0 10px 10px', padding: '16px 20px' },
+    inputCalle: { background: 'rgba(255,255,255,0.06)', border: '1px solid var(--gfi-border)', borderRadius: 6, color: '#fff', padding: '8px 12px', fontSize: 13, outline: 'none', flex: 1, fontFamily: 'Inter,sans-serif' },
     resultados: { maxWidth: 1200, margin: '0 auto', padding: '16px 20px' },
-    card: { display: 'flex', gap: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, marginBottom: 8, alignItems: 'center' },
+    card: { display: 'flex', gap: 12, padding: '10px 12px', background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border-subtle)', borderRadius: 8, marginBottom: 8, alignItems: 'center' },
   }
 
   return (
     <div style={s.page}>
       <div style={s.topBar}>
         <div style={s.breadcrumb}>
-          <Link href="/red-gfi" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Red GFI</Link>
+          <Link href="/red-gfi" style={{ color: 'var(--gfi-text-muted)', textDecoration: 'none' }}>Red GFI</Link>
           <span>/</span>
-          <span style={{ color: 'rgba(255,255,255,0.6)' }}>Mapa</span>
+          <span style={{ color: 'var(--gfi-text-secondary)' }}>Mapa</span>
         </div>
         <h1 style={s.titulo}>🗺️ Búsqueda en mapa — Red GFI</h1>
 
@@ -233,7 +233,7 @@ export default function MapaRedGFI() {
           >
             📍 Buscar por cuadrante de calles
           </button>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginLeft: 4 }}>
+          <span style={{ fontSize: 11, color: 'var(--gfi-text-dim)', marginLeft: 4 }}>
             {cargando ? 'Cargando…' : `${resultados.length} resultados (${enBounds.length} en zona visible)`}
           </span>
         </div>
@@ -242,30 +242,30 @@ export default function MapaRedGFI() {
       {/* Panel cuadrante de calles */}
       {modoPanel === 'cuadrante' && (
         <div style={s.cuadrantePanel}>
-          <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', color: 'rgba(255,255,255,0.5)', marginBottom: 12, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', color: 'var(--gfi-text-secondary)', marginBottom: 12, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Definir zona por intersección de calles
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
             <div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Esquina SW (abajo-izquierda)</div>
+              <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', marginBottom: 5 }}>Esquina SW (abajo-izquierda)</div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <input style={s.inputCalle} placeholder="Ej: Av. Pellegrini" value={c1a} onChange={e => setC1a(e.target.value)} />
-                <span style={{ alignSelf: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 11 }}>y</span>
+                <span style={{ alignSelf: 'center', color: 'var(--gfi-text-muted)', fontSize: 11 }}>y</span>
                 <input style={s.inputCalle} placeholder="Ej: Bv. Oroño" value={c1b} onChange={e => setC1b(e.target.value)} />
               </div>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Esquina NE (arriba-derecha)</div>
+              <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', marginBottom: 5 }}>Esquina NE (arriba-derecha)</div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <input style={s.inputCalle} placeholder="Ej: Av. Córdoba" value={c2a} onChange={e => setC2a(e.target.value)} />
-                <span style={{ alignSelf: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 11 }}>y</span>
+                <span style={{ alignSelf: 'center', color: 'var(--gfi-text-muted)', fontSize: 11 }}>y</span>
                 <input style={s.inputCalle} placeholder="Ej: San Martín" value={c2b} onChange={e => setC2b(e.target.value)} />
               </div>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Ciudad:</span>
+              <span style={{ fontSize: 12, color: 'var(--gfi-text-muted)' }}>Ciudad:</span>
               <input style={{ ...s.inputCalle, flex: 'none', width: 120 }} value={ciudadGeo} onChange={e => setCiudadGeo(e.target.value)} />
             </div>
             <button
@@ -277,7 +277,7 @@ export default function MapaRedGFI() {
             </button>
           </div>
           {geoError && <p style={{ margin: '8px 0 0', fontSize: 12, color: '#f87171' }}>{geoError}</p>}
-          <p style={{ margin: '8px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
+          <p style={{ margin: '8px 0 0', fontSize: 11, color: 'var(--gfi-text-dim)' }}>
             Las calles se geocodifican automáticamente con OpenStreetMap. Usá nombres completos para mejor precisión.
           </p>
         </div>
@@ -345,7 +345,7 @@ export default function MapaRedGFI() {
         </button>
 
         {/* Leyenda */}
-        <div style={{ position: 'absolute', bottom: 20, right: 12, zIndex: 999, background: 'rgba(20,20,20,0.85)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '6px 10px', fontSize: 11 }}>
+        <div style={{ position: 'absolute', bottom: 20, right: 12, zIndex: 999, background: 'rgba(20,20,20,0.85)', border: '1px solid var(--gfi-border)', borderRadius: 6, padding: '6px 10px', fontSize: 11 }}>
           {Object.entries(OP_COLOR).map(([op, color]) => (
             <div key={op} style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#ccc', marginBottom: 2 }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: color, border: '1px solid white' }} />
@@ -359,7 +359,7 @@ export default function MapaRedGFI() {
       <div style={s.resultados}>
         {enBounds.length > 0 && (
           <>
-            <div style={{ fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'var(--gfi-text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
               {enBounds.length} propiedades en la zona visible
             </div>
             {enBounds.map(p => <TarjetaMapa key={p.id} p={p} />)}
@@ -368,7 +368,7 @@ export default function MapaRedGFI() {
 
         {sinCoords.length > 0 && (
           <>
-            <div style={{ fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '16px 0 10px' }}>
+            <div style={{ fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'var(--gfi-text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '16px 0 10px' }}>
               {sinCoords.length} sin ubicación exacta
             </div>
             {sinCoords.map(p => <TarjetaMapa key={p.id} p={p} dimmed />)}
@@ -376,7 +376,7 @@ export default function MapaRedGFI() {
         )}
 
         {resultados.length === 0 && !cargando && (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(255,255,255,0.2)', fontSize: 13, fontStyle: 'italic' }}>
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--gfi-text-dim)', fontSize: 13, fontStyle: 'italic' }}>
             No hay propiedades que coincidan con los filtros seleccionados.
           </div>
         )}
@@ -390,21 +390,21 @@ function TarjetaMapa({ p, dimmed }: { p: PropMapa; dimmed?: boolean }) {
   return (
     <div style={{
       display: 'flex', gap: 12, padding: '10px 12px', marginBottom: 8,
-      background: dimmed ? 'rgba(255,255,255,0.015)' : 'rgba(255,255,255,0.03)',
-      border: `1px solid ${dimmed ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.08)'}`,
+      background: dimmed ? 'rgba(255,255,255,0.015)' : 'var(--gfi-bg-card)',
+      border: `1px solid ${dimmed ? 'var(--gfi-border-subtle)' : 'var(--gfi-border)'}`,
       borderRadius: 8, alignItems: 'center',
       opacity: dimmed ? 0.6 : 1,
     }}>
       {p.fotos?.[0]
         ? <img src={p.fotos[0]} alt="" style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} />
-        : <div style={{ width: 60, height: 45, background: 'rgba(255,255,255,0.04)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>🏠</div>
+        : <div style={{ width: 60, height: 45, background: 'var(--gfi-border-subtle)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>🏠</div>
       }
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
           {p.tipo_propiedad}
           <span style={{ marginLeft: 6, fontSize: 11, color, fontWeight: 700 }}>{OP_LABEL[p.operacion] ?? p.operacion}</span>
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+        <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', marginTop: 2 }}>
           📍 {[p.zona, p.ciudad].filter(Boolean).join(', ')}
           {p.dormitorios ? ` · ${p.dormitorios} dorm.` : ''}
           {p.honorario_compartir ? ` · Hon: ${p.honorario_compartir}` : ''}
@@ -415,7 +415,7 @@ function TarjetaMapa({ p, dimmed }: { p: PropMapa; dimmed?: boolean }) {
           {fmtPrecio(p.precio, p.moneda)}
         </div>
         <a href={`/red-gfi/ficha/${p.id}`} target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>
+          style={{ fontSize: 11, color: 'var(--gfi-text-muted)', textDecoration: 'none' }}>
           Ver ficha →
         </a>
       </div>

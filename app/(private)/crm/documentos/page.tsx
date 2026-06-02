@@ -179,16 +179,16 @@ export default function GestionDocumentos() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>📋 Gestión de Documentos</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>📋 Gestión de Documentos</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Checklist de documentación por negocio — guardado localmente</p>
         </div>
         {negocioActual && (
           <button onClick={exportPDF} style={{
             background: "#990000", color: "#fff", border: "none", borderRadius: 8,
-            padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "Montserrat, sans-serif",
+            padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-display)",
           }}>📄 PDF</button>
         )}
       </div>
@@ -245,23 +245,23 @@ export default function GestionDocumentos() {
             <div style={{ padding: "24px", maxWidth: 800 }}>
               {/* Header negocio */}
               <div style={{ marginBottom: 20 }}>
-                <h2 style={{ margin: "0 0 4px", fontSize: 18, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>{negocioActual.titulo}</h2>
+                <h2 style={{ margin: "0 0 4px", fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800 }}>{negocioActual.titulo}</h2>
                 <div style={{ fontSize: 12, color: "#666" }}>{negocioActual.etapa} · {negocioActual.tipo_operacion ?? "—"}</div>
               </div>
 
               {/* Progreso */}
               {progreso && (
-                <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "16px 20px", marginBottom: 20, display: "flex", gap: 24 }}>
+                <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "16px 20px", marginBottom: 20, display: "flex", gap: 24 }}>
                   <div>
-                    <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>Obligatorios</div>
+                    <div style={{ fontSize: 10, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>Obligatorios</div>
                     <div style={{ fontSize: 24, fontWeight: 700, color: "#3abab6" }}>{progreso.recibidos}/{progreso.obligatorios}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>Pendientes *</div>
+                    <div style={{ fontSize: 10, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>Pendientes *</div>
                     <div style={{ fontSize: 24, fontWeight: 700, color: progreso.pendientes > 0 ? "#d4960c" : "#3abab6" }}>{progreso.pendientes}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>Total recibidos</div>
+                    <div style={{ fontSize: 10, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>Total recibidos</div>
                     <div style={{ fontSize: 24, fontWeight: 700, color: "#3b82f6" }}>{progreso.total}/{DOCS_BASE.length}</div>
                   </div>
                   <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
@@ -280,7 +280,7 @@ export default function GestionDocumentos() {
               {/* Grupos de documentos */}
               {Object.entries(grupos).map(([grupo, docs]) => (
                 <div key={grupo} style={{ marginBottom: 20 }}>
-                  <h3 style={{ margin: "0 0 10px", fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <h3 style={{ margin: "0 0 10px", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {grupo}
                   </h3>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -289,7 +289,7 @@ export default function GestionDocumentos() {
                       return (
                         <div key={doc.id} style={{
                           display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                          background: "#111", border: `1px solid ${estado === "recibido" ? "#3abab620" : estado === "no_aplica" ? "#6b728020" : "#1a1a1a"}`,
+                          background: "var(--gfi-bg-secondary)", border: `1px solid ${estado === "recibido" ? "#3abab620" : estado === "no_aplica" ? "#6b728020" : "#1a1a1a"}`,
                           borderRadius: 8,
                         }}>
                           <div style={{ flex: 1 }}>
@@ -309,7 +309,7 @@ export default function GestionDocumentos() {
                                   border: `1px solid ${estado === est ? ESTADO_COLORS[est] : "#333"}`,
                                   background: estado === est ? ESTADO_COLORS[est] + "20" : "transparent",
                                   color: estado === est ? ESTADO_COLORS[est] : "#555",
-                                  fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                                  fontFamily: "var(--font-display)", fontWeight: 700,
                                   transition: "all 0.15s",
                                 }}
                               >

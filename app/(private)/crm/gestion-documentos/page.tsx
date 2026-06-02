@@ -324,7 +324,7 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
           style={{
             margin: 0,
             fontSize: 18,
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             color: "#e0e0e0",
           }}
@@ -333,7 +333,7 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
         </h2>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <label style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             NOMBRE DEL EXPEDIENTE *
           </label>
           <input
@@ -345,7 +345,7 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <label style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             TIPO DE OPERACIÓN *
           </label>
           <select
@@ -361,7 +361,7 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <label style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             CONTACTO
           </label>
           <input
@@ -373,7 +373,7 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <label style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             PROPIEDAD
           </label>
           <input
@@ -417,7 +417,7 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
               color: "#666",
               padding: "9px 18px",
               fontSize: 12,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               cursor: "pointer",
             }}
@@ -433,7 +433,7 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
               color: "#fff",
               padding: "9px 22px",
               fontSize: 12,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               cursor: "pointer",
             }}
@@ -519,7 +519,7 @@ function ModalAgregarDoc({ onClose, onSave }: ModalAgregarDocProps) {
           style={{
             margin: 0,
             fontSize: 18,
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             color: "#e0e0e0",
           }}
@@ -528,14 +528,14 @@ function ModalAgregarDoc({ onClose, onSave }: ModalAgregarDocProps) {
         </h2>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <label style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             NOMBRE *
           </label>
           <input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del documento" style={inputSty} />
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <label style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             CATEGORÍA
           </label>
           <select
@@ -571,14 +571,14 @@ function ModalAgregarDoc({ onClose, onSave }: ModalAgregarDocProps) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <label style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             FECHA DE VENCIMIENTO (opcional)
           </label>
           <input type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} style={inputSty} />
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+          <label style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
             NOTAS (opcional)
           </label>
           <input value={notas} onChange={(e) => setNotas(e.target.value)} placeholder="Observaciones" style={inputSty} />
@@ -598,7 +598,7 @@ function ModalAgregarDoc({ onClose, onSave }: ModalAgregarDocProps) {
               color: "#666",
               padding: "9px 18px",
               fontSize: 12,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               cursor: "pointer",
             }}
@@ -614,7 +614,7 @@ function ModalAgregarDoc({ onClose, onSave }: ModalAgregarDocProps) {
               color: "#fff",
               padding: "9px 22px",
               fontSize: 12,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               cursor: "pointer",
             }}
@@ -813,7 +813,7 @@ export default function GestionDocumentosPage() {
   const tabBtn = (activa: boolean): React.CSSProperties => ({
     padding: "9px 18px",
     fontSize: 12,
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     border: activa ? "1px solid #990000" : "1px solid #222222",
     borderRadius: 8,
@@ -852,7 +852,7 @@ export default function GestionDocumentosPage() {
             style={{
               margin: 0,
               fontSize: 22,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               color: "#e0e0e0",
             }}
@@ -872,7 +872,7 @@ export default function GestionDocumentosPage() {
             color: "#fff",
             padding: "10px 20px",
             fontSize: 12,
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             cursor: "pointer",
             flexShrink: 0,
@@ -1022,7 +1022,7 @@ export default function GestionDocumentosPage() {
                             border: `1px solid ${TIPO_COLORS[exp.tipo]}40`,
                             borderRadius: 4,
                             fontSize: 9,
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             padding: "2px 7px",
                             whiteSpace: "nowrap",
@@ -1060,7 +1060,7 @@ export default function GestionDocumentosPage() {
                         <span style={{ fontSize: 11, color: "#666" }}>
                           {exp.items.filter((i) => i.obtenido).length}/{exp.items.length} docs
                         </span>
-                        <span style={{ fontSize: 11, color, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                        <span style={{ fontSize: 11, color, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                           {statusEmoji(pct)} {label} · {pct}%
                         </span>
                       </div>
@@ -1145,7 +1145,7 @@ export default function GestionDocumentosPage() {
                             style={{
                               margin: 0,
                               fontSize: 18,
-                              fontFamily: "Montserrat, sans-serif",
+                              fontFamily: "var(--font-display)",
                               fontWeight: 800,
                               color: "#e0e0e0",
                             }}
@@ -1159,7 +1159,7 @@ export default function GestionDocumentosPage() {
                               border: `1px solid ${TIPO_COLORS[expedienteActual.tipo]}40`,
                               borderRadius: 4,
                               fontSize: 10,
-                              fontFamily: "Montserrat, sans-serif",
+                              fontFamily: "var(--font-display)",
                               fontWeight: 700,
                               padding: "3px 9px",
                             }}
@@ -1188,7 +1188,7 @@ export default function GestionDocumentosPage() {
                             color: "#4ab8d8",
                             padding: "8px 14px",
                             fontSize: 11,
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             cursor: "pointer",
                           }}
@@ -1205,7 +1205,7 @@ export default function GestionDocumentosPage() {
                               color: "#666",
                               padding: "8px 14px",
                               fontSize: 11,
-                              fontFamily: "Montserrat, sans-serif",
+                              fontFamily: "var(--font-display)",
                               fontWeight: 700,
                               cursor: "pointer",
                             }}
@@ -1226,7 +1226,7 @@ export default function GestionDocumentosPage() {
                         <span
                           style={{
                             fontSize: 13,
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 800,
                             color,
                           }}
@@ -1257,7 +1257,7 @@ export default function GestionDocumentosPage() {
                         <div
                           style={{
                             fontSize: 10,
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 800,
                             color: "#990000",
                             textTransform: "uppercase",
@@ -1328,7 +1328,7 @@ export default function GestionDocumentosPage() {
                                         <span
                                           style={{
                                             fontSize: 9,
-                                            fontFamily: "Montserrat, sans-serif",
+                                            fontFamily: "var(--font-display)",
                                             fontWeight: 700,
                                             color: "#990000",
                                             background: "rgba(153,0,0,0.12)",
@@ -1343,7 +1343,7 @@ export default function GestionDocumentosPage() {
                                         <span
                                           style={{
                                             fontSize: 9,
-                                            fontFamily: "Montserrat, sans-serif",
+                                            fontFamily: "var(--font-display)",
                                             fontWeight: 700,
                                             color: "#555",
                                             background: "rgba(85,85,85,0.1)",
@@ -1361,7 +1361,7 @@ export default function GestionDocumentosPage() {
                                           style={{
                                             fontSize: 10,
                                             color: vencido ? "#990000" : proximoVencer ? "#d4960c" : "#666",
-                                            fontFamily: "Montserrat, sans-serif",
+                                            fontFamily: "var(--font-display)",
                                             fontWeight: 600,
                                           }}
                                         >
@@ -1488,14 +1488,14 @@ export default function GestionDocumentosPage() {
                   <div
                     style={{
                       fontSize: 28,
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 800,
                       color: card.color,
                     }}
                   >
                     {card.value}
                   </div>
-                  <div style={{ fontSize: 11, color: "#666", marginTop: 2, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                  <div style={{ fontSize: 11, color: "#666", marginTop: 2, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                     {card.label}
                   </div>
                 </div>
@@ -1516,7 +1516,7 @@ export default function GestionDocumentosPage() {
                 style={{
                   margin: "0 0 20px",
                   fontSize: 13,
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 800,
                   color: "#e0e0e0",
                   textTransform: "uppercase",
@@ -1552,7 +1552,7 @@ export default function GestionDocumentosPage() {
                       <span
                         style={{
                           fontSize: 12,
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           color: val > 0 ? barColor : "#444",
                         }}
@@ -1589,7 +1589,7 @@ export default function GestionDocumentosPage() {
                 style={{
                   margin: "0 0 16px",
                   fontSize: 13,
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 800,
                   color: "#e0e0e0",
                   textTransform: "uppercase",
@@ -1621,7 +1621,7 @@ export default function GestionDocumentosPage() {
                       <span
                         style={{
                           fontSize: 11,
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 800,
                           color: "#444",
                           minWidth: 20,
@@ -1634,7 +1634,7 @@ export default function GestionDocumentosPage() {
                       <span
                         style={{
                           fontSize: 11,
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           color: "#990000",
                           background: "rgba(153,0,0,0.1)",

@@ -148,7 +148,7 @@ function ResultadoCard({
         display: "flex",
         gap: 12,
         padding: "12px 16px",
-        background: hovered ? "#1a1a1a" : "#111",
+        background: hovered ? "#1a1a1a" : "var(--gfi-bg-secondary)",
         borderRadius: 8,
         border: `1px solid ${hovered ? "#2a2a2a" : "#1e1e1e"}`,
         cursor: "pointer",
@@ -167,7 +167,7 @@ function ResultadoCard({
           alignSelf: "flex-start",
           marginTop: 2,
           whiteSpace: "nowrap",
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
         }}
       >
         {resultado.badge}
@@ -176,7 +176,7 @@ function ResultadoCard({
         <p style={{ margin: "0 0 2px", fontWeight: 600, fontSize: 14, fontFamily: "Inter, sans-serif", color: "#fff" }}>
           <TextoHighlight texto={resultado.titulo} query={query} />
         </p>
-        <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>
+        <p style={{ margin: 0, fontSize: 12, color: "var(--gfi-text-secondary)", fontFamily: "Inter, sans-serif" }}>
           {resultado.subtitulo}
         </p>
         {resultado.highlight && (
@@ -184,7 +184,7 @@ function ResultadoCard({
             style={{
               margin: "4px 0 0",
               fontSize: 11,
-              color: "rgba(255,255,255,0.4)",
+              color: "var(--gfi-text-muted)",
               fontStyle: "italic",
               fontFamily: "Inter, sans-serif",
               overflow: "hidden",
@@ -202,7 +202,7 @@ function ResultadoCard({
         style={{
           margin: 0,
           fontSize: 11,
-          color: "rgba(255,255,255,0.3)",
+          color: "var(--gfi-text-muted)",
           alignSelf: "flex-end",
           whiteSpace: "nowrap",
           fontFamily: "Inter, sans-serif",
@@ -256,16 +256,16 @@ function SeccionResultados({
           margin: "0 0 12px",
           fontSize: 11,
           fontWeight: 700,
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
           letterSpacing: "0.12em",
           textTransform: "uppercase",
-          color: "rgba(255,255,255,0.35)",
+          color: "var(--gfi-text-muted)",
         }}
       >
         {titulo}{" "}
         <span
           style={{
-            background: "rgba(255,255,255,0.08)",
+            background: "var(--gfi-border)",
             borderRadius: 10,
             padding: "1px 7px",
             fontSize: 10,
@@ -305,9 +305,9 @@ function FiltroToggle({
       style={{
         padding: "6px 14px",
         borderRadius: 20,
-        border: `1px solid ${activo ? color : "rgba(255,255,255,0.1)"}`,
+        border: `1px solid ${activo ? color : "var(--gfi-border)"}`,
         background: activo ? color + "22" : "transparent",
-        color: activo ? color : "rgba(255,255,255,0.4)",
+        color: activo ? color : "var(--gfi-text-muted)",
         fontSize: 12,
         fontWeight: 600,
         fontFamily: "Inter, sans-serif",
@@ -522,7 +522,7 @@ export default function BuscadorCRMPage() {
               margin: "0 0 6px",
               fontSize: 28,
               fontWeight: 800,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               color: "#fff",
             }}
           >
@@ -532,7 +532,7 @@ export default function BuscadorCRMPage() {
             style={{
               margin: 0,
               fontSize: 14,
-              color: "rgba(255,255,255,0.4)",
+              color: "var(--gfi-text-muted)",
             }}
           >
             Buscá contactos, negocios y propiedades en un solo lugar
@@ -548,7 +548,7 @@ export default function BuscadorCRMPage() {
               top: "50%",
               transform: "translateY(-50%)",
               fontSize: 20,
-              color: "rgba(255,255,255,0.3)",
+              color: "var(--gfi-text-muted)",
               pointerEvents: "none",
             }}
           >
@@ -563,7 +563,7 @@ export default function BuscadorCRMPage() {
             style={{
               width: "100%",
               padding: "16px 20px 16px 52px",
-              background: "#111",
+              background: "var(--gfi-bg-secondary)",
               border: `2px solid ${inputFocused ? "#990000" : "#333"}`,
               borderRadius: 12,
               color: "#fff",
@@ -600,12 +600,12 @@ export default function BuscadorCRMPage() {
                 right: 14,
                 top: "50%",
                 transform: "translateY(-50%)",
-                background: "rgba(255,255,255,0.08)",
+                background: "var(--gfi-border)",
                 border: "none",
                 borderRadius: "50%",
                 width: 26,
                 height: 26,
-                color: "rgba(255,255,255,0.5)",
+                color: "var(--gfi-text-secondary)",
                 cursor: "pointer",
                 fontSize: 14,
                 display: "flex",
@@ -622,7 +622,7 @@ export default function BuscadorCRMPage() {
         {mostrarRecientes && (
           <div
             style={{
-              background: "#111",
+              background: "var(--gfi-bg-secondary)",
               border: "1px solid #1e1e1e",
               borderRadius: 10,
               padding: "14px 16px",
@@ -641,10 +641,10 @@ export default function BuscadorCRMPage() {
                 style={{
                   fontSize: 10,
                   fontWeight: 700,
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.3)",
+                  color: "var(--gfi-text-muted)",
                 }}
               >
                 Búsquedas recientes
@@ -654,7 +654,7 @@ export default function BuscadorCRMPage() {
                 style={{
                   background: "none",
                   border: "none",
-                  color: "rgba(255,255,255,0.3)",
+                  color: "var(--gfi-text-muted)",
                   fontSize: 11,
                   cursor: "pointer",
                   fontFamily: "Inter, sans-serif",
@@ -670,11 +670,11 @@ export default function BuscadorCRMPage() {
                   key={r}
                   onClick={() => handleReciente(r)}
                   style={{
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "var(--gfi-border-subtle)",
+                    border: "1px solid var(--gfi-border)",
                     borderRadius: 16,
                     padding: "4px 12px",
-                    color: "rgba(255,255,255,0.6)",
+                    color: "var(--gfi-text-secondary)",
                     fontSize: 12,
                     cursor: "pointer",
                     fontFamily: "Inter, sans-serif",
@@ -701,8 +701,8 @@ export default function BuscadorCRMPage() {
             <span
               style={{
                 fontSize: 11,
-                color: "rgba(255,255,255,0.3)",
-                fontFamily: "Montserrat, sans-serif",
+                color: "var(--gfi-text-muted)",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 letterSpacing: "0.08em",
               }}
@@ -733,8 +733,8 @@ export default function BuscadorCRMPage() {
               <span
                 style={{
                   fontSize: 11,
-                  color: "rgba(255,255,255,0.3)",
-                  fontFamily: "Montserrat, sans-serif",
+                  color: "var(--gfi-text-muted)",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   letterSpacing: "0.08em",
                 }}
@@ -745,7 +745,7 @@ export default function BuscadorCRMPage() {
                 value={orden}
                 onChange={(e) => setOrden(e.target.value as OrdenResultado)}
                 style={{
-                  background: "#111",
+                  background: "var(--gfi-bg-secondary)",
                   border: "1px solid #333",
                   borderRadius: 6,
                   color: "#fff",
@@ -768,14 +768,14 @@ export default function BuscadorCRMPage() {
             style={{
               textAlign: "center",
               padding: "60px 20px",
-              color: "rgba(255,255,255,0.2)",
+              color: "var(--gfi-text-dim)",
             }}
           >
             <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
             <p
               style={{
                 fontSize: 16,
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 marginBottom: 8,
               }}
@@ -793,7 +793,7 @@ export default function BuscadorCRMPage() {
             style={{
               textAlign: "center",
               padding: "40px 20px",
-              color: "rgba(255,255,255,0.3)",
+              color: "var(--gfi-text-muted)",
               fontFamily: "Inter, sans-serif",
               fontSize: 14,
             }}
@@ -809,13 +809,13 @@ export default function BuscadorCRMPage() {
             style={{
               textAlign: "center",
               padding: "40px 20px",
-              color: "rgba(255,255,255,0.3)",
+              color: "var(--gfi-text-muted)",
               fontFamily: "Inter, sans-serif",
               fontSize: 14,
             }}
           >
             Sin resultados para{" "}
-            <strong style={{ color: "rgba(255,255,255,0.5)" }}>
+            <strong style={{ color: "var(--gfi-text-secondary)" }}>
               &ldquo;{query}&rdquo;
             </strong>
           </div>
@@ -828,13 +828,13 @@ export default function BuscadorCRMPage() {
               style={{
                 marginBottom: 16,
                 fontSize: 12,
-                color: "rgba(255,255,255,0.3)",
+                color: "var(--gfi-text-muted)",
                 fontFamily: "Inter, sans-serif",
               }}
             >
               {resultadosFiltrados.length} resultado
               {resultadosFiltrados.length !== 1 ? "s" : ""} para{" "}
-              <strong style={{ color: "rgba(255,255,255,0.5)" }}>
+              <strong style={{ color: "var(--gfi-text-secondary)" }}>
                 &ldquo;{query}&rdquo;
               </strong>
             </div>

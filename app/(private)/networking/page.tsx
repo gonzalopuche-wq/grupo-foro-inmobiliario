@@ -222,7 +222,7 @@ export default function NetworkingPage() {
         .net-btn-save:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
         .net-sec { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-muted); margin: 16px 0 12px; border-bottom: 1px solid var(--gfi-border-subtle); padding-bottom: 6px; }
         .net-det-autor { font-size: 13px; color: var(--gfi-text-secondary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .net-det-mat { font-size: 11px; background: rgba(255,255,255,0.04); border: 1px solid var(--gfi-border); border-radius: 20px; padding: 2px 9px; color: var(--gfi-text-muted); }
+        .net-det-mat { font-size: 11px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 20px; padding: 2px 9px; color: var(--gfi-text-muted); }
         .net-det-desc { font-size: 14px; color: var(--gfi-text-primary); line-height: 1.7; white-space: pre-wrap; margin-bottom: 16px; }
         .net-det-caract { font-size: 13px; color: var(--gfi-text-secondary); background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 12px 14px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 14px; }
         .net-det-contact { background: var(--gfi-green-soft); border: 1px solid rgba(58,186,182,0.2); border-radius: var(--gfi-radius-md); padding: 14px 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
@@ -286,7 +286,7 @@ export default function NetworkingPage() {
 
         {/* Lista */}
         {loading ? (
-          <div style={{ padding: 48, textAlign: "center", color: "rgba(255,255,255,0.25)", fontSize: 13 }}>Cargando...</div>
+          <div style={{ padding: 48, textAlign: "center", color: "var(--gfi-text-dim)", fontSize: 13 }}>Cargando...</div>
         ) : postsFiltrados.length === 0 ? (
           <div className="net-empty">
             {misPostsOnly ? "Todavía no publicaste nada en el Networking." : "No hay publicaciones activas en esta categoría."}
@@ -308,7 +308,7 @@ export default function NetworkingPage() {
                       <div className="net-card-titulo">{t.icon} {post.titulo}</div>
                       <span className="net-badge" style={{ color: t.color, background: t.bg, borderColor: t.border }}>{t.label}</span>
                       {post.estado !== "activo" && (
-                        <span className="net-estado-badge" style={{ color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.1)" }}>
+                        <span className="net-estado-badge" style={{ color: "var(--gfi-text-muted)", background: "var(--gfi-border-subtle)", borderColor: "var(--gfi-border)" }}>
                           {post.estado === "pausado" ? "Pausado" : "Cerrado"}
                         </span>
                       )}
@@ -320,7 +320,7 @@ export default function NetworkingPage() {
                           <img key={i} src={f} alt="" className="net-foto" onClick={() => {}} />
                         ))}
                         {post.fotos.length > 4 && (
-                          <div style={{ width: 60, height: 60, borderRadius: 4, background: "rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>+{post.fotos.length - 4}</div>
+                          <div style={{ width: 60, height: 60, borderRadius: 4, background: "rgba(0,0,0,0.6)", border: "1px solid var(--gfi-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)" }}>+{post.fotos.length - 4}</div>
                         )}
                       </div>
                     )}
@@ -343,7 +343,7 @@ export default function NetworkingPage() {
       {postVer && (
         <div className="net-modal-bg" onClick={e => { if (e.target === e.currentTarget) setPostVer(null); }}>
           <div className="net-modal">
-            <button onClick={() => setPostVer(null)} style={{ position: "absolute", top: 16, right: 16, background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 20, cursor: "pointer", lineHeight: 1 }}>✕</button>
+            <button onClick={() => setPostVer(null)} style={{ position: "absolute", top: 16, right: 16, background: "transparent", border: "none", color: "var(--gfi-text-muted)", fontSize: 20, cursor: "pointer", lineHeight: 1 }}>✕</button>
             {(() => {
               const t = TIPOS[postVer.tipo] ?? TIPOS.otro;
               const precio = formatPrecio(postVer);
@@ -355,18 +355,18 @@ export default function NetworkingPage() {
                     <span className="net-badge" style={{ color: t.color, background: t.bg, borderColor: t.border, alignSelf: "flex-start" }}>{t.label}</span>
                   </div>
                   {precio && <div className="net-precio" style={{ marginBottom: 12 }}>{precio}</div>}
-                  {postVer.ubicacion && <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>📍 {postVer.ubicacion}</div>}
+                  {postVer.ubicacion && <div style={{ fontSize: 13, color: "var(--gfi-text-muted)", marginBottom: 12 }}>📍 {postVer.ubicacion}</div>}
 
                   <div className="net-det-autor">
                     <span>Por {postVer.autor?.apellido}, {postVer.autor?.nombre}</span>
                     {postVer.autor?.matricula && <span className="net-det-mat">Mat. {postVer.autor.matricula}</span>}
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginLeft: "auto" }}>{formatFecha(postVer.created_at)}</span>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-dim)", marginLeft: "auto" }}>{formatFecha(postVer.created_at)}</span>
                   </div>
 
                   {postVer.fotos && postVer.fotos.length > 0 && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
                       {postVer.fotos.map((f, i) => (
-                        <img key={i} src={f} alt="" style={{ width: 90, height: 90, borderRadius: 6, objectFit: "cover", border: "1px solid rgba(255,255,255,0.1)", cursor: "zoom-in" }} />
+                        <img key={i} src={f} alt="" style={{ width: 90, height: 90, borderRadius: 6, objectFit: "cover", border: "1px solid var(--gfi-border)", cursor: "zoom-in" }} />
                       ))}
                     </div>
                   )}
@@ -375,7 +375,7 @@ export default function NetworkingPage() {
 
                   {postVer.caracteristicas && (
                     <>
-                      <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 8 }}>Características</div>
+                      <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 8 }}>Características</div>
                       <div className="net-det-caract">{postVer.caracteristicas}</div>
                     </>
                   )}
@@ -384,8 +384,8 @@ export default function NetworkingPage() {
                     <div className="net-det-contact">
                       <div style={{ flex: 1 }}>
                         <div className="net-det-contact-label">Contacto</div>
-                        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>{postVer.autor.apellido}, {postVer.autor.nombre}</div>
-                        {postVer.autor.email && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{postVer.autor.email}</div>}
+                        <div style={{ fontSize: 13, color: "var(--gfi-text-primary)" }}>{postVer.autor.apellido}, {postVer.autor.nombre}</div>
+                        {postVer.autor.email && <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>{postVer.autor.email}</div>}
                       </div>
                       {postVer.autor.telefono && (
                         <a
@@ -436,10 +436,10 @@ export default function NetworkingPage() {
                   </button>
                 ))}
               </div>
-              <div style={{ marginTop: 10, padding: "8px 12px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 4, fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.5 }}>
-                💎 <b style={{ color: "rgba(255,255,255,0.5)" }}>Oportunidad</b>: propiedad interesante sin urgencia ·
-                🔥 <b style={{ color: "rgba(255,255,255,0.5)" }}>Urgencia</b>: necesita venderse rápido, autorización por vencer, situación especial ·
-                🔍 <b style={{ color: "rgba(255,255,255,0.5)" }}>Busco</b>: cliente que necesita propiedad específica
+              <div style={{ marginTop: 10, padding: "8px 12px", background: "var(--gfi-bg-card)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 4, fontSize: 11, color: "var(--gfi-text-muted)", lineHeight: 1.5 }}>
+                💎 <b style={{ color: "var(--gfi-text-secondary)" }}>Oportunidad</b>: propiedad interesante sin urgencia ·
+                🔥 <b style={{ color: "var(--gfi-text-secondary)" }}>Urgencia</b>: necesita venderse rápido, autorización por vencer, situación especial ·
+                🔍 <b style={{ color: "var(--gfi-text-secondary)" }}>Busco</b>: cliente que necesita propiedad específica
               </div>
             </div>
 
@@ -479,16 +479,16 @@ export default function NetworkingPage() {
 
             <div className="net-sec">Fotos (hasta 5)</div>
             <div className="net-field">
-              <label style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "2px dashed rgba(255,255,255,0.1)", borderRadius: 6, cursor: "pointer" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", background: "var(--gfi-bg-card)", border: "2px dashed var(--gfi-border)", borderRadius: 6, cursor: "pointer" }}>
                 <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={e => e.target.files && subirFoto(e.target.files)} />
                 <span style={{ fontSize: 22 }}>📷</span>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{subiendoFoto ? "⏳ Subiendo..." : "Seleccionar fotos"}</span>
+                <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>{subiendoFoto ? "⏳ Subiendo..." : "Seleccionar fotos"}</span>
               </label>
               {fotos.length > 0 && (
                 <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                   {fotos.map((f, i) => (
                     <div key={i} style={{ position: "relative" }}>
-                      <img src={f} alt="" style={{ width: 60, height: 60, borderRadius: 4, objectFit: "cover", border: "1px solid rgba(255,255,255,0.1)" }} />
+                      <img src={f} alt="" style={{ width: 60, height: 60, borderRadius: 4, objectFit: "cover", border: "1px solid var(--gfi-border)" }} />
                       <button type="button" onClick={() => setFotos(p => p.filter((_, j) => j !== i))}
                         style={{ position: "absolute", top: -4, right: -4, width: 16, height: 16, background: "#990000", border: "none", borderRadius: "50%", color: "#fff", fontSize: 9, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
                         ✕

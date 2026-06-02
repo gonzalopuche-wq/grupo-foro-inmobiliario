@@ -514,8 +514,8 @@ export default function RecordatoriosPage() {
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "9px 11px",
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--gfi-border-subtle)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: 5,
     color: "#fff",
     fontSize: 14,
@@ -530,9 +530,9 @@ export default function RecordatoriosPage() {
     fontWeight: 700,
     letterSpacing: "0.12em",
     textTransform: "uppercase",
-    color: "rgba(255,255,255,0.35)",
+    color: "var(--gfi-text-muted)",
     marginBottom: 5,
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
   };
 
   const fieldStyle: React.CSSProperties = { marginBottom: 14 };
@@ -545,7 +545,7 @@ export default function RecordatoriosPage() {
     padding: "9px 16px",
     border: border ?? "none",
     borderRadius: 5,
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontSize: 11,
     fontWeight: 700,
     letterSpacing: "0.08em",
@@ -556,8 +556,8 @@ export default function RecordatoriosPage() {
   });
 
   const cardStyle: React.CSSProperties = {
-    background: "rgba(14,14,14,0.9)",
-    border: "1px solid rgba(255,255,255,0.07)",
+    background: "var(--gfi-bg-card)",
+    border: "1px solid var(--gfi-border-subtle)",
     borderRadius: 8,
     padding: "14px 16px",
     display: "flex",
@@ -571,7 +571,7 @@ export default function RecordatoriosPage() {
     borderRadius: 10,
     fontSize: 10,
     fontWeight: 700,
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     background: `${color}22`,
     color,
     border: `1px solid ${color}44`,
@@ -581,7 +581,7 @@ export default function RecordatoriosPage() {
     padding: "7px 16px",
     borderRadius: 20,
     border: "none",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontSize: 11,
     fontWeight: 700,
     letterSpacing: "0.08em",
@@ -592,7 +592,7 @@ export default function RecordatoriosPage() {
   });
 
   const sectionHeaderStyle: React.CSSProperties = {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 13,
     color: "rgba(255,255,255,0.55)",
@@ -602,13 +602,13 @@ export default function RecordatoriosPage() {
   };
 
   const emptyStyle: React.CSSProperties = {
-    background: "rgba(14,14,14,0.9)",
-    border: "1px solid rgba(255,255,255,0.07)",
+    background: "var(--gfi-bg-card)",
+    border: "1px solid var(--gfi-border-subtle)",
     borderRadius: 8,
     padding: "28px 20px",
     textAlign: "center",
-    color: "rgba(255,255,255,0.25)",
-    fontFamily: "Montserrat, sans-serif",
+    color: "var(--gfi-text-dim)",
+    fontFamily: "var(--font-display)",
     fontSize: 13,
   };
 
@@ -623,7 +623,7 @@ export default function RecordatoriosPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "rgba(255,255,255,0.3)",
+          color: "var(--gfi-text-muted)",
           fontFamily: "Inter, sans-serif",
         }}
       >
@@ -667,7 +667,7 @@ export default function RecordatoriosPage() {
           <div>
             <h1
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 800,
                 fontSize: 28,
                 color: "#fff",
@@ -679,7 +679,7 @@ export default function RecordatoriosPage() {
             <div
               style={{
                 fontSize: 12,
-                color: "rgba(255,255,255,0.35)",
+                color: "var(--gfi-text-muted)",
                 marginTop: 4,
               }}
             >
@@ -709,7 +709,7 @@ export default function RecordatoriosPage() {
               <span
                 style={{
                   marginLeft: 6,
-                  background: tab === "pendientes" ? "rgba(255,255,255,0.25)" : "#990000",
+                  background: tab === "pendientes" ? "var(--gfi-text-dim)" : "#990000",
                   color: "#fff",
                   borderRadius: 10,
                   padding: "1px 7px",
@@ -744,9 +744,9 @@ export default function RecordatoriosPage() {
                   marginLeft: 6,
                   background:
                     tab === "historial"
-                      ? "rgba(255,255,255,0.25)"
-                      : "rgba(255,255,255,0.12)",
-                  color: "rgba(255,255,255,0.6)",
+                      ? "var(--gfi-text-dim)"
+                      : "var(--gfi-border)",
+                  color: "var(--gfi-text-secondary)",
                   borderRadius: 10,
                   padding: "1px 7px",
                   fontSize: 10,
@@ -767,8 +767,8 @@ export default function RecordatoriosPage() {
                 style={{
                   textAlign: "center",
                   padding: 48,
-                  color: "rgba(255,255,255,0.25)",
-                  fontFamily: "Montserrat, sans-serif",
+                  color: "var(--gfi-text-dim)",
+                  fontFamily: "var(--font-display)",
                 }}
               >
                 Analizando datos...
@@ -824,7 +824,7 @@ export default function RecordatoriosPage() {
                               </span>
                               <span
                                 style={{
-                                  fontFamily: "Montserrat, sans-serif",
+                                  fontFamily: "var(--font-display)",
                                   fontSize: 13,
                                   fontWeight: 700,
                                   color: "#fff",
@@ -836,7 +836,7 @@ export default function RecordatoriosPage() {
                             <div
                               style={{
                                 fontSize: 12,
-                                color: "rgba(255,255,255,0.4)",
+                                color: "var(--gfi-text-muted)",
                                 fontFamily: "Inter, sans-serif",
                               }}
                             >
@@ -855,7 +855,7 @@ export default function RecordatoriosPage() {
                                   <span
                                     style={{
                                       fontSize: 11,
-                                      color: "rgba(255,255,255,0.3)",
+                                      color: "var(--gfi-text-muted)",
                                       fontFamily: "Inter, sans-serif",
                                     }}
                                   >
@@ -866,7 +866,7 @@ export default function RecordatoriosPage() {
                                   <span
                                     style={{
                                       fontSize: 11,
-                                      color: "rgba(255,255,255,0.3)",
+                                      color: "var(--gfi-text-muted)",
                                       fontFamily: "Inter, sans-serif",
                                     }}
                                   >
@@ -880,7 +880,7 @@ export default function RecordatoriosPage() {
                             style={btnStyle(
                               "rgba(255,255,255,0.06)",
                               "rgba(255,255,255,0.45)",
-                              "1px solid rgba(255,255,255,0.1)"
+                              "1px solid var(--gfi-border)"
                             )}
                             onClick={() => ignorarAlerta(alerta.id)}
                           >
@@ -939,7 +939,7 @@ export default function RecordatoriosPage() {
                               </span>
                               <span
                                 style={{
-                                  fontFamily: "Montserrat, sans-serif",
+                                  fontFamily: "var(--font-display)",
                                   fontSize: 13,
                                   fontWeight: 700,
                                   color: "#fff",
@@ -952,7 +952,7 @@ export default function RecordatoriosPage() {
                               <div
                                 style={{
                                   fontSize: 12,
-                                  color: "rgba(255,255,255,0.4)",
+                                  color: "var(--gfi-text-muted)",
                                   fontFamily: "Inter, sans-serif",
                                   marginBottom: 5,
                                 }}
@@ -964,7 +964,7 @@ export default function RecordatoriosPage() {
                               <span
                                 style={{
                                   fontSize: 11,
-                                  color: "rgba(255,255,255,0.3)",
+                                  color: "var(--gfi-text-muted)",
                                   fontFamily: "Inter, sans-serif",
                                 }}
                               >
@@ -974,7 +974,7 @@ export default function RecordatoriosPage() {
                                 <span
                                   style={{
                                     fontSize: 11,
-                                    color: "rgba(255,255,255,0.3)",
+                                    color: "var(--gfi-text-muted)",
                                     fontFamily: "Inter, sans-serif",
                                   }}
                                 >
@@ -985,7 +985,7 @@ export default function RecordatoriosPage() {
                                 <span
                                   style={{
                                     fontSize: 11,
-                                    color: "rgba(255,255,255,0.3)",
+                                    color: "var(--gfi-text-muted)",
                                     fontFamily: "Inter, sans-serif",
                                   }}
                                 >
@@ -1008,8 +1008,8 @@ export default function RecordatoriosPage() {
                             <button
                               style={btnStyle(
                                 "rgba(255,255,255,0.06)",
-                                "rgba(255,255,255,0.5)",
-                                "1px solid rgba(255,255,255,0.1)"
+                                "var(--gfi-text-secondary)",
+                                "1px solid var(--gfi-border)"
                               )}
                               onClick={() => abrirEditar(r)}
                             >
@@ -1037,10 +1037,10 @@ export default function RecordatoriosPage() {
                   <div>
                     <div
                       style={{
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 700,
                         fontSize: 12,
-                        color: "rgba(255,255,255,0.35)",
+                        color: "var(--gfi-text-muted)",
                         textTransform: "uppercase",
                         letterSpacing: "0.1em",
                         marginBottom: 10,
@@ -1053,8 +1053,8 @@ export default function RecordatoriosPage() {
                         <div
                           key={r.id}
                           style={{
-                            background: "rgba(14,14,14,0.6)",
-                            border: "1px solid rgba(255,255,255,0.05)",
+                            background: "var(--gfi-bg-secondary)",
+                            border: "1px solid var(--gfi-border-subtle)",
                             borderRadius: 8,
                             padding: "10px 14px",
                             display: "flex",
@@ -1066,10 +1066,10 @@ export default function RecordatoriosPage() {
                           <div>
                             <span
                               style={{
-                                fontFamily: "Montserrat, sans-serif",
+                                fontFamily: "var(--font-display)",
                                 fontSize: 12,
                                 fontWeight: 600,
-                                color: "rgba(255,255,255,0.7)",
+                                color: "var(--gfi-text-primary)",
                                 marginRight: 8,
                               }}
                             >
@@ -1078,7 +1078,7 @@ export default function RecordatoriosPage() {
                             <span
                               style={{
                                 fontSize: 11,
-                                color: "rgba(255,255,255,0.25)",
+                                color: "var(--gfi-text-dim)",
                                 fontFamily: "Inter, sans-serif",
                               }}
                             >
@@ -1088,9 +1088,9 @@ export default function RecordatoriosPage() {
                           <div style={{ display: "flex", gap: 5 }}>
                             <button
                               style={btnStyle(
-                                "rgba(255,255,255,0.05)",
-                                "rgba(255,255,255,0.4)",
-                                "1px solid rgba(255,255,255,0.08)"
+                                "var(--gfi-border-subtle)",
+                                "var(--gfi-text-muted)",
+                                "1px solid var(--gfi-border)"
                               )}
                               onClick={() => abrirEditar(r)}
                             >
@@ -1121,8 +1121,8 @@ export default function RecordatoriosPage() {
         {tab === "crear" && (
           <div
             style={{
-              background: "rgba(14,14,14,0.9)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "var(--gfi-bg-card)",
+              border: "1px solid var(--gfi-border)",
               borderRadius: 10,
               padding: 24,
               maxWidth: 560,
@@ -1130,7 +1130,7 @@ export default function RecordatoriosPage() {
           >
             <div
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontSize: 15,
                 fontWeight: 800,
                 color: "#fff",
@@ -1184,7 +1184,7 @@ export default function RecordatoriosPage() {
                 <select
                   style={{
                     ...inputStyle,
-                    background: "rgba(14,14,14,0.95)",
+                    background: "var(--gfi-bg-card)",
                   }}
                   value={form.prioridad}
                   onChange={(e) =>
@@ -1242,8 +1242,8 @@ export default function RecordatoriosPage() {
               <button
                 style={btnStyle(
                   "rgba(255,255,255,0.06)",
-                  "rgba(255,255,255,0.6)",
-                  "1px solid rgba(255,255,255,0.12)"
+                  "var(--gfi-text-secondary)",
+                  "1px solid var(--gfi-border)"
                 )}
                 onClick={cancelarForm}
               >
@@ -1296,8 +1296,8 @@ export default function RecordatoriosPage() {
             ) : (
               <div
                 style={{
-                  background: "rgba(14,14,14,0.9)",
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  background: "var(--gfi-bg-card)",
+                  border: "1px solid var(--gfi-border-subtle)",
                   borderRadius: 8,
                   overflow: "hidden",
                 }}
@@ -1310,13 +1310,13 @@ export default function RecordatoriosPage() {
                     gridTemplateColumns: "90px 1fr 100px 100px 100px",
                     gap: 8,
                     padding: "10px 16px",
-                    borderBottom: "1px solid rgba(255,255,255,0.07)",
-                    fontFamily: "Montserrat, sans-serif",
+                    borderBottom: "1px solid var(--gfi-border-subtle)",
+                    fontFamily: "var(--font-display)",
                     fontSize: 10,
                     fontWeight: 700,
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
-                    color: "rgba(255,255,255,0.3)",
+                    color: "var(--gfi-text-muted)",
                   }}
                 >
                   <span>Tipo</span>
@@ -1336,7 +1336,7 @@ export default function RecordatoriosPage() {
                       padding: "11px 16px",
                       borderBottom:
                         idx < historial.length - 1
-                          ? "1px solid rgba(255,255,255,0.04)"
+                          ? "1px solid var(--gfi-border-subtle)"
                           : "none",
                       alignItems: "center",
                     }}
@@ -1347,10 +1347,10 @@ export default function RecordatoriosPage() {
                     <div>
                       <div
                         style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontSize: 12,
                           fontWeight: 600,
-                          color: "rgba(255,255,255,0.6)",
+                          color: "var(--gfi-text-secondary)",
                         }}
                       >
                         {r.titulo}
@@ -1359,7 +1359,7 @@ export default function RecordatoriosPage() {
                         <div
                           style={{
                             fontSize: 11,
-                            color: "rgba(255,255,255,0.25)",
+                            color: "var(--gfi-text-dim)",
                             fontFamily: "Inter, sans-serif",
                             marginTop: 2,
                           }}
@@ -1371,7 +1371,7 @@ export default function RecordatoriosPage() {
                     <span
                       style={{
                         fontSize: 11,
-                        color: "rgba(255,255,255,0.3)",
+                        color: "var(--gfi-text-muted)",
                         fontFamily: "Inter, sans-serif",
                       }}
                     >
@@ -1387,8 +1387,8 @@ export default function RecordatoriosPage() {
                     <button
                       style={btnStyle(
                         "rgba(255,255,255,0.06)",
-                        "rgba(255,255,255,0.5)",
-                        "1px solid rgba(255,255,255,0.1)"
+                        "var(--gfi-text-secondary)",
+                        "1px solid var(--gfi-border)"
                       )}
                       onClick={() => restaurarManual(r.id)}
                     >
@@ -1411,7 +1411,7 @@ export default function RecordatoriosPage() {
             left: "50%",
             transform: "translateX(-50%)",
             background: "#1a1a1a",
-            border: "1px solid rgba(255,255,255,0.12)",
+            border: "1px solid var(--gfi-border)",
             borderRadius: 8,
             padding: "12px 20px",
             color: "#fff",

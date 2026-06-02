@@ -496,24 +496,24 @@ export default function ReportesPropietariosPage() {
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
-        .rp-input { background:rgba(255,255,255,0.05); border:1px solid #222222; border-radius:7px; color:#e0e0e0; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; width:100%; box-sizing:border-box; }
+        .rp-input { background:var(--gfi-border-subtle); border:1px solid #222222; border-radius:7px; color:#e0e0e0; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; width:100%; box-sizing:border-box; }
         .rp-input:focus { border-color:rgba(153,0,0,0.45); }
-        .rp-textarea { background:rgba(255,255,255,0.04); border:1px solid #222222; border-radius:7px; color:#e0e0e0; padding:10px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; width:100%; resize:vertical; min-height:90px; box-sizing:border-box; }
+        .rp-textarea { background:var(--gfi-border-subtle); border:1px solid #222222; border-radius:7px; color:#e0e0e0; padding:10px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; width:100%; resize:vertical; min-height:90px; box-sizing:border-box; }
         .rp-textarea:focus { border-color:rgba(153,0,0,0.45); }
-        .rp-select { background:#111111; border:1px solid #222222; border-radius:7px; color:#e0e0e0; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; cursor:pointer; width:100%; box-sizing:border-box; }
-        .rp-select-sm { background:#111111; border:1px solid #222222; border-radius:6px; color:#e0e0e0; padding:6px 10px; font-size:12px; font-family:Inter,sans-serif; outline:none; cursor:pointer; }
-        .rp-card { background:#111111; border:1px solid #222222; border-radius:12px; padding:20px; }
-        .rp-section-title { font-family:Montserrat,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:14px; }
+        .rp-select { background:var(--gfi-bg-secondary)111; border:1px solid #222222; border-radius:7px; color:#e0e0e0; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; cursor:pointer; width:100%; box-sizing:border-box; }
+        .rp-select-sm { background:var(--gfi-bg-secondary)111; border:1px solid #222222; border-radius:6px; color:#e0e0e0; padding:6px 10px; font-size:12px; font-family:Inter,sans-serif; outline:none; cursor:pointer; }
+        .rp-card { background:var(--gfi-bg-secondary)111; border:1px solid #222222; border-radius:12px; padding:20px; }
+        .rp-section-title { font-family:Montserrat,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--gfi-text-muted); margin-bottom:14px; }
         .rp-btn { border:none; border-radius:8px; font-family:Montserrat,sans-serif; font-weight:700; font-size:12px; cursor:pointer; padding:9px 18px; transition:opacity 0.15s; }
         .rp-btn:hover { opacity:0.85; }
         .rp-btn-red { background:#990000; color:#fff; }
-        .rp-btn-ghost { background:rgba(255,255,255,0.07); color:#e0e0e0; border:1px solid #222222; }
+        .rp-btn-ghost { background:var(--gfi-border-subtle); color:#e0e0e0; border:1px solid #222222; }
         .rp-btn-green { background:#15803d; color:#fff; }
         .rp-tab { padding:8px 18px; border-radius:7px; font-family:Montserrat,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:background 0.15s,color 0.15s; }
         @keyframes rpFadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
         .rp-fadein { animation:rpFadeIn 0.25s ease both; }
         @keyframes rpSkeleton { 0%,100%{opacity:0.4} 50%{opacity:0.7} }
-        .rp-skeleton { animation:rpSkeleton 1.2s ease-in-out infinite; background:rgba(255,255,255,0.07); border-radius:10px; }
+        .rp-skeleton { animation:rpSkeleton 1.2s ease-in-out infinite; background:var(--gfi-border-subtle); border-radius:10px; }
         .rp-act-row { background:rgba(255,255,255,0.025); border:1px solid #222222; border-radius:9px; padding:14px; margin-bottom:10px; }
         @media(max-width:640px){
           .rp-grid2 { grid-template-columns:1fr !important; }
@@ -526,11 +526,11 @@ export default function ReportesPropietariosPage() {
         <div
           style={{
             fontSize: 10,
-            fontFamily: "Montserrat,sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             letterSpacing: "0.18em",
             textTransform: "uppercase",
-            color: "rgba(255,255,255,0.2)",
+            color: "var(--gfi-text-dim)",
             marginBottom: 6,
           }}
         >
@@ -538,7 +538,7 @@ export default function ReportesPropietariosPage() {
         </div>
         <h1
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: 28,
             color: "#e0e0e0",
@@ -548,7 +548,7 @@ export default function ReportesPropietariosPage() {
         >
           Reportes <span style={{ color: "#990000" }}>para Propietarios</span>
         </h1>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 5, marginBottom: 0 }}>
+        <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 5, marginBottom: 0 }}>
           Generador de informes mensuales de actividad para enviar a los propietarios
         </p>
       </div>
@@ -560,8 +560,8 @@ export default function ReportesPropietariosPage() {
             key={t}
             className="rp-tab"
             style={{
-              background: tab === t ? "#990000" : "rgba(255,255,255,0.05)",
-              color:      tab === t ? "#fff"    : "rgba(255,255,255,0.4)",
+              background: tab === t ? "#990000" : "var(--gfi-border-subtle)",
+              color:      tab === t ? "#fff"    : "var(--gfi-text-muted)",
               border:     tab === t ? "1px solid #990000" : "1px solid #222222",
             }}
             onClick={() => setTab(t)}
@@ -597,16 +597,16 @@ export default function ReportesPropietariosPage() {
                   <div style={{ fontSize: 36, marginBottom: 14, opacity: 0.25 }}>🏠</div>
                   <div
                     style={{
-                      fontFamily: "Montserrat,sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontSize: 15,
                       fontWeight: 700,
-                      color: "rgba(255,255,255,0.3)",
+                      color: "var(--gfi-text-muted)",
                       marginBottom: 8,
                     }}
                   >
                     Sin propiedades en cartera
                   </div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.2)" }}>
+                  <div style={{ fontSize: 13, color: "var(--gfi-text-dim)" }}>
                     Cargá propiedades en tu cartera para generar reportes
                   </div>
                 </div>
@@ -625,7 +625,7 @@ export default function ReportesPropietariosPage() {
                           <div>
                             <div
                               style={{
-                                fontFamily: "Montserrat,sans-serif",
+                                fontFamily: "var(--font-display)",
                                 fontWeight: 700,
                                 fontSize: 13,
                                 color: "#e0e0e0",
@@ -634,7 +634,7 @@ export default function ReportesPropietariosPage() {
                             >
                               {prop.tipo ?? "Propiedad"}{prop.zona ? ` · ${prop.zona}` : ""}
                             </div>
-                            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+                            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>
                               {prop.operacion ?? "—"} · {fmtPrecio(prop.precio, prop.moneda)}
                             </div>
                           </div>
@@ -643,13 +643,13 @@ export default function ReportesPropietariosPage() {
                               fontSize: 10,
                               padding: "3px 9px",
                               borderRadius: 5,
-                              fontFamily: "Montserrat,sans-serif",
+                              fontFamily: "var(--font-display)",
                               fontWeight: 700,
                               background: prop.estado === "activo" || prop.estado === "publicada"
                                 ? "rgba(34,197,94,0.12)"
-                                : "rgba(255,255,255,0.07)",
+                                : "var(--gfi-border-subtle)",
                               border: `1px solid ${prop.estado === "activo" || prop.estado === "publicada" ? "rgba(34,197,94,0.3)" : "#222222"}`,
-                              color: prop.estado === "activo" || prop.estado === "publicada" ? "#3abab6" : "rgba(255,255,255,0.4)",
+                              color: prop.estado === "activo" || prop.estado === "publicada" ? "#3abab6" : "var(--gfi-text-muted)",
                               whiteSpace: "nowrap",
                               flexShrink: 0,
                             }}
@@ -663,7 +663,7 @@ export default function ReportesPropietariosPage() {
                           <div
                             style={{
                               fontSize: 12,
-                              color: "rgba(255,255,255,0.35)",
+                              color: "var(--gfi-text-muted)",
                               marginBottom: 12,
                               display: "-webkit-box",
                               WebkitLineClamp: 2,
@@ -680,11 +680,11 @@ export default function ReportesPropietariosPage() {
                           <div
                             style={{
                               fontSize: 9,
-                              fontFamily: "Montserrat,sans-serif",
+                              fontFamily: "var(--font-display)",
                               fontWeight: 700,
                               letterSpacing: "0.1em",
                               textTransform: "uppercase",
-                              color: "rgba(255,255,255,0.3)",
+                              color: "var(--gfi-text-muted)",
                               marginBottom: 5,
                             }}
                           >
@@ -706,7 +706,7 @@ export default function ReportesPropietariosPage() {
                           <div
                             style={{
                               fontSize: 12,
-                              color: "rgba(255,255,255,0.4)",
+                              color: "var(--gfi-text-muted)",
                               marginBottom: 12,
                               display: "flex",
                               gap: 10,
@@ -790,7 +790,7 @@ export default function ReportesPropietariosPage() {
                   <span><strong style={{ color: "#e0e0e0" }}>Propiedad:</strong> {propiedadEditando.tipo ?? "—"}</span>
                   <span><strong style={{ color: "#e0e0e0" }}>Barrio:</strong> {propiedadEditando.zona ?? "—"}</span>
                   <span><strong style={{ color: "#e0e0e0" }}>Precio:</strong> {fmtPrecio(propiedadEditando.precio, propiedadEditando.moneda)}</span>
-                  <span><strong style={{ color: "#e0e0e0" }}>Propietario:</strong> {propietarioEditando?.nombre ?? <span style={{ color: "rgba(255,255,255,0.25)" }}>Sin asignar</span>}</span>
+                  <span><strong style={{ color: "#e0e0e0" }}>Propietario:</strong> {propietarioEditando?.nombre ?? <span style={{ color: "var(--gfi-text-dim)" }}>Sin asignar</span>}</span>
                 </div>
               )}
 
@@ -821,8 +821,8 @@ export default function ReportesPropietariosPage() {
                             textAlign: "center",
                           }}
                         >
-                          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 16, color: TIPO_ACTIVIDAD_COLOR[tipo] }}>{count}</div>
-                          <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>{TIPO_ACTIVIDAD_LABEL[tipo]}</div>
+                          <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: TIPO_ACTIVIDAD_COLOR[tipo] }}>{count}</div>
+                          <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", marginTop: 1 }}>{TIPO_ACTIVIDAD_LABEL[tipo]}</div>
                         </div>
                       ))
                     }
@@ -830,7 +830,7 @@ export default function ReportesPropietariosPage() {
                 )}
 
                 {editorActividad.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "24px 0", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>
+                  <div style={{ textAlign: "center", padding: "24px 0", color: "var(--gfi-text-dim)", fontSize: 13 }}>
                     No hay actividad registrada. Hacé clic en "+ Agregar actividad" para comenzar.
                   </div>
                 ) : (
@@ -841,7 +841,7 @@ export default function ReportesPropietariosPage() {
                         style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr auto", gap: 10, alignItems: "flex-start" }}
                       >
                         <div>
-                          <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: 5 }}>Tipo</div>
+                          <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: 5 }}>Tipo</div>
                           <select
                             className="rp-select-sm"
                             value={act.tipo}
@@ -855,7 +855,7 @@ export default function ReportesPropietariosPage() {
                           </select>
                         </div>
                         <div>
-                          <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: 5 }}>Fecha</div>
+                          <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: 5 }}>Fecha</div>
                           <input
                             type="date"
                             className="rp-input"
@@ -865,7 +865,7 @@ export default function ReportesPropietariosPage() {
                           />
                         </div>
                         <div>
-                          <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: 5 }}>Descripción</div>
+                          <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: 5 }}>Descripción</div>
                           <input
                             type="text"
                             className="rp-input"
@@ -876,7 +876,7 @@ export default function ReportesPropietariosPage() {
                           />
                         </div>
                         <div>
-                          <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: 5 }}>Resultado</div>
+                          <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: 5 }}>Resultado</div>
                           <input
                             type="text"
                             className="rp-input"
@@ -961,7 +961,7 @@ export default function ReportesPropietariosPage() {
                       Igual al precio actual ({fmtPrecio(propiedadEditando.precio, propiedadEditando.moneda)})
                     </button>
                   )}
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 10 }}>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", marginTop: 10 }}>
                     Dejá en blanco si no querés incluir un precio sugerido en el reporte.
                   </div>
                 </div>
@@ -972,12 +972,12 @@ export default function ReportesPropietariosPage() {
                 <div>
                   <div
                     style={{
-                      fontFamily: "Montserrat,sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontSize: 10,
                       fontWeight: 700,
                       letterSpacing: "0.14em",
                       textTransform: "uppercase",
-                      color: "rgba(255,255,255,0.25)",
+                      color: "var(--gfi-text-dim)",
                       marginBottom: 12,
                     }}
                   >
@@ -986,7 +986,7 @@ export default function ReportesPropietariosPage() {
                   <div
                     style={{
                       background: "#fff",
-                      color: "#111",
+                      color: "var(--gfi-bg-secondary)",
                       borderRadius: 12,
                       padding: "32px 36px",
                       fontFamily: "Inter, sans-serif",
@@ -995,9 +995,9 @@ export default function ReportesPropietariosPage() {
                     {/* header preview */}
                     <div style={{ borderBottom: "3px solid #990000", paddingBottom: 16, marginBottom: 22 }}>
                       <div style={{ fontFamily: "Arial Black, Arial, sans-serif", fontSize: 18, fontWeight: 900, color: "#990000", marginBottom: 8 }}>
-                        GFI <span style={{ color: "#111" }}>Inmobiliario</span>
+                        GFI <span style={{ color: "var(--gfi-bg-secondary)" }}>Inmobiliario</span>
                       </div>
-                      <h2 style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 20, color: "#111", margin: "0 0 4px" }}>
+                      <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "var(--gfi-bg-secondary)", margin: "0 0 4px" }}>
                         Informe Mensual — <span style={{ color: "#990000" }}>{periodoLabel(editorPeriodo)}</span>
                       </h2>
                       <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>Generado el {fechaHoy}</p>
@@ -1030,20 +1030,20 @@ export default function ReportesPropietariosPage() {
                           }}
                         >
                           <div style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: "highlight" in item && item.highlight ? "#990000" : "#9ca3af", fontWeight: 700, marginBottom: 3 }}>{item.label}</div>
-                          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, color: "highlight" in item && item.highlight ? "#990000" : "#111" }}>{item.valor}</div>
+                          <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "highlight" in item && item.highlight ? "#990000" : "var(--gfi-bg-secondary)" }}>{item.valor}</div>
                         </div>
                       ))}
                     </div>
 
                     {/* tabla actividad */}
-                    <div style={{ fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#990000", borderBottom: "1px solid #e5e7eb", paddingBottom: 7, marginBottom: 12 }}>
+                    <div style={{ fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#990000", borderBottom: "1px solid #e5e7eb", paddingBottom: 7, marginBottom: 12 }}>
                       Actividad del período ({editorActividad.length})
                     </div>
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, marginBottom: 20 }}>
                       <thead>
                         <tr style={{ background: "#f9fafb" }}>
                           {["Tipo", "Fecha", "Descripción", "Resultado"].map(h => (
-                            <th key={h} style={{ padding: "7px 10px", textAlign: "left", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6b7280", borderBottom: "1px solid #e5e7eb" }}>{h}</th>
+                            <th key={h} style={{ padding: "7px 10px", textAlign: "left", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6b7280", borderBottom: "1px solid #e5e7eb" }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
@@ -1056,10 +1056,10 @@ export default function ReportesPropietariosPage() {
                           editorActividad.map(a => (
                             <tr key={a.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
                               <td style={{ padding: "7px 10px" }}>
-                                <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, background: `${TIPO_ACTIVIDAD_COLOR[a.tipo]}18`, color: TIPO_ACTIVIDAD_COLOR[a.tipo], fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{TIPO_ACTIVIDAD_LABEL[a.tipo]}</span>
+                                <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, background: `${TIPO_ACTIVIDAD_COLOR[a.tipo]}18`, color: TIPO_ACTIVIDAD_COLOR[a.tipo], fontFamily: "var(--font-display)", fontWeight: 700 }}>{TIPO_ACTIVIDAD_LABEL[a.tipo]}</span>
                               </td>
                               <td style={{ padding: "7px 10px", color: "#6b7280" }}>{a.fecha ? fmtFecha(a.fecha) : "—"}</td>
-                              <td style={{ padding: "7px 10px", color: "#111" }}>{a.descripcion || "—"}</td>
+                              <td style={{ padding: "7px 10px", color: "var(--gfi-bg-secondary)" }}>{a.descripcion || "—"}</td>
                               <td style={{ padding: "7px 10px", color: "#374151" }}>{a.resultado || "—"}</td>
                             </tr>
                           ))
@@ -1070,7 +1070,7 @@ export default function ReportesPropietariosPage() {
                     {/* observaciones */}
                     {editorObservaciones && (
                       <>
-                        <div style={{ fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#990000", borderBottom: "1px solid #e5e7eb", paddingBottom: 7, marginBottom: 12 }}>Observaciones del corredor</div>
+                        <div style={{ fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#990000", borderBottom: "1px solid #e5e7eb", paddingBottom: 7, marginBottom: 12 }}>Observaciones del corredor</div>
                         <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.65, marginBottom: 20, padding: "12px 14px", background: "#f9fafb", borderRadius: 7, border: "1px solid #e5e7eb", whiteSpace: "pre-wrap" }}>{editorObservaciones}</div>
                       </>
                     )}
@@ -1136,8 +1136,8 @@ export default function ReportesPropietariosPage() {
                     className="rp-card"
                     style={{ flex: "1 1 140px", borderTop: `3px solid ${kpi.color}`, textAlign: "center" }}
                   >
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 26, color: kpi.color, lineHeight: 1 }}>{kpi.valor}</div>
-                    <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.3)", marginTop: 6 }}>{kpi.label}</div>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: kpi.color, lineHeight: 1 }}>{kpi.valor}</div>
+                    <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--gfi-text-muted)", marginTop: 6 }}>{kpi.label}</div>
                   </div>
                 ))}
               </div>
@@ -1153,7 +1153,7 @@ export default function ReportesPropietariosPage() {
                     borderRadius: 14,
                   }}
                 >
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.25)", marginBottom: 8 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: "var(--gfi-text-dim)", marginBottom: 8 }}>
                     Sin reportes generados
                   </div>
                   <div style={{ fontSize: 13, color: "rgba(255,255,255,0.18)" }}>
@@ -1168,7 +1168,7 @@ export default function ReportesPropietariosPage() {
                       {/* título propiedad */}
                       <div
                         style={{
-                          fontFamily: "Montserrat,sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 14,
                           color: "#e0e0e0",
@@ -1180,7 +1180,7 @@ export default function ReportesPropietariosPage() {
                           : "Propiedad eliminada"}
                       </div>
                       {propiedad && (
-                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>
+                        <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 14 }}>
                           {propiedad.operacion ?? "—"} · {fmtPrecio(propiedad.precio, propiedad.moneda)}
                         </div>
                       )}
@@ -1199,17 +1199,17 @@ export default function ReportesPropietariosPage() {
                                   alignItems: "center",
                                   gap: 12,
                                   padding: "10px 14px",
-                                  background: "rgba(255,255,255,0.03)",
+                                  background: "var(--gfi-bg-card)",
                                   border: "1px solid #222222",
                                   borderRadius: 8,
                                   flexWrap: "wrap",
                                 }}
                               >
                                 <div style={{ flex: 1, minWidth: 120 }}>
-                                  <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, color: "#e0e0e0" }}>
+                                  <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "#e0e0e0" }}>
                                     {periodoLabel(rep.periodo)}
                                   </div>
-                                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
+                                  <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                                     {rep.actividad.length} actividad{rep.actividad.length !== 1 ? "es" : ""} · Creado {fmtFecha(rep.created_at)}
                                   </div>
                                 </div>
@@ -1219,11 +1219,11 @@ export default function ReportesPropietariosPage() {
                                     fontSize: 10,
                                     padding: "3px 10px",
                                     borderRadius: 5,
-                                    fontFamily: "Montserrat,sans-serif",
+                                    fontFamily: "var(--font-display)",
                                     fontWeight: 700,
-                                    background: enviado ? "rgba(34,197,94,0.12)" : "rgba(255,255,255,0.07)",
+                                    background: enviado ? "rgba(34,197,94,0.12)" : "var(--gfi-border-subtle)",
                                     border: `1px solid ${enviado ? "rgba(34,197,94,0.3)" : "#222222"}`,
-                                    color: enviado ? "#3abab6" : "rgba(255,255,255,0.4)",
+                                    color: enviado ? "#3abab6" : "var(--gfi-text-muted)",
                                     whiteSpace: "nowrap",
                                   }}
                                 >

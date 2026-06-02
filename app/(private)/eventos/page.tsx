@@ -430,104 +430,104 @@ export default function EventosPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .ev-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: flex-start; }
         .ev-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 20px; }
-        .ev-cal { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px; }
+        .ev-cal { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 16px; }
         .ev-cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .ev-cal-titulo { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 800; color: #fff; }
-        .ev-cal-nav { width: 28px; height: 28px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+        .ev-cal-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 800; color: #fff; }
+        .ev-cal-nav { width: 28px; height: 28px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-secondary); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
         .ev-cal-nav:hover { border-color: rgba(200,0,0,0.4); color: #fff; }
         .ev-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
-        .ev-cal-dow { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.25); text-align: center; padding: 4px 0; }
-        .ev-cal-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 600; cursor: pointer; transition: all 0.15s; color: rgba(255,255,255,0.4); position: relative; border: 1px solid transparent; }
+        .ev-cal-dow { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gfi-text-dim); text-align: center; padding: 4px 0; }
+        .ev-cal-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 11px; font-family: var(--font-display); font-weight: 600; cursor: pointer; transition: all 0.15s; color: var(--gfi-text-muted); position: relative; border: 1px solid transparent; }
         .ev-cal-dia:hover { background: rgba(255,255,255,0.06); color: #fff; }
         .ev-cal-dia.hoy { color: #990000; font-weight: 800; border-color: rgba(200,0,0,0.3); }
         .ev-cal-dia.con-eventos::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #990000; }
         .ev-cal-dia.seleccionado { background: rgba(200,0,0,0.15); border-color: #990000; color: #fff; }
         .ev-cal-dia.vacio { cursor: default; }
         .ev-cal-dia.vacio:hover { background: transparent; }
-        .ev-cal-limpiar { width: 100%; margin-top: 8px; padding: 6px; background: transparent; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: rgba(255,255,255,0.3); font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-        .ev-cal-limpiar:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.6); }
-        .ev-leyenda { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 16px; }
-        .ev-leyenda-titulo { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 10px; }
+        .ev-cal-limpiar { width: 100%; margin-top: 8px; padding: 6px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-muted); font-size: 10px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .ev-cal-limpiar:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-secondary); }
+        .ev-leyenda { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 14px 16px; }
+        .ev-leyenda-titulo { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-dim); margin-bottom: 10px; }
         .ev-leyenda-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; transition: opacity 0.15s; }
         .ev-leyenda-item:hover { opacity: 0.8; }
         .ev-leyenda-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .ev-leyenda-label { font-size: 11px; color: rgba(255,255,255,0.5); font-family: 'Inter',sans-serif; }
+        .ev-leyenda-label { font-size: 11px; color: var(--gfi-text-secondary); font-family: var(--font-body); }
         .ev-leyenda-item.activo .ev-leyenda-label { color: #fff; }
         .ev-main { display: flex; flex-direction: column; gap: 16px; }
         .ev-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
         .ev-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
-        .ev-filtro { padding: 7px 14px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); transition: all 0.2s; }
-        .ev-filtro:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
+        .ev-filtro { padding: 7px 14px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; cursor: pointer; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); transition: all 0.2s; }
+        .ev-filtro:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-primary); }
         .ev-filtro.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
-        .ev-btn-nuevo { padding: 9px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        .ev-btn-nuevo { padding: 9px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
         .ev-btn-nuevo:hover { background: #e60000; }
         .ev-lista { display: flex; flex-direction: column; gap: 12px; }
-        .ev-card { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow: hidden; display: flex; transition: border-color 0.2s; }
+        .ev-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; overflow: hidden; display: flex; transition: border-color 0.2s; }
         .ev-card:hover { border-color: rgba(200,0,0,0.2); }
         .ev-card.pasado { opacity: 0.5; }
         .ev-card.destacado { border-color: rgba(200,0,0,0.3); }
         .ev-fecha-col { width: 72px; flex-shrink: 0; background: rgba(200,0,0,0.08); border-right: 1px solid rgba(200,0,0,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 12px 8px; }
-        .ev-fecha-num { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #990000; line-height: 1; }
-        .ev-fecha-mes { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); }
-        .ev-fecha-anio { font-size: 9px; color: rgba(255,255,255,0.25); }
+        .ev-fecha-num { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #990000; line-height: 1; }
+        .ev-fecha-mes { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--gfi-text-muted); }
+        .ev-fecha-anio { font-size: 9px; color: var(--gfi-text-dim); }
         .ev-body { flex: 1; padding: 14px 18px; min-width: 0; }
         .ev-body-top { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-        .ev-titulo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; line-height: 1.3; }
-        .ev-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; border: 1px solid; white-space: nowrap; }
+        .ev-titulo { font-family: var(--font-display); font-size: 14px; font-weight: 800; color: #fff; line-height: 1.3; }
+        .ev-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; border: 1px solid; white-space: nowrap; }
         .ev-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
-        .ev-meta-item { font-size: 11px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 4px; }
+        .ev-meta-item { font-size: 11px; color: var(--gfi-text-muted); display: flex; align-items: center; gap: 4px; }
         .ev-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
         .ev-cap { margin-top: 8px; }
         .ev-cap-bar-wrap { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 4px; }
         .ev-cap-bar { height: 3px; border-radius: 2px; transition: width 0.4s; }
-        .ev-cap-texto { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 3px; }
-        .ev-acciones { padding: 14px 16px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; min-width: 130px; flex-shrink: 0; border-left: 1px solid rgba(255,255,255,0.05); }
-        .ev-btn-ins { padding: 8px 14px; border: none; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .ev-cap-texto { font-size: 10px; color: var(--gfi-text-muted); margin-top: 3px; }
+        .ev-acciones { padding: 14px 16px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; min-width: 130px; flex-shrink: 0; border-left: 1px solid var(--gfi-border-subtle); }
+        .ev-btn-ins { padding: 8px 14px; border: none; border-radius: 3px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .ev-btn-ins.libre { background: #990000; color: #fff; }
         .ev-btn-ins.libre:hover { background: #e60000; }
         .ev-btn-ins.inscripto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #3abab6; }
         .ev-btn-ins.inscripto:hover { background: rgba(34,197,94,0.2); }
-        .ev-btn-ins.lleno { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.25); cursor: not-allowed; }
+        .ev-btn-ins.lleno { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); color: var(--gfi-text-dim); cursor: not-allowed; }
         .ev-btn-ins:disabled { opacity: 0.5; cursor: not-allowed; }
-        .ev-btn-cancelar-ev { padding: 5px 10px; background: transparent; border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .ev-btn-cancelar-ev { padding: 5px 10px; background: transparent; border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .ev-btn-cancelar-ev:hover { border-color: #990000; color: #990000; }
         .ev-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.15); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .ev-empty { padding: 48px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; }
-        .ev-loading { padding: 48px; text-align: center; color: rgba(255,255,255,0.25); font-size: 13px; }
+        .ev-empty { padding: 48px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; font-style: italic; background: var(--gfi-bg-card); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; }
+        .ev-loading { padding: 48px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; }
         /* Modal */
         .ev-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
         .ev-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; padding: 28px 32px; width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; position: relative; }
         .ev-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 8px 8px 0 0; }
-        .ev-modal-titulo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
+        .ev-modal-titulo { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
         .ev-modal-titulo span { color: #990000; }
         .ev-field { margin-bottom: 14px; }
-        .ev-label { display: block; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 6px; }
-        .ev-input { width: 100%; padding: 9px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; }
+        .ev-label { display: block; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 6px; }
+        .ev-input { width: 100%; padding: 9px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); transition: border-color 0.2s; }
         .ev-input:focus { border-color: rgba(200,0,0,0.4); }
-        .ev-input::placeholder { color: rgba(255,255,255,0.2); }
-        .ev-select { width: 100%; padding: 9px 13px; background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
-        .ev-textarea { width: 100%; padding: 9px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; resize: vertical; min-height: 80px; transition: border-color 0.2s; }
+        .ev-input::placeholder { color: var(--gfi-text-dim); }
+        .ev-select { width: 100%; padding: 9px 13px; background: #0f0f0f; border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); }
+        .ev-textarea { width: 100%; padding: 9px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); resize: vertical; min-height: 80px; transition: border-color 0.2s; }
         .ev-textarea:focus { border-color: rgba(200,0,0,0.4); }
         .ev-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .ev-tipos-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-        .ev-tipo-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 700; font-family: 'Montserrat',sans-serif; cursor: pointer; transition: all 0.15s; }
+        .ev-tipo-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); font-size: 11px; font-weight: 700; font-family: var(--font-display); cursor: pointer; transition: all 0.15s; }
         .ev-gratuito-toggle { display: flex; gap: 10px; }
-        .ev-gt-btn { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .ev-gt-btn { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .ev-gt-btn.activo.grat { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.08); color: #3abab6; }
         .ev-gt-btn.activo.pago { border-color: rgba(234,179,8,0.4); background: rgba(234,179,8,0.08); color: #d4960c; }
-        .ev-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px; }
-        .ev-btn-cancel { padding: 9px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .ev-btn-guardar { padding: 9px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .ev-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid var(--gfi-border-subtle); padding-top: 16px; }
+        .ev-btn-cancel { padding: 9px 20px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .ev-btn-guardar { padding: 9px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .ev-btn-guardar:hover { background: #e60000; }
         .ev-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
-        .ev-seccion-titulo { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin: 16px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px; }
-        .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
+        .ev-seccion-titulo { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-dim); margin: 16px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px; }
+        .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 5px; font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
         .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; }
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         @media (max-width: 860px) { .ev-layout { grid-template-columns: 1fr; } .ev-sidebar { position: static; } }
-        @media (max-width: 600px) { .ev-card { flex-direction: column; } .ev-acciones { flex-direction: row; border-left: none; border-top: 1px solid rgba(255,255,255,0.05); } .ev-row2 { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .ev-card { flex-direction: column; } .ev-acciones { flex-direction: row; border-left: none; border-top: 1px solid var(--gfi-border-subtle); } .ev-row2 { grid-template-columns: 1fr; } }
       `}</style>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -535,10 +535,10 @@ export default function EventosPage() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 22, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "#fff" }}>
               Próximos <span style={{ color: "#990000" }}>eventos</span>
             </div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>
+            <div style={{ fontSize: 13, color: "var(--gfi-text-muted)", marginTop: 4 }}>
               GFI®, COCIR, CIR y la comunidad
             </div>
           </div>
@@ -583,16 +583,16 @@ export default function EventosPage() {
             {/* Leyenda tipos */}
             <div className="ev-leyenda">
               <div className="ev-leyenda-titulo">Tipo de evento</div>
-              <div className="ev-leyenda-item" style={{ paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.05)", marginBottom: 4 }}
+              <div className="ev-leyenda-item" style={{ paddingBottom: 6, borderBottom: "1px solid var(--gfi-border-subtle)", marginBottom: 4 }}
                 onClick={() => setFiltroTipo("todos")}>
-                <div className="ev-leyenda-dot" style={{ background: "rgba(255,255,255,0.3)" }} />
+                <div className="ev-leyenda-dot" style={{ background: "var(--gfi-text-muted)" }} />
                 <span className="ev-leyenda-label" style={{ color: filtroTipo === "todos" ? "#fff" : undefined }}>Todos</span>
               </div>
               {Object.entries(TIPOS).map(([k, t]) => (
                 <div key={k} className={`ev-leyenda-item${filtroTipo === k ? " activo" : ""}`} onClick={() => setFiltroTipo(filtroTipo === k ? "todos" : k)}>
                   <div className="ev-leyenda-dot" style={{ background: t.color }} />
                   <span className="ev-leyenda-label">{t.label}</span>
-                  <span style={{ marginLeft: "auto", fontSize: 10, color: "rgba(255,255,255,0.2)", fontFamily: "'Montserrat',sans-serif" }}>
+                  <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)" }}>
                     {eventos.filter(ev => ev.tipo === k).length}
                   </span>
                 </div>
@@ -612,7 +612,7 @@ export default function EventosPage() {
                 ))}
               </div>
               {diaSeleccionado !== null && (
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                   📅 {diaSeleccionado} de {MESES[calMes]}
                 </div>
               )}
@@ -659,7 +659,7 @@ export default function EventosPage() {
                             {(fotos.length + videos.length) > 1 && (
                               <div style={{position:"absolute",bottom:5,right:5,display:"flex",gap:3}}>
                                 {[...fotos.slice(1,3),...videos.slice(0,1)].map((m:MediaItem,i:number) => (
-                                  <div key={i} style={{width:30,height:30,borderRadius:3,overflow:"hidden",border:"1.5px solid rgba(255,255,255,0.5)",flexShrink:0,position:"relative",background:"#000",cursor:"zoom-in"}}
+                                  <div key={i} style={{width:30,height:30,borderRadius:3,overflow:"hidden",border:"1.5px solid var(--gfi-text-secondary)",flexShrink:0,position:"relative",background:"#000",cursor:"zoom-in"}}
                                     onClick={e=>{e.stopPropagation();setLightbox(m.url);}}>
                                     {m.tipo==="foto"
                                       ? <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
@@ -670,14 +670,14 @@ export default function EventosPage() {
                                   </div>
                                 ))}
                                 {(fotos.length+videos.length) > 4 && (
-                                  <div style={{width:30,height:30,borderRadius:3,background:"rgba(0,0,0,0.85)",border:"1.5px solid rgba(255,255,255,0.4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"#fff",fontWeight:800,fontFamily:"'Montserrat',sans-serif"}}>
+                                  <div style={{width:30,height:30,borderRadius:3,background:"rgba(0,0,0,0.85)",border:"1.5px solid var(--gfi-text-muted)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"#fff",fontWeight:800,fontFamily:"var(--font-display)"}}>
                                     +{(fotos.length+videos.length)-4}
                                   </div>
                                 )}
                               </div>
                             )}
                             {ev.destacado && (
-                              <div style={{position:"absolute",top:7,left:7,background:"rgba(200,0,0,0.9)",padding:"2px 7px",borderRadius:20,fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,color:"#fff"}}>⭐</div>
+                              <div style={{position:"absolute",top:7,left:7,background:"rgba(200,0,0,0.9)",padding:"2px 7px",borderRadius:20,fontSize:9,fontFamily:"var(--font-display)",fontWeight:700,color:"#fff"}}>⭐</div>
                             )}
                           </div>
                         );
@@ -687,15 +687,15 @@ export default function EventosPage() {
                       <div className="ev-fecha-col">
                         {ev.es_recurrente && ev.fechas_recurrentes && ev.fechas_recurrentes.length > 0 ? (
                           <>
-                            <div style={{ fontSize: 22, fontWeight: 800, color: "#990000", lineHeight: 1, fontFamily: "'Montserrat',sans-serif" }}>{ev.fechas_recurrentes.length}</div>
-                            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", textAlign: "center" }}>SESIONES</div>
-                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)" }}>{new Date(ev.fecha + "T12:00:00").toLocaleDateString("es-AR", { month: "short", year: "2-digit" }).toUpperCase()}</div>
+                            <div style={{ fontSize: 22, fontWeight: 800, color: "#990000", lineHeight: 1, fontFamily: "var(--font-display)" }}>{ev.fechas_recurrentes.length}</div>
+                            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", textAlign: "center" }}>SESIONES</div>
+                            <div style={{ fontSize: 9, color: "var(--gfi-text-dim)" }}>{new Date(ev.fecha + "T12:00:00").toLocaleDateString("es-AR", { month: "short", year: "2-digit" }).toUpperCase()}</div>
                           </>
                         ) : ev.fecha_fin ? (
                           <>
-                            <div style={{ fontSize: 16, fontWeight: 800, color: "#990000", lineHeight: 1, fontFamily: "'Montserrat',sans-serif" }}>{f.num}→{new Date(ev.fecha_fin).getDate()}</div>
-                            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", textAlign: "center" }}>{f.mes}</div>
-                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)" }}>{anio}</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: "#990000", lineHeight: 1, fontFamily: "var(--font-display)" }}>{f.num}→{new Date(ev.fecha_fin).getDate()}</div>
+                            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", textAlign: "center" }}>{f.mes}</div>
+                            <div style={{ fontSize: 9, color: "var(--gfi-text-dim)" }}>{anio}</div>
                           </>
                         ) : (
                           <>
@@ -742,18 +742,18 @@ export default function EventosPage() {
                           </div>
                         )}
                         {ev.capacidad===null&&ev.total_inscriptos!==undefined&&ev.total_inscriptos>0&&(
-                          <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:6}}>{ev.total_inscriptos} inscriptos</div>
+                          <div style={{fontSize:10,color:"var(--gfi-text-dim)",marginTop:6}}>{ev.total_inscriptos} inscriptos</div>
                         )}
                       </div>
 
                       {/* ACCIONES */}
                       <div className="ev-acciones">
                         {procesando===ev.id?<span className="ev-spinner" />
-                        :pasado?<span style={{fontSize:10,color:"rgba(255,255,255,0.2)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>FINALIZADO</span>
+                        :pasado?<span style={{fontSize:10,color:"var(--gfi-text-dim)",fontFamily:"var(--font-display)",fontWeight:700}}>FINALIZADO</span>
                         :!ev.gratuito&&!ev.inscripto?(
                           ev.link_externo
                             ?<button className="ev-btn-ins libre" onClick={()=>window.open(ev.link_externo!,"_blank","noopener,noreferrer")}>Pago externo</button>
-                            :<span style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>💰 {ev.precio_entrada?.toLocaleString("es-AR")} {ev.moneda??""}</span>
+                            :<span style={{fontSize:10,color:"var(--gfi-text-muted)",fontFamily:"var(--font-display)",fontWeight:700}}>💰 {ev.precio_entrada?.toLocaleString("es-AR")} {ev.moneda??""}</span>
                         ):(
                           <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
                             onClick={()=>{
@@ -766,27 +766,27 @@ export default function EventosPage() {
                           </button>
                         )}
                         {ev.inscripto&&ev.link_externo&&!pasado&&(
-                          <a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>🔗 Link inscripción</a>
+                          <a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"var(--font-display)",fontWeight:700}}>🔗 Link inscripción</a>
                         )}
-                        <button style={{padding:"5px 10px",background:"transparent",border:"1px solid rgba(255,255,255,0.1)",borderRadius:3,color:"rgba(255,255,255,0.4)",fontFamily:"'Montserrat',sans-serif",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",transition:"all 0.15s"}}
+                        <button style={{padding:"5px 10px",background:"transparent",border:"1px solid var(--gfi-border)",borderRadius:3,color:"var(--gfi-text-muted)",fontFamily:"var(--font-display)",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",transition:"all 0.15s"}}
                           onClick={()=>setEventoVer(ev)}
                           onMouseEnter={e=>(e.currentTarget.style.color="#fff")}
-                          onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.4)")}>
+                          onMouseLeave={e=>(e.currentTarget.style.color="var(--gfi-text-muted)")}>
                           Ver evento
                         </button>
-                        {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#4ab8d8",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Unirse</a>}
+                        {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#4ab8d8",textDecoration:"none",fontFamily:"var(--font-display)",fontWeight:700}}>Unirse</a>}
                         {esAdmin&&ev.estado==="publicado"&&(
                           <button
                             onClick={() => publicarEventoEnRedes(ev)}
                             disabled={publicandoEvento === ev.id}
-                            style={{padding:"5px 10px",background:"rgba(59,130,246,0.1)",border:"1px solid rgba(59,130,246,0.3)",borderRadius:3,color:"#3b82f6",fontFamily:"'Montserrat',sans-serif",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",whiteSpace:"nowrap"}}>
+                            style={{padding:"5px 10px",background:"rgba(59,130,246,0.1)",border:"1px solid rgba(59,130,246,0.3)",borderRadius:3,color:"#3b82f6",fontFamily:"var(--font-display)",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",whiteSpace:"nowrap"}}>
                             {publicandoEvento === ev.id ? "..." : "📤 Redes"}
                           </button>
                         )}
                         {esAdmin&&ev.estado==="publicado"&&eventoRedesResult[ev.id]&&(
                           <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
                             {eventoRedesResult[ev.id].map(r => (
-                              <span key={r.red} style={{fontSize:8,fontFamily:"'Montserrat',sans-serif",fontWeight:700,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",textTransform:"uppercase",background:r.ok?"rgba(34,197,94,0.12)":"rgba(200,0,0,0.12)",border:`1px solid ${r.ok?"rgba(34,197,94,0.3)":"rgba(200,0,0,0.3)"}`,color:r.ok?"#3abab6":"#f87171"}}>
+                              <span key={r.red} style={{fontSize:8,fontFamily:"var(--font-display)",fontWeight:700,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",textTransform:"uppercase",background:r.ok?"rgba(34,197,94,0.12)":"rgba(200,0,0,0.12)",border:`1px solid ${r.ok?"rgba(34,197,94,0.3)":"rgba(200,0,0,0.3)"}`,color:r.ok?"#3abab6":"#f87171"}}>
                                 {r.red} {r.ok ? "✓" : "✗"}
                               </span>
                             ))}
@@ -811,24 +811,24 @@ export default function EventosPage() {
               {esAdmin ? "Crear" : "Proponer"} <span>evento</span>
             </div>
             {!esAdmin && (
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>
                 💡 Tu propuesta será revisada por el admin antes de publicarse.
               </div>
             )}
 
             {!mostrarParser ? (
               <button type="button"
-                style={{width:"100%",padding:"10px 14px",background:"rgba(200,0,0,0.06)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:6,color:"rgba(200,0,0,0.8)",fontFamily:"'Montserrat',sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",marginBottom:16}}
+                style={{width:"100%",padding:"10px 14px",background:"rgba(200,0,0,0.06)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:6,color:"rgba(200,0,0,0.8)",fontFamily:"var(--font-display)",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",marginBottom:16}}
                 onClick={() => setMostrarParser(true)}>
                 Pegar texto de WhatsApp / mail — autocompletar con IA
               </button>
             ) : (
               <div style={{background:"rgba(200,0,0,0.04)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:16,marginBottom:16}}>
-                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:8}}>
+                <div style={{fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:8}}>
                   Parser IA — Pega el texto del evento
                 </div>
                 <textarea
-                  style={{width:"100%",minHeight:120,padding:"10px 12px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"#fff",fontSize:12,fontFamily:"'Inter',sans-serif",outline:"none",resize:"vertical"}}
+                  style={{width:"100%",minHeight:120,padding:"10px 12px",background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:4,color:"#fff",fontSize:12,fontFamily:"var(--font-body)",outline:"none",resize:"vertical"}}
                   placeholder={"Pega aca el texto del evento (Ctrl+V)...\n\nTambien podes pegar una imagen del portapapeles."}
                   value={textoParser}
                   onChange={e => setTextoParser(e.target.value)}
@@ -837,9 +837,9 @@ export default function EventosPage() {
                 />
                 {imagenParser && (
                   <div style={{marginTop:8,display:"flex",alignItems:"center",gap:8}}>
-                    <img src={imagenParser} alt="preview" style={{width:60,height:60,objectFit:"cover",borderRadius:4,border:"1px solid rgba(255,255,255,0.1)"}} />
-                    <span style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>Imagen detectada — se usara como imagen del evento</span>
-                    <button type="button" onClick={() => setImagenParser(null)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:14}}>x</button>
+                    <img src={imagenParser} alt="preview" style={{width:60,height:60,objectFit:"cover",borderRadius:4,border:"1px solid var(--gfi-border)"}} />
+                    <span style={{fontSize:11,color:"var(--gfi-text-muted)"}}>Imagen detectada — se usara como imagen del evento</span>
+                    <button type="button" onClick={() => setImagenParser(null)} style={{background:"transparent",border:"none",color:"var(--gfi-text-muted)",cursor:"pointer",fontSize:14}}>x</button>
                   </div>
                 )}
                 <div style={{display:"flex",gap:8,marginTop:10}}>
@@ -850,7 +850,7 @@ export default function EventosPage() {
                     Cancelar
                   </button>
                 </div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:8,fontStyle:"italic"}}>
+                <div style={{fontSize:10,color:"var(--gfi-text-dim)",marginTop:8,fontStyle:"italic"}}>
                   La IA extrae titulo, fecha, hora, lugar, disertantes y mas. Revisa los datos antes de guardar.
                 </div>
               </div>
@@ -899,7 +899,7 @@ export default function EventosPage() {
                   { key: "recurrente", label: "Sesiones / clases" },
                 ].map(op => (
                   <button key={op.key} type="button"
-                    style={{ flex: 1, padding: "8px 6px", background: modoFecha === op.key ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.03)", border: `1px solid ${modoFecha === op.key ? "rgba(200,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, borderRadius: 4, color: modoFecha === op.key ? "#fff" : "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
+                    style={{ flex: 1, padding: "8px 6px", background: modoFecha === op.key ? "rgba(200,0,0,0.12)" : "var(--gfi-bg-card)", border: `1px solid ${modoFecha === op.key ? "rgba(200,0,0,0.5)" : "var(--gfi-border)"}`, borderRadius: 4, color: modoFecha === op.key ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
                     onClick={() => setModoFecha(op.key as "unico"|"multidia"|"recurrente")}>
                     {op.label}
                   </button>
@@ -937,21 +937,21 @@ export default function EventosPage() {
                   <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                     <input className="ev-input" type="date" value={nuevaFechaRec} onChange={e => setNuevaFechaRec(e.target.value)} style={{ flex: 1 }} />
                     <button type="button" onClick={() => { if (nuevaFechaRec && !fechasRec.includes(nuevaFechaRec)) { setFechasRec(p => [...p, nuevaFechaRec].sort()); setNuevaFechaRec(""); } }}
-                      style={{ padding: "8px 14px", background: "#990000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
+                      style={{ padding: "8px 14px", background: "#990000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
                       + Agregar
                     </button>
                   </div>
                   {fechasRec.length > 0 && (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {fechasRec.map(f => (
-                        <div key={f} style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.25)", borderRadius: 4, padding: "4px 10px", fontSize: 12, color: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", gap: 6 }}>
+                        <div key={f} style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.25)", borderRadius: 4, padding: "4px 10px", fontSize: 12, color: "var(--gfi-text-primary)", display: "flex", alignItems: "center", gap: 6 }}>
                           {new Date(f + "T12:00:00").toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" })}
-                          <button type="button" onClick={() => setFechasRec(p => p.filter(x => x !== f))} style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 13, lineHeight: 1, padding: 0 }}>×</button>
+                          <button type="button" onClick={() => setFechasRec(p => p.filter(x => x !== f))} style={{ background: "transparent", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 13, lineHeight: 1, padding: 0 }}>×</button>
                         </div>
                       ))}
                     </div>
                   )}
-                  {fechasRec.length === 0 && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>Agregá al menos una fecha de sesión</div>}
+                  {fechasRec.length === 0 && <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontStyle: "italic" }}>Agregá al menos una fecha de sesión</div>}
                 </div>
               </>
             )}
@@ -1004,7 +1004,7 @@ export default function EventosPage() {
               <div className="ev-field" style={{ marginTop: 8 }}>
                 <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
                   <input type="checkbox" checked={form.destacado} onChange={e => setF("destacado", e.target.checked)} style={{ accentColor: "#990000" }} />
-                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>⭐ Marcar como destacado</span>
+                  <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>⭐ Marcar como destacado</span>
                 </label>
               </div>
             )}
@@ -1016,20 +1016,20 @@ export default function EventosPage() {
             <div className="ev-field">
               <label className="ev-label">Fotos (flyer, lugar, etc.) — varias a la vez</label>
               <label
-                style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",background:"rgba(255,255,255,0.03)",border:"2px dashed rgba(255,255,255,0.1)",borderRadius:6,cursor:"pointer",transition:"all 0.2s"}}
+                style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",background:"var(--gfi-bg-card)",border:"2px dashed var(--gfi-border)",borderRadius:6,cursor:"pointer",transition:"all 0.2s"}}
                 onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(200,0,0,0.5)"; }}
-                onDragLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
-                onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; if (e.dataTransfer.files) subirFotos(e.dataTransfer.files); }}
+                onDragLeave={e => { e.currentTarget.style.borderColor = "var(--gfi-border)"; }}
+                onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = "var(--gfi-border)"; if (e.dataTransfer.files) subirFotos(e.dataTransfer.files); }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(200,0,0,0.3)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--gfi-border)"}
               >
                 <input type="file" accept="image/*" multiple style={{display:"none"}} onChange={e => e.target.files && subirFotos(e.target.files)} />
                 <span style={{fontSize:28}}>📷</span>
                 <div>
-                  <div style={{fontSize:13,color:"rgba(255,255,255,0.7)",fontWeight:500}}>
+                  <div style={{fontSize:13,color:"var(--gfi-text-primary)",fontWeight:500}}>
                     {subiendoFoto ? "⏳ Subiendo fotos..." : "Seleccionar o arrastrar fotos"}
                   </div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:2}}>JPG, PNG, WEBP · Podés seleccionar varias a la vez</div>
+                  <div style={{fontSize:11,color:"var(--gfi-text-muted)",marginTop:2}}>JPG, PNG, WEBP · Podés seleccionar varias a la vez</div>
                 </div>
               </label>
             </div>
@@ -1051,7 +1051,7 @@ export default function EventosPage() {
                   + Agregar
                 </button>
               </div>
-              <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:4}}>
+              <div style={{fontSize:10,color:"var(--gfi-text-dim)",marginTop:4}}>
                 Pegá el link y presioná Enter o el botón. Repetí para cada video.
               </div>
             </div>
@@ -1059,12 +1059,12 @@ export default function EventosPage() {
             {/* Galería preview */}
             {media.length > 0 && (
               <div style={{marginTop:4}}>
-                <div style={{fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:8}}>
+                <div style={{fontSize:10,fontFamily:"var(--font-display)",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--gfi-text-dim)",marginBottom:8}}>
                   {media.filter(m => m.tipo === "foto").length} foto{media.filter(m => m.tipo === "foto").length !== 1 ? "s" : ""} · {media.filter(m => m.tipo === "video").length} video{media.filter(m => m.tipo === "video").length !== 1 ? "s" : ""}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))",gap:8}}>
                   {media.map((m, i) => (
-                    <div key={i} style={{position:"relative",borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",aspectRatio:"1",background:"rgba(0,0,0,0.4)",minHeight:88}}>
+                    <div key={i} style={{position:"relative",borderRadius:6,overflow:"hidden",border:"1px solid var(--gfi-border)",aspectRatio:"1",background:"rgba(0,0,0,0.4)",minHeight:88}}>
                       {m.tipo === "foto" ? (
                         <img
                           src={m.url}
@@ -1079,13 +1079,13 @@ export default function EventosPage() {
                             ? <img src={m.thumb} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.5}} alt="" />
                             : null}
                           <span style={{fontSize:22,position:"relative",zIndex:1}}>▶️</span>
-                          <span style={{fontSize:8,color:"rgba(255,255,255,0.5)",textAlign:"center",position:"relative",zIndex:1,lineHeight:1.2,wordBreak:"break-all"}}>
+                          <span style={{fontSize:8,color:"var(--gfi-text-secondary)",textAlign:"center",position:"relative",zIndex:1,lineHeight:1.2,wordBreak:"break-all"}}>
                             {m.url.includes("youtube") ? "YouTube" : m.url.includes("instagram") ? "Instagram" : m.url.includes("tiktok") ? "TikTok" : "Video"}
                           </span>
                         </div>
                       )}
                       {/* Badge tipo */}
-                      <div style={{position:"absolute",bottom:0,left:0,right:0,background:"rgba(0,0,0,0.65)",padding:"2px 4px",fontSize:9,color:"rgba(255,255,255,0.7)",textAlign:"center",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
+                      <div style={{position:"absolute",bottom:0,left:0,right:0,background:"rgba(0,0,0,0.65)",padding:"2px 4px",fontSize:9,color:"var(--gfi-text-primary)",textAlign:"center",fontFamily:"var(--font-display)",fontWeight:700}}>
                         {m.tipo === "foto" ? "📷 Foto" : "🎬 Video"}
                       </div>
                       {/* Botón quitar */}
@@ -1094,14 +1094,14 @@ export default function EventosPage() {
                         onClick={() => quitarMedia(i)}>&times;</button>
                       {/* Primera foto = portada */}
                       {i === 0 && m.tipo === "foto" && (
-                        <div style={{position:"absolute",top:4,left:4,background:"rgba(200,0,0,0.85)",padding:"2px 6px",borderRadius:3,fontSize:8,color:"#fff",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
+                        <div style={{position:"absolute",top:4,left:4,background:"rgba(200,0,0,0.85)",padding:"2px 6px",borderRadius:3,fontSize:8,color:"#fff",fontFamily:"var(--font-display)",fontWeight:700}}>
                           PORTADA
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:6,fontStyle:"italic"}}>
+                <div style={{fontSize:10,color:"var(--gfi-text-dim)",marginTop:6,fontStyle:"italic"}}>
                   La primera foto se muestra como portada del evento. Podés reordenarlas quitando y volviendo a subir.
                 </div>
               </div>
@@ -1136,10 +1136,10 @@ export default function EventosPage() {
             ) : lightbox.includes("instagram.com") ? (
               <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
                 <div style={{fontSize:48}}>📷</div>
-                <div style={{fontSize:14,color:"rgba(255,255,255,0.7)",textAlign:"center",maxWidth:320}}>
+                <div style={{fontSize:14,color:"var(--gfi-text-primary)",textAlign:"center",maxWidth:320}}>
                   Instagram no permite reproducción embebida.<br/>
                   <a href={lightbox} target="_blank" rel="noopener noreferrer"
-                    style={{color:"#990000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",marginTop:12,display:"inline-block"}}>
+                    style={{color:"#990000",fontWeight:700,fontFamily:"var(--font-display)",textDecoration:"none",marginTop:12,display:"inline-block"}}>
                     Abrir en Instagram →
                   </a>
                 </div>
@@ -1147,10 +1147,10 @@ export default function EventosPage() {
             ) : lightbox.includes("tiktok.com") ? (
               <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
                 <div style={{fontSize:48}}>🎵</div>
-                <div style={{fontSize:14,color:"rgba(255,255,255,0.7)",textAlign:"center",maxWidth:320}}>
+                <div style={{fontSize:14,color:"var(--gfi-text-primary)",textAlign:"center",maxWidth:320}}>
                   TikTok no permite reproducción embebida.<br/>
                   <a href={lightbox} target="_blank" rel="noopener noreferrer"
-                    style={{color:"#990000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",marginTop:12,display:"inline-block"}}>
+                    style={{color:"#990000",fontWeight:700,fontFamily:"var(--font-display)",textDecoration:"none",marginTop:12,display:"inline-block"}}>
                     Abrir en TikTok →
                   </a>
                 </div>
@@ -1167,7 +1167,7 @@ export default function EventosPage() {
               <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
                 <div style={{fontSize:48}}>🎬</div>
                 <a href={lightbox} target="_blank" rel="noopener noreferrer"
-                  style={{color:"#990000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",fontSize:14}}>
+                  style={{color:"#990000",fontWeight:700,fontFamily:"var(--font-display)",textDecoration:"none",fontSize:14}}>
                   Abrir video →
                 </a>
               </div>
@@ -1205,13 +1205,13 @@ export default function EventosPage() {
                   {fotos.length > 1 && (
                     <div style={{position:"absolute",bottom:10,right:12,display:"flex",gap:4}}>
                       {fotos.slice(1,4).map((m:MediaItem,i:number)=>(
-                        <div key={i} style={{width:44,height:44,borderRadius:4,overflow:"hidden",border:"1.5px solid rgba(255,255,255,0.4)",cursor:"zoom-in",flexShrink:0}}
+                        <div key={i} style={{width:44,height:44,borderRadius:4,overflow:"hidden",border:"1.5px solid var(--gfi-text-muted)",cursor:"zoom-in",flexShrink:0}}
                           onClick={e=>{e.stopPropagation();setLightbox(m.url);}}>
                           <img src={m.url} style={{width:"100%",height:"100%",objectFit:"cover"}} alt="" />
                         </div>
                       ))}
                       {fotos.length > 4 && (
-                        <div style={{width:44,height:44,borderRadius:4,background:"rgba(0,0,0,0.7)",border:"1.5px solid rgba(255,255,255,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",fontWeight:800,fontFamily:"'Montserrat',sans-serif"}}>
+                        <div style={{width:44,height:44,borderRadius:4,background:"rgba(0,0,0,0.7)",border:"1.5px solid var(--gfi-text-muted)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",fontWeight:800,fontFamily:"var(--font-display)"}}>
                           +{fotos.length-4}
                         </div>
                       )}
@@ -1242,30 +1242,30 @@ export default function EventosPage() {
                 </div>
 
                 {/* Título */}
-                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:20,fontWeight:800,color:"#fff",lineHeight:1.3,marginBottom:14}}>{ev.titulo}</div>
+                <div style={{fontFamily:"var(--font-display)",fontSize:20,fontWeight:800,color:"#fff",lineHeight:1.3,marginBottom:14}}>{ev.titulo}</div>
 
                 {/* Meta */}
                 <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:16}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"rgba(255,255,255,0.6)"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"var(--gfi-text-secondary)"}}>
                     <span>🗓️</span><span>{f.dia} a las {f.hora}hs</span>
                   </div>
                   {ev.lugar&&(
-                    <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"rgba(255,255,255,0.6)"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"var(--gfi-text-secondary)"}}>
                       <span>📍</span><span>{ev.lugar}</span>
-                      {ev.lugar_url&&<a href={ev.lugar_url} target="_blank" rel="noopener noreferrer" style={{color:"#990000",fontSize:11,fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none"}}>Ver mapa →</a>}
+                      {ev.lugar_url&&<a href={ev.lugar_url} target="_blank" rel="noopener noreferrer" style={{color:"#990000",fontSize:11,fontWeight:700,fontFamily:"var(--font-display)",textDecoration:"none"}}>Ver mapa →</a>}
                     </div>
                   )}
                   {ev.link_reunion&&!pasado&&(
-                    <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"rgba(255,255,255,0.6)"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"var(--gfi-text-secondary)"}}>
                       <span>🔗</span>
-                      <a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{color:"#4ab8d8",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",fontSize:13}}>Unirse online →</a>
+                      <a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{color:"#4ab8d8",fontWeight:700,fontFamily:"var(--font-display)",textDecoration:"none",fontSize:13}}>Unirse online →</a>
                     </div>
                   )}
                 </div>
 
                 {/* Descripción */}
                 {ev.descripcion && (
-                  <div style={{fontSize:14,color:"rgba(255,255,255,0.7)",lineHeight:1.7,whiteSpace:"pre-wrap",marginBottom:18,padding:"14px 16px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6}}>
+                  <div style={{fontSize:14,color:"var(--gfi-text-primary)",lineHeight:1.7,whiteSpace:"pre-wrap",marginBottom:18,padding:"14px 16px",background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border-subtle)",borderRadius:6}}>
                     {ev.descripcion}
                   </div>
                 )}
@@ -1273,11 +1273,11 @@ export default function EventosPage() {
                 {/* Videos */}
                 {videos.length > 0 && (
                   <div style={{marginBottom:16}}>
-                    <div style={{fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:8}}>Videos</div>
+                    <div style={{fontSize:10,fontFamily:"var(--font-display)",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--gfi-text-dim)",marginBottom:8}}>Videos</div>
                     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                       {videos.map((v:MediaItem,i:number)=>(
                         <button key={i} type="button"
-                          style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",background:"rgba(74,184,216,0.08)",border:"1px solid rgba(74,184,216,0.2)",borderRadius:4,color:"#4ab8d8",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
+                          style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",background:"rgba(74,184,216,0.08)",border:"1px solid rgba(74,184,216,0.2)",borderRadius:4,color:"#4ab8d8",fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,cursor:"pointer"}}
                           onClick={()=>setLightbox(v.url)}>
                           ▶️ Ver video {videos.length>1?i+1:""}
                         </button>
@@ -1295,13 +1295,13 @@ export default function EventosPage() {
                 )}
 
                 {/* Acciones */}
-                <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:18}}>
+                <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",borderTop:"1px solid var(--gfi-border-subtle)",paddingTop:18}}>
                   {!pasado&&(
                     procesando===ev.id ? <span className="ev-spinner" /> :
                     !ev.gratuito&&!ev.inscripto ? (
                       ev.link_externo
                         ?<button className="ev-btn-ins libre" style={{fontSize:11,padding:"10px 20px"}} onClick={()=>window.open(ev.link_externo!,"_blank","noopener,noreferrer")}>Pago externo</button>
-                        :<span style={{fontSize:12,color:"rgba(255,255,255,0.4)",fontWeight:700}}>💰 {ev.precio_entrada?.toLocaleString("es-AR")} {ev.moneda??""}</span>
+                        :<span style={{fontSize:12,color:"var(--gfi-text-muted)",fontWeight:700}}>💰 {ev.precio_entrada?.toLocaleString("es-AR")} {ev.moneda??""}</span>
                     ) : (
                       <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
                         style={{fontSize:11,padding:"10px 20px"}}
@@ -1317,7 +1317,7 @@ export default function EventosPage() {
                   )}
                   {ev.link_externo&&(
                     <a href={ev.link_externo} target="_blank" rel="noopener noreferrer"
-                      style={{padding:"9px 16px",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#990000",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase"}}>
+                      style={{padding:"9px 16px",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#990000",fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase"}}>
                       🔗 Link inscripción
                     </a>
                   )}
@@ -1326,7 +1326,7 @@ export default function EventosPage() {
               </div>
 
               {/* Botón cerrar X */}
-              <button style={{position:"absolute",top:12,right:12,width:32,height:32,borderRadius:"50%",background:"rgba(0,0,0,0.7)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.7)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10}}
+              <button style={{position:"absolute",top:12,right:12,width:32,height:32,borderRadius:"50%",background:"rgba(0,0,0,0.7)",border:"1px solid var(--gfi-border)",color:"var(--gfi-text-primary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10}}
                 onClick={()=>setEventoVer(null)}>&times;</button>
             </div>
           </div>

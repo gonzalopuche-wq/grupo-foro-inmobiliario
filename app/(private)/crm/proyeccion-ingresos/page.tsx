@@ -196,16 +196,16 @@ export default function ProyeccionIngresosPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .pi-card { background:rgba(14,14,14,0.9); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:18px; }
-        .pi-input { width:100%; padding:8px 10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
+        .pi-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:8px; padding:18px; }
+        .pi-input { width:100%; padding:8px 10px; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:4px; color:#fff; font-size:13px; font-family:var(--font-body); outline:none; box-sizing:border-box; }
         .pi-input:focus { border-color:rgba(153,0,0,0.5); }
-        .pi-select { width:100%; padding:8px 10px; background:rgba(14,14,14,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; }
-        .pi-label { display:block; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:5px; font-family:'Montserrat',sans-serif; }
-        .pi-btn { padding:8px 14px; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; }
+        .pi-select { width:100%; padding:8px 10px; background:var(--gfi-bg-card); border:1px solid var(--gfi-border); border-radius:4px; color:#fff; font-size:13px; font-family:var(--font-body); outline:none; }
+        .pi-label { display:block; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--gfi-text-muted); margin-bottom:5px; font-family:var(--font-display); }
+        .pi-btn { padding:8px 14px; border:none; border-radius:5px; font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; }
         .pi-kpi { text-align:center; }
-        .pi-kpi-n { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; }
-        .pi-kpi-l { font-size:10px; color:rgba(255,255,255,0.3); font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-top:4px; }
-        .pi-tab { padding:7px 16px; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:all 0.15s; }
+        .pi-kpi-n { font-family:var(--font-display); font-size:18px; font-weight:800; }
+        .pi-kpi-l { font-size:10px; color:var(--gfi-text-muted); font-family:var(--font-display); font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-top:4px; }
+        .pi-tab { padding:7px 16px; border-radius:5px; font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:all 0.15s; }
         @media(max-width:700px){.pi-cols{flex-direction:column!important;} .pi-grid4{grid-template-columns:repeat(2,1fr)!important;}}
       `}</style>
 
@@ -214,14 +214,14 @@ export default function ProyeccionIngresosPage() {
         {/* ── Header ── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#fff" }}>
               Proyección de <span style={{ color: "#990000" }}>Ingresos</span>
             </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 3 }}>
               Comisiones esperadas basadas en el pipeline CRM · probabilidad por etapa
             </div>
           </div>
-          <button className="pi-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={exportarPDF}>
+          <button className="pi-btn" style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)" }} onClick={exportarPDF}>
             ↓ Exportar PDF
           </button>
         </div>
@@ -251,9 +251,9 @@ export default function ProyeccionIngresosPage() {
               {(["pes","base","opt"] as const).map(e => (
                 <button key={e} className="pi-tab"
                   style={{
-                    background: escenario === e ? `${e === "opt" ? "rgba(34,197,94," : e === "pes" ? "rgba(245,158,11," : "rgba(255,255,255,"}0.12)` : "rgba(255,255,255,0.04)",
-                    color: escenario === e ? escenarioColor[e] : "rgba(255,255,255,0.35)",
-                    border: `1px solid ${escenario === e ? (e === "opt" ? "rgba(34,197,94,0.4)" : e === "pes" ? "rgba(245,158,11,0.4)" : "rgba(255,255,255,0.2)") : "rgba(255,255,255,0.08)"}`,
+                    background: escenario === e ? `${e === "opt" ? "rgba(34,197,94," : e === "pes" ? "rgba(245,158,11," : "rgba(255,255,255,"}0.12)` : "var(--gfi-border-subtle)",
+                    color: escenario === e ? escenarioColor[e] : "var(--gfi-text-muted)",
+                    border: `1px solid ${escenario === e ? (e === "opt" ? "rgba(34,197,94,0.4)" : e === "pes" ? "rgba(245,158,11,0.4)" : "var(--gfi-text-dim)") : "var(--gfi-border)"}`,
                   }}
                   onClick={() => setEscenario(e)}>
                   {escenarioLabel[e]}
@@ -264,12 +264,12 @@ export default function ProyeccionIngresosPage() {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 48, fontFamily: "Inter,sans-serif" }}>Cargando pipeline...</div>
+          <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 48, fontFamily: "Inter,sans-serif" }}>Cargando pipeline...</div>
         ) : negocios.filter(n => n.etapa !== "cerrado").length === 0 ? (
           <div className="pi-card" style={{ textAlign: "center", padding: "40px 20px" }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>📊</div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)" }}>Sin negocios activos en el pipeline</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", marginTop: 6, fontFamily: "Inter,sans-serif" }}>Agregá negocios en el CRM para ver la proyección</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)" }}>Sin negocios activos en el pipeline</div>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-dim)", marginTop: 6, fontFamily: "Inter,sans-serif" }}>Agregá negocios en el CRM para ver la proyección</div>
           </div>
         ) : (
           <>
@@ -284,7 +284,7 @@ export default function ProyeccionIngresosPage() {
                 <div key={k.l} className="pi-card pi-kpi">
                   <div className="pi-kpi-n" style={{ color: k.c, fontSize: 14 }}>{k.n}</div>
                   <div className="pi-kpi-l">{k.l}</div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", fontFamily: "Montserrat,sans-serif", marginTop: 4 }}>Escenario {escenarioLabel[escenario]}</div>
+                  <div style={{ fontSize: 9, color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)", marginTop: 4 }}>Escenario {escenarioLabel[escenario]}</div>
                 </div>
               ))}
             </div>
@@ -295,7 +295,7 @@ export default function ProyeccionIngresosPage() {
               {/* Gráfico mensual */}
               <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 14 }}>
                 <div className="pi-card">
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>
                     Proyección mensual — {escenarioLabel[escenario]}
                   </div>
                   {/* SVG Bar chart */}
@@ -319,13 +319,13 @@ export default function ProyeccionIngresosPage() {
                             {/* Valor */}
                             {val > 0 && (
                               <text x={x + 40} y={180 - barH - 5} textAnchor="middle"
-                                fill="rgba(255,255,255,0.6)" fontSize={9} fontFamily="Montserrat,sans-serif">
+                                fill="var(--gfi-text-secondary)" fontSize={9} fontFamily="Montserrat,sans-serif">
                                 {fmtUSD(val).replace("USD ", "")}
                               </text>
                             )}
                             {/* Label mes */}
                             <text x={x + 40} y={196} textAnchor="middle"
-                              fill="rgba(255,255,255,0.3)" fontSize={9} fontFamily="Montserrat,sans-serif">
+                              fill="var(--gfi-text-muted)" fontSize={9} fontFamily="Montserrat,sans-serif">
                               {m.mes}
                             </text>
                           </g>
@@ -333,40 +333,40 @@ export default function ProyeccionIngresosPage() {
                       })}
                     </svg>
                   </div>
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", marginTop: 8 }}>
+                  <div style={{ fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", marginTop: 8 }}>
                     Las barras grises trasparentes muestran el rango pesimista–optimista para cada mes.
                   </div>
                 </div>
 
                 {/* Tabla mensual */}
                 <div className="pi-card">
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
                     Detalle mensual
                   </div>
                   <div style={{ overflowX: "auto" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
                       <thead>
-                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                        <tr style={{ borderBottom: "1px solid var(--gfi-border)" }}>
                           {["Mes","Pesimista","Base","Optimista","Negocios"].map(h => (
-                            <th key={h} style={{ padding: "7px 10px", textAlign: h === "Mes" || h === "Negocios" ? "left" : "right", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>{h}</th>
+                            <th key={h} style={{ padding: "7px 10px", textAlign: h === "Mes" || h === "Negocios" ? "left" : "right", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
                         {proyeccion.map((m, i) => (
-                          <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                            <td style={{ padding: "9px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff" }}>{m.mes}</td>
+                          <tr key={i} style={{ borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                            <td style={{ padding: "9px 10px", fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>{m.mes}</td>
                             <td style={{ padding: "9px 10px", textAlign: "right", color: "#d4960c" }}>{fmtUSD(m.pes)}</td>
                             <td style={{ padding: "9px 10px", textAlign: "right", color: "#fff", fontWeight: 600 }}>{fmtUSD(m.base)}</td>
                             <td style={{ padding: "9px 10px", textAlign: "right", color: "#3abab6" }}>{fmtUSD(m.opt)}</td>
-                            <td style={{ padding: "9px 10px", color: "rgba(255,255,255,0.4)" }}>{m.negocios.length}</td>
+                            <td style={{ padding: "9px 10px", color: "var(--gfi-text-muted)" }}>{m.negocios.length}</td>
                           </tr>
                         ))}
-                        <tr style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}>
-                          <td style={{ padding: "10px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>Total</td>
-                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#d4960c" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.pes,0))}</td>
-                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.base,0))}</td>
-                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#3abab6" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.opt,0))}</td>
+                        <tr style={{ borderTop: "1px solid var(--gfi-border)" }}>
+                          <td style={{ padding: "10px 10px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: "var(--gfi-text-secondary)", textTransform: "uppercase" }}>Total</td>
+                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "var(--font-display)", fontWeight: 800, color: "#d4960c" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.pes,0))}</td>
+                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.base,0))}</td>
+                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "var(--font-display)", fontWeight: 800, color: "#3abab6" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.opt,0))}</td>
                           <td />
                         </tr>
                       </tbody>
@@ -380,7 +380,7 @@ export default function ProyeccionIngresosPage() {
 
                 {/* Por etapa */}
                 <div className="pi-card">
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
                     Pipeline por etapa
                   </div>
                   {porEtapa.map(([etapa, data]) => {
@@ -390,9 +390,9 @@ export default function ProyeccionIngresosPage() {
                       <div key={etapa} style={{ marginBottom: 10 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", fontFamily: "Inter,sans-serif" }}>
-                            {etapa.replace("_"," ")} <span style={{ color: "rgba(255,255,255,0.3)" }}>({data.count})</span>
+                            {etapa.replace("_"," ")} <span style={{ color: "var(--gfi-text-muted)" }}>({data.count})</span>
                           </span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color, fontFamily: "Montserrat,sans-serif" }}>{fmtUSD(data.valorEsperado)}</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color, fontFamily: "var(--font-display)" }}>{fmtUSD(data.valorEsperado)}</span>
                         </div>
                         <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
                           <div style={{ height: "100%", width: `${(data.valorEsperado / maxVal) * 100}%`, background: color, borderRadius: 2, transition: "width 0.4s" }} />
@@ -404,18 +404,18 @@ export default function ProyeccionIngresosPage() {
 
                 {/* Metodología */}
                 <div className="pi-card" style={{ background: "rgba(255,255,255,0.01)" }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Probabilidades por etapa</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Probabilidades por etapa</div>
                   {Object.entries(PROB_BASE).filter(([e]) => e !== "perdido" && e !== "cerrado").map(([etapa, prob]) => (
-                    <div key={etapa} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>{etapa.replace("_"," ")}</span>
-                      <div style={{ display: "flex", gap: 8, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                    <div key={etapa} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                      <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>{etapa.replace("_"," ")}</span>
+                      <div style={{ display: "flex", gap: 8, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                         <span style={{ color: "#d4960c" }}>{fmtPct(PROB_PES[etapa])}</span>
-                        <span style={{ color: "rgba(255,255,255,0.5)" }}>{fmtPct(prob)}</span>
+                        <span style={{ color: "var(--gfi-text-secondary)" }}>{fmtPct(prob)}</span>
                         <span style={{ color: "#3abab6" }}>{fmtPct(PROB_OPT[etapa])}</span>
                       </div>
                     </div>
                   ))}
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", marginTop: 8, lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", marginTop: 8, lineHeight: 1.4 }}>
                     Pes / Base / Opt — Ajustá el escenario según tu historial real
                   </div>
                 </div>

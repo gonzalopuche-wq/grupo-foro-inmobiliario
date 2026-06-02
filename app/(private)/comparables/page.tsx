@@ -237,11 +237,11 @@ export default function ComparablesPage() {
         /* Tabla */
         .cmp-tabla-wrap { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); overflow: auto; }
         .cmp-tabla { width: 100%; border-collapse: collapse; min-width: 900px; }
-        .cmp-tabla thead tr { background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--gfi-border); }
+        .cmp-tabla thead tr { background: var(--gfi-bg-secondary); border-bottom: 1px solid var(--gfi-border); }
         .cmp-tabla th { padding: 11px 14px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); white-space: nowrap; }
-        .cmp-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background var(--gfi-transition); }
+        .cmp-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background var(--gfi-transition); }
         .cmp-tabla tbody tr:last-child { border-bottom: none; }
-        .cmp-tabla tbody tr:hover { background: rgba(255,255,255,0.02); }
+        .cmp-tabla tbody tr:hover { background: var(--gfi-bg-secondary); }
         .cmp-tabla td { padding: 12px 14px; font-size: 12px; color: var(--gfi-text-secondary); vertical-align: middle; }
         .cmp-direccion { font-weight: 600; color: var(--gfi-text-primary); font-size: 13px; }
         .cmp-sub-info { font-size: 10px; color: var(--gfi-text-muted); margin-top: 2px; }
@@ -251,7 +251,7 @@ export default function ComparablesPage() {
         .cmp-acciones { display: flex; gap: 6px; }
         .cmp-btn-sm { padding: 5px 10px; border-radius: var(--gfi-radius-sm); font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); border: 1px solid; }
         .cmp-btn-editar { background: transparent; border-color: var(--gfi-border); color: var(--gfi-text-muted); }
-        .cmp-btn-editar:hover { border-color: rgba(255,255,255,0.3); color: var(--gfi-text-primary); }
+        .cmp-btn-editar:hover { border-color: var(--gfi-text-muted); color: var(--gfi-text-primary); }
         .cmp-btn-eliminar { background: transparent; border-color: var(--gfi-red-border); color: rgba(153,0,0,0.5); }
         .cmp-btn-eliminar:hover { background: var(--gfi-red-soft); border-color: var(--gfi-red); color: var(--gfi-red); }
         .cmp-mio { font-size: 8px; color: var(--gfi-red); font-family: var(--font-display); font-weight: 700; }
@@ -283,7 +283,7 @@ export default function ComparablesPage() {
         .dolar-ref strong { color: var(--gfi-green-text); }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gfi-border); }
         .btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm); color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
-        .btn-cancel:hover { border-color: rgba(255,255,255,0.25); color: var(--gfi-text-primary); }
+        .btn-cancel:hover { border-color: var(--gfi-text-dim); color: var(--gfi-text-primary); }
         .btn-save { padding: 9px 22px; background: var(--gfi-red); border: none; border-radius: var(--gfi-radius-sm); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
         .btn-save:hover:not(:disabled) { background: var(--gfi-red-hover); }
         .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -339,13 +339,13 @@ export default function ComparablesPage() {
             </select>
             <button
               className="cmp-select"
-              style={{cursor:"pointer",color:mostrarFiltrosAvanzados?"#990000":"rgba(255,255,255,0.6)",borderColor:mostrarFiltrosAvanzados?"rgba(200,0,0,0.4)":"rgba(255,255,255,0.1)"}}
+              style={{cursor:"pointer",color:mostrarFiltrosAvanzados?"#990000":"var(--gfi-text-secondary)",borderColor:mostrarFiltrosAvanzados?"rgba(200,0,0,0.4)":"var(--gfi-border)"}}
               onClick={()=>setMostrarFiltrosAvanzados(v=>!v)}
             >
               {mostrarFiltrosAvanzados?"▲ Menos filtros":"▼ Más filtros"}
             </button>
             <div className="cmp-toggle" onClick={()=>setSoloMios(v=>!v)}>
-              <div className="cmp-toggle-switch" style={{background:soloMios?"#990000":"rgba(255,255,255,0.1)"}}>
+              <div className="cmp-toggle-switch" style={{background:soloMios?"#990000":"var(--gfi-border)"}}>
                 <div className="cmp-toggle-knob" style={{left:soloMios?18:2}}/>
               </div>
               <span className="cmp-toggle-label">Solo míos</span>

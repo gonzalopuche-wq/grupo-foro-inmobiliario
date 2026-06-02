@@ -137,7 +137,7 @@ export default function BusquedaGlobal() {
                     <div
                       key={r.id}
                       onClick={() => navegar(r.href)}
-                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)", background: isSelected ? "var(--gfi-bg-elevated)" : "transparent", transition: "background var(--gfi-transition)" }}
+                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", cursor: "pointer", borderBottom: "1px solid var(--gfi-border-subtle)", background: isSelected ? "var(--gfi-bg-elevated)" : "transparent", transition: "background var(--gfi-transition)" }}
                       onMouseEnter={() => setSelIdx(i)}
                     >
                       <span style={{ fontSize: 18, flexShrink: 0 }}>{cfg.icon}</span>

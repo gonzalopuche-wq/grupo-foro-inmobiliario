@@ -179,23 +179,23 @@ export default function MapaCarteraPage() {
     <div style={{ fontFamily: "Inter,sans-serif", color: "#fff", height: "calc(100vh - 80px)", display: "flex", flexDirection: "column" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap');
-        .mc-filtro-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-family: Montserrat,sans-serif; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
-        .mc-filtro-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
+        .mc-filtro-btn { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); color: var(--gfi-text-secondary); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-family: Montserrat,sans-serif; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
+        .mc-filtro-btn:hover { border-color: var(--gfi-text-dim); color: rgba(255,255,255,0.8); }
         .mc-filtro-btn.active { background: rgba(153,0,0,0.12); border-color: rgba(153,0,0,0.3); color: #990000; }
-        .mc-prop-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all 0.15s; }
-        .mc-prop-card:hover { border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.05); }
+        .mc-prop-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all 0.15s; }
+        .mc-prop-card:hover { border-color: rgba(255,255,255,0.14); background: var(--gfi-border-subtle); }
         .mc-prop-card.selected { border-color: rgba(153,0,0,0.4); background: rgba(153,0,0,0.06); }
         .leaflet-popup-content-wrapper { border-radius: 8px !important; }
         .leaflet-popup-tip { display: none !important; }
       `}</style>
 
       {/* Header */}
-      <div style={{ padding: "12px 20px 10px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", flexShrink: 0 }}>
-        <Link href="/crm/cartera" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em" }}>
+      <div style={{ padding: "12px 20px 10px", borderBottom: "1px solid var(--gfi-border-subtle)", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", flexShrink: 0 }}>
+        <Link href="/crm/cartera" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em" }}>
           ← CARTERA
         </Link>
-        <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.1)" }} />
-        <div style={{ fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff" }}>Mapa de propiedades</div>
+        <div style={{ width: 1, height: 16, background: "var(--gfi-border)" }} />
+        <div style={{ fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>Mapa de propiedades</div>
         <div style={{ flex: 1 }} />
 
         {/* Filtros */}
@@ -205,7 +205,7 @@ export default function MapaCarteraPage() {
               {op || "Todas"}
             </button>
           ))}
-          <div style={{ width: 1, height: 24, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
+          <div style={{ width: 1, height: 24, background: "var(--gfi-border)", margin: "0 2px" }} />
           {["", "activa", "reservada", "pausada"].map(est => (
             <button key={est} className={`mc-filtro-btn${filtroEstado === est ? " active" : ""}`} onClick={() => setFiltroEstado(est)}>
               {est ? est.charAt(0).toUpperCase() + est.slice(1) : "Todos estados"}
@@ -216,11 +216,11 @@ export default function MapaCarteraPage() {
         {/* Stats */}
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#990000", lineHeight: 1 }}>{conCoords.length}</div>
-            <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em" }}>EN MAPA</div>
+            <div style={{ fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", lineHeight: 1 }}>{conCoords.length}</div>
+            <div style={{ fontSize: 8, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em" }}>EN MAPA</div>
           </div>
           {sinCoordenadas > 0 && (
-            <div style={{ fontSize: 10, color: "rgba(255,165,0,0.7)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+            <div style={{ fontSize: 10, color: "rgba(255,165,0,0.7)", fontFamily: "var(--font-display)", fontWeight: 700 }}>
               {sinCoordenadas} sin coordenadas
             </div>
           )}
@@ -231,11 +231,11 @@ export default function MapaCarteraPage() {
       <div style={{ flex: 1, display: "grid", gridTemplateColumns: "280px 1fr", overflow: "hidden" }}>
 
         {/* Sidebar: list */}
-        <div style={{ overflow: "hidden auto", borderRight: "1px solid rgba(255,255,255,0.07)", padding: "12px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ overflow: "hidden auto", borderRight: "1px solid var(--gfi-border-subtle)", padding: "12px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
           {loading ? (
-            <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, padding: "24px 0", textAlign: "center" }}>Cargando propiedades...</div>
+            <div style={{ color: "var(--gfi-text-dim)", fontSize: 12, padding: "24px 0", textAlign: "center" }}>Cargando propiedades...</div>
           ) : filtradas.length === 0 ? (
-            <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, padding: "24px 0", textAlign: "center" }}>Sin propiedades</div>
+            <div style={{ color: "var(--gfi-text-dim)", fontSize: 12, padding: "24px 0", textAlign: "center" }}>Sin propiedades</div>
           ) : (
             filtradas.map(p => {
               const color = OP_COLOR[p.operacion] ?? "#990000";
@@ -251,16 +251,16 @@ export default function MapaCarteraPage() {
                     {p.fotos?.[0] ? (
                       <img src={p.fotos[0]} alt="" style={{ width: 48, height: 40, objectFit: "cover", borderRadius: 4, flexShrink: 0 }} />
                     ) : (
-                      <div style={{ width: 48, height: 40, background: "rgba(255,255,255,0.04)", borderRadius: 4, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🏠</div>
+                      <div style={{ width: 48, height: 40, background: "var(--gfi-border-subtle)", borderRadius: 4, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🏠</div>
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: hasCoordenadas ? "#fff" : "rgba(255,255,255,0.4)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.titulo}</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: hasCoordenadas ? "#fff" : "var(--gfi-text-muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.titulo}</div>
                       <div style={{ display: "flex", gap: 4, marginTop: 3, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color, background: `${color}18`, border: `1px solid ${color}30`, borderRadius: 3, padding: "1px 5px" }}>{p.operacion}</span>
-                        <span style={{ fontSize: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: estColor, background: `${estColor}18`, borderRadius: 3, padding: "1px 5px" }}>{p.estado}</span>
-                        {!hasCoordenadas && <span style={{ fontSize: 8, color: "rgba(255,165,0,0.6)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Sin coord.</span>}
+                        <span style={{ fontSize: 8, fontFamily: "var(--font-display)", fontWeight: 700, color, background: `${color}18`, border: `1px solid ${color}30`, borderRadius: 3, padding: "1px 5px" }}>{p.operacion}</span>
+                        <span style={{ fontSize: 8, fontFamily: "var(--font-display)", fontWeight: 700, color: estColor, background: `${estColor}18`, borderRadius: 3, padding: "1px 5px" }}>{p.estado}</span>
+                        {!hasCoordenadas && <span style={{ fontSize: 8, color: "rgba(255,165,0,0.6)", fontFamily: "var(--font-display)", fontWeight: 700 }}>Sin coord.</span>}
                       </div>
-                      <div style={{ fontSize: 10, color, fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginTop: 3 }}>{fmtPrecio(p)}</div>
+                      <div style={{ fontSize: 10, color, fontFamily: "var(--font-display)", fontWeight: 700, marginTop: 3 }}>{fmtPrecio(p)}</div>
                     </div>
                   </div>
                 </div>
@@ -275,26 +275,26 @@ export default function MapaCarteraPage() {
 
           {/* Selected property card overlay */}
           {selected && (
-            <div style={{ position: "absolute", bottom: 20, right: 20, width: 260, background: "#111", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, padding: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 1000 }}>
+            <div style={{ position: "absolute", bottom: 20, right: 20, width: 260, background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 10, padding: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 1000 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: "Montserrat,sans-serif", flex: 1, paddingRight: 8 }}>{selected.titulo}</div>
-                <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.35)", cursor: "pointer", fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: "var(--font-display)", flex: 1, paddingRight: 8 }}>{selected.titulo}</div>
+                <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
               </div>
               {selected.fotos?.[0] && (
                 <img src={selected.fotos[0]} alt="" style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />
               )}
               <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: OP_COLOR[selected.operacion] ?? "#990000", background: `${(OP_COLOR[selected.operacion] ?? "#990000")}18`, border: `1px solid ${(OP_COLOR[selected.operacion] ?? "#990000")}30`, borderRadius: 4, padding: "2px 7px" }}>{selected.operacion}</span>
-                <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: ESTADO_COLOR[selected.estado] ?? "#6b7280", background: `${(ESTADO_COLOR[selected.estado] ?? "#6b7280")}18`, borderRadius: 4, padding: "2px 7px" }}>{selected.estado}</span>
+                <span style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, color: OP_COLOR[selected.operacion] ?? "#990000", background: `${(OP_COLOR[selected.operacion] ?? "#990000")}18`, border: `1px solid ${(OP_COLOR[selected.operacion] ?? "#990000")}30`, borderRadius: 4, padding: "2px 7px" }}>{selected.operacion}</span>
+                <span style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, color: ESTADO_COLOR[selected.estado] ?? "#6b7280", background: `${(ESTADO_COLOR[selected.estado] ?? "#6b7280")}18`, borderRadius: 4, padding: "2px 7px" }}>{selected.estado}</span>
               </div>
-              <div style={{ fontSize: 16, fontFamily: "Montserrat,sans-serif", fontWeight: 900, color: OP_COLOR[selected.operacion] ?? "#990000", marginBottom: 6 }}>{fmtPrecio(selected)}</div>
-              <div style={{ display: "flex", gap: 12, fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>
+              <div style={{ fontSize: 16, fontFamily: "var(--font-display)", fontWeight: 900, color: OP_COLOR[selected.operacion] ?? "#990000", marginBottom: 6 }}>{fmtPrecio(selected)}</div>
+              <div style={{ display: "flex", gap: 12, fontSize: 10, color: "var(--gfi-text-muted)", marginBottom: 10 }}>
                 {selected.tipo && <span>{selected.tipo}</span>}
                 {selected.dormitorios && <span>{selected.dormitorios} dorm.</span>}
                 {selected.superficie_cubierta && <span>{selected.superficie_cubierta} m²</span>}
               </div>
-              {selected.direccion && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>📍 {selected.direccion}</div>}
-              <Link href={`/crm/cartera/ficha/${selected.id}`} style={{ display: "block", textAlign: "center", padding: "7px 0", background: "#990000", color: "#fff", borderRadius: 6, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", letterSpacing: "0.06em" }}>
+              {selected.direccion && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginBottom: 10 }}>📍 {selected.direccion}</div>}
+              <Link href={`/crm/cartera/ficha/${selected.id}`} style={{ display: "block", textAlign: "center", padding: "7px 0", background: "#990000", color: "#fff", borderRadius: 6, fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, textDecoration: "none", letterSpacing: "0.06em" }}>
                 VER FICHA COMPLETA →
               </Link>
             </div>
@@ -305,23 +305,23 @@ export default function MapaCarteraPage() {
             <div style={{ position: "absolute", inset: 0, background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999 }}>
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🗺️</div>
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif" }}>Cargando mapa...</div>
+                <div style={{ fontSize: 13, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)" }}>Cargando mapa...</div>
               </div>
             </div>
           )}
 
           {/* Legend */}
           {mapsLoaded && !loading && (
-            <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(17,17,17,0.92)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", zIndex: 1000 }}>
-              <div style={{ fontSize: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>REFERENCIAS</div>
+            <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(17,17,17,0.92)", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "10px 14px", zIndex: 1000 }}>
+              <div style={{ fontSize: 8, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", color: "var(--gfi-text-muted)", marginBottom: 8 }}>REFERENCIAS</div>
               {[
                 { label: "Venta", color: "#990000" },
                 { label: "Alquiler", color: "#3b82f6" },
                 { label: "Alq. temporal", color: "#a78bfa" },
               ].map(r => (
                 <div key={r.label} style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: r.color, border: "1.5px solid rgba(255,255,255,0.3)" }} />
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif" }}>{r.label}</span>
+                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: r.color, border: "1.5px solid var(--gfi-text-muted)" }} />
+                  <span style={{ fontSize: 10, color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)" }}>{r.label}</span>
                 </div>
               ))}
             </div>

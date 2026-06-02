@@ -141,7 +141,7 @@ export default function WinLossPage() {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>
               📊 Win / Loss Analysis
             </h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>
@@ -152,7 +152,7 @@ export default function WinLossPage() {
         </div>
 
         {/* Config */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 24, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 24, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
           <div>
             <label style={{ fontSize: 11, color: "#6b7280", display: "block", marginBottom: 3 }}>Período</label>
             <select value={periodo} onChange={e => setPeriodo(Number(e.target.value))}
@@ -191,9 +191,9 @@ export default function WinLossPage() {
             { label: "Ticket Promedio", value: `USD ${fmt(stats.avgValorCerrado)}`, sub: "por operación", color: "#d4960c" },
             { label: "Interacc./Cierre", value: stats.avgIntCierre.toFixed(1), sub: "interacciones promedio", color: "#6b7280" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "12px 14px" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "12px 14px" }}>
               <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 4, fontWeight: 600 }}>{k.label}</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 18, color: k.color }}>{k.value}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: k.color }}>{k.value}</div>
               <div style={{ fontSize: 10, color: "#4b5563", marginTop: 2 }}>{k.sub}</div>
             </div>
           ))}
@@ -202,8 +202,8 @@ export default function WinLossPage() {
         {/* Win/Loss visual */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
           {/* Gauge win rate */}
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 20 }}>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 16 }}>Tasa de Cierre</div>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 20 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 16 }}>Tasa de Cierre</div>
             <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
               {[
                 { label: "Cerrados", pct: stats.winRate, color: "#3abab6", count: stats.cerrados },
@@ -223,8 +223,8 @@ export default function WinLossPage() {
           </div>
 
           {/* Velocidad pipeline */}
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 20 }}>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 16 }}>Pipeline Activo por Etapa</div>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 20 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 16 }}>Pipeline Activo por Etapa</div>
             {ETAPAS_ORDEN.filter(e => !["cerrado"].includes(e)).map(etapa => {
               const count = stats.porEtapa[etapa] ?? 0;
               const maxE = Math.max(1, ...Object.values(stats.porEtapa));
@@ -247,9 +247,9 @@ export default function WinLossPage() {
         </div>
 
         {/* Por tipo de operación */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, overflow: "hidden", marginBottom: 24 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, overflow: "hidden", marginBottom: 24 }}>
           <div style={{ background: "#1a1a1a", padding: "12px 18px", borderBottom: "1px solid #1f2937" }}>
-            <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>Análisis por Tipo de Operación</span>
+            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff" }}>Análisis por Tipo de Operación</span>
           </div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -266,7 +266,7 @@ export default function WinLossPage() {
                   .map(([tipo, t], i) => {
                     const winR = t.total > 0 ? (t.cerrados / t.total) * 100 : 0;
                     return (
-                      <tr key={tipo} style={{ background: i % 2 === 0 ? "#0f0f0f" : "#111", borderBottom: "1px solid #1f2937" }}>
+                      <tr key={tipo} style={{ background: i % 2 === 0 ? "var(--gfi-bg-primary)" : "var(--gfi-bg-secondary)", borderBottom: "1px solid #1f2937" }}>
                         <td style={{ padding: "9px 14px", color: "#e5e5e5", fontWeight: 600 }}>{tipo}</td>
                         <td style={{ padding: "9px 14px", textAlign: "right", color: "#9ca3af" }}>{t.total}</td>
                         <td style={{ padding: "9px 14px", textAlign: "right", color: "#3abab6", fontWeight: 700 }}>{t.cerrados}</td>
@@ -291,8 +291,8 @@ export default function WinLossPage() {
         </div>
 
         {/* Insights */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 20 }}>
-          <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 14 }}>💡 Insights</div>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 20 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 14 }}>💡 Insights</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {stats.winRate >= 50 && (
               <div style={{ background: "#15803d22", border: "1px solid #3abab633", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#3abab6" }}>

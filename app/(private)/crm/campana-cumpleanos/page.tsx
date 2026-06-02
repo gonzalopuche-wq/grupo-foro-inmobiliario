@@ -133,7 +133,7 @@ function Avatar({ nombre, apellido }: { nombre: string; apellido: string }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontFamily: "Montserrat, sans-serif",
+        fontFamily: "var(--font-display)",
         fontWeight: 700,
         fontSize: 16,
         color: "#fff",
@@ -157,7 +157,7 @@ function DiasBadge({ dias }: { dias: number }) {
         padding: "2px 10px",
         fontSize: 12,
         fontWeight: 700,
-        fontFamily: "Montserrat, sans-serif",
+        fontFamily: "var(--font-display)",
         minWidth: 48,
         textAlign: "center",
         display: "inline-block",
@@ -173,8 +173,8 @@ function TipoChip({ tipo }: { tipo: string | null }) {
   return (
     <span
       style={{
-        background: "rgba(255,255,255,0.08)",
-        color: "rgba(255,255,255,0.7)",
+        background: "var(--gfi-border)",
+        color: "var(--gfi-text-primary)",
         borderRadius: 999,
         padding: "1px 8px",
         fontSize: 11,
@@ -213,8 +213,8 @@ function CalendarioMes({
   return (
     <div
       style={{
-        background: esActual ? "rgba(153,0,0,0.08)" : "rgba(255,255,255,0.03)",
-        border: `1px solid ${esActual ? "#990000" : "rgba(255,255,255,0.08)"}`,
+        background: esActual ? "rgba(153,0,0,0.08)" : "var(--gfi-bg-card)",
+        border: `1px solid ${esActual ? "#990000" : "var(--gfi-border)"}`,
         borderRadius: 12,
         padding: "12px 10px",
         position: "relative",
@@ -222,10 +222,10 @@ function CalendarioMes({
     >
       <div
         style={{
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
           fontWeight: 700,
           fontSize: 13,
-          color: esActual ? "#990000" : "rgba(255,255,255,0.7)",
+          color: esActual ? "#990000" : "var(--gfi-text-primary)",
           marginBottom: 8,
           textAlign: "center",
         }}
@@ -235,7 +235,7 @@ function CalendarioMes({
       {/* Header días */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, marginBottom: 4 }}>
         {["L", "M", "X", "J", "V", "S", "D"].map((d) => (
-          <div key={d} style={{ textAlign: "center", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif" }}>
+          <div key={d} style={{ textAlign: "center", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif" }}>
             {d}
           </div>
         ))}
@@ -260,7 +260,7 @@ function CalendarioMes({
                 <span
                   style={{
                     fontSize: 10,
-                    color: esHoy ? "#990000" : dia === null ? "transparent" : "rgba(255,255,255,0.5)",
+                    color: esHoy ? "#990000" : dia === null ? "transparent" : "var(--gfi-text-secondary)",
                     fontFamily: "Inter, sans-serif",
                     fontWeight: esHoy ? 700 : 400,
                   }}
@@ -509,13 +509,13 @@ export default function CampanaCumpleanosPage() {
     } as React.CSSProperties,
 
     heading: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 800,
     } as React.CSSProperties,
 
     card: {
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.08)",
+      background: "var(--gfi-border-subtle)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 14,
       padding: 20,
     } as React.CSSProperties,
@@ -532,14 +532,14 @@ export default function CampanaCumpleanosPage() {
       alignItems: "center",
       gap: 6,
       ...(variant === "primary" && { background: "#990000", color: "#fff" }),
-      ...(variant === "ghost" && { background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.8)" }),
+      ...(variant === "ghost" && { background: "var(--gfi-border-subtle)", color: "rgba(255,255,255,0.8)" }),
       ...(variant === "danger" && { background: "rgba(153,0,0,0.15)", color: "#990000", border: "1px solid rgba(153,0,0,0.3)" }),
       ...(variant === "success" && { background: "rgba(74,222,128,0.12)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.25)" }),
     } as React.CSSProperties),
 
     input: {
       background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       padding: "8px 12px",
       color: "#fff",
@@ -551,7 +551,7 @@ export default function CampanaCumpleanosPage() {
 
     textarea: {
       background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       padding: "10px 12px",
       color: "#fff",
@@ -569,7 +569,7 @@ export default function CampanaCumpleanosPage() {
   if (loading) {
     return (
       <div style={{ ...s.page, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ color: "rgba(255,255,255,0.4)", fontFamily: "Inter, sans-serif" }}>Cargando contactos...</div>
+        <div style={{ color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif" }}>Cargando contactos...</div>
       </div>
     );
   }
@@ -597,7 +597,7 @@ export default function CampanaCumpleanosPage() {
             borderRadius: 16,
             padding: 20,
             marginBottom: 24,
-            boxShadow: "0 0 32px rgba(153,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+            boxShadow: "0 0 32px rgba(153,0,0,0.15), inset 0 1px 0 var(--gfi-border)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
@@ -630,7 +630,7 @@ export default function CampanaCumpleanosPage() {
                   <div style={{ fontWeight: 600, fontSize: 15, color: "#fff" }}>
                     {c.nombre} {c.apellido}
                   </div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>
                     Cumple {c.fecha_nacimiento ? edadQueVaCumplir(c.fecha_nacimiento) : ""} años hoy
                   </div>
                 </div>
@@ -670,11 +670,11 @@ export default function CampanaCumpleanosPage() {
           {
             label: "Cumpleaños hoy",
             value: cumpleHoy.length,
-            color: cumpleHoy.length > 0 ? "#990000" : "rgba(255,255,255,0.7)",
+            color: cumpleHoy.length > 0 ? "#990000" : "var(--gfi-text-primary)",
             icon: "🎂",
           },
-          { label: "Esta semana", value: cumpleSemana.length, color: "rgba(255,255,255,0.7)", icon: "📅" },
-          { label: "Este mes", value: cumpleMes.length, color: "rgba(255,255,255,0.7)", icon: "🗓️" },
+          { label: "Esta semana", value: cumpleSemana.length, color: "var(--gfi-text-primary)", icon: "📅" },
+          { label: "Este mes", value: cumpleMes.length, color: "var(--gfi-text-primary)", icon: "🗓️" },
           { label: "Fechas registradas", value: `${pctConFecha}%`, color: pctConFecha < 50 ? "#d4960c" : "#4ade80", icon: "📊" },
         ].map((kpi) => (
           <div key={kpi.label} style={s.card}>
@@ -711,10 +711,10 @@ export default function CampanaCumpleanosPage() {
         >
           <span style={{ fontSize: 18 }}>⚠️</span>
           <div>
-            <div style={{ fontWeight: 600, color: "#d4960c", fontFamily: "Montserrat, sans-serif", fontSize: 14, marginBottom: 4 }}>
+            <div style={{ fontWeight: 600, color: "#d4960c", fontFamily: "var(--font-display)", fontSize: 14, marginBottom: 4 }}>
               {100 - pctConFecha}% de tus contactos no tienen fecha de nacimiento
             </div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", lineHeight: 1.5 }}>
               Completar las fechas de nacimiento te permite automatizar felicitaciones, fortalecer vínculos y diferenciarte de la competencia.
             </div>
           </div>
@@ -726,7 +726,7 @@ export default function CampanaCumpleanosPage() {
         style={{
           display: "flex",
           gap: 4,
-          background: "rgba(255,255,255,0.04)",
+          background: "var(--gfi-border-subtle)",
           borderRadius: 10,
           padding: 4,
           marginBottom: 24,
@@ -752,7 +752,7 @@ export default function CampanaCumpleanosPage() {
               fontSize: 13,
               fontWeight: 600,
               background: tab === t.id ? "#990000" : "transparent",
-              color: tab === t.id ? "#fff" : "rgba(255,255,255,0.5)",
+              color: tab === t.id ? "#fff" : "var(--gfi-text-secondary)",
               transition: "all 0.15s",
             }}
           >
@@ -779,7 +779,7 @@ export default function CampanaCumpleanosPage() {
                   key={f.id}
                   onClick={() => setFiltroProximos(f.id)}
                   style={{
-                    border: `1px solid ${filtroProximos === f.id ? "#990000" : "rgba(255,255,255,0.12)"}`,
+                    border: `1px solid ${filtroProximos === f.id ? "#990000" : "var(--gfi-border)"}`,
                     borderRadius: 8,
                     padding: "6px 12px",
                     cursor: "pointer",
@@ -809,7 +809,7 @@ export default function CampanaCumpleanosPage() {
               style={{
                 ...s.card,
                 textAlign: "center",
-                color: "rgba(255,255,255,0.3)",
+                color: "var(--gfi-text-muted)",
                 padding: 40,
               }}
             >
@@ -830,7 +830,7 @@ export default function CampanaCumpleanosPage() {
                       gap: 14,
                       flexWrap: "wrap",
                       opacity: felicitado ? 0.65 : 1,
-                      borderColor: dias === 0 ? "rgba(153,0,0,0.4)" : "rgba(255,255,255,0.08)",
+                      borderColor: dias === 0 ? "rgba(153,0,0,0.4)" : "var(--gfi-border)",
                     }}
                   >
                     <Avatar nombre={c.nombre} apellido={c.apellido} />
@@ -844,7 +844,7 @@ export default function CampanaCumpleanosPage() {
                           <span style={{ fontSize: 11, color: "#4ade80" }}>✓ felicitado</span>
                         )}
                       </div>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
+                      <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>
                         {c.fecha_nacimiento
                           ? `Cumple ${edadQueVaCumplir(c.fecha_nacimiento)} años · ${new Date(c.fecha_nacimiento + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "long" })}`
                           : ""}
@@ -925,7 +925,7 @@ export default function CampanaCumpleanosPage() {
           </div>
 
           {contactos.length === 0 && (
-            <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", marginTop: 24 }}>
+            <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", marginTop: 24 }}>
               No hay contactos con fecha de nacimiento registrada
             </div>
           )}
@@ -991,7 +991,7 @@ export default function CampanaCumpleanosPage() {
                   onChange={(e) => guardarPlantillas({ ...plantillas, whatsapp: e.target.value })}
                   style={s.textarea}
                 />
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 8 }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 8 }}>
                   Variables: <code style={{ color: "#990000" }}>{"{nombre}"}</code>,{" "}
                   <code style={{ color: "#990000" }}>{"{apellido}"}</code>,{" "}
                   <code style={{ color: "#990000" }}>{"{edad}"}</code>,{" "}
@@ -1006,7 +1006,7 @@ export default function CampanaCumpleanosPage() {
                   borderRadius: 8,
                   padding: "10px 14px",
                   fontSize: 13,
-                  color: "rgba(255,255,255,0.6)",
+                  color: "var(--gfi-text-secondary)",
                   lineHeight: 1.6,
                   whiteSpace: "pre-wrap",
                 }}
@@ -1017,7 +1017,7 @@ export default function CampanaCumpleanosPage() {
             {/* Preview */}
             {contactos.length > 0 && (
               <div style={{ marginTop: 14 }}>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 6 }}>
                   Preview con {contactos[0].nombre}:
                 </div>
                 <div
@@ -1027,7 +1027,7 @@ export default function CampanaCumpleanosPage() {
                     borderRadius: 8,
                     padding: "10px 14px",
                     fontSize: 13,
-                    color: "rgba(255,255,255,0.7)",
+                    color: "var(--gfi-text-primary)",
                     lineHeight: 1.6,
                     whiteSpace: "pre-wrap",
                   }}
@@ -1077,7 +1077,7 @@ export default function CampanaCumpleanosPage() {
                     style={s.textarea}
                   />
                 </div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>
                   Variables: <code style={{ color: "#990000" }}>{"{nombre}"}</code>,{" "}
                   <code style={{ color: "#990000" }}>{"{apellido}"}</code>,{" "}
                   <code style={{ color: "#990000" }}>{"{edad}"}</code>,{" "}
@@ -1087,9 +1087,9 @@ export default function CampanaCumpleanosPage() {
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+                <div style={{ fontSize: 13, color: "var(--gfi-text-muted)" }}>
                   Asunto:{" "}
-                  <span style={{ color: "rgba(255,255,255,0.7)" }}>{plantillas.email_asunto}</span>
+                  <span style={{ color: "var(--gfi-text-primary)" }}>{plantillas.email_asunto}</span>
                 </div>
                 <div
                   style={{
@@ -1097,7 +1097,7 @@ export default function CampanaCumpleanosPage() {
                     borderRadius: 8,
                     padding: "10px 14px",
                     fontSize: 13,
-                    color: "rgba(255,255,255,0.6)",
+                    color: "var(--gfi-text-secondary)",
                     lineHeight: 1.6,
                     whiteSpace: "pre-wrap",
                   }}
@@ -1109,17 +1109,17 @@ export default function CampanaCumpleanosPage() {
             {/* Preview email */}
             {contactos.length > 0 && (
               <div style={{ marginTop: 14 }}>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 6 }}>
                   Preview con {contactos[0].nombre}:
                 </div>
                 <div
                   style={{
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "var(--gfi-border-subtle)",
+                    border: "1px solid var(--gfi-border)",
                     borderRadius: 8,
                     padding: "10px 14px",
                     fontSize: 13,
-                    color: "rgba(255,255,255,0.7)",
+                    color: "var(--gfi-text-primary)",
                     lineHeight: 1.6,
                     whiteSpace: "pre-wrap",
                   }}
@@ -1153,7 +1153,7 @@ export default function CampanaCumpleanosPage() {
               )}
             </div>
             {felicitadosEsteAnio.length === 0 ? (
-              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 14 }}>
+              <div style={{ color: "var(--gfi-text-muted)", fontSize: 14 }}>
                 Aún no marcaste ningún contacto como felicitado este año.
               </div>
             ) : (
@@ -1182,7 +1182,7 @@ export default function CampanaCumpleanosPage() {
                         </span>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+                        <span style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>
                           {new Date(f.fecha).toLocaleDateString("es-AR", {
                             day: "numeric",
                             month: "short",

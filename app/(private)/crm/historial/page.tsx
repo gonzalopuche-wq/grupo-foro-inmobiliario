@@ -261,9 +261,9 @@ export default function HistorialPage() {
     <div style={{ fontFamily: "Inter, sans-serif", background: "#0a0a0a", minHeight: "100vh", color: "#e5e5e5", display: "flex" }}>
 
       {/* Panel izquierdo: lista de contactos */}
-      <div style={{ width: 280, flexShrink: 0, background: "#0f0f0f", borderRight: "1px solid #1f2937", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }}>
+      <div style={{ width: 280, flexShrink: 0, background: "var(--gfi-bg-primary)", borderRight: "1px solid #1f2937", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }}>
         <div style={{ padding: "20px 16px 12px" }}>
-          <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
             📋 Historial de Contacto
           </div>
           <input
@@ -303,7 +303,7 @@ export default function HistorialPage() {
             {/* Header contacto */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
               <div>
-                <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, color: "#fff", margin: 0 }}>
+                <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, color: "#fff", margin: 0 }}>
                   {contacto?.nombre} {contacto?.apellido}
                 </h2>
                 <div style={{ display: "flex", gap: 10, marginTop: 6, flexWrap: "wrap" }}>
@@ -318,7 +318,7 @@ export default function HistorialPage() {
                 </div>
               </div>
               <button onClick={exportarPDF}
-                style={{ background: "#1f2937", color: "#e5e5e5", border: "1px solid #374151", borderRadius: 6, padding: "7px 14px", fontSize: 12, cursor: "pointer" }}>
+                style={{ background: "var(--gfi-border)", color: "#e5e5e5", border: "1px solid #374151", borderRadius: 6, padding: "7px 14px", fontSize: 12, cursor: "pointer" }}>
                 📄 PDF
               </button>
             </div>
@@ -332,13 +332,13 @@ export default function HistorialPage() {
                   { label: "Cierres", value: statsContacto.negociosCerrados, color: "#3abab6" },
                   { label: "Tareas pendientes", value: statsContacto.tareasPend, color: "#990000" },
                 ].map(s => (
-                  <div key={s.label} style={{ background: "#111", border: `1px solid ${s.color}33`, borderRadius: 8, padding: "8px 14px", display: "flex", gap: 8, alignItems: "center" }}>
+                  <div key={s.label} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${s.color}33`, borderRadius: 8, padding: "8px 14px", display: "flex", gap: 8, alignItems: "center" }}>
                     <span style={{ fontSize: 18, fontWeight: 800, color: s.color }}>{s.value}</span>
                     <span style={{ fontSize: 11, color: "#6b7280" }}>{s.label}</span>
                   </div>
                 ))}
                 {statsContacto.ultimaActividad && (
-                  <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 8, padding: "8px 14px", fontSize: 11, color: "#6b7280", alignSelf: "center" }}>
+                  <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 8, padding: "8px 14px", fontSize: 11, color: "#6b7280", alignSelf: "center" }}>
                     Última actividad: <span style={{ color: "#9ca3af" }}>{fechaCorta(statsContacto.ultimaActividad)}</span>
                   </div>
                 )}
@@ -355,7 +355,7 @@ export default function HistorialPage() {
                 { val: "recordatorio", label: "Recordatorios" },
               ].map(f => (
                 <button key={f.val} onClick={() => setFiltroTipo(f.val)}
-                  style={{ background: filtroTipo === f.val ? "#99000033" : "#111", border: `1px solid ${filtroTipo === f.val ? "#990000" : "#333"}`, borderRadius: 20, color: filtroTipo === f.val ? "#990000" : "#6b7280", padding: "5px 12px", fontSize: 12, cursor: "pointer" }}>
+                  style={{ background: filtroTipo === f.val ? "#99000033" : "var(--gfi-bg-secondary)", border: `1px solid ${filtroTipo === f.val ? "#990000" : "#333"}`, borderRadius: 20, color: filtroTipo === f.val ? "#990000" : "#6b7280", padding: "5px 12px", fontSize: 12, cursor: "pointer" }}>
                   {f.label}
                 </button>
               ))}
@@ -368,7 +368,7 @@ export default function HistorialPage() {
               <div style={{ textAlign: "center", color: "#4b5563", padding: 60 }}>Sin eventos registrados</div>
             ) : (
               <div style={{ position: "relative" }}>
-                <div style={{ position: "absolute", left: 20, top: 0, bottom: 0, width: 2, background: "#1f2937" }} />
+                <div style={{ position: "absolute", left: 20, top: 0, bottom: 0, width: 2, background: "var(--gfi-border)" }} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                   {timeline.map((ev, i) => {
                     const prevFecha = i > 0 ? timeline[i - 1].fecha.slice(0, 10) : null;
@@ -387,7 +387,7 @@ export default function HistorialPage() {
                               {ev.icon}
                             </div>
                           </div>
-                          <div style={{ flex: 1, background: "#111", border: `1px solid ${ev.color}22`, borderLeft: `3px solid ${ev.color}`, borderRadius: 8, padding: "10px 14px", marginTop: 4 }}>
+                          <div style={{ flex: 1, background: "var(--gfi-bg-secondary)", border: `1px solid ${ev.color}22`, borderLeft: `3px solid ${ev.color}`, borderRadius: 8, padding: "10px 14px", marginTop: 4 }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                               <div style={{ fontSize: 13, fontWeight: 600, color: "#e5e5e5" }}>{ev.titulo}</div>
                               <div style={{ fontSize: 11, color: "#4b5563", flexShrink: 0, marginLeft: 10 }}>{horaCorta(ev.fecha)}</div>

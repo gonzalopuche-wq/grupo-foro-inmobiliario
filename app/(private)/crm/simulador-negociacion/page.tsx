@@ -162,12 +162,12 @@ function nuevaSimulacion(): SimulacionNegociacion {
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.1)",
+  background: "var(--gfi-border-subtle)",
+  border: "1px solid var(--gfi-border)",
   borderRadius: 8,
   color: "#fff",
   padding: "8px 11px",
-  fontFamily: "'Inter', sans-serif",
+  fontFamily: "var(--font-body)",
   fontSize: 13,
   boxSizing: "border-box",
   outline: "none",
@@ -177,7 +177,7 @@ const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: 9,
   color: "rgba(255,255,255,0.38)",
-  fontFamily: "'Montserrat', sans-serif",
+  fontFamily: "var(--font-display)",
   fontWeight: 700,
   letterSpacing: "0.09em",
   textTransform: "uppercase",
@@ -188,14 +188,14 @@ const sectionTitleStyle: React.CSSProperties = {
   margin: "0 0 14px 0",
   fontSize: 10,
   color: "rgba(255,255,255,0.28)",
-  fontFamily: "'Montserrat', sans-serif",
+  fontFamily: "var(--font-display)",
   fontWeight: 700,
   letterSpacing: "0.1em",
   textTransform: "uppercase",
 };
 
 const cardStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.02)",
+  background: "var(--gfi-bg-secondary)",
   border: "1px solid rgba(255,255,255,0.06)",
   borderRadius: 12,
   padding: 20,
@@ -238,7 +238,7 @@ function ZonaNegociacion({ sim }: { sim: SimulacionNegociacion }) {
     <div style={{ overflowX: "auto" }}>
       <svg width={W} height={H} style={{ display: "block", minWidth: W }}>
         {/* Track fondo */}
-        <rect x={PAD_L} y={trackY - trackH / 2} width={trackW} height={trackH} rx={6} fill="rgba(255,255,255,0.04)" />
+        <rect x={PAD_L} y={trackY - trackH / 2} width={trackW} height={trackH} rx={6} fill="var(--gfi-border-subtle)" />
 
         {/* Zona overlap (verde) */}
         {hasOverlap && overlapRight > overlapLeft && (
@@ -253,7 +253,7 @@ function ZonaNegociacion({ sim }: { sim: SimulacionNegociacion }) {
         )}
 
         {/* Línea de track */}
-        <line x1={PAD_L} y1={trackY} x2={PAD_L + trackW} y2={trackY} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+        <line x1={PAD_L} y1={trackY} x2={PAD_L + trackW} y2={trackY} stroke="var(--gfi-border)" strokeWidth={1} />
 
         {/* Punto oferta inicial (comprador) */}
         <circle cx={xOfertaInicial} cy={trackY} r={7} fill="#3b82f6" stroke="#0a0a0a" strokeWidth={2} />
@@ -390,7 +390,7 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
     border: "none",
     color: "#fff",
     fontSize: 12,
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     cursor: "pointer",
     letterSpacing: "0.04em",
@@ -399,11 +399,11 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
   const btnSecondary: React.CSSProperties = {
     padding: "9px 22px",
     borderRadius: 8,
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    color: "rgba(255,255,255,0.7)",
+    background: "var(--gfi-border-subtle)",
+    border: "1px solid var(--gfi-border)",
+    color: "var(--gfi-text-primary)",
     fontSize: 12,
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     cursor: "pointer",
   };
@@ -491,7 +491,7 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
               onChange={(e) => handleNumericChange("posicionCompradorMin", e.target.value)}
               style={inputStyle}
             />
-            <p style={{ margin: "4px 0 0 0", fontSize: 9, color: "rgba(255,255,255,0.25)", fontFamily: "'Inter', sans-serif" }}>
+            <p style={{ margin: "4px 0 0 0", fontSize: 9, color: "var(--gfi-text-dim)", fontFamily: "var(--font-body)" }}>
               Límite real: no pagaría más que este valor
             </p>
           </div>
@@ -521,7 +521,7 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
               onChange={(e) => setNum("disposicionBajar", e.target.value)}
               style={inputStyle}
             />
-            <p style={{ margin: "4px 0 0 0", fontSize: 9, color: "rgba(255,255,255,0.25)", fontFamily: "'Inter', sans-serif" }}>
+            <p style={{ margin: "4px 0 0 0", fontSize: 9, color: "var(--gfi-text-dim)", fontFamily: "var(--font-body)" }}>
               Estimado: % máx que cedería el vendedor
             </p>
           </div>
@@ -534,7 +534,7 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
               onChange={(e) => handleNumericChange("posicionVendedorMax", e.target.value)}
               style={inputStyle}
             />
-            <p style={{ margin: "4px 0 0 0", fontSize: 9, color: "rgba(255,255,255,0.25)", fontFamily: "'Inter', sans-serif" }}>
+            <p style={{ margin: "4px 0 0 0", fontSize: 9, color: "var(--gfi-text-dim)", fontFamily: "var(--font-body)" }}>
               Piso real: no aceptaría menos que este valor
             </p>
           </div>
@@ -579,7 +579,7 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
               <div
                 key={esc.id}
                 style={{
-                  background: "rgba(255,255,255,0.02)",
+                  background: "var(--gfi-bg-secondary)",
                   border: `1px solid ${col}22`,
                   borderRadius: 10,
                   padding: 14,
@@ -635,7 +635,7 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
         </div>
         <button
           onClick={addEscenario}
-          style={{ marginTop: 12, padding: "7px 16px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, cursor: "pointer" }}
+          style={{ marginTop: 12, padding: "7px 16px", borderRadius: 8, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
         >
           + Agregar escenario personalizado
         </button>
@@ -692,7 +692,7 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
               ) : (
                 <div style={{ width: 10, height: 10, borderRadius: "50%", background: item.dot }} />
               )}
-              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "'Inter', sans-serif" }}>{item.label}</span>
+              <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>{item.label}</span>
             </div>
           ))}
         </div>
@@ -706,7 +706,7 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
             <div
               key={esc.id}
               style={{
-                background: "rgba(255,255,255,0.02)",
+                background: "var(--gfi-bg-secondary)",
                 border: `1px solid ${col}30`,
                 borderRadius: 14,
                 padding: 20,
@@ -717,11 +717,11 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
             >
               {/* Header */}
               <div>
-                <p style={{ margin: "0 0 4px 0", fontSize: 11, color: col, fontFamily: "'Montserrat', sans-serif", fontWeight: 800, letterSpacing: "0.04em" }}>
+                <p style={{ margin: "0 0 4px 0", fontSize: 11, color: col, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "0.04em" }}>
                   {esc.nombre}
                 </p>
                 {esc.descripcion && (
-                  <p style={{ margin: 0, fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Inter', sans-serif", lineHeight: 1.5 }}>
+                  <p style={{ margin: 0, fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)", lineHeight: 1.5 }}>
                     {esc.descripcion}
                   </p>
                 )}
@@ -729,11 +729,11 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
 
               {/* Precio principal */}
               <div style={{ padding: "12px 0", borderTop: `1px solid ${col}18`, borderBottom: `1px solid ${col}18` }}>
-                <p style={{ margin: "0 0 2px 0", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat', sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Precio de acuerdo</p>
-                <p style={{ margin: 0, fontSize: 24, fontFamily: "'Montserrat', sans-serif", fontWeight: 800, color: "#fff" }}>
+                <p style={{ margin: "0 0 2px 0", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Precio de acuerdo</p>
+                <p style={{ margin: 0, fontSize: 24, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>
                   USD {fmt(res.precioUSD)}
                 </p>
-                <p style={{ margin: "2px 0 0 0", fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "'Inter', sans-serif" }}>
+                <p style={{ margin: "2px 0 0 0", fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>
                   ARS {fmt(res.precioARS)}
                 </p>
               </div>
@@ -750,10 +750,10 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
                 ].map((kpi) => (
                   <div key={kpi.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
                     <div>
-                      <span style={{ fontSize: 10, color: "rgba(255,255,255,0.38)", fontFamily: "'Inter', sans-serif" }}>{kpi.label}</span>
-                      {kpi.sub && <p style={{ margin: 0, fontSize: 8, color: "rgba(255,255,255,0.22)", fontFamily: "'Inter', sans-serif" }}>{kpi.sub}</p>}
+                      <span style={{ fontSize: 10, color: "rgba(255,255,255,0.38)", fontFamily: "var(--font-body)" }}>{kpi.label}</span>
+                      {kpi.sub && <p style={{ margin: 0, fontSize: 8, color: "rgba(255,255,255,0.22)", fontFamily: "var(--font-body)" }}>{kpi.sub}</p>}
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 700, fontFamily: "'Montserrat', sans-serif", color: kpi.color ?? "rgba(255,255,255,0.85)", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, fontFamily: "var(--font-display)", color: kpi.color ?? "rgba(255,255,255,0.85)", whiteSpace: "nowrap" }}>
                       {kpi.val}
                     </span>
                   </div>
@@ -763,11 +763,11 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
               {/* Badge zona */}
               <div>
                 {res.enZona ? (
-                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.3)", color: "#3abab6", fontSize: 10, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}>
+                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.3)", color: "#3abab6", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                     Zona de acuerdo posible
                   </span>
                 ) : (
-                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", fontSize: 10, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}>
+                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                     Fuera de zona
                   </span>
                 )}
@@ -781,13 +781,13 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
       <div style={cardStyle}>
         <p style={sectionTitleStyle}>Tabla comparativa</p>
         <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'Inter', sans-serif", fontSize: 11 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "var(--font-body)", fontSize: 11 }}>
             <thead>
               <tr>
                 {["Escenario", "Precio USD", "Desc. s/pub.", "Costo comp. ARS", "Neto vend. ARS", "Hon. totales ARS", "Zona"].map((h) => (
                   <th
                     key={h}
-                    style={{ textAlign: "left", padding: "8px 12px", background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.38)", fontSize: 9, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)", whiteSpace: "nowrap" }}
+                    style={{ textAlign: "left", padding: "8px 12px", background: "var(--gfi-border-subtle)", color: "rgba(255,255,255,0.38)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)", whiteSpace: "nowrap" }}
                   >
                     {h}
                   </th>
@@ -798,20 +798,20 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
               {resultados.map(({ esc, res }, i) => {
                 const col = COLORS[i % COLORS.length];
                 return (
-                  <tr key={esc.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                    <td style={{ padding: "10px 12px", color: col, fontWeight: 700, fontFamily: "'Montserrat', sans-serif", fontSize: 11, whiteSpace: "nowrap" }}>
+                  <tr key={esc.id} style={{ borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                    <td style={{ padding: "10px 12px", color: col, fontWeight: 700, fontFamily: "var(--font-display)", fontSize: 11, whiteSpace: "nowrap" }}>
                       {esc.nombre.split("—")[0].trim()}
                     </td>
                     <td style={{ padding: "10px 12px", color: "#fff", fontWeight: 700 }}>
                       {fmt(res.precioUSD)}
                     </td>
-                    <td style={{ padding: "10px 12px", color: res.descuentoSobrePublicado > 5 ? "#3abab6" : "rgba(255,255,255,0.6)" }}>
+                    <td style={{ padding: "10px 12px", color: res.descuentoSobrePublicado > 5 ? "#3abab6" : "var(--gfi-text-secondary)" }}>
                       {fmtPct(res.descuentoSobrePublicado)}
                     </td>
-                    <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.7)" }}>
+                    <td style={{ padding: "10px 12px", color: "var(--gfi-text-primary)" }}>
                       {fmt(res.costoTotalComprador)}
                     </td>
-                    <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.7)" }}>
+                    <td style={{ padding: "10px 12px", color: "var(--gfi-text-primary)" }}>
                       {fmt(res.neteVendedor)}
                     </td>
                     <td style={{ padding: "10px 12px", color: "#a78bfa" }}>
@@ -880,11 +880,11 @@ export default function SimuladorNegociacion() {
   const tabStyle = (active: boolean): React.CSSProperties => ({
     padding: "9px 20px",
     borderRadius: 8,
-    border: active ? "1px solid rgba(153,0,0,0.4)" : "1px solid rgba(255,255,255,0.07)",
+    border: active ? "1px solid rgba(153,0,0,0.4)" : "1px solid var(--gfi-border-subtle)",
     background: active ? "rgba(153,0,0,0.1)" : "transparent",
     color: active ? "#990000" : "rgba(255,255,255,0.38)",
     fontSize: 11,
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     cursor: "pointer",
     letterSpacing: "0.05em",
@@ -892,24 +892,24 @@ export default function SimuladorNegociacion() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "var(--font-body)" }}>
       {/* Header */}
       <div style={{ background: "rgba(255,255,255,0.015)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 28px", display: "flex", alignItems: "center", gap: 16 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.3)", textDecoration: "none", fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12, fontFamily: "var(--font-body)" }}>
           ← CRM
         </Link>
-        <h1 style={{ margin: 0, fontSize: 20, fontFamily: "'Montserrat', sans-serif", fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>
+        <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>
           Simulador de Negociación
         </h1>
         {tab !== "lista" && simActual.titulo && (
-          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "'Inter', sans-serif" }}>
+          <span style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>
             — {simActual.titulo}
           </span>
         )}
       </div>
 
       {/* Tabs */}
-      <div style={{ padding: "16px 28px 0", display: "flex", gap: 8, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+      <div style={{ padding: "16px 28px 0", display: "flex", gap: 8, borderBottom: "1px solid var(--gfi-border-subtle)" }}>
         <button onClick={() => setTab("lista")} style={tabStyle(tab === "lista")}>
           Simulaciones guardadas ({simulaciones.length})
         </button>
@@ -928,12 +928,12 @@ export default function SimuladorNegociacion() {
         {tab === "lista" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "'Inter', sans-serif" }}>
+              <p style={{ margin: 0, fontSize: 13, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>
                 {simulaciones.length === 0 ? "No hay simulaciones guardadas aún." : `${simulaciones.length} simulación${simulaciones.length !== 1 ? "es" : ""} guardada${simulaciones.length !== 1 ? "s" : ""}`}
               </p>
               <button
                 onClick={abrirNueva}
-                style={{ padding: "9px 20px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, cursor: "pointer" }}
+                style={{ padding: "9px 20px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
               >
                 + Nueva simulación
               </button>
@@ -942,15 +942,15 @@ export default function SimuladorNegociacion() {
             {simulaciones.length === 0 ? (
               <div style={{ ...cardStyle, textAlign: "center", padding: 60 }}>
                 <p style={{ margin: "0 0 10px 0", fontSize: 32 }}>📊</p>
-                <p style={{ margin: "0 0 6px 0", fontSize: 16, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>
+                <p style={{ margin: "0 0 6px 0", fontSize: 16, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-secondary)" }}>
                   Ninguna simulación todavía
                 </p>
-                <p style={{ margin: "0 0 20px 0", fontSize: 12, color: "rgba(255,255,255,0.25)", fontFamily: "'Inter', sans-serif" }}>
+                <p style={{ margin: "0 0 20px 0", fontSize: 12, color: "var(--gfi-text-dim)", fontFamily: "var(--font-body)" }}>
                   Creá una nueva simulación para modelar escenarios de negociación
                 </p>
                 <button
                   onClick={abrirNueva}
-                  style={{ padding: "10px 24px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, cursor: "pointer" }}
+                  style={{ padding: "10px 24px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}
                 >
                   + Nueva simulación
                 </button>
@@ -973,14 +973,14 @@ export default function SimuladorNegociacion() {
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <div style={{ flex: 1 }}>
-                          <p style={{ margin: "0 0 4px 0", fontSize: 14, fontFamily: "'Montserrat', sans-serif", fontWeight: 800, color: "#fff" }}>
+                          <p style={{ margin: "0 0 4px 0", fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>
                             {sim.titulo || "Sin título"}
                           </p>
-                          <p style={{ margin: "0 0 10px 0", fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "'Inter', sans-serif" }}>{fecha}</p>
+                          <p style={{ margin: "0 0 10px 0", fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "var(--font-body)" }}>{fecha}</p>
                         </div>
                         <button
                           onClick={(ev) => { ev.stopPropagation(); eliminarSim(sim.id); }}
-                          style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", cursor: "pointer", fontSize: 14, padding: "0 0 0 8px", lineHeight: 1 }}
+                          style={{ background: "none", border: "none", color: "var(--gfi-text-dim)", cursor: "pointer", fontSize: 14, padding: "0 0 0 8px", lineHeight: 1 }}
                           title="Eliminar"
                         >
                           ✕
@@ -988,20 +988,20 @@ export default function SimuladorNegociacion() {
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         <div style={{ display: "flex", justifyContent: "space-between" }}>
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "'Inter', sans-serif" }}>Precio publicado</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "#990000", fontFamily: "'Montserrat', sans-serif" }}>
+                          <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>Precio publicado</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: "#990000", fontFamily: "var(--font-display)" }}>
                             {sim.moneda} {fmt(sim.precioPublicado)}
                           </span>
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between" }}>
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "'Inter', sans-serif" }}>Escenarios</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.6)", fontFamily: "'Montserrat', sans-serif" }}>
+                          <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>Escenarios</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)" }}>
                             {sim.escenarios.length} total · {escConZona} en zona
                           </span>
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between" }}>
-                          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "'Inter', sans-serif" }}>Brecha</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.6)", fontFamily: "'Montserrat', sans-serif" }}>
+                          <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>Brecha</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)" }}>
                             {fmtPct(((sim.precioPublicado - sim.ofertaFinal) / sim.precioPublicado) * 100)}
                           </span>
                         </div>

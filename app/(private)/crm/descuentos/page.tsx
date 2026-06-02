@@ -342,7 +342,7 @@ export default function DescuentosPage() {
   };
 
   const cardStyle: React.CSSProperties = {
-    background: "#111",
+    background: "var(--gfi-bg-secondary)",
     border: "1px solid #222",
     borderRadius: 10,
     padding: "20px 24px",
@@ -353,7 +353,7 @@ export default function DescuentosPage() {
     textAlign: "left",
     fontSize: 10,
     color: "#666",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     textTransform: "uppercase",
     borderBottom: "1px solid #222",
@@ -488,7 +488,7 @@ export default function DescuentosPage() {
       {/* ── Header ── */}
       <div
         style={{
-          background: "#111",
+          background: "var(--gfi-bg-secondary)",
           borderBottom: "1px solid #222",
           padding: "16px 24px",
           display: "flex",
@@ -505,7 +505,7 @@ export default function DescuentosPage() {
             style={{
               margin: 0,
               fontSize: 20,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
             }}
           >
@@ -626,7 +626,7 @@ export default function DescuentosPage() {
                   style={{
                     fontSize: 10,
                     color: "#888",
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     textTransform: "uppercase",
                     marginBottom: 6,
@@ -638,7 +638,7 @@ export default function DescuentosPage() {
                   style={{
                     fontSize: 28,
                     fontWeight: 800,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     color: "#990000",
                     lineHeight: 1,
                   }}
@@ -661,7 +661,7 @@ export default function DescuentosPage() {
                   style={{
                     fontSize: 10,
                     color: "#888",
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     textTransform: "uppercase",
                     marginBottom: 6,
@@ -673,7 +673,7 @@ export default function DescuentosPage() {
                   style={{
                     fontSize: 28,
                     fontWeight: 800,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     color: "#990000",
                     lineHeight: 1,
                   }}
@@ -696,7 +696,7 @@ export default function DescuentosPage() {
                   style={{
                     fontSize: 10,
                     color: "#888",
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     textTransform: "uppercase",
                     marginBottom: 6,
@@ -708,7 +708,7 @@ export default function DescuentosPage() {
                   style={{
                     fontSize: 28,
                     fontWeight: 800,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     color: "#990000",
                     lineHeight: 1,
                   }}
@@ -733,7 +733,7 @@ export default function DescuentosPage() {
                   style={{
                     fontSize: 10,
                     color: "#888",
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     textTransform: "uppercase",
                     marginBottom: 6,
@@ -745,7 +745,7 @@ export default function DescuentosPage() {
                   style={{
                     fontSize: 28,
                     fontWeight: 800,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     color: "#3abab6",
                     lineHeight: 1,
                   }}
@@ -786,7 +786,7 @@ export default function DescuentosPage() {
                       border: "none",
                       borderBottom: tab === t.key ? "2px solid #990000" : "2px solid transparent",
                       color: tab === t.key ? "#fff" : "#666",
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 700,
                       fontSize: 12,
                       padding: "10px 18px",
@@ -808,7 +808,7 @@ export default function DescuentosPage() {
                     style={{
                       margin: "0 0 20px",
                       fontSize: 13,
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 800,
                       textTransform: "uppercase",
                       color: "#fff",
@@ -925,7 +925,7 @@ export default function DescuentosPage() {
                     style={{
                       margin: "0 0 16px",
                       fontSize: 13,
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 800,
                       textTransform: "uppercase",
                     }}
@@ -947,7 +947,7 @@ export default function DescuentosPage() {
                     style={{
                       margin: "0 0 16px",
                       fontSize: 13,
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 800,
                       textTransform: "uppercase",
                     }}
@@ -969,7 +969,7 @@ export default function DescuentosPage() {
                 style={{
                   margin: "0 0 16px",
                   fontSize: 13,
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 800,
                   textTransform: "uppercase",
                 }}

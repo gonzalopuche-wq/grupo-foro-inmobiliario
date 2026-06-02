@@ -139,70 +139,70 @@ export default function Forecast() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <span style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Inter',sans-serif" }}>Cargando forecast...</span>
+      <span style={{ color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>Cargando forecast...</span>
     </div>
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "var(--font-body)" }}>
       {/* Header */}
-      <div style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
-        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "-0.02em" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
+        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "-0.02em" }}>
           Forecast de Ingresos
         </h1>
-        <span style={{ marginLeft: "auto", fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{analisis.procesados.length} negocios en horizonte</span>
+        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--gfi-text-muted)" }}>{analisis.procesados.length} negocios en horizonte</span>
       </div>
 
       <div style={{ padding: "24px", maxWidth: 1100, margin: "0 auto" }}>
         {/* Controles */}
         <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>HORIZONTE:</span>
+            <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>HORIZONTE:</span>
             {[3, 6, 9, 12].map(m => (
-              <button key={m} onClick={() => setVistaHorizonteMeses(m)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${vistaHorizonteMeses === m ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: vistaHorizonteMeses === m ? "rgba(153,0,0,0.12)" : "transparent", color: vistaHorizonteMeses === m ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+              <button key={m} onClick={() => setVistaHorizonteMeses(m)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${vistaHorizonteMeses === m ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`, background: vistaHorizonteMeses === m ? "rgba(153,0,0,0.12)" : "transparent", color: vistaHorizonteMeses === m ? "#990000" : "var(--gfi-text-muted)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
                 {m}m
               </button>
             ))}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>ESCENARIO:</span>
+            <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>ESCENARIO:</span>
             {(["pesimista","base","optimista"] as const).map(s => (
-              <button key={s} onClick={() => setModoConfianza(s)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${modoConfianza === s ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.1)"}`, background: modoConfianza === s ? "rgba(255,255,255,0.08)" : "transparent", color: modoConfianza === s ? "#fff" : "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", textTransform: "capitalize" }}>
+              <button key={s} onClick={() => setModoConfianza(s)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${modoConfianza === s ? "var(--gfi-text-muted)" : "var(--gfi-border)"}`, background: modoConfianza === s ? "var(--gfi-border)" : "transparent", color: modoConfianza === s ? "#fff" : "var(--gfi-text-muted)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "capitalize" }}>
                 {s === "pesimista" ? "🔴 Pesimista" : s === "optimista" ? "🟢 Optimista" : "🟡 Base"}
               </button>
             ))}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>TC:</span>
-            <input type="number" value={tcDolar} onChange={e => setTcDolar(+e.target.value)} style={{ width: 90, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", padding: "4px 8px", fontSize: 12, fontFamily: "'Inter',sans-serif" }} />
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>Hon.%:</span>
-            <input type="number" step="0.5" value={honorariosPct} onChange={e => setHonorariosPct(+e.target.value)} style={{ width: 60, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", padding: "4px 8px", fontSize: 12, fontFamily: "'Inter',sans-serif" }} />
+            <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>TC:</span>
+            <input type="number" value={tcDolar} onChange={e => setTcDolar(+e.target.value)} style={{ width: 90, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", padding: "4px 8px", fontSize: 12, fontFamily: "var(--font-body)" }} />
+            <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>Hon.%:</span>
+            <input type="number" step="0.5" value={honorariosPct} onChange={e => setHonorariosPct(+e.target.value)} style={{ width: 60, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", padding: "4px 8px", fontSize: 12, fontFamily: "var(--font-body)" }} />
           </div>
         </div>
 
         {/* KPIs top */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
           {[
-            { label: "Honorarios Potenciales", val: `USD ${fmt(analisis.totalBruto)}`, sub: `${vistaHorizonteMeses} meses`, color: "rgba(255,255,255,0.7)" },
+            { label: "Honorarios Potenciales", val: `USD ${fmt(analisis.totalBruto)}`, sub: `${vistaHorizonteMeses} meses`, color: "var(--gfi-text-primary)" },
             { label: "Honorarios Ponderados", val: `USD ${fmt(analisis.totalPonderado)}`, sub: `Ajustado por probabilidad`, color: "#990000" },
             { label: "Valor en Pipeline", val: `USD ${fmt(analisis.totalValorUSD)}`, sub: "Propiedades", color: "#3b82f6" },
             { label: "Deals en Horizonte", val: analisis.procesados.length.toString(), sub: "Negocios activos", color: "#d4960c" },
           ].map(kpi => (
-            <div key={kpi.label} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "16px 20px" }}>
-              <p style={{ margin: "0 0 8px 0", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>{kpi.label}</p>
-              <p style={{ margin: 0, fontSize: 22, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
-              <p style={{ margin: "4px 0 0 0", fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{kpi.sub}</p>
+            <div key={kpi.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "16px 20px" }}>
+              <p style={{ margin: "0 0 8px 0", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>{kpi.label}</p>
+              <p style={{ margin: 0, fontSize: 22, fontFamily: "var(--font-display)", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
+              <p style={{ margin: "4px 0 0 0", fontSize: 10, color: "var(--gfi-text-muted)" }}>{kpi.sub}</p>
             </div>
           ))}
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 20 }}>
           {/* Gráfico por mes */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20 }}>
-            <p style={{ margin: "0 0 20px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Proyección Mensual de Honorarios</p>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20 }}>
+            <p style={{ margin: "0 0 20px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Proyección Mensual de Honorarios</p>
             {analisis.meses.length === 0 ? (
-              <div style={{ textAlign: "center", padding: 40, color: "rgba(255,255,255,0.2)", fontSize: 13 }}>
+              <div style={{ textAlign: "center", padding: 40, color: "var(--gfi-text-dim)", fontSize: 13 }}>
                 No hay negocios con fecha de cierre en el horizonte seleccionado
               </div>
             ) : (
@@ -212,14 +212,14 @@ export default function Forecast() {
                   const hPond = Math.max(4, (m.ponderado / maxPonderado) * 160);
                   return (
                     <div key={m.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                      <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", marginBottom: 4 }}>USD {fmt(m.ponderado)}</span>
+                      <span style={{ fontSize: 9, color: "var(--gfi-text-muted)", marginBottom: 4 }}>USD {fmt(m.ponderado)}</span>
                       <div style={{ width: "100%", position: "relative", height: hBruto, display: "flex", alignItems: "flex-end" }}>
                         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: hBruto, background: "rgba(255,255,255,0.06)", borderRadius: "4px 4px 0 0" }} />
                         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: hPond, background: "rgba(153,0,0,0.5)", borderRadius: "4px 4px 0 0", border: "1px solid rgba(153,0,0,0.3)" }} />
                         <div style={{ position: "absolute", bottom: hPond, left: 0, right: 0, height: 2, background: "#990000", borderRadius: 1 }} />
                       </div>
-                      <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{m.label}</span>
-                      <span style={{ fontSize: 8, color: "rgba(255,255,255,0.2)" }}>{m.cantidad} deal{m.cantidad !== 1 ? "s" : ""}</span>
+                      <span style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>{m.label}</span>
+                      <span style={{ fontSize: 8, color: "var(--gfi-text-dim)" }}>{m.cantidad} deal{m.cantidad !== 1 ? "s" : ""}</span>
                     </div>
                   );
                 })}
@@ -227,30 +227,30 @@ export default function Forecast() {
             )}
             <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 10, height: 10, background: "rgba(255,255,255,0.08)", borderRadius: 2 }} />
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>Potencial bruto</span>
+                <div style={{ width: 10, height: 10, background: "var(--gfi-border)", borderRadius: 2 }} />
+                <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>Potencial bruto</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <div style={{ width: 10, height: 10, background: "rgba(153,0,0,0.5)", borderRadius: 2 }} />
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>Ponderado por prob.</span>
+                <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>Ponderado por prob.</span>
               </div>
             </div>
           </div>
 
           {/* Por etapa */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20 }}>
-            <p style={{ margin: "0 0 16px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Por Etapa</p>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20 }}>
+            <p style={{ margin: "0 0 16px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Por Etapa</p>
             {Array.from(analisis.porEtapa.entries()).sort((a, b) => (PROB_ETAPA[b[0]] ?? 0) - (PROB_ETAPA[a[0]] ?? 0)).map(([etapa, data]) => (
               <div key={etapa} style={{ marginBottom: 14 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>{ETAPA_LABEL[etapa] ?? etapa}</span>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{data.cantidad} deal{data.cantidad !== 1 ? "s" : ""}</span>
+                  <span style={{ fontSize: 12, color: "var(--gfi-text-primary)" }}>{ETAPA_LABEL[etapa] ?? etapa}</span>
+                  <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{data.cantidad} deal{data.cantidad !== 1 ? "s" : ""}</span>
                 </div>
-                <div style={{ height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{ height: 6, background: "var(--gfi-border-subtle)", borderRadius: 3, overflow: "hidden" }}>
                   <div style={{ height: "100%", width: `${(PROB_ETAPA[etapa] ?? 10)}%`, background: PROB_ETAPA[etapa] >= 80 ? "#3abab6" : PROB_ETAPA[etapa] >= 50 ? "#d4960c" : "#3b82f6", borderRadius: 3 }} />
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
-                  <span style={{ fontSize: 9, color: "rgba(255,255,255,0.2)" }}>Prob. {PROB_ETAPA[etapa] ?? 10}%</span>
+                  <span style={{ fontSize: 9, color: "var(--gfi-text-dim)" }}>Prob. {PROB_ETAPA[etapa] ?? 10}%</span>
                   <span style={{ fontSize: 10, fontWeight: 700, color: "#990000" }}>USD {fmt(data.valorPonderado)}</span>
                 </div>
               </div>
@@ -259,32 +259,32 @@ export default function Forecast() {
         </div>
 
         {/* Tabla detalle */}
-        <div style={{ marginTop: 20, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
-          <p style={{ margin: 0, padding: "14px 20px", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Detalle de Negocios</p>
+        <div style={{ marginTop: 20, background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
+          <p style={{ margin: 0, padding: "14px 20px", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: "1px solid var(--gfi-border-subtle)" }}>Detalle de Negocios</p>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+              <tr style={{ background: "var(--gfi-bg-secondary)" }}>
                 {["Negocio", "Etapa", "Prob.", "Valor", "Honorarios", "Hon. Ponderado", "Cierre Est."].map(h => (
-                  <th key={h} style={{ padding: "8px 14px", textAlign: h === "Negocio" ? "left" : "right", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>{h}</th>
+                  <th key={h} style={{ padding: "8px 14px", textAlign: h === "Negocio" ? "left" : "right", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", borderBottom: "1px solid var(--gfi-border-subtle)" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {analisis.procesados.length === 0 ? (
-                <tr><td colSpan={7} style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Sin negocios en el horizonte</td></tr>
+                <tr><td colSpan={7} style={{ padding: 40, textAlign: "center", color: "var(--gfi-text-dim)", fontSize: 13 }}>Sin negocios en el horizonte</td></tr>
               ) : analisis.procesados.map((n, i) => (
                 <tr key={n.id} style={{ background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)" }}>
                   <td style={{ padding: "9px 14px", fontSize: 13 }}>{n.titulo}</td>
                   <td style={{ padding: "9px 14px", textAlign: "right" }}>
-                    <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: n.prob >= 80 ? "rgba(34,197,94,0.12)" : n.prob >= 50 ? "rgba(249,115,22,0.12)" : "rgba(59,130,246,0.12)", color: n.prob >= 80 ? "#3abab6" : n.prob >= 50 ? "#d4960c" : "#3b82f6", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                    <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: n.prob >= 80 ? "rgba(34,197,94,0.12)" : n.prob >= 50 ? "rgba(249,115,22,0.12)" : "rgba(59,130,246,0.12)", color: n.prob >= 80 ? "#3abab6" : n.prob >= 50 ? "#d4960c" : "#3b82f6", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       {ETAPA_LABEL[n.etapa] ?? n.etapa}
                     </span>
                   </td>
-                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12, fontWeight: 700, color: n.prob >= 80 ? "#3abab6" : "rgba(255,255,255,0.6)" }}>{n.prob.toFixed(0)}%</td>
+                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12, fontWeight: 700, color: n.prob >= 80 ? "#3abab6" : "var(--gfi-text-secondary)" }}>{n.prob.toFixed(0)}%</td>
                   <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12 }}>USD {fmt(n.valorUSD)}</td>
-                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>USD {fmt(n.honorarios)}</td>
+                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12, color: "var(--gfi-text-secondary)" }}>USD {fmt(n.honorarios)}</td>
                   <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 13, fontWeight: 700, color: "#990000" }}>USD {fmt(n.honorariosPonderado)}</td>
-                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 11, color: "var(--gfi-text-muted)" }}>
                     {n.fecha_cierre ? mesLabel(n.fecha_cierre) : "—"}
                   </td>
                 </tr>

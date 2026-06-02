@@ -220,20 +220,20 @@ export default function BusquedaPage() {
     setGruposFiltro(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
 
-  const label: React.CSSProperties = { fontSize:10, color:'rgba(255,255,255,0.4)', display:'block', marginBottom:6, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }
+  const label: React.CSSProperties = { fontSize:10, color:'var(--gfi-text-muted)', display:'block', marginBottom:6, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }
 
   return (
     <div style={{minHeight:'100vh', background:'#0a0a0a', color:'#fff', fontFamily:'Inter,sans-serif'}}>
 
       {/* Header */}
-      <div style={{borderBottom:'1px solid rgba(255,255,255,0.07)', background:'rgba(13,13,13,0.98)', position:'sticky', top:0, zIndex:20, padding:'14px 20px'}}>
+      <div style={{borderBottom:'1px solid var(--gfi-border-subtle)', background:'rgba(13,13,13,0.98)', position:'sticky', top:0, zIndex:20, padding:'14px 20px'}}>
         <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', maxWidth:1200, margin:'0 auto'}}>
           <div>
             <h1 style={{margin:0, fontSize:18, fontWeight:800, fontFamily:'Montserrat,sans-serif', display:'flex', alignItems:'center', gap:8}}>
               <Search style={{width:18, height:18, color:'#990000'}} />
               Búsqueda Inteligente
             </h1>
-            <p style={{margin:'2px 0 0', fontSize:11, color:'rgba(255,255,255,0.3)'}}>
+            <p style={{margin:'2px 0 0', fontSize:11, color:'var(--gfi-text-muted)'}}>
               Todo el mercado de la 2da Circ. COCIR — Red GFI · ZonaProp · Argenprop · y más
             </p>
           </div>
@@ -243,14 +243,14 @@ export default function BusquedaPage() {
       <div style={{maxWidth:1200, margin:'0 auto', padding:20}}>
 
         {/* ── Filtros ── */}
-        <div style={{background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:12, padding:20, marginBottom:16}}>
+        <div style={{background:'var(--gfi-bg-card)', border:'1px solid var(--gfi-border)', borderRadius:12, padding:20, marginBottom:16}}>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:14, marginBottom:14}}>
             <div>
               <label style={label}>Operación</label>
               <div style={{display:'flex', gap:4}}>
                 {OPERACIONES.map(op => (
                   <button key={op} onClick={() => setOperacion(op)}
-                    style={{flex:1, padding:'7px 4px', borderRadius:6, border:`1px solid ${operacion===op?'#990000':'rgba(255,255,255,0.1)'}`, background:operacion===op?'rgba(200,0,0,0.12)':'transparent', color:operacion===op?'#fff':'rgba(255,255,255,0.4)', fontSize:10, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer'}}>
+                    style={{flex:1, padding:'7px 4px', borderRadius:6, border:`1px solid ${operacion===op?'#990000':'var(--gfi-border)'}`, background:operacion===op?'rgba(200,0,0,0.12)':'transparent', color:operacion===op?'#fff':'var(--gfi-text-muted)', fontSize:10, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer'}}>
                     {op}
                   </button>
                 ))}
@@ -259,7 +259,7 @@ export default function BusquedaPage() {
             <div>
               <label style={label}>Tipo</label>
               <select value={tipo} onChange={e => setTipo(e.target.value)}
-                style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none'}}>
+                style={{width:'100%', background:'var(--gfi-border-subtle)', border:'1px solid var(--gfi-border)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none'}}>
                 {TIPOS.map(t => <option key={t} style={{background:'#111'}}>{t}</option>)}
               </select>
             </div>
@@ -267,13 +267,13 @@ export default function BusquedaPage() {
               <label style={label}>Zona / Barrio</label>
               <input type="text" value={zona} onChange={e => setZona(e.target.value)} onKeyDown={e => e.key==='Enter' && buscarLocal()}
                 placeholder="Ej: Pichincha, Centro, Fisherton..."
-                style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
+                style={{width:'100%', background:'var(--gfi-border-subtle)', border:'1px solid var(--gfi-border)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
             </div>
           </div>
 
           <div style={{marginBottom:14}}>
             <button onClick={() => setFiltrosAbiertos(!filtrosAbiertos)}
-              style={{background:'none', border:'none', color:'rgba(255,255,255,0.4)', fontSize:11, cursor:'pointer', display:'flex', alignItems:'center', gap:4, padding:0}}>
+              style={{background:'none', border:'none', color:'var(--gfi-text-muted)', fontSize:11, cursor:'pointer', display:'flex', alignItems:'center', gap:4, padding:0}}>
               <SlidersHorizontal style={{width:13, height:13}} />
               Filtros avanzados
               <ChevronDown style={{width:13, height:13, transform:filtrosAbiertos?'rotate(180deg)':'none', transition:'transform 0.2s'}} />
@@ -283,19 +283,19 @@ export default function BusquedaPage() {
                 <div>
                   <label style={label}>Precio mín.</label>
                   <input type="number" value={precioMin} onChange={e => setPrecioMin(e.target.value)} placeholder="USD 0"
-                    style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
+                    style={{width:'100%', background:'var(--gfi-border-subtle)', border:'1px solid var(--gfi-border)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
                 </div>
                 <div>
                   <label style={label}>Precio máx.</label>
                   <input type="number" value={precioMax} onChange={e => setPrecioMax(e.target.value)} placeholder="Sin límite"
-                    style={{width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
+                    style={{width:'100%', background:'var(--gfi-border-subtle)', border:'1px solid var(--gfi-border)', borderRadius:6, padding:'8px 10px', color:'#fff', fontSize:12, outline:'none', boxSizing:'border-box'}} />
                 </div>
                 <div>
                   <label style={label}>Dormitorios</label>
                   <div style={{display:'flex', gap:4}}>
                     {DORMITORIOS.map(d => (
                       <button key={d} onClick={() => setDormitorios(dormitorios===d?'':d)}
-                        style={{flex:1, padding:'7px 2px', borderRadius:6, border:`1px solid ${dormitorios===d?'#990000':'rgba(255,255,255,0.1)'}`, background:dormitorios===d?'rgba(200,0,0,0.12)':'transparent', color:dormitorios===d?'#fff':'rgba(255,255,255,0.4)', fontSize:10, fontWeight:700, cursor:'pointer'}}>
+                        style={{flex:1, padding:'7px 2px', borderRadius:6, border:`1px solid ${dormitorios===d?'#990000':'var(--gfi-border)'}`, background:dormitorios===d?'rgba(200,0,0,0.12)':'transparent', color:dormitorios===d?'#fff':'var(--gfi-text-muted)', fontSize:10, fontWeight:700, cursor:'pointer'}}>
                         {d}
                       </button>
                     ))}
@@ -319,7 +319,7 @@ export default function BusquedaPage() {
                 const activa = gruposFiltro.includes(g.id)
                 return (
                   <button key={g.id} onClick={() => toggleGrupo(g.id)}
-                    style={{padding:'5px 12px', borderRadius:20, border:`1px solid ${activa ? g.badge : 'rgba(255,255,255,0.12)'}`, background:activa ? `${g.badge}22` : 'transparent', color:activa ? '#fff' : 'rgba(255,255,255,0.35)', fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', transition:'all 0.15s'}}>
+                    style={{padding:'5px 12px', borderRadius:20, border:`1px solid ${activa ? g.badge : 'var(--gfi-border)'}`, background:activa ? `${g.badge}22` : 'transparent', color:activa ? '#fff' : 'var(--gfi-text-muted)', fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', transition:'all 0.15s'}}>
                     {g.label}
                   </button>
                 )
@@ -339,7 +339,7 @@ export default function BusquedaPage() {
           {/* Links a todos los portales */}
           {portalURLs && (
             <div>
-              <p style={{margin:'0 0 8px', fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase'}}>
+              <p style={{margin:'0 0 8px', fontSize:10, color:'var(--gfi-text-muted)', fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase'}}>
                 Buscar también en — abre en nueva pestaña con tu búsqueda aplicada:
               </p>
               <div style={{display:'flex', flexWrap:'wrap', gap:8}}>
@@ -351,7 +351,7 @@ export default function BusquedaPage() {
                   </a>
                 ))}
               </div>
-              <p style={{margin:'8px 0 0', fontSize:11, color:'rgba(255,255,255,0.2)'}}>
+              <p style={{margin:'8px 0 0', fontSize:11, color:'var(--gfi-text-dim)'}}>
                 Encontraste algo que te gusta? Copiá la URL y pegala abajo para agregarlo a tu lista.
               </p>
             </div>
@@ -374,7 +374,7 @@ export default function BusquedaPage() {
                         return acc
                       }, {})
                     ).map(([fuente, cant]) => (
-                      <span key={fuente} style={{fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:10, background: FUENTES_CONFIG[fuente]?.color ?? 'rgba(255,255,255,0.05)', border:`1px solid ${FUENTES_CONFIG[fuente]?.border ?? 'rgba(255,255,255,0.1)'}`, color:'rgba(255,255,255,0.7)', fontFamily:'Montserrat,sans-serif', letterSpacing:'0.05em'}}>
+                      <span key={fuente} style={{fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:10, background: FUENTES_CONFIG[fuente]?.color ?? 'var(--gfi-border-subtle)', border:`1px solid ${FUENTES_CONFIG[fuente]?.border ?? 'var(--gfi-border)'}`, color:'var(--gfi-text-primary)', fontFamily:'Montserrat,sans-serif', letterSpacing:'0.05em'}}>
                         {FUENTES_CONFIG[fuente]?.label ?? fuente}: {cant}
                       </span>
                     ))}
@@ -384,7 +384,7 @@ export default function BusquedaPage() {
             </div>
 
             {!cargandoLocal && resultadosLocal.length === 0 && (
-              <div style={{textAlign:'center', padding:'32px 0', color:'rgba(255,255,255,0.2)'}}>
+              <div style={{textAlign:'center', padding:'32px 0', color:'var(--gfi-text-dim)'}}>
                 <Home style={{width:32, height:32, margin:'0 auto 8px', display:'block', opacity:0.3}} />
                 <p style={{margin:0}}>Sin resultados en la base local para esos filtros.</p>
               </div>
@@ -400,20 +400,20 @@ export default function BusquedaPage() {
                   return (
                     <div key={p.id}
                       onClick={() => setSelectedProp({id: p.id, fuente: p.fuente})}
-                      style={{display:'block', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:10, overflow:'hidden', color:'inherit', transition:'border-color 0.15s', cursor:'pointer'}}
+                      style={{display:'block', background:'var(--gfi-bg-card)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:10, overflow:'hidden', color:'inherit', transition:'border-color 0.15s', cursor:'pointer'}}
                       onMouseEnter={e => (e.currentTarget.style.borderColor = cfg.border)}
                       onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}>
-                      <div style={{height:160, background:'rgba(255,255,255,0.05)', overflow:'hidden', position:'relative'}}>
+                      <div style={{height:160, background:'var(--gfi-border-subtle)', overflow:'hidden', position:'relative'}}>
                         {p.foto_principal
                           ? <img src={p.foto_principal} alt={p.titulo ?? ''} style={{width:'100%', height:'100%', objectFit:'cover'}}
                               onError={e => { const t = e.currentTarget; t.style.display='none'; (t.nextSibling as HTMLElement | null)?.style && ((t.nextSibling as HTMLElement).style.display='flex'); }} />
                           : null}
-                        <div style={{display: p.foto_principal ? 'none' : 'flex', alignItems:'center', justifyContent:'center', height:'100%', fontSize:28, color:'rgba(255,255,255,0.1)'}}>🏠</div>
+                        <div style={{display: p.foto_principal ? 'none' : 'flex', alignItems:'center', justifyContent:'center', height:'100%', fontSize:28, color:'var(--gfi-border)'}}>🏠</div>
                         <span style={{position:'absolute', top:8, left:8, fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:10, background:cfg.badge, color:'#fff', fontFamily:'Montserrat,sans-serif', letterSpacing:'0.06em', textTransform:'uppercase'}}>
                           {cfg.label}
                         </span>
                         {p.fuente === 'gfi' && (
-                          <span style={{position:'absolute', top:8, right:8, fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:10, background:'rgba(0,0,0,0.6)', color:'rgba(255,255,255,0.6)', fontFamily:'Montserrat,sans-serif'}}>
+                          <span style={{position:'absolute', top:8, right:8, fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:10, background:'rgba(0,0,0,0.6)', color:'var(--gfi-text-secondary)', fontFamily:'Montserrat,sans-serif'}}>
                             Cartera GFI
                           </span>
                         )}
@@ -421,20 +421,20 @@ export default function BusquedaPage() {
                       <div style={{padding:'12px 14px'}}>
                         <div style={{fontSize:13, fontWeight:700, color:'#fff', marginBottom:4, overflow:'hidden', whiteSpace:'nowrap', textOverflow:'ellipsis'}}>{p.titulo}</div>
                         {(p.barrio || p.ciudad) && (
-                          <div style={{fontSize:11, color:'rgba(255,255,255,0.35)', marginBottom:8}}>📍 {[p.barrio, p.ciudad].filter(Boolean).join(', ')}</div>
+                          <div style={{fontSize:11, color:'var(--gfi-text-muted)', marginBottom:8}}>📍 {[p.barrio, p.ciudad].filter(Boolean).join(', ')}</div>
                         )}
                         <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
                           {precioStr
                             ? <span style={{fontSize:15, fontWeight:800, color:cfg.badge}}>{precioStr}</span>
-                            : <span style={{fontSize:12, color:'rgba(255,255,255,0.2)'}}>Consultar</span>
+                            : <span style={{fontSize:12, color:'var(--gfi-text-dim)'}}>Consultar</span>
                           }
                           <div style={{display:'flex', gap:6}}>
-                            {p.dormitorios && <span style={{fontSize:10, background:'rgba(255,255,255,0.06)', padding:'2px 6px', borderRadius:4, color:'rgba(255,255,255,0.5)'}}>🛏 {p.dormitorios}</span>}
-                            {p.superficie_cubierta && <span style={{fontSize:10, background:'rgba(255,255,255,0.06)', padding:'2px 6px', borderRadius:4, color:'rgba(255,255,255,0.5)'}}>📐 {p.superficie_cubierta}m²</span>}
+                            {p.dormitorios && <span style={{fontSize:10, background:'rgba(255,255,255,0.06)', padding:'2px 6px', borderRadius:4, color:'var(--gfi-text-secondary)'}}>🛏 {p.dormitorios}</span>}
+                            {p.superficie_cubierta && <span style={{fontSize:10, background:'rgba(255,255,255,0.06)', padding:'2px 6px', borderRadius:4, color:'var(--gfi-text-secondary)'}}>📐 {p.superficie_cubierta}m²</span>}
                           </div>
                         </div>
                         {(p.operacion || p.tipo) && (
-                          <div style={{fontSize:10, color:'rgba(255,255,255,0.2)', marginTop:6}}>{[p.operacion, p.tipo].filter(Boolean).join(' · ')}</div>
+                          <div style={{fontSize:10, color:'var(--gfi-text-dim)', marginTop:6}}>{[p.operacion, p.tipo].filter(Boolean).join(' · ')}</div>
                         )}
                       </div>
                     </div>

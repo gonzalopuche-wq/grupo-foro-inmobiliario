@@ -231,7 +231,7 @@ export default function AlertasPage() {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>
               🚨 Panel de Alertas
             </h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>
@@ -250,12 +250,12 @@ export default function AlertasPage() {
             { label: "Estancados", count: porTipo["negocio_estancado"] ?? 0, color: "#a855f7" },
             { label: "Inactivos", count: porTipo["contacto_inactivo"] ?? 0, color: "#6b7280" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: `1px solid ${k.color}44`, borderRadius: 8, padding: "8px 16px", display: "flex", alignItems: "center", gap: 8 }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${k.color}44`, borderRadius: 8, padding: "8px 16px", display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 22, fontWeight: 800, color: k.color }}>{k.count}</span>
               <span style={{ fontSize: 12, color: "#9ca3af" }}>{k.label}</span>
             </div>
           ))}
-          <div style={{ background: "#111", border: "1px solid #333", borderRadius: 8, padding: "8px 16px" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 8, padding: "8px 16px" }}>
             <span style={{ fontSize: 12, color: "#9ca3af" }}>Alta prioridad: </span>
             <span style={{ fontWeight: 700, color: "#990000" }}>{porPrioridad["alta"] ?? 0}</span>
           </div>
@@ -297,9 +297,9 @@ export default function AlertasPage() {
         {loading ? (
           <div style={{ textAlign: "center", color: "#6b7280", padding: 60 }}>Cargando alertas…</div>
         ) : filtradas.length === 0 ? (
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 60, textAlign: "center" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 12, padding: 60, textAlign: "center" }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 18, color: "#3abab6" }}>Sin alertas pendientes</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, color: "#3abab6" }}>Sin alertas pendientes</div>
             <div style={{ color: "#6b7280", fontSize: 13, marginTop: 4 }}>Todo en orden por ahora</div>
           </div>
         ) : (
@@ -308,11 +308,11 @@ export default function AlertasPage() {
               const b = badge(alerta.tipo);
               return (
                 <div key={alerta.id}
-                  style={{ background: "#111", border: `1px solid ${b.color}33`, borderLeft: `3px solid ${b.color}`, borderRadius: 10, padding: "14px 18px", display: "flex", alignItems: "center", gap: 14 }}>
+                  style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${b.color}33`, borderLeft: `3px solid ${b.color}`, borderRadius: 10, padding: "14px 18px", display: "flex", alignItems: "center", gap: 14 }}>
                   <div style={{ fontSize: 24, flexShrink: 0 }}>{b.icon}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                      <span style={{ background: `${b.color}22`, color: b.color, fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, fontFamily: "Montserrat, sans-serif" }}>{b.label}</span>
+                      <span style={{ background: `${b.color}22`, color: b.color, fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, fontFamily: "var(--font-display)" }}>{b.label}</span>
                       <span style={{ background: `${colPrioridad[alerta.prioridad]}22`, color: colPrioridad[alerta.prioridad], fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4 }}>
                         {alerta.prioridad.toUpperCase()}
                       </span>
@@ -346,7 +346,7 @@ export default function AlertasPage() {
 
         {/* Resumen pie */}
         {alertas.length > 0 && (
-          <div style={{ marginTop: 24, background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "14px 18px", display: "flex", gap: 24, flexWrap: "wrap" }}>
+          <div style={{ marginTop: 24, background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "14px 18px", display: "flex", gap: 24, flexWrap: "wrap" }}>
             <div style={{ fontSize: 12, color: "#9ca3af" }}>
               <span style={{ color: "#990000", fontWeight: 700 }}>{porPrioridad["alta"] ?? 0}</span> alta ·{" "}
               <span style={{ color: "#d4960c", fontWeight: 700 }}>{porPrioridad["media"] ?? 0}</span> media ·{" "}

@@ -219,12 +219,12 @@ export default function CobranzasPage() {
     <>
       <style>{`
         .cob-wrap { max-width: 1000px; display: flex; flex-direction: column; gap: 16px; }
-        .cob-card { background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 18px; }
-        .cob-input { width: 100%; padding: 9px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; box-sizing: border-box; }
+        .cob-card { background: #111; border: 1px solid var(--gfi-border); border-radius: 12px; padding: 14px 18px; }
+        .cob-input { width: 100%; padding: 9px 11px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; box-sizing: border-box; }
         .cob-input:focus { border-color: rgba(200,0,0,0.5); }
-        .cob-select { width: 100%; padding: 9px 11px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; }
-        .cob-btn { padding: 7px 14px; border: none; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
-        .cob-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
+        .cob-select { width: 100%; padding: 9px 11px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; }
+        .cob-btn { padding: 7px 14px; border: none; border-radius: 5px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
+        .cob-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
         .cob-field { margin-bottom: 12px; }
         @media (max-width: 600px) {
           .cob-stats { flex-direction: column !important; }
@@ -236,16 +236,16 @@ export default function CobranzasPage() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: "#fff" }}>
               Cobranzas <span style={{ color: "#990000" }}>CRM</span>
             </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 3 }}>
               Seguimiento de pagos mensuales · {mesLabel(mes)}
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <button className="cob-btn"
-              style={{ background: verFinalizados ? "rgba(107,114,128,0.2)" : "rgba(255,255,255,0.06)", color: verFinalizados ? "#9ca3af" : "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}
+              style={{ background: verFinalizados ? "rgba(107,114,128,0.2)" : "rgba(255,255,255,0.06)", color: verFinalizados ? "#9ca3af" : "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)" }}
               onClick={() => setVerFinalizados(v => !v)}>
               {verFinalizados ? "Ver activos" : "Finalizados"}
             </button>
@@ -277,8 +277,8 @@ export default function CobranzasPage() {
               { n: `${Math.round(stats.totalCobrado / 1000)}k`, l: "Cobrado (k)", c: "#e5e5e5" },
             ].map(s => (
               <div key={s.l} style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 20, color: s.c }}>{s.n}</div>
-                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{s.l}</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: s.c }}>{s.n}</div>
+                <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{s.l}</div>
               </div>
             ))}
           </div>
@@ -290,7 +290,7 @@ export default function CobranzasPage() {
             <div style={{ background: "#0a0a0a", borderRadius: 6, height: 10, overflow: "hidden", marginBottom: 6 }}>
               <div style={{ width: `${Math.min((stats.totalCobrado / stats.totalEsperado) * 100, 100)}%`, height: "100%", background: "#3abab6", transition: "width 0.5s" }} />
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--gfi-text-muted)" }}>
               <span>Cobrado: ARS {fmt(Math.round(stats.totalCobrado / 1000))}k</span>
               <span style={{ color: "#3abab6", fontWeight: 700 }}>{Math.round((stats.totalCobrado / stats.totalEsperado) * 100)}%</span>
               <span>Esperado: ARS {fmt(Math.round(stats.totalEsperado / 1000))}k</span>
@@ -300,9 +300,9 @@ export default function CobranzasPage() {
 
         {/* Lista de contratos */}
         {loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 40 }}>Cargando...</div>
+          <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 40 }}>Cargando...</div>
         ) : contratosVisibles.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px 20px", color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif" }}>
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)" }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>📋</div>
             <div style={{ fontWeight: 700 }}>Sin contratos activos</div>
             <div style={{ fontSize: 12, marginTop: 4 }}>Hacé clic en "+ Contrato" para agregar uno</div>
@@ -318,28 +318,28 @@ export default function CobranzasPage() {
                 <div key={c.id} className="cob-card" style={{ borderColor: `${estadoColor(estado)}33` }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                     <div>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#fff" }}>{c.inquilino_nombre}</div>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{c.direccion}</div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>
+                      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>{c.inquilino_nombre}</div>
+                      <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>{c.direccion}</div>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", marginTop: 2 }}>
                         Vence día {c.dia_vencimiento} · {montoDisplay}/mes
                         {c.propietario_nombre && <span> · Prop: {c.propietario_nombre}</span>}
                       </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 13, color: estadoColor(estado) }}>
+                      <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, color: estadoColor(estado) }}>
                         {estadoLabel(estado)}
                       </div>
                       {mora > 0 && <div style={{ fontSize: 11, color: "#990000", marginTop: 2 }}>{mora} días mora</div>}
-                      {p?.fecha_pago && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>Pagó: {p.fecha_pago}</div>}
+                      {p?.fecha_pago && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>Pagó: {p.fecha_pago}</div>}
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {(["pagado", "parcial", "pendiente", "moroso"] as const).map(est => (
                       <button key={est} className="cob-btn"
                         style={{
-                          background: estado === est ? `${estadoColor(est)}22` : "rgba(255,255,255,0.03)",
-                          border: `1px solid ${estado === est ? estadoColor(est) : "rgba(255,255,255,0.1)"}`,
-                          color: estado === est ? estadoColor(est) : "rgba(255,255,255,0.4)",
+                          background: estado === est ? `${estadoColor(est)}22` : "var(--gfi-bg-card)",
+                          border: `1px solid ${estado === est ? estadoColor(est) : "var(--gfi-border)"}`,
+                          color: estado === est ? estadoColor(est) : "var(--gfi-text-muted)",
                           padding: "4px 12px", fontSize: 10,
                         }}
                         onClick={() => toggleEstadoPago(c, mes, est)}>
@@ -349,7 +349,7 @@ export default function CobranzasPage() {
                     {c.inquilino_telefono && (
                       <a href={`https://wa.me/54${c.inquilino_telefono}?text=${encodeURIComponent(`Hola ${c.inquilino_nombre.split(",")[0]}, te recordamos que el alquiler de ${mesLabel(mes)} por ${montoDisplay} vence el día ${c.dia_vencimiento}. Gracias!`)}`}
                         target="_blank" rel="noreferrer"
-                        style={{ background: "rgba(37,211,102,0.12)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 5, color: "#25d366", padding: "4px 12px", fontSize: 10, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em" }}>
+                        style={{ background: "rgba(37,211,102,0.12)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 5, color: "#25d366", padding: "4px 12px", fontSize: 10, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em" }}>
                         💬 WA
                       </a>
                     )}
@@ -369,8 +369,8 @@ export default function CobranzasPage() {
       {/* Modal nuevo contrato */}
       {modal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 24, width: "100%", maxWidth: 500, maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 20 }}>Nuevo Contrato</div>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 12, padding: 24, width: "100%", maxWidth: 500, maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 20 }}>Nuevo Contrato</div>
 
             <div className="cob-field">
               <label className="cob-label">Inquilino *</label>
@@ -421,7 +421,7 @@ export default function CobranzasPage() {
             </div>
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
-              <button className="cob-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={() => setModal(false)}>Cancelar</button>
+              <button className="cob-btn" style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)" }} onClick={() => setModal(false)}>Cancelar</button>
               <button className="cob-btn" style={{ background: "#990000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardarContrato} disabled={guardando}>
                 {guardando ? "Guardando..." : "Crear contrato"}
               </button>
@@ -431,7 +431,7 @@ export default function CobranzasPage() {
       )}
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
           {toast}
         </div>
       )}

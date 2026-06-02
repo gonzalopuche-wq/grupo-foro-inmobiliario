@@ -147,7 +147,7 @@ export default async function FichaPage({ params }: Props) {
         .ficha-fotos-strip { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 6px; }
         .ficha-foto-thumb {
           width: 64px; height: 48px; object-fit: cover;
-          border-radius: var(--gfi-radius-sm); border: 2px solid rgba(255,255,255,0.2);
+          border-radius: var(--gfi-radius-sm); border: 2px solid var(--gfi-text-dim);
           opacity: 0.85; transition: opacity 0.15s;
         }
         .ficha-foto-thumb:hover { opacity: 1; }
@@ -280,11 +280,11 @@ export default async function FichaPage({ params }: Props) {
           color: var(--gfi-text-secondary); vertical-align: middle;
         }
         .hist-table tr:last-child td { border-bottom: none; }
-        .hist-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+        .hist-table tbody tr:hover { background: var(--gfi-bg-secondary); }
         .hist-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; }
         .hist-badge-reduccion { background: rgba(58,186,182,0.12); color: var(--gfi-green-text); border: 1px solid rgba(58,186,182,0.25); }
         .hist-badge-aumento   { background: var(--gfi-red-soft); color: var(--gfi-red); border: 1px solid var(--gfi-red-border); }
-        .hist-badge-inicial   { background: rgba(255,255,255,0.05); color: var(--gfi-text-muted); border: 1px solid var(--gfi-border); }
+        .hist-badge-inicial   { background: var(--gfi-border-subtle); color: var(--gfi-text-muted); border: 1px solid var(--gfi-border); }
         .hist-badge-actualizacion { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
         .hist-empty { font-size: 12px; color: var(--gfi-text-muted); font-style: italic; padding: 8px 0; }
 
@@ -325,7 +325,7 @@ export default async function FichaPage({ params }: Props) {
         .ficha-corredor-contacto { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .ficha-corredor-link {
           font-size: 12px; color: var(--gfi-text-secondary);
-          padding: 5px 12px; background: rgba(255,255,255,0.04);
+          padding: 5px 12px; background: var(--gfi-border-subtle);
           border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm);
           transition: var(--gfi-transition);
         }

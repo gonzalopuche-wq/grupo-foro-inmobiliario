@@ -285,7 +285,7 @@ export default function PipelineKanbanPage() {
           <div>
             <h1
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 800,
                 fontSize: 28,
                 color: "#fff",
@@ -306,10 +306,10 @@ export default function PipelineKanbanPage() {
               padding: "8px 16px",
               borderRadius: 20,
               border: incluirCerrados ? "1px solid #3abab6" : "1px solid #333",
-              background: incluirCerrados ? "rgba(34,197,94,0.1)" : "#111",
+              background: incluirCerrados ? "rgba(34,197,94,0.1)" : "var(--gfi-bg-secondary)",
               color: incluirCerrados ? "#3abab6" : "#888",
               fontSize: 12,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               cursor: "pointer",
               textTransform: "uppercase",
@@ -340,7 +340,7 @@ export default function PipelineKanbanPage() {
                 borderBottom: tab === t.id ? "2px solid #990000" : "2px solid transparent",
                 color: tab === t.id ? "#fff" : "#666",
                 fontSize: 14,
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: tab === t.id ? 700 : 600,
                 cursor: "pointer",
                 transition: "color 0.15s",
@@ -401,7 +401,7 @@ function KanbanColumna({ etapa, items, totalHon, onMover, moviendo, etapasVisibl
       style={{
         minWidth: 240,
         maxWidth: 260,
-        background: "#111",
+        background: "var(--gfi-bg-secondary)",
         borderRadius: 10,
         overflow: "hidden",
         border: "1px solid #1e1e1e",
@@ -418,7 +418,7 @@ function KanbanColumna({ etapa, items, totalHon, onMover, moviendo, etapasVisibl
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: 13,
               color: "#fff",
@@ -433,7 +433,7 @@ function KanbanColumna({ etapa, items, totalHon, onMover, moviendo, etapasVisibl
               borderRadius: 20,
               padding: "2px 8px",
               fontSize: 11,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
             }}
           >
@@ -533,7 +533,7 @@ function NegocioCard({ negocio, prevEtapa, nextEtapa, onMover, moviendo }: CardP
       {/* Título */}
       <div
         style={{
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
           fontWeight: 700,
           fontSize: 13,
           color: "#fff",
@@ -561,7 +561,7 @@ function NegocioCard({ negocio, prevEtapa, nextEtapa, onMover, moviendo }: CardP
             borderRadius: 4,
             padding: "2px 6px",
             fontSize: 10,
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             textTransform: "uppercase",
             letterSpacing: "0.04em",
@@ -591,7 +591,7 @@ function NegocioCard({ negocio, prevEtapa, nextEtapa, onMover, moviendo }: CardP
       )}
 
       {/* Días en etapa */}
-      <div style={{ fontSize: 11, color: dColor, marginBottom: 8, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+      <div style={{ fontSize: 11, color: dColor, marginBottom: 8, fontFamily: "var(--font-display)", fontWeight: 700 }}>
         {negocio.dias_en_etapa === 0
           ? "Hoy"
           : `${negocio.dias_en_etapa}d en etapa`}
@@ -628,7 +628,7 @@ function NegocioCard({ negocio, prevEtapa, nextEtapa, onMover, moviendo }: CardP
             color: "#888",
             textDecoration: "none",
             padding: "3px 0",
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             border: "1px solid #2a2a2a",
             borderRadius: 4,
@@ -686,7 +686,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
       <div style={{ marginBottom: 32 }}>
         <h2
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: 16,
             color: "#fff",
@@ -695,7 +695,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
         >
           Distribución por etapa
         </h2>
-        <div style={{ background: "#111", borderRadius: 10, padding: 20, border: "1px solid #1e1e1e" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", borderRadius: 10, padding: 20, border: "1px solid #1e1e1e" }}>
           <svg width="100%" viewBox={`0 0 600 ${ETAPAS.length * 36}`} style={{ display: "block" }}>
             {resumen.map((r, i) => {
               const barW = maxHon > 0 ? Math.max((r.totalHon / maxHon) * 520, r.items.length > 0 ? 12 : 0) : 0;
@@ -742,7 +742,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
       {/* Tabla */}
       <h2
         style={{
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
           fontWeight: 700,
           fontSize: 16,
           color: "#fff",
@@ -753,7 +753,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
       </h2>
       <div
         style={{
-          background: "#111",
+          background: "var(--gfi-bg-secondary)",
           borderRadius: 10,
           border: "1px solid #1e1e1e",
           overflow: "hidden",
@@ -773,7 +773,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
             <span
               key={h}
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 11,
                 color: "#666",
@@ -810,7 +810,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
                   flexShrink: 0,
                 }}
               />
-              <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: 13, color: "#fff" }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#fff" }}>
                 {r.label}
               </span>
             </div>
@@ -818,7 +818,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
             {/* Cantidad */}
             <span
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 14,
                 color: r.items.length > 0 ? "#fff" : "#444",
@@ -863,7 +863,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
                   }}
                 />
               </div>
-              <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 12, color: "#888", minWidth: 32 }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#888", minWidth: 32 }}>
                 {r.convPct}%
               </span>
             </div>

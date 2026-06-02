@@ -611,9 +611,9 @@ function generarPDF(propuesta: Propuesta): void {
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  background: "#111",
+  background: "var(--gfi-bg-secondary)",
   color: "#fff",
-  border: "1px solid rgba(255,255,255,0.12)",
+  border: "1px solid var(--gfi-border)",
   borderRadius: 8,
   padding: "9px 12px",
   fontSize: 13,
@@ -632,8 +632,8 @@ const labelStyle: React.CSSProperties = {
 };
 
 const sectionCardStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
+  background: "var(--gfi-border-subtle)",
+  border: "1px solid var(--gfi-border)",
   borderRadius: 12,
   padding: "20px 22px",
   marginBottom: 16,
@@ -669,7 +669,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
     marginBottom: 14,
   };
   const secTitleStyle: React.CSSProperties = {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 11,
     textTransform: "uppercase" as const,
@@ -682,7 +682,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
     <div
       style={{
         background: "#fff",
-        color: "#111",
+        color: "var(--gfi-bg-secondary)",
         borderRadius: 12,
         padding: "28px 30px",
         fontFamily: "Inter, sans-serif",
@@ -712,7 +712,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: 18,
             flexShrink: 0,
@@ -723,10 +723,10 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
         <div>
           <div
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 16,
-              color: "#111",
+              color: "var(--gfi-bg-secondary)",
             }}
           >
             {agencia.nombreAgencia || "Nombre de la agencia"}
@@ -745,7 +745,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
       <div style={{ marginBottom: 20 }}>
         <h1
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: 22,
             ...accentStyle,
@@ -823,7 +823,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
           <>
             <div
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 800,
                 fontSize: 24,
                 color: "#990000",
@@ -856,7 +856,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
                 color: "#fff",
                 padding: "5px 16px",
                 borderRadius: 20,
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 800,
                 fontSize: 18,
               }}
@@ -957,7 +957,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
               >
                 <div
                   style={{
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 800,
                     fontSize: 18,
                     color: "#990000",
@@ -1008,7 +1008,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
       >
         <div>
           <div style={{ borderTop: "1px solid #ccc", width: 180, marginBottom: 6 }} />
-          <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 12 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12 }}>
             {agencia.nombreCorredor || agencia.nombreAgencia || "—"}
           </div>
           {agencia.matriculaCorredor && (
@@ -1185,10 +1185,10 @@ export default function PropuestaComercialPage() {
       <div style={sectionCardStyle}>
         <div
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: 13,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--gfi-text-secondary)",
             marginBottom: 14,
             textTransform: "uppercase",
             letterSpacing: 1,
@@ -1281,10 +1281,10 @@ export default function PropuestaComercialPage() {
       <div style={sectionCardStyle}>
         <div
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: 13,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--gfi-text-secondary)",
             marginBottom: 14,
             textTransform: "uppercase",
             letterSpacing: 1,
@@ -1409,8 +1409,8 @@ export default function PropuestaComercialPage() {
                   onClick={() => toggleCaracteristica(c)}
                   style={{
                     background: sel ? "#990000" : "rgba(255,255,255,0.06)",
-                    color: sel ? "#fff" : "rgba(255,255,255,0.6)",
-                    border: sel ? "1px solid #990000" : "1px solid rgba(255,255,255,0.12)",
+                    color: sel ? "#fff" : "var(--gfi-text-secondary)",
+                    border: sel ? "1px solid #990000" : "1px solid var(--gfi-border)",
                     borderRadius: 20,
                     padding: "5px 12px",
                     fontSize: 12,
@@ -1447,14 +1447,14 @@ export default function PropuestaComercialPage() {
                     border:
                       operacion.tipoOperacion === op
                         ? "1px solid #990000"
-                        : "1px solid rgba(255,255,255,0.12)",
+                        : "1px solid var(--gfi-border)",
                     background:
-                      operacion.tipoOperacion === op ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
-                    color: operacion.tipoOperacion === op ? "#fff" : "rgba(255,255,255,0.5)",
+                      operacion.tipoOperacion === op ? "rgba(153,0,0,0.15)" : "var(--gfi-border-subtle)",
+                    color: operacion.tipoOperacion === op ? "#fff" : "var(--gfi-text-secondary)",
                     fontWeight: operacion.tipoOperacion === op ? 700 : 400,
                     cursor: "pointer",
                     fontSize: 13,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     textTransform: "capitalize",
                   }}
                 >
@@ -1529,10 +1529,10 @@ export default function PropuestaComercialPage() {
                     border:
                       operacion.exclusiva === v
                         ? "1px solid #990000"
-                        : "1px solid rgba(255,255,255,0.12)",
+                        : "1px solid var(--gfi-border)",
                     background:
-                      operacion.exclusiva === v ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
-                    color: operacion.exclusiva === v ? "#fff" : "rgba(255,255,255,0.5)",
+                      operacion.exclusiva === v ? "rgba(153,0,0,0.15)" : "var(--gfi-border-subtle)",
+                    color: operacion.exclusiva === v ? "#fff" : "var(--gfi-text-secondary)",
                     fontWeight: operacion.exclusiva === v ? 700 : 400,
                     cursor: "pointer",
                     fontSize: 13,
@@ -1578,12 +1578,12 @@ export default function PropuestaComercialPage() {
             padding: "12px 16px",
           }}
         >
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>
+          <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 4 }}>
             Honorarios estimados
           </div>
           <div
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 20,
               color: "#990000",
@@ -1603,10 +1603,10 @@ export default function PropuestaComercialPage() {
     <div style={sectionCardStyle}>
       <div
         style={{
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
           fontWeight: 700,
           fontSize: 13,
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--gfi-text-secondary)",
           marginBottom: 6,
           textTransform: "uppercase",
           letterSpacing: 1,
@@ -1614,7 +1614,7 @@ export default function PropuestaComercialPage() {
       >
         Seleccionar canales de difusión
       </div>
-      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 16 }}>
+      <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 16 }}>
         Elegí los portales y canales que incluirás en la propuesta.
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1627,8 +1627,8 @@ export default function PropuestaComercialPage() {
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
-                background: sel ? "rgba(153,0,0,0.08)" : "rgba(255,255,255,0.03)",
-                border: sel ? "1px solid rgba(153,0,0,0.3)" : "1px solid rgba(255,255,255,0.08)",
+                background: sel ? "rgba(153,0,0,0.08)" : "var(--gfi-bg-card)",
+                border: sel ? "1px solid rgba(153,0,0,0.3)" : "1px solid var(--gfi-border)",
                 borderRadius: 8,
                 padding: "10px 14px",
                 cursor: "pointer",
@@ -1640,7 +1640,7 @@ export default function PropuestaComercialPage() {
                   width: 18,
                   height: 18,
                   borderRadius: 4,
-                  border: sel ? "none" : "1px solid rgba(255,255,255,0.2)",
+                  border: sel ? "none" : "1px solid var(--gfi-text-dim)",
                   background: sel ? "#990000" : "transparent",
                   display: "flex",
                   alignItems: "center",
@@ -1659,7 +1659,7 @@ export default function PropuestaComercialPage() {
               <span
                 style={{
                   fontSize: 13,
-                  color: sel ? "#fff" : "rgba(255,255,255,0.6)",
+                  color: sel ? "#fff" : "var(--gfi-text-secondary)",
                   fontWeight: sel ? 600 : 400,
                   cursor: "pointer",
                 }}
@@ -1675,7 +1675,7 @@ export default function PropuestaComercialPage() {
         style={{
           marginTop: 12,
           fontSize: 12,
-          color: "rgba(255,255,255,0.35)",
+          color: "var(--gfi-text-muted)",
         }}
       >
         {operacion.estrategiaDifusion.length} canal
@@ -1690,10 +1690,10 @@ export default function PropuestaComercialPage() {
       <div style={sectionCardStyle}>
         <div
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: 13,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--gfi-text-secondary)",
             marginBottom: 14,
             textTransform: "uppercase",
             letterSpacing: 1,
@@ -1795,10 +1795,10 @@ export default function PropuestaComercialPage() {
       <div style={sectionCardStyle}>
         <div
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: 13,
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--gfi-text-secondary)",
             marginBottom: 6,
             textTransform: "uppercase",
             letterSpacing: 1,
@@ -1806,7 +1806,7 @@ export default function PropuestaComercialPage() {
         >
           Ventajas competitivas
         </div>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>
+        <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 12 }}>
           Estos puntos aparecerán en el bloque "¿Por qué elegirnos?".
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
@@ -1817,10 +1817,10 @@ export default function PropuestaComercialPage() {
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
-                background: "rgba(255,255,255,0.04)",
+                background: "var(--gfi-border-subtle)",
                 borderRadius: 8,
                 padding: "8px 12px",
-                border: "1px solid rgba(255,255,255,0.08)",
+                border: "1px solid var(--gfi-border)",
               }}
             >
               <span style={{ color: "#990000", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
@@ -1832,7 +1832,7 @@ export default function PropuestaComercialPage() {
                 style={{
                   background: "transparent",
                   border: "none",
-                  color: "rgba(255,255,255,0.3)",
+                  color: "var(--gfi-text-muted)",
                   cursor: "pointer",
                   fontSize: 14,
                   padding: "0 4px",
@@ -1863,7 +1863,7 @@ export default function PropuestaComercialPage() {
               cursor: "pointer",
               fontWeight: 700,
               fontSize: 13,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               flexShrink: 0,
             }}
           >
@@ -1876,7 +1876,7 @@ export default function PropuestaComercialPage() {
             marginTop: 12,
             background: "transparent",
             border: "1px solid rgba(255,255,255,0.15)",
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--gfi-text-secondary)",
             borderRadius: 8,
             padding: "8px 14px",
             cursor: "pointer",
@@ -1897,7 +1897,7 @@ export default function PropuestaComercialPage() {
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif", fontSize: 13 }}>Cargando...</p>
+        <p style={{ color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif", fontSize: 13 }}>Cargando...</p>
       </div>
     );
   }
@@ -1938,7 +1938,7 @@ export default function PropuestaComercialPage() {
         <div style={{ marginBottom: 28 }}>
           <h1
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 24,
               margin: 0,
@@ -1947,7 +1947,7 @@ export default function PropuestaComercialPage() {
           >
             Propuesta Comercial
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, margin: "4px 0 0" }}>
+          <p style={{ color: "var(--gfi-text-muted)", fontSize: 13, margin: "4px 0 0" }}>
             Generador de propuestas para captación de exclusiva
           </p>
         </div>
@@ -1984,13 +1984,13 @@ export default function PropuestaComercialPage() {
                           ? "1px solid #990000"
                           : completo
                           ? "1px solid rgba(153,0,0,0.4)"
-                          : "1px solid rgba(255,255,255,0.08)",
+                          : "1px solid var(--gfi-border)",
                         borderRadius: 8,
                         padding: "8px 4px",
                         cursor: "pointer",
-                        color: activo ? "#fff" : completo ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.3)",
+                        color: activo ? "#fff" : completo ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)",
                         fontSize: 11,
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: activo ? 700 : 500,
                         transition: "all 0.15s",
                         textAlign: "center",
@@ -2013,7 +2013,7 @@ export default function PropuestaComercialPage() {
               <div
                 style={{
                   height: 3,
-                  background: "rgba(255,255,255,0.08)",
+                  background: "var(--gfi-border)",
                   borderRadius: 2,
                   overflow: "hidden",
                 }}
@@ -2043,8 +2043,8 @@ export default function PropuestaComercialPage() {
                   onClick={() => setPaso((p) => p - 1)}
                   style={{
                     background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    color: "rgba(255,255,255,0.7)",
+                    border: "1px solid var(--gfi-border)",
+                    color: "var(--gfi-text-primary)",
                     borderRadius: 8,
                     padding: "10px 20px",
                     cursor: "pointer",
@@ -2068,7 +2068,7 @@ export default function PropuestaComercialPage() {
                     cursor: "pointer",
                     fontSize: 13,
                     fontWeight: 700,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                   }}
                 >
                   Siguiente →
@@ -2086,7 +2086,7 @@ export default function PropuestaComercialPage() {
                     cursor: "pointer",
                     fontSize: 13,
                     fontWeight: 700,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                   }}
                 >
                   Guardar propuesta
@@ -2098,8 +2098,8 @@ export default function PropuestaComercialPage() {
             <div
               style={{
                 marginTop: 32,
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "var(--gfi-bg-card)",
+                border: "1px solid var(--gfi-border)",
                 borderRadius: 12,
                 padding: "18px 20px",
               }}
@@ -2114,10 +2114,10 @@ export default function PropuestaComercialPage() {
               >
                 <div
                   style={{
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     fontSize: 13,
-                    color: "rgba(255,255,255,0.5)",
+                    color: "var(--gfi-text-secondary)",
                     textTransform: "uppercase",
                     letterSpacing: 1,
                   }}
@@ -2129,7 +2129,7 @@ export default function PropuestaComercialPage() {
                   style={{
                     background: "transparent",
                     border: "1px solid rgba(255,255,255,0.15)",
-                    color: "rgba(255,255,255,0.5)",
+                    color: "var(--gfi-text-secondary)",
                     borderRadius: 6,
                     padding: "5px 12px",
                     cursor: "pointer",
@@ -2146,7 +2146,7 @@ export default function PropuestaComercialPage() {
                   style={{
                     textAlign: "center",
                     padding: "20px 0",
-                    color: "rgba(255,255,255,0.2)",
+                    color: "var(--gfi-text-dim)",
                     fontSize: 13,
                   }}
                 >
@@ -2160,10 +2160,10 @@ export default function PropuestaComercialPage() {
                       <div
                         key={p.id}
                         style={{
-                          background: sel ? "rgba(153,0,0,0.08)" : "rgba(255,255,255,0.03)",
+                          background: sel ? "rgba(153,0,0,0.08)" : "var(--gfi-bg-card)",
                           border: sel
                             ? "1px solid rgba(153,0,0,0.3)"
-                            : "1px solid rgba(255,255,255,0.08)",
+                            : "1px solid var(--gfi-border)",
                           borderRadius: 8,
                           padding: "10px 12px",
                           display: "flex",
@@ -2180,7 +2180,7 @@ export default function PropuestaComercialPage() {
                               ? `${p.propietario.apellido}, ${p.propietario.nombre}`
                               : p.propietario.nombre || "Sin nombre"}
                           </div>
-                          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+                          <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
                             {p.inmueble.tipo} · {p.operacion.tipoOperacion === "ambas" ? "Venta/Alq." : p.operacion.tipoOperacion} ·{" "}
                             {new Date(p.createdAt).toLocaleDateString("es-AR")}
                           </div>
@@ -2191,8 +2191,8 @@ export default function PropuestaComercialPage() {
                             title="Duplicar"
                             style={{
                               background: "transparent",
-                              border: "1px solid rgba(255,255,255,0.1)",
-                              color: "rgba(255,255,255,0.4)",
+                              border: "1px solid var(--gfi-border)",
+                              color: "var(--gfi-text-muted)",
                               borderRadius: 6,
                               padding: "4px 8px",
                               cursor: "pointer",
@@ -2247,7 +2247,7 @@ export default function PropuestaComercialPage() {
                   cursor: "pointer",
                   fontWeight: 700,
                   fontSize: 13,
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                 }}
               >
                 Generar PDF / Imprimir
@@ -2257,7 +2257,7 @@ export default function PropuestaComercialPage() {
                 style={{
                   flex: 1,
                   background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  border: "1px solid var(--gfi-border)",
                   color: "#fff",
                   borderRadius: 8,
                   padding: "12px 0",
@@ -2275,7 +2275,7 @@ export default function PropuestaComercialPage() {
             <div
               style={{
                 fontSize: 11,
-                color: "rgba(255,255,255,0.25)",
+                color: "var(--gfi-text-dim)",
                 textTransform: "uppercase",
                 letterSpacing: "1px",
                 marginBottom: 10,

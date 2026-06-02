@@ -156,10 +156,10 @@ export default function PanelComisiones() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>💰 Panel de Comisiones</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>💰 Panel de Comisiones</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Honorarios realizados y proyectados del pipeline</p>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -176,7 +176,7 @@ export default function PanelComisiones() {
             <button key={v} onClick={() => setVistaMode(v)} style={{
               background: vistaMode === v ? "#990000" : "#1a1a1a", border: "1px solid #333",
               borderRadius: 6, color: "#fff", padding: "6px 12px", fontSize: 12, cursor: "pointer",
-              fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "capitalize",
+              fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "capitalize",
             }}>{v === "tabla" ? "📋 Tabla" : "📊 Mensual"}</button>
           ))}
         </div>
@@ -194,9 +194,9 @@ export default function PanelComisiones() {
             { label: "Total proyectado", val: fmt(kpis.totalRealizado + kpis.totalPipeline), sub: "Realizado + pipeline", color: "#d4960c" },
           ].map((kpi, i) => (
             <div key={i} style={{
-              background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px",
+              background: "var(--gfi-bg-secondary)", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px",
             }}>
-              <div style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
+              <div style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: kpi.color, marginTop: 4 }}>{kpi.val}</div>
               <div style={{ fontSize: 11, color: "#555", marginTop: 2 }}>{kpi.sub}</div>
             </div>
@@ -207,8 +207,8 @@ export default function PanelComisiones() {
           <div style={{ textAlign: "center", color: "#666", padding: 48 }}>Cargando...</div>
         ) : vistaMode === "mensual" ? (
           /* Vista mensual con barras */
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-            <h2 style={{ margin: "0 0 20px", fontSize: 14, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+            <h2 style={{ margin: "0 0 20px", fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
               Comisiones por mes
             </h2>
             {porMes.length === 0 ? (
@@ -216,7 +216,7 @@ export default function PanelComisiones() {
             ) : porMes.map(mes => (
               <div key={mes.key} style={{ marginBottom: 14 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, color: "#ccc", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>{mes.label}</span>
+                  <span style={{ fontSize: 12, color: "#ccc", fontFamily: "var(--font-display)", fontWeight: 700 }}>{mes.label}</span>
                   <span style={{ fontSize: 12, color: "#888" }}>
                     {mes.realizadas > 0 && <span style={{ color: "#3abab6" }}>{fmt(mes.realizadas)}</span>}
                     {mes.realizadas > 0 && mes.pipeline > 0 && <span style={{ color: "#555" }}> + </span>}
@@ -251,12 +251,12 @@ export default function PanelComisiones() {
           </div>
         ) : (
           /* Vista tabla */
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, overflow: "hidden" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #222" }}>
                   {["Negocio","Tipo","Etapa","Valor op.","Hon. %","Comisión","Mes"].map(h => (
-                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{h}</th>
+                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -264,7 +264,7 @@ export default function PanelComisiones() {
                 {filasFiltradas.length === 0 ? (
                   <tr><td colSpan={7} style={{ padding: 32, textAlign: "center", color: "#555" }}>Sin negocios con valor definido</td></tr>
                 ) : filasFiltradas.map((f, i) => (
-                  <tr key={f.id} style={{ borderBottom: "1px solid #1a1a1a", background: i % 2 === 0 ? "#0d0d0d" : "transparent" }}>
+                  <tr key={f.id} style={{ borderBottom: "1px solid #1a1a1a", background: i % 2 === 0 ? "var(--gfi-bg-primary)" : "transparent" }}>
                     <td style={{ padding: "10px 16px" }}>
                       <div style={{ fontSize: 13, color: "#fff" }}>{f.titulo}</div>
                       {!f.realizada && <div style={{ fontSize: 10, color: "#888", marginTop: 1 }}>Pipeline</div>}
@@ -272,7 +272,7 @@ export default function PanelComisiones() {
                     <td style={{ padding: "10px 16px", fontSize: 12, color: "#888" }}>{f.tipo ?? "—"}</td>
                     <td style={{ padding: "10px 16px" }}>
                       <span style={{
-                        fontSize: 11, fontFamily: "Montserrat, sans-serif", fontWeight: 700, padding: "2px 8px",
+                        fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 8px",
                         borderRadius: 4, background: `${COLORES_ETAPA[f.etapa] ?? "#333"}20`,
                         color: COLORES_ETAPA[f.etapa] ?? "#888",
                       }}>{f.etapa}</span>
@@ -292,8 +292,8 @@ export default function PanelComisiones() {
               </tbody>
               {filasFiltradas.length > 0 && (
                 <tfoot>
-                  <tr style={{ borderTop: "2px solid #222", background: "#0d0d0d" }}>
-                    <td colSpan={5} style={{ padding: "10px 16px", fontSize: 12, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                  <tr style={{ borderTop: "2px solid #222", background: "var(--gfi-bg-primary)" }}>
+                    <td colSpan={5} style={{ padding: "10px 16px", fontSize: 12, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       TOTAL ({filasFiltradas.length} negocios)
                     </td>
                     <td style={{ padding: "10px 16px", fontSize: 14, fontWeight: 700, color: "#fff" }}>
@@ -320,8 +320,8 @@ export default function PanelComisiones() {
           if (ranking.length === 0) return null;
           const maxTipo = Math.max(...ranking.map(r => r[1].total), 1);
           return (
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-              <h2 style={{ margin: "0 0 16px", fontSize: 14, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+              <h2 style={{ margin: "0 0 16px", fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                 Ranking por tipo de operación
               </h2>
               {ranking.map(([tipo, { total, count }]) => (

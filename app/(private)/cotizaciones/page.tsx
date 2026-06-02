@@ -239,110 +239,110 @@ export default function CotizacionesPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .cot-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
-        .cot-tab { padding: 9px 22px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
-        .cot-tab:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
+        .cot-tab { padding: 9px 22px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; transition: all 0.2s; }
+        .cot-tab:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-primary); }
         .cot-tab.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
-        .dolar-ref-widget { background: rgba(14,14,14,0.95); border: 1px solid rgba(200,0,0,0.35); border-radius: 8px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; position: relative; overflow: hidden; }
+        .dolar-ref-widget { background: var(--gfi-bg-card); border: 1px solid rgba(200,0,0,0.35); border-radius: 8px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; position: relative; overflow: hidden; }
         .dolar-ref-widget::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, #990000 60%, transparent); }
         .dolar-ref-left { display: flex; flex-direction: column; gap: 3px; }
-        .dolar-ref-label { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #990000; }
-        .dolar-ref-valor { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 800; color: #fff; line-height: 1; }
-        .dolar-ref-fuente { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+        .dolar-ref-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #990000; }
+        .dolar-ref-valor { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: #fff; line-height: 1; }
+        .dolar-ref-fuente { font-size: 11px; color: var(--gfi-text-muted); margin-top: 2px; }
         .dolar-ref-right { display: flex; gap: 20px; flex-wrap: wrap; }
         .dolar-ref-item { text-align: center; }
-        .dolar-ref-item-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-family: 'Montserrat', sans-serif; }
-        .dolar-ref-item-val { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 800; margin-top: 2px; }
-        .dolar-ref-nota { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 6px; font-style: italic; }
+        .dolar-ref-item-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); font-family: var(--font-display); }
+        .dolar-ref-item-val { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-top: 2px; }
+        .dolar-ref-nota { font-size: 10px; color: var(--gfi-text-dim); margin-top: 6px; font-style: italic; }
         .cot-seccion { display: flex; flex-direction: column; gap: 12px; }
-        .cot-seccion-titulo { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; }
+        .cot-seccion-titulo { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gfi-text-muted); display: flex; align-items: center; gap: 8px; }
         .cot-seccion-titulo::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
-        .cot-tabla-wrap { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; }
+        .cot-tabla-wrap { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; overflow: hidden; }
         .cot-tabla { width: 100%; border-collapse: collapse; }
-        .cot-tabla thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .cot-tabla th { padding: 11px 16px; text-align: left; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+        .cot-tabla thead tr { background: var(--gfi-bg-card); border-bottom: 1px solid var(--gfi-border-subtle); }
+        .cot-tabla th { padding: 11px 16px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-muted); }
         .cot-tabla th:not(:first-child) { text-align: right; }
-        .cot-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; }
+        .cot-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.15s; }
         .cot-tabla tbody tr:last-child { border-bottom: none; }
-        .cot-tabla tbody tr:hover { background: rgba(255,255,255,0.02); }
+        .cot-tabla tbody tr:hover { background: var(--gfi-bg-secondary); }
         .cot-tabla tbody tr.destacado { background: rgba(200,0,0,0.04); }
         .cot-tabla td { padding: 13px 16px; font-size: 13px; }
-        .cot-tabla td:not(:first-child) { text-align: right; font-family: 'Montserrat', sans-serif; font-weight: 700; }
+        .cot-tabla td:not(:first-child) { text-align: right; font-family: var(--font-display); font-weight: 700; }
         .cot-nombre { font-weight: 600; color: #fff; }
         .td-c { color: #4ab8d8; }
         .td-v { color: #f87171; }
         .td-p { color: #3abab6; }
         .cot-grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
-        .cot-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px 20px; }
-        .cot-card-label { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
+        .cot-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 16px 20px; }
+        .cot-card-label { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--gfi-text-primary); margin-bottom: 12px; }
         .cot-vals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .cot-val-label { font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-family: 'Montserrat', sans-serif; }
-        .cot-val-num { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; margin-top: 3px; }
+        .cot-val-label { font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); font-family: var(--font-display); }
+        .cot-val-num { font-family: var(--font-display); font-size: 15px; font-weight: 800; margin-top: 3px; }
         .prov-grid { display: flex; flex-direction: column; gap: 12px; }
-        .prov-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 20px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; transition: border-color 0.2s; }
+        .prov-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 20px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; transition: border-color 0.2s; }
         .prov-card:hover { border-color: rgba(200,0,0,0.2); }
         .prov-card.referencia { border-color: rgba(200,0,0,0.4); background: rgba(200,0,0,0.04); }
-        .prov-ref-badge { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; background: #990000; color: #fff; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+        .prov-ref-badge { font-family: var(--font-display); font-size: 8px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; background: #990000; color: #fff; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
         .prov-info { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .prov-nombre { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
+        .prov-nombre { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: #fff; }
         .prov-monedas { display: flex; gap: 6px; flex-wrap: wrap; }
-        .prov-moneda-tag { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 3px 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: rgba(255,255,255,0.6); }
-        .prov-servicios { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; }
+        .prov-moneda-tag { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 3px 8px; background: rgba(255,255,255,0.06); border: 1px solid var(--gfi-border); border-radius: 20px; color: var(--gfi-text-secondary); }
+        .prov-servicios { font-size: 12px; color: var(--gfi-text-muted); line-height: 1.5; }
         .prov-cot { display: flex; gap: 16px; flex-wrap: wrap; }
-        .prov-cot-item { font-size: 12px; color: rgba(255,255,255,0.4); }
-        .prov-cot-item strong { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; }
+        .prov-cot-item { font-size: 12px; color: var(--gfi-text-muted); }
+        .prov-cot-item strong { font-family: var(--font-display); font-weight: 800; font-size: 14px; }
         .prov-cot-item.compra strong { color: #4ab8d8; }
         .prov-cot-item.venta strong { color: #f87171; }
         .prov-cot-item.promedio strong { color: #3abab6; }
-        .prov-hora { font-size: 10px; color: rgba(255,255,255,0.25); }
+        .prov-hora { font-size: 10px; color: var(--gfi-text-dim); }
         .prov-acciones { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
-        .prov-btn-wa { padding: 8px 18px; background: rgba(37,211,102,0.12); border: 1px solid rgba(37,211,102,0.3); border-radius: 3px; color: #25d366; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; transition: all 0.2s; }
+        .prov-btn-wa { padding: 8px 18px; background: rgba(37,211,102,0.12); border: 1px solid rgba(37,211,102,0.3); border-radius: 3px; color: #25d366; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; transition: all 0.2s; }
         .prov-btn-wa:hover { background: rgba(37,211,102,0.2); }
-        .prov-btn-actualizar { padding: 8px 18px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #990000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .prov-btn-actualizar { padding: 8px 18px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .prov-btn-actualizar:hover { background: rgba(200,0,0,0.2); color: #fff; }
-        .prov-empty { padding: 48px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
+        .prov-empty { padding: 48px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; font-style: italic; }
         .match-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .match-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
-        .match-filtro { padding: 6px 14px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
-        .match-filtro:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
+        .match-filtro { padding: 6px 14px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; transition: all 0.2s; }
+        .match-filtro:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-primary); }
         .match-filtro.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
-        .match-btn-pub { padding: 9px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
+        .match-btn-pub { padding: 9px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
         .match-btn-pub:hover { background: #e60000; }
         .match-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .match-col-titulo { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px 4px 0 0; }
+        .match-col-titulo { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px 4px 0 0; }
         .match-col-titulo.venta { background: rgba(34,197,94,0.1); color: #3abab6; border: 1px solid rgba(34,197,94,0.2); border-bottom: none; }
         .match-col-titulo.compra { background: rgba(200,0,0,0.08); color: #990000; border: 1px solid rgba(200,0,0,0.2); border-bottom: none; }
-        .match-pub { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 8px; }
+        .match-pub { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 14px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 8px; }
         .match-pub.propia { border-color: rgba(200,0,0,0.25); background: rgba(200,0,0,0.04); }
         .match-pub-info { flex: 1; }
-        .match-pub-monto { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; color: #fff; }
+        .match-pub-monto { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; }
         .match-pub-monto span { color: #990000; }
-        .match-pub-meta { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; line-height: 1.5; }
-        .match-pub-corredor { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; font-weight: 500; }
+        .match-pub-meta { font-size: 11px; color: var(--gfi-text-muted); margin-top: 4px; line-height: 1.5; }
+        .match-pub-corredor { font-size: 12px; color: var(--gfi-text-secondary); margin-top: 6px; font-weight: 500; }
         .match-pub-precio { font-size: 11px; color: #d4960c; margin-top: 2px; }
-        .match-btn-eliminar { padding: 6px 10px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; }
+        .match-btn-eliminar { padding: 6px 10px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-muted); font-size: 11px; cursor: pointer; }
         .match-btn-eliminar:hover { border-color: rgba(200,0,0,0.4); color: #ff4444; }
-        .match-nota { font-size: 11px; color: rgba(255,255,255,0.2); text-align: center; padding: 8px; background: rgba(200,0,0,0.05); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; }
-        .match-empty { padding: 24px 16px; text-align: center; color: rgba(255,255,255,0.2); font-size: 12px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; margin-top: 8px; }
+        .match-nota { font-size: 11px; color: var(--gfi-text-dim); text-align: center; padding: 8px; background: rgba(200,0,0,0.05); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; }
+        .match-empty { padding: 24px 16px; text-align: center; color: var(--gfi-text-dim); font-size: 12px; font-style: italic; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; margin-top: 8px; }
         .fn-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
         .fn-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 36px; width: 100%; max-width: 460px; position: relative; }
         .fn-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
-        .fn-modal h2 { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; margin-bottom: 20px; }
+        .fn-modal h2 { font-family: var(--font-display); font-size: 16px; font-weight: 800; margin-bottom: 20px; }
         .fn-modal h2 span { color: #990000; }
         .fn-field { margin-bottom: 14px; }
-        .fn-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; font-family: 'Montserrat', sans-serif; }
-        .fn-input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: 'Inter', sans-serif; }
+        .fn-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 6px; font-family: var(--font-display); }
+        .fn-input { width: 100%; padding: 10px 14px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: var(--font-body); }
         .fn-input:focus { border-color: rgba(200,0,0,0.5); }
-        .fn-input::placeholder { color: rgba(255,255,255,0.2); }
-        .fn-select { width: 100%; padding: 10px 14px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter', sans-serif; }
+        .fn-input::placeholder { color: var(--gfi-text-dim); }
+        .fn-select { width: 100%; padding: 10px 14px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); }
         .fn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .fn-modal-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
-        .fn-btn-cancelar { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .fn-btn-guardar { padding: 10px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .fn-btn-cancelar { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .fn-btn-guardar { padding: 10px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .fn-btn-guardar:hover { background: #e60000; }
         .fn-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 4px; animation: skpulse 1.5s ease-in-out infinite; display: inline-block; }
         @keyframes skpulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-        .cot-nota { font-size: 11px; color: rgba(255,255,255,0.2); text-align: center; font-style: italic; }
+        .cot-nota { font-size: 11px; color: var(--gfi-text-dim); text-align: center; font-style: italic; }
         @media (max-width: 900px) { .cot-grid3 { grid-template-columns: 1fr 1fr; } .match-columnas { grid-template-columns: 1fr; } }
         @media (max-width: 600px) { .cot-grid3 { grid-template-columns: 1fr; } }
       `}</style>
@@ -503,7 +503,7 @@ export default function CotizacionesPage() {
                 <button className={`match-filtro${filtroTipo === "todos" ? " activo" : ""}`} onClick={() => setFiltroTipo("todos")}>Todos</button>
                 <button className={`match-filtro${filtroTipo === "venta" ? " activo" : ""}`} onClick={() => setFiltroTipo("venta")}>Venden</button>
                 <button className={`match-filtro${filtroTipo === "compra" ? " activo" : ""}`} onClick={() => setFiltroTipo("compra")}>Compran</button>
-                <span style={{width:1,background:"rgba(255,255,255,0.1)",margin:"0 4px"}} />
+                <span style={{width:1,background:"var(--gfi-border)",margin:"0 4px"}} />
                 {["todas", ...MONEDAS].map(m => (
                   <button key={m} className={`match-filtro${filtroMoneda === m ? " activo" : ""}`} onClick={() => setFiltroMoneda(m)}>
                     {m === "todas" ? "Todas" : `${MONEDA_FLAG[m]} ${m}`}
@@ -514,7 +514,7 @@ export default function CotizacionesPage() {
             </div>
             <div className="match-nota">
               💡 Referencia GFI: <strong style={{color:"#3abab6"}}>{dolarReferencia.valor ? formatARS(dolarReferencia.valor) : "cargando..."}</strong>
-              {dolarReferencia.proveedor && <span style={{color:"rgba(255,255,255,0.3)"}}> · {dolarReferencia.proveedor}</span>}
+              {dolarReferencia.proveedor && <span style={{color:"var(--gfi-text-muted)"}}> · {dolarReferencia.proveedor}</span>}
               {" · "}Publicaciones vencen en 24hs.
             </div>
             <div className="match-columnas">
@@ -536,7 +536,7 @@ export default function CotizacionesPage() {
                       ? <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
                       : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
                           {p.perfiles?.telefono && <a href={`https://wa.me/${p.perfiles.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{padding:"6px 12px",background:"#25d366",border:"none",borderRadius:4,color:"#fff",fontSize:11,fontWeight:700,textDecoration:"none"}}>📱 WhatsApp</a>}
-                          {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{p.perfiles.email}</a>}
+                          {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"var(--gfi-text-secondary)"}}>{p.perfiles.email}</a>}
                         </div>}
                   </div>
                 ))}
@@ -559,7 +559,7 @@ export default function CotizacionesPage() {
                       ? <button className="match-btn-eliminar" onClick={() => eliminarPublicacion(p.id)}>✕</button>
                       : <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
                           {p.perfiles?.telefono && <a href={`https://wa.me/${p.perfiles.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{padding:"6px 12px",background:"#25d366",border:"none",borderRadius:4,color:"#fff",fontSize:11,fontWeight:700,textDecoration:"none"}}>📱 WhatsApp</a>}
-                          {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{p.perfiles.email}</a>}
+                          {p.perfiles?.email && <a href={`mailto:${p.perfiles.email}`} style={{fontSize:10,color:"var(--gfi-text-secondary)"}}>{p.perfiles.email}</a>}
                         </div>}
                   </div>
                 ))}
@@ -612,7 +612,7 @@ export default function CotizacionesPage() {
               <label className="fn-label">Notas adicionales</label>
               <input className="fn-input" placeholder="recibo transferencia, efectivo..." value={formPub.notas} onChange={e => setFormPub(p => ({ ...p, notas: e.target.value }))} />
             </div>
-            <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:8}}>⏱ La publicación vence en 24 horas automáticamente.</div>
+            <div style={{fontSize:11,color:"var(--gfi-text-muted)",marginTop:8}}>⏱ La publicación vence en 24 horas automáticamente.</div>
             <div className="fn-modal-actions">
               <button className="fn-btn-cancelar" onClick={() => setMostrarForm(false)}>Cancelar</button>
               <button className="fn-btn-guardar" onClick={publicar} disabled={guardando || !formPub.monto}>

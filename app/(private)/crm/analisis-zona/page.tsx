@@ -353,7 +353,7 @@ export default function AnalisisZona() {
     textAlign: "left",
     fontSize: 10,
     color: "#888",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     textTransform: "uppercase",
     whiteSpace: "nowrap",
@@ -391,7 +391,7 @@ export default function AnalisisZona() {
       {/* Header */}
       <div
         style={{
-          background: "#111",
+          background: "var(--gfi-bg-secondary)",
           borderBottom: "1px solid #222",
           padding: "16px 24px",
           display: "flex",
@@ -407,7 +407,7 @@ export default function AnalisisZona() {
           <h1
             style={{
               margin: 0,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 28,
               color: "#fff",
@@ -433,7 +433,7 @@ export default function AnalisisZona() {
       {/* Tabs */}
       <div
         style={{
-          background: "#0f0f0f",
+          background: "var(--gfi-bg-primary)",
           borderBottom: "1px solid #1a1a1a",
           padding: "12px 24px",
           display: "flex",
@@ -455,7 +455,7 @@ export default function AnalisisZona() {
               borderRadius: 20,
               border: "none",
               cursor: "pointer",
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: 12,
               background: tab === t.id ? "#990000" : "#1a1a1a",
@@ -481,7 +481,7 @@ export default function AnalisisZona() {
                 {/* Tabla barrios */}
                 <div
                   style={{
-                    background: "#111",
+                    background: "var(--gfi-bg-secondary)",
                     border: "1px solid #222",
                     borderRadius: 10,
                     overflow: "hidden",
@@ -492,7 +492,7 @@ export default function AnalisisZona() {
                       style={{
                         margin: 0,
                         fontSize: 13,
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         color: "#fff",
                         textTransform: "uppercase",
@@ -503,7 +503,7 @@ export default function AnalisisZona() {
                     <p
                       style={{
                         margin: "6px 0 0",
-                        color: "rgba(255,255,255,0.4)",
+                        color: "var(--gfi-text-muted)",
                         fontSize: 12,
                         fontStyle: "italic",
                       }}
@@ -593,7 +593,7 @@ export default function AnalisisZona() {
                 {scatterData.length > 0 && (
                   <div
                     style={{
-                      background: "#111",
+                      background: "var(--gfi-bg-secondary)",
                       border: "1px solid #222",
                       borderRadius: 10,
                       padding: "20px 24px",
@@ -603,7 +603,7 @@ export default function AnalisisZona() {
                       style={{
                         margin: "0 0 4px",
                         fontSize: 13,
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         color: "#fff",
                         textTransform: "uppercase",
@@ -725,7 +725,7 @@ export default function AnalisisZona() {
                 {scatterData.length === 0 && estadisticasPorZona.length > 0 && (
                   <div
                     style={{
-                      background: "#111",
+                      background: "var(--gfi-bg-secondary)",
                       border: "1px solid #222",
                       borderRadius: 10,
                       padding: "20px 24px",
@@ -746,7 +746,7 @@ export default function AnalisisZona() {
                 {/* Filtros */}
                 <div
                   style={{
-                    background: "#111",
+                    background: "var(--gfi-bg-secondary)",
                     border: "1px solid #222",
                     borderRadius: 10,
                     padding: "16px 20px",
@@ -839,7 +839,7 @@ export default function AnalisisZona() {
                     <div
                       key={i}
                       style={{
-                        background: "#111",
+                        background: "var(--gfi-bg-secondary)",
                         border: `1px solid ${kpi.color}33`,
                         borderRadius: 10,
                         padding: "14px 16px",
@@ -849,7 +849,7 @@ export default function AnalisisZona() {
                         style={{
                           fontSize: 10,
                           color: "#888",
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           textTransform: "uppercase",
                         }}
@@ -869,7 +869,7 @@ export default function AnalisisZona() {
                 {histogramData.length > 0 && (
                   <div
                     style={{
-                      background: "#111",
+                      background: "var(--gfi-bg-secondary)",
                       border: "1px solid #222",
                       borderRadius: 10,
                       padding: "20px 24px",
@@ -879,7 +879,7 @@ export default function AnalisisZona() {
                       style={{
                         margin: "0 0 16px",
                         fontSize: 13,
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         color: "#fff",
                         textTransform: "uppercase",
@@ -941,7 +941,7 @@ export default function AnalisisZona() {
                 {/* Tabla propiedades */}
                 <div
                   style={{
-                    background: "#111",
+                    background: "var(--gfi-bg-secondary)",
                     border: "1px solid #222",
                     borderRadius: 10,
                     overflow: "hidden",
@@ -952,7 +952,7 @@ export default function AnalisisZona() {
                       style={{
                         margin: 0,
                         fontSize: 13,
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         color: "#fff",
                         textTransform: "uppercase",
@@ -1017,7 +1017,7 @@ export default function AnalisisZona() {
                                           ? "rgba(34,197,94,0.15)"
                                           : p.estado === "vendido" || p.estado === "alquilado"
                                           ? "rgba(153,0,0,0.15)"
-                                          : "rgba(255,255,255,0.05)",
+                                          : "var(--gfi-border-subtle)",
                                       color:
                                         p.estado === "activo" || p.estado === "activa"
                                           ? "#3abab6"
@@ -1087,7 +1087,7 @@ export default function AnalisisZona() {
                     <div
                       key={i}
                       style={{
-                        background: "#111",
+                        background: "var(--gfi-bg-secondary)",
                         border: `1px solid ${kpi.color}33`,
                         borderRadius: 10,
                         padding: "14px 16px",
@@ -1097,7 +1097,7 @@ export default function AnalisisZona() {
                         style={{
                           fontSize: 10,
                           color: "#888",
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           textTransform: "uppercase",
                         }}
@@ -1117,7 +1117,7 @@ export default function AnalisisZona() {
                 {/* Line chart */}
                 <div
                   style={{
-                    background: "#111",
+                    background: "var(--gfi-bg-secondary)",
                     border: "1px solid #222",
                     borderRadius: 10,
                     padding: "20px 24px",
@@ -1127,7 +1127,7 @@ export default function AnalisisZona() {
                     style={{
                       margin: "0 0 8px",
                       fontSize: 13,
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 800,
                       color: "#fff",
                       textTransform: "uppercase",
@@ -1260,7 +1260,7 @@ export default function AnalisisZona() {
                 {/* Tabla tendencias */}
                 <div
                   style={{
-                    background: "#111",
+                    background: "var(--gfi-bg-secondary)",
                     border: "1px solid #222",
                     borderRadius: 10,
                     overflow: "hidden",
@@ -1271,7 +1271,7 @@ export default function AnalisisZona() {
                       style={{
                         margin: 0,
                         fontSize: 13,
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         color: "#fff",
                         textTransform: "uppercase",
@@ -1342,7 +1342,7 @@ export default function AnalisisZona() {
                     <p
                       style={{
                         margin: 0,
-                        color: "rgba(255,255,255,0.4)",
+                        color: "var(--gfi-text-muted)",
                         fontSize: 12,
                         fontStyle: "italic",
                       }}

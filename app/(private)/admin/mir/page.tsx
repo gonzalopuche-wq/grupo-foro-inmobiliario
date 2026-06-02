@@ -115,13 +115,13 @@ function ModalOfrecido({
     background: "#1a1a1a", border: "1px solid #333", borderRadius: 5,
     color: "#fff", padding: "6px 10px", fontSize: 12, fontFamily: "Inter,sans-serif", width: "100%", boxSizing: "border-box",
   };
-  const lbl: React.CSSProperties = { fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 4 };
+  const lbl: React.CSSProperties = { fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 4 };
   const fld: React.CSSProperties = { marginBottom: 12 };
 
   const checkRow = (keys: (keyof Ofrecido)[], labels: string[]) => (
     <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
       {keys.map((k, i) => (
-        <label key={k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}>
+        <label key={k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--gfi-text-primary)", cursor: "pointer" }}>
           <input type="checkbox" checked={!!form[k]} onChange={e => setF(k, e.target.checked)} />
           {labels[i]}
         </label>
@@ -132,10 +132,10 @@ function ModalOfrecido({
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 600, maxHeight: "90vh", overflowY: "auto" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 600, maxHeight: "90vh", overflowY: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, color: "#fff" }}>Editar Ofrecido</div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 18 }}>✕</button>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 800, color: "#fff" }}>Editar Ofrecido</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 18 }}>✕</button>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
@@ -206,7 +206,7 @@ function ModalOfrecido({
         {error && <div style={{ color: "#b80000", fontSize: 12, marginBottom: 10 }}>✕ {error}</div>}
 
         <button onClick={guardar} disabled={guardando}
-          style={{ width: "100%", padding: 12, background: guardando ? "rgba(153,0,0,0.4)" : "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: guardando ? "not-allowed" : "pointer" }}>
+          style={{ width: "100%", padding: 12, background: guardando ? "rgba(153,0,0,0.4)" : "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: guardando ? "not-allowed" : "pointer" }}>
           {guardando ? "Guardando..." : "Guardar cambios"}
         </button>
       </div>
@@ -257,16 +257,16 @@ function ModalBusqueda({
     background: "#1a1a1a", border: "1px solid #333", borderRadius: 5,
     color: "#fff", padding: "6px 10px", fontSize: 12, fontFamily: "Inter,sans-serif", width: "100%", boxSizing: "border-box",
   };
-  const lbl: React.CSSProperties = { fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 4 };
+  const lbl: React.CSSProperties = { fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 4 };
   const fld: React.CSSProperties = { marginBottom: 12 };
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 620, maxHeight: "90vh", overflowY: "auto" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 620, maxHeight: "90vh", overflowY: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, color: "#fff" }}>Editar Búsqueda</div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 18 }}>✕</button>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 800, color: "#fff" }}>Editar Búsqueda</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 18 }}>✕</button>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
@@ -338,7 +338,7 @@ function ModalBusqueda({
 
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
           {(["apto_credito", "con_cochera", "barrio_cerrado", "uso_comercial", "acepta_mascotas", "acepta_bitcoin", "urgente", "activo"] as (keyof Busqueda)[]).map((k, i) => (
-            <label key={k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}>
+            <label key={k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--gfi-text-primary)", cursor: "pointer" }}>
               <input type="checkbox" checked={!!form[k]} onChange={e => setF(k, e.target.checked)} />
               {["Apto crédito", "Cochera", "B. cerrado", "Comercial", "Mascotas", "Bitcoin", "Urgente", "Activo"][i]}
             </label>
@@ -353,7 +353,7 @@ function ModalBusqueda({
         {error && <div style={{ color: "#b80000", fontSize: 12, marginBottom: 10 }}>✕ {error}</div>}
 
         <button onClick={guardar} disabled={guardando}
-          style={{ width: "100%", padding: 12, background: guardando ? "rgba(153,0,0,0.4)" : "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: guardando ? "not-allowed" : "pointer" }}>
+          style={{ width: "100%", padding: 12, background: guardando ? "rgba(153,0,0,0.4)" : "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: guardando ? "not-allowed" : "pointer" }}>
           {guardando ? "Guardando..." : "Guardar cambios"}
         </button>
       </div>
@@ -457,10 +457,10 @@ export default function AdminMirPage() {
 
   const st = {
     page: { minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter,sans-serif" } as React.CSSProperties,
-    header: { background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 } as React.CSSProperties,
-    badge: (color: string) => ({ background: `${color}22`, color, border: `1px solid ${color}44`, borderRadius: 4, padding: "2px 8px", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase" as const }),
+    header: { background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 } as React.CSSProperties,
+    badge: (color: string) => ({ background: `${color}22`, color, border: `1px solid ${color}44`, borderRadius: 4, padding: "2px 8px", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" as const }),
     inp: { background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 5, color: "#fff", padding: "6px 10px", fontSize: 12, fontFamily: "Inter,sans-serif" } as React.CSSProperties,
-    btn: (color: string) => ({ padding: "4px 10px", borderRadius: 4, border: `1px solid ${color}44`, background: `${color}11`, color, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", textTransform: "uppercase" as const }),
+    btn: (color: string) => ({ padding: "4px 10px", borderRadius: 4, border: `1px solid ${color}44`, background: `${color}11`, color, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "uppercase" as const }),
   };
 
   const ops = tab === "ofrecidos" ? OPS_OFRECIDO : OPS_BUSQUEDA;
@@ -498,7 +498,7 @@ export default function AdminMirPage() {
       <div style={st.header}>
         <Link href="/admin" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← Admin</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat,sans-serif", fontWeight: 800 }}>🔁 MIR — Gestión Admin</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>🔁 MIR — Gestión Admin</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Ofrecidos y búsquedas del Mercado Inmobiliario en Red</p>
         </div>
         <button onClick={cargar} style={st.btn("#888")}>↻ Recargar</button>
@@ -510,9 +510,9 @@ export default function AdminMirPage() {
           {(["ofrecidos", "busquedas"] as const).map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               padding: "8px 18px", borderRadius: 6, border: "none", cursor: "pointer",
-              fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+              fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
               background: tab === t ? "#990000" : "rgba(255,255,255,0.06)",
-              color: tab === t ? "#fff" : "rgba(255,255,255,0.4)",
+              color: tab === t ? "#fff" : "var(--gfi-text-muted)",
             }}>
               {t === "ofrecidos" ? "🏠 Ofrecidos" : "🔍 Búsquedas"}
               <span style={{ marginLeft: 6, opacity: 0.7 }}>
@@ -520,7 +520,7 @@ export default function AdminMirPage() {
               </span>
             </button>
           ))}
-          <div style={{ marginLeft: "auto", display: "flex", gap: 12, fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 12, fontSize: 12, color: "var(--gfi-text-secondary)" }}>
             <span>Total: <strong style={{ color: "#fff" }}>{total}</strong></span>
             <span>Activos: <strong style={{ color: "#3abab6" }}>{activos}</strong></span>
             <span>Inactivos: <strong style={{ color: "#b80000" }}>{total - activos}</strong></span>
@@ -552,7 +552,7 @@ export default function AdminMirPage() {
 
         {/* Barra de ordenamiento */}
         <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginRight: 4 }}>Ordenar:</span>
+          <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginRight: 4 }}>Ordenar:</span>
           {([
             { key: "fecha", label: "Fecha" },
             { key: "ciudad", label: "Ciudad" },
@@ -565,10 +565,10 @@ export default function AdminMirPage() {
               else { setSortCol(key); setSortDir(key === "fecha" ? "desc" : "asc"); }
             }} style={{
               padding: "3px 10px", borderRadius: 3, cursor: "pointer", fontSize: 10,
-              fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em",
-              border: `1px solid ${sortCol === key ? "#990000" : "rgba(255,255,255,0.1)"}`,
+              fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.06em",
+              border: `1px solid ${sortCol === key ? "#990000" : "var(--gfi-border)"}`,
               background: sortCol === key ? "rgba(200,0,0,0.12)" : "transparent",
-              color: sortCol === key ? "#fff" : "rgba(255,255,255,0.4)",
+              color: sortCol === key ? "#fff" : "var(--gfi-text-muted)",
             }}>
               {label}{sortCol === key ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
             </button>
@@ -588,8 +588,8 @@ export default function AdminMirPage() {
                 : (o.nombre_publicante ?? "Sin corredor");
               return (
                 <div key={o.id} style={{
-                  background: o.activo ? "#111" : "rgba(239,68,68,0.04)",
-                  border: `1px solid ${o.activo ? "rgba(255,255,255,0.07)" : "rgba(239,68,68,0.2)"}`,
+                  background: o.activo ? "var(--gfi-bg-secondary)" : "rgba(239,68,68,0.04)",
+                  border: `1px solid ${o.activo ? "var(--gfi-border-subtle)" : "rgba(239,68,68,0.2)"}`,
                   borderRadius: 8, padding: "12px 16px",
                   display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap",
                 }}>
@@ -604,17 +604,17 @@ export default function AdminMirPage() {
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 2 }}>
                       {o.tipo_propiedad} · {o.ciudad}{o.zona ? `, ${o.zona}` : ""}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-secondary)", marginBottom: 4 }}>
                       {corredor} · {fmtFecha(o.created_at)}
                     </div>
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 12, color: "var(--gfi-text-primary)", display: "flex", gap: 12, flexWrap: "wrap" }}>
                       {o.precio && <span>{o.moneda} {fmt(o.precio)}</span>}
                       {o.dormitorios && <span>{o.dormitorios} dorm.</span>}
                       {o.superficie_cubierta && <span>{o.superficie_cubierta} m²</span>}
                       {o.apto_credito && <span style={{ color: "#3abab6" }}>Apto crédito</span>}
                     </div>
                     {o.descripcion && (
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, fontStyle: "italic" }}>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4, fontStyle: "italic" }}>
                         {o.descripcion.slice(0, 120)}{o.descripcion.length > 120 ? "..." : ""}
                       </div>
                     )}
@@ -645,8 +645,8 @@ export default function AdminMirPage() {
                 : b.presupuesto_min ? `${b.moneda} desde ${fmt(b.presupuesto_min)}` : null;
               return (
                 <div key={b.id} style={{
-                  background: b.activo ? "#111" : "rgba(239,68,68,0.04)",
-                  border: `1px solid ${b.activo ? "rgba(255,255,255,0.07)" : "rgba(239,68,68,0.2)"}`,
+                  background: b.activo ? "var(--gfi-bg-secondary)" : "rgba(239,68,68,0.04)",
+                  border: `1px solid ${b.activo ? "var(--gfi-border-subtle)" : "rgba(239,68,68,0.2)"}`,
                   borderRadius: 8, padding: "12px 16px",
                   display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap",
                 }}>
@@ -659,17 +659,17 @@ export default function AdminMirPage() {
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 2 }}>
                       {b.tipo_propiedad} · {b.ciudad}{b.zona ? `, ${b.zona}` : ""}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-secondary)", marginBottom: 4 }}>
                       {corredor} · {fmtFecha(b.created_at)}
                     </div>
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 12, color: "var(--gfi-text-primary)", display: "flex", gap: 12, flexWrap: "wrap" }}>
                       {presup && <span>{presup}</span>}
                       {b.dormitorios_min && <span>{b.dormitorios_min}{b.dormitorios_max ? `–${b.dormitorios_max}` : "+"} dorm.</span>}
                       {b.superficie_min && <span>desde {b.superficie_min} m²</span>}
                       {b.apto_credito && <span style={{ color: "#3abab6" }}>Apto crédito</span>}
                     </div>
                     {b.descripcion && (
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, fontStyle: "italic" }}>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4, fontStyle: "italic" }}>
                         {b.descripcion.slice(0, 120)}{b.descripcion.length > 120 ? "..." : ""}
                       </div>
                     )}

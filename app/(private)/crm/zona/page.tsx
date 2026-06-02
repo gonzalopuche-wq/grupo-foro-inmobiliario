@@ -144,10 +144,10 @@ export default function AnalisisZona() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>📍 Análisis por Zona</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>📍 Análisis por Zona</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Precio por m² y estadísticas de mercado por barrio — cartera activa</p>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -182,8 +182,8 @@ export default function AnalisisZona() {
                   { label: "Rango (mín)", val: fmtUSD(globalStats.pm2Min) + "/m²", color: "#888" },
                   { label: "Rango (máx)", val: fmtUSD(globalStats.pm2Max) + "/m²", color: "#990000" },
                 ].map((kpi, i) => (
-                  <div key={i} style={{ background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "12px 16px" }}>
-                    <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
+                  <div key={i} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "12px 16px" }}>
+                    <div style={{ fontSize: 10, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: kpi.color, marginTop: 4 }}>{kpi.val}</div>
                   </div>
                 ))}
@@ -191,14 +191,14 @@ export default function AnalisisZona() {
             )}
 
             {zonaStats.length === 0 ? (
-              <div style={{ background: "#111", border: "1px solid #333", borderRadius: 10, padding: 32, textAlign: "center", color: "#666" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 10, padding: 32, textAlign: "center", color: "#666" }}>
                 Sin propiedades con precio y superficie definidos para los filtros seleccionados.
               </div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: zonaDetalle ? "1fr 320px" : "1fr", gap: 16 }}>
                 {/* Ranking de zonas */}
-                <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-                  <h2 style={{ margin: "0 0 20px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+                <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+                  <h2 style={{ margin: "0 0 20px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                     Ranking por precio mediano/m² ({zonaStats.length} zonas)
                   </h2>
                   {zonaStats.map((zona, i) => {
@@ -244,9 +244,9 @@ export default function AnalisisZona() {
 
                 {/* Panel detalle zona */}
                 {zonaDetalle && (
-                  <div style={{ background: "#111", border: "1px solid #990000", borderRadius: 10, padding: "20px", alignSelf: "start", position: "sticky", top: 16 }}>
+                  <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #990000", borderRadius: 10, padding: "20px", alignSelf: "start", position: "sticky", top: 16 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                      <h2 style={{ margin: 0, fontSize: 14, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000" }}>
+                      <h2 style={{ margin: 0, fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000" }}>
                         📍 {zonaDetalle.zona}
                       </h2>
                       <button onClick={() => setZonaSeleccionada(null)} style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: 18 }}>×</button>
@@ -268,7 +268,7 @@ export default function AnalisisZona() {
                     ))}
 
                     <div style={{ marginTop: 16 }}>
-                      <div style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, marginBottom: 8, textTransform: "uppercase" }}>
+                      <div style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 8, textTransform: "uppercase" }}>
                         Distribución por tipo
                       </div>
                       {Object.entries(zonaDetalle.distribTipo).sort((a, b) => b[1] - a[1]).map(([tipo, count]) => (

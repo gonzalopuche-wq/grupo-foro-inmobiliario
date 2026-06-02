@@ -53,8 +53,8 @@ export default function NuevoDMPage() {
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer", padding: "4px 8px" }}>←</button>
-        <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>
+        <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 18, cursor: "pointer", padding: "4px 8px" }}>←</button>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: "#fff" }}>
           Nuevo mensaje
         </h1>
       </div>
@@ -65,36 +65,36 @@ export default function NuevoDMPage() {
           placeholder="Buscar colega por nombre, matrícula o inmobiliaria..."
           value={busqueda}
           onChange={e => setBusqueda(e.target.value)}
-          style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", boxSizing: "border-box" }}
+          style={{ width: "100%", padding: "10px 14px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", boxSizing: "border-box" }}
         />
       </div>
 
-      <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden" }}>
         {filtrados.length === 0 ? (
-          <div style={{ padding: "30px 20px", textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 13, fontFamily: "Inter,sans-serif" }}>
+          <div style={{ padding: "30px 20px", textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 13, fontFamily: "Inter,sans-serif" }}>
             {busqueda ? `Sin resultados para "${busqueda}"` : "Sin colegas disponibles"}
           </div>
         ) : filtrados.map(c => (
           <div
             key={c.id}
             onClick={() => router.push(`/comunidad/dm/${c.id}`)}
-            style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.15s" }}
-            onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+            style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid var(--gfi-border-subtle)", transition: "background 0.15s" }}
+            onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
             onMouseOut={e => (e.currentTarget.style.background = "transparent")}
           >
-            <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden" }}>
+            <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden" }}>
               {c.foto_url ? <img src={c.foto_url} alt={c.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : initials(c)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {c.apellido}, {c.nombre}
               </div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif", marginTop: 1 }}>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 1 }}>
                 {c.matricula ? `Mat. ${c.matricula}` : "Sin matrícula"}
                 {c.inmobiliaria ? ` · ${c.inmobiliaria}` : ""}
               </div>
             </div>
-            <span style={{ fontSize: 16, color: "rgba(255,255,255,0.2)" }}>›</span>
+            <span style={{ fontSize: 16, color: "var(--gfi-text-dim)" }}>›</span>
           </div>
         ))}
       </div>

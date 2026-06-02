@@ -10,9 +10,9 @@ const PLANTILLAS = [
   { id: "rosario-classic", nombre: "Rosario Classic", estilo: "Oscuro · Rojo · Elegante", 
     preview: { bg: "#0a0a0a", accent: "#990000", text: "#fff" } },
   { id: "blanco-moderno", nombre: "Blanco Moderno", estilo: "Minimalista · Limpio",
-    preview: { bg: "#fff", accent: "#111", text: "#111" } },
+    preview: { bg: "#fff", accent: "var(--gfi-bg-secondary)", text: "var(--gfi-bg-secondary)" } },
   { id: "grand-estate", nombre: "Grand Estate", estilo: "Lujo · Negro · Dorado",
-    preview: { bg: "#0d0d0d", accent: "#c9a84c", text: "#fff" } },
+    preview: { bg: "var(--gfi-bg-primary)", accent: "#c9a84c", text: "#fff" } },
   { id: "ciudad-viva", nombre: "Ciudad Viva", estilo: "Urbano · Azul · Moderno",
     preview: { bg: "#1a2332", accent: "#3b82f6", text: "#fff" } },
   { id: "campo-verde", nombre: "Campo Verde", estilo: "Natural · Verde · Fresco",
@@ -24,7 +24,7 @@ const PLANTILLAS = [
   { id: "sol-norte", nombre: "Sol Norte", estilo: "Cálido · Naranja · Enérgico",
     preview: { bg: "#fffbf0", accent: "#d4960c", text: "#1a1a1a" } },
   { id: "plata", nombre: "Plata", estilo: "Premium · Plateado · Elegante",
-    preview: { bg: "#f8f9fa", accent: "#6b7280", text: "#111" } },
+    preview: { bg: "#f8f9fa", accent: "#6b7280", text: "var(--gfi-bg-secondary)" } },
   { id: "brick", nombre: "Brick", estilo: "Industrial · Ladrillo · Urbano",
     preview: { bg: "#1c1410", accent: "#b45309", text: "#fff" } },
   { id: "zen", nombre: "Zen", estilo: "Minimalista · Beige · Calma",
@@ -95,12 +95,12 @@ const CONFIG_VACIA: Config = {
 };
 
 const Toggle = ({ label, value, onChange, desc }: { label: string; value: boolean; onChange: (v: boolean) => void; desc?: string }) => (
-  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, padding: "12px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
     <div>
       <div style={{ fontSize: 13, color: "#fff", fontFamily: "Inter,sans-serif" }}>{label}</div>
-      {desc && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{desc}</div>}
+      {desc && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>{desc}</div>}
     </div>
-    <div style={{ width: 44, height: 24, borderRadius: 12, background: value ? "#990000" : "rgba(255,255,255,0.1)", position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.2s" }} onClick={() => onChange(!value)}>
+    <div style={{ width: 44, height: 24, borderRadius: 12, background: value ? "#990000" : "var(--gfi-border)", position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.2s" }} onClick={() => onChange(!value)}>
       <div style={{ position: "absolute", top: 3, left: value ? 23 : 3, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
     </div>
   </div>
@@ -253,7 +253,7 @@ export default function MiWebPage() {
     (config.slug ? `https://${config.slug}.foroinmobiliario.com.ar` : null);
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50vh", color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50vh", color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
       Cargando configuración...
     </div>
   );
@@ -263,79 +263,79 @@ export default function MiWebPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .mw-wrap { display: flex; gap: 0; min-height: calc(100vh - 70px); }
-        .mw-sidebar { width: 280px; flex-shrink: 0; background: rgba(8,8,8,0.95); border-right: 1px solid rgba(255,255,255,0.07); padding: 24px 0; display: flex; flex-direction: column; }
-        .mw-sidebar-titulo { padding: 0 22px 20px; font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 8px; }
+        .mw-sidebar { width: 280px; flex-shrink: 0; background: rgba(8,8,8,0.95); border-right: 1px solid var(--gfi-border-subtle); padding: 24px 0; display: flex; flex-direction: column; }
+        .mw-sidebar-titulo { padding: 0 22px 20px; font-family: var(--font-display); font-size: 14px; font-weight: 800; color: #fff; border-bottom: 1px solid var(--gfi-border-subtle); margin-bottom: 8px; }
         .mw-sidebar-titulo span { color: #990000; }
         .mw-sidebar-progress { padding: 12px 22px; margin-bottom: 8px; }
-        .mw-progress-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+        .mw-progress-bar { height: 3px; background: var(--gfi-border); border-radius: 2px; overflow: hidden; }
         .mw-progress-fill { height: 100%; background: #990000; border-radius: 2px; transition: width 0.3s; }
-        .mw-progress-txt { font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; margin-top: 6px; }
+        .mw-progress-txt { font-size: 10px; color: var(--gfi-text-muted); font-family: var(--font-display); margin-top: 6px; }
         .mw-paso-item { display: flex; align-items: center; gap: 14px; padding: 12px 22px; cursor: pointer; transition: background 0.15s; position: relative; }
-        .mw-paso-item:hover { background: rgba(255,255,255,0.03); }
+        .mw-paso-item:hover { background: var(--gfi-bg-card); }
         .mw-paso-item.activo { background: rgba(200,0,0,0.06); border-left: 2px solid #990000; }
-        .mw-paso-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; flex-shrink: 0; transition: all 0.2s; }
+        .mw-paso-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 800; flex-shrink: 0; transition: all 0.2s; }
         .mw-paso-num.completado { background: #3abab6; color: #fff; }
         .mw-paso-num.activo { background: #990000; color: #fff; }
-        .mw-paso-num.pendiente { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+        .mw-paso-num.pendiente { background: var(--gfi-border); color: var(--gfi-text-muted); }
         .mw-paso-info {}
-        .mw-paso-label { font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); }
+        .mw-paso-label { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); }
         .mw-paso-item.activo .mw-paso-label { color: #fff; }
-        .mw-paso-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 1px; }
-        .mw-sidebar-conector { width: 1px; height: 12px; background: rgba(255,255,255,0.07); margin: 0 35px; }
+        .mw-paso-sub { font-size: 10px; color: var(--gfi-text-muted); margin-top: 1px; }
+        .mw-sidebar-conector { width: 1px; height: 12px; background: var(--gfi-border-subtle); margin: 0 35px; }
         .mw-estado { margin: 16px 22px 0; padding: 10px 14px; border-radius: 6px; display: flex; align-items: center; gap: 10px; }
         .mw-estado.activa { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); }
-        .mw-estado.inactiva { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
+        .mw-estado.inactiva { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); }
         .mw-content { flex: 1; padding: 32px 40px; overflow-y: auto; }
-        .mw-paso-titulo { font-size: 10px; color: #990000; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px; }
-        .mw-paso-h1 { font-family: 'Montserrat',sans-serif; font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 4px; }
-        .mw-paso-desc { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
-        .mw-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 22px 24px; margin-bottom: 16px; }
-        .mw-card-titulo { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .mw-paso-titulo { font-size: 10px; color: #990000; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px; }
+        .mw-paso-h1 { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+        .mw-paso-desc { font-size: 13px; color: var(--gfi-text-muted); margin-bottom: 28px; }
+        .mw-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 22px 24px; margin-bottom: 16px; }
+        .mw-card-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .mw-field { margin-bottom: 14px; }
-        .mw-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 6px; font-family: 'Montserrat',sans-serif; }
-        .mw-label small { font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 6px; }
-        .mw-input { width: 100%; padding: 10px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; box-sizing: border-box; transition: border-color 0.2s; }
+        .mw-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 6px; font-family: var(--font-display); }
+        .mw-label small { font-size: 10px; color: var(--gfi-text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 6px; }
+        .mw-input { width: 100%; padding: 10px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); box-sizing: border-box; transition: border-color 0.2s; }
         .mw-input:focus { border-color: rgba(200,0,0,0.5); }
-        .mw-input::placeholder { color: rgba(255,255,255,0.2); }
-        .mw-textarea { width: 100%; padding: 10px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; box-sizing: border-box; resize: vertical; min-height: 80px; }
+        .mw-input::placeholder { color: var(--gfi-text-dim); }
+        .mw-textarea { width: 100%; padding: 10px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); box-sizing: border-box; resize: vertical; min-height: 80px; }
         .mw-textarea:focus { border-color: rgba(200,0,0,0.5); }
-        .mw-textarea::placeholder { color: rgba(255,255,255,0.2); }
+        .mw-textarea::placeholder { color: var(--gfi-text-dim); }
         .mw-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .mw-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-        .mw-hint { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 5px; line-height: 1.5; }
+        .mw-hint { font-size: 11px; color: var(--gfi-text-dim); margin-top: 5px; line-height: 1.5; }
         .mw-url-preview { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(200,0,0,0.06); border: 1px solid rgba(200,0,0,0.15); border-radius: 6px; margin-top: 10px; }
-        .mw-url-txt { font-size: 12px; color: rgba(255,255,255,0.6); font-family: 'Inter',sans-serif; }
-        .mw-url-link { font-size: 12px; color: "#990000"; font-family: 'Inter',sans-serif; word-break: break-all; }
+        .mw-url-txt { font-size: 12px; color: var(--gfi-text-secondary); font-family: var(--font-body); }
+        .mw-url-link { font-size: 12px; color: "#990000"; font-family: var(--font-body); word-break: break-all; }
         /* Plantillas */
         .mw-plantillas { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
         .mw-plantilla { border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
         .mw-plantilla:hover { transform: translateY(-2px); }
         .mw-plantilla.activa { border-color: #990000; }
         .mw-plantilla-preview { height: 100px; display: flex; flex-direction: column; padding: 10px; position: relative; overflow: hidden; }
-        .mw-plantilla-nombre { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; padding: 8px 10px; letter-spacing: 0.05em; text-transform: uppercase; }
-        .mw-plantilla-estilo { font-size: 9px; color: rgba(255,255,255,0.5); padding: 0 10px 8px; font-family: 'Inter',sans-serif; }
+        .mw-plantilla-nombre { font-family: var(--font-display); font-size: 9px; font-weight: 800; padding: 8px 10px; letter-spacing: 0.05em; text-transform: uppercase; }
+        .mw-plantilla-estilo { font-size: 9px; color: var(--gfi-text-secondary); padding: 0 10px 8px; font-family: var(--font-body); }
         .mw-check-activa { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; background: #990000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; }
         /* Color picker */
         .mw-colores { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .mw-color-item { display: flex; align-items: center; gap: 10px; }
-        .mw-color-preview { width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; flex-shrink: 0; }
-        .mw-color-label { font-size: 11px; color: rgba(255,255,255,0.5); font-family: 'Inter',sans-serif; }
-        .mw-color-input { width: 100%; padding: 6px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 12px; outline: none; font-family: 'Inter',sans-serif; box-sizing: border-box; }
+        .mw-color-preview { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gfi-border); cursor: pointer; flex-shrink: 0; }
+        .mw-color-label { font-size: 11px; color: var(--gfi-text-secondary); font-family: var(--font-body); }
+        .mw-color-input { width: 100%; padding: 6px 10px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 12px; outline: none; font-family: var(--font-body); box-sizing: border-box; }
         /* Botones nav */
-        .mw-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.07); }
-        .mw-btn-prev { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .mw-btn-next { padding: 10px 24px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .mw-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--gfi-border-subtle); }
+        .mw-btn-prev { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .mw-btn-next { padding: 10px 24px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .mw-btn-next:hover { background: #e60000; }
-        .mw-btn-guardar { padding: 10px 24px; background: #3abab6; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .mw-spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
+        .mw-btn-guardar { padding: 10px 24px; background: #3abab6; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .mw-spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--gfi-text-muted); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .mw-img-upload { display: flex; align-items: center; gap: 12px; }
-        .mw-img-preview { width: 80px; height: 60px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .mw-img-preview { width: 80px; height: 60px; border-radius: 6px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
         .mw-img-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .mw-img-placeholder { font-size: 10px; color: rgba(255,255,255,0.2); text-align: center; font-family: 'Inter',sans-serif; }
-        .mw-btn-upload { padding: 7px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: rgba(255,255,255,0.6); font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 700; cursor: pointer; }
+        .mw-img-placeholder { font-size: 10px; color: var(--gfi-text-dim); text-align: center; font-family: var(--font-body); }
+        .mw-btn-upload { padding: 7px 14px; background: var(--gfi-border-subtle); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: var(--gfi-text-secondary); font-size: 11px; font-family: var(--font-display); font-weight: 700; cursor: pointer; }
         .mw-social-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .mw-social-icon { width: 32px; height: 32px; border-radius: 6px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .mw-social-icon { width: 32px; height: 32px; border-radius: 6px; background: var(--gfi-border-subtle); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         @media (max-width: 900px) { .mw-sidebar { width: 220px; } .mw-content { padding: 24px 20px; } }
         @media (max-width: 700px) { .mw-wrap { flex-direction: column; } .mw-sidebar { width: 100%; padding: 16px 0; } .mw-row, .mw-row3, .mw-colores { grid-template-columns: 1fr; } }
       `}</style>
@@ -370,13 +370,13 @@ export default function MiWebPage() {
 
           {/* Estado web */}
           <div className={`mw-estado ${config.activa ? "activa" : "inactiva"}`}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: config.activa ? "#3abab6" : "rgba(255,255,255,0.2)", flexShrink: 0 }} />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: config.activa ? "#3abab6" : "var(--gfi-text-dim)", flexShrink: 0 }} />
             <div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: config.activa ? "#3abab6" : "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, color: config.activa ? "#3abab6" : "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 {config.activa ? "Web activa" : "Web inactiva"}
               </div>
               {urlWeb && (
-                <a href={urlWeb} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", textDecoration: "none", wordBreak: "break-all" }}>
+                <a href={urlWeb} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", textDecoration: "none", wordBreak: "break-all" }}>
                   {urlWeb.replace("https://", "")}
                 </a>
               )}
@@ -384,27 +384,27 @@ export default function MiWebPage() {
           </div>
 
           {/* Contenido links */}
-          <div style={{ margin: "12px 22px 0", padding: "10px 14px", borderRadius: 6, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Contenido</div>
+          <div style={{ margin: "12px 22px 0", padding: "10px 14px", borderRadius: 6, background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)" }}>
+            <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Contenido</div>
             <Link href="/mi-web/leads" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0" }}>
               <span style={{ fontSize: 14 }}>📬</span>
               <span style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", fontWeight: 500 }}>Leads</span>
-              <span style={{ marginLeft: "auto", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>→</span>
+              <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--gfi-text-dim)" }}>→</span>
             </Link>
-            <Link href="/mi-web/blog" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0", borderTop: "1px solid rgba(255,255,255,0.05)", marginTop: 2 }}>
+            <Link href="/mi-web/blog" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0", borderTop: "1px solid var(--gfi-border-subtle)", marginTop: 2 }}>
               <span style={{ fontSize: 14 }}>✍️</span>
               <span style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", fontWeight: 500 }}>Ver mi Blog</span>
-              <span style={{ marginLeft: "auto", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>→</span>
+              <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--gfi-text-dim)" }}>→</span>
             </Link>
-            <Link href="/mi-web/instagram" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0", borderTop: "1px solid rgba(255,255,255,0.05)", marginTop: 2 }}>
+            <Link href="/mi-web/instagram" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0", borderTop: "1px solid var(--gfi-border-subtle)", marginTop: 2 }}>
               <span style={{ fontSize: 14 }}>📸</span>
               <span style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", fontWeight: 500 }}>Instagram</span>
-              <span style={{ marginLeft: "auto", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>→</span>
+              <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--gfi-text-dim)" }}>→</span>
             </Link>
-            <Link href="/mi-web/testimonios" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0", borderTop: "1px solid rgba(255,255,255,0.05)", marginTop: 2 }}>
+            <Link href="/mi-web/testimonios" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", padding: "6px 0", borderTop: "1px solid var(--gfi-border-subtle)", marginTop: 2 }}>
               <span style={{ fontSize: 14 }}>💬</span>
               <span style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", fontWeight: 500 }}>Testimonios</span>
-              <span style={{ marginLeft: "auto", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>→</span>
+              <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--gfi-text-dim)" }}>→</span>
             </Link>
           </div>
         </div>
@@ -434,7 +434,7 @@ export default function MiWebPage() {
                         onChange={e => set("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
                         placeholder={matricula ? `mat${matricula}` : "tu-nombre"}
                       />
-                      <div style={{ padding: "10px 12px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0 4px 4px 0", fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", whiteSpace: "nowrap" }}>
+                      <div style={{ padding: "10px 12px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", borderRadius: "0 4px 4px 0", fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", whiteSpace: "nowrap" }}>
                         .foroinmobiliario.com.ar
                       </div>
                     </div>
@@ -456,7 +456,7 @@ export default function MiWebPage() {
                   <div className="mw-url-preview">
                     <span style={{ fontSize: 14 }}>🌐</span>
                     <div>
-                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 2 }}>Tu web quedará en</div>
+                      <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 2 }}>Tu web quedará en</div>
                       <span style={{ fontSize: 12, color: "#990000", fontFamily: "Inter,sans-serif" }}>
                         {config.dominio_propio || `https://${config.slug || `mat${matricula}`}.foroinmobiliario.com.ar`}
                       </span>
@@ -482,7 +482,7 @@ export default function MiWebPage() {
                     <div
                       key={p.id}
                       className={`mw-plantilla${config.plantilla === p.id ? " activa" : ""}`}
-                      style={{ border: `2px solid ${config.plantilla === p.id ? "#990000" : "rgba(255,255,255,0.08)"}` }}
+                      style={{ border: `2px solid ${config.plantilla === p.id ? "#990000" : "var(--gfi-border)"}` }}
                       onClick={() => set("plantilla", p.id)}
                     >
                       {/* Preview visual */}
@@ -508,7 +508,7 @@ export default function MiWebPage() {
                         {config.plantilla === p.id && <div className="mw-check-activa">✓</div>}
                       </div>
                       <div style={{ background: `${p.preview.bg}ee`, padding: "8px 10px" }}>
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 800, color: p.preview.text, letterSpacing: "0.05em" }}>{p.nombre}</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 800, color: p.preview.text, letterSpacing: "0.05em" }}>{p.nombre}</div>
                         <div style={{ fontSize: 9, color: `${p.preview.text}60`, fontFamily: "Inter,sans-serif", marginTop: 2 }}>{p.estilo}</div>
                       </div>
                     </div>
@@ -558,11 +558,11 @@ export default function MiWebPage() {
                         type="color"
                         value={config[c.key as keyof Config] as string}
                         onChange={e => set(c.key as keyof Config, e.target.value)}
-                        style={{ width: 40, height: 40, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", padding: 2, background: "transparent" }}
+                        style={{ width: 40, height: 40, borderRadius: 8, border: "1px solid var(--gfi-border)", cursor: "pointer", padding: 2, background: "transparent" }}
                       />
                       <div>
                         <div style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif" }}>{c.label}</div>
-                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{c.desc}</div>
+                        <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 2 }}>{c.desc}</div>
                         <input
                           className="mw-color-input"
                           value={config[c.key as keyof Config] as string}
@@ -576,7 +576,7 @@ export default function MiWebPage() {
                 <div style={{ marginTop: 14, padding: "10px 14px", borderRadius: 6, background: `${config.color_primario}15`, border: `1px solid ${config.color_primario}30`, display: "flex", gap: 10, alignItems: "center" }}>
                   <div style={{ width: 28, height: 28, borderRadius: 6, background: config.color_primario }} />
                   <div style={{ width: 28, height: 28, borderRadius: 6, background: config.color_secundario }} />
-                  <div style={{ flex: 1, height: 28, borderRadius: 6, background: config.color_fondo, border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", paddingLeft: 10 }}>
+                  <div style={{ flex: 1, height: 28, borderRadius: 6, background: config.color_fondo, border: "1px solid var(--gfi-border)", display: "flex", alignItems: "center", paddingLeft: 10 }}>
                     <span style={{ fontSize: 10, color: config.color_texto, fontFamily: "Inter,sans-serif" }}>Vista previa de colores</span>
                   </div>
                 </div>
@@ -590,7 +590,7 @@ export default function MiWebPage() {
                     <input className="mw-input" value={config.cover_url} onChange={e => set("cover_url", e.target.value)} placeholder="https://..." />
                     <div className="mw-hint">1920×360px · Imagen principal del hero</div>
                     {config.cover_url && (
-                      <div style={{ marginTop: 8, height: 80, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <div style={{ marginTop: 8, height: 80, borderRadius: 6, overflow: "hidden", border: "1px solid var(--gfi-border)" }}>
                         <img src={config.cover_url} alt="Cover" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       </div>
                     )}
@@ -600,7 +600,7 @@ export default function MiWebPage() {
                     <input className="mw-input" value={config.foto_sobre_mi_url} onChange={e => set("foto_sobre_mi_url", e.target.value)} placeholder="https://..." />
                     <div className="mw-hint">1024×768px · Foto en sección Sobre mí</div>
                     {config.foto_sobre_mi_url && (
-                      <div style={{ marginTop: 8, height: 80, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <div style={{ marginTop: 8, height: 80, borderRadius: 6, overflow: "hidden", border: "1px solid var(--gfi-border)" }}>
                         <img src={config.foto_sobre_mi_url} alt="Sobre mi" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       </div>
                     )}
@@ -725,7 +725,7 @@ export default function MiWebPage() {
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {[3, 4, 6, 8, 9, 12].map(n => (
                       <button key={n} type="button"
-                        style={{ padding: "7px 14px", borderRadius: 4, border: `1px solid ${parseInt(config.limite_propiedades_home) === n ? "#990000" : "rgba(255,255,255,0.1)"}`, background: parseInt(config.limite_propiedades_home) === n ? "rgba(200,0,0,0.1)" : "transparent", color: parseInt(config.limite_propiedades_home) === n ? "#fff" : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                        style={{ padding: "7px 14px", borderRadius: 4, border: `1px solid ${parseInt(config.limite_propiedades_home) === n ? "#990000" : "var(--gfi-border)"}`, background: parseInt(config.limite_propiedades_home) === n ? "rgba(200,0,0,0.1)" : "transparent", color: parseInt(config.limite_propiedades_home) === n ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
                         onClick={() => set("limite_propiedades_home", n.toString())}>
                         {n}
                       </button>
@@ -764,7 +764,7 @@ export default function MiWebPage() {
               ← Anterior
             </button>
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              {guardadoOk && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>✓ Guardado</span>}
+              {guardadoOk && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "var(--font-display)", fontWeight: 700 }}>✓ Guardado</span>}
               <button className="mw-btn-guardar" onClick={guardar} disabled={guardando}>
                 {guardando ? <><span className="mw-spinner" />Guardando...</> : "💾 Guardar cambios"}
               </button>
@@ -774,7 +774,7 @@ export default function MiWebPage() {
                 </button>
               )}
               {paso === 6 && urlWeb && (
-                <a href={urlWeb} target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                <a href={urlWeb} target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, color: "var(--gfi-text-secondary)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, textDecoration: "none", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                   🌐 Ver mi web →
                 </a>
               )}

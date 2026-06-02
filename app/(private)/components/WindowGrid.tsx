@@ -18,7 +18,7 @@ export default function WindowGrid({ onClose }: { onClose: () => void }) {
       }}
     >
       <div style={{
-        fontFamily: "'Montserrat',sans-serif", fontWeight: 800,
+        fontFamily: "var(--font-display)", fontWeight: 800,
         fontSize: 11, color: "rgba(255,255,255,0.28)",
         letterSpacing: "0.18em", textTransform: "uppercase",
       }}>
@@ -38,7 +38,7 @@ export default function WindowGrid({ onClose }: { onClose: () => void }) {
             key={win.id}
             onClick={() => { restoreWindow(win.id); focusWindow(win.id); onClose(); }}
             style={{
-              background: "rgba(255,255,255,0.04)",
+              background: "var(--gfi-border-subtle)",
               border: "1px solid rgba(255,255,255,0.09)",
               borderRadius: 8, overflow: "hidden",
               cursor: "pointer", transition: "border-color 0.15s",
@@ -62,7 +62,7 @@ export default function WindowGrid({ onClose }: { onClose: () => void }) {
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6,
             }}>
               <span style={{
-                fontSize: 11, fontFamily: "'Inter',sans-serif",
+                fontSize: 11, fontFamily: "var(--font-body)",
                 color: "rgba(255,255,255,0.65)", fontWeight: 500,
                 overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1,
               }}>
@@ -72,7 +72,7 @@ export default function WindowGrid({ onClose }: { onClose: () => void }) {
                 onClick={e => { e.stopPropagation(); closeWindow(win.id); }}
                 style={{
                   background: "none", border: "none",
-                  color: "rgba(255,255,255,0.25)", cursor: "pointer",
+                  color: "var(--gfi-text-dim)", cursor: "pointer",
                   fontSize: 15, padding: "0 2px", lineHeight: 1, flexShrink: 0,
                 }}
                 title="Cerrar"
@@ -88,7 +88,7 @@ export default function WindowGrid({ onClose }: { onClose: () => void }) {
                 border: "1px solid rgba(245,158,11,0.3)",
                 borderRadius: 3, padding: "1px 5px",
                 fontSize: 8, color: "#d4960c",
-                fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+                fontFamily: "var(--font-display)", fontWeight: 700,
                 letterSpacing: "0.08em",
               }}>
                 MIN
@@ -100,7 +100,7 @@ export default function WindowGrid({ onClose }: { onClose: () => void }) {
 
       <div style={{
         fontSize: 11, color: "rgba(255,255,255,0.18)",
-        fontFamily: "'Inter',sans-serif", marginTop: 4,
+        fontFamily: "var(--font-body)", marginTop: 4,
       }}>
         Clic en el fondo para cerrar
       </div>

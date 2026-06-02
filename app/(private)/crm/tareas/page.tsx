@@ -185,22 +185,22 @@ export default function CrmTareasPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .t-wrap { max-width: 860px; display: flex; flex-direction: column; gap: 16px; }
-        .t-stat { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 12px 16px; text-align: center; }
-        .t-stat-n { font-family: 'Montserrat',sans-serif; font-size: 24px; font-weight: 800; }
-        .t-stat-l { font-size: 10px; color: rgba(255,255,255,0.35); font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
-        .t-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; transition: border-color 0.15s; }
+        .t-stat { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 12px 16px; text-align: center; }
+        .t-stat-n { font-family: var(--font-display); font-size: 24px; font-weight: 800; }
+        .t-stat-l { font-size: 10px; color: var(--gfi-text-muted); font-family: var(--font-display); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
+        .t-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; transition: border-color 0.15s; }
         .t-card:hover { border-color: rgba(255,255,255,0.14); }
         .t-card.completada { opacity: 0.5; }
         .t-card.vencida { border-color: rgba(239,68,68,0.3); }
-        .t-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); cursor: pointer; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+        .t-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--gfi-text-dim); cursor: pointer; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
         .t-check.done { background: #3abab6; border-color: #3abab6; }
-        .t-input { width: 100%; padding: 9px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; box-sizing: border-box; }
+        .t-input { width: 100%; padding: 9px 11px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; box-sizing: border-box; }
         .t-input:focus { border-color: rgba(200,0,0,0.5); }
-        .t-select { width: 100%; padding: 9px 11px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; }
-        .t-btn { padding: 9px 16px; border: none; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
-        .t-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
+        .t-select { width: 100%; padding: 9px 11px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; }
+        .t-btn { padding: 9px 16px; border: none; border-radius: 5px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
+        .t-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
         .t-field { margin-bottom: 12px; }
-        .t-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: 'Montserrat',sans-serif; }
+        .t-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: var(--font-display); }
         @media (max-width: 600px) {
           .t-stats { grid-template-columns: repeat(2, 1fr) !important; }
         }
@@ -210,10 +210,10 @@ export default function CrmTareasPage() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: "#fff" }}>
               Tareas <span style={{ color: "#990000" }}>CRM</span>
             </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 3 }}>
               Gestioná seguimientos, llamadas y pendientes
             </div>
           </div>
@@ -254,9 +254,9 @@ export default function CrmTareasPage() {
 
         {/* Lista */}
         {loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 40, fontFamily: "Inter,sans-serif" }}>Cargando tareas...</div>
+          <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 40, fontFamily: "Inter,sans-serif" }}>Cargando tareas...</div>
         ) : tareasFiltradas.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px 20px", color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif" }}>
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)" }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>✅</div>
             <div style={{ fontWeight: 700 }}>No hay tareas{busqueda ? " que coincidan" : ""}</div>
           </div>
@@ -274,7 +274,7 @@ export default function CrmTareasPage() {
                   {/* Contenido */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 600, color: "#fff", textDecoration: t.estado === "completada" ? "line-through" : "none" }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 600, color: "#fff", textDecoration: t.estado === "completada" ? "line-through" : "none" }}>
                         {tipoInfo(t.tipo)} {t.titulo}
                       </span>
                       <span className="t-badge" style={{ background: `${prio.color}20`, color: prio.color, border: `1px solid ${prio.color}40` }}>
@@ -286,15 +286,15 @@ export default function CrmTareasPage() {
                     {t.descripcion && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>{t.descripcion}</div>}
                     <div style={{ display: "flex", gap: 12, marginTop: 6, flexWrap: "wrap" }}>
                       {t.fecha_vencimiento && (
-                        <span style={{ fontSize: 11, color: vencida ? "#b80000" : "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
+                        <span style={{ fontSize: 11, color: vencida ? "#b80000" : "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                           📅 {fmtFecha(t.fecha_vencimiento)}
                         </span>
                       )}
                       {contactoNombre(t.contacto_id) && (
-                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>👤 {contactoNombre(t.contacto_id)}</span>
+                        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>👤 {contactoNombre(t.contacto_id)}</span>
                       )}
                       {negocioTitulo(t.negocio_id) && (
-                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>🤝 {negocioTitulo(t.negocio_id)}</span>
+                        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>🤝 {negocioTitulo(t.negocio_id)}</span>
                       )}
                     </div>
                   </div>
@@ -309,7 +309,7 @@ export default function CrmTareasPage() {
                         Iniciar
                       </button>
                     )}
-                    <button className="t-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.1)", padding: "5px 10px", fontSize: 10 }}
+                    <button className="t-btn" style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)", padding: "5px 10px", fontSize: 10 }}
                       onClick={() => abrirEditar(t)}>Editar</button>
                     <button className="t-btn" style={{ background: "rgba(239,68,68,0.1)", color: "#b80000", border: "1px solid rgba(239,68,68,0.25)", padding: "5px 10px", fontSize: 10 }}
                       onClick={() => eliminar(t.id)}>×</button>
@@ -324,8 +324,8 @@ export default function CrmTareasPage() {
       {/* Modal */}
       {modal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: 24, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 20 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 10, padding: 24, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 20 }}>
               {editId ? "Editar tarea" : "Nueva tarea"}
             </div>
 
@@ -382,7 +382,7 @@ export default function CrmTareasPage() {
             </div>
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
-              <button className="t-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={() => setModal(false)}>Cancelar</button>
+              <button className="t-btn" style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)" }} onClick={() => setModal(false)}>Cancelar</button>
               <button className="t-btn" style={{ background: "#990000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardar} disabled={guardando}>
                 {guardando ? "Guardando..." : editId ? "Actualizar" : "Crear tarea"}
               </button>
@@ -392,7 +392,7 @@ export default function CrmTareasPage() {
       )}
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
           {toast}
         </div>
       )}

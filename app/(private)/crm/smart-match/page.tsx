@@ -226,12 +226,12 @@ export default function SmartMatch() {
   }, [matches]);
 
   const cardStyle: React.CSSProperties = {
-    background: "#0d0d0d", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "16px 18px",
+    background: "var(--gfi-bg-primary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "16px 18px",
   };
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>Analizando matches…</div>
+      <div style={{ color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>Analizando matches…</div>
     </div>
   );
 
@@ -239,12 +239,12 @@ export default function SmartMatch() {
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter,sans-serif", padding: "28px 24px" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
-        <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, margin: 0 }}>Smart Match</h1>
-        <span style={{ background: "#3abab6", color: "#000", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>AUTOMÁTICO</span>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, margin: 0 }}>Smart Match</h1>
+        <span style={{ background: "#3abab6", color: "#000", fontSize: 9, fontWeight: 700, fontFamily: "var(--font-display)", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>AUTOMÁTICO</span>
       </div>
-      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 20 }}>
+      <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 20 }}>
         Cruza {contactos.length} contactos activos con {propiedades.length} propiedades disponibles
       </div>
 
@@ -257,15 +257,15 @@ export default function SmartMatch() {
           { label: "Contactos con match", val: porContacto.length, color: "#3b82f6" },
           { label: "Props con demanda", val: porPropiedad.length, color: "#a78bfa" },
         ].map((k, i) => (
-          <div key={i} style={{ background: "#0d0d0d", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "10px 14px" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: k.color }}>{k.val}</div>
-            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{k.label}</div>
+          <div key={i} style={{ background: "var(--gfi-bg-primary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "10px 14px" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: k.color }}>{k.val}</div>
+            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginTop: 2 }}>{k.label}</div>
           </div>
         ))}
 
         <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center" }}>
           <div>
-            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>Score mínimo: {filtroScore}</div>
+            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", color: "var(--gfi-text-muted)", marginBottom: 3 }}>Score mínimo: {filtroScore}</div>
             <input type="range" min={20} max={90} step={5} value={filtroScore} onChange={e => setFiltroScore(Number(e.target.value))}
               style={{ width: 120, accentColor: "#990000" }} />
           </div>
@@ -273,11 +273,11 @@ export default function SmartMatch() {
             placeholder="Filtrar contacto…"
             value={filtroContacto}
             onChange={e => setFiltroContacto(e.target.value)}
-            style={{ background: "#111", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 12, padding: "7px 10px" }}
+            style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 12, padding: "7px 10px" }}
           />
           <div style={{ display: "flex", gap: 4 }}>
             {(["por-contacto", "por-prop"] as const).map(v => (
-              <button key={v} onClick={() => setVista(v)} style={{ background: vista === v ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.04)", border: `1px solid ${vista === v ? "rgba(153,0,0,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: vista === v ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "6px 12px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+              <button key={v} onClick={() => setVista(v)} style={{ background: vista === v ? "rgba(153,0,0,0.2)" : "var(--gfi-border-subtle)", border: `1px solid ${vista === v ? "rgba(153,0,0,0.4)" : "var(--gfi-border)"}`, borderRadius: 6, color: vista === v ? "#990000" : "var(--gfi-text-muted)", fontSize: 11, padding: "6px 12px", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                 {v === "por-contacto" ? "Por Contacto" : "Por Propiedad"}
               </button>
             ))}
@@ -288,10 +288,10 @@ export default function SmartMatch() {
       {matches.length === 0 ? (
         <div style={{ ...cardStyle, textAlign: "center", padding: "40px 24px" }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: "var(--gfi-text-muted)", marginBottom: 8 }}>
             Sin matches con score ≥ {filtroScore}
           </div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)" }}>
+          <div style={{ fontSize: 12, color: "var(--gfi-text-dim)" }}>
             Bajá el score mínimo o completá presupuesto/zona/interés en los contactos
           </div>
         </div>
@@ -302,23 +302,23 @@ export default function SmartMatch() {
             const isOpen = expandido === key;
             const best = ms[0].score;
             return (
-              <div key={key} style={{ ...cardStyle, borderColor: best >= 75 ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.07)" }}>
+              <div key={key} style={{ ...cardStyle, borderColor: best >= 75 ? "rgba(34,197,94,0.2)" : "var(--gfi-border-subtle)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setExpandido(isOpen ? null : key)}>
                   <div style={{ width: 40, height: 40, borderRadius: "50%", background: scoreColor(best) + "22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, color: scoreColor(best) }}>{best}</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 800, color: scoreColor(best) }}>{best}</span>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700 }}>{contacto.nombre} {contacto.apellido}</div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700 }}>{contacto.nombre} {contacto.apellido}</div>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                       {contacto.interes ? `Busca: ${contacto.interes}` : "Sin interés definido"}
                       {contacto.zona_interes ? ` · Zona: ${contacto.zona_interes}` : ""}
                       {contacto.presupuesto_max ? ` · Max: ${contacto.moneda ?? "USD"} ${contacto.presupuesto_max.toLocaleString("es-AR")}` : ""}
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <span style={{ background: scoreColor(best) + "22", color: scoreColor(best), fontSize: 10, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "3px 9px", borderRadius: 4 }}>{scoreLabel(best)}</span>
-                    <span style={{ background: "#111", color: "rgba(255,255,255,0.5)", fontSize: 11, padding: "3px 9px", borderRadius: 4 }}>{ms.length} match{ms.length > 1 ? "es" : ""}</span>
-                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 16 }}>{isOpen ? "▲" : "▼"}</span>
+                    <span style={{ background: scoreColor(best) + "22", color: scoreColor(best), fontSize: 10, fontWeight: 700, fontFamily: "var(--font-display)", padding: "3px 9px", borderRadius: 4 }}>{scoreLabel(best)}</span>
+                    <span style={{ background: "var(--gfi-bg-secondary)", color: "var(--gfi-text-secondary)", fontSize: 11, padding: "3px 9px", borderRadius: 4 }}>{ms.length} match{ms.length > 1 ? "es" : ""}</span>
+                    <span style={{ color: "var(--gfi-text-muted)", fontSize: 16 }}>{isOpen ? "▲" : "▼"}</span>
                   </div>
                 </div>
 
@@ -328,32 +328,32 @@ export default function SmartMatch() {
                     <div style={{ display: "flex", gap: 8 }}>
                       {contacto.telefono && (
                         <a href={`https://wa.me/${contacto.telefono.replace(/\D/g, "")}`} target="_blank" rel="noopener"
-                          style={{ background: "#3abab622", border: "1px solid #3abab644", color: "#3abab6", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "5px 12px", borderRadius: 5, textDecoration: "none" }}>
+                          style={{ background: "#3abab622", border: "1px solid #3abab644", color: "#3abab6", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "5px 12px", borderRadius: 5, textDecoration: "none" }}>
                           WhatsApp
                         </a>
                       )}
                       {contacto.email && (
                         <a href={`mailto:${contacto.email}`}
-                          style={{ background: "#3b82f622", border: "1px solid #3b82f644", color: "#3b82f6", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "5px 12px", borderRadius: 5, textDecoration: "none" }}>
+                          style={{ background: "#3b82f622", border: "1px solid #3b82f644", color: "#3b82f6", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "5px 12px", borderRadius: 5, textDecoration: "none" }}>
                           Email
                         </a>
                       )}
                       <Link href={`/crm/contactos/${contacto.id}`}
-                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "5px 12px", borderRadius: 5, textDecoration: "none" }}>
+                        style={{ background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "5px 12px", borderRadius: 5, textDecoration: "none" }}>
                         Ver ficha
                       </Link>
                     </div>
 
                     {ms.map((m, mi) => (
-                      <div key={mi} style={{ background: "#111", borderRadius: 8, padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr auto", gap: 12 }}>
+                      <div key={mi} style={{ background: "var(--gfi-bg-secondary)", borderRadius: 8, padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr auto", gap: 12 }}>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                             <div style={{ width: 28, height: 28, borderRadius: 6, background: scoreColor(m.score) + "22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                              <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: scoreColor(m.score) }}>{m.score}</span>
+                              <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 800, color: scoreColor(m.score) }}>{m.score}</span>
                             </div>
                             <div>
-                              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700 }}>{m.propiedad.titulo}</div>
-                              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>
+                              <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700 }}>{m.propiedad.titulo}</div>
+                              <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>
                                 {m.propiedad.operacion} · {m.propiedad.tipo}
                                 {m.propiedad.zona ? ` · ${m.propiedad.zona}` : ""}
                                 {m.propiedad.precio ? ` · ${m.propiedad.moneda} ${m.propiedad.precio.toLocaleString("es-AR")}` : ""}
@@ -362,15 +362,15 @@ export default function SmartMatch() {
                           </div>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                             {m.motivos.map((mot, k) => (
-                              <span key={k} style={{ background: "#3abab618", color: "#3abab6", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>✓ {mot}</span>
+                              <span key={k} style={{ background: "#3abab618", color: "#3abab6", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>✓ {mot}</span>
                             ))}
                             {m.alertas.map((al, k) => (
-                              <span key={k} style={{ background: "#d4960c18", color: "#d4960c", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>⚠ {al}</span>
+                              <span key={k} style={{ background: "#d4960c18", color: "#d4960c", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>⚠ {al}</span>
                             ))}
                           </div>
                         </div>
                         <Link href={`/crm/cartera/ficha/${m.propiedad.id}`}
-                          style={{ alignSelf: "center", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 11, padding: "5px 10px", borderRadius: 5, textDecoration: "none", whiteSpace: "nowrap" }}>
+                          style={{ alignSelf: "center", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)", fontSize: 11, padding: "5px 10px", borderRadius: 5, textDecoration: "none", whiteSpace: "nowrap" }}>
                           Ver prop ↗
                         </Link>
                       </div>
@@ -388,45 +388,45 @@ export default function SmartMatch() {
             const isOpen = expandido === key;
             const best = Math.max(...ms.map(m => m.score));
             return (
-              <div key={key} style={{ ...cardStyle, borderColor: best >= 75 ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.07)" }}>
+              <div key={key} style={{ ...cardStyle, borderColor: best >= 75 ? "rgba(34,197,94,0.2)" : "var(--gfi-border-subtle)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setExpandido(isOpen ? null : key)}>
                   <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#3b82f622", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, color: "#3b82f6" }}>{ms.length}</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 800, color: "#3b82f6" }}>{ms.length}</span>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700 }}>{propiedad.titulo}</div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700 }}>{propiedad.titulo}</div>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                       {propiedad.operacion} · {propiedad.tipo}
                       {propiedad.zona ? ` · ${propiedad.zona}` : ""}
                       {propiedad.precio ? ` · ${propiedad.moneda} ${propiedad.precio.toLocaleString("es-AR")}` : ""}
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <span style={{ background: "#3b82f622", color: "#3b82f6", fontSize: 10, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "3px 9px", borderRadius: 4 }}>{ms.length} interesado{ms.length > 1 ? "s" : ""}</span>
-                    <span style={{ background: scoreColor(best) + "22", color: scoreColor(best), fontSize: 10, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "3px 9px", borderRadius: 4 }}>mejor: {best}</span>
-                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 16 }}>{isOpen ? "▲" : "▼"}</span>
+                    <span style={{ background: "#3b82f622", color: "#3b82f6", fontSize: 10, fontWeight: 700, fontFamily: "var(--font-display)", padding: "3px 9px", borderRadius: 4 }}>{ms.length} interesado{ms.length > 1 ? "s" : ""}</span>
+                    <span style={{ background: scoreColor(best) + "22", color: scoreColor(best), fontSize: 10, fontWeight: 700, fontFamily: "var(--font-display)", padding: "3px 9px", borderRadius: 4 }}>mejor: {best}</span>
+                    <span style={{ color: "var(--gfi-text-muted)", fontSize: 16 }}>{isOpen ? "▲" : "▼"}</span>
                   </div>
                 </div>
 
                 {isOpen && (
                   <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
                     {ms.map((m, mi) => (
-                      <div key={mi} style={{ background: "#111", borderRadius: 8, padding: "12px 14px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                      <div key={mi} style={{ background: "var(--gfi-bg-secondary)", borderRadius: 8, padding: "12px 14px", display: "flex", gap: 12, alignItems: "flex-start" }}>
                         <div style={{ width: 32, height: 32, borderRadius: "50%", background: scoreColor(m.score) + "22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                          <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: scoreColor(m.score) }}>{m.score}</span>
+                          <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 800, color: scoreColor(m.score) }}>{m.score}</span>
                         </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700 }}>{m.contacto.nombre} {m.contacto.apellido}</div>
-                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                          <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700 }}>{m.contacto.nombre} {m.contacto.apellido}</div>
+                          <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                             {m.contacto.interes ?? "Sin interés definido"}
                             {m.contacto.presupuesto_max ? ` · Max: ${m.contacto.moneda ?? "USD"} ${m.contacto.presupuesto_max.toLocaleString("es-AR")}` : ""}
                           </div>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
                             {m.motivos.map((mot, k) => (
-                              <span key={k} style={{ background: "#3abab618", color: "#3abab6", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>✓ {mot}</span>
+                              <span key={k} style={{ background: "#3abab618", color: "#3abab6", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>✓ {mot}</span>
                             ))}
                             {m.alertas.map((al, k) => (
-                              <span key={k} style={{ background: "#d4960c18", color: "#d4960c", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>⚠ {al}</span>
+                              <span key={k} style={{ background: "#d4960c18", color: "#d4960c", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>⚠ {al}</span>
                             ))}
                           </div>
                         </div>
@@ -438,7 +438,7 @@ export default function SmartMatch() {
                             </a>
                           )}
                           <Link href={`/crm/contactos/${m.contacto.id}`}
-                            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 10, padding: "4px 9px", borderRadius: 5, textDecoration: "none" }}>
+                            style={{ background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)", fontSize: 10, padding: "4px 9px", borderRadius: 5, textDecoration: "none" }}>
                             Ficha ↗
                           </Link>
                         </div>

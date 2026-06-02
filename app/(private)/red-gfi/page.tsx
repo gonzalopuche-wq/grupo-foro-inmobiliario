@@ -139,67 +139,67 @@ export default function RedGFIPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .rgfi-wrap { max-width: 1400px; }
         .rgfi-header { margin-bottom: 24px; }
-        .rgfi-title { font-family:'Montserrat',sans-serif; font-size:22px; font-weight:800; color:#fff; }
+        .rgfi-title { font-family:var(--font-display); font-size:22px; font-weight:800; color:#fff; }
         .rgfi-title span { color:#990000; }
-        .rgfi-sub { font-size:13px; color:rgba(255,255,255,0.35); margin-top:4px; font-family:'Inter',sans-serif; }
+        .rgfi-sub { font-size:13px; color:var(--gfi-text-muted); margin-top:4px; font-family:var(--font-body); }
         .rgfi-stats { display:flex; gap:16px; margin-top:12px; flex-wrap:wrap; }
-        .rgfi-stat { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 16px; }
-        .rgfi-stat-n { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:800; color:#fff; }
-        .rgfi-stat-l { font-size:10px; color:rgba(255,255,255,0.3); font-family:'Inter',sans-serif; }
-        .rgfi-filters { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:14px 16px; margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-        .rgfi-filter-input { flex:1; min-width:180px; padding:8px 12px; background:rgba(12,12,12,0.8); border:1px solid rgba(255,255,255,0.08); border-radius:6px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; }
-        .rgfi-filter-input::placeholder { color:rgba(255,255,255,0.2); }
-        .rgfi-filter-sel { padding:8px 10px; background:rgba(12,12,12,0.8); border:1px solid rgba(255,255,255,0.08); border-radius:6px; color:rgba(255,255,255,0.6); font-size:12px; font-family:'Inter',sans-serif; outline:none; cursor:pointer; }
+        .rgfi-stat { background:var(--gfi-border-subtle); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 16px; }
+        .rgfi-stat-n { font-family:var(--font-display); font-size:20px; font-weight:800; color:#fff; }
+        .rgfi-stat-l { font-size:10px; color:var(--gfi-text-muted); font-family:var(--font-body); }
+        .rgfi-filters { background:var(--gfi-bg-card); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:14px 16px; margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+        .rgfi-filter-input { flex:1; min-width:180px; padding:8px 12px; background:rgba(12,12,12,0.8); border:1px solid var(--gfi-border); border-radius:6px; color:#fff; font-size:13px; font-family:var(--font-body); outline:none; }
+        .rgfi-filter-input::placeholder { color:var(--gfi-text-dim); }
+        .rgfi-filter-sel { padding:8px 10px; background:rgba(12,12,12,0.8); border:1px solid var(--gfi-border); border-radius:6px; color:var(--gfi-text-secondary); font-size:12px; font-family:var(--font-body); outline:none; cursor:pointer; }
         .rgfi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
-        .rgfi-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:10px; overflow:hidden; cursor:pointer; transition:border-color 0.15s,transform 0.1s; }
+        .rgfi-card { background:var(--gfi-bg-card); border:1px solid rgba(255,255,255,0.06); border-radius:10px; overflow:hidden; cursor:pointer; transition:border-color 0.15s,transform 0.1s; }
         .rgfi-card:hover { border-color:rgba(153,0,0,0.3); transform:translateY(-1px); }
         .rgfi-card.selected { border-color:#990000; }
-        .rgfi-card-foto { height:160px; background:rgba(255,255,255,0.03); position:relative; overflow:hidden; }
+        .rgfi-card-foto { height:160px; background:var(--gfi-bg-card); position:relative; overflow:hidden; }
         .rgfi-card-foto img { width:100%; height:100%; object-fit:cover; }
         .rgfi-card-foto-empty { height:100%; display:flex; align-items:center; justify-content:center; font-size:40px; }
-        .rgfi-op-badge { position:absolute; top:8px; left:8px; padding:3px 8px; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:9px; font-weight:800; letter-spacing:0.08em; }
+        .rgfi-op-badge { position:absolute; top:8px; left:8px; padding:3px 8px; border-radius:4px; font-family:var(--font-display); font-size:9px; font-weight:800; letter-spacing:0.08em; }
         .rgfi-card-body { padding:14px; }
-        .rgfi-card-tipo { font-size:11px; color:rgba(255,255,255,0.3); font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
-        .rgfi-card-precio { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; color:#fff; margin:4px 0; }
+        .rgfi-card-tipo { font-size:11px; color:var(--gfi-text-muted); font-family:var(--font-display); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+        .rgfi-card-precio { font-family:var(--font-display); font-size:18px; font-weight:800; color:#fff; margin:4px 0; }
         .rgfi-card-loc { font-size:12px; color:rgba(255,255,255,0.45); margin-bottom:8px; }
         .rgfi-card-meta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
-        .rgfi-meta-item { font-size:11px; color:rgba(255,255,255,0.4); }
+        .rgfi-meta-item { font-size:11px; color:var(--gfi-text-muted); }
         .rgfi-chips { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:10px; }
-        .rgfi-chip { font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.4); font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.04em; }
+        .rgfi-chip { font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(255,255,255,0.06); color:var(--gfi-text-muted); font-family:var(--font-display); font-weight:700; letter-spacing:0.04em; }
         .rgfi-corredor { display:flex; align-items:center; gap:8px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); }
-        .rgfi-corredor-ava { width:28px; height:28px; border-radius:6px; background:rgba(200,0,0,0.12); border:1px solid rgba(200,0,0,0.2); display:flex; align-items:center; justify-content:center; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; color:#990000; flex-shrink:0; overflow:hidden; }
+        .rgfi-corredor-ava { width:28px; height:28px; border-radius:6px; background:rgba(200,0,0,0.12); border:1px solid rgba(200,0,0,0.2); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:10px; font-weight:800; color:#990000; flex-shrink:0; overflow:hidden; }
         .rgfi-corredor-ava img { width:100%; height:100%; object-fit:cover; }
-        .rgfi-corredor-nombre { font-size:12px; font-weight:600; color:rgba(255,255,255,0.7); font-family:'Inter',sans-serif; }
-        .rgfi-corredor-mat { font-size:10px; color:rgba(255,255,255,0.25); }
+        .rgfi-corredor-nombre { font-size:12px; font-weight:600; color:var(--gfi-text-primary); font-family:var(--font-body); }
+        .rgfi-corredor-mat { font-size:10px; color:var(--gfi-text-dim); }
         .rgfi-corredor-tel { font-size:10px; color:rgba(74,184,216,0.8); }
-        .rgfi-my-badge { position:absolute; top:8px; right:8px; background:rgba(200,0,0,0.85); color:#fff; font-size:8px; font-family:'Montserrat',sans-serif; font-weight:800; padding:2px 6px; border-radius:3px; letter-spacing:0.06em; }
+        .rgfi-my-badge { position:absolute; top:8px; right:8px; background:rgba(200,0,0,0.85); color:#fff; font-size:8px; font-family:var(--font-display); font-weight:800; padding:2px 6px; border-radius:3px; letter-spacing:0.06em; }
         /* Detail modal */
         .rgfi-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
-        .rgfi-detail { background:#111; border:1px solid rgba(255,255,255,0.1); border-radius:14px; width:100%; max-width:680px; max-height:90vh; overflow-y:auto; }
+        .rgfi-detail { background:var(--gfi-bg-secondary); border:1px solid var(--gfi-border); border-radius:14px; width:100%; max-width:680px; max-height:90vh; overflow-y:auto; }
         .rgfi-detail-header { padding:20px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-        .rgfi-detail-close { background:none; border:none; color:rgba(255,255,255,0.4); font-size:18px; cursor:pointer; padding:4px; flex-shrink:0; }
+        .rgfi-detail-close { background:none; border:none; color:var(--gfi-text-muted); font-size:18px; cursor:pointer; padding:4px; flex-shrink:0; }
         .rgfi-detail-close:hover { color:#fff; }
         .rgfi-detail-fotos { display:flex; gap:8px; padding:16px; overflow-x:auto; }
         .rgfi-detail-fotos img { height:160px; width:auto; border-radius:6px; flex-shrink:0; }
         .rgfi-detail-body { padding:0 20px 20px; }
         .rgfi-detail-section { margin-bottom:16px; }
-        .rgfi-detail-section-title { font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; color:rgba(255,255,255,0.25); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
+        .rgfi-detail-section-title { font-family:var(--font-display); font-size:10px; font-weight:700; color:var(--gfi-text-dim); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
         .rgfi-detail-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-        .rgfi-detail-item { background:rgba(255,255,255,0.03); border-radius:6px; padding:8px 10px; }
-        .rgfi-detail-item-label { font-size:9px; color:rgba(255,255,255,0.25); font-family:'Montserrat',sans-serif; letter-spacing:0.06em; text-transform:uppercase; }
-        .rgfi-detail-item-value { font-size:13px; color:#fff; font-family:'Inter',sans-serif; font-weight:500; margin-top:2px; }
+        .rgfi-detail-item { background:var(--gfi-bg-card); border-radius:6px; padding:8px 10px; }
+        .rgfi-detail-item-label { font-size:9px; color:var(--gfi-text-dim); font-family:var(--font-display); letter-spacing:0.06em; text-transform:uppercase; }
+        .rgfi-detail-item-value { font-size:13px; color:#fff; font-family:var(--font-body); font-weight:500; margin-top:2px; }
         .rgfi-contact-card { background:rgba(200,0,0,0.06); border:1px solid rgba(200,0,0,0.15); border-radius:8px; padding:14px; }
-        .rgfi-contact-name { font-family:'Montserrat',sans-serif; font-size:15px; font-weight:800; color:#fff; }
-        .rgfi-contact-mat { font-size:11px; color:rgba(255,255,255,0.3); margin-bottom:10px; }
+        .rgfi-contact-name { font-family:var(--font-display); font-size:15px; font-weight:800; color:#fff; }
+        .rgfi-contact-mat { font-size:11px; color:var(--gfi-text-muted); margin-bottom:10px; }
         .rgfi-contact-btns { display:flex; gap:8px; flex-wrap:wrap; }
-        .rgfi-contact-btn { padding:8px 16px; border-radius:6px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; text-decoration:none; letter-spacing:0.04em; display:inline-block; }
+        .rgfi-contact-btn { padding:8px 16px; border-radius:6px; font-family:var(--font-display); font-size:11px; font-weight:700; text-decoration:none; letter-spacing:0.04em; display:inline-block; }
         .rgfi-contact-btn-wa { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#3abab6; }
         .rgfi-contact-btn-mail { background:rgba(74,184,216,0.1); border:1px solid rgba(74,184,216,0.2); color:#4ab8d8; }
-        .rgfi-contact-btn-ficha { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.7); }
-        .rgfi-honor-badge { background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.2); border-radius:4px; padding:4px 10px; font-size:10px; font-family:'Montserrat',sans-serif; color:rgba(234,179,8,0.8); font-weight:700; }
-        .rgfi-ficha-btn { margin-top:10px; width:100%; padding:8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:6px; color:rgba(255,255,255,0.4); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.06em; cursor:pointer; transition:background 0.15s,color 0.15s; text-align:center; text-decoration:none; display:block; }
-        .rgfi-ficha-btn:hover { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7); }
-        .rgfi-empty { text-align:center; padding:60px 20px; color:rgba(255,255,255,0.2); font-family:'Inter',sans-serif; }
+        .rgfi-contact-btn-ficha { background:rgba(255,255,255,0.06); border:1px solid var(--gfi-border); color:var(--gfi-text-primary); }
+        .rgfi-honor-badge { background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.2); border-radius:4px; padding:4px 10px; font-size:10px; font-family:var(--font-display); color:rgba(234,179,8,0.8); font-weight:700; }
+        .rgfi-ficha-btn { margin-top:10px; width:100%; padding:8px; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:6px; color:var(--gfi-text-muted); font-family:var(--font-display); font-size:10px; font-weight:700; letter-spacing:0.06em; cursor:pointer; transition:background 0.15s,color 0.15s; text-align:center; text-decoration:none; display:block; }
+        .rgfi-ficha-btn:hover { background:var(--gfi-border); color:var(--gfi-text-primary); }
+        .rgfi-empty { text-align:center; padding:60px 20px; color:var(--gfi-text-dim); font-family:var(--font-body); }
         .rgfi-empty-ico { font-size:48px; margin-bottom:12px; }
         @media (max-width:700px) {
           .rgfi-grid { grid-template-columns:1fr; }
@@ -268,14 +268,14 @@ export default function RedGFIPage() {
           )}
           <a
             href="/red-gfi/mapa"
-            style={{ padding:"8px 14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.7)", fontFamily:"Montserrat,sans-serif", fontSize:11, fontWeight:700, textDecoration:"none", cursor:"pointer", whiteSpace:"nowrap" as const }}
+            style={{ padding:"8px 14px", background:"var(--gfi-border-subtle)", border:"1px solid var(--gfi-border)", borderRadius:6, color:"var(--gfi-text-primary)", fontFamily:"Montserrat,sans-serif", fontSize:11, fontWeight:700, textDecoration:"none", cursor:"pointer", whiteSpace:"nowrap" as const }}
           >
             🗺️ Buscar en mapa
           </a>
         </div>
 
         {loading ? (
-          <div style={{ textAlign:"center", padding:"60px 0", color:"rgba(255,255,255,0.2)" }}>
+          <div style={{ textAlign:"center", padding:"60px 0", color:"var(--gfi-text-dim)" }}>
             <div style={{ width:32, height:32, border:"2px solid rgba(200,0,0,0.2)", borderTopColor:"#990000", borderRadius:"50%", animation:"spin 0.7s linear infinite", margin:"0 auto 12px" }} />
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
             Cargando Red GFI...
@@ -283,7 +283,7 @@ export default function RedGFIPage() {
         ) : filtrados.length === 0 ? (
           <div className="rgfi-empty">
             <div className="rgfi-empty-ico">🏠</div>
-            <div style={{ fontSize:16, fontWeight:600, color:"rgba(255,255,255,0.4)", marginBottom:6 }}>
+            <div style={{ fontSize:16, fontWeight:600, color:"var(--gfi-text-muted)", marginBottom:6 }}>
               {items.length === 0 ? "Aún no hay propiedades en la Red GFI" : "Sin resultados para los filtros seleccionados"}
             </div>
             <div style={{ fontSize:13 }}>
@@ -390,7 +390,7 @@ export default function RedGFIPage() {
                 <div style={{ fontFamily:"Montserrat,sans-serif", fontSize:20, fontWeight:800, color:"#fff" }}>
                   {selected.nombre_publicante ?? selected.tipo_propiedad}
                 </div>
-                <div style={{ fontSize:13, color:"rgba(255,255,255,0.4)", marginTop:2 }}>
+                <div style={{ fontSize:13, color:"var(--gfi-text-muted)", marginTop:2 }}>
                   {selected.tipo_propiedad} · {selected.ciudad}{selected.zona ? ` · ${selected.zona}` : ""}
                 </div>
               </div>
@@ -465,7 +465,7 @@ export default function RedGFIPage() {
               {selected.descripcion && (
                 <div className="rgfi-detail-section">
                   <div className="rgfi-detail-section-title">Descripción</div>
-                  <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", lineHeight:1.6, fontFamily:"Inter,sans-serif", whiteSpace:"pre-wrap" }}>
+                  <div style={{ fontSize:13, color:"var(--gfi-text-secondary)", lineHeight:1.6, fontFamily:"Inter,sans-serif", whiteSpace:"pre-wrap" }}>
                     {selected.descripcion}
                   </div>
                 </div>
@@ -526,7 +526,7 @@ export default function RedGFIPage() {
                     {copiado === selected.id ? "✓ Enlace copiado" : "🔗 Copiar enlace de ficha"}
                   </button>
                 </div>
-                <div style={{ fontSize:11, color:"rgba(255,255,255,0.2)", marginTop:8 }}>
+                <div style={{ fontSize:11, color:"var(--gfi-text-dim)", marginTop:8 }}>
                   La ficha no revela datos de la inmobiliaria. Podés enviarla a cualquier colega de la red.
                 </div>
               </div>

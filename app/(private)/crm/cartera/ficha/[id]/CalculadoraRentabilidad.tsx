@@ -37,25 +37,25 @@ export function CalculadoraRentabilidad({ precioVenta, moneda = "USD", precioAlq
         .calc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         @media (max-width: 640px) { .calc-grid { grid-template-columns: 1fr; } }
         .calc-input-group { display: flex; flex-direction: column; gap: 4px; }
-        .calc-input-label { font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #888; }
-        .calc-input { width: 100%; background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 7px; padding: 9px 12px; font-size: 15px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: #111; outline: none; transition: border-color 0.15s; }
+        .calc-input-label { font-size: 10px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #888; }
+        .calc-input { width: 100%; background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 7px; padding: 9px 12px; font-size: 15px; font-family: var(--font-display); font-weight: 700; color: #111; outline: none; transition: border-color 0.15s; }
         .calc-input:focus { border-color: #990000; background: #fff; }
         .calc-input::placeholder { color: #bbb; font-weight: 400; }
         .calc-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         @media (max-width: 480px) { .calc-results { grid-template-columns: 1fr; } }
         .calc-result-card { background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; padding: 14px 16px; }
         .calc-result-card.highlight { background: #0a0a0a; border-color: #222; }
-        .calc-result-val { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #990000; }
+        .calc-result-val { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: #990000; }
         .calc-result-card.highlight .calc-result-val { color: #fff; }
-        .calc-result-label { font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-top: 2px; }
-        .calc-result-card.highlight .calc-result-label { color: rgba(255,255,255,0.4); }
+        .calc-result-label { font-size: 10px; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-top: 2px; }
+        .calc-result-card.highlight .calc-result-label { color: var(--gfi-text-muted); }
         .calc-comparativa { margin-top: 0; }
-        .calc-comparativa-title { font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #999; margin-bottom: 12px; }
+        .calc-comparativa-title { font-size: 10px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #999; margin-bottom: 12px; }
         .calc-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .calc-bar-label { font-size: 11px; color: #666; font-family: 'Montserrat',sans-serif; font-weight: 600; width: 130px; flex-shrink: 0; }
+        .calc-bar-label { font-size: 11px; color: #666; font-family: var(--font-display); font-weight: 600; width: 130px; flex-shrink: 0; }
         .calc-bar-track { flex: 1; background: #f0f0f0; border-radius: 4px; height: 12px; overflow: hidden; }
         .calc-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
-        .calc-bar-pct { font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: #444; width: 48px; text-align: right; flex-shrink: 0; }
+        .calc-bar-pct { font-size: 11px; font-family: var(--font-display); font-weight: 700; color: #444; width: 48px; text-align: right; flex-shrink: 0; }
         .calc-nota { font-size: 10px; color: #aaa; margin-top: 14px; font-style: italic; }
       `}</style>
 

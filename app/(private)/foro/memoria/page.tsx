@@ -84,8 +84,8 @@ export default function MemoriaColectivaPage() {
     }}>
       {/* Header */}
       <div style={{
-        borderBottom: "1px solid rgba(255,255,255,0.07)",
-        background: "rgba(255,255,255,0.03)",
+        borderBottom: "1px solid var(--gfi-border-subtle)",
+        background: "var(--gfi-bg-card)",
         padding: "16px 20px",
         flexShrink: 0,
       }}>
@@ -93,7 +93,7 @@ export default function MemoriaColectivaPage() {
           <span style={{ fontSize: 28 }}>🧠</span>
           <div>
             <h1 style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 16,
               fontWeight: 700,
               letterSpacing: "0.02em",
@@ -103,7 +103,7 @@ export default function MemoriaColectivaPage() {
             </h1>
             <p style={{
               fontSize: 11,
-              color: "rgba(255,255,255,0.4)",
+              color: "var(--gfi-text-muted)",
               margin: 0,
               marginTop: 2,
             }}>
@@ -129,7 +129,7 @@ export default function MemoriaColectivaPage() {
                 ¿Qué querés saber?
               </p>
               <p style={{
-                color: "rgba(255,255,255,0.4)",
+                color: "var(--gfi-text-muted)",
                 fontSize: 13,
                 margin: "0 0 24px",
               }}>
@@ -147,17 +147,17 @@ export default function MemoriaColectivaPage() {
                     style={{
                       textAlign: "left",
                       fontSize: 12,
-                      background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "var(--gfi-border-subtle)",
+                      border: "1px solid var(--gfi-border)",
                       borderRadius: 10,
                       padding: "10px 14px",
-                      color: "rgba(255,255,255,0.7)",
+                      color: "var(--gfi-text-primary)",
                       cursor: "pointer",
                       transition: "background 0.15s",
                       lineHeight: 1.4,
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+                    onMouseEnter={e => (e.currentTarget.style.background = "var(--gfi-border)")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "var(--gfi-border-subtle)")}
                   >
                     {s}
                   </button>
@@ -198,7 +198,7 @@ export default function MemoriaColectivaPage() {
                       <span style={{
                         fontSize: 11,
                         fontWeight: 600,
-                        color: "rgba(255,255,255,0.4)",
+                        color: "var(--gfi-text-muted)",
                         letterSpacing: "0.05em",
                         textTransform: "uppercase",
                       }}>
@@ -206,7 +206,7 @@ export default function MemoriaColectivaPage() {
                       </span>
                     </div>
                     <div style={{
-                      background: "rgba(255,255,255,0.04)",
+                      background: "var(--gfi-border-subtle)",
                       border: "1px solid rgba(255,255,255,0.09)",
                       borderRadius: "4px 16px 16px 16px",
                       padding: "14px 18px",
@@ -222,7 +222,7 @@ export default function MemoriaColectivaPage() {
                         <p style={{
                           fontSize: 10,
                           fontWeight: 600,
-                          color: "rgba(255,255,255,0.3)",
+                          color: "var(--gfi-text-muted)",
                           textTransform: "uppercase",
                           letterSpacing: "0.08em",
                           margin: "0 0 4px",
@@ -238,7 +238,7 @@ export default function MemoriaColectivaPage() {
                               gap: 8,
                               fontSize: 11,
                               color: "rgba(255,255,255,0.45)",
-                              background: "rgba(255,255,255,0.03)",
+                              background: "var(--gfi-bg-card)",
                               borderRadius: 6,
                               padding: "5px 10px",
                               marginBottom: 3,
@@ -260,7 +260,7 @@ export default function MemoriaColectivaPage() {
                               {f.titulo}
                             </span>
                             <span style={{
-                              color: "rgba(255,255,255,0.25)",
+                              color: "var(--gfi-text-dim)",
                               flexShrink: 0,
                             }}>
                               {new Date(f.fecha).toLocaleDateString("es-AR")}
@@ -278,12 +278,12 @@ export default function MemoriaColectivaPage() {
           {cargando && (
             <div style={{ display: "flex", justifyContent: "flex-start", marginTop: 20 }}>
               <div style={{
-                background: "rgba(255,255,255,0.04)",
+                background: "var(--gfi-border-subtle)",
                 border: "1px solid rgba(255,255,255,0.09)",
                 borderRadius: "4px 16px 16px 16px",
                 padding: "12px 18px",
                 fontSize: 13,
-                color: "rgba(255,255,255,0.4)",
+                color: "var(--gfi-text-muted)",
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
@@ -300,8 +300,8 @@ export default function MemoriaColectivaPage() {
 
       {/* Input */}
       <div style={{
-        borderTop: "1px solid rgba(255,255,255,0.07)",
-        background: "rgba(255,255,255,0.02)",
+        borderTop: "1px solid var(--gfi-border-subtle)",
+        background: "var(--gfi-bg-secondary)",
         padding: "14px 20px",
         flexShrink: 0,
       }}>
@@ -326,7 +326,7 @@ export default function MemoriaColectivaPage() {
             style={{
               flex: 1,
               background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
+              border: "1px solid var(--gfi-border)",
               borderRadius: 10,
               padding: "10px 14px",
               fontSize: 13,
@@ -337,7 +337,7 @@ export default function MemoriaColectivaPage() {
               lineHeight: 1.5,
             }}
             onFocus={e => (e.currentTarget.style.borderColor = "rgba(153,0,0,0.5)")}
-            onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
+            onBlur={e => (e.currentTarget.style.borderColor = "var(--gfi-border)")}
           />
           <button
             onClick={() => consultar()}
@@ -362,7 +362,7 @@ export default function MemoriaColectivaPage() {
           maxWidth: 720,
           margin: "6px auto 0",
           fontSize: 10,
-          color: "rgba(255,255,255,0.2)",
+          color: "var(--gfi-text-dim)",
           textAlign: "center",
         }}>
           La IA busca en el historial del Foro GFI® · No reemplaza asesoramiento profesional

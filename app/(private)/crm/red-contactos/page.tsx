@@ -101,7 +101,7 @@ function Avatar({ nombre, tipo, size = 40 }: { nombre: string; tipo: Contacto["t
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontFamily: "Montserrat, sans-serif",
+        fontFamily: "var(--font-display)",
         fontWeight: 800,
         fontSize: size * 0.4,
         color: "#fff",
@@ -195,7 +195,7 @@ function ModalRelacion({ contactos, preseleccionado, onCerrar, onGuardar }: Moda
           fontFamily: "Inter, sans-serif",
         }}
       >
-        <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 18, color: "#e0e0e0", marginTop: 0, marginBottom: 20 }}>
+        <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#e0e0e0", marginTop: 0, marginBottom: 20 }}>
           Agregar relación
         </h2>
 
@@ -319,7 +319,7 @@ function ModalRelacion({ contactos, preseleccionado, onCerrar, onGuardar }: Moda
             style={{
               background: "#990000", border: "none", borderRadius: 8,
               padding: "9px 20px", color: "#fff", cursor: "pointer",
-              fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14,
+              fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
             }}
           >
             Guardar relación
@@ -523,10 +523,10 @@ function TabDirectorio({ contactos, onAgregarRelacion }: TabDirectorioProps) {
       {/* Stats rápidas */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 24 }}>
         <div style={{
-          background: "#111", border: "1px solid #222", borderRadius: 10,
+          background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10,
           padding: "12px 20px", display: "flex", alignItems: "center", gap: 10,
         }}>
-          <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#e0e0e0" }}>{contactos.length}</span>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: "#e0e0e0" }}>{contactos.length}</span>
           <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#a0a0a0" }}>contactos<br />en total</span>
         </div>
         {tiposOrden.map(tipo => {
@@ -557,7 +557,7 @@ function TabDirectorio({ contactos, onAgregarRelacion }: TabDirectorioProps) {
         value={busqueda}
         onChange={e => handleBusqueda(e.target.value)}
         style={{
-          width: "100%", background: "#111", border: "1px solid #222",
+          width: "100%", background: "var(--gfi-bg-secondary)", border: "1px solid #222",
           borderRadius: 10, padding: "12px 16px", color: "#e0e0e0",
           fontFamily: "Inter, sans-serif", fontSize: 14, marginBottom: 24,
           boxSizing: "border-box",
@@ -589,7 +589,7 @@ function TabDirectorio({ contactos, onAgregarRelacion }: TabDirectorioProps) {
                   background: TIPO_COLORES[tipo], display: "inline-block",
                 }} />
                 <span style={{
-                  fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                  fontFamily: "var(--font-display)", fontWeight: 700,
                   fontSize: 15, color: "#e0e0e0",
                 }}>
                   {TIPO_LABELS[tipo]}
@@ -611,7 +611,7 @@ function TabDirectorio({ contactos, onAgregarRelacion }: TabDirectorioProps) {
                     <div
                       key={c.id}
                       style={{
-                        background: "#111", border: "1px solid #222",
+                        background: "var(--gfi-bg-secondary)", border: "1px solid #222",
                         borderRadius: 10, padding: 16,
                       }}
                     >
@@ -619,7 +619,7 @@ function TabDirectorio({ contactos, onAgregarRelacion }: TabDirectorioProps) {
                         <Avatar nombre={c.nombre} tipo={c.tipo} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{
-                            fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                            fontFamily: "var(--font-display)", fontWeight: 700,
                             fontSize: 14, color: "#e0e0e0",
                             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                           }}>
@@ -720,8 +720,8 @@ function TabRed({ contactos, relaciones, onAgregarRelacion, onEliminarRelacion }
     <div>
       {/* Estadísticas */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 32 }}>
-        <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
-          <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 32, color: "#990000" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 32, color: "#990000" }}>
             {relaciones.length}
           </div>
           <div style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#a0a0a0", marginTop: 4 }}>
@@ -729,14 +729,14 @@ function TabRed({ contactos, relaciones, onAgregarRelacion, onEliminarRelacion }
           </div>
         </div>
         {hub && (
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
             <div style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#a0a0a0", marginBottom: 8 }}>
               Hub de la red
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <Avatar nombre={hub.contacto.nombre} tipo={hub.contacto.tipo} size={36} />
               <div>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#e0e0e0" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#e0e0e0" }}>
                   {hub.contacto.nombre}
                 </div>
                 <div style={{ fontSize: 12, color: "#a0a0a0", fontFamily: "Inter, sans-serif" }}>
@@ -746,7 +746,7 @@ function TabRed({ contactos, relaciones, onAgregarRelacion, onEliminarRelacion }
             </div>
           </div>
         )}
-        <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
           <div style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#a0a0a0", marginBottom: 12 }}>
             Tipos más frecuentes
           </div>
@@ -764,16 +764,16 @@ function TabRed({ contactos, relaciones, onAgregarRelacion, onEliminarRelacion }
           {contactosConRelaciones.map(c => {
             const rels = relacionesDeContacto(c.id);
             return (
-              <div key={c.id} style={{ background: "#111", border: "1px solid #222", borderRadius: 10, overflow: "hidden" }}>
+              <div key={c.id} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, overflow: "hidden" }}>
                 {/* Header contacto */}
                 <div style={{
                   display: "flex", alignItems: "center", gap: 12,
                   padding: "14px 16px", borderBottom: "1px solid #1a1a1a",
-                  background: "#0d0d0d",
+                  background: "var(--gfi-bg-primary)",
                 }}>
                   <Avatar nombre={c.nombre} tipo={c.tipo} />
                   <div>
-                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, color: "#e0e0e0" }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#e0e0e0" }}>
                       {c.nombre}
                     </div>
                     <div style={{ fontSize: 12, color: "#666", fontFamily: "Inter, sans-serif" }}>
@@ -914,7 +914,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
   return (
     <div>
       {/* Top 5 referidores */}
-      <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 16, color: "#e0e0e0", marginTop: 0, marginBottom: 16 }}>
+      <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#e0e0e0", marginTop: 0, marginBottom: 16 }}>
         Top 5 referidores
       </h3>
 
@@ -928,7 +928,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
             <div
               key={item.contacto.id}
               style={{
-                background: "#111", border: "1px solid #222", borderRadius: 10,
+                background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10,
                 padding: 16, display: "flex", alignItems: "center", gap: 12,
               }}
             >
@@ -936,7 +936,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
                 width: 28, height: 28, borderRadius: "50%",
                 background: idx === 0 ? "#d97706" : idx === 1 ? "#6b7280" : "#7c3aed22",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 13,
+                fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13,
                 color: idx < 2 ? "#fff" : "#7c3aed", flexShrink: 0,
               }}>
                 {idx + 1}
@@ -944,7 +944,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
               <Avatar nombre={item.contacto.nombre} tipo={item.contacto.tipo} size={36} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
-                  fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13,
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13,
                   color: "#e0e0e0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                 }}>
                   {item.contacto.nombre}
@@ -962,7 +962,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
       )}
 
       {/* Lista de referidos */}
-      <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 16, color: "#e0e0e0", marginBottom: 16 }}>
+      <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#e0e0e0", marginBottom: 16 }}>
         Quién refirió a quién
       </h3>
 
@@ -980,7 +980,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
               <div
                 key={rel.id}
                 style={{
-                  background: "#111", border: "1px solid #222", borderRadius: 10,
+                  background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10,
                   padding: "14px 16px", display: "flex", alignItems: "center",
                   gap: 12, flexWrap: "wrap",
                 }}
@@ -988,7 +988,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Avatar nombre={quien.nombre} tipo={quien.tipo} size={32} />
                   <div>
-                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: "#e0e0e0" }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "#e0e0e0" }}>
                       {quien.nombre}
                     </div>
                     <div style={{ fontSize: 11, color: "#666", fontFamily: "Inter, sans-serif" }}>
@@ -1002,7 +1002,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Avatar nombre={referido.nombre} tipo={referido.tipo} size={32} />
                   <div>
-                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: "#e0e0e0" }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "#e0e0e0" }}>
                       {referido.nombre}
                     </div>
                     <div style={{ fontSize: 11, color: "#666", fontFamily: "Inter, sans-serif" }}>
@@ -1028,10 +1028,10 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
       )}
 
       {/* Gráfico barras últimos 12 meses */}
-      <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 16, color: "#e0e0e0", marginBottom: 16 }}>
+      <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#e0e0e0", marginBottom: 16 }}>
         Nuevas relaciones por mes (últimos 12 meses)
       </h3>
-      <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
         <GraficoBarsas relaciones={relaciones} />
       </div>
     </div>
@@ -1148,7 +1148,7 @@ export default function RedContactosPage() {
           <div style={{ marginBottom: 28, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
             <div>
               <h1 style={{
-                fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26,
+                fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26,
                 color: "#e0e0e0", margin: 0,
               }}>
                 Red de Contactos
@@ -1162,7 +1162,7 @@ export default function RedContactosPage() {
               style={{
                 background: "#990000", border: "none", borderRadius: 10,
                 padding: "10px 20px", color: "#fff", cursor: "pointer",
-                fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14,
+                fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
               }}
             >
               + Nueva relación

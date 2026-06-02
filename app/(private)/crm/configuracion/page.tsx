@@ -289,7 +289,7 @@ export default function ConfiguracionPage() {
       margin: "0 auto",
     } as React.CSSProperties,
     h1: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 800,
       fontSize: 28,
       color: "#fff",
@@ -314,19 +314,19 @@ export default function ConfiguracionPage() {
       fontFamily: "Inter, sans-serif",
       fontSize: 13,
       fontWeight: 600,
-      background: active ? "#990000" : "rgba(255,255,255,0.07)",
-      color: active ? "#fff" : "rgba(255,255,255,0.6)",
+      background: active ? "#990000" : "var(--gfi-border-subtle)",
+      color: active ? "#fff" : "var(--gfi-text-secondary)",
       transition: "all .15s",
     }),
     card: {
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.08)",
+      background: "var(--gfi-border-subtle)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 12,
       padding: 24,
       marginBottom: 20,
     } as React.CSSProperties,
     cardTitle: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       fontSize: 15,
       color: "#fff",
@@ -349,7 +349,7 @@ export default function ConfiguracionPage() {
     input: {
       width: "100%",
       background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       padding: "10px 12px",
       color: "#fff",
@@ -360,11 +360,11 @@ export default function ConfiguracionPage() {
     } as React.CSSProperties,
     inputReadonly: {
       width: "100%",
-      background: "rgba(255,255,255,0.03)",
+      background: "var(--gfi-bg-card)",
       border: "1px solid rgba(255,255,255,0.06)",
       borderRadius: 8,
       padding: "10px 12px",
-      color: "rgba(255,255,255,0.4)",
+      color: "var(--gfi-text-muted)",
       fontSize: 14,
       fontFamily: "Inter, sans-serif",
       outline: "none",
@@ -374,7 +374,7 @@ export default function ConfiguracionPage() {
     textarea: {
       width: "100%",
       background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       padding: "10px 12px",
       color: "#fff",
@@ -388,7 +388,7 @@ export default function ConfiguracionPage() {
     select: {
       width: "100%",
       background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       padding: "10px 12px",
       color: "#fff",
@@ -404,16 +404,16 @@ export default function ConfiguracionPage() {
       border: "none",
       borderRadius: 8,
       padding: "11px 24px",
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       fontSize: 13,
       cursor: "pointer",
       letterSpacing: "0.03em",
     } as React.CSSProperties,
     btnSecondary: {
-      background: "rgba(255,255,255,0.07)",
+      background: "var(--gfi-border-subtle)",
       color: "rgba(255,255,255,0.75)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       padding: "10px 20px",
       fontFamily: "Inter, sans-serif",
@@ -443,7 +443,7 @@ export default function ConfiguracionPage() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 800,
       fontSize: 24,
       color: "#fff",
@@ -495,34 +495,34 @@ export default function ConfiguracionPage() {
     } as React.CSSProperties,
     badge: {
       display: "inline-block",
-      background: "rgba(255,255,255,0.08)",
+      background: "var(--gfi-border)",
       border: "1px solid rgba(255,255,255,0.15)",
       borderRadius: 20,
       padding: "4px 12px",
       fontSize: 12,
       fontWeight: 600,
-      color: "rgba(255,255,255,0.6)",
+      color: "var(--gfi-text-secondary)",
     } as React.CSSProperties,
     separator: {
-      borderTop: "1px solid rgba(255,255,255,0.07)",
+      borderTop: "1px solid var(--gfi-border-subtle)",
       margin: "20px 0",
     } as React.CSSProperties,
     sectionTitle: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       fontSize: 13,
-      color: "rgba(255,255,255,0.5)",
+      color: "var(--gfi-text-secondary)",
       textTransform: "uppercase" as const,
       letterSpacing: "0.08em",
       marginBottom: 14,
     } as React.CSSProperties,
     previewCard: {
-      background: "#111",
-      border: "1px solid rgba(255,255,255,0.1)",
+      background: "var(--gfi-bg-secondary)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 10,
       padding: 20,
       fontSize: 13,
-      color: "rgba(255,255,255,0.7)",
+      color: "var(--gfi-text-primary)",
       lineHeight: 1.6,
     } as React.CSSProperties,
     toastBox: (tipo: "ok" | "error"): React.CSSProperties => ({
@@ -556,14 +556,14 @@ export default function ConfiguracionPage() {
       width: 48,
       height: 36,
       padding: 2,
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 6,
       background: "rgba(255,255,255,0.06)",
       cursor: "pointer",
     } as React.CSSProperties,
     agenciaCard: {
-      background: "#111",
-      border: "1px solid rgba(255,255,255,0.1)",
+      background: "var(--gfi-bg-secondary)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 12,
       padding: 24,
       display: "flex",
@@ -577,16 +577,16 @@ export default function ConfiguracionPage() {
       cursor: "pointer",
       fontWeight: 700,
       fontSize: 13,
-      fontFamily: "Montserrat, sans-serif",
-      background: active ? "#990000" : "rgba(255,255,255,0.07)",
-      color: active ? "#fff" : "rgba(255,255,255,0.5)",
+      fontFamily: "var(--font-display)",
+      background: active ? "#990000" : "var(--gfi-border-subtle)",
+      color: active ? "#fff" : "var(--gfi-text-secondary)",
     }),
   };
 
   if (loading) {
     return (
       <div style={{ ...s.page, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 15 }}>Cargando configuración…</span>
+        <span style={{ color: "var(--gfi-text-muted)", fontSize: 15 }}>Cargando configuración…</span>
       </div>
     );
   }
@@ -599,10 +599,10 @@ export default function ConfiguracionPage() {
         <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 24 }}>
           <div style={s.avatar}>{iniciales(perfil.nombre, perfil.apellido)}</div>
           <div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 18, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, color: "#fff" }}>
               {perfil.nombre || perfil.apellido ? `${perfil.nombre ?? ""} ${perfil.apellido ?? ""}`.trim() : "Sin nombre"}
             </div>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, marginTop: 4 }}>{perfil.cargo ?? "Corredor"}</div>
+            <div style={{ color: "var(--gfi-text-muted)", fontSize: 13, marginTop: 4 }}>{perfil.cargo ?? "Corredor"}</div>
           </div>
         </div>
 
@@ -739,7 +739,7 @@ export default function ConfiguracionPage() {
             placeholder="Hola {nombre}, te contacto de {inmobiliaria}..."
             rows={3}
           />
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 6 }}>
+          <div style={{ color: "var(--gfi-text-muted)", fontSize: 11, marginTop: 6 }}>
             Variables: {"{nombre}"}, {"{apellido}"}, {"{inmobiliaria}"}, {"{cargo}"}
           </div>
         </div>
@@ -777,7 +777,7 @@ export default function ConfiguracionPage() {
           </div>
         )}
         {config.zonasTrabajo.length === 0 && (
-          <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>Sin zonas agregadas aún.</div>
+          <div style={{ color: "var(--gfi-text-dim)", fontSize: 13 }}>Sin zonas agregadas aún.</div>
         )}
       </div>
 
@@ -787,7 +787,7 @@ export default function ConfiguracionPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
           <div>
             <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Alertas habilitadas</div>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>Recibir notificaciones de vencimientos</div>
+            <div style={{ color: "var(--gfi-text-muted)", fontSize: 12 }}>Recibir notificaciones de vencimientos</div>
           </div>
           <div
             style={s.toggle(config.alertasHabilitadas)}
@@ -877,7 +877,7 @@ export default function ConfiguracionPage() {
                 onChange={(e) => setAgencia((a) => ({ ...a, colorPrimario: e.target.value }))}
               />
               <div style={s.colorPreview(agencia.colorPrimario)} />
-              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{agencia.colorPrimario}</span>
+              <span style={{ color: "var(--gfi-text-secondary)", fontSize: 13 }}>{agencia.colorPrimario}</span>
             </div>
           </div>
           <div style={s.fieldWrap}>
@@ -890,7 +890,7 @@ export default function ConfiguracionPage() {
                 onChange={(e) => setAgencia((a) => ({ ...a, colorSecundario: e.target.value }))}
               />
               <div style={s.colorPreview(agencia.colorSecundario)} />
-              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{agencia.colorSecundario}</span>
+              <span style={{ color: "var(--gfi-text-secondary)", fontSize: 13 }}>{agencia.colorSecundario}</span>
             </div>
           </div>
         </div>
@@ -919,7 +919,7 @@ export default function ConfiguracionPage() {
               width: 120,
               height: 120,
               borderRadius: "50%",
-              background: "rgba(255,255,255,0.08)",
+              background: "var(--gfi-border)",
             }}
           />
           {agencia.logoUrl && (
@@ -929,11 +929,11 @@ export default function ConfiguracionPage() {
               style={{ height: 36, marginBottom: 12, objectFit: "contain" }}
             />
           )}
-          <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 20, marginBottom: 4 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, marginBottom: 4 }}>
             {agencia.nombre || "Nombre de la agencia"}
           </div>
           <div style={{ opacity: 0.8, fontSize: 13, marginBottom: 12 }}>{agencia.matriculaAgencia ? `Mat. ${agencia.matriculaAgencia}` : ""}</div>
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.2)", paddingTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+          <div style={{ borderTop: "1px solid var(--gfi-text-dim)", paddingTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
             {agencia.direccion && <div style={{ fontSize: 12, opacity: 0.85 }}>📍 {agencia.direccion}</div>}
             {agencia.telefonoCentral && <div style={{ fontSize: 12, opacity: 0.85 }}>📞 {agencia.telefonoCentral}</div>}
             {agencia.emailAgencia && <div style={{ fontSize: 12, opacity: 0.85 }}>✉ {agencia.emailAgencia}</div>}
@@ -947,8 +947,8 @@ export default function ConfiguracionPage() {
           <div
             style={{
               marginTop: 12,
-              background: agencia.colorSecundario || "#111",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: agencia.colorSecundario || "var(--gfi-bg-secondary)",
+              border: "1px solid var(--gfi-border)",
               borderRadius: 10,
               padding: "16px 20px",
               display: "flex",
@@ -958,11 +958,11 @@ export default function ConfiguracionPage() {
           >
             <div style={{ ...s.avatar, width: 44, height: 44, fontSize: 16 }}>{iniciales(perfil.nombre, perfil.apellido)}</div>
             <div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, color: "#fff" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>
                 {`${perfil.nombre ?? ""} ${perfil.apellido ?? ""}`.trim()}
               </div>
-              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{perfil.cargo ?? ""}</div>
-              {perfil.telefono && <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{perfil.telefono}</div>}
+              <div style={{ color: "var(--gfi-text-secondary)", fontSize: 12 }}>{perfil.cargo ?? ""}</div>
+              {perfil.telefono && <div style={{ color: "var(--gfi-text-secondary)", fontSize: 12 }}>{perfil.telefono}</div>}
             </div>
           </div>
         )}

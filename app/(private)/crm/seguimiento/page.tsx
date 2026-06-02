@@ -273,12 +273,12 @@ export default function SeguimientoPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .seg-card { background:rgba(14,14,14,0.9); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:16px; transition:border-color 0.15s; }
+        .seg-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:8px; padding:16px; transition:border-color 0.15s; }
         .seg-card:hover { border-color:rgba(255,255,255,0.13); }
-        .seg-input { width:100%; padding:9px 12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:5px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
+        .seg-input { width:100%; padding:9px 12px; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:5px; color:#fff; font-size:13px; font-family:var(--font-body); outline:none; box-sizing:border-box; }
         .seg-input:focus { border-color:rgba(153,0,0,0.4); }
-        .seg-btn { padding:7px 13px; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
-        .seg-chip { padding:5px 12px; border-radius:20px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:all 0.15s; }
+        .seg-btn { padding:7px 13px; border:none; border-radius:5px; font-family:var(--font-display); font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
+        .seg-chip { padding:5px 12px; border-radius:20px; font-family:var(--font-display); font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:all 0.15s; }
         .seg-score-bar { height:5px; border-radius:3px; transition:width 0.4s; }
         @media(max-width:640px){.seg-grid-3{grid-template-columns:1fr 1fr!important;}}
       `}</style>
@@ -288,15 +288,15 @@ export default function SeguimientoPage() {
         {/* ── Header ── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#fff" }}>
               Seguimiento <span style={{ color: "#990000" }}>de Leads</span>
             </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 3 }}>
               Prioridad automática por score · {scorados.length} contactos activos
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <Link href="/crm/contactos" style={{ padding: "8px 14px", borderRadius: 5, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textDecoration: "none" }}>
+            <Link href="/crm/contactos" style={{ padding: "8px 14px", borderRadius: 5, background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textDecoration: "none" }}>
               Ver todos ↗
             </Link>
           </div>
@@ -312,9 +312,9 @@ export default function SeguimientoPage() {
           ].map(k => (
             <div key={k.l}
               onClick={() => k.t ? setFiltroTemp(filtroTemp === k.t ? "todos" : k.t as typeof filtroTemp) : undefined}
-              style={{ background: filtroTemp === k.t ? k.bg : "rgba(14,14,14,0.9)", border: `1px solid ${filtroTemp === k.t ? k.c + "40" : "rgba(255,255,255,0.07)"}`, borderRadius: 8, padding: "12px 14px", textAlign: "center", cursor: k.t ? "pointer" : "default", transition: "all 0.15s" }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: k.c }}>{k.n}</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 3 }}>{k.l}</div>
+              style={{ background: filtroTemp === k.t ? k.bg : "var(--gfi-bg-card)", border: `1px solid ${filtroTemp === k.t ? k.c + "40" : "var(--gfi-border-subtle)"}`, borderRadius: 8, padding: "12px 14px", textAlign: "center", cursor: k.t ? "pointer" : "default", transition: "all 0.15s" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: k.c }}>{k.n}</div>
+              <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 3 }}>{k.l}</div>
             </div>
           ))}
         </div>
@@ -325,9 +325,9 @@ export default function SeguimientoPage() {
           {(["todos","caliente","tibio","frio"] as const).map(t => (
             <button key={t} className="seg-chip"
               style={{
-                background: filtroTemp === t ? (t === "todos" ? "rgba(153,0,0,0.12)" : TEMP_BG[t as keyof typeof TEMP_BG]) : "rgba(255,255,255,0.04)",
-                color: filtroTemp === t ? (t === "todos" ? "#990000" : TEMP_COLOR[t as keyof typeof TEMP_COLOR]) : "rgba(255,255,255,0.4)",
-                border: `1px solid ${filtroTemp === t ? (t === "todos" ? "rgba(153,0,0,0.35)" : TEMP_COLOR[t as keyof typeof TEMP_COLOR] + "50") : "rgba(255,255,255,0.08)"}`,
+                background: filtroTemp === t ? (t === "todos" ? "rgba(153,0,0,0.12)" : TEMP_BG[t as keyof typeof TEMP_BG]) : "var(--gfi-border-subtle)",
+                color: filtroTemp === t ? (t === "todos" ? "#990000" : TEMP_COLOR[t as keyof typeof TEMP_COLOR]) : "var(--gfi-text-muted)",
+                border: `1px solid ${filtroTemp === t ? (t === "todos" ? "rgba(153,0,0,0.35)" : TEMP_COLOR[t as keyof typeof TEMP_COLOR] + "50") : "var(--gfi-border)"}`,
               }}
               onClick={() => setFiltroTemp(t)}>
               {t === "todos" ? "Todos" : TEMP_LABEL[t]}
@@ -337,9 +337,9 @@ export default function SeguimientoPage() {
 
         {/* ── Lista ── */}
         {loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 48, fontFamily: "Inter,sans-serif" }}>Calculando scores...</div>
+          <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 48, fontFamily: "Inter,sans-serif" }}>Calculando scores...</div>
         ) : filtrados.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "48px 20px", color: "rgba(255,255,255,0.2)", fontFamily: "Montserrat,sans-serif" }}>
+          <div style={{ textAlign: "center", padding: "48px 20px", color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)" }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>🎯</div>
             <div style={{ fontWeight: 700 }}>No hay contactos en esta categoría</div>
           </div>
@@ -353,13 +353,13 @@ export default function SeguimientoPage() {
                   {/* Fila principal */}
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                     {/* Ranking */}
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 800, color: "rgba(255,255,255,0.2)", minWidth: 24, textAlign: "center", paddingTop: 2 }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 800, color: "var(--gfi-text-dim)", minWidth: 24, textAlign: "center", paddingTop: 2 }}>
                       #{idx + 1}
                     </div>
 
                     {/* Avatar */}
                     <div style={{ width: 38, height: 38, borderRadius: "50%", background: TEMP_BG[s.temperatura], border: `2px solid ${TEMP_COLOR[s.temperatura]}50`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, color: TEMP_COLOR[s.temperatura] }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 800, color: TEMP_COLOR[s.temperatura] }}>
                         {(c.nombre[0] ?? "?") + (c.apellido[0] ?? "")}
                       </span>
                     </div>
@@ -367,18 +367,18 @@ export default function SeguimientoPage() {
                     {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <Link href={`/crm/contactos/${c.id}`} style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "#fff", textDecoration: "none" }}
+                        <Link href={`/crm/contactos/${c.id}`} style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: "#fff", textDecoration: "none" }}
                           onMouseEnter={e => e.currentTarget.style.color = "#990000"}
                           onMouseLeave={e => e.currentTarget.style.color = "#fff"}>
                           {c.nombre} {c.apellido}
                         </Link>
                         {/* Temperatura */}
-                        <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: TEMP_BG[s.temperatura], color: TEMP_COLOR[s.temperatura], border: `1px solid ${TEMP_COLOR[s.temperatura]}40` }}>
+                        <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "var(--font-display)", fontWeight: 700, background: TEMP_BG[s.temperatura], color: TEMP_COLOR[s.temperatura], border: `1px solid ${TEMP_COLOR[s.temperatura]}40` }}>
                           {TEMP_LABEL[s.temperatura]}
                         </span>
                         {/* Negocio etapa */}
                         {s.negocio && (
-                          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${ETAPA_COLOR[s.negocio.etapa]}18`, color: ETAPA_COLOR[s.negocio.etapa], border: `1px solid ${ETAPA_COLOR[s.negocio.etapa]}40` }}>
+                          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "var(--font-display)", fontWeight: 700, background: `${ETAPA_COLOR[s.negocio.etapa]}18`, color: ETAPA_COLOR[s.negocio.etapa], border: `1px solid ${ETAPA_COLOR[s.negocio.etapa]}40` }}>
                             {ETAPA_LABEL[s.negocio.etapa] ?? s.negocio.etapa}
                           </span>
                         )}
@@ -389,27 +389,27 @@ export default function SeguimientoPage() {
                         <div style={{ flex: 1, height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden" }}>
                           <div className="seg-score-bar" style={{ width: `${s.score}%`, background: s.temperatura === "caliente" ? "#b80000" : s.temperatura === "tibio" ? "#d4960c" : "#4ab8d8" }} />
                         </div>
-                        <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: TEMP_COLOR[s.temperatura], minWidth: 28 }}>{s.score}</span>
+                        <span style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 800, color: TEMP_COLOR[s.temperatura], minWidth: 28 }}>{s.score}</span>
                       </div>
 
                       {/* Metainfo */}
                       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 6 }}>
-                        <span style={{ fontSize: 11, color: s.diasSinContacto !== null && s.diasSinContacto > 14 ? "#d4960c" : "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
+                        <span style={{ fontSize: 11, color: s.diasSinContacto !== null && s.diasSinContacto > 14 ? "#d4960c" : "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                           🕐 {fmtDias(s.diasSinContacto)}
                         </span>
                         {c.zona_interes && (
-                          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>📍 {c.zona_interes}</span>
+                          <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>📍 {c.zona_interes}</span>
                         )}
                         {fmtMonto(c.presupuesto_max, c.moneda) && (
-                          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>💰 hasta {fmtMonto(c.presupuesto_max, c.moneda)}</span>
+                          <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>💰 hasta {fmtMonto(c.presupuesto_max, c.moneda)}</span>
                         )}
                         {s.negocio?.valor_operacion && (
-                          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>🤝 {fmtMonto(s.negocio.valor_operacion, s.negocio.moneda)}</span>
+                          <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>🤝 {fmtMonto(s.negocio.valor_operacion, s.negocio.moneda)}</span>
                         )}
                       </div>
 
                       {/* Acción sugerida */}
-                      <div style={{ marginTop: 8, padding: "5px 10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 5, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ marginTop: 8, padding: "5px 10px", background: "var(--gfi-bg-card)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 5, display: "inline-flex", alignItems: "center", gap: 6 }}>
                         <span style={{ fontSize: 13 }}>{s.iconoAccion}</span>
                         <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", fontFamily: "Inter,sans-serif" }}>Sugerido: <strong style={{ color: "rgba(255,255,255,0.75)" }}>{s.accionSugerida}</strong></span>
                       </div>
@@ -444,7 +444,7 @@ export default function SeguimientoPage() {
                         )}
                       </div>
                       <button className="seg-btn"
-                        style={{ background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.08)", fontSize: 10 }}
+                        style={{ background: "var(--gfi-border-subtle)", color: "var(--gfi-text-muted)", border: "1px solid var(--gfi-border)", fontSize: 10 }}
                         onClick={() => setVistaDetalle(isOpen ? null : c.id)}>
                         {isOpen ? "▲ Cerrar" : "▼ Detalle"}
                       </button>
@@ -456,29 +456,29 @@ export default function SeguimientoPage() {
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                         <div>
-                          <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Score breakdown</div>
+                          <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>Score breakdown</div>
                           {[
                             { label: "Recencia", val: s.diasSinContacto === null ? "Sin interacción" : fmtDias(s.diasSinContacto) },
                             { label: "Etapa negocio", val: s.negocio ? ETAPA_LABEL[s.negocio.etapa] : "Sin negocio activo" },
                             { label: "Estado contacto", val: c.estado ?? "—" },
                             { label: "Presupuesto máx.", val: fmtMonto(c.presupuesto_max, c.moneda) ?? "—" },
                           ].map(row => (
-                            <div key={row.label} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>{row.label}</span>
-                              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif", fontWeight: 600 }}>{row.val}</span>
+                            <div key={row.label} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                              <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>{row.label}</span>
+                              <span style={{ fontSize: 11, color: "var(--gfi-text-primary)", fontFamily: "Inter,sans-serif", fontWeight: 600 }}>{row.val}</span>
                             </div>
                           ))}
                         </div>
                         <div>
-                          <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Acciones</div>
+                          <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>Acciones</div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                             <Link href={`/crm/contactos/${c.id}`}
-                              style={{ padding: "8px 12px", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 5, color: "#990000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
+                              style={{ padding: "8px 12px", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 5, color: "#990000", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
                               Abrir ficha completa ↗
                             </Link>
                             {s.negocio && (
                               <Link href="/crm/negocios"
-                                style={{ padding: "8px 12px", background: `${ETAPA_COLOR[s.negocio.etapa]}12`, border: `1px solid ${ETAPA_COLOR[s.negocio.etapa]}30`, borderRadius: 5, color: ETAPA_COLOR[s.negocio.etapa], fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
+                                style={{ padding: "8px 12px", background: `${ETAPA_COLOR[s.negocio.etapa]}12`, border: `1px solid ${ETAPA_COLOR[s.negocio.etapa]}30`, borderRadius: 5, color: ETAPA_COLOR[s.negocio.etapa], fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
                                 Ver negocio → {ETAPA_LABEL[s.negocio.etapa]}
                               </Link>
                             )}
@@ -499,15 +499,15 @@ export default function SeguimientoPage() {
         )}
 
         {/* ── Leyenda de score ── */}
-        <div style={{ padding: "12px 16px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 6 }}>
-          <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 8 }}>Cómo se calcula el score</div>
+        <div style={{ padding: "12px 16px", background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 6 }}>
+          <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 8 }}>Cómo se calcula el score</div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
             {[
               "🔥 ≥68 pts: Caliente — requiere contacto inmediato",
               "🟡 42–67 pts: Tibio — seguimiento esta semana",
               "❄️ <42 pts: Frío — recuperar o pausar",
             ].map(t => (
-              <span key={t} style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>{t}</span>
+              <span key={t} style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>{t}</span>
             ))}
           </div>
         </div>

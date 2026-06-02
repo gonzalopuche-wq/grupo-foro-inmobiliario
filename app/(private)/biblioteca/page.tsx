@@ -241,7 +241,7 @@ export default function BibliotecaPage() {
         .bib-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; }
         .bib-badge-cat { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
         .bib-badge-gfi { background: rgba(255,255,255,0.06); border: 1px solid var(--gfi-border); color: var(--gfi-text-secondary); }
-        .bib-badge-com { background: rgba(255,255,255,0.04); border: 1px solid var(--gfi-border-subtle); color: var(--gfi-text-muted); }
+        .bib-badge-com { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border-subtle); color: var(--gfi-text-muted); }
         .bib-card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .bib-card-meta { font-size: 10px; color: var(--gfi-text-muted); display: flex; gap: 10px; flex-wrap: wrap; font-family: var(--font-mono); }
         .bib-btn-dl { display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-md); color: var(--gfi-red); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
@@ -452,7 +452,7 @@ export default function BibliotecaPage() {
             )}
 
             <div className="modal-nota">
-              🏆 <strong style={{color:"rgba(255,255,255,0.5)"}}>Subir & Ganar:</strong> Si tu documento es aprobado, recibís un descuento en tu próxima suscripción. El admin define el monto.
+              🏆 <strong style={{color:"var(--gfi-text-secondary)"}}>Subir & Ganar:</strong> Si tu documento es aprobado, recibís un descuento en tu próxima suscripción. El admin define el monto.
             </div>
 
             <div className="modal-actions">

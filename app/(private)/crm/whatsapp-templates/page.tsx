@@ -207,25 +207,25 @@ export default function WhatsAppTemplates() {
   }
 
   const cardStyle: React.CSSProperties = {
-    background: "#0d0d0d", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "16px 18px",
+    background: "var(--gfi-bg-primary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "16px 18px",
   };
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter,sans-serif", padding: "28px 24px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
-        <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, margin: 0 }}>Plantillas WhatsApp</h1>
-        <span style={{ background: "#3abab6", color: "#000", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>MENSAJES</span>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, margin: 0 }}>Plantillas WhatsApp</h1>
+        <span style={{ background: "#3abab6", color: "#000", fontSize: 9, fontWeight: 700, fontFamily: "var(--font-display)", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>MENSAJES</span>
       </div>
-      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 20 }}>{TEMPLATES.length} plantillas listas para usar · personalizables por contacto</div>
+      <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 20 }}>{TEMPLATES.length} plantillas listas para usar · personalizables por contacto</div>
 
       {/* Filtros */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {CATEGORIAS.map(c => (
             <button key={c.id} onClick={() => setCategoria(c.id)}
-              style={{ background: categoria === c.id ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${categoria === c.id ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: categoria === c.id ? "#3abab6" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+              style={{ background: categoria === c.id ? "rgba(34,197,94,0.15)" : "var(--gfi-border-subtle)", border: `1px solid ${categoria === c.id ? "rgba(34,197,94,0.4)" : "var(--gfi-border)"}`, borderRadius: 6, color: categoria === c.id ? "#3abab6" : "var(--gfi-text-muted)", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
               {c.emoji} {c.label}
             </button>
           ))}
@@ -234,7 +234,7 @@ export default function WhatsAppTemplates() {
           placeholder="Buscar plantilla…"
           value={busqueda}
           onChange={e => setBusqueda(e.target.value)}
-          style={{ background: "#111", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 12, padding: "7px 12px", marginLeft: "auto" }}
+          style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 12, padding: "7px 12px", marginLeft: "auto" }}
         />
       </div>
 
@@ -248,42 +248,42 @@ export default function WhatsAppTemplates() {
           const tieneVarsVacias = t.variables.some(v => !vals[v]);
 
           return (
-            <div key={t.id} style={{ ...cardStyle, borderColor: isOpen ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.07)" }}>
+            <div key={t.id} style={{ ...cardStyle, borderColor: isOpen ? "rgba(34,197,94,0.2)" : "var(--gfi-border-subtle)" }}>
               {/* Header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                     <span style={{ fontSize: 16 }}>{t.emoji}</span>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700 }}>{t.nombre}</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700 }}>{t.nombre}</span>
                   </div>
-                  <span style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
+                  <span style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-muted)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
                     {CATEGORIAS.find(c => c.id === t.categoria)?.emoji} {CATEGORIAS.find(c => c.id === t.categoria)?.label}
                   </span>
                 </div>
                 <button onClick={() => setExpandido(isOpen ? null : t.id)}
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "rgba(255,255,255,0.4)", fontSize: 10, padding: "4px 10px", cursor: "pointer" }}>
+                  style={{ background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "var(--gfi-text-muted)", fontSize: 10, padding: "4px 10px", cursor: "pointer" }}>
                   {isOpen ? "▲ Cerrar" : "▼ Personalizar"}
                 </button>
               </div>
 
               {/* Preview del texto */}
-              <div style={{ background: "#111", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, fontFamily: "Inter,sans-serif", marginBottom: 12, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "var(--gfi-text-primary)", lineHeight: 1.6, fontFamily: "Inter,sans-serif", marginBottom: 12, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                 {textoFinal}
               </div>
 
               {/* Variables editables */}
               {isOpen && t.variables.length > 0 && (
                 <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Variables</div>
+                  <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>Variables</div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
                     {t.variables.map(v => (
                       <div key={v}>
-                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", marginBottom: 2 }}>{v}</div>
+                        <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", marginBottom: 2 }}>{v}</div>
                         <input
                           value={vals[v] ?? ""}
                           onChange={e => setVar(t.id, v, e.target.value)}
                           placeholder={v.replace("{", "").replace("}", "")}
-                          style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 12, padding: "5px 8px", width: "100%", boxSizing: "border-box" }}
+                          style={{ background: "#0a0a0a", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 12, padding: "5px 8px", width: "100%", boxSizing: "border-box" }}
                         />
                       </div>
                     ))}
@@ -297,11 +297,11 @@ export default function WhatsAppTemplates() {
               {/* Acciones */}
               <div style={{ display: "flex", gap: 6 }}>
                 <button onClick={() => copiar(t)}
-                  style={{ flex: 1, background: isCopied ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.05)", border: `1px solid ${isCopied ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.1)"}`, borderRadius: 6, color: isCopied ? "#3abab6" : "rgba(255,255,255,0.6)", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "7px 0", cursor: "pointer", letterSpacing: "0.05em" }}>
+                  style={{ flex: 1, background: isCopied ? "rgba(34,197,94,0.15)" : "var(--gfi-border-subtle)", border: `1px solid ${isCopied ? "rgba(34,197,94,0.4)" : "var(--gfi-border)"}`, borderRadius: 6, color: isCopied ? "#3abab6" : "var(--gfi-text-secondary)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "7px 0", cursor: "pointer", letterSpacing: "0.05em" }}>
                   {isCopied ? "✓ Copiado!" : "📋 Copiar"}
                 </button>
                 <button onClick={() => abrirWhatsApp(t)}
-                  style={{ flex: 1, background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 6, color: "#3abab6", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "7px 0", cursor: "pointer", letterSpacing: "0.05em" }}>
+                  style={{ flex: 1, background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 6, color: "#3abab6", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, padding: "7px 0", cursor: "pointer", letterSpacing: "0.05em" }}>
                   WhatsApp ↗
                 </button>
               </div>
@@ -311,9 +311,9 @@ export default function WhatsAppTemplates() {
       </div>
 
       {filtrados.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 24px", color: "rgba(255,255,255,0.3)" }}>
+        <div style={{ textAlign: "center", padding: "40px 24px", color: "var(--gfi-text-muted)" }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700 }}>Sin resultados para "{busqueda}"</div>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700 }}>Sin resultados para "{busqueda}"</div>
         </div>
       )}
     </div>

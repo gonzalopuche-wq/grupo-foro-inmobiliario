@@ -173,7 +173,7 @@ export default function ComparadorPage() {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>
               🏘️ Comparador de Propiedades
             </h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Compará hasta 3 propiedades lado a lado</p>
@@ -182,7 +182,7 @@ export default function ComparadorPage() {
         </div>
 
         {/* Config TC */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 20, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 20, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
           <label style={{ fontSize: 13, color: "#9ca3af" }}>TC USD/ARS:</label>
           <input type="number" value={tc} onChange={e => setTc(parseFloat(e.target.value) || 1)}
             style={{ background: "#0a0a0a", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 13, width: 100 }} />
@@ -193,7 +193,7 @@ export default function ComparadorPage() {
             </button>
           )}
           <button onClick={exportarPDF}
-            style={{ background: "#1f2937", color: "#e5e5e5", border: "1px solid #374151", borderRadius: 6, padding: "6px 14px", fontSize: 13, cursor: "pointer", marginLeft: "auto" }}>
+            style={{ background: "var(--gfi-border)", color: "#e5e5e5", border: "1px solid #374151", borderRadius: 6, padding: "6px 14px", fontSize: 13, cursor: "pointer", marginLeft: "auto" }}>
             📄 Exportar PDF
           </button>
         </div>
@@ -201,9 +201,9 @@ export default function ComparadorPage() {
         {/* Formularios en columnas */}
         <div style={{ display: "grid", gridTemplateColumns: `repeat(${props.length}, 1fr)`, gap: 16, marginBottom: 28 }}>
           {props.map((p, i) => (
-            <div key={p.id} style={{ background: "#111", border: `1px solid ${colores[i]}44`, borderTop: `3px solid ${colores[i]}`, borderRadius: 12, padding: 18 }}>
+            <div key={p.id} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${colores[i]}44`, borderTop: `3px solid ${colores[i]}`, borderRadius: 12, padding: 18 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
-                <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, color: colores[i] }}>{p.nombre}</span>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: colores[i] }}>{p.nombre}</span>
                 {props.length > 2 && (
                   <button onClick={() => removeProp(p.id)}
                     style={{ background: "transparent", border: "none", color: "#6b7280", cursor: "pointer", fontSize: 16 }}>✕</button>
@@ -220,9 +220,9 @@ export default function ComparadorPage() {
         </div>
 
         {/* Tabla comparativa de resultados */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, overflow: "hidden", marginBottom: 24 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, overflow: "hidden", marginBottom: 24 }}>
           <div style={{ background: "#1a1a1a", padding: "12px 18px", borderBottom: "1px solid #1f2937" }}>
-            <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, color: "#fff" }}>📊 Análisis Comparativo</span>
+            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>📊 Análisis Comparativo</span>
           </div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -249,7 +249,7 @@ export default function ComparadorPage() {
                   { label: "Valor estimado 5 años", render: (a: typeof analisis[number]) => `USD ${fmt(a.valor5y)}` },
                   { label: "Score inversión", render: (a: typeof analisis[number]) => `${a.score.toFixed(0)}/100` },
                 ].map((row, ri) => (
-                  <tr key={row.label} style={{ background: ri % 2 === 0 ? "#0f0f0f" : "#111" }}>
+                  <tr key={row.label} style={{ background: ri % 2 === 0 ? "var(--gfi-bg-primary)" : "var(--gfi-bg-secondary)" }}>
                     <td style={{ padding: "9px 16px", color: "#9ca3af", borderBottom: "1px solid #1f2937" }}>{row.label}</td>
                     {analisis.map((a, ci) => {
                       const val = row.render(a);
@@ -275,8 +275,8 @@ export default function ComparadorPage() {
             const label = sc >= 70 ? "Muy buena" : sc >= 50 ? "Buena" : sc >= 30 ? "Regular" : "Baja";
             const col = sc >= 70 ? "#3abab6" : sc >= 50 ? "#3b82f6" : sc >= 30 ? "#d4960c" : "#990000";
             return (
-              <div key={a.p.id} style={{ background: "#111", border: `1px solid ${colores[i]}33`, borderRadius: 12, padding: 20, textAlign: "center" }}>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: colores[i], marginBottom: 8 }}>{a.p.nombre}</div>
+              <div key={a.p.id} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${colores[i]}33`, borderRadius: 12, padding: 20, textAlign: "center" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: colores[i], marginBottom: 8 }}>{a.p.nombre}</div>
                 <div style={{ fontSize: 42, fontWeight: 800, color: col }}>{sc.toFixed(0)}</div>
                 <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 12 }}>/ 100 pts · {label}</div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, height: 8, overflow: "hidden" }}>
@@ -296,7 +296,7 @@ export default function ComparadorPage() {
         </div>
 
         {/* Nota metodología */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "#6b7280" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "#6b7280" }}>
           <strong style={{ color: "#9ca3af" }}>Score:</strong> Precio/m² relativo (40%) + Rentabilidad neta (35%) + Antigüedad (15%) + Apreciación proyectada (10%).
           La "Mejor opción" (★) maximiza el puntaje ponderado. No constituye asesoramiento de inversión.
         </div>

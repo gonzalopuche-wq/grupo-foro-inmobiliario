@@ -313,7 +313,7 @@ export default function PadronGFIPage() {
         /* Table wrapper */
         .pad-tabla-wrap { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
         .pad-tabla { width: 100%; border-collapse: collapse; min-width: 680px; }
-        .pad-tabla thead tr { background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--gfi-border); }
+        .pad-tabla thead tr { background: var(--gfi-bg-secondary); border-bottom: 1px solid var(--gfi-border); }
         .pad-tabla th { padding: 11px 14px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-muted); white-space: nowrap; }
         .pad-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.12s; }
         .pad-tabla tbody tr:last-child { border-bottom: none; }
@@ -382,10 +382,10 @@ export default function PadronGFIPage() {
           )}
         </div>
         {syncPhonesState === "done" && syncPhonesResult && (
-          <div style={{ padding: "10px 16px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif" }}>
+          <div style={{ padding: "10px 16px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, fontSize: 12, color: "var(--gfi-text-primary)", fontFamily: "Inter,sans-serif" }}>
             <strong style={{ color: "#3abab6" }}>{syncPhonesResult.actualizados}</strong> perfiles actualizados ·{" "}
-            <strong style={{ color: "rgba(255,255,255,0.4)" }}>{syncPhonesResult.omitidos}</strong> sin cambios ·{" "}
-            <strong style={{ color: syncPhonesResult.errores > 0 ? "#f87171" : "rgba(255,255,255,0.4)" }}>{syncPhonesResult.errores}</strong> errores
+            <strong style={{ color: "var(--gfi-text-muted)" }}>{syncPhonesResult.omitidos}</strong> sin cambios ·{" "}
+            <strong style={{ color: syncPhonesResult.errores > 0 ? "#f87171" : "var(--gfi-text-muted)" }}>{syncPhonesResult.errores}</strong> errores
             {" · "}Total: {syncPhonesResult.total_perfiles} perfiles con matrícula
           </div>
         )}
@@ -435,13 +435,13 @@ export default function PadronGFIPage() {
             </>
           )}
           <div className="pad-stat">
-            <div className="pad-stat-val" style={{color:"rgba(255,255,255,0.5)"}}>
+            <div className="pad-stat-val" style={{color:"var(--gfi-text-secondary)"}}>
               {busqueda ? filtrados.length.toLocaleString("es-AR") : "—"}
             </div>
             <div className="pad-stat-label">Resultados búsqueda</div>
           </div>
           <div style={{marginLeft:"auto",textAlign:"right"}}>
-            <div style={{fontSize:11,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>
+            <div style={{fontSize:11,color:"var(--gfi-text-dim)",fontStyle:"italic"}}>
               {fuente === "cocir" ? "Padrón oficial COCIR · Solo lectura" :
                fuente === "gfi" ? "Miembros registrados en GFI®" :
                "Cruce COCIR + GFI por matrícula"}
@@ -538,7 +538,7 @@ export default function PadronGFIPage() {
                           )}
                           <div>
                             <div className="pad-nombre">{[r.apellido, r.nombre].filter(Boolean).join(", ") || "—"}</div>
-                            {r.zona_trabajo && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>📍 {r.zona_trabajo}</div>}
+                            {r.zona_trabajo && <div style={{fontSize:10,color:"var(--gfi-text-muted)",marginTop:2}}>📍 {r.zona_trabajo}</div>}
                           </div>
                         </div>
                       </td>
@@ -547,13 +547,13 @@ export default function PadronGFIPage() {
                           ? <span style={{fontFamily:"var(--font-mono)",fontWeight:600,fontSize:12,color:"var(--gfi-red)",letterSpacing:"0.02em"}}>{r.matricula}</span>
                           : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
                       </td>
-                      <td style={{color:"rgba(255,255,255,0.6)"}}>
-                        {r.inmobiliaria || <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                      <td style={{color:"var(--gfi-text-secondary)"}}>
+                        {r.inmobiliaria || <span style={{color:"var(--gfi-text-dim)"}}>—</span>}
                       </td>
-                      <td style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>
+                      <td style={{color:"var(--gfi-text-secondary)",fontSize:11}}>
                         {(() => {
                           const { texto, mapsUrl } = parseDireccion(r.direccion);
-                          if (!texto) return <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>;
+                          if (!texto) return <span style={{color:"var(--gfi-text-dim)"}}>—</span>;
                           return <>{texto}{r.localidad ? ` · ${r.localidad}` : ""}{mapsUrl && <> <a href={mapsUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"var(--gfi-ocean-text)",fontSize:10,textDecoration:"none",fontWeight:600,marginLeft:4}}>📍</a></>}</>;
                         })()}
                       </td>
@@ -564,7 +564,7 @@ export default function PadronGFIPage() {
                             ? <a href={waLink(celular)} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"#25d366",textDecoration:"none",fontFamily:"Inter,sans-serif",display:"inline-flex",alignItems:"center",gap:4}}>
                                 <span style={{fontSize:13}}>💬</span>{celular}
                               </a>
-                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>;
+                            : <span style={{color:"var(--gfi-text-dim)"}}>—</span>;
                         })()}
                       </td>
                       <td style={{fontSize:12}}>
@@ -574,7 +574,7 @@ export default function PadronGFIPage() {
                             ? <a href={`mailto:${email}`} onClick={e => e.stopPropagation()} style={{color:"#f87171",textDecoration:"none",fontFamily:"Inter,sans-serif",wordBreak:"break-all"}}>
                                 {email.toLowerCase()}
                               </a>
-                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>;
+                            : <span style={{color:"var(--gfi-text-dim)"}}>—</span>;
                         })()}
                       </td>
                       {fuente === "ambos" && (
@@ -590,7 +590,7 @@ export default function PadronGFIPage() {
                             {esAlerta ? "⛔" : "✅"} {r.estadoCOCIR?.toUpperCase() || "HABILITADO"}
                           </span>
                         ) : (
-                          <span className="pad-badge" style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.35)"}}>
+                          <span className="pad-badge" style={{background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",color:"var(--gfi-text-muted)"}}>
                             Solo GFI
                           </span>
                         )}
@@ -652,10 +652,10 @@ export default function PadronGFIPage() {
               </div>
             )}
 
-            <div style={{display:"flex",flexDirection:"column",gap:10,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:16}}>
+            <div style={{display:"flex",flexDirection:"column",gap:10,borderTop:"1px solid var(--gfi-border-subtle)",paddingTop:16}}>
               {contactoSeleccionado.inmobiliaria && (
                 <div style={{display:"flex",gap:10}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Inmob.</span>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)",paddingTop:1}}>Inmob.</span>
                   <span style={{fontSize:13,color:"rgba(255,255,255,0.8)"}}>{contactoSeleccionado.inmobiliaria}</span>
                 </div>
               )}
@@ -664,8 +664,8 @@ export default function PadronGFIPage() {
                 const dirTexto = [texto, contactoSeleccionado.localidad].filter(Boolean).join(" · ");
                 return dirTexto ? (
                   <div style={{display:"flex",gap:10}}>
-                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Dirección</span>
-                    <span style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>
+                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)",paddingTop:1}}>Dirección</span>
+                    <span style={{fontSize:13,color:"var(--gfi-text-primary)"}}>
                       {dirTexto}
                       {mapsUrl && <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{color:"var(--gfi-ocean-text)",marginLeft:8,fontSize:12,textDecoration:"none"}}>📍 Ver mapa</a>}
                     </span>
@@ -676,7 +676,7 @@ export default function PadronGFIPage() {
                 const { celular } = parseCamposContacto({ celular: contactoSeleccionado.celular, telefono: contactoSeleccionado.telefono, email: contactoSeleccionado.email });
                 return celular ? (
                   <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Celular</span>
+                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)"}}>Celular</span>
                     <a href={waLink(celular)} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontWeight:700,fontSize:13,display:"inline-flex",alignItems:"center",gap:6}}>
                       💬 {celular}
                     </a>
@@ -687,7 +687,7 @@ export default function PadronGFIPage() {
                 const { email } = parseCamposContacto({ celular: contactoSeleccionado.celular, telefono: contactoSeleccionado.telefono, email: contactoSeleccionado.email });
                 return email ? (
                   <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Email</span>
+                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)"}}>Email</span>
                     <a href={`mailto:${email}`} style={{color:"#f87171",textDecoration:"none",fontSize:13,wordBreak:"break-all"}}>
                       ✉️ {email.toLowerCase()}
                     </a>

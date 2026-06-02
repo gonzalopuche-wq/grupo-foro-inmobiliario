@@ -116,7 +116,7 @@ export default function LegalPage() {
     const tipo = TIPOS[d.tipo] ?? TIPOS.guia
     const isOpen = abierto === d.id
     return (
-      <div key={key} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${d.destacado ? 'rgba(153,0,0,0.2)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 10, overflow: 'hidden' }}>
+      <div key={key} style={{ background: 'var(--gfi-bg-card)', border: `1px solid ${d.destacado ? 'rgba(153,0,0,0.2)' : 'var(--gfi-border-subtle)'}`, borderRadius: 10, overflow: 'hidden' }}>
         <div
           onClick={() => setAbierto(isOpen ? null : d.id)}
           style={{ padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 12 }}
@@ -130,15 +130,15 @@ export default function LegalPage() {
             {d.descripcion && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.4 }}>{d.descripcion}</div>}
             <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
               <span style={{ fontSize: 10, color: tipo.color, background: `${tipo.color}18`, padding: '2px 8px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>{tipo.label}</span>
-              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>{d.categoria}</span>
+              <span style={{ fontSize: 10, color: 'var(--gfi-text-muted)', background: 'var(--gfi-border-subtle)', padding: '2px 8px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>{d.categoria}</span>
             </div>
           </div>
-          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 16, flexShrink: 0, marginTop: 2 }}>{isOpen ? '▲' : '▼'}</span>
+          <span style={{ color: 'var(--gfi-text-muted)', fontSize: 16, flexShrink: 0, marginTop: 2 }}>{isOpen ? '▲' : '▼'}</span>
         </div>
 
         {isOpen && d.contenido && (
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '16px', background: 'rgba(0,0,0,0.2)' }}>
-            <pre style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: 'rgba(255,255,255,0.7)', whiteSpace: 'pre-wrap', lineHeight: 1.7, margin: 0 }}>{d.contenido}</pre>
+            <pre style={{ fontFamily: "var(--font-body)", fontSize: 13, color: 'var(--gfi-text-primary)', whiteSpace: 'pre-wrap', lineHeight: 1.7, margin: 0 }}>{d.contenido}</pre>
             {d.archivo_url && (
               <a href={d.archivo_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: 12, padding: '8px 16px', background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', borderRadius: 8, color: '#3b82f6', fontSize: 12, fontWeight: 700, textDecoration: 'none', fontFamily: 'Montserrat,sans-serif' }}>
                 ⬇ Descargar archivo
@@ -155,39 +155,39 @@ export default function LegalPage() {
 
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>Módulos 70 / 71</div>
+        <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gfi-text-dim)', marginBottom: 6 }}>Módulos 70 / 71</div>
         <h1 style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>Documentación Legal</h1>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+        <p style={{ fontSize: 12, color: 'var(--gfi-text-muted)', marginTop: 4 }}>
           Guías, modelos y normativa para el corredor inmobiliario matriculado
         </p>
       </div>
 
       {/* Búsqueda */}
       <div style={{ position: 'relative', marginBottom: 16 }}>
-        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', fontSize: 16 }}>🔍</span>
+        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--gfi-text-muted)', fontSize: 16 }}>🔍</span>
         <input
           value={busqueda}
           onChange={e => setBusqueda(e.target.value)}
           placeholder="Buscar documento, guía o normativa..."
-          style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', padding: '10px 12px 10px 38px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }}
+          style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 8, color: '#fff', padding: '10px 12px 10px 38px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }}
         />
       </div>
 
       {/* Filtros */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 24, flexWrap: 'wrap' }}>
         {CATEGORIAS.map(c => (
-          <button key={c} onClick={() => setFiltro(c)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === c ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === c ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+          <button key={c} onClick={() => setFiltro(c)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === c ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === c ? '#fff' : 'var(--gfi-text-muted)' }}>
             {c}
           </button>
         ))}
       </div>
 
       {cargando ? (
-        <div style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
+        <div style={{ color: 'var(--gfi-text-muted)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
       ) : filtrados.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '56px 0' }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>⚖️</div>
-          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>No se encontraron documentos</div>
+          <div style={{ color: 'var(--gfi-text-muted)', fontSize: 14 }}>No se encontraron documentos</div>
         </div>
       ) : (
         <>
@@ -201,7 +201,7 @@ export default function LegalPage() {
           )}
           {resto.length > 0 && (
             <div>
-              {destacados.length > 0 && <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 10 }}>Biblioteca completa</div>}
+              {destacados.length > 0 && <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--gfi-text-dim)', marginBottom: 10 }}>Biblioteca completa</div>}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {resto.map(d => renderDoc(d, d.id))}
               </div>

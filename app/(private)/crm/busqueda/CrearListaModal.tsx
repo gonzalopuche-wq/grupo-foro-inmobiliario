@@ -107,10 +107,10 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
   const s: Record<string, any> = {
     bg: { position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',zIndex:300,display:'flex',alignItems:'center',justifyContent:'center',padding:16 },
     modal: { background:'#0f0f0f',border:'1px solid rgba(200,0,0,0.2)',borderRadius:12,width:'100%',maxWidth:480 },
-    header: { display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px 20px',borderBottom:'1px solid rgba(255,255,255,0.07)' },
+    header: { display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px 20px',borderBottom:'1px solid var(--gfi-border-subtle)' },
     body: { padding:20 },
-    label: { fontSize:10,color:'rgba(255,255,255,0.4)',display:'block',marginBottom:6,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase' as const },
-    input: { width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:6,padding:'8px 10px',color:'#fff',fontSize:13,outline:'none',boxSizing:'border-box' as const,fontFamily:'Inter,sans-serif' },
+    label: { fontSize:10,color:'var(--gfi-text-muted)',display:'block',marginBottom:6,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase' as const },
+    input: { width:'100%',background:'var(--gfi-border-subtle)',border:'1px solid var(--gfi-border)',borderRadius:6,padding:'8px 10px',color:'#fff',fontSize:13,outline:'none',boxSizing:'border-box' as const,fontFamily:'Inter,sans-serif' },
     field: { marginBottom:14 },
   }
 
@@ -124,19 +124,19 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
               {listo ? 'Lista creada' : 'Guardar en lista'}
             </span>
           </div>
-          <button onClick={onClose} style={{background:'none',border:'none',color:'rgba(255,255,255,0.4)',cursor:'pointer'}}><X style={{width:18,height:18}} /></button>
+          <button onClick={onClose} style={{background:'none',border:'none',color:'var(--gfi-text-muted)',cursor:'pointer'}}><X style={{width:18,height:18}} /></button>
         </div>
 
         {!listo ? (
           <div style={s.body}>
-            <div style={{background:'rgba(255,255,255,0.04)',borderRadius:8,padding:'10px 14px',fontSize:12,color:'rgba(255,255,255,0.5)',marginBottom:16}}>
+            <div style={{background:'var(--gfi-border-subtle)',borderRadius:8,padding:'10px 14px',fontSize:12,color:'var(--gfi-text-secondary)',marginBottom:16}}>
               {propiedades.length} propiedad{propiedades.length !== 1 ? 'es' : ''} seleccionada{propiedades.length !== 1 ? 's' : ''}
             </div>
 
             <div style={s.field}>
               <label style={s.label}>Contacto del CRM (opcional)</label>
               {cargandoContactos ? (
-                <div style={{color:'rgba(255,255,255,0.3)',fontSize:12}}>Cargando contactos...</div>
+                <div style={{color:'var(--gfi-text-muted)',fontSize:12}}>Cargando contactos...</div>
               ) : (
                 <select value={contactoId} onChange={e => setContactoId(e.target.value)}
                   style={{...s.input,background:'#111'}}>
@@ -166,7 +166,7 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
               <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:notificarCliente?12:0}}>
                 <input type="checkbox" id="notif" checked={notificarCliente} onChange={e => setNotificarCliente(e.target.checked)}
                   style={{marginTop:2,accentColor:'#990000'}} />
-                <label htmlFor="notif" style={{fontSize:12,color:'rgba(255,255,255,0.6)',cursor:'pointer'}}>
+                <label htmlFor="notif" style={{fontSize:12,color:'var(--gfi-text-secondary)',cursor:'pointer'}}>
                   Notificar al cliente cuando cambie el precio o se dé de baja una propiedad
                 </label>
               </div>
@@ -192,21 +192,21 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
               <CheckCircle2 style={{width:28,height:28,color:'#3abab6'}} />
             </div>
             <h3 style={{margin:'0 0 6px',color:'#fff',fontFamily:'Montserrat,sans-serif'}}>{propiedades.length} propiedades guardadas</h3>
-            <p style={{margin:'0 0 20px',color:'rgba(255,255,255,0.4)',fontSize:13}}>La lista se actualiza automáticamente</p>
+            <p style={{margin:'0 0 20px',color:'var(--gfi-text-muted)',fontSize:13}}>La lista se actualiza automáticamente</p>
 
-            <div style={{background:'rgba(255,255,255,0.04)',borderRadius:8,padding:14,marginBottom:20,textAlign:'left'}}>
-              <p style={{margin:'0 0 6px',fontSize:10,color:'rgba(255,255,255,0.3)',fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase'}}>Link para el cliente:</p>
+            <div style={{background:'var(--gfi-border-subtle)',borderRadius:8,padding:14,marginBottom:20,textAlign:'left'}}>
+              <p style={{margin:'0 0 6px',fontSize:10,color:'var(--gfi-text-muted)',fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase'}}>Link para el cliente:</p>
               <div style={{display:'flex',alignItems:'center',gap:8,background:'rgba(0,0,0,0.3)',borderRadius:6,padding:'8px 12px'}}>
                 <span style={{color:'#990000',fontSize:12,flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{urlLista}</span>
                 <button onClick={() => navigator.clipboard.writeText(urlLista)}
-                  style={{background:'rgba(255,255,255,0.1)',border:'none',color:'#fff',padding:'4px 10px',borderRadius:4,fontSize:11,cursor:'pointer'}}>
+                  style={{background:'var(--gfi-border)',border:'none',color:'#fff',padding:'4px 10px',borderRadius:4,fontSize:11,cursor:'pointer'}}>
                   Copiar
                 </button>
               </div>
             </div>
 
             <div style={{display:'flex',gap:10}}>
-              <button onClick={onClose} style={{flex:1,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'#fff',padding:'10px',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer'}}>Cerrar</button>
+              <button onClick={onClose} style={{flex:1,background:'rgba(255,255,255,0.06)',border:'1px solid var(--gfi-border)',color:'#fff',padding:'10px',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer'}}>Cerrar</button>
               <a href="/crm/listas" style={{flex:1,background:'#990000',color:'#fff',padding:'10px',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',textDecoration:'none',display:'flex',alignItems:'center',justifyContent:'center'}}>Ver mis listas</a>
             </div>
           </div>

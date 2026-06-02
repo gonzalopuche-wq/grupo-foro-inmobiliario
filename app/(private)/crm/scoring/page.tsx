@@ -207,7 +207,7 @@ export default function ScoringPage() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🎯 Scoring de Contactos</h1>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🎯 Scoring de Contactos</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Ranking automático por interacciones, etapa y completitud de perfil</p>
           </div>
           <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
@@ -221,16 +221,16 @@ export default function ScoringPage() {
             { label: "⚡ Tibios", value: totalTibio, color: "#d4960c", sub: "score 30–59" },
             { label: "❄️ Fríos", value: totalFrio, color: "#3b82f6", sub: "score < 30" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "14px 16px" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "14px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: k.color }}>{k.value}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: k.color }}>{k.value}</div>
               <div style={{ fontSize: 11, color: "#4b5563" }}>{k.sub}</div>
             </div>
           ))}
         </div>
 
         {/* Filtros */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
           <input
             type="text" placeholder="Buscar contacto..." value={busqueda}
             onChange={e => setBusqueda(e.target.value)}
@@ -239,7 +239,7 @@ export default function ScoringPage() {
           <div style={{ display: "flex", gap: 6 }}>
             {(["todos", "caliente", "tibio", "frio"] as const).map(f => (
               <button key={f} onClick={() => setFiltro(f)}
-                style={{ background: filtro === f ? "#1f2937" : "transparent", border: `1px solid ${filtro === f ? "#374151" : "#1f2937"}`, borderRadius: 6, color: filtro === f ? "#e5e5e5" : "#6b7280", padding: "5px 14px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "capitalize" }}>
+                style={{ background: filtro === f ? "#1f2937" : "transparent", border: `1px solid ${filtro === f ? "#374151" : "var(--gfi-border)"}`, borderRadius: 6, color: filtro === f ? "#e5e5e5" : "#6b7280", padding: "5px 14px", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "capitalize" }}>
                 {f === "todos" ? "Todos" : catIcon(f) + " " + f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
             ))}
@@ -256,9 +256,9 @@ export default function ScoringPage() {
             ) : filtrados.map((s, idx) => (
               <div key={s.contacto.id}
                 onClick={() => setSeleccionado(seleccionado?.contacto.id === s.contacto.id ? null : s)}
-                style={{ background: seleccionado?.contacto.id === s.contacto.id ? "#1a1a1a" : "#111", border: `1px solid ${seleccionado?.contacto.id === s.contacto.id ? catColor(s.categoria) + "66" : "#1f2937"}`, borderRadius: 10, padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 16, color: "#4b5563", width: 32, textAlign: "center" }}>#{idx + 1}</div>
-                <div style={{ background: `${catColor(s.categoria)}22`, color: catColor(s.categoria), borderRadius: 8, padding: "6px 10px", fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, minWidth: 60, textAlign: "center" }}>
+                style={{ background: seleccionado?.contacto.id === s.contacto.id ? "#1a1a1a" : "var(--gfi-bg-secondary)", border: `1px solid ${seleccionado?.contacto.id === s.contacto.id ? catColor(s.categoria) + "66" : "var(--gfi-border)"}`, borderRadius: 10, padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#4b5563", width: 32, textAlign: "center" }}>#{idx + 1}</div>
+                <div style={{ background: `${catColor(s.categoria)}22`, color: catColor(s.categoria), borderRadius: 8, padding: "6px 10px", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, minWidth: 60, textAlign: "center" }}>
                   {s.score}
                 </div>
                 <div style={{ flex: 1 }}>
@@ -290,28 +290,28 @@ export default function ScoringPage() {
 
           {/* Detalle scoring */}
           {seleccionado && (
-            <div style={{ background: "#111", border: `1px solid ${catColor(seleccionado.categoria)}44`, borderRadius: 12, padding: 20, position: "sticky", top: 20, alignSelf: "flex-start" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${catColor(seleccionado.categoria)}44`, borderRadius: 12, padding: 20, position: "sticky", top: 20, alignSelf: "flex-start" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <div>
-                  <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 16, color: "#fff" }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff" }}>
                     {seleccionado.contacto.nombre} {seleccionado.contacto.apellido}
                   </div>
                   <div style={{ fontSize: 12, color: catColor(seleccionado.categoria), marginTop: 2 }}>
                     {catIcon(seleccionado.categoria)} {seleccionado.categoria.charAt(0).toUpperCase() + seleccionado.categoria.slice(1)}
                   </div>
                 </div>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 40, color: catColor(seleccionado.categoria) }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 40, color: catColor(seleccionado.categoria) }}>
                   {seleccionado.score}
                 </div>
               </div>
 
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 10, color: "#6b7280", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Desglose de puntos</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, color: "#6b7280", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Desglose de puntos</div>
                 {seleccionado.desglose.map(d => (
                   <div key={d.label} style={{ marginBottom: 8 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 3 }}>
                       <span style={{ color: "#9ca3af" }}>{d.label}</span>
-                      <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: d.pts > 0 ? "#3abab6" : "#4b5563" }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: d.pts > 0 ? "#3abab6" : "#4b5563" }}>
                         {d.pts}/{d.max}
                       </span>
                     </div>
@@ -323,7 +323,7 @@ export default function ScoringPage() {
               </div>
 
               <div style={{ borderTop: "1px solid #1f2937", paddingTop: 14 }}>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 10, color: "#6b7280", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>Datos del contacto</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, color: "#6b7280", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>Datos del contacto</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 5, fontSize: 12 }}>
                   {seleccionado.contacto.telefono && <div style={{ color: "#9ca3af" }}>📞 {seleccionado.contacto.telefono}</div>}
                   {seleccionado.contacto.email && <div style={{ color: "#9ca3af" }}>✉️ {seleccionado.contacto.email}</div>}
@@ -338,14 +338,14 @@ export default function ScoringPage() {
               {/* Análisis IA */}
               {iaAnalisis[seleccionado.contacto.id] ? (
                 <div style={{ marginTop: 14, padding: 14, background: "#0a0a0a", borderRadius: 8, border: "1px solid rgba(139,92,246,0.25)" }}>
-                  <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 10, color: "#8b5cf6", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, color: "#8b5cf6", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
                     🤖 Análisis IA
                   </div>
                   <div style={{ fontSize: 12, color: "#d1d5db", lineHeight: 1.6, marginBottom: 8 }}>
                     {iaAnalisis[seleccionado.contacto.id].resumen}
                   </div>
                   <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, padding: 10, marginBottom: 8 }}>
-                    <div style={{ fontSize: 10, color: "#3abab6", fontWeight: 700, marginBottom: 4, fontFamily: "Montserrat,sans-serif", textTransform: "uppercase" }}>Próximo paso</div>
+                    <div style={{ fontSize: 10, color: "#3abab6", fontWeight: 700, marginBottom: 4, fontFamily: "var(--font-display)", textTransform: "uppercase" }}>Próximo paso</div>
                     <div style={{ fontSize: 12, color: "#d1d5db" }}>{iaAnalisis[seleccionado.contacto.id].proximo_paso}</div>
                   </div>
                   {iaAnalisis[seleccionado.contacto.id].riesgo && (
@@ -373,14 +373,14 @@ export default function ScoringPage() {
                       setIaLoading(null);
                     }
                   }}
-                  style={{ width: "100%", marginTop: 12, background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.3)", borderRadius: 6, color: "#8b5cf6", padding: "10px", fontSize: 12, fontWeight: 700, cursor: iaLoading === seleccionado.contacto.id ? "not-allowed" : "pointer", fontFamily: "Montserrat,sans-serif", opacity: iaLoading === seleccionado.contacto.id ? 0.7 : 1 }}>
+                  style={{ width: "100%", marginTop: 12, background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.3)", borderRadius: 6, color: "#8b5cf6", padding: "10px", fontSize: 12, fontWeight: 700, cursor: iaLoading === seleccionado.contacto.id ? "not-allowed" : "pointer", fontFamily: "var(--font-display)", opacity: iaLoading === seleccionado.contacto.id ? 0.7 : 1 }}>
                   {iaLoading === seleccionado.contacto.id ? "Analizando con IA..." : "🤖 Analizar con IA"}
                 </button>
               )}
 
               <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
                 <Link href={`/crm/contactos?id=${seleccionado.contacto.id}`}
-                  style={{ flex: 1, background: "#1f2937", border: "1px solid #374151", borderRadius: 6, color: "#e5e5e5", padding: "8px", fontSize: 12, textDecoration: "none", textAlign: "center" }}>
+                  style={{ flex: 1, background: "var(--gfi-border)", border: "1px solid #374151", borderRadius: 6, color: "#e5e5e5", padding: "8px", fontSize: 12, textDecoration: "none", textAlign: "center" }}>
                   Ver perfil
                 </Link>
                 {seleccionado.contacto.telefono && (

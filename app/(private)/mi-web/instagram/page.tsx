@@ -29,7 +29,7 @@ function EstadoBadge({ estado }: { estado: string }) {
       padding: "2px 9px",
       borderRadius: 12,
       fontSize: 10,
-      fontFamily: "Montserrat,sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       letterSpacing: "0.08em",
       textTransform: "uppercase",
@@ -175,33 +175,33 @@ export default function InstagramPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .ig-wrap { display: flex; flex-direction: column; gap: 20px; }
         .ig-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .ig-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .ig-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
         .ig-titulo span { color: #990000; }
-        .ig-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
-        .ig-btn-nuevo { padding: 10px 20px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
+        .ig-sub { font-size: 13px; color: var(--gfi-text-muted); margin-top: 4px; }
+        .ig-btn-nuevo { padding: 10px 20px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .ig-btn-nuevo:hover { background: #e60000; }
         .ig-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-        .ig-chip { padding: 7px 16px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); transition: all 0.2s; }
+        .ig-chip { padding: 7px 16px; border-radius: 20px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); transition: all 0.2s; }
         .ig-chip.activo { background: rgba(200,0,0,0.1); border-color: rgba(200,0,0,0.4); color: #ff6666; }
-        .ig-chip:hover:not(.activo) { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.7); }
+        .ig-chip:hover:not(.activo) { border-color: var(--gfi-text-dim); color: var(--gfi-text-primary); }
         .ig-lista { display: flex; flex-direction: column; gap: 10px; }
-        .ig-card { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px; display: flex; gap: 14px; align-items: flex-start; transition: border-color 0.2s; }
+        .ig-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 16px; display: flex; gap: 14px; align-items: flex-start; transition: border-color 0.2s; }
         .ig-card:hover { border-color: rgba(200,0,0,0.2); }
-        .ig-thumb { width: 60px; height: 60px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; font-size: 24px; }
+        .ig-thumb { width: 60px; height: 60px; border-radius: 6px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; font-size: 24px; }
         .ig-thumb img { width: 100%; height: 100%; object-fit: cover; }
         .ig-card-body { flex: 1; min-width: 0; }
         .ig-card-contenido { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; }
         .ig-card-meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .ig-card-fecha { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .ig-card-fecha { font-size: 11px; color: var(--gfi-text-muted); font-family: var(--font-display); font-weight: 700; }
         .ig-card-actions { display: flex; gap: 6px; align-items: center; margin-left: auto; flex-shrink: 0; }
-        .ig-btn-sm { padding: 6px 12px; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid; transition: all 0.15s; }
+        .ig-btn-sm { padding: 6px 12px; border-radius: 3px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid; transition: all 0.15s; }
         .ig-btn-pub { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); color: #3abab6; }
         .ig-btn-pub:hover { background: rgba(34,197,94,0.18); }
-        .ig-btn-edit { background: transparent; border-color: rgba(255,255,255,0.14); color: rgba(255,255,255,0.4); }
-        .ig-btn-edit:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+        .ig-btn-edit { background: transparent; border-color: rgba(255,255,255,0.14); color: var(--gfi-text-muted); }
+        .ig-btn-edit:hover { border-color: var(--gfi-text-muted); color: #fff; }
         .ig-btn-del { background: transparent; border-color: rgba(200,0,0,0.18); color: rgba(200,0,0,0.5); }
         .ig-btn-del:hover { background: rgba(200,0,0,0.1); border-color: #ff4444; color: #ff4444; }
-        .ig-empty { padding: 60px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; }
+        .ig-empty { padding: 60px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; font-style: italic; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; }
         .ig-spinner { display: flex; align-items: center; justify-content: center; padding: 60px; }
         .ig-spin { width: 26px; height: 26px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -210,21 +210,21 @@ export default function InstagramPage() {
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 400; padding: 20px; }
         .modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.25); border-radius: 6px; padding: 28px 30px; width: 100%; max-width: 540px; position: relative; max-height: 92vh; overflow-y: auto; }
         .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,transparent,#990000,transparent); border-radius: 6px 6px 0 0; }
-        .modal-titulo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
+        .modal-titulo { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
         .modal-titulo span { color: #990000; }
         .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
-        .field label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
-        .field input, .field select, .field textarea { padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; width: 100%; box-sizing: border-box; }
+        .field label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-muted); }
+        .field input, .field select, .field textarea { padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); transition: border-color 0.2s; width: 100%; box-sizing: border-box; }
         .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(200,0,0,0.4); }
-        .field input::placeholder, .field textarea::placeholder { color: rgba(255,255,255,0.2); }
+        .field input::placeholder, .field textarea::placeholder { color: var(--gfi-text-dim); }
         .field select { background: #0f0f0f; }
         .field textarea { resize: vertical; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 6px; }
-        .btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; color: rgba(255,255,255,0.45); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .btn-save { padding: 9px 22px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px; border-top: 1px solid var(--gfi-border-subtle); margin-top: 6px; }
+        .btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; color: rgba(255,255,255,0.45); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .btn-save { padding: 9px 22px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .btn-save:hover:not(:disabled) { background: #e60000; }
         .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
+        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
         .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; }
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }

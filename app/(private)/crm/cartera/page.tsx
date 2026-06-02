@@ -1263,17 +1263,17 @@ export default function CarteraPage() {
           justify-content: space-between; gap: 12px; flex-wrap: wrap;
           border-bottom: 1px solid #252a35;
         }
-        .cart-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 900; color: #f0f4f8; letter-spacing: -0.01em; }
+        .cart-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 900; color: #f0f4f8; letter-spacing: -0.01em; }
         .cart-titulo span { color: #990000; }
         .cart-stats { display: flex; gap: 20px; }
         .cart-stat { display: flex; flex-direction: column; align-items: center; gap: 1px; }
         .cart-stat-val { font-family: 'JetBrains Mono','Courier New',monospace; font-size: 18px; font-weight: 700; color: #f0f4f8; font-variant-numeric: tabular-nums; }
-        .cart-stat-label { font-size: 8px; color: #4a5568; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+        .cart-stat-label { font-size: 8px; color: #4a5568; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
         .cart-btn-nueva {
           padding: 9px 20px;
           background: linear-gradient(135deg, #990000 0%, #b80000 100%);
           border: none; border-radius: 6px; color: #fff;
-          font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800;
+          font-family: var(--font-display); font-size: 10px; font-weight: 800;
           letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer;
           box-shadow: 0 2px 12px rgba(153,0,0,0.35); transition: all 0.15s;
         }
@@ -1290,14 +1290,14 @@ export default function CarteraPage() {
           padding: 8px 10px 8px 28px;
           background: #111318; border: 1px solid #252a35; border-radius: 6px;
           color: #f0f4f8; font-size: 12px; outline: none;
-          font-family: 'Inter',sans-serif; width: 220px; transition: border-color 0.15s;
+          font-family: var(--font-body); width: 220px; transition: border-color 0.15s;
         }
         .cart-search:focus { border-color: rgba(153,0,0,0.45); box-shadow: 0 0 0 3px rgba(153,0,0,0.08); }
         .cart-search::placeholder { color: #4a5568; }
         .cart-select {
           padding: 7px 28px 7px 10px; background: #111318;
           border: 1px solid #252a35; border-radius: 6px;
-          color: #8892a4; font-size: 11px; font-family: 'Inter',sans-serif;
+          color: #8892a4; font-size: 11px; font-family: var(--font-body);
           outline: none; cursor: pointer; appearance: none;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238892a4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
           background-repeat: no-repeat; background-position: right 10px center;
@@ -1319,21 +1319,21 @@ export default function CarteraPage() {
         .cart-card-foto { width: 210px; min-width: 210px; flex-shrink: 0; position: relative; background: #0d1017; overflow: hidden; min-height: 148px; }
         .cart-card-foto img { width: 100%; height: 100%; object-fit: cover; min-height: 148px; display: block; }
         .cart-card-foto-empty { width: 100%; min-height: 148px; display: flex; align-items: center; justify-content: center; font-size: 36px; color: #1c2030; }
-        .cart-estado-badge { position: absolute; top: 10px; left: 10px; padding: 3px 9px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .cart-estado-badge { position: absolute; top: 10px; left: 10px; padding: 3px 9px; border-radius: 20px; font-family: var(--font-display); font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .cart-foto-count { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.75); color: #8892a4; font-size: 9px; padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 600; backdrop-filter: blur(4px); }
         /* Banner operación sobre la foto (parte inferior) */
-        .cart-op-banner { position: absolute; bottom: 0; left: 0; right: 0; padding: 5px 10px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; }
+        .cart-op-banner { position: absolute; bottom: 0; left: 0; right: 0; padding: 5px 10px; font-family: var(--font-display); font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; }
 
         /* Info principal */
         .cart-card-info { flex: 1; padding: 13px 16px 11px; display: flex; flex-direction: column; gap: 0; min-width: 0; }
         .cart-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
         .cart-card-codigo { font-size: 9px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 600; letter-spacing: 0.08em; margin-bottom: 3px; }
-        .cart-card-titulo { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #f0f4f8; cursor: pointer; line-height: 1.3; transition: color 0.15s; }
+        .cart-card-titulo { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: #f0f4f8; cursor: pointer; line-height: 1.3; transition: color 0.15s; }
         .cart-card-titulo:hover { color: #990000; }
-        .cart-card-tipo { font-size: 11px; color: #8892a4; margin-top: 3px; font-family: 'Inter',sans-serif; }
+        .cart-card-tipo { font-size: 11px; color: #8892a4; margin-top: 3px; font-family: var(--font-body); }
         /* Precio lado derecho */
         .cart-precio-block { text-align: right; flex-shrink: 0; }
-        .cart-precio-op { display: inline-block; font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; margin-bottom: 5px; }
+        .cart-precio-op { display: inline-block; font-size: 8px; font-family: var(--font-display); font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; margin-bottom: 5px; }
         .cart-precio-op-venta { background: rgba(10,61,46,0.40); color: #3abab6; border: 1px solid rgba(58,186,182,0.22); }
         .cart-precio-op-alquiler { background: rgba(10,37,64,0.50); color: #4ab8d8; border: 1px solid rgba(74,184,216,0.22); }
         .cart-precio-op-temporal { background: rgba(196,74,0,0.12); color: #d4960c; border: 1px solid rgba(196,74,0,0.28); }
@@ -1345,24 +1345,24 @@ export default function CarteraPage() {
         .cart-card-dir { font-size: 11px; color: #8892a4; display: flex; align-items: center; gap: 5px; margin: 4px 0 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         /* Specs */
         .cart-card-specs { display: flex; gap: 0; flex-wrap: wrap; margin-bottom: 7px; }
-        .cart-spec-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #8892a4; font-family: 'Inter',sans-serif; padding: 3px 10px 3px 0; border-right: 1px solid #1c2030; margin-right: 10px; }
+        .cart-spec-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #8892a4; font-family: var(--font-body); padding: 3px 10px 3px 0; border-right: 1px solid #1c2030; margin-right: 10px; }
         .cart-spec-item:last-child { border-right: none; }
         /* Chips */
         .cart-card-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
-        .cart-chip { font-size: 8px; padding: 2px 8px; border-radius: 20px; border: 1px solid #252a35; color: #8892a4; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.05em; }
+        .cart-chip { font-size: 8px; padding: 2px 8px; border-radius: 20px; border: 1px solid #252a35; color: #8892a4; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.05em; }
         .cart-chip-v { border-color: rgba(58,186,182,0.25); color: #3abab6; }
         /* Footer */
         .cart-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 8px; border-top: 1px solid #1c2030; }
         .cart-card-fecha { font-size: 9px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; font-variant-numeric: tabular-nums; }
-        .cart-mir-badge { font-size: 8px; padding: 2px 8px; border-radius: 10px; background: rgba(153,0,0,0.10); border: 1px solid rgba(153,0,0,0.25); color: rgba(153,0,0,0.80); font-family: 'Montserrat',sans-serif; font-weight: 700; }
-        .cart-mir-badge-red { display:inline-flex; align-items:center; gap:3px; font-size:8px; padding:2px 7px; border-radius:4px; font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:0.05em; background:rgba(153,0,0,0.12); border:1px solid rgba(153,0,0,0.25); color:rgba(153,0,0,0.8); }
+        .cart-mir-badge { font-size: 8px; padding: 2px 8px; border-radius: 10px; background: rgba(153,0,0,0.10); border: 1px solid rgba(153,0,0,0.25); color: rgba(153,0,0,0.80); font-family: var(--font-display); font-weight: 700; }
+        .cart-mir-badge-red { display:inline-flex; align-items:center; gap:3px; font-size:8px; padding:2px 7px; border-radius:4px; font-family:var(--font-display); font-weight:800; letter-spacing:0.05em; background:rgba(153,0,0,0.12); border:1px solid rgba(153,0,0,0.25); color:rgba(153,0,0,0.8); }
         /* Portal sync pills */
-        .sync-badge { font-size: 8px; padding: 3px 8px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.06em; }
+        .sync-badge { font-size: 8px; padding: 3px 8px; border-radius: 20px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.06em; }
         .sync-badge-tokko { background: rgba(220,38,38,0.10); border: 1px solid rgba(220,38,38,0.22); color: #f87171; }
         .sync-badge-kite  { background: rgba(74,184,216,0.10); border: 1px solid rgba(74,184,216,0.22); color: #4ab8d8; }
         .sync-badge-propia{ background: rgba(58,186,182,0.10); border: 1px solid rgba(58,186,182,0.22); color: #34d399; }
         /* Portal chips (filtros) */
-        .portal-chip { padding: 5px 12px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; border: 1px solid #252a35; background: rgba(255,255,255,0.025); color: #4a5568; transition: all 0.15s; }
+        .portal-chip { padding: 5px 12px; border-radius: 20px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; border: 1px solid #252a35; background: rgba(255,255,255,0.025); color: #4a5568; transition: all 0.15s; }
         .portal-chip:hover { border-color: #333b4d; color: #8892a4; }
         .portal-chip.active-kite { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); color: #4ab8d8; }
         .portal-chip.active-propia { background: rgba(153,0,0,0.12); border-color: rgba(153,0,0,0.4); color: #990000; }
@@ -1370,9 +1370,9 @@ export default function CarteraPage() {
         .portal-chip.active-gfi { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #3abab6; }
         /* Acciones */
         .cart-card-acciones { width: 114px; flex-shrink: 0; padding: 10px 8px; display: flex; flex-direction: column; gap: 4px; border-left: 1px solid #1c2030; background: rgba(0,0,0,0.12); }
-        .cart-acc-btn { padding: 5px 6px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; text-align: center; width: 100%; transition: all 0.12s; }
-        .cart-acc-editar { background: rgba(255,255,255,0.04); border: 1px solid #252a35; color: #8892a4; }
-        .cart-acc-editar:hover { background: rgba(255,255,255,0.08); border-color: #333b4d; color: #f0f4f8; }
+        .cart-acc-btn { padding: 5px 6px; border-radius: 5px; font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; text-align: center; width: 100%; transition: all 0.12s; }
+        .cart-acc-editar { background: var(--gfi-border-subtle); border: 1px solid #252a35; color: #8892a4; }
+        .cart-acc-editar:hover { background: var(--gfi-border); border-color: #333b4d; color: #f0f4f8; }
         .cart-acc-tokko { background: rgba(220,38,38,0.06); border: 1px solid rgba(220,38,38,0.18); color: rgba(220,38,38,0.65); }
         .cart-acc-kite { background: rgba(74,184,216,0.06); border: 1px solid rgba(74,184,216,0.18); color: rgba(74,184,216,0.65); }
         .cart-acc-ambos { background: rgba(58,186,182,0.06); border: 1px solid rgba(58,186,182,0.18); color: rgba(58,186,182,0.65); }
@@ -1380,36 +1380,36 @@ export default function CarteraPage() {
         .cart-acc-eliminar:hover { background: rgba(153,0,0,0.08); border-color: rgba(153,0,0,0.30); color: rgba(153,0,0,0.70); }
         .cart-acc-red { background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.22); color: rgba(153,0,0,0.75); }
         .cart-acc-red.on { background: rgba(153,0,0,0.16); border-color: rgba(153,0,0,0.45); color: #990000; }
-        .cart-estado-select { width: 100%; padding: 4px 5px; background: #0d1017; border: 1px solid #252a35; border-radius: 5px; color: #8892a4; font-size: 9px; font-family: 'Montserrat',sans-serif; outline: none; cursor: pointer; }
-        .cart-empty { padding: 60px 20px; text-align: center; color: #4a5568; font-family: 'Inter',sans-serif; font-size: 13px; line-height: 1.8; }
+        .cart-estado-select { width: 100%; padding: 4px 5px; background: #0d1017; border: 1px solid #252a35; border-radius: 5px; color: #8892a4; font-size: 9px; font-family: var(--font-display); outline: none; cursor: pointer; }
+        .cart-empty { padding: 60px 20px; text-align: center; color: #4a5568; font-family: var(--font-body); font-size: 13px; line-height: 1.8; }
         .cart-empty-ico { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
-        .cart-sync-spinner { display: inline-block; width: 8px; height: 8px; border: 1.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 3px; vertical-align: middle; }
+        .cart-sync-spinner { display: inline-block; width: 8px; height: 8px; border: 1.5px solid var(--gfi-text-muted); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 3px; vertical-align: middle; }
 
         /* ── Wizard overlay ── */
         .wiz-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; z-index: 300; overflow: hidden; backdrop-filter: blur(4px); }
         .wiz-sidebar { width: 260px; flex-shrink: 0; background: #0c0f14; border-right: 1px solid #252a35; display: flex; flex-direction: column; padding: 24px 0; }
-        .wiz-sidebar-title { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 900; color: #f0f4f8; padding: 0 20px 20px; border-bottom: 1px solid #252a35; margin-bottom: 8px; letter-spacing: 0.02em; }
+        .wiz-sidebar-title { font-family: var(--font-display); font-size: 13px; font-weight: 900; color: #f0f4f8; padding: 0 20px 20px; border-bottom: 1px solid #252a35; margin-bottom: 8px; letter-spacing: 0.02em; }
         .wiz-sidebar-title span { color: #990000; }
         .wiz-progress-wrap { padding: 0 20px 16px; }
         .wiz-progress-bar-bg { height: 2px; background: #252a35; border-radius: 2px; overflow: hidden; }
         .wiz-progress-bar { height: 100%; background: linear-gradient(90deg, #990000, #b80000); transition: width 0.3s; box-shadow: 0 0 8px rgba(153,0,0,0.4); }
         .wiz-progress-pct { font-size: 9px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 600; margin-top: 4px; }
         .wiz-step { display: flex; align-items: center; gap: 12px; padding: 10px 20px; cursor: pointer; transition: background 0.12s; }
-        .wiz-step:hover { background: rgba(255,255,255,0.02); }
-        .wiz-step-n { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; flex-shrink: 0; border: 2px solid #252a35; color: #4a5568; transition: all 0.15s; }
+        .wiz-step:hover { background: var(--gfi-bg-secondary); }
+        .wiz-step-n { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 10px; font-weight: 800; flex-shrink: 0; border: 2px solid #252a35; color: #4a5568; transition: all 0.15s; }
         .wiz-step-n.activo { background: linear-gradient(135deg, #990000, #b80000); border-color: #990000; color: #fff; box-shadow: 0 0 12px rgba(153,0,0,0.30); }
         .wiz-step-n.hecho { background: rgba(10,61,46,0.40); border-color: rgba(58,186,182,0.35); color: #3abab6; }
         .wiz-step-info { flex: 1; min-width: 0; }
-        .wiz-step-label { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; color: #4a5568; transition: color 0.12s; }
+        .wiz-step-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: #4a5568; transition: color 0.12s; }
         .wiz-step-label.activo { color: #f0f4f8; }
         .wiz-step-sub { font-size: 9px; color: #2d3748; margin-top: 1px; }
 
         /* ── Wizard content ── */
         .wiz-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #0d1017; }
         .wiz-main-header { padding: 20px 28px 16px; border-bottom: 1px solid #252a35; flex-shrink: 0; background: linear-gradient(90deg, rgba(153,0,0,0.05) 0%, transparent 60%); }
-        .wiz-paso-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.20em; text-transform: uppercase; color: rgba(153,0,0,0.7); margin-bottom: 4px; }
-        .wiz-paso-titulo { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 900; color: #f0f4f8; }
-        .wiz-paso-sub { font-size: 12px; color: #8892a4; margin-top: 3px; font-family: 'Inter',sans-serif; }
+        .wiz-paso-label { font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: 0.20em; text-transform: uppercase; color: rgba(153,0,0,0.7); margin-bottom: 4px; }
+        .wiz-paso-titulo { font-family: var(--font-display); font-size: 22px; font-weight: 900; color: #f0f4f8; }
+        .wiz-paso-sub { font-size: 12px; color: #8892a4; margin-top: 3px; font-family: var(--font-body); }
         .wiz-body { flex: 1; overflow-y: auto; padding: 20px 28px; }
         .wiz-body::-webkit-scrollbar { width: 3px; }
         .wiz-body::-webkit-scrollbar-thumb { background: rgba(153,0,0,0.3); border-radius: 2px; }
@@ -1417,16 +1417,16 @@ export default function CarteraPage() {
 
         /* ── Form elements ── */
         .wiz-section { background: rgba(255,255,255,0.018); border: 1px solid #252a35; border-radius: 8px; padding: 18px 20px; margin-bottom: 14px; }
-        .wiz-section-title { display: flex; align-items: center; gap: 8px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 800; color: #f0f4f8; margin-bottom: 14px; }
+        .wiz-section-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 800; color: #f0f4f8; margin-bottom: 14px; }
         .wiz-section-ico { font-size: 16px; }
         .wiz-field { margin-bottom: 11px; }
-        .wiz-label { display: block; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #4a5568; margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
-        .wiz-input { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; box-sizing: border-box; transition: border-color 0.15s; }
+        .wiz-label { display: block; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #4a5568; margin-bottom: 5px; font-family: var(--font-display); }
+        .wiz-input { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 13px; outline: none; font-family: var(--font-body); box-sizing: border-box; transition: border-color 0.15s; }
         .wiz-input:focus { border-color: rgba(153,0,0,0.45); box-shadow: 0 0 0 3px rgba(153,0,0,0.08); }
         .wiz-input::placeholder { color: #4a5568; }
-        .wiz-select { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.15s; }
+        .wiz-select { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 13px; outline: none; font-family: var(--font-body); transition: border-color 0.15s; }
         .wiz-select:focus { border-color: rgba(153,0,0,0.45); }
-        .wiz-textarea { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 12px; font-family: 'Inter',sans-serif; outline: none; resize: none; box-sizing: border-box; transition: border-color 0.15s; }
+        .wiz-textarea { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 12px; font-family: var(--font-body); outline: none; resize: none; box-sizing: border-box; transition: border-color 0.15s; }
         .wiz-textarea:focus { border-color: rgba(153,0,0,0.45); box-shadow: 0 0 0 3px rgba(153,0,0,0.08); }
         .wiz-textarea::placeholder { color: #4a5568; }
         .wiz-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -1438,14 +1438,14 @@ export default function CarteraPage() {
         .wiz-check-item.on { background: rgba(153,0,0,0.08); border-color: rgba(153,0,0,0.22); }
         .wiz-check-box { width: 15px; height: 15px; border-radius: 3px; border: 2px solid #252a35; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.12s; }
         .wiz-check-box.on { background: linear-gradient(135deg, #990000, #b80000); border-color: #990000; }
-        .wiz-check-label { font-size: 11px; color: #8892a4; font-family: 'Inter',sans-serif; }
+        .wiz-check-label { font-size: 11px; color: #8892a4; font-family: var(--font-body); }
         .wiz-check-item.on .wiz-check-label { color: #f0f4f8; }
 
         /* ── Fotos ── */
         .foto-upload-area { border: 2px dashed #252a35; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.15s; position: relative; margin-bottom: 10px; background: rgba(255,255,255,0.012); }
         .foto-upload-area:hover { border-color: rgba(153,0,0,0.35); background: rgba(153,0,0,0.03); }
         .foto-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-        .foto-upload-txt { font-size: 12px; color: #8892a4; font-family: 'Inter',sans-serif; }
+        .foto-upload-txt { font-size: 12px; color: #8892a4; font-family: var(--font-body); }
         .foto-upload-sub { font-size: 10px; color: #4a5568; margin-top: 3px; }
         .fotos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 6px; margin-bottom: 10px; }
         .foto-thumb { position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #0d1017; border: 1px solid #252a35; }
@@ -1464,21 +1464,21 @@ export default function CarteraPage() {
         .video-preview iframe { width: 100%; height: 100%; border: none; }
 
         /* ── Nav wizard ── */
-        .wiz-btn-prev { padding: 8px 20px; background: transparent; border: 1px solid #252a35; border-radius: 6px; color: #8892a4; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+        .wiz-btn-prev { padding: 8px 20px; background: transparent; border: 1px solid #252a35; border-radius: 6px; color: #8892a4; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
         .wiz-btn-prev:hover { border-color: #333b4d; color: #f0f4f8; }
-        .wiz-btn-next { padding: 8px 24px; background: linear-gradient(135deg, #990000 0%, #b80000 100%); border: none; border-radius: 6px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 12px rgba(153,0,0,0.35); transition: all 0.15s; }
+        .wiz-btn-next { padding: 8px 24px; background: linear-gradient(135deg, #990000 0%, #b80000 100%); border: none; border-radius: 6px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 12px rgba(153,0,0,0.35); transition: all 0.15s; }
         .wiz-btn-next:hover:not(:disabled) { box-shadow: 0 4px 20px rgba(153,0,0,0.50); transform: translateY(-1px); }
         .wiz-btn-next:disabled { opacity: 0.40; cursor: not-allowed; transform: none; box-shadow: none; }
         .wiz-btn-cerrar { position: absolute; top: 16px; right: 16px; background: none; border: 1px solid #252a35; border-radius: 6px; color: #4a5568; font-size: 18px; cursor: pointer; z-index: 10; padding: 4px 8px; transition: all 0.15s; }
         .wiz-btn-cerrar:hover { color: #f0f4f8; border-color: #333b4d; }
-        .wiz-mir-info { background: rgba(153,0,0,0.05); border: 1px solid rgba(153,0,0,0.15); border-radius: 6px; padding: 10px 12px; font-size: 11px; color: #8892a4; font-family: 'Inter',sans-serif; line-height: 1.5; margin-bottom: 14px; }
+        .wiz-mir-info { background: rgba(153,0,0,0.05); border: 1px solid rgba(153,0,0,0.15); border-radius: 6px; padding: 10px 12px; font-size: 11px; color: #8892a4; font-family: var(--font-body); line-height: 1.5; margin-bottom: 14px; }
         .wiz-mir-info strong { color: rgba(153,0,0,0.80); }
-        .cart-spinner { display: inline-block; width: 9px; height: 9px; border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
+        .cart-spinner { display: inline-block; width: 9px; height: 9px; border: 2px solid var(--gfi-text-dim); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
       {toastGuardado && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "rgba(10,61,46,0.95)", color: "#3abab6", border: "1px solid rgba(58,186,182,0.30)", padding: "12px 24px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, zIndex: 9999, boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(58,186,182,0.15)", backdropFilter: "blur(8px)" }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "rgba(10,61,46,0.95)", color: "#3abab6", border: "1px solid rgba(58,186,182,0.30)", padding: "12px 24px", borderRadius: 10, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, zIndex: 9999, boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(58,186,182,0.15)", backdropFilter: "blur(8px)" }}>
           {toastGuardado}
         </div>
       )}
@@ -1501,15 +1501,15 @@ export default function CarteraPage() {
               { href: "/crm/cartera/mapa",       label: "Mapa" },
               { href: "/crm/cartera/parametros", label: "Params" },
             ].map(({ href, label }) => (
-              <Link key={href} href={href} style={{ padding: "6px 12px", background: "rgba(255,255,255,0.035)", border: "1px solid #252a35", borderRadius: 6, color: "#8892a4", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}
+              <Link key={href} href={href} style={{ padding: "6px 12px", background: "rgba(255,255,255,0.035)", border: "1px solid #252a35", borderRadius: 6, color: "#8892a4", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}
                 onMouseEnter={e => { e.currentTarget.style.color = "#f0f4f8"; e.currentTarget.style.borderColor = "#333b4d"; }}
                 onMouseLeave={e => { e.currentTarget.style.color = "#8892a4"; e.currentTarget.style.borderColor = "#252a35"; }}
               >{label}</Link>
             ))}
-            <button style={{ padding: "6px 12px", background: "rgba(255,255,255,0.035)", border: "1px solid #252a35", borderRadius: 6, color: "#8892a4", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setXlsxNombre(""); setTabImport("url"); }}>Importar</button>
-            <button style={{ padding: "6px 12px", background: "rgba(255,255,255,0.035)", border: "1px solid #252a35", borderRadius: 6, color: "#8892a4", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => { if (!userId) return; const { data: { session } } = await supabase.auth.getSession(); const res = await fetch(`/api/cartera/export-csv?perfil_id=${userId}`, { headers: { Authorization: `Bearer ${session?.access_token}` } }); if (!res.ok) return; const blob = await res.blob(); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `cartera-gfi-${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url); }}>CSV</button>
+            <button style={{ padding: "6px 12px", background: "rgba(255,255,255,0.035)", border: "1px solid #252a35", borderRadius: 6, color: "#8892a4", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => { setMostrarImportar(true); setImportError(""); setImportResult(null); setUrlImport(""); setCsvTexto(""); setXlsxNombre(""); setTabImport("url"); }}>Importar</button>
+            <button style={{ padding: "6px 12px", background: "rgba(255,255,255,0.035)", border: "1px solid #252a35", borderRadius: 6, color: "#8892a4", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => { if (!userId) return; const { data: { session } } = await supabase.auth.getSession(); const res = await fetch(`/api/cartera/export-csv?perfil_id=${userId}`, { headers: { Authorization: `Bearer ${session?.access_token}` } }); if (!res.ok) return; const blob = await res.blob(); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `cartera-gfi-${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url); }}>CSV</button>
             <button className="cart-btn-nueva" onClick={abrirNueva}>+ Nueva</button>
-            <button style={{ padding: "6px 12px", background: "rgba(196,74,0,0.08)", border: "1px solid rgba(196,74,0,0.22)", borderRadius: 6, color: "#c44a00", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => {
+            <button style={{ padding: "6px 12px", background: "rgba(196,74,0,0.08)", border: "1px solid rgba(196,74,0,0.22)", borderRadius: 6, color: "#c44a00", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }} onClick={async () => {
               const { data: { session } } = await supabase.auth.getSession();
               const res = await fetch("/api/cartera/diagnostico", { headers: { "Authorization": `Bearer ${session?.access_token}` } });
               const d = await res.json();
@@ -1534,7 +1534,7 @@ export default function CarteraPage() {
               }}
               style={{
                 padding: "11px 18px", background: "none", border: "none", cursor: "pointer",
-                fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+                fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
                 color: fuenteActiva === tab.id ? "#f0f4f8" : "#4a5568",
                 borderBottom: fuenteActiva === tab.id ? "2px solid #990000" : "2px solid transparent",
                 marginBottom: -1, transition: "all 0.15s",
@@ -1543,7 +1543,7 @@ export default function CarteraPage() {
             >
               {tab.label}
               {tab.count !== null && tab.count > 0 && (
-                <span style={{ marginLeft: 6, fontSize: 9, background: fuenteActiva === tab.id ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.05)", borderRadius: 10, padding: "1px 7px", color: fuenteActiva === tab.id ? "#990000" : "#4a5568", fontFamily: "'JetBrains Mono','Courier New',monospace" }}>
+                <span style={{ marginLeft: 6, fontSize: 9, background: fuenteActiva === tab.id ? "rgba(153,0,0,0.15)" : "var(--gfi-border-subtle)", borderRadius: 10, padding: "1px 7px", color: fuenteActiva === tab.id ? "#990000" : "#4a5568", fontFamily: "'JetBrains Mono','Courier New',monospace" }}>
                   {tab.count.toLocaleString("es-AR")}
                 </span>
               )}
@@ -1583,32 +1583,32 @@ export default function CarteraPage() {
             placeholder="Precio mín"
             value={filtroPrecioMin}
             onChange={e => setFiltroPrecioMin(e.target.value)}
-            style={{width:90,padding:"7px 8px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:"rgba(255,255,255,0.6)",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none"}}
+            style={{width:90,padding:"7px 8px",background:"var(--gfi-border-subtle)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:"var(--gfi-text-secondary)",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none"}}
           />
           <input
             placeholder="Precio máx"
             value={filtroPrecioMax}
             onChange={e => setFiltroPrecioMax(e.target.value)}
-            style={{width:90,padding:"7px 8px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:"rgba(255,255,255,0.6)",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none"}}
+            style={{width:90,padding:"7px 8px",background:"var(--gfi-border-subtle)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:"var(--gfi-text-secondary)",fontSize:12,fontFamily:"Inter,sans-serif",outline:"none"}}
           />
           <button
             onClick={() => setFiltroSoloWeb(v => !v)}
-            style={{padding:"7px 10px",background:filtroSoloWeb?"rgba(59,130,246,0.12)":"rgba(255,255,255,0.04)",border:filtroSoloWeb?"1px solid rgba(59,130,246,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroSoloWeb?"#4ab8d8":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
+            style={{padding:"7px 10px",background:filtroSoloWeb?"rgba(59,130,246,0.12)":"var(--gfi-border-subtle)",border:filtroSoloWeb?"1px solid rgba(59,130,246,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroSoloWeb?"#4ab8d8":"var(--gfi-text-muted)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
             title="Mostrar solo propiedades publicadas en el sitio web"
           >🌐 Web</button>
           <button
             onClick={() => setFiltroConLeads(v => !v)}
-            style={{padding:"7px 10px",background:filtroConLeads?"rgba(153,0,0,0.12)":"rgba(255,255,255,0.04)",border:filtroConLeads?"1px solid rgba(153,0,0,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroConLeads?"#990000":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
+            style={{padding:"7px 10px",background:filtroConLeads?"rgba(153,0,0,0.12)":"var(--gfi-border-subtle)",border:filtroConLeads?"1px solid rgba(153,0,0,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroConLeads?"#990000":"var(--gfi-text-muted)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
             title="Mostrar solo propiedades que recibieron leads"
           >✉ Con leads</button>
           {(filtroOp || filtroTipo || filtroEstado || busqueda || filtroPrecioMin || filtroPrecioMax || filtroSoloWeb || filtroConLeads || filtroPortal) && (
-            <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); setFiltroPrecioMin(""); setFiltroPrecioMax(""); setFiltroSoloWeb(false); setFiltroConLeads(false); setFiltroPortal(""); }}>✕ Limpiar</button>
+            <button style={{background:"none",border:"none",color:"var(--gfi-text-muted)",cursor:"pointer",fontSize:11}} onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroEstado(""); setFiltroPrecioMin(""); setFiltroPrecioMax(""); setFiltroSoloWeb(false); setFiltroConLeads(false); setFiltroPortal(""); }}>✕ Limpiar</button>
           )}
           <span className="cart-count">{filtradas.length} propiedades</span>
 
           {/* Segunda fila: filtro por portal con contadores */}
           <div style={{ flexBasis: "100%", width: "100%", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 10, marginTop: 2, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-            <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginRight: 4 }}>Red/Portal</span>
+            <span style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", color: "var(--gfi-text-muted)", textTransform: "uppercase", marginRight: 4 }}>Red/Portal</span>
             {[
               { id: "",         label: "Todos",      count: propiedades.length },
               { id: "gfi",      label: "Solo GFI",   count: propiedades.filter(p => !p.kiteprop_id && !p.propia_id && !syncData[p.id]?.tokko_id && !syncData[p.id]?.kiteprop_id).length },
@@ -1622,7 +1622,7 @@ export default function CarteraPage() {
                 <button key={chip.id} className={`portal-chip ${isActive ? activeClass : ""}`} onClick={() => setFiltroPortal(chip.id)}
                   style={{ display: "flex", alignItems: "center", gap: 5 }}>
                   {chip.label}
-                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 18, height: 16, borderRadius: 8, padding: "0 4px", fontSize: 9, fontWeight: 800, background: isActive ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)", color: isActive ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 18, height: 16, borderRadius: 8, padding: "0 4px", fontSize: 9, fontWeight: 800, background: isActive ? "var(--gfi-text-dim)" : "var(--gfi-border)", color: isActive ? "#fff" : "var(--gfi-text-secondary)" }}>
                     {chip.count}
                   </span>
                 </button>
@@ -1635,19 +1635,19 @@ export default function CarteraPage() {
         {/* Alertas de Autorizaciones de Venta */}
         {!loading && alertasAutorizacion.length > 0 && (
           <div style={{ margin: "10px 0 0", padding: "14px 18px", background: "rgba(234,179,8,0.05)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 6 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#d4960c", marginBottom: 10 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#d4960c", marginBottom: 10 }}>
               ⚠️ Autorizaciones de Venta próximas a vencer
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {alertasAutorizacion.map(p => (
                 <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {p.titulo || p.direccion || "Propiedad sin título"}
                   </span>
-                  <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: p.diasCI <= 0 ? "#ff4444" : p.diasCI <= 7 ? "#ff8800" : "#d4960c", whiteSpace: "nowrap" }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: p.diasCI <= 0 ? "#ff4444" : p.diasCI <= 7 ? "#ff8800" : "#d4960c", whiteSpace: "nowrap" }}>
                     {p.diasCI <= 0 ? `VENCIDA hace ${Math.abs(p.diasCI)} días` : `Vence en ${p.diasCI} días`}
                   </span>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
+                  <span style={{ fontSize: 10, color: "var(--gfi-text-dim)" }}>
                     {p.ci_fecha_vencimiento ? new Date(p.ci_fecha_vencimiento).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""}
                   </span>
                 </div>
@@ -1659,19 +1659,19 @@ export default function CarteraPage() {
         {/* Alertas de Exclusividad próximas a vencer */}
         {!loading && alertasExclusividad.length > 0 && (
           <div style={{ margin: "10px 0 0", padding: "14px 18px", background: "rgba(168,85,247,0.05)", border: "1px solid rgba(168,85,247,0.2)", borderRadius: 6 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#a855f7", marginBottom: 10 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#a855f7", marginBottom: 10 }}>
               🔑 Exclusividades próximas a vencer
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {alertasExclusividad.map(p => (
                 <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {p.titulo || p.direccion || "Propiedad sin título"}
                   </span>
-                  <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: p.diasExcl <= 0 ? "#ff4444" : p.diasExcl <= 7 ? "#ff8800" : "#a855f7", whiteSpace: "nowrap" }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, color: p.diasExcl <= 0 ? "#ff4444" : p.diasExcl <= 7 ? "#ff8800" : "#a855f7", whiteSpace: "nowrap" }}>
                     {p.diasExcl <= 0 ? `VENCIDA hace ${Math.abs(p.diasExcl)} días` : `Vence en ${p.diasExcl} días`}
                   </span>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
+                  <span style={{ fontSize: 10, color: "var(--gfi-text-dim)" }}>
                     {p.fecha_fin_exclusividad ? new Date(p.fecha_fin_exclusividad).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""}
                   </span>
                 </div>
@@ -1725,7 +1725,7 @@ export default function CarteraPage() {
                         {p.codigo && <div className="cart-card-codigo"># {p.codigo}</div>}
                         <div className="cart-card-titulo" onClick={() => abrirEditar(p)}>{p.titulo}</div>
                         <div className="cart-card-tipo">
-                          {p.tipo}{p.zona ? <> · <span style={{color:"rgba(255,255,255,0.25)"}}>{p.zona}</span></> : ""}
+                          {p.tipo}{p.zona ? <> · <span style={{color:"var(--gfi-text-dim)"}}>{p.zona}</span></> : ""}
                         </div>
                       </div>
                       <div className="cart-precio-block">
@@ -1769,7 +1769,7 @@ export default function CarteraPage() {
                         {p.compartir_en_red && <span className="cart-mir-badge-red">🌐 Red GFI</span>}
                         {p.publicada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 8px",background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",borderRadius:4,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#4ab8d8"}}>🌐 WEB</span>}
                         {p.destacada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 8px",background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.3)",borderRadius:4,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#d4960c"}}>⭐ DEST.</span>}
-                        {(p.vistas ?? 0) > 0 && <span style={{fontSize:9,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>👁 {p.vistas}</span>}
+                        {(p.vistas ?? 0) > 0 && <span style={{fontSize:9,color:"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>👁 {p.vistas}</span>}
                         {(p.leads_count ?? 0) > 0 && <span style={{fontSize:9,color:"#990000",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>✉ {p.leads_count}</span>}
                       </div>
                       <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"flex-end"}}>
@@ -1781,7 +1781,7 @@ export default function CarteraPage() {
                   </div>
                   <div className="cart-card-acciones">
                     <button className="cart-acc-btn cart-acc-editar" onClick={() => abrirEditar(p)}>Editar</button>
-                    <a href={`/crm/cartera/ficha/${p.id}`} target="_blank" rel="noopener noreferrer" className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.45)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}}>📄 Ficha</a>
+                    <a href={`/crm/cartera/ficha/${p.id}`} target="_blank" rel="noopener noreferrer" className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.45)",background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}}>📄 Ficha</a>
                     <button className="cart-acc-btn" title="Copiar link de ficha pública para compartir con clientes" style={{background:"rgba(234,179,8,0.07)",border:"1px solid rgba(234,179,8,0.2)",color:"#d4960c"}} onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/inmueble/${p.id}`).catch(()=>{}); setToastGuardado("Link público copiado"); setTimeout(()=>setToastGuardado(""),2500); }}>🔗 Pública</button>
                     <button className="cart-acc-btn" onClick={() => compartirWhatsApp(p)} title="Compartir por WhatsApp" style={{background:"rgba(34,197,94,0.07)",border:"1px solid rgba(34,197,94,0.15)",color:"#3abab6"}}>📲 WA</button>
                     <button className="cart-acc-btn" onClick={() => generarPostRRSS(p)} disabled={generandoPost === p.id} title="Generar post para Instagram/Facebook con IA" style={{background:"rgba(168,85,247,0.07)",border:"1px solid rgba(168,85,247,0.15)",color:"#a855f7"}}>{generandoPost === p.id ? "..." : "🎯 Post"}</button>
@@ -1795,7 +1795,7 @@ export default function CarteraPage() {
                       title={p.publicada_web ? "Quitar del sitio web" : "Publicar en el sitio web"}
                       style={p.publicada_web
                         ? {background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",color:"#4ab8d8"}
-                        : {background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.35)"}}
+                        : {background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",color:"var(--gfi-text-muted)"}}
                     >
                       {p.publicada_web ? "🌐 En Web" : "🌐 Web"}
                     </button>
@@ -1806,7 +1806,7 @@ export default function CarteraPage() {
                         title={p.destacada_web ? "Quitar de destacadas" : "Destacar en el sitio web"}
                         style={p.destacada_web
                           ? {background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.35)",color:"#d4960c"}
-                          : {background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.25)"}}
+                          : {background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",color:"var(--gfi-text-dim)"}}
                       >
                         {p.destacada_web ? "⭐ Destacada" : "⭐ Destacar"}
                       </button>
@@ -1865,7 +1865,7 @@ export default function CarteraPage() {
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
               <button
                 onClick={() => { setPortalesActivosExt([]); cargarExternas([], 1, filtroOpExt, filtroTipoExt, busquedaExt); }}
-                style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${portalesActivosExt.length === 0 ? "rgba(200,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: portalesActivosExt.length === 0 ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.04)", color: portalesActivosExt.length === 0 ? "#990000" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${portalesActivosExt.length === 0 ? "rgba(200,0,0,0.5)" : "var(--gfi-border)"}`, background: portalesActivosExt.length === 0 ? "rgba(200,0,0,0.12)" : "var(--gfi-border-subtle)", color: portalesActivosExt.length === 0 ? "#990000" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700 }}
               >
                 Todos ({Object.values(porPortalExt).reduce((a, b) => a + b, 0).toLocaleString("es-AR")})
               </button>
@@ -1881,7 +1881,7 @@ export default function CarteraPage() {
                       setPortalesActivosExt(next);
                       cargarExternas(next, 1, filtroOpExt, filtroTipoExt, busquedaExt);
                     }}
-                    style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${activo ? p.color + "60" : sinDatos ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.08)"}`, background: activo ? p.bg : "rgba(255,255,255,0.03)", color: activo ? p.color : sinDatos ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, transition: "all 0.15s" }}
+                    style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${activo ? p.color + "60" : sinDatos ? "var(--gfi-border-subtle)" : "var(--gfi-border)"}`, background: activo ? p.bg : "var(--gfi-bg-card)", color: activo ? p.color : sinDatos ? "var(--gfi-text-dim)" : "var(--gfi-text-muted)", cursor: "pointer", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, transition: "all 0.15s" }}
                   >
                     {p.label}{sinDatos ? <span style={{ marginLeft: 3, fontSize: 8, opacity: 0.5 }}>·</span> : <span style={{ fontSize: 9, marginLeft: 4, opacity: 0.7 }}>{count}</span>}
                   </button>
@@ -1913,7 +1913,7 @@ export default function CarteraPage() {
                     setSincronizandoExt(false);
                   }}
                   disabled={sincronizandoExt}
-                  style={{ marginLeft: "auto", padding: "6px 16px", borderRadius: 4, background: sincronizandoExt ? "rgba(200,0,0,0.06)" : "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", color: "#990000", cursor: sincronizandoExt ? "wait" : "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                  style={{ marginLeft: "auto", padding: "6px 16px", borderRadius: 4, background: sincronizandoExt ? "rgba(200,0,0,0.06)" : "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", color: "#990000", cursor: sincronizandoExt ? "wait" : "pointer", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700 }}
                 >
                   {sincronizandoExt ? "⏳ Sincronizando..." : "↻ Sincronizar"}
                 </button>
@@ -1964,7 +1964,7 @@ export default function CarteraPage() {
                     }
                     alert(`⚠️ El constraint de portales está incompleto.\nPortales bloqueados: ${portalesFail.join(", ")}\n\n${sql ? "✅ El SQL fue copiado al portapapeles.\n\n" : ""}PASOS:\n1. Ir a Supabase → SQL Editor\n2. Pegar y ejecutar:\n\n${sql}\n\n3. Volver y hacer clic en ↻ Sincronizar`);
                   }}
-                  style={{ padding: "6px 12px", borderRadius: 4, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                  style={{ padding: "6px 12px", borderRadius: 4, background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}
                   title="Diagnosticar y reparar sync"
                 >🔧</button>
               )}
@@ -1976,15 +1976,15 @@ export default function CarteraPage() {
                 placeholder="🔍 Buscar..."
                 value={busquedaExt}
                 onChange={e => { setBusquedaExt(e.target.value); cargarExternas(portalesActivosExt, 1, filtroOpExt, filtroTipoExt, e.target.value); }}
-                style={{ padding: "7px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 200 }}
+                style={{ padding: "7px 10px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 200 }}
               />
-              <select value={filtroOpExt} onChange={e => { setFiltroOpExt(e.target.value); cargarExternas(portalesActivosExt, 1, e.target.value, filtroTipoExt, busquedaExt); }} style={{ padding: "7px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
+              <select value={filtroOpExt} onChange={e => { setFiltroOpExt(e.target.value); cargarExternas(portalesActivosExt, 1, e.target.value, filtroTipoExt, busquedaExt); }} style={{ padding: "7px 10px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "var(--gfi-text-secondary)", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
                 <option value="">Operación</option>
                 <option value="venta">Venta</option>
                 <option value="alquiler">Alquiler</option>
                 <option value="alquiler_temporal">Alquiler temporal</option>
               </select>
-              <select value={filtroTipoExt} onChange={e => { setFiltroTipoExt(e.target.value); cargarExternas(portalesActivosExt, 1, filtroOpExt, e.target.value, busquedaExt); }} style={{ padding: "7px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
+              <select value={filtroTipoExt} onChange={e => { setFiltroTipoExt(e.target.value); cargarExternas(portalesActivosExt, 1, filtroOpExt, e.target.value, busquedaExt); }} style={{ padding: "7px 10px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "var(--gfi-text-secondary)", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
                 <option value="">Tipo</option>
                 <option value="departamento">Departamento</option>
                 <option value="casa">Casa</option>
@@ -1994,15 +1994,15 @@ export default function CarteraPage() {
                 <option value="terreno">Terreno</option>
               </select>
               {syncResExt && <span style={{ fontSize: 10, color: syncResExt.startsWith("✓") ? "#3abab6" : "#b80000", alignSelf: "center", fontFamily: "Inter,sans-serif", maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={syncResExt}>{syncResExt}</span>}
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", alignSelf: "center", marginLeft: "auto" }}>{totalExternas.toLocaleString("es-AR")} propiedades</span>
+              <span style={{ fontSize: 11, color: "var(--gfi-text-dim)", alignSelf: "center", marginLeft: "auto" }}>{totalExternas.toLocaleString("es-AR")} propiedades</span>
               {ultimaSyncExt && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.18)", alignSelf: "center" }}>Sync: {new Date(ultimaSyncExt).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>}
             </div>
             {/* Errores de sync por portal */}
             {syncResultados && Object.entries(syncResultados).some(([, r]: any) => r.error) && (
               <div style={{ marginBottom: 12, padding: "10px 14px", background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 6 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#b80000", fontFamily: "Montserrat,sans-serif", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>⚠ Errores en sync</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#b80000", fontFamily: "var(--font-display)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>⚠ Errores en sync</div>
                 {Object.entries(syncResultados).filter(([, r]: any) => r.error).map(([portal, r]: any) => (
-                  <div key={portal} style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif", marginBottom: 3 }}>
+                  <div key={portal} style={{ fontSize: 10, color: "var(--gfi-text-secondary)", fontFamily: "Inter,sans-serif", marginBottom: 3 }}>
                     <span style={{ color: "#f87171", fontWeight: 600 }}>{portal}:</span> {r.error}
                   </div>
                 ))}
@@ -2010,7 +2010,7 @@ export default function CarteraPage() {
             )}
             {/* Cards */}
             {loadingExternas ? (
-              <div style={{ padding: "40px 20px", textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Cargando propiedades...</div>
+              <div style={{ padding: "40px 20px", textAlign: "center", color: "var(--gfi-text-dim)", fontSize: 13 }}>Cargando propiedades...</div>
             ) : propsExternas.length === 0 ? (
               <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.18)", fontSize: 13, lineHeight: 2 }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🏙️</div>
@@ -2065,7 +2065,7 @@ export default function CarteraPage() {
                         <div className="cart-card-info">
                           <div className="cart-card-top">
                             <div style={{ minWidth: 0, flex: 1 }}>
-                              {tipoLabel && <div className="cart-card-tipo">{tipoLabel}{p.zona ? <> · <span style={{ color: "rgba(255,255,255,0.25)" }}>{p.zona}</span></> : ""}</div>}
+                              {tipoLabel && <div className="cart-card-tipo">{tipoLabel}{p.zona ? <> · <span style={{ color: "var(--gfi-text-dim)" }}>{p.zona}</span></> : ""}</div>}
                               <div className="cart-card-titulo" style={{ fontSize: 14, marginTop: 2 }}>
                                 {p.titulo || p.direccion || "Sin título"}
                               </div>
@@ -2091,7 +2091,7 @@ export default function CarteraPage() {
                             {p.url_portal && (
                               <a href={p.url_portal} target="_blank" rel="noopener noreferrer"
                                 onClick={e => e.stopPropagation()}
-                                style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", padding: "2px 8px", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 3 }}>
+                                style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, textDecoration: "none", padding: "2px 8px", border: "1px solid var(--gfi-border)", borderRadius: 3 }}>
                                 Ver en portal ↗
                               </a>
                             )}
@@ -2104,9 +2104,9 @@ export default function CarteraPage() {
                 {/* Paginación */}
                 {totalExternas > 24 && (
                   <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
-                    <button onClick={() => { const p = Math.max(1, paginaExt - 1); setPaginaExt(p); cargarExternas(portalesActivosExt, p, filtroOpExt, filtroTipoExt, busquedaExt); }} disabled={paginaExt <= 1} style={{ padding: "7px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 11 }}>← Anterior</button>
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", alignSelf: "center" }}>Página {paginaExt} de {Math.ceil(totalExternas / 24)}</span>
-                    <button onClick={() => { const p = paginaExt + 1; setPaginaExt(p); cargarExternas(portalesActivosExt, p, filtroOpExt, filtroTipoExt, busquedaExt); }} disabled={paginaExt >= Math.ceil(totalExternas / 24)} style={{ padding: "7px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 11 }}>Siguiente →</button>
+                    <button onClick={() => { const p = Math.max(1, paginaExt - 1); setPaginaExt(p); cargarExternas(portalesActivosExt, p, filtroOpExt, filtroTipoExt, busquedaExt); }} disabled={paginaExt <= 1} style={{ padding: "7px 14px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "var(--gfi-text-secondary)", cursor: "pointer", fontSize: 11 }}>← Anterior</button>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", alignSelf: "center" }}>Página {paginaExt} de {Math.ceil(totalExternas / 24)}</span>
+                    <button onClick={() => { const p = paginaExt + 1; setPaginaExt(p); cargarExternas(portalesActivosExt, p, filtroOpExt, filtroTipoExt, busquedaExt); }} disabled={paginaExt >= Math.ceil(totalExternas / 24)} style={{ padding: "7px 14px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 4, color: "var(--gfi-text-secondary)", cursor: "pointer", fontSize: 11 }}>Siguiente →</button>
                   </div>
                 )}
               </>
@@ -2185,7 +2185,7 @@ export default function CarteraPage() {
                       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                         {ESTADOS.map(s => (
                           <button key={s.value} type="button"
-                            style={{padding:"6px 14px",borderRadius:4,border:`2px solid ${form.estado===s.value?s.color:"rgba(255,255,255,0.1)"}`,background:form.estado===s.value?`${s.color}20`:"transparent",color:form.estado===s.value?s.color:"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
+                            style={{padding:"6px 14px",borderRadius:4,border:`2px solid ${form.estado===s.value?s.color:"var(--gfi-border)"}`,background:form.estado===s.value?`${s.color}20`:"transparent",color:form.estado===s.value?s.color:"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
                             onClick={() => setF("estado", s.value)}>{s.label}</button>
                         ))}
                       </div>
@@ -2243,7 +2243,7 @@ export default function CarteraPage() {
                         <div style={{display:"flex",gap:6}}>
                           {OPERACIONES.map(o => (
                             <button key={o} type="button"
-                              style={{padding:"6px 12px",borderRadius:3,border:`1px solid ${form.operacion===o?"#990000":"rgba(255,255,255,0.1)"}`,background:form.operacion===o?"rgba(200,0,0,0.1)":"transparent",color:form.operacion===o?"#fff":"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
+                              style={{padding:"6px 12px",borderRadius:3,border:`1px solid ${form.operacion===o?"#990000":"var(--gfi-border)"}`,background:form.operacion===o?"rgba(200,0,0,0.1)":"transparent",color:form.operacion===o?"#fff":"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
                               onClick={() => setF("operacion", o)}>{o}</button>
                           ))}
                         </div>
@@ -2362,12 +2362,12 @@ export default function CarteraPage() {
                       type="button"
                       onClick={geocodificar}
                       disabled={geocodificando || (!form.direccion && !form.ciudad)}
-                      style={{ padding: "8px 16px", background: geocodificando ? "rgba(255,255,255,0.05)" : "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 4, color: geocodificando ? "rgba(255,255,255,0.3)" : "#990000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: geocodificando ? "not-allowed" : "pointer", letterSpacing: "0.1em", textTransform: "uppercase" }}
+                      style={{ padding: "8px 16px", background: geocodificando ? "var(--gfi-border-subtle)" : "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 4, color: geocodificando ? "var(--gfi-text-muted)" : "#990000", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: geocodificando ? "not-allowed" : "pointer", letterSpacing: "0.1em", textTransform: "uppercase" }}
                     >
                       {geocodificando ? "Buscando..." : "📍 Geocodificar desde dirección"}
                     </button>
                     {form.latitud && form.longitud && (
-                      <div style={{ marginTop: 10, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <div style={{ marginTop: 10, borderRadius: 6, overflow: "hidden", border: "1px solid var(--gfi-border)" }}>
                         <iframe
                           src={`https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(form.longitud) - 0.008},${parseFloat(form.latitud) - 0.005},${parseFloat(form.longitud) + 0.008},${parseFloat(form.latitud) + 0.005}&layer=mapnik&marker=${form.latitud},${form.longitud}`}
                           style={{ width: "100%", height: 200, border: "none", display: "block", filter: "invert(0.88) hue-rotate(180deg)" }}
@@ -2492,10 +2492,10 @@ export default function CarteraPage() {
                     <div className="wiz-field">
                       {/* IA Descripción */}
                       <div style={{marginBottom:10,padding:"10px 12px",background:"rgba(153,0,0,0.06)",border:"1px solid rgba(153,0,0,0.15)",borderRadius:8}}>
-                        <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginBottom:8,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em"}}>🤖 GENERAR CON IA</div>
+                        <div style={{fontSize:11,color:"var(--gfi-text-secondary)",marginBottom:8,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em"}}>🤖 GENERAR CON IA</div>
                         <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
                           {(["profesional","premium","amigable","vendedor"] as const).map(t => (
-                            <button key={t} onClick={() => setTonoDesc(t)} type="button" style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,textTransform:"capitalize",background:tonoDesc===t?"rgba(153,0,0,0.2)":"rgba(255,255,255,0.05)",color:tonoDesc===t?"#ff6666":"rgba(255,255,255,0.4)",outline:tonoDesc===t?"1px solid rgba(153,0,0,0.3)":"none"}}>
+                            <button key={t} onClick={() => setTonoDesc(t)} type="button" style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,textTransform:"capitalize",background:tonoDesc===t?"rgba(153,0,0,0.2)":"var(--gfi-border-subtle)",color:tonoDesc===t?"#ff6666":"var(--gfi-text-muted)",outline:tonoDesc===t?"1px solid rgba(153,0,0,0.3)":"none"}}>
                               {t}
                             </button>
                           ))}
@@ -2522,7 +2522,7 @@ export default function CarteraPage() {
                     <div className="wiz-field">
                       <label className="wiz-label">Comentarios para colegas</label>
                       <textarea className="wiz-textarea" value={form.comentarios_colegas} onChange={e => setF("comentarios_colegas", e.target.value)} rows={2} placeholder="Visible solo dentro del sistema, no se publica en portales..." style={{width:"100%",boxSizing:"border-box"}} />
-                      <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:4,fontFamily:"Inter,sans-serif",lineHeight:1.5}}>Información útil para colegas interesados en compartir o canjear honorarios. No se publica externamente.</div>
+                      <div style={{fontSize:10,color:"var(--gfi-text-dim)",marginTop:4,fontFamily:"Inter,sans-serif",lineHeight:1.5}}>Información útil para colegas interesados en compartir o canjear honorarios. No se publica externamente.</div>
                     </div>
                     <div className="wiz-field">
                       <label className="wiz-label">Aviso legal</label>
@@ -2613,7 +2613,7 @@ export default function CarteraPage() {
                       <label className="wiz-label">URL del tour virtual (Matterport, Kuula, iStaging, etc.)</label>
                       <input className="wiz-input" value={form.tour_virtual_url} onChange={e => setF("tour_virtual_url", e.target.value)} placeholder="https://my.matterport.com/show/?m=..." />
                       {form.tour_virtual_url && (
-                        <div style={{marginTop:8,borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.1)",height:240}}>
+                        <div style={{marginTop:8,borderRadius:8,overflow:"hidden",border:"1px solid var(--gfi-border)",height:240}}>
                           <iframe
                             src={form.tour_virtual_url}
                             style={{width:"100%",height:"100%",border:0}}
@@ -2623,7 +2623,7 @@ export default function CarteraPage() {
                           />
                         </div>
                       )}
-                      <div style={{marginTop:6,fontSize:10,color:"rgba(255,255,255,0.3)"}}>Compatible con Matterport, Kuula, iStaging, Roundme y cualquier URL embebible</div>
+                      <div style={{marginTop:6,fontSize:10,color:"var(--gfi-text-muted)"}}>Compatible con Matterport, Kuula, iStaging, Roundme y cualquier URL embebible</div>
                     </div>
                   </div>
 
@@ -2651,7 +2651,7 @@ export default function CarteraPage() {
 
                   <div className="wiz-section">
                     <div className="wiz-section-title"><span className="wiz-section-ico">🔗</span>Links de portales</div>
-                    <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:12,fontFamily:"Inter,sans-serif"}}>Donde está publicada esta propiedad. Solo para uso interno / referencia.</div>
+                    <div style={{fontSize:11,color:"var(--gfi-text-muted)",marginBottom:12,fontFamily:"Inter,sans-serif"}}>Donde está publicada esta propiedad. Solo para uso interno / referencia.</div>
                     <div className="wiz-field">
                       <label className="wiz-label">ZonaProp</label>
                       <input className="wiz-input" value={form.link_zonaprop} onChange={e => setF("link_zonaprop", e.target.value)} placeholder="https://www.zonaprop.com.ar/propiedades/..." />
@@ -2715,7 +2715,7 @@ export default function CarteraPage() {
                           <option key={c.id} value={c.id}>{[c.nombre, c.apellido].filter(Boolean).join(" ")}</option>
                         ))}
                       </select>
-                      <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginTop:4}}>Vinculá al propietario para acceder a su info de contacto desde esta ficha.</div>
+                      <div style={{fontSize:11,color:"var(--gfi-text-dim)",marginTop:4}}>Vinculá al propietario para acceder a su info de contacto desde esta ficha.</div>
                     </div>
                   </div>
 
@@ -2786,7 +2786,7 @@ export default function CarteraPage() {
             <div className="wiz-footer">
               <div style={{display:"flex",gap:8}}>
                 {paso > 1 && <button className="wiz-btn-prev" onClick={() => setPaso(p => p - 1)}>← Anterior</button>}
-                <button style={{background:"none",border:"none",color:"rgba(255,255,255,0.25)",cursor:"pointer",fontSize:11,fontFamily:"Inter,sans-serif"}} onClick={() => setMostrarWizard(false)}>Cancelar</button>
+                <button style={{background:"none",border:"none",color:"var(--gfi-text-dim)",cursor:"pointer",fontSize:11,fontFamily:"Inter,sans-serif"}} onClick={() => setMostrarWizard(false)}>Cancelar</button>
               </div>
               {paso < 7
                 ? <button className="wiz-btn-next" onClick={() => setPaso(p => p + 1)} disabled={paso === 1 && !form.titulo}>Siguiente →</button>
@@ -2804,14 +2804,14 @@ export default function CarteraPage() {
       ═══════════════════════════════════════ */}
       {mostrarImportar && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 580 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 17, fontWeight: 800, color: "#fff", marginBottom: 18 }}>↓ Importar propiedades</div>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 580 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 800, color: "#fff", marginBottom: 18 }}>↓ Importar propiedades</div>
 
             {/* Tabs */}
-            <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: 22 }}>
+            <div style={{ display: "flex", gap: 0, borderBottom: "1px solid var(--gfi-border)", marginBottom: 22 }}>
               {(["url", "tokko", "csv"] as const).map(t => (
                 <button key={t} onClick={() => { setTabImport(t); setImportError(""); setImportResult(null); }}
-                  style={{ padding: "8px 16px", background: "none", border: "none", borderBottom: `2px solid ${tabImport === t ? "#990000" : "transparent"}`, color: tabImport === t ? "#fff" : "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
+                  style={{ padding: "8px 16px", background: "none", border: "none", borderBottom: `2px solid ${tabImport === t ? "#990000" : "transparent"}`, color: tabImport === t ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
                   {t === "url" ? "URL de portal" : t === "tokko" ? "Tokko Broker" : "CSV / Excel"}
                 </button>
               ))}
@@ -2820,35 +2820,35 @@ export default function CarteraPage() {
             {/* Tab: URL individual */}
             {tabImport === "url" && (
               <>
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.6 }}>
+                <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 16, lineHeight: 1.6 }}>
                   Pegá la URL de una propiedad de ZonaProp, Argenprop, MercadoLibre u otros portales. Los datos se pre-cargarán en el formulario.
                 </p>
                 <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
                   <input value={urlImport} onChange={e => setUrlImport(e.target.value)} onKeyDown={e => e.key === "Enter" && importarDesdeUrl()}
                     placeholder="https://www.zonaprop.com.ar/..."
-                    style={{ flex: 1, padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none" }} />
+                    style={{ flex: 1, padding: "10px 14px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none" }} />
                   <button onClick={importarDesdeUrl} disabled={importando || !urlImport.trim()}
-                    style={{ padding: "10px 18px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", opacity: importando || !urlImport.trim() ? 0.5 : 1 }}>
+                    style={{ padding: "10px 18px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", opacity: importando || !urlImport.trim() ? 0.5 : 1 }}>
                     {importando ? "Importando…" : "Importar"}
                   </button>
                 </div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>ZonaProp · Argenprop · MercadoLibre · Red Propia · Ficha.info · Properati</div>
+                <div style={{ fontSize: 11, color: "var(--gfi-text-dim)" }}>ZonaProp · Argenprop · MercadoLibre · Red Propia · Ficha.info · Properati</div>
               </>
             )}
 
             {/* Tab: Tokko bulk */}
             {tabImport === "tokko" && (
               <>
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.6 }}>
-                  Importa <strong style={{color:"rgba(255,255,255,0.7)"}}>todas tus propiedades</strong> desde Tokko Broker de una sola vez. Requiere tu API key configurada en <a href="/crm/portales" style={{color:"#990000"}}>Portales</a>. Las ya importadas se saltean automáticamente.
+                <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 16, lineHeight: 1.6 }}>
+                  Importa <strong style={{color:"var(--gfi-text-primary)"}}>todas tus propiedades</strong> desde Tokko Broker de una sola vez. Requiere tu API key configurada en <a href="/crm/portales" style={{color:"#990000"}}>Portales</a>. Las ya importadas se saltean automáticamente.
                 </p>
                 {importResult ? (
                   <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: 16, marginBottom: 16 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#3abab6", marginBottom: 6 }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#3abab6", marginBottom: 6 }}>
                       ✓ {importResult.importadas} propiedad{importResult.importadas !== 1 ? "es" : ""} importada{importResult.importadas !== 1 ? "s" : ""}
                     </div>
                     {importResult.saltadas !== undefined && importResult.saltadas > 0 && (
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{importResult.saltadas} ya existían y se saltaron</div>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{importResult.saltadas} ya existían y se saltaron</div>
                     )}
                     {importResult.errores && importResult.errores.length > 0 && (
                       <div style={{ marginTop: 8, fontSize: 11, color: "#f87171" }}>{importResult.errores.slice(0, 5).join(" · ")}</div>
@@ -2856,7 +2856,7 @@ export default function CarteraPage() {
                   </div>
                 ) : (
                   <button onClick={importarDesdeTokko} disabled={importando}
-                    style={{ width: "100%", padding: "12px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", marginBottom: 12, opacity: importando ? 0.6 : 1 }}>
+                    style={{ width: "100%", padding: "12px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", marginBottom: 12, opacity: importando ? 0.6 : 1 }}>
                     {importando ? "Importando desde Tokko…" : "↓ Importar todo desde Tokko"}
                   </button>
                 )}
@@ -2866,7 +2866,7 @@ export default function CarteraPage() {
             {/* Tab: CSV / Excel */}
             {tabImport === "csv" && (
               <>
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 12, lineHeight: 1.6 }}>
+                <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 12, lineHeight: 1.6 }}>
                   Subí un archivo Excel (.xlsx) o CSV exportado desde cualquier CRM.{" "}
                   <button onClick={descargarPlantillaCSV} style={{ background: "none", border: "none", color: "#990000", cursor: "pointer", fontSize: 12, padding: 0, textDecoration: "underline" }}>
                     Descargar plantilla CSV
@@ -2878,9 +2878,9 @@ export default function CarteraPage() {
                     <span style={{ fontSize: 18 }}>📄</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 12, color: "#4ade80", fontFamily: "Inter,sans-serif", fontWeight: 600 }}>{xlsxNombre}</div>
-                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{csvTexto ? `${csvTexto.split("\n").length - 1} filas detectadas` : "Procesando..."}</div>
+                      <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 2 }}>{csvTexto ? `${csvTexto.split("\n").length - 1} filas detectadas` : "Procesando..."}</div>
                     </div>
-                    <button onClick={() => { setXlsxNombre(""); setCsvTexto(""); }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16 }}>×</button>
+                    <button onClick={() => { setXlsxNombre(""); setCsvTexto(""); }} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 16 }}>×</button>
                   </div>
                 ) : (
                   <div style={{ marginBottom: 12 }}>
@@ -2888,23 +2888,23 @@ export default function CarteraPage() {
                       type="file"
                       accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                       onChange={e => { const f = e.target.files?.[0]; if (f) cargarArchivo(f); e.target.value = ""; }}
-                      style={{ display: "block", width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, color: "rgba(255,255,255,0.7)", cursor: "pointer", fontFamily: "Inter,sans-serif", fontSize: 12, boxSizing: "border-box" }}
+                      style={{ display: "block", width: "100%", padding: "10px 12px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, color: "var(--gfi-text-primary)", cursor: "pointer", fontFamily: "Inter,sans-serif", fontSize: 12, boxSizing: "border-box" }}
                     />
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", marginTop: 5, textAlign: "center" }}>.xlsx · .xls · .csv · KiteProp · ZonaProp · Tokko</div>
+                    <div style={{ fontSize: 10, color: "var(--gfi-text-dim)", marginTop: 5, textAlign: "center" }}>.xlsx · .xls · .csv · KiteProp · ZonaProp · Tokko</div>
                   </div>
                 )}
                 {/* Optional: paste CSV manually */}
                 <details style={{ marginBottom: 12 }}>
-                  <summary style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  <summary style={{ fontSize: 10, color: "var(--gfi-text-muted)", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                     O pegá el texto del CSV manualmente
                   </summary>
                   <textarea value={csvTexto} onChange={e => { setCsvTexto(e.target.value); setXlsxNombre(""); }}
                     placeholder={"titulo,tipo,operacion,precio,moneda,ciudad...\nDepartamento Pichincha,Departamento,Venta,120000,USD,Rosario..."}
-                    style={{ width: "100%", height: 100, padding: "10px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 11, outline: "none", resize: "vertical", fontFamily: "monospace", marginTop: 8, boxSizing: "border-box" }} />
+                    style={{ width: "100%", height: 100, padding: "10px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", fontSize: 11, outline: "none", resize: "vertical", fontFamily: "monospace", marginTop: 8, boxSizing: "border-box" }} />
                 </details>
                 {importResult ? (
                   <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: 14, marginBottom: 12 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#3abab6" }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#3abab6" }}>
                       ✓ {importResult.importadas} propiedad{importResult.importadas !== 1 ? "es" : ""} importada{importResult.importadas !== 1 ? "s" : ""}
                     </div>
                     {importResult.errores && importResult.errores.length > 0 && (
@@ -2915,57 +2915,57 @@ export default function CarteraPage() {
                   <>
                     {/* Staging table */}
                     <div style={{ marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
+                      <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", fontFamily: "Inter,sans-serif" }}>
                         {csvPreviewSel.filter(Boolean).length} de {csvPreview.length} seleccionadas
                       </div>
-                      <button onClick={() => setCsvPreviewSel(s => s.map(() => !s.every(Boolean)))} style={{ background: "none", border: "none", color: "#990000", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                      <button onClick={() => setCsvPreviewSel(s => s.map(() => !s.every(Boolean)))} style={{ background: "none", border: "none", color: "#990000", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                         {csvPreviewSel.every(Boolean) ? "Deseleccionar todo" : "Seleccionar todo"}
                       </button>
                     </div>
-                    <div style={{ maxHeight: 240, overflowY: "auto", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, marginBottom: 12 }}>
+                    <div style={{ maxHeight: 240, overflowY: "auto", border: "1px solid var(--gfi-border)", borderRadius: 8, marginBottom: 12 }}>
                       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, fontFamily: "Inter,sans-serif" }}>
                         <thead>
-                          <tr style={{ background: "rgba(255,255,255,0.04)", position: "sticky", top: 0 }}>
-                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600, width: 28 }}></th>
-                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Título</th>
-                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Tipo</th>
-                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Op.</th>
-                            <th style={{ padding: "6px 8px", textAlign: "right", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Precio</th>
-                            <th style={{ padding: "6px 8px", textAlign: "left", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Ciudad</th>
+                          <tr style={{ background: "var(--gfi-border-subtle)", position: "sticky", top: 0 }}>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "var(--gfi-text-muted)", fontWeight: 600, width: 28 }}></th>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "var(--gfi-text-muted)", fontWeight: 600 }}>Título</th>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "var(--gfi-text-muted)", fontWeight: 600 }}>Tipo</th>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "var(--gfi-text-muted)", fontWeight: 600 }}>Op.</th>
+                            <th style={{ padding: "6px 8px", textAlign: "right", color: "var(--gfi-text-muted)", fontWeight: 600 }}>Precio</th>
+                            <th style={{ padding: "6px 8px", textAlign: "left", color: "var(--gfi-text-muted)", fontWeight: 600 }}>Ciudad</th>
                           </tr>
                         </thead>
                         <tbody>
                           {csvPreview.map((row, i) => (
                             <tr key={i} onClick={() => setCsvPreviewSel(s => { const n=[...s]; n[i]=!n[i]; return n; })}
-                              style={{ borderTop: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", background: csvPreviewSel[i] ? "transparent" : "rgba(255,255,255,0.01)", opacity: csvPreviewSel[i] ? 1 : 0.4 }}>
+                              style={{ borderTop: "1px solid var(--gfi-border-subtle)", cursor: "pointer", background: csvPreviewSel[i] ? "transparent" : "rgba(255,255,255,0.01)", opacity: csvPreviewSel[i] ? 1 : 0.4 }}>
                               <td style={{ padding: "5px 8px" }}>
-                                <div style={{ width: 14, height: 14, borderRadius: 3, border: `1px solid ${csvPreviewSel[i] ? "#990000" : "rgba(255,255,255,0.2)"}`, background: csvPreviewSel[i] ? "#990000" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <div style={{ width: 14, height: 14, borderRadius: 3, border: `1px solid ${csvPreviewSel[i] ? "#990000" : "var(--gfi-text-dim)"}`, background: csvPreviewSel[i] ? "#990000" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                   {csvPreviewSel[i] && <span style={{ fontSize: 8, color: "#fff", fontWeight: 900 }}>✓</span>}
                                 </div>
                               </td>
                               <td style={{ padding: "5px 8px", color: "#fff", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.titulo}</td>
-                              <td style={{ padding: "5px 8px", color: "rgba(255,255,255,0.5)" }}>{row.tipo}</td>
-                              <td style={{ padding: "5px 8px", color: "rgba(255,255,255,0.5)" }}>{row.operacion?.slice(0, 6)}</td>
-                              <td style={{ padding: "5px 8px", color: "rgba(255,255,255,0.5)", textAlign: "right", whiteSpace: "nowrap" }}>{row.precio ? `${row.moneda} ${Number(row.precio).toLocaleString("es-AR")}` : "—"}</td>
-                              <td style={{ padding: "5px 8px", color: "rgba(255,255,255,0.5)" }}>{row.ciudad}</td>
+                              <td style={{ padding: "5px 8px", color: "var(--gfi-text-secondary)" }}>{row.tipo}</td>
+                              <td style={{ padding: "5px 8px", color: "var(--gfi-text-secondary)" }}>{row.operacion?.slice(0, 6)}</td>
+                              <td style={{ padding: "5px 8px", color: "var(--gfi-text-secondary)", textAlign: "right", whiteSpace: "nowrap" }}>{row.precio ? `${row.moneda} ${Number(row.precio).toLocaleString("es-AR")}` : "—"}</td>
+                              <td style={{ padding: "5px 8px", color: "var(--gfi-text-secondary)" }}>{row.ciudad}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
                     <div style={{ display: "flex", gap: 8 }}>
-                      <button onClick={() => { setCsvPreview(null); setCsvPreviewSel([]); }} style={{ padding: "10px 16px", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                      <button onClick={() => { setCsvPreview(null); setCsvPreviewSel([]); }} style={{ padding: "10px 16px", background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "none", borderRadius: 8, fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
                         ← Volver
                       </button>
                       <button onClick={importarDesdeCSV} disabled={importando || !csvPreviewSel.some(Boolean)}
-                        style={{ flex: 1, padding: "10px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: importando || !csvPreviewSel.some(Boolean) ? 0.5 : 1 }}>
+                        style={{ flex: 1, padding: "10px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: importando || !csvPreviewSel.some(Boolean) ? 0.5 : 1 }}>
                         {importando ? "Importando…" : `Importar ${csvPreviewSel.filter(Boolean).length} propiedad${csvPreviewSel.filter(Boolean).length !== 1 ? "es" : ""}`}
                       </button>
                     </div>
                   </>
                 ) : (
                   <button onClick={previewCSV} disabled={cargandoPreview || !csvTexto.trim()}
-                    style={{ width: "100%", padding: "11px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: cargandoPreview || !csvTexto.trim() ? 0.5 : 1 }}>
+                    style={{ width: "100%", padding: "11px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: cargandoPreview || !csvTexto.trim() ? 0.5 : 1 }}>
                     {cargandoPreview ? "Analizando…" : xlsxNombre ? `Vista previa de "${xlsxNombre}"` : "Vista previa del CSV"}
                   </button>
                 )}
@@ -2979,7 +2979,7 @@ export default function CarteraPage() {
             )}
 
             <button onClick={() => { setMostrarImportar(false); setImportError(""); setImportResult(null); setXlsxNombre(""); setCsvTexto(""); }}
-              style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 12, cursor: "pointer", fontFamily: "Inter,sans-serif", marginTop: 18 }}>
+              style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 12, cursor: "pointer", fontFamily: "Inter,sans-serif", marginTop: 18 }}>
               Cerrar
             </button>
           </div>
@@ -2988,21 +2988,21 @@ export default function CarteraPage() {
       {/* ── SMART PROSPECTING MODAL ── */}
       {mostrarSmartMatch && smartMatches.length > 0 && (
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={() => setMostrarSmartMatch(false)}>
-          <div style={{background:"#111",border:"1px solid rgba(200,0,0,0.3)",borderRadius:12,padding:28,maxWidth:520,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>
-            <button onClick={() => setMostrarSmartMatch(false)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:20,cursor:"pointer"}}>×</button>
+          <div style={{background:"var(--gfi-bg-secondary)",border:"1px solid rgba(200,0,0,0.3)",borderRadius:12,padding:28,maxWidth:520,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setMostrarSmartMatch(false)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"var(--gfi-text-muted)",fontSize:20,cursor:"pointer"}}>×</button>
             <div style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:15,color:"#fff",marginBottom:4}}>🎯 Smart Prospecting</div>
-            <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:20}}>
-              Se guardó <strong style={{color:"rgba(255,255,255,0.7)"}}>{smartPropTitulo}</strong>. IA encontró {smartMatches.length} cliente{smartMatches.length > 1 ? "s" : ""} que podrían estar interesados:
+            <div style={{fontSize:12,color:"var(--gfi-text-muted)",marginBottom:20}}>
+              Se guardó <strong style={{color:"var(--gfi-text-primary)"}}>{smartPropTitulo}</strong>. IA encontró {smartMatches.length} cliente{smartMatches.length > 1 ? "s" : ""} que podrían estar interesados:
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:10}}>
               {smartMatches.map(m => (
-                <div key={m.id} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:8,padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
+                <div key={m.id} style={{background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border)",borderRadius:8,padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                       <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:13,color:"#fff"}}>{m.nombre}</span>
                       <span style={{background:"rgba(200,0,0,0.12)",border:"1px solid rgba(200,0,0,0.25)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:"#990000",fontFamily:"Montserrat,sans-serif"}}>{m.compatibilidad}%</span>
                     </div>
-                    <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",lineHeight:1.4}}>{m.razon}</div>
+                    <div style={{fontSize:11,color:"var(--gfi-text-muted)",lineHeight:1.4}}>{m.razon}</div>
                   </div>
                   {m.telefono && (
                     <a href={`https://wa.me/${m.telefono.replace(/\D/g,"")}?text=${encodeURIComponent(`Hola ${m.nombre.split(" ")[0]}, tengo una propiedad que puede interesarte: ${smartPropTitulo}`)}`}
@@ -3015,7 +3015,7 @@ export default function CarteraPage() {
               ))}
             </div>
             <button onClick={() => setMostrarSmartMatch(false)}
-              style={{marginTop:16,width:"100%",padding:"10px 0",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:6,color:"rgba(255,255,255,0.5)",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+              style={{marginTop:16,width:"100%",padding:"10px 0",background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:6,color:"var(--gfi-text-secondary)",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>
               Cerrar
             </button>
           </div>
@@ -3024,19 +3024,19 @@ export default function CarteraPage() {
 
       {postModal && (
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={() => setPostModal(null)}>
-          <div style={{background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:24,maxWidth:480,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>
-            <button onClick={() => setPostModal(null)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:20,cursor:"pointer"}}>×</button>
+          <div style={{background:"var(--gfi-bg-secondary)",border:"1px solid var(--gfi-border)",borderRadius:12,padding:24,maxWidth:480,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setPostModal(null)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"var(--gfi-text-muted)",fontSize:20,cursor:"pointer"}}>×</button>
             <div style={{fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#a855f7",marginBottom:6}}>🎯 Post generado con IA</div>
-            <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:14,fontFamily:"Inter,sans-serif"}}>{postModal.titulo}</div>
+            <div style={{fontSize:12,color:"var(--gfi-text-muted)",marginBottom:14,fontFamily:"Inter,sans-serif"}}>{postModal.titulo}</div>
             <textarea readOnly value={postModal.caption + (postModal.hashtags ? `\n\n${postModal.hashtags}` : "")} rows={10}
-              style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:6,color:"#fff",fontFamily:"Inter,sans-serif",fontSize:12,padding:"10px 12px",resize:"none",boxSizing:"border-box",lineHeight:1.6}} />
+              style={{width:"100%",background:"var(--gfi-border-subtle)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:6,color:"#fff",fontFamily:"Inter,sans-serif",fontSize:12,padding:"10px 12px",resize:"none",boxSizing:"border-box",lineHeight:1.6}} />
             <div style={{display:"flex",gap:8,marginTop:12}}>
               <button onClick={() => { navigator.clipboard.writeText(postModal.caption + (postModal.hashtags ? `\n\n${postModal.hashtags}` : "")); }}
                 style={{flex:1,padding:"9px 0",background:"rgba(168,85,247,0.12)",border:"1px solid rgba(168,85,247,0.25)",borderRadius:6,color:"#a855f7",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>
                 📋 Copiar
               </button>
               <button onClick={() => setPostModal(null)}
-                style={{padding:"9px 16px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:6,color:"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                style={{padding:"9px 16px",background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:6,color:"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>
                 Cerrar
               </button>
             </div>

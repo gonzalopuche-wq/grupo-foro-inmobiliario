@@ -97,12 +97,12 @@ export function PropiaPublicarButton({
         onClick={() => { setAbierto(true); setMsg(null); }}
         style={{
           padding: "8px 16px", borderRadius: 5, cursor: "pointer",
-          fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700,
+          fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700,
           letterSpacing: "0.1em", textTransform: "uppercase",
           display: "flex", alignItems: "center", gap: 6,
           background: estaPublicada ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.06)",
           border: estaPublicada ? "1px solid rgba(153,0,0,0.45)" : "1px solid rgba(255,255,255,0.15)",
-          color: estaPublicada ? "#990000" : "rgba(255,255,255,0.7)",
+          color: estaPublicada ? "#990000" : "var(--gfi-text-primary)",
         }}
       >
         🏛️ {estaPublicada ? "Propia ✓" : "Publicar en Propia"}
@@ -113,29 +113,29 @@ export function PropiaPublicarButton({
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
           onClick={e => { if (e.target === e.currentTarget) { setAbierto(false); setMsg(null); } }}
         >
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 480 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 12, padding: 28, width: "100%", maxWidth: 480 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, color: "#fff" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 800, color: "#fff" }}>
                 🏛️ Propia MLS
               </div>
-              <button onClick={() => { setAbierto(false); setMsg(null); }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 18 }}>✕</button>
+              <button onClick={() => { setAbierto(false); setMsg(null); }} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 18 }}>✕</button>
             </div>
 
             {estaPublicada && (
               <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "12px 16px", marginBottom: 16, fontSize: 12, color: "#3abab6", fontFamily: "Inter,sans-serif" }}>
                 ✓ Publicada en Propia MLS · ID: <strong>{propiaIdLocal}</strong>
-                {syncAtLocal && <span style={{ color: "rgba(255,255,255,0.3)", marginLeft: 8 }}>· Última sync: {syncAtLocal}</span>}
+                {syncAtLocal && <span style={{ color: "var(--gfi-text-muted)", marginLeft: 8 }}>· Última sync: {syncAtLocal}</span>}
               </div>
             )}
 
-            <div style={{ marginBottom: 20, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 16px" }}>
-              <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 8 }}>RESUMEN</div>
+            <div style={{ marginBottom: 20, background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "14px 16px" }}>
+              <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", marginBottom: 8 }}>RESUMEN</div>
               <div style={{ fontSize: 13, color: "#fff", fontFamily: "Inter,sans-serif", marginBottom: 4 }}>{titulo}</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", fontFamily: "Inter,sans-serif" }}>
                 {[direccion, zona, ciudad].filter(Boolean).join(", ")}
               </div>
               {precio && (
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#990000", fontFamily: "Montserrat,sans-serif", marginTop: 6 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#990000", fontFamily: "var(--font-display)", marginTop: 6 }}>
                   {moneda === "USD" ? "USD " : "$ "}{precio.toLocaleString("es-AR")}
                 </div>
               )}
@@ -148,7 +148,7 @@ export function PropiaPublicarButton({
                 width: "100%", padding: "12px", borderRadius: 6, border: "none",
                 background: publicando ? "rgba(153,0,0,0.4)" : "#990000",
                 color: "#fff", cursor: publicando ? "not-allowed" : "pointer",
-                fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700,
+                fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700,
                 letterSpacing: "0.12em", textTransform: "uppercase",
               }}
             >

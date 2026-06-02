@@ -227,7 +227,7 @@ export default function MatchClientesPage() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🎯 Match Clientes–Propiedades</h1>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>🎯 Match Clientes–Propiedades</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Cruza perfiles de clientes con negocios activos por zona, presupuesto y tipo de operación</p>
           </div>
           <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
@@ -241,15 +241,15 @@ export default function MatchClientesPage() {
             { label: "Negocios activos", value: negociosFiltrados.length, color: "#3b82f6" },
             { label: "Alta compatibilidad", value: matches.filter(m => m.score >= 70).length, color: "#3abab6" },
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: k.color }}>{k.value}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 28, color: k.color }}>{k.value}</div>
             </div>
           ))}
         </div>
 
         {/* Controles */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
           <input type="text" value={busqueda} onChange={e => setBusqueda(e.target.value)}
             placeholder="Buscar cliente..."
             style={{ flex: 1, background: "#0a0a0a", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "7px 10px", fontSize: 13, minWidth: 140 }} />
@@ -270,7 +270,7 @@ export default function MatchClientesPage() {
             { id: "todos", label: "Todos" },
           ].map(f => (
             <button key={f.id} onClick={() => setFiltroEtapa(f.id)}
-              style={{ background: filtroEtapa === f.id ? "#1f2937" : "transparent", border: `1px solid ${filtroEtapa === f.id ? "#374151" : "#1f2937"}`, borderRadius: 6, color: filtroEtapa === f.id ? "#e5e5e5" : "#6b7280", padding: "5px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+              style={{ background: filtroEtapa === f.id ? "#1f2937" : "transparent", border: `1px solid ${filtroEtapa === f.id ? "#374151" : "var(--gfi-border)"}`, borderRadius: 6, color: filtroEtapa === f.id ? "#e5e5e5" : "#6b7280", padding: "5px 12px", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
               {f.label}
             </button>
           ))}
@@ -279,9 +279,9 @@ export default function MatchClientesPage() {
         {loading ? (
           <div style={{ textAlign: "center", color: "#6b7280", padding: 48 }}>Cargando datos...</div>
         ) : matches.length === 0 ? (
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 48, textAlign: "center" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 48, textAlign: "center" }}>
             <div style={{ fontSize: 36, marginBottom: 10 }}>🔍</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#9ca3af" }}>Sin matches para los filtros actuales</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#9ca3af" }}>Sin matches para los filtros actuales</div>
             <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>Probá bajando el score mínimo o completando más datos en los perfiles</div>
           </div>
         ) : (
@@ -291,15 +291,15 @@ export default function MatchClientesPage() {
               const isExpanded = expandidos.has(contactoId);
               const maxScore = Math.max(...ms.map(m => m.score));
               return (
-                <div key={contactoId} style={{ background: "#111", border: `1px solid ${scoreColor(maxScore)}33`, borderRadius: 12, overflow: "hidden" }}>
+                <div key={contactoId} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${scoreColor(maxScore)}33`, borderRadius: 12, overflow: "hidden" }}>
                   {/* Header contacto */}
                   <div style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
                     onClick={() => toggleExpand(contactoId)}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <div>
-                        <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, color: "#fff" }}>
+                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>
                           {c.nombre} {c.apellido}
-                          {c.tipo && <span style={{ marginLeft: 8, fontSize: 10, color: "#6b7280", background: "#1f2937", padding: "2px 7px", borderRadius: 4 }}>{c.tipo}</span>}
+                          {c.tipo && <span style={{ marginLeft: 8, fontSize: 10, color: "#6b7280", background: "var(--gfi-border)", padding: "2px 7px", borderRadius: 4 }}>{c.tipo}</span>}
                         </div>
                         <div style={{ display: "flex", gap: 12, marginTop: 4, fontSize: 12, color: "#6b7280" }}>
                           {c.zona_interes && <span>📍 {c.zona_interes}</span>}
@@ -309,7 +309,7 @@ export default function MatchClientesPage() {
                       </div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ background: `${scoreColor(maxScore)}22`, color: scoreColor(maxScore), padding: "4px 12px", borderRadius: 6, fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 13 }}>
+                      <span style={{ background: `${scoreColor(maxScore)}22`, color: scoreColor(maxScore), padding: "4px 12px", borderRadius: 6, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13 }}>
                         {ms.length} match{ms.length > 1 ? "es" : ""}
                       </span>
                       <span style={{ color: "#4b5563", fontSize: 12 }}>{isExpanded ? "▲" : "▼"}</span>
@@ -323,7 +323,7 @@ export default function MatchClientesPage() {
                         <div key={m.negocio.id}
                           style={{ padding: "12px 16px", borderBottom: i < ms.slice(0, 5).length - 1 ? "1px solid #1a1a1a" : "none", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
                           <div style={{ flex: 1 }}>
-                            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: 13, color: "#e5e5e5", marginBottom: 4 }}>
+                            <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#e5e5e5", marginBottom: 4 }}>
                               {m.negocio.titulo}
                               <span style={{ marginLeft: 8, fontSize: 10, color: "#4b5563" }}>{m.negocio.etapa}</span>
                             </div>
@@ -334,20 +334,20 @@ export default function MatchClientesPage() {
                             </div>
                             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                               {m.razones.map(r => (
-                                <span key={r} style={{ background: `${scoreColor(m.score)}15`, color: scoreColor(m.score), padding: "2px 8px", borderRadius: 4, fontSize: 10, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                                <span key={r} style={{ background: `${scoreColor(m.score)}15`, color: scoreColor(m.score), padding: "2px 8px", borderRadius: 4, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                   {r}
                                 </span>
                               ))}
                             </div>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-                            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 18, color: scoreColor(m.score) }}>
+                            <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: scoreColor(m.score) }}>
                               {m.score}
                             </div>
                             <div style={{ fontSize: 10, color: scoreColor(m.score) }}>{scoreLabel(m.score)}</div>
                             {c.telefono && (
                               <button onClick={() => waMsg(c, m.negocio)}
-                                style={{ background: "#25d366", border: "none", borderRadius: 5, color: "#fff", padding: "5px 10px", fontSize: 10, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                                style={{ background: "#25d366", border: "none", borderRadius: 5, color: "#fff", padding: "5px 10px", fontSize: 10, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                 💬 WA
                               </button>
                             )}
@@ -369,8 +369,8 @@ export default function MatchClientesPage() {
 
         {/* Top contactos sidebar info */}
         {topContactos.length > 0 && !loading && (
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 16, display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
-            <span style={{ fontSize: 11, color: "#6b7280", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>TOP CLIENTES:</span>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 16, display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
+            <span style={{ fontSize: 11, color: "#6b7280", fontFamily: "var(--font-display)", fontWeight: 700 }}>TOP CLIENTES:</span>
             {topContactos.map(([id, count]) => {
               const c = contactos.find(x => x.id === id);
               if (!c) return null;
@@ -384,7 +384,7 @@ export default function MatchClientesPage() {
           </div>
         )}
 
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 12, fontSize: 12, color: "#6b7280" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 8, padding: "12px 16px", marginTop: 12, fontSize: 12, color: "#6b7280" }}>
           <strong style={{ color: "#9ca3af" }}>📌 Cómo funciona:</strong> Cruza zona de interés, presupuesto y tipo de operación de cada cliente con los negocios activos. Score basado en compatibilidad de precio (±15%), zona por palabras clave y tipo de operación. No cruza el cliente con su propio negocio.
         </div>
       </div>

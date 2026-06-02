@@ -96,7 +96,7 @@ function PortalBadge({ portal }: { portal: PortalId }) {
       padding: "2px 6px", borderRadius: 3,
       background: p.bg, color: p.id === "mercadolibre" ? "#996600" : p.color,
       border: `1px solid ${p.color}40`,
-      fontFamily: "'Montserrat',sans-serif", textTransform: "uppercase",
+      fontFamily: "var(--font-display)", textTransform: "uppercase",
     }}>
       {p.label}
     </span>
@@ -126,7 +126,7 @@ function PropCard({ p }: { p: Propiedad }) {
     >
       <div style={{
         background: "rgba(18,18,18,0.9)",
-        border: "1px solid rgba(255,255,255,0.07)",
+        border: "1px solid var(--gfi-border-subtle)",
         borderRadius: 8,
         overflow: "hidden",
         display: "flex", flexDirection: "column",
@@ -139,12 +139,12 @@ function PropCard({ p }: { p: Propiedad }) {
           (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
         }}
         onMouseLeave={e => {
-          (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)";
+          (e.currentTarget as HTMLElement).style.borderColor = "var(--gfi-border-subtle)";
           (e.currentTarget as HTMLElement).style.transform = "";
         }}
       >
         {/* Imagen */}
-        <div style={{ position: "relative", height: 160, background: "#111", flexShrink: 0 }}>
+        <div style={{ position: "relative", height: 160, background: "var(--gfi-bg-secondary)", flexShrink: 0 }}>
           {img ? (
             <img
               src={img}
@@ -154,7 +154,7 @@ function PropCard({ p }: { p: Propiedad }) {
               onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
             />
           ) : (
-            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, color: "rgba(255,255,255,0.1)" }}>
+            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, color: "var(--gfi-border)" }}>
               🏠
             </div>
           )}
@@ -165,7 +165,7 @@ function PropCard({ p }: { p: Propiedad }) {
             padding: "3px 7px", borderRadius: 3,
             background: `${opColor}22`, color: opColor,
             border: `1px solid ${opColor}44`,
-            fontFamily: "'Montserrat',sans-serif", textTransform: "uppercase",
+            fontFamily: "var(--font-display)", textTransform: "uppercase",
           }}>
             {p.operacion === "alquiler_temporal" ? "Alq. temporal" : p.operacion}
           </span>
@@ -174,7 +174,7 @@ function PropCard({ p }: { p: Propiedad }) {
             position: "absolute", top: 8, right: 8,
             fontSize: 9, fontWeight: 600, padding: "3px 7px",
             borderRadius: 3, background: "rgba(0,0,0,0.7)",
-            color: "rgba(255,255,255,0.7)", textTransform: "capitalize",
+            color: "var(--gfi-text-primary)", textTransform: "capitalize",
           }}>
             {p.tipo}
           </span>
@@ -188,7 +188,7 @@ function PropCard({ p }: { p: Propiedad }) {
           {/* Título */}
           <p style={{
             fontSize: 12, color: "rgba(255,255,255,0.82)", fontWeight: 500,
-            fontFamily: "'Inter',sans-serif", margin: 0,
+            fontFamily: "var(--font-body)", margin: 0,
             overflow: "hidden", display: "-webkit-box",
             WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
             lineHeight: 1.4,
@@ -199,7 +199,7 @@ function PropCard({ p }: { p: Propiedad }) {
           {/* Precio */}
           <p style={{
             fontSize: 15, fontWeight: 700, color: "#fff",
-            fontFamily: "'Montserrat',sans-serif", margin: 0,
+            fontFamily: "var(--font-display)", margin: 0,
           }}>
             {precio}
           </p>
@@ -208,7 +208,7 @@ function PropCard({ p }: { p: Propiedad }) {
           {specs.length > 0 && (
             <p style={{
               fontSize: 11, color: "rgba(255,255,255,0.45)",
-              fontFamily: "'Inter',sans-serif", margin: 0,
+              fontFamily: "var(--font-body)", margin: 0,
             }}>
               {specs.join(" · ")}
             </p>
@@ -216,8 +216,8 @@ function PropCard({ p }: { p: Propiedad }) {
 
           {/* Ubicación */}
           <p style={{
-            fontSize: 11, color: "rgba(255,255,255,0.35)",
-            fontFamily: "'Inter',sans-serif", margin: 0, marginTop: "auto",
+            fontSize: 11, color: "var(--gfi-text-muted)",
+            fontFamily: "var(--font-body)", margin: 0, marginTop: "auto",
           }}>
             📍 {[p.barrio, p.ciudad].filter(Boolean).join(", ")}
           </p>
@@ -330,20 +330,20 @@ export default function PropiedadesMercadoPage() {
     <div style={{ padding: "28px 24px 80px", maxWidth: 1400, margin: "0 auto" }}>
       <style>{`
         .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-        .pm-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #fff; padding: 8px 12px; font-size: 12px; font-family: 'Inter',sans-serif; outline: none; width: 100%; }
+        .pm-input { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 5px; color: #fff; padding: 8px 12px; font-size: 12px; font-family: var(--font-body); outline: none; width: 100%; }
         .pm-input:focus { border-color: rgba(200,0,0,0.5); }
-        .pm-input::placeholder { color: rgba(255,255,255,0.25); }
-        .pm-select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: rgba(255,255,255,0.8); padding: 8px 12px; font-size: 12px; font-family: 'Inter',sans-serif; outline: none; width: 100%; cursor: pointer; }
+        .pm-input::placeholder { color: var(--gfi-text-dim); }
+        .pm-select { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 5px; color: rgba(255,255,255,0.8); padding: 8px 12px; font-size: 12px; font-family: var(--font-body); outline: none; width: 100%; cursor: pointer; }
         .pm-select option { background: #1a1a1a; color: #fff; }
         @media (max-width: 768px) { .pm-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
       `}</style>
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Montserrat',sans-serif", color: "#fff", margin: 0 }}>
+        <h1 style={{ fontSize: 20, fontWeight: 700, fontFamily: "var(--font-display)", color: "#fff", margin: 0 }}>
           🏙️ Portales del Mercado
         </h1>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 4, fontFamily: "'Inter',sans-serif" }}>
+        <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4, fontFamily: "var(--font-body)" }}>
           Propiedades sincronizadas desde Mercado Libre, Zonaprop, Argenprop y Properati
           {ultimaSync && ` · Última sync: ${new Date(ultimaSync).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}`}
         </p>
@@ -355,10 +355,10 @@ export default function PropiedadesMercadoPage() {
           onClick={() => setFilters(f => ({ ...f, portalesActivos: [] }))}
           style={{
             padding: "6px 14px", borderRadius: 20,
-            background: filters.portalesActivos.length === 0 ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.05)",
-            border: `1px solid ${filters.portalesActivos.length === 0 ? "rgba(200,0,0,0.4)" : "rgba(255,255,255,0.1)"}`,
-            color: filters.portalesActivos.length === 0 ? "#990000" : "rgba(255,255,255,0.5)",
-            cursor: "pointer", fontSize: 12, fontFamily: "'Inter',sans-serif",
+            background: filters.portalesActivos.length === 0 ? "rgba(200,0,0,0.15)" : "var(--gfi-border-subtle)",
+            border: `1px solid ${filters.portalesActivos.length === 0 ? "rgba(200,0,0,0.4)" : "var(--gfi-border)"}`,
+            color: filters.portalesActivos.length === 0 ? "#990000" : "var(--gfi-text-secondary)",
+            cursor: "pointer", fontSize: 12, fontFamily: "var(--font-body)",
           }}
         >
           Todos ({totalGeneral.toLocaleString("es-AR")})
@@ -372,10 +372,10 @@ export default function PropiedadesMercadoPage() {
               onClick={() => togglePortal(p.id)}
               style={{
                 padding: "6px 14px", borderRadius: 20,
-                background: activo ? p.bg : "rgba(255,255,255,0.04)",
-                border: `1px solid ${activo ? p.color + "60" : "rgba(255,255,255,0.08)"}`,
+                background: activo ? p.bg : "var(--gfi-border-subtle)",
+                border: `1px solid ${activo ? p.color + "60" : "var(--gfi-border)"}`,
                 color: activo ? (p.id === "mercadolibre" ? "#996600" : p.color) : "rgba(255,255,255,0.45)",
-                cursor: "pointer", fontSize: 12, fontFamily: "'Inter',sans-serif",
+                cursor: "pointer", fontSize: 12, fontFamily: "var(--font-body)",
                 transition: "all 0.15s",
               }}
             >
@@ -387,8 +387,8 @@ export default function PropiedadesMercadoPage() {
 
       {/* Filtros */}
       <div style={{
-        background: "rgba(14,14,14,0.8)",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "var(--gfi-bg-secondary)",
+        border: "1px solid var(--gfi-border-subtle)",
         borderRadius: 8, padding: 16, marginBottom: 24,
         display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12,
       }}>
@@ -427,7 +427,7 @@ export default function PropiedadesMercadoPage() {
             style={{
               background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)",
               borderRadius: 5, color: "#990000", cursor: "pointer",
-              fontSize: 11, fontFamily: "'Inter',sans-serif", padding: "8px 12px",
+              fontSize: 11, fontFamily: "var(--font-body)", padding: "8px 12px",
             }}
           >
             ✕ Limpiar filtros
@@ -443,7 +443,7 @@ export default function PropiedadesMercadoPage() {
           borderRadius: 8, padding: "14px 18px",
           marginBottom: 24, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
         }}>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", fontFamily: "'Inter',sans-serif" }}>
+          <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)", fontFamily: "var(--font-body)" }}>
             ⚙️ Sincronizar portales:
           </span>
           <select
@@ -460,11 +460,11 @@ export default function PropiedadesMercadoPage() {
             disabled={syncing}
             style={{
               padding: "8px 18px", borderRadius: 5,
-              background: syncing ? "rgba(255,255,255,0.05)" : "rgba(200,0,0,0.15)",
+              background: syncing ? "var(--gfi-border-subtle)" : "rgba(200,0,0,0.15)",
               border: "1px solid rgba(200,0,0,0.3)",
-              color: syncing ? "rgba(255,255,255,0.35)" : "#990000",
+              color: syncing ? "var(--gfi-text-muted)" : "#990000",
               cursor: syncing ? "not-allowed" : "pointer",
-              fontSize: 12, fontFamily: "'Montserrat',sans-serif",
+              fontSize: 12, fontFamily: "var(--font-display)",
               fontWeight: 700, letterSpacing: "0.05em",
               display: "flex", alignItems: "center", gap: 8,
             }}
@@ -473,7 +473,7 @@ export default function PropiedadesMercadoPage() {
             {syncing ? "Sincronizando..." : "⟳ Sincronizar"}
           </button>
           {syncResultado && (
-            <span style={{ fontSize: 11, color: syncResultado.startsWith("✓") ? "#3abab6" : "#b80000", fontFamily: "'Inter',sans-serif" }}>
+            <span style={{ fontSize: 11, color: syncResultado.startsWith("✓") ? "#3abab6" : "#b80000", fontFamily: "var(--font-body)" }}>
               {syncResultado}
             </span>
           )}
@@ -482,7 +482,7 @@ export default function PropiedadesMercadoPage() {
 
       {/* Resultados */}
       <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", fontFamily: "'Inter',sans-serif", margin: 0 }}>
+        <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)", margin: 0 }}>
           {loading ? "Cargando..." : `${total.toLocaleString("es-AR")} propiedad${total !== 1 ? "es" : ""} encontrada${total !== 1 ? "s" : ""}`}
         </p>
       </div>
@@ -493,11 +493,11 @@ export default function PropiedadesMercadoPage() {
           {totalGeneral === 0 ? (
             <>
               <div style={{ fontSize: 48, marginBottom: 16 }}>🏙️</div>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", fontFamily: "'Inter',sans-serif", marginBottom: 8 }}>
+              <p style={{ fontSize: 14, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)", marginBottom: 8 }}>
                 Todavía no hay propiedades sincronizadas.
               </p>
               {esAdmin && (
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", fontFamily: "'Inter',sans-serif" }}>
+                <p style={{ fontSize: 12, color: "var(--gfi-text-dim)", fontFamily: "var(--font-body)" }}>
                   Usá el panel de sincronización de arriba para importar propiedades de los portales.
                 </p>
               )}
@@ -505,7 +505,7 @@ export default function PropiedadesMercadoPage() {
           ) : (
             <>
               <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", fontFamily: "'Inter',sans-serif" }}>
+              <p style={{ fontSize: 14, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>
                 Sin resultados para los filtros aplicados.
               </p>
             </>
@@ -525,14 +525,14 @@ export default function PropiedadesMercadoPage() {
             disabled={page === 1}
             style={{
               padding: "8px 16px", borderRadius: 5, cursor: page === 1 ? "not-allowed" : "pointer",
-              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-              color: page === 1 ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.7)",
-              fontSize: 12, fontFamily: "'Inter',sans-serif",
+              background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)",
+              color: page === 1 ? "var(--gfi-text-dim)" : "var(--gfi-text-primary)",
+              fontSize: 12, fontFamily: "var(--font-body)",
             }}
           >
             ← Anterior
           </button>
-          <span style={{ padding: "8px 14px", fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "'Inter',sans-serif" }}>
+          <span style={{ padding: "8px 14px", fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>
             Pág. {page} de {totalPages}
           </span>
           <button
@@ -540,9 +540,9 @@ export default function PropiedadesMercadoPage() {
             disabled={page === totalPages}
             style={{
               padding: "8px 16px", borderRadius: 5, cursor: page === totalPages ? "not-allowed" : "pointer",
-              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-              color: page === totalPages ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.7)",
-              fontSize: 12, fontFamily: "'Inter',sans-serif",
+              background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)",
+              color: page === totalPages ? "var(--gfi-text-dim)" : "var(--gfi-text-primary)",
+              fontSize: 12, fontFamily: "var(--font-body)",
             }}
           >
             Siguiente →

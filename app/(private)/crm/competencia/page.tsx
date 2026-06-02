@@ -120,18 +120,18 @@ export default function Competencia() {
 
   const zonas = useMemo(() => Array.from(new Set(propiedades.map(p => p.zona))), [propiedades]);
 
-  const inputStyle: React.CSSProperties = { width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", padding: "6px 10px", fontFamily: "'Inter',sans-serif", fontSize: 12, boxSizing: "border-box" };
-  const labelStyle: React.CSSProperties = { display: "block", fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 3 };
+  const inputStyle: React.CSSProperties = { width: "100%", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", padding: "6px 10px", fontFamily: "var(--font-body)", fontSize: 12, boxSizing: "border-box" };
+  const labelStyle: React.CSSProperties = { display: "block", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 3 };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "var(--font-body)" }}>
       {/* Header */}
-      <div style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
-        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "-0.02em" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
+        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "-0.02em" }}>
           Análisis de Competencia
         </h1>
-        <button onClick={() => setMostrarForm(!mostrarForm)} style={{ marginLeft: "auto", padding: "7px 16px", borderRadius: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.4)", color: "#990000", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+        <button onClick={() => setMostrarForm(!mostrarForm)} style={{ marginLeft: "auto", padding: "7px 16px", borderRadius: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.4)", color: "#990000", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
           + Agregar Propiedad
         </button>
       </div>
@@ -139,8 +139,8 @@ export default function Competencia() {
       <div style={{ padding: "24px", maxWidth: 1200, margin: "0 auto" }}>
         {/* Form */}
         {mostrarForm && (
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
-            <p style={{ margin: "0 0 16px 0", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#990000", letterSpacing: "0.08em", textTransform: "uppercase" }}>Nueva Propiedad Competidora</p>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+            <p style={{ margin: "0 0 16px 0", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, color: "#990000", letterSpacing: "0.08em", textTransform: "uppercase" }}>Nueva Propiedad Competidora</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
               <div style={{ gridColumn: "1/3" }}>
                 <label style={labelStyle}>Título / Descripción</label>
@@ -210,8 +210,8 @@ export default function Competencia() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
-              <button onClick={agregarPropiedad} style={{ padding: "7px 20px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>Agregar</button>
-              <button onClick={() => setMostrarForm(false)} style={{ padding: "7px 14px", borderRadius: 8, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 12, cursor: "pointer" }}>Cancelar</button>
+              <button onClick={agregarPropiedad} style={{ padding: "7px 20px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>Agregar</button>
+              <button onClick={() => setMostrarForm(false)} style={{ padding: "7px 14px", borderRadius: 8, background: "transparent", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)", fontSize: 12, cursor: "pointer" }}>Cancelar</button>
             </div>
           </div>
         )}
@@ -222,14 +222,14 @@ export default function Competencia() {
             {[
               { label: "Activas", val: stats.count, color: "#3abab6" },
               { label: "Mediana precio", val: `${form.moneda} ${fmt(stats.median)}`, color: "#fff" },
-              { label: "Promedio precio", val: `${form.moneda} ${fmt(stats.avg)}`, color: "rgba(255,255,255,0.7)" },
+              { label: "Promedio precio", val: `${form.moneda} ${fmt(stats.avg)}`, color: "var(--gfi-text-primary)" },
               { label: "Precio/m² prom.", val: `${form.moneda} ${fmt(stats.avgm2, 0)}/m²`, color: "#3b82f6" },
               { label: "Rango m²", val: `${fmt(stats.minm2, 0)} – ${fmt(stats.maxm2, 0)}`, color: "#d4960c" },
               { label: "Días prom. activa", val: `${stats.diasPromedio.toFixed(0)}d`, color: stats.diasPromedio > 60 ? "#990000" : "#3abab6" },
             ].map(kpi => (
-              <div key={kpi.label} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 14px" }}>
-                <p style={{ margin: "0 0 4px 0", fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>{kpi.label}</p>
-                <p style={{ margin: 0, fontSize: 14, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
+              <div key={kpi.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 14px" }}>
+                <p style={{ margin: "0 0 4px 0", fontSize: 8, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>{kpi.label}</p>
+                <p style={{ margin: 0, fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
               </div>
             ))}
           </div>
@@ -237,24 +237,24 @@ export default function Competencia() {
 
         {/* Filtros */}
         <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
-          <input type="text" placeholder="Filtrar por zona..." value={filtroZona} onChange={e => setFiltroZona(e.target.value)} style={{ flex: 1, minWidth: 140, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", padding: "6px 10px", fontFamily: "'Inter',sans-serif", fontSize: 12 }} />
+          <input type="text" placeholder="Filtrar por zona..." value={filtroZona} onChange={e => setFiltroZona(e.target.value)} style={{ flex: 1, minWidth: 140, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, color: "#fff", padding: "6px 10px", fontFamily: "var(--font-body)", fontSize: 12 }} />
           <div style={{ display: "flex", gap: 5 }}>
             {(["todos","venta","alquiler"] as const).map(op => (
-              <button key={op} onClick={() => setFiltroOp(op)} style={{ padding: "5px 10px", borderRadius: 16, border: `1px solid ${filtroOp === op ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: filtroOp === op ? "rgba(153,0,0,0.12)" : "transparent", color: filtroOp === op ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+              <button key={op} onClick={() => setFiltroOp(op)} style={{ padding: "5px 10px", borderRadius: 16, border: `1px solid ${filtroOp === op ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`, background: filtroOp === op ? "rgba(153,0,0,0.12)" : "transparent", color: filtroOp === op ? "#990000" : "var(--gfi-text-muted)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
                 {op === "todos" ? "Todas" : op === "venta" ? "Venta" : "Alquiler"}
               </button>
             ))}
           </div>
           <div style={{ display: "flex", gap: 5 }}>
             {(["todos","activa","bajada","vendida"] as const).map(est => (
-              <button key={est} onClick={() => setFiltroEstado(est)} style={{ padding: "5px 10px", borderRadius: 16, border: `1px solid ${filtroEstado === est ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.08)"}`, background: filtroEstado === est ? "rgba(255,255,255,0.08)" : "transparent", color: filtroEstado === est ? "#fff" : "rgba(255,255,255,0.3)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", textTransform: "capitalize" }}>
+              <button key={est} onClick={() => setFiltroEstado(est)} style={{ padding: "5px 10px", borderRadius: 16, border: `1px solid ${filtroEstado === est ? "var(--gfi-text-muted)" : "var(--gfi-border)"}`, background: filtroEstado === est ? "var(--gfi-border)" : "transparent", color: filtroEstado === est ? "#fff" : "var(--gfi-text-muted)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "capitalize" }}>
                 {est === "todos" ? "Todos" : est}
               </button>
             ))}
           </div>
           <div style={{ display: "flex", gap: 5, marginLeft: "auto" }}>
             {(["preciom2","precio","dias"] as const).map(o => (
-              <button key={o} onClick={() => setOrdenar(o)} style={{ padding: "5px 10px", borderRadius: 16, border: `1px solid ${ordenar === o ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.08)"}`, background: ordenar === o ? "rgba(153,0,0,0.12)" : "transparent", color: ordenar === o ? "#990000" : "rgba(255,255,255,0.3)", fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+              <button key={o} onClick={() => setOrdenar(o)} style={{ padding: "5px 10px", borderRadius: 16, border: `1px solid ${ordenar === o ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`, background: ordenar === o ? "rgba(153,0,0,0.12)" : "transparent", color: ordenar === o ? "#990000" : "var(--gfi-text-muted)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
                 {o === "preciom2" ? "$/m²" : o === "precio" ? "Precio" : "Días"}
               </button>
             ))}
@@ -262,20 +262,20 @@ export default function Competencia() {
         </div>
 
         {/* Tabla */}
-        <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
           {filtradas.length === 0 ? (
             <div style={{ padding: 60, textAlign: "center" }}>
               <p style={{ margin: "0 0 8px 0", fontSize: 28 }}>🔍</p>
-              <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.3)" }}>
+              <p style={{ margin: 0, fontSize: 13, color: "var(--gfi-text-muted)" }}>
                 {propiedades.length === 0 ? "Agregá propiedades competidoras para analizar el mercado" : "Sin resultados con los filtros actuales"}
               </p>
             </div>
           ) : (
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ background: "rgba(255,255,255,0.03)" }}>
+                <tr style={{ background: "var(--gfi-bg-card)" }}>
                   {["Estado", "Propiedad", "Zona", "Ambientes", "Sup.", "Precio", "$/m²", "Días", "Acciones"].map(h => (
-                    <th key={h} style={{ padding: "9px 12px", textAlign: h === "Propiedad" || h === "Zona" ? "left" : "center", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>{h}</th>
+                    <th key={h} style={{ padding: "9px 12px", textAlign: h === "Propiedad" || h === "Zona" ? "left" : "center", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid var(--gfi-border-subtle)" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -283,7 +283,7 @@ export default function Competencia() {
                 {filtradas.map((p, idx) => (
                   <tr key={p.id} style={{ background: idx % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)", opacity: p.estado === "vendida" ? 0.5 : 1 }}>
                     <td style={{ padding: "9px 12px", textAlign: "center" }}>
-                      <select value={p.estado} onChange={e => cambiarEstado(p.id, e.target.value as PropiedadCompetencia["estado"])} style={{ background: "transparent", border: "none", color: estadoColor(p.estado), fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+                      <select value={p.estado} onChange={e => cambiarEstado(p.id, e.target.value as PropiedadCompetencia["estado"])} style={{ background: "transparent", border: "none", color: estadoColor(p.estado), fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
                         <option value="activa">🟢 Activa</option>
                         <option value="bajada">🟡 Bajó</option>
                         <option value="vendida">🔴 Vendida</option>
@@ -291,11 +291,11 @@ export default function Competencia() {
                     </td>
                     <td style={{ padding: "9px 12px" }}>
                       <div style={{ fontWeight: 600, fontSize: 12 }}>{p.titulo}</div>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{p.portal} · {p.tipo} · {p.operacion}</div>
+                      <div style={{ fontSize: 9, color: "var(--gfi-text-muted)" }}>{p.portal} · {p.tipo} · {p.operacion}</div>
                     </td>
-                    <td style={{ padding: "9px 12px", fontSize: 11, color: "rgba(255,255,255,0.6)" }}>{p.zona}</td>
+                    <td style={{ padding: "9px 12px", fontSize: 11, color: "var(--gfi-text-secondary)" }}>{p.zona}</td>
                     <td style={{ padding: "9px 12px", textAlign: "center", fontSize: 12 }}>{p.ambientes}</td>
-                    <td style={{ padding: "9px 12px", textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                    <td style={{ padding: "9px 12px", textAlign: "center", fontSize: 11, color: "var(--gfi-text-secondary)" }}>
                       {p.superficieCubierta}m²{p.superficieTotal > p.superficieCubierta ? `+${p.superficieTotal - p.superficieCubierta}` : ""}
                     </td>
                     <td style={{ padding: "9px 12px", textAlign: "center", fontSize: 13, fontWeight: 700 }}>
@@ -303,7 +303,7 @@ export default function Competencia() {
                     </td>
                     <td style={{ padding: "9px 12px", textAlign: "center" }}>
                       {p.preciom2 > 0 ? (
-                        <span style={{ fontSize: 11, fontWeight: 700, color: stats && p.preciom2 < stats.avgm2 ? "#3abab6" : stats && p.preciom2 > stats.avgm2 * 1.1 ? "#990000" : "rgba(255,255,255,0.7)" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: stats && p.preciom2 < stats.avgm2 ? "#3abab6" : stats && p.preciom2 > stats.avgm2 * 1.1 ? "#990000" : "var(--gfi-text-primary)" }}>
                           {p.moneda} {fmt(p.preciom2, 0)}
                         </span>
                       ) : "—"}
@@ -315,7 +315,7 @@ export default function Competencia() {
                     </td>
                     <td style={{ padding: "9px 12px", textAlign: "center", display: "flex", gap: 4, justifyContent: "center" }}>
                       {p.link && <a href={p.link} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: "#3b82f6", textDecoration: "none" }}>🔗</a>}
-                      <button onClick={() => eliminarPropiedad(p.id)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", cursor: "pointer", fontSize: 12 }}>✕</button>
+                      <button onClick={() => eliminarPropiedad(p.id)} style={{ background: "none", border: "none", color: "var(--gfi-text-dim)", cursor: "pointer", fontSize: 12 }}>✕</button>
                     </td>
                   </tr>
                 ))}
@@ -326,8 +326,8 @@ export default function Competencia() {
 
         {/* Comparación precios/m² por zona */}
         {zonas.length > 1 && (
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginTop: 20 }}>
-            <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Precio/m² por Zona</p>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginTop: 20 }}>
+            <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Precio/m² por Zona</p>
             {zonas.map(zona => {
               const props = propiedades.filter(p => p.zona === zona && p.preciom2 > 0 && p.estado === "activa");
               if (props.length === 0) return null;
@@ -338,12 +338,12 @@ export default function Competencia() {
               }));
               return (
                 <div key={zona} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, width: 120, color: "rgba(255,255,255,0.6)" }}>{zona}</span>
-                  <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
+                  <span style={{ fontSize: 11, width: 120, color: "var(--gfi-text-secondary)" }}>{zona}</span>
+                  <div style={{ flex: 1, height: 6, background: "var(--gfi-border-subtle)", borderRadius: 3, overflow: "hidden" }}>
                     <div style={{ height: "100%", width: `${(avg / maxAvg) * 100}%`, background: "#990000", borderRadius: 3 }} />
                   </div>
                   <span style={{ fontSize: 11, fontWeight: 700, color: "#990000", width: 80, textAlign: "right" }}>{form.moneda} {fmt(avg, 0)}/m²</span>
-                  <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", width: 50 }}>{props.length} prop.</span>
+                  <span style={{ fontSize: 9, color: "var(--gfi-text-muted)", width: 50 }}>{props.length} prop.</span>
                 </div>
               );
             })}

@@ -280,12 +280,12 @@ function fechaHoy(): string {
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255,255,255,0.05)",
+  background: "var(--gfi-border-subtle)",
   border: "1px solid #222222",
   borderRadius: 6,
   color: "#e0e0e0",
   padding: "7px 10px",
-  fontFamily: "'Inter',sans-serif",
+  fontFamily: "var(--font-body)",
   fontSize: 12,
   boxSizing: "border-box",
   outline: "none",
@@ -294,8 +294,8 @@ const inputStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: 9,
-  color: "rgba(255,255,255,0.4)",
-  fontFamily: "'Montserrat',sans-serif",
+  color: "var(--gfi-text-muted)",
+  fontFamily: "var(--font-display)",
   fontWeight: 700,
   letterSpacing: "0.08em",
   textTransform: "uppercase",
@@ -316,7 +316,7 @@ const btnPrimary: React.CSSProperties = {
   border: "none",
   color: "#fff",
   fontSize: 12,
-  fontFamily: "'Montserrat',sans-serif",
+  fontFamily: "var(--font-display)",
   fontWeight: 700,
   cursor: "pointer",
 };
@@ -326,9 +326,9 @@ const btnSecondary: React.CSSProperties = {
   borderRadius: 8,
   background: "transparent",
   border: "1px solid #222222",
-  color: "rgba(255,255,255,0.4)",
+  color: "var(--gfi-text-muted)",
   fontSize: 12,
-  fontFamily: "'Inter',sans-serif",
+  fontFamily: "var(--font-body)",
   cursor: "pointer",
 };
 
@@ -351,8 +351,8 @@ function Modal({ onClose, children, title }: { onClose: () => void; children: Re
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <p style={{ margin: 0, fontSize: 13, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#e0e0e0", letterSpacing: "-0.01em" }}>{title}</p>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer", lineHeight: 1 }}>✕</button>
+          <p style={{ margin: 0, fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#e0e0e0", letterSpacing: "-0.01em" }}>{title}</p>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 18, cursor: "pointer", lineHeight: 1 }}>✕</button>
         </div>
         {children}
       </div>
@@ -730,7 +730,7 @@ export default function AnalisisCompetencia() {
   if (!hydrated) {
     return (
       <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Inter',sans-serif", fontSize: 13 }}>Cargando...</p>
+        <p style={{ color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)", fontSize: 13 }}>Cargando...</p>
       </div>
     );
   }
@@ -739,8 +739,8 @@ export default function AnalisisCompetencia() {
     padding: "9px 12px",
     textAlign: "left",
     fontSize: 9,
-    color: "rgba(255,255,255,0.35)",
-    fontFamily: "'Montserrat',sans-serif",
+    color: "var(--gfi-text-muted)",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     letterSpacing: "0.07em",
     textTransform: "uppercase",
@@ -752,17 +752,17 @@ export default function AnalisisCompetencia() {
     padding: "10px 12px",
     fontSize: 12,
     color: "#e0e0e0",
-    borderBottom: "1px solid rgba(255,255,255,0.04)",
+    borderBottom: "1px solid var(--gfi-border-subtle)",
     verticalAlign: "middle",
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#e0e0e0", fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#e0e0e0", fontFamily: "var(--font-body)" }}>
 
       {/* Header */}
-      <div style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid #222222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
-        <h1 style={{ margin: 0, fontSize: 20, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "-0.02em", color: "#e0e0e0" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
+        <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "-0.02em", color: "#e0e0e0" }}>
           Análisis de la Competencia
         </h1>
       </div>
@@ -781,9 +781,9 @@ export default function AnalisisCompetencia() {
                 background: "transparent",
                 border: "none",
                 borderBottom: active ? "2px solid #990000" : "2px solid transparent",
-                color: active ? "#e0e0e0" : "rgba(255,255,255,0.4)",
+                color: active ? "#e0e0e0" : "var(--gfi-text-muted)",
                 fontSize: 12,
-                fontFamily: "'Montserrat',sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 cursor: "pointer",
                 letterSpacing: "0.02em",
@@ -804,7 +804,7 @@ export default function AnalisisCompetencia() {
         {tab === "mapa" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "'Inter',sans-serif" }}>
+              <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>
                 {inmobiliarias.length} inmobiliaria{inmobiliarias.length !== 1 ? "s" : ""} registrada{inmobiliarias.length !== 1 ? "s" : ""}
               </p>
               <button
@@ -818,7 +818,7 @@ export default function AnalisisCompetencia() {
             {inmobiliarias.length === 0 ? (
               <div style={{ ...cardStyle, padding: 60, textAlign: "center" }}>
                 <p style={{ margin: "0 0 8px 0", fontSize: 32, opacity: 0.5 }}>🏢</p>
-                <p style={{ margin: 0, fontSize: 14, color: "rgba(255,255,255,0.35)" }}>
+                <p style={{ margin: 0, fontSize: 14, color: "var(--gfi-text-muted)" }}>
                   Aún no tenés competidores registrados. Empezá agregando las inmobiliarias de tu zona.
                 </p>
               </div>
@@ -828,7 +828,7 @@ export default function AnalisisCompetencia() {
                 <div style={{ flex: "1 1 500px", ...cardStyle, padding: 0, overflow: "hidden" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                      <tr style={{ background: "var(--gfi-bg-secondary)" }}>
                         {["Nombre / Zona", "Activas", "$/m² prom.", "Días prom.", "Rotación", ""].map((h) => (
                           <th key={h} style={thStyle}>{h}</th>
                         ))}
@@ -849,12 +849,12 @@ export default function AnalisisCompetencia() {
                           >
                             <td style={tdStyle}>
                               <div style={{ fontWeight: 600, fontSize: 13, color: sel ? "#990000" : "#e0e0e0" }}>{inm.nombre}</div>
-                              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>{inm.zona}</div>
+                              <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 1 }}>{inm.zona}</div>
                             </td>
                             <td style={{ ...tdStyle, textAlign: "center" }}>
-                              <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 16, color: "#3abab6" }}>{nActivas}</span>
+                              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#3abab6" }}>{nActivas}</span>
                             </td>
-                            <td style={{ ...tdStyle, textAlign: "center", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#e0e0e0" }}>
+                            <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700, color: "#e0e0e0" }}>
                               {avgPrecioM2 !== null ? `${fmt(avgPrecioM2)}/m²` : "—"}
                             </td>
                             <td style={{ ...tdStyle, textAlign: "center" }}>
@@ -865,12 +865,12 @@ export default function AnalisisCompetencia() {
                               ) : "—"}
                             </td>
                             <td style={{ ...tdStyle, textAlign: "center" }}>
-                              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>{rotacion.toFixed(0)}%</span>
+                              <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)" }}>{rotacion.toFixed(0)}%</span>
                             </td>
                             <td style={{ ...tdStyle, textAlign: "center" }}>
                               <button
                                 onClick={(e) => { e.stopPropagation(); eliminarInmobiliaria(inm.id); }}
-                                style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", cursor: "pointer", fontSize: 12, padding: 4 }}
+                                style={{ background: "none", border: "none", color: "var(--gfi-text-dim)", cursor: "pointer", fontSize: 12, padding: 4 }}
                                 title="Eliminar"
                               >✕</button>
                             </td>
@@ -886,10 +886,10 @@ export default function AnalisisCompetencia() {
                   <div style={{ flex: "1 1 300px", ...cardStyle }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
                       <div>
-                        <p style={{ margin: "0 0 2px 0", fontSize: 15, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#990000" }}>{selectedInm.nombre}</p>
-                        <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{selectedInm.zona}</p>
+                        <p style={{ margin: "0 0 2px 0", fontSize: 15, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000" }}>{selectedInm.nombre}</p>
+                        <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-muted)" }}>{selectedInm.zona}</p>
                       </div>
-                      <button onClick={() => setSelectedInmId(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 14 }}>✕</button>
+                      <button onClick={() => setSelectedInmId(null)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 14 }}>✕</button>
                     </div>
 
                     {/* Info básica */}
@@ -915,7 +915,7 @@ export default function AnalisisCompetencia() {
                       {selectedInm.notas && (
                         <div style={{ gridColumn: "1/3" }}>
                           <p style={{ ...labelStyle, margin: "0 0 2px 0" }}>Notas</p>
-                          <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>{selectedInm.notas}</p>
+                          <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-secondary)" }}>{selectedInm.notas}</p>
                         </div>
                       )}
                     </div>
@@ -926,12 +926,12 @@ export default function AnalisisCompetencia() {
                         { label: "Activas", val: statsDetalle.activas.length, color: "#3abab6" },
                         { label: "$/m² prom.", val: statsDetalle.avgPrecioM2 !== null ? `${fmt(statsDetalle.avgPrecioM2)}/m²` : "—", color: "#e0e0e0" },
                         { label: "Días prom.", val: statsDetalle.avgDias !== null ? `${fmt(statsDetalle.avgDias)}d` : "—", color: statsDetalle.avgDias !== null && statsDetalle.avgDias > 90 ? "#990000" : statsDetalle.avgDias !== null && statsDetalle.avgDias > 60 ? "#d4960c" : "#3abab6" },
-                        { label: "Total prop.", val: statsDetalle.total, color: "rgba(255,255,255,0.6)" },
+                        { label: "Total prop.", val: statsDetalle.total, color: "var(--gfi-text-secondary)" },
                         { label: "Rotación", val: `${statsDetalle.rotacion.toFixed(0)}%`, color: "#3b82f6" },
                       ].map((k) => (
-                        <div key={k.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "10px 12px" }}>
+                        <div key={k.label} style={{ background: "var(--gfi-bg-card)", borderRadius: 8, padding: "10px 12px" }}>
                           <p style={{ ...labelStyle, margin: "0 0 3px 0" }}>{k.label}</p>
-                          <p style={{ margin: 0, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 15, color: k.color }}>{k.val}</p>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, color: k.color }}>{k.val}</p>
                         </div>
                       ))}
                     </div>
@@ -939,19 +939,19 @@ export default function AnalisisCompetencia() {
                     {/* Propiedades activas */}
                     <p style={{ ...labelStyle, marginBottom: 8 }}>Propiedades activas</p>
                     {statsDetalle.activas.length === 0 ? (
-                      <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>Sin propiedades activas</p>
+                      <p style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontStyle: "italic" }}>Sin propiedades activas</p>
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         {statsDetalle.activas.map((p) => (
-                          <div key={p.id} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "8px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div key={p.id} style={{ background: "var(--gfi-bg-card)", borderRadius: 8, padding: "8px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <div>
                               <p style={{ margin: "0 0 1px 0", fontSize: 11, fontWeight: 600, color: "#e0e0e0" }}>{p.descripcion}</p>
-                              <p style={{ margin: 0, fontSize: 10, color: "rgba(255,255,255,0.35)" }}>{p.barrio} · {p.tipo_propiedad} · {p.tipo_operacion}</p>
+                              <p style={{ margin: 0, fontSize: 10, color: "var(--gfi-text-muted)" }}>{p.barrio} · {p.tipo_propiedad} · {p.tipo_operacion}</p>
                             </div>
                             <div style={{ textAlign: "right" }}>
-                              <p style={{ margin: "0 0 1px 0", fontSize: 12, fontWeight: 700, fontFamily: "'Montserrat',sans-serif", color: "#e0e0e0" }}>{p.moneda} {fmt(p.precio)}</p>
+                              <p style={{ margin: "0 0 1px 0", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-display)", color: "#e0e0e0" }}>{p.moneda} {fmt(p.precio)}</p>
                               {p.precio_m2 !== null && (
-                                <p style={{ margin: 0, fontSize: 9, color: "rgba(255,255,255,0.35)" }}>{fmt(p.precio_m2)}/m²</p>
+                                <p style={{ margin: 0, fontSize: 9, color: "var(--gfi-text-muted)" }}>{fmt(p.precio_m2)}/m²</p>
                               )}
                             </div>
                           </div>
@@ -972,7 +972,7 @@ export default function AnalisisCompetencia() {
           <div>
             {/* Barra superior */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-              <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+              <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-muted)" }}>
                 {propsFiltradas.length} propiedad{propsFiltradas.length !== 1 ? "es" : ""}
               </p>
               <button
@@ -1004,10 +1004,10 @@ export default function AnalisisCompetencia() {
                     onClick={() => setFiltroOp(op)}
                     style={{
                       padding: "5px 12px", borderRadius: 16, fontSize: 10,
-                      fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer",
+                      fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer",
                       border: `1px solid ${filtroOp === op ? "rgba(153,0,0,0.5)" : "#222222"}`,
                       background: filtroOp === op ? "rgba(153,0,0,0.12)" : "transparent",
-                      color: filtroOp === op ? "#990000" : "rgba(255,255,255,0.4)",
+                      color: filtroOp === op ? "#990000" : "var(--gfi-text-muted)",
                     }}
                   >
                     {op === "todos" ? "Todas" : op === "venta" ? "Venta" : "Alquiler"}
@@ -1032,10 +1032,10 @@ export default function AnalisisCompetencia() {
                       onClick={() => setFiltroEstado(est)}
                       style={{
                         padding: "5px 12px", borderRadius: 16, fontSize: 10,
-                        fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer",
-                        border: `1px solid ${filtroEstado === est ? (badge?.color ?? "rgba(255,255,255,0.3)") + "66" : "#222222"}`,
-                        background: filtroEstado === est ? (badge?.bg ?? "rgba(255,255,255,0.05)") : "transparent",
-                        color: filtroEstado === est ? (badge?.color ?? "#e0e0e0") : "rgba(255,255,255,0.4)",
+                        fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer",
+                        border: `1px solid ${filtroEstado === est ? (badge?.color ?? "var(--gfi-text-muted)") + "66" : "#222222"}`,
+                        background: filtroEstado === est ? (badge?.bg ?? "var(--gfi-border-subtle)") : "transparent",
+                        color: filtroEstado === est ? (badge?.color ?? "#e0e0e0") : "var(--gfi-text-muted)",
                       }}
                     >
                       {est === "todos" ? "Todos" : est.charAt(0).toUpperCase() + est.slice(1)}
@@ -1049,7 +1049,7 @@ export default function AnalisisCompetencia() {
             {propiedades.length === 0 && inmobiliarias.length === 0 ? (
               <div style={{ ...cardStyle, padding: 60, textAlign: "center" }}>
                 <p style={{ margin: "0 0 8px 0", fontSize: 32, opacity: 0.5 }}>🏠</p>
-                <p style={{ margin: 0, fontSize: 14, color: "rgba(255,255,255,0.35)" }}>
+                <p style={{ margin: 0, fontSize: 14, color: "var(--gfi-text-muted)" }}>
                   Aún no tenés competidores registrados. Empezá agregando las inmobiliarias de tu zona.
                 </p>
               </div>
@@ -1057,13 +1057,13 @@ export default function AnalisisCompetencia() {
               <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
                 {propsFiltradas.length === 0 ? (
                   <div style={{ padding: 40, textAlign: "center" }}>
-                    <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.3)" }}>Sin resultados con los filtros actuales</p>
+                    <p style={{ margin: 0, fontSize: 13, color: "var(--gfi-text-muted)" }}>Sin resultados con los filtros actuales</p>
                   </div>
                 ) : (
                   <div style={{ overflowX: "auto" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 820 }}>
                       <thead>
-                        <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                        <tr style={{ background: "var(--gfi-bg-secondary)" }}>
                           <th style={thStyle}>Descripción</th>
                           <th style={thStyle}>Inmobiliaria</th>
                           <th style={thStyle}>Barrio</th>
@@ -1119,14 +1119,14 @@ export default function AnalisisCompetencia() {
                               <td style={{ ...tdStyle, fontSize: 11 }}>{p.barrio || "—"}</td>
                               <td style={{ ...tdStyle, fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{p.tipo_propiedad}</td>
                               <td style={{ ...tdStyle, textAlign: "center", fontSize: 11 }}>{p.m2 !== null ? `${p.m2}` : "—"}</td>
-                              <td style={{ ...tdStyle, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 13, whiteSpace: "nowrap" }}>
+                              <td style={{ ...tdStyle, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, whiteSpace: "nowrap" }}>
                                 {p.moneda} {fmt(p.precio)}
                               </td>
-                              <td style={{ ...tdStyle, textAlign: "center", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, color: "#990000" }}>
+                              <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#990000" }}>
                                 {p.precio_m2 !== null ? `${fmt(p.precio_m2)}/m²` : "—"}
                               </td>
                               <td style={{ ...tdStyle, textAlign: "center" }}>
-                                <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 20, background: badge.bg, color: badge.color, fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                                <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 20, background: badge.bg, color: badge.color, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                   {badge.label}
                                 </span>
                               </td>
@@ -1160,11 +1160,11 @@ export default function AnalisisCompetencia() {
 
             {/* Comparativa por barrio */}
             <div style={cardStyle}>
-              <p style={{ margin: "0 0 16px 0", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <p style={{ margin: "0 0 16px 0", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 Comparativa precio/m² por barrio
               </p>
               {barrioPreciosComp.length === 0 ? (
-                <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Sin datos suficientes</p>
+                <p style={{ margin: 0, fontSize: 12, color: "var(--gfi-text-muted)" }}>Sin datos suficientes</p>
               ) : (
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
@@ -1180,13 +1180,13 @@ export default function AnalisisCompetencia() {
                       {barrioPreciosComp.map(({ barrio, competencia }) => (
                         <tr key={barrio}>
                           <td style={tdStyle}>{barrio}</td>
-                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#990000" }}>
+                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 700, color: "#990000" }}>
                             {fmt(competencia)}/m²
                           </td>
-                          <td style={{ ...tdStyle, textAlign: "center", color: "rgba(255,255,255,0.4)" }}>
+                          <td style={{ ...tdStyle, textAlign: "center", color: "var(--gfi-text-muted)" }}>
                             N/A
                           </td>
-                          <td style={{ ...tdStyle, textAlign: "center", color: "rgba(255,255,255,0.4)" }}>—</td>
+                          <td style={{ ...tdStyle, textAlign: "center", color: "var(--gfi-text-muted)" }}>—</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1198,7 +1198,7 @@ export default function AnalisisCompetencia() {
             {/* Gráfico de barras: precio/m² por inmobiliaria */}
             {inmpreciosM2.length > 0 && (
               <div style={cardStyle}>
-                <p style={{ margin: "0 0 16px 0", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                <p style={{ margin: "0 0 16px 0", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                   Precio/m² promedio por inmobiliaria
                 </p>
                 <PrecioM2Chart data={inmpreciosM2} />
@@ -1208,7 +1208,7 @@ export default function AnalisisCompetencia() {
             {/* Gráfico horizontal: días en mercado */}
             {inmdias.length > 0 && (
               <div style={cardStyle}>
-                <p style={{ margin: "0 0 16px 0", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                <p style={{ margin: "0 0 16px 0", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                   Tiempo promedio en mercado (propiedades activas)
                 </p>
                 <DiasChart data={inmdias} />
@@ -1217,12 +1217,12 @@ export default function AnalisisCompetencia() {
 
             {/* Insights */}
             <div style={cardStyle}>
-              <p style={{ margin: "0 0 16px 0", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <p style={{ margin: "0 0 16px 0", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 Insights automáticos
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {insights.map((insight, idx) => (
-                  <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 8, borderLeft: "3px solid #990000" }}>
+                  <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", background: "var(--gfi-bg-card)", borderRadius: 8, borderLeft: "3px solid #990000" }}>
                     <span style={{ color: "#990000", fontSize: 14, lineHeight: 1.5, flexShrink: 0 }}>▸</span>
                     <p style={{ margin: 0, fontSize: 12, color: "#e0e0e0", lineHeight: 1.6 }}>{insight}</p>
                   </div>
@@ -1414,15 +1414,15 @@ function PropiedadDetalle({
   onActualizarEstado: () => void;
 }) {
   const badge = estadoBadge(prop.estado);
-  const rowStyle: React.CSSProperties = { display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" };
-  const keyStyle: React.CSSProperties = { fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" };
+  const rowStyle: React.CSSProperties = { display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--gfi-border-subtle)" };
+  const keyStyle: React.CSSProperties = { fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" };
   const valStyle: React.CSSProperties = { fontSize: 12, color: "#e0e0e0", fontWeight: 500 };
 
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
         <p style={{ margin: "0 0 4px 0", fontSize: 15, fontWeight: 700, color: "#e0e0e0" }}>{prop.descripcion}</p>
-        <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, background: badge.bg, color: badge.color, fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{badge.label}</span>
+        <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, background: badge.bg, color: badge.color, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>{badge.label}</span>
       </div>
       <div>
         {[
@@ -1445,7 +1445,7 @@ function PropiedadDetalle({
         {prop.notas && (
           <div style={{ marginTop: 10 }}>
             <p style={{ ...keyStyle, marginBottom: 4 }}>Notas</p>
-            <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.6)", fontStyle: "italic" }}>{prop.notas}</p>
+            <p style={{ margin: 0, fontSize: 12, color: "var(--gfi-text-secondary)", fontStyle: "italic" }}>{prop.notas}</p>
           </div>
         )}
       </div>
@@ -1455,7 +1455,7 @@ function PropiedadDetalle({
         </a>
       )}
       <div style={{ marginTop: 20 }}>
-        <button onClick={onActualizarEstado} style={{ padding: "8px 18px", borderRadius: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.4)", color: "#990000", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+        <button onClick={onActualizarEstado} style={{ padding: "8px 18px", borderRadius: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.4)", color: "#990000", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
           Actualizar estado
         </button>
       </div>
@@ -1467,7 +1467,7 @@ function PropiedadDetalle({
 
 function PrecioM2Chart({ data }: { data: { nombre: string; avg: number | null }[] }) {
   const validData = data.filter((d): d is { nombre: string; avg: number } => d.avg !== null);
-  if (validData.length === 0) return <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Sin datos</p>;
+  if (validData.length === 0) return <p style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>Sin datos</p>;
 
   const maxVal = Math.max(...validData.map((d) => d.avg));
   const W = 700;
@@ -1492,7 +1492,7 @@ function PrecioM2Chart({ data }: { data: { nombre: string; avg: number | null }[
           return (
             <g key={frac}>
               <line x1={paddingLeft} y1={y} x2={paddingLeft + chartW} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
-              <text x={paddingLeft - 8} y={y + 4} textAnchor="end" fill="rgba(255,255,255,0.3)" fontSize={9} fontFamily="Inter,sans-serif">
+              <text x={paddingLeft - 8} y={y + 4} textAnchor="end" fill="var(--gfi-text-muted)" fontSize={9} fontFamily="Inter,sans-serif">
                 {fmt(val)}
               </text>
             </g>
@@ -1523,8 +1523,8 @@ function PrecioM2Chart({ data }: { data: { nombre: string; avg: number | null }[
           );
         })}
         {/* Axis */}
-        <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={paddingTop + chartH} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
-        <line x1={paddingLeft} y1={paddingTop + chartH} x2={paddingLeft + chartW} y2={paddingTop + chartH} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+        <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={paddingTop + chartH} stroke="var(--gfi-border)" strokeWidth={1} />
+        <line x1={paddingLeft} y1={paddingTop + chartH} x2={paddingLeft + chartW} y2={paddingTop + chartH} stroke="var(--gfi-border)" strokeWidth={1} />
       </svg>
     </div>
   );
@@ -1534,7 +1534,7 @@ function PrecioM2Chart({ data }: { data: { nombre: string; avg: number | null }[
 
 function DiasChart({ data }: { data: { nombre: string; avg: number | null }[] }) {
   const validData = data.filter((d): d is { nombre: string; avg: number } => d.avg !== null);
-  if (validData.length === 0) return <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Sin datos</p>;
+  if (validData.length === 0) return <p style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>Sin datos</p>;
 
   const maxVal = Math.max(...validData.map((d) => d.avg), 1);
 
@@ -1549,7 +1549,7 @@ function DiasChart({ data }: { data: { nombre: string; avg: number | null }[] })
             <div style={{ flex: 1, height: 10, background: "rgba(255,255,255,0.06)", borderRadius: 5, overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 5, transition: "width 0.4s ease" }} />
             </div>
-            <span style={{ fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color, minWidth: 50, textAlign: "right" }}>
+            <span style={{ fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, color, minWidth: 50, textAlign: "right" }}>
               {d.avg.toFixed(0)}d
             </span>
           </div>
@@ -1559,7 +1559,7 @@ function DiasChart({ data }: { data: { nombre: string; avg: number | null }[] })
         {[{ color: "#3abab6", label: "< 60 días" }, { color: "#d4960c", label: "60–90 días" }, { color: "#990000", label: "> 90 días" }].map((leg) => (
           <div key={leg.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: leg.color }} />
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{leg.label}</span>
+            <span style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>{leg.label}</span>
           </div>
         ))}
       </div>

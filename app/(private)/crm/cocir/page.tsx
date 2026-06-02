@@ -374,7 +374,7 @@ export default function COCIRPage() {
         .cc-phone-pill.on { background: var(--gfi-red-soft); border-color: var(--gfi-red-border); color: var(--gfi-red); }
         .cc-phone-pill.ok.on { background: rgba(10,61,46,0.4); border-color: rgba(58,186,182,0.3); color: var(--gfi-green-text); }
         .cc-phone-pill.diferente.on { background: rgba(196,74,0,0.12); border-color: var(--gfi-orange-border); color: #d4960c; }
-        .cc-phone-pill.sin-padron.on { background: rgba(255,255,255,0.05); border-color: var(--gfi-border-bright); color: var(--gfi-text-secondary); }
+        .cc-phone-pill.sin-padron.on { background: var(--gfi-border-subtle); border-color: var(--gfi-border-bright); color: var(--gfi-text-secondary); }
         /* Phone rows */
         .cc-phone-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.1s; }
         .cc-phone-row:hover { background: rgba(153,0,0,0.03); }
@@ -406,7 +406,7 @@ export default function COCIRPage() {
 
         {/* KPIs */}
         {cargandoStats ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--gfi-text-muted)" }}>
             <div className="cc-spinner" /> Cargando estadísticas del padrón...
           </div>
         ) : stats ? (
@@ -432,7 +432,7 @@ export default function COCIRPage() {
               <div className="cc-kpi-label">Con email</div>
             </div>
             <div className="cc-kpi">
-              <div className="cc-kpi-val" style={{ fontSize: 13, color: stats.ultimaSync ? "#d4960c" : "rgba(255,255,255,0.3)" }}>
+              <div className="cc-kpi-val" style={{ fontSize: 13, color: stats.ultimaSync ? "#d4960c" : "var(--gfi-text-muted)" }}>
                 {stats.ultimaSync
                   ? new Date(stats.ultimaSync).toLocaleDateString("es-AR", { day: "numeric", month: "short" })
                   : "—"}
@@ -441,7 +441,7 @@ export default function COCIRPage() {
             </div>
           </div>
         ) : (
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+          <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>
             {stats === null && !cargandoStats ? "El padrón COCIR aún no fue sincronizado." : ""}
           </div>
         )}
@@ -459,7 +459,7 @@ export default function COCIRPage() {
           <div className="cc-card">
             {stats && stats.total > 0 ? (
               <div>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 12 }}>
                   Muestra del padrón — últimos 20 registros
                 </div>
                 <PadronMuestra onSelect={setContacto} />
@@ -467,10 +467,10 @@ export default function COCIRPage() {
             ) : (
               <div style={{ textAlign: "center", padding: "30px 20px" }}>
                 <div style={{ fontSize: 28, marginBottom: 12 }}>📭</div>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.4)" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "var(--gfi-text-muted)" }}>
                   Padrón vacío
                 </div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", marginTop: 6 }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-dim)", marginTop: 6 }}>
                   {esAdmin
                     ? "El padrón COCIR no ha sido sincronizado. Ejecutá la sincronización desde el panel de administración (/admin/sync)."
                     : "El padrón aún no fue cargado. Contactá al administrador."}
@@ -490,12 +490,12 @@ export default function COCIRPage() {
               onChange={e => setBusqueda(e.target.value)}
             />
             {buscando && (
-              <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--gfi-text-muted)" }}>
                 <div className="cc-spinner" /> Buscando en el padrón...
               </div>
             )}
             {!buscando && busqueda.length >= 2 && (
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                 {resultados.length === 0 ? "Sin resultados." : `${resultados.length} resultado${resultados.length > 1 ? "s" : ""}`}
               </div>
             )}
@@ -556,7 +556,7 @@ export default function COCIRPage() {
             {busqueda.length < 2 && (
               <div style={{ padding: "30px 20px", textAlign: "center" }}>
                 <div style={{ fontSize: 24, marginBottom: 10 }}>🔍</div>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-muted)" }}>
                   Ingresá al menos 2 caracteres para buscar
                 </div>
               </div>
@@ -583,7 +583,7 @@ export default function COCIRPage() {
                   <div className="cc-kpi-label">Coinciden / OK</div>
                 </div>
                 <div className="cc-kpi">
-                  <div className="cc-kpi-val" style={{ color: "rgba(255,255,255,0.3)" }}>{phoneData.totales.sin_padron}</div>
+                  <div className="cc-kpi-val" style={{ color: "var(--gfi-text-muted)" }}>{phoneData.totales.sin_padron}</div>
                   <div className="cc-kpi-label">Sin registro COCIR</div>
                 </div>
               </div>
@@ -616,7 +616,7 @@ export default function COCIRPage() {
             {/* Lista */}
             <div className="cc-card" style={{ padding: 0, overflow: "hidden" }}>
               {phoneCargando && (
-                <div style={{ padding: "20px 16px", display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+                <div style={{ padding: "20px 16px", display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--gfi-text-muted)" }}>
                   <div className="cc-spinner" /> Cargando comparación de teléfonos...
                 </div>
               )}
@@ -624,7 +624,7 @@ export default function COCIRPage() {
                 <div style={{ padding: "14px 16px", fontSize: 12, color: "#ff4444" }}>⚠ {phoneError}</div>
               )}
               {!phoneCargando && !phoneError && phoneData && phoneData.data.length === 0 && (
-                <div style={{ padding: "30px 20px", textAlign: "center", fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+                <div style={{ padding: "30px 20px", textAlign: "center", fontSize: 12, color: "var(--gfi-text-muted)" }}>
                   No hay registros en esta categoría.
                 </div>
               )}
@@ -673,14 +673,14 @@ export default function COCIRPage() {
                     </div>
                     {/* Teléfonos */}
                     <div style={{ textAlign: "right", flexShrink: 0 }}>
-                      <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em", color: "rgba(255,255,255,0.25)", marginBottom: 2 }}>GFI</div>
+                      <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.06em", color: "var(--gfi-text-dim)", marginBottom: 2 }}>GFI</div>
                       {telGFI
                         ? <span className="cc-phone-tel">{telGFI}</span>
                         : <span className="cc-phone-missing">sin teléfono</span>
                       }
                     </div>
                     <div style={{ textAlign: "right", flexShrink: 0 }}>
-                      <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em", color: "rgba(255,255,255,0.25)", marginBottom: 2 }}>COCIR</div>
+                      <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.06em", color: "var(--gfi-text-dim)", marginBottom: 2 }}>COCIR</div>
                       {telCOCIR
                         ? <span className="cc-phone-cocir">{telCOCIR}</span>
                         : <span className="cc-phone-missing">—</span>
@@ -713,7 +713,7 @@ export default function COCIRPage() {
                     ← Anterior
                   </button>
                 )}
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", alignSelf: "center" }}>
+                <span style={{ fontSize: 12, color: "var(--gfi-text-muted)", alignSelf: "center" }}>
                   Página {phoneData.page + 1} · {phoneData.total} perfiles
                 </span>
                 {phoneData.hasMore && (
@@ -730,14 +730,14 @@ export default function COCIRPage() {
         {tab === "sync" && esAdmin && (
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div className="cc-card">
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 4 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 4 }}>
                 Sincronización de datos desde padrón COCIR → perfiles
               </div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 16, lineHeight: 1.6 }}>
                 Copia los datos del padrón COCIR hacia los perfiles de usuarios registrados, cruzando por número de matrícula. Por defecto solo actualiza campos vacíos.
               </div>
 
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 10 }}>
                 Campos a sincronizar
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
@@ -754,10 +754,10 @@ export default function COCIRPage() {
                       onChange={() => toggleCampo(campo.id)}
                     />
                     <div>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: syncCampos.includes(campo.id) ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                      <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: syncCampos.includes(campo.id) ? "#fff" : "var(--gfi-text-secondary)" }}>
                         {campo.label}
                       </div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{campo.desc}</div>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{campo.desc}</div>
                     </div>
                   </label>
                 ))}
@@ -766,10 +766,10 @@ export default function COCIRPage() {
               <label className="cc-cb-row" style={{ marginBottom: 16, borderColor: syncForzar ? "rgba(234,179,8,0.3)" : undefined, background: syncForzar ? "rgba(234,179,8,0.05)" : undefined }}>
                 <input type="checkbox" checked={syncForzar} onChange={e => setSyncForzar(e.target.checked)} />
                 <div>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: syncForzar ? "#d4960c" : "rgba(255,255,255,0.5)" }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: syncForzar ? "#d4960c" : "var(--gfi-text-secondary)" }}>
                     ⚠ Forzar sobreescritura
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>Actualiza aunque el perfil ya tenga el dato cargado</div>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>Actualiza aunque el perfil ya tenga el dato cargado</div>
                 </div>
               </label>
 
@@ -791,7 +791,7 @@ export default function COCIRPage() {
             {/* Resultado */}
             {syncResultado && (
               <div className="cc-card">
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 14 }}>
                   Resultado de la sincronización
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10, marginBottom: 16 }}>
@@ -800,11 +800,11 @@ export default function COCIRPage() {
                     <div className="cc-sync-stat-label">Actualizados</div>
                   </div>
                   <div className="cc-sync-stat">
-                    <div className="cc-sync-stat-val" style={{ color: "rgba(255,255,255,0.4)" }}>{syncResultado.omitidos}</div>
+                    <div className="cc-sync-stat-val" style={{ color: "var(--gfi-text-muted)" }}>{syncResultado.omitidos}</div>
                     <div className="cc-sync-stat-label">Omitidos</div>
                   </div>
                   <div className="cc-sync-stat">
-                    <div className="cc-sync-stat-val" style={{ color: syncResultado.errores > 0 ? "#b80000" : "rgba(255,255,255,0.4)" }}>{syncResultado.errores}</div>
+                    <div className="cc-sync-stat-val" style={{ color: syncResultado.errores > 0 ? "#b80000" : "var(--gfi-text-muted)" }}>{syncResultado.errores}</div>
                     <div className="cc-sync-stat-label">Errores</div>
                   </div>
                   <div className="cc-sync-stat">
@@ -815,16 +815,16 @@ export default function COCIRPage() {
 
                 {syncResultado.detalle.length > 0 && (
                   <>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>
                       Detalle de cambios ({syncResultado.detalle.length})
                     </div>
                     <div style={{ maxHeight: 250, overflowY: "auto" }}>
                       {syncResultado.detalle.map(d => (
-                        <div key={d.id} style={{ padding: "7px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", gap: 12, alignItems: "flex-start" }}>
-                          <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#990000", flexShrink: 0 }}>#{d.matricula}</span>
+                        <div key={d.id} style={{ padding: "7px 10px", borderBottom: "1px solid var(--gfi-border-subtle)", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                          <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 800, color: "#990000", flexShrink: 0 }}>#{d.matricula}</span>
                           <div style={{ flex: 1 }}>
                             {Object.entries(d.cambios).map(([campo, valor]) => (
-                              <span key={campo} style={{ fontSize: 11, color: "#3abab6", fontFamily: "Montserrat,sans-serif", marginRight: 10 }}>
+                              <span key={campo} style={{ fontSize: 11, color: "#3abab6", fontFamily: "var(--font-display)", marginRight: 10 }}>
                                 {campo}: <strong>{valor}</strong>
                               </span>
                             ))}
@@ -866,22 +866,22 @@ export default function COCIRPage() {
                 <span style={{fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",color:estadoColor(contacto.estado)}}>{contacto.estado.toUpperCase()}</span>
               </div>
             )}
-            <div style={{display:"flex",flexDirection:"column",gap:10,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:16}}>
+            <div style={{display:"flex",flexDirection:"column",gap:10,borderTop:"1px solid var(--gfi-border-subtle)",paddingTop:16}}>
               {contacto.inmobiliaria && (
                 <div style={{display:"flex",gap:10}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Inmob.</span>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)",paddingTop:1}}>Inmob.</span>
                   <span style={{fontSize:13,color:"rgba(255,255,255,0.8)"}}>{contacto.inmobiliaria}</span>
                 </div>
               )}
               {contacto.localidad && (
                 <div style={{display:"flex",gap:10}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Localidad</span>
-                  <span style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>{contacto.localidad}</span>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)",paddingTop:1}}>Localidad</span>
+                  <span style={{fontSize:13,color:"var(--gfi-text-primary)"}}>{contacto.localidad}</span>
                 </div>
               )}
               {contacto.celular && (
                 <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Celular</span>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)"}}>Celular</span>
                   <a href={`https://wa.me/${contacto.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontWeight:700,fontSize:13}}>
                     {contacto.celular}
                   </a>
@@ -889,13 +889,13 @@ export default function COCIRPage() {
               )}
               {contacto.telefono && contacto.telefono !== contacto.celular && (
                 <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Teléfono</span>
-                  <span style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>{contacto.telefono}</span>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)"}}>Teléfono</span>
+                  <span style={{fontSize:13,color:"var(--gfi-text-primary)"}}>{contacto.telefono}</span>
                 </div>
               )}
               {contacto.email && (
                 <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Email</span>
+                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--gfi-text-muted)"}}>Email</span>
                   <a href={`mailto:${contacto.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:13,wordBreak:"break-all"}}>{contacto.email}</a>
                 </div>
               )}
@@ -926,8 +926,8 @@ function PadronMuestra({ onSelect }: { onSelect: (r: PadronEntry) => void }) {
     cargar();
   }, []);
 
-  if (cargando) return <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Cargando...</div>;
-  if (filas.length === 0) return <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Sin datos en el padrón.</div>;
+  if (cargando) return <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>Cargando...</div>;
+  if (filas.length === 0) return <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>Sin datos en el padrón.</div>;
 
   return (
     <div style={{ overflowX: "auto" }}>

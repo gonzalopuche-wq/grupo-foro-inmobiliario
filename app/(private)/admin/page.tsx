@@ -115,25 +115,25 @@ function CobrosMatchesAdmin() {
     <div style={{ marginBottom: 32 }}>
       <div className="adm-ind-titulo">Cobros <span>por matches</span></div>
       <div className="adm-ind-subtitulo">Registros de accesos a contactos (MIR + Divisas). Todos pagan por transferencia.</div>
-      {loading ? <div style={{ color: "rgba(255,255,255,0.3)", padding: 16 }}>Cargando...</div> : (
+      {loading ? <div style={{ color: "var(--gfi-text-muted)", padding: 16 }}>Cargando...</div> : (
         <>
           <div style={{ display: "flex", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
             <div style={{ background: "var(--gfi-green-soft)", border: "1px solid rgba(58,186,182,0.25)", borderRadius: 8, padding: "12px 20px" }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>Total acumulado</div>
+              <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Total acumulado</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: "var(--gfi-green-text)", fontFamily: "var(--font-mono)", fontVariantNumeric: "tabular-nums" }}>{fmt(total)}</div>
             </div>
-            <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "12px 20px" }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>MIR</div>
+            <div style={{ background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px" }}>
+              <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase" }}>MIR</div>
               <div style={{ fontSize: 18, fontWeight: 700 }}>{mirItems.length} accesos</div>
             </div>
-            <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "12px 20px" }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>Divisas</div>
+            <div style={{ background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px" }}>
+              <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Divisas</div>
               <div style={{ fontSize: 18, fontWeight: 700 }}>{divisasItems.length} accesos</div>
             </div>
           </div>
           {mirItems.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8, fontFamily: "Montserrat,sans-serif" }}>MIR — desbloqueos</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8, fontFamily: "var(--font-display)" }}>MIR — desbloqueos</div>
               <div className="adm-tabla-wrap"><table className="adm-tabla"><thead><tr><th>Corredor</th><th>Mat.</th><th>Tipo</th><th>Monto</th><th>Fecha</th></tr></thead>
                 <tbody>{mirItems.map(x => (<tr key={x.id}><td>{x.perfiles?.apellido}, {x.perfiles?.nombre}</td><td>{x.perfiles?.matricula ?? "—"}</td><td style={{ textTransform: "capitalize" }}>{x.tipo}</td><td style={{ color: "var(--gfi-green-text)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{fmt(x.monto)}</td><td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{fmtDate(x.created_at)}</td></tr>))}</tbody>
               </table></div>
@@ -141,13 +141,13 @@ function CobrosMatchesAdmin() {
           )}
           {divisasItems.length > 0 && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8, fontFamily: "Montserrat,sans-serif" }}>Divisas — accesos a contacto</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8, fontFamily: "var(--font-display)" }}>Divisas — accesos a contacto</div>
               <div className="adm-tabla-wrap"><table className="adm-tabla"><thead><tr><th>Corredor</th><th>Mat.</th><th>Monto</th><th>Fecha</th></tr></thead>
                 <tbody>{divisasItems.map(x => (<tr key={x.id}><td>{x.accedido?.apellido}, {x.accedido?.nombre}</td><td>{x.accedido?.matricula ?? "—"}</td><td style={{ color: "var(--gfi-green-text)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{fmt(x.monto)}</td><td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{fmtDate(x.created_at)}</td></tr>))}</tbody>
               </table></div>
             </div>
           )}
-          {mirItems.length === 0 && divisasItems.length === 0 && <div style={{ color: "rgba(255,255,255,0.3)", padding: 16 }}>Sin cobros registrados todavía.</div>}
+          {mirItems.length === 0 && divisasItems.length === 0 && <div style={{ color: "var(--gfi-text-muted)", padding: 16 }}>Sin cobros registrados todavía.</div>}
         </>
       )}
     </div>
@@ -472,7 +472,7 @@ export default function AdminPage() {
     });
     // Enviar email al colaborador
     try {
-      await enviarEmail(c.email, "✅ Tu acceso a GFI® fue aprobado", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:rgba(255,255,255,0.5);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`);
+      await enviarEmail(c.email, "✅ Tu acceso a GFI® fue aprobado", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:var(--gfi-text-secondary);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`);
     } catch {}
     setProcesandoColab(null);
     cargarColaboradores(filtroColab);
@@ -870,7 +870,7 @@ export default function AdminPage() {
     if (pago.perfiles?.email) {
       try {
         const reciboUrl = `https://foroinmobiliario.com.ar/recibo/${pago.id}`;
-        await enviarEmail(pago.perfiles.email, "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><div style="font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">GFI<span style="color:#990000">®</span></div><div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:24px;">Grupo Foro Inmobiliario</div><h2 style="color:#3abab6;margin-bottom:16px;font-family:sans-serif;">✅ Pago confirmado</h2><p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin-bottom:20px;">Hola <strong style="color:#fff;">${pago.perfiles.nombre}</strong>, tu pago fue confirmado. Tu acceso a GFI® está activo hasta el <strong style="color:#fff;">${vencimiento.toLocaleDateString("es-AR")}</strong>.</p><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:10px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px;">Tu comprobante de pago</div><a href="${reciboUrl}" style="display:inline-block;background:#990000;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;padding:11px 24px;border-radius:4px;">↓ Ver y descargar comprobante</a><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:10px;">Podés guardarlo como PDF desde el navegador.</div></div><p style="font-size:11px;color:rgba(255,255,255,0.3);line-height:1.6;margin:0;">GFI® · 2da Circ. COCIR · Rosario · foroinmobiliariomatriculados@gmail.com</p></div>`);
+        await enviarEmail(pago.perfiles.email, "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><div style="font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:4px;">GFI<span style="color:#990000">®</span></div><div style="font-size:10px;color:var(--gfi-text-muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:24px;">Grupo Foro Inmobiliario</div><h2 style="color:#3abab6;margin-bottom:16px;font-family:sans-serif;">✅ Pago confirmado</h2><p style="color:var(--gfi-text-primary);font-size:13px;line-height:1.7;margin-bottom:20px;">Hola <strong style="color:#fff;">${pago.perfiles.nombre}</strong>, tu pago fue confirmado. Tu acceso a GFI® está activo hasta el <strong style="color:#fff;">${vencimiento.toLocaleDateString("es-AR")}</strong>.</p><div style="background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);border-radius:6px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:10px;font-family:var(--font-display);font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--gfi-text-muted);margin-bottom:10px;">Tu comprobante de pago</div><a href="${reciboUrl}" style="display:inline-block;background:#990000;color:#fff;font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;padding:11px 24px;border-radius:4px;">↓ Ver y descargar comprobante</a><div style="font-size:11px;color:var(--gfi-text-muted);margin-top:10px;">Podés guardarlo como PDF desde el navegador.</div></div><p style="font-size:11px;color:var(--gfi-text-muted);line-height:1.6;margin:0;">GFI® · 2da Circ. COCIR · Rosario · foroinmobiliariomatriculados@gmail.com</p></div>`);
       } catch {}
     }
     setProcesandoPago(null); cargarPagos();
@@ -984,7 +984,7 @@ export default function AdminPage() {
       // Email de bienvenida al corredor aprobado
       const perfilAprobado = perfiles.find(p => p.id === id);
       if (perfilAprobado?.email) {
-        enviarEmail(perfilAprobado.email, "✅ ¡Tu cuenta en GFI® fue aprobada!", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">🎉 ¡Bienvenido a GFI®!</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${perfilAprobado.nombre}</strong>, tu cuenta en <strong>GFI® Grupo Foro Inmobiliario</strong> fue aprobada y ya podés acceder a la plataforma.</p><div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.6);"><strong style="color:#d4960c;">Período gratuito:</strong> Tu primer mes es gratuito hasta el ${fechaStr}.<br/>A partir de esa fecha el costo mensual será de USD 15.</div><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ingresar a GFI®</a></div>`).catch(() => {});
+        enviarEmail(perfilAprobado.email, "✅ ¡Tu cuenta en GFI® fue aprobada!", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">🎉 ¡Bienvenido a GFI®!</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${perfilAprobado.nombre}</strong>, tu cuenta en <strong>GFI® Grupo Foro Inmobiliario</strong> fue aprobada y ya podés acceder a la plataforma.</p><div style="background:var(--gfi-border-subtle);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:var(--gfi-text-secondary);"><strong style="color:#d4960c;">Período gratuito:</strong> Tu primer mes es gratuito hasta el ${fechaStr}.<br/>A partir de esa fecha el costo mensual será de USD 15.</div><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ingresar a GFI®</a></div>`).catch(() => {});
       }
       // Push de bienvenida (via admin endpoint — no expone CRON_SECRET al browser)
       const { data: { session: sessionPush } } = await supabase.auth.getSession();
@@ -1149,7 +1149,7 @@ export default function AdminPage() {
       updated_at: new Date().toISOString(),
     }).eq("id", ticketVer.id);
     if (ticketVer.perfiles?.email) {
-      enviarEmail(ticketVer.perfiles.email, "✅ Respuesta a tu ticket de soporte — GFI®", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">✅ Tu ticket fue respondido</h2><p style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:8px;"><strong>Asunto:</strong> ${ticketVer.asunto}</p><div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;white-space:pre-wrap;">${respuestaForm.trim()}</div><a href="https://www.foroinmobiliario.com.ar/soporte" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ver mi ticket</a></div>`).catch(() => {});
+      enviarEmail(ticketVer.perfiles.email, "✅ Respuesta a tu ticket de soporte — GFI®", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">✅ Tu ticket fue respondido</h2><p style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:8px;"><strong>Asunto:</strong> ${ticketVer.asunto}</p><div style="background:var(--gfi-border-subtle);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;white-space:pre-wrap;">${respuestaForm.trim()}</div><a href="https://www.foroinmobiliario.com.ar/soporte" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ver mi ticket</a></div>`).catch(() => {});
     }
     await supabase.from("notificaciones").insert({
       user_id: ticketVer.user_id,
@@ -1722,18 +1722,18 @@ export default function AdminPage() {
             <div style={{ marginBottom: 16 }}>
               <label style={{
                 display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer",
-                padding: "10px 20px", borderRadius: 4, fontFamily: "Montserrat,sans-serif",
+                padding: "10px 20px", borderRadius: 4, fontFamily: "var(--font-display)",
                 fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
                 background: importandoPadron ? "var(--gfi-bg-secondary)" : "var(--gfi-red-soft)",
                 border: "1px solid var(--gfi-red-border)", color: importandoPadron ? "var(--gfi-text-muted)" : "var(--gfi-text-primary)",
                 pointerEvents: importandoPadron ? "none" : "auto",
               }}>
                 {importandoPadron
-                  ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Importando...</>
+                  ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid var(--gfi-text-muted)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Importando...</>
                   : "📂 Importar Excel / CSV del padrón"}
                 <input type="file" accept=".xlsx,.xls,.csv,.ods" onChange={importarPadronArchivo} style={{ display: "none" }} />
               </label>
-              <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
+              <div style={{ marginTop: 8, fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>
                 Formatos soportados: .xlsx · .xls · .csv — Columnas detectadas automáticamente por nombre (matrícula, apellido, nombre, estado, inmobiliaria, etc.)
               </div>
             </div>
@@ -1754,8 +1754,8 @@ export default function AdminPage() {
             )}
 
             {/* Sync automático desde web (secundario) */}
-            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>Sync web (experimental):</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", paddingTop: 12, borderTop: "1px solid var(--gfi-border-subtle)" }}>
+              <span style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>Sync web (experimental):</span>
               <button
                 className="adm-ind-btn"
                 onClick={sincronizarCocir}
@@ -1763,7 +1763,7 @@ export default function AdminPage() {
                 style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 10, padding: "6px 14px" }}
               >
                 {syncingCocir
-                  ? <><span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Sincronizando...</>
+                  ? <><span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid var(--gfi-text-muted)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Sincronizando...</>
                   : "↺ Sincronizar desde cocir.org.ar"}
               </button>
               {syncCocirRes && (
@@ -1772,7 +1772,7 @@ export default function AdminPage() {
                     {syncCocirRes.ok ? `✓ ${syncCocirRes.total_scrapeados ?? 0} registros` : `✗ ${syncCocirRes.error ?? "Error desconocido"}`}
                   </span>
                   {!syncCocirRes.ok && syncCocirRes.debug && (
-                    <pre style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 220, overflowY: "auto" }}>
+                    <pre style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.55)", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 220, overflowY: "auto" }}>
                       {JSON.stringify(syncCocirRes.debug, null, 2)}
                     </pre>
                   )}
@@ -1781,22 +1781,22 @@ export default function AdminPage() {
             </div>
 
             {/* Diagnóstico COCIR */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap", paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap", paddingTop: 10, borderTop: "1px solid var(--gfi-border-subtle)" }}>
               <button
                 className="adm-ind-btn"
                 onClick={diagnosticarCocir}
                 disabled={debuggingCocir}
-                style={{ fontSize: 10, padding: "5px 12px", background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.5)" }}
+                style={{ fontSize: 10, padding: "5px 12px", background: "var(--gfi-border-subtle)", color: "var(--gfi-text-secondary)" }}
               >
                 {debuggingCocir ? "Diagnosticando..." : "🔍 Diagnosticar COCIR"}
               </button>
               {debugCocir && (
                 <div style={{ width: "100%", marginTop: 6 }}>
                   <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>Resultado diagnóstico — copialo y mandáselo a Claude:</span>
-                    <button onClick={() => navigator.clipboard.writeText(JSON.stringify(debugCocir, null, 2))} style={{ fontSize: 9, padding: "1px 7px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Copiar</button>
+                    <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>Resultado diagnóstico — copialo y mandáselo a Claude:</span>
+                    <button onClick={() => navigator.clipboard.writeText(JSON.stringify(debugCocir, null, 2))} style={{ fontSize: 9, padding: "1px 7px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "var(--gfi-text-secondary)", cursor: "pointer" }}>Copiar</button>
                   </div>
-                  <pre style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 300, overflowY: "auto" }}>
+                  <pre style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 4, padding: "8px 10px", overflowX: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all", maxHeight: 300, overflowY: "auto" }}>
                     {JSON.stringify(debugCocir, null, 2)}
                   </pre>
                 </div>
@@ -1819,18 +1819,18 @@ export default function AdminPage() {
                   <div key={ev.id} style={{background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border)",borderRadius:8,padding:"16px 20px",display:"flex",alignItems:"flex-start",gap:16,flexWrap:"wrap"}}>
                     <div style={{flex:1}}>
                       <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:6}}>
-                        <span style={{fontFamily:"'Montserrat',sans-serif",fontSize:13,fontWeight:800,color:"#fff"}}>{ev.titulo}</span>
+                        <span style={{fontFamily:"var(--font-display)",fontSize:13,fontWeight:800,color:"#fff"}}>{ev.titulo}</span>
                         <span className="badge badge-pendiente">{TIPOS_EV[ev.tipo] ?? ev.tipo}</span>
                         <span className="badge" style={{background:"var(--gfi-green-soft)",border:"1px solid rgba(58,186,182,0.25)",color:"var(--gfi-green-text)"}}>{ev.gratuito ? "Gratuito" : `$${ev.precio_entrada?.toLocaleString("es-AR")}`}</span>
                       </div>
-                      {ev.descripcion && <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:6,lineHeight:1.5}}>{ev.descripcion.substring(0,200)}{ev.descripcion.length > 200 ? "..." : ""}</div>}
-                      <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",display:"flex",gap:16,flexWrap:"wrap"}}>
+                      {ev.descripcion && <div style={{fontSize:12,color:"var(--gfi-text-muted)",marginBottom:6,lineHeight:1.5}}>{ev.descripcion.substring(0,200)}{ev.descripcion.length > 200 ? "..." : ""}</div>}
+                      <div style={{fontSize:11,color:"var(--gfi-text-muted)",display:"flex",gap:16,flexWrap:"wrap"}}>
                         <span>📅 {new Date(ev.fecha).toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</span>
                         {ev.lugar && <span>📍 {ev.lugar}</span>}
                         {ev.capacidad && <span>👥 Cap. {ev.capacidad}</span>}
                       </div>
-                      <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginTop:6}}>
-                        Propuesto por: <strong style={{color:"rgba(255,255,255,0.5)"}}>{ev.organizador?.apellido}, {ev.organizador?.nombre}</strong>
+                      <div style={{fontSize:11,color:"var(--gfi-text-dim)",marginTop:6}}>
+                        Propuesto por: <strong style={{color:"var(--gfi-text-secondary)"}}>{ev.organizador?.apellido}, {ev.organizador?.nombre}</strong>
                         {ev.organizador?.matricula && ` · Mat. ${ev.organizador.matricula}`}
                         {" · "}{formatFecha(ev.created_at)}
                       </div>
@@ -1847,27 +1847,27 @@ export default function AdminPage() {
                     </div>
                   {/* Panel config notificaciones */}
                   {configEvId === ev.id && (
-                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", marginTop: 14, paddingTop: 14 }}>
-                      <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12 }}>
+                    <div style={{ borderTop: "1px solid var(--gfi-border)", marginTop: 14, paddingTop: 14 }}>
+                      <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 12 }}>
                         Configuración de notificaciones push
                       </div>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
                         {/* Activar notifs */}
                         <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
                           <input type="checkbox" checked={configEvNotif.activa} onChange={e => setConfigEvNotif(p => ({ ...p, activa: e.target.checked }))} />
-                          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Activar notificaciones</span>
+                          <span style={{ fontSize: 12, color: "var(--gfi-text-primary)", fontFamily: "var(--font-display)", fontWeight: 700 }}>Activar notificaciones</span>
                         </label>
                         {configEvNotif.activa && (<>
                           {/* Frecuencia */}
                           <div>
-                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Frecuencia</div>
+                            <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Frecuencia</div>
                             <div style={{ display: "flex", gap: 4 }}>
                               {[1, 2, 3].map(f => (
                                 <button key={f} onClick={() => setConfigEvNotif(p => ({ ...p, frecuencia: f }))}
-                                  style={{ padding: "4px 10px", borderRadius: 3, border: "1px solid", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer",
+                                  style={{ padding: "4px 10px", borderRadius: 3, border: "1px solid", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer",
                                     background: configEvNotif.frecuencia === f ? "var(--gfi-red)" : "transparent",
                                     borderColor: configEvNotif.frecuencia === f ? "var(--gfi-red)" : "var(--gfi-border)",
-                                    color: configEvNotif.frecuencia === f ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                                    color: configEvNotif.frecuencia === f ? "#fff" : "var(--gfi-text-secondary)" }}>
                                   {f}× / sem
                                 </button>
                               ))}
@@ -1875,9 +1875,9 @@ export default function AdminPage() {
                           </div>
                           {/* Audiencia */}
                           <div>
-                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Audiencia</div>
+                            <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Audiencia</div>
                             <select value={configEvNotif.audiencia} onChange={e => setConfigEvNotif(p => ({ ...p, audiencia: e.target.value }))}
-                              style={{ padding: "5px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
+                              style={{ padding: "5px 10px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }}>
                               <option value="todos">Todos los miembros</option>
                               <option value="corredores">Solo corredores</option>
                               <option value="vip">Solo VIP</option>
@@ -1887,13 +1887,13 @@ export default function AdminPage() {
                         {/* Pauta */}
                         <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
                           <input type="checkbox" checked={configEvNotif.esPauta} onChange={e => setConfigEvNotif(p => ({ ...p, esPauta: e.target.checked }))} />
-                          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Pauta paga</span>
+                          <span style={{ fontSize: 12, color: "var(--gfi-text-primary)", fontFamily: "var(--font-display)", fontWeight: 700 }}>Pauta paga</span>
                         </label>
                         {configEvNotif.esPauta && (<>
                           <input placeholder="Organizador externo" value={configEvNotif.pautaOrg} onChange={e => setConfigEvNotif(p => ({ ...p, pautaOrg: e.target.value }))}
-                            style={{ padding: "5px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }} />
+                            style={{ padding: "5px 10px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }} />
                           <input placeholder="Monto cobrado ($)" type="number" value={configEvNotif.pautaMonto} onChange={e => setConfigEvNotif(p => ({ ...p, pautaMonto: e.target.value }))}
-                            style={{ width: 140, padding: "5px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }} />
+                            style={{ width: 140, padding: "5px 10px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none" }} />
                         </>)}
                       </div>
                       <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
@@ -1901,7 +1901,7 @@ export default function AdminPage() {
                           {procesandoEvProp === ev.id ? "Publicando..." : "✓ Confirmar y publicar"}
                         </button>
                         <button onClick={() => setConfigEvId(null)}
-                          style={{ padding: "6px 14px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}>
+                          style={{ padding: "6px 14px", background: "transparent", border: "1px solid var(--gfi-border)", borderRadius: 3, color: "var(--gfi-text-muted)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
                           Cancelar
                         </button>
                       </div>
@@ -1964,7 +1964,7 @@ export default function AdminPage() {
                           {c.telefono && <div className="adm-sub">{c.telefono}</div>}
                           {c.dni && <div className="adm-sub">DNI {c.dni}</div>}
                         </td>
-                        <td style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{formatFecha(c.created_at)}</td>
+                        <td style={{fontSize:12,color:"var(--gfi-text-muted)"}}>{formatFecha(c.created_at)}</td>
                         <td>
                           <span className={`badge badge-${c.estado}`}>
                             {c.estado === "pendiente" ? "⏳ Pendiente" : c.estado === "activo" ? "✓ Activo" : "✗ Suspendido"}
@@ -2017,10 +2017,10 @@ export default function AdminPage() {
                 <div className="doc-info">
                   <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
                     <span className="doc-nombre">{n.titulo}</span>
-                    {n.destacado && <span style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"var(--gfi-orange)",background:"var(--gfi-orange-soft)",border:"1px solid var(--gfi-orange-border)",padding:"2px 6px",borderRadius:10}}>⭐ DESTACADA</span>}
-                    {n.fuente && <span style={{fontSize:9,color:"var(--gfi-red)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>{n.fuente}</span>}
+                    {n.destacado && <span style={{fontSize:9,fontFamily:"var(--font-display)",fontWeight:700,letterSpacing:"0.1em",color:"var(--gfi-orange)",background:"var(--gfi-orange-soft)",border:"1px solid var(--gfi-orange-border)",padding:"2px 6px",borderRadius:10}}>⭐ DESTACADA</span>}
+                    {n.fuente && <span style={{fontSize:9,color:"var(--gfi-red)",fontFamily:"var(--font-display)",fontWeight:700}}>{n.fuente}</span>}
                   </div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",lineHeight:1.5,marginBottom:6}}>{n.cuerpo?.substring(0,200)}{n.cuerpo?.length > 200 ? "..." : ""}</div>
+                  <div style={{fontSize:11,color:"var(--gfi-text-muted)",lineHeight:1.5,marginBottom:6}}>{n.cuerpo?.substring(0,200)}{n.cuerpo?.length > 200 ? "..." : ""}</div>
                   <div className="doc-meta">Por: {n.perfiles?.nombre} {n.perfiles?.apellido}{n.perfiles?.matricula ? ` · Mat. ${n.perfiles.matricula}` : ""} · {formatFecha(n.created_at)}{n.link && <a href={n.link} target="_blank" rel="noopener noreferrer" style={{marginLeft:10,color:"var(--gfi-red)",textDecoration:"none",fontSize:10}}>Ver link →</a>}</div>
                 </div>
                 <div className="doc-acciones" style={{flexDirection:"column",gap:6}}>
@@ -2050,7 +2050,7 @@ export default function AdminPage() {
                   {(contadoresPagos[f] ?? 0) > 0 && <span className="adm-filtro-count" style={f === "suspendida" ? {background:"var(--gfi-red-soft)",color:"var(--gfi-red)"} : {}}>{contadoresPagos[f]}</span>}
                 </button>
               ))}
-              <button style={{marginLeft:"auto",fontSize:11,padding:"4px 12px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"rgba(255,255,255,0.5)",cursor:"pointer"}} onClick={cargarPagos}>↻ Actualizar</button>
+              <button style={{marginLeft:"auto",fontSize:11,padding:"4px 12px",background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:4,color:"var(--gfi-text-secondary)",cursor:"pointer"}} onClick={cargarPagos}>↻ Actualizar</button>
             </div>
             <div className="adm-tabla-wrap">
               {loadingPagos ? <div className="adm-loading">Cargando...</div>
@@ -2062,12 +2062,12 @@ export default function AdminPage() {
                     const color = estadoPagoColor(p.estado);
                     return <tr key={p.id}>
                       <td><div className="adm-nombre">{p.perfiles ? `${p.perfiles.apellido}, ${p.perfiles.nombre}` : "—"}</div><div className="adm-sub">Mat. {p.perfiles?.matricula ?? "—"} · {p.tipo}</div>{p.perfiles?.email && <div className="adm-sub">✉️ {p.perfiles.email}</div>}</td>
-                      <td style={{fontFamily:"'Montserrat',sans-serif",fontWeight:700,fontSize:12}}>{p.periodo ?? "—"}</td>
-                      <td>{p.monto_declarado_ars ? <div>${p.monto_declarado_ars.toLocaleString("es-AR")}</div> : <div style={{color:"rgba(255,255,255,0.3)"}}>—</div>}<div className="adm-sub">USD {p.monto_usd}</div></td>
+                      <td style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:12}}>{p.periodo ?? "—"}</td>
+                      <td>{p.monto_declarado_ars ? <div>${p.monto_declarado_ars.toLocaleString("es-AR")}</div> : <div style={{color:"var(--gfi-text-muted)"}}>—</div>}<div className="adm-sub">USD {p.monto_usd}</div></td>
                       <td><div className="adm-comprobante">{p.comprobante ?? "—"}</div>{p.cbu_origen && <div className="adm-sub">{p.cbu_origen}</div>}</td>
-                      <td style={{fontSize:12,color:"rgba(255,255,255,0.5)"}}>{p.fecha_pago_declarado ? formatFecha(p.fecha_pago_declarado) : "—"}{p.fecha_confirmacion && <div className="adm-sub">Conf: {formatFecha(p.fecha_confirmacion)}</div>}{p.fecha_vencimiento && <div className="adm-sub">Vence: {formatFecha(p.fecha_vencimiento)}</div>}</td>
+                      <td style={{fontSize:12,color:"var(--gfi-text-secondary)"}}>{p.fecha_pago_declarado ? formatFecha(p.fecha_pago_declarado) : "—"}{p.fecha_confirmacion && <div className="adm-sub">Conf: {formatFecha(p.fecha_confirmacion)}</div>}{p.fecha_vencimiento && <div className="adm-sub">Vence: {formatFecha(p.fecha_vencimiento)}</div>}</td>
                       <td><span className="badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{p.estado.toUpperCase()}</span></td>
-                      <td>{procesandoPago === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div><input className="adm-nota-input" placeholder="Nota interna (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => confirmarPago(p)}>✓ Confirmar</button><button className="adm-btn-rechazar" onClick={() => rechazarPago(p)}>✗ Rechazar</button></div></div>) : (p.estado === "suspendida" || p.estado === "bloqueado") ? (<div><input className="adm-nota-input" placeholder="Nota (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => reactivarSuscripcion(p)}>↺ Reactivar</button></div></div>) : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{p.nota_admin ?? "—"}</span>}</td>
+                      <td>{procesandoPago === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div><input className="adm-nota-input" placeholder="Nota interna (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => confirmarPago(p)}>✓ Confirmar</button><button className="adm-btn-rechazar" onClick={() => rechazarPago(p)}>✗ Rechazar</button></div></div>) : (p.estado === "suspendida" || p.estado === "bloqueado") ? (<div><input className="adm-nota-input" placeholder="Nota (opcional)" value={notaAdmin[p.id] ?? ""} onChange={e => setNotaAdmin(prev => ({...prev,[p.id]:e.target.value}))} /><div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => reactivarSuscripcion(p)}>↺ Reactivar</button></div></div>) : <span style={{fontSize:11,color:"var(--gfi-text-dim)"}}>{p.nota_admin ?? "—"}</span>}</td>
                     </tr>;
                   })}
                 </tbody>
@@ -2088,7 +2088,7 @@ export default function AdminPage() {
                 type="month"
                 value={periodoFact}
                 onChange={e => setPeriodoFact(e.target.value)}
-                style={{ padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
+                style={{ padding: "8px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
               />
               <button
                 onClick={() => cargarResumenFact(periodoFact)}
@@ -2118,11 +2118,11 @@ export default function AdminPage() {
                       { label: `Subtotal USD (s/ IVA)`, val: `USD ${totalUsd.toFixed(2)}`, color: "#fff" },
                       { label: `IVA ${resumenFact.iva_pct}%`, val: ivaArs ? fmtARS(ivaArs) : "—", color: "var(--gfi-orange)" },
                       { label: "Total ARS (c/ IVA)", val: totalArs ? fmtARS(totalArs) : "—", color: "var(--gfi-green-text)" },
-                      { label: "Dólar blue ref.", val: resumenFact.dolar_ref ? `$ ${resumenFact.dolar_ref.toLocaleString("es-AR")}` : "—", color: "rgba(255,255,255,0.5)" },
+                      { label: "Dólar blue ref.", val: resumenFact.dolar_ref ? `$ ${resumenFact.dolar_ref.toLocaleString("es-AR")}` : "—", color: "var(--gfi-text-secondary)" },
                     ].map(card => (
                       <div key={card.label} style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "16px 18px" }}>
-                        <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>{card.label}</div>
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 18, color: card.color }}>{card.val}</div>
+                        <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>{card.label}</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: card.color }}>{card.val}</div>
                       </div>
                     ))}
                   </div>
@@ -2152,7 +2152,7 @@ export default function AdminPage() {
                           return (
                             <tr key={c.id}>
                               <td className="adm-nombre">{c.apellido}, {c.nombre}</td>
-                              <td style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11 }}>{c.matricula ?? "—"}</td>
+                              <td style={{ fontFamily: "var(--font-display)", fontSize: 11 }}>{c.matricula ?? "—"}</td>
                               <td style={{ color: c.colaboradores > 0 ? "var(--gfi-text-secondary)" : "var(--gfi-text-muted)" }}>{c.colaboradores}</td>
                               <td>USD {c.precio_base_usd}</td>
                               <td style={{ color: c.colaboradores > 0 ? "var(--gfi-text-secondary)" : "var(--gfi-text-muted)" }}>
@@ -2172,24 +2172,24 @@ export default function AdminPage() {
                   {/* Totales finales + registro */}
                   <div style={{ background: "var(--gfi-green-soft)", border: "1px solid rgba(58,186,182,0.25)", borderRadius: 8, padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                     <div>
-                      <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
+                      <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>
                         Total a facturar — {resumenFact.periodo}
                       </div>
                       <div style={{ fontSize: 26, fontFamily: "var(--font-mono)", fontWeight: 800, color: "var(--gfi-green-text)", fontVariantNumeric: "tabular-nums" }}>
                         {totalArs ? fmtARS(totalArs) : `USD ${totalUsd.toFixed(2)}`}
                       </div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4 }}>
                         Neto s/ IVA: {subtotalArs ? fmtARS(subtotalArs) : `USD ${totalUsd}`} · IVA {resumenFact.iva_pct}%: {ivaArs ? fmtARS(ivaArs) : "—"}
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
                       <div>
-                        <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Nro. Factura AFIP</div>
+                        <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>Nro. Factura AFIP</div>
                         <input
                           value={numeroFacturaInput}
                           onChange={e => setNumeroFacturaInput(e.target.value)}
                           placeholder="Ej: 0001-00000123"
-                          style={{ padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none", width: 180 }}
+                          style={{ padding: "8px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none", width: 180 }}
                         />
                       </div>
                       <button
@@ -2222,7 +2222,7 @@ export default function AdminPage() {
                   )}
                 </button>
               ))}
-              <button style={{marginLeft:"auto",fontSize:11,padding:"4px 12px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"rgba(255,255,255,0.5)",cursor:"pointer"}} onClick={cargarReferidos}>↻ Actualizar</button>
+              <button style={{marginLeft:"auto",fontSize:11,padding:"4px 12px",background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:4,color:"var(--gfi-text-secondary)",cursor:"pointer"}} onClick={cargarReferidos}>↻ Actualizar</button>
             </div>
             <div className="adm-tabla-wrap">
               {loadingReferidos ? <div className="adm-loading">Cargando...</div>
@@ -2237,12 +2237,12 @@ export default function AdminPage() {
                              <tr key={r.id}>
                                <td>
                                  <div style={{fontSize:12,fontWeight:600,color:"#fff"}}>{r.referidor?.nombre} {r.referidor?.apellido}</div>
-                                 {r.referidor?.matricula && <div style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>Mat. {r.referidor.matricula}</div>}
+                                 {r.referidor?.matricula && <div style={{fontSize:10,color:"var(--gfi-text-muted)"}}>Mat. {r.referidor.matricula}</div>}
                                </td>
-                               <td style={{fontSize:12,color:"rgba(255,255,255,0.7)"}}>{r.referido_nombre}</td>
+                               <td style={{fontSize:12,color:"var(--gfi-text-primary)"}}>{r.referido_nombre}</td>
                                <td><span style={{fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:700,padding:"2px 8px",borderRadius:10,background:r.tipo==="corredor"?"var(--gfi-red-soft)":r.tipo==="cliente"?"var(--gfi-green-soft)":"var(--gfi-orange-soft)",color:r.tipo==="corredor"?"var(--gfi-red)":r.tipo==="cliente"?"var(--gfi-green-text)":"var(--gfi-orange)"}}>{r.tipo}</span></td>
                                <td>
-                                 {r.referido_email && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>{r.referido_email}</div>}
+                                 {r.referido_email && <div style={{fontSize:11,color:"var(--gfi-text-secondary)"}}>{r.referido_email}</div>}
                                  {r.referido_telefono && <a href={`https://wa.me/${r.referido_telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"var(--gfi-green-text)",textDecoration:"none"}}>💬 {r.referido_telefono}</a>}
                                </td>
                                <td><span style={{fontSize:11,fontWeight:600,color:r.estado==="activo"?"var(--gfi-green-text)":r.estado==="pendiente"?"var(--gfi-orange)":"var(--gfi-red)"}}>{r.estado}</span></td>
@@ -2253,7 +2253,7 @@ export default function AdminPage() {
                                      <button className="adm-btn-aprobar" onClick={() => activarReferido(r)}>✓ Activar</button>
                                      <button className="adm-btn-rechazar" onClick={() => rechazarReferido(r.id)}>✗ Rechazar</button>
                                    </div>
-                                 ) : <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>{r.estado}</span>}
+                                 ) : <span style={{fontSize:11,color:"var(--gfi-text-dim)"}}>{r.estado}</span>}
                                </td>
                              </tr>
                            ))}
@@ -2291,10 +2291,10 @@ export default function AdminPage() {
             <div style={{background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border)",borderRadius:8,padding:"22px 24px"}}>
               <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:16}}>
                 <label style={{display:"inline-flex",alignItems:"center",gap:8,padding:"9px 18px",background:clearingCargando?"var(--gfi-bg-secondary)":"var(--gfi-red-soft)",border:"1px solid var(--gfi-red-border)",borderRadius:6,cursor:clearingCargando?"not-allowed":"pointer",color:clearingCargando?"var(--gfi-text-muted)":"var(--gfi-text-primary)",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.08em"}}>
-                  {clearingCargando?<><span style={{display:"inline-block",width:13,height:13,border:"2px solid rgba(255,255,255,0.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/> Procesando...</>:"📊 Subir extracto bancario"}
+                  {clearingCargando?<><span style={{display:"inline-block",width:13,height:13,border:"2px solid var(--gfi-text-muted)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/> Procesando...</>:"📊 Subir extracto bancario"}
                   <input type="file" accept=".xlsx,.xls,.csv,.ods" onChange={procesarClearingBancario} style={{display:"none"}} disabled={clearingCargando}/>
                 </label>
-                <span style={{fontSize:11,color:"rgba(255,255,255,0.3)",fontFamily:"Inter,sans-serif"}}>Formatos: .xlsx · .xls · .csv — Columnas detectadas automáticamente (fecha, importe, descripción, CBU)</span>
+                <span style={{fontSize:11,color:"var(--gfi-text-muted)",fontFamily:"Inter,sans-serif"}}>Formatos: .xlsx · .xls · .csv — Columnas detectadas automáticamente (fecha, importe, descripción, CBU)</span>
               </div>
 
               {clearingError && <div style={{padding:"10px 14px",background:"var(--gfi-red-soft)",border:"1px solid var(--gfi-red-border)",borderRadius:6,fontSize:12,color:"var(--gfi-red)",marginBottom:12}}>{clearingError}</div>}
@@ -2308,16 +2308,16 @@ export default function AdminPage() {
                       {l:"Pagos pendientes DB",v:clearingResult.total_pagos_pendientes,c:"var(--gfi-orange)"},
                       {l:"Matches encontrados",v:clearingResult.matches?.length??0,c:"var(--gfi-green-text)"},
                     ].map(s => (
-                      <div key={s.l} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"12px 16px"}}>
+                      <div key={s.l} style={{background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border-subtle)",borderRadius:8,padding:"12px 16px"}}>
                         <div style={{fontSize:22,fontWeight:800,color:s.c,fontFamily:"Montserrat,sans-serif"}}>{s.v}</div>
-                        <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",marginTop:2,fontFamily:"Montserrat,sans-serif",letterSpacing:"0.06em"}}>{s.l}</div>
+                        <div style={{fontSize:10,color:"var(--gfi-text-muted)",marginTop:2,fontFamily:"Montserrat,sans-serif",letterSpacing:"0.06em"}}>{s.l}</div>
                       </div>
                     ))}
                   </div>
 
                   {/* Columnas detectadas */}
                   {clearingResult.columnas_detectadas && (
-                    <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif",marginBottom:16,letterSpacing:"0.06em"}}>
+                    <div style={{fontSize:10,color:"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",marginBottom:16,letterSpacing:"0.06em"}}>
                       Columnas detectadas: {Object.entries(clearingResult.columnas_detectadas).filter(([,v])=>v).map(([k,v])=>`${k}: "${v}"`).join(" · ")}
                     </div>
                   )}
@@ -2331,12 +2331,12 @@ export default function AdminPage() {
                           <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:"var(--gfi-green-soft)",border:"1px solid rgba(58,186,182,0.25)",borderRadius:8}}>
                             <div style={{flex:1,minWidth:0}}>
                               <div style={{fontSize:12,color:"#fff",fontWeight:600,marginBottom:2}}>{m.pago.perfiles?.nombre} {m.pago.perfiles?.apellido}{m.pago.perfiles?.matricula?` · Mat. ${m.pago.perfiles.matricula}`:""}</div>
-                              <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"Inter,sans-serif"}}>
+                              <div style={{fontSize:11,color:"var(--gfi-text-muted)",fontFamily:"Inter,sans-serif"}}>
                                 Declaró: ${Number(m.pago.monto_declarado_ars).toLocaleString("es-AR")} el {m.pago.fecha_pago_declarado}
                                 {" · "}Banco: ${m.banco.monto.toLocaleString("es-AR")} el {m.banco.fecha}
                                 {" · "}<span style={{color:m.confianza==="alta"?"var(--gfi-green-text)":"var(--gfi-orange)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>{m.confianza==="alta"?"● Alta confianza":"◐ Media confianza"}</span>
                               </div>
-                              {m.banco.descripcion && <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:2}}>{m.banco.descripcion}</div>}
+                              {m.banco.descripcion && <div style={{fontSize:10,color:"var(--gfi-text-dim)",marginTop:2}}>{m.banco.descripcion}</div>}
                             </div>
                             <button className="adm-btn-aprobar" onClick={() => confirmarMatchClearing(m.pago.id)} style={{whiteSpace:"nowrap"}}>✓ Confirmar</button>
                           </div>
@@ -2348,10 +2348,10 @@ export default function AdminPage() {
                   {/* Transacciones sin match */}
                   {clearingResult.sin_match_banco?.length > 0 && (
                     <div style={{marginBottom:20}}>
-                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"rgba(255,255,255,0.4)",marginBottom:8}}>TRANSACCIONES DEL BANCO SIN MATCH</div>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"var(--gfi-text-muted)",marginBottom:8}}>TRANSACCIONES DEL BANCO SIN MATCH</div>
                       <div style={{display:"flex",flexDirection:"column",gap:4}}>
                         {clearingResult.sin_match_banco.map((t: any, i: number) => (
-                          <div key={i} style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"Inter,sans-serif",padding:"6px 12px",background:"rgba(255,255,255,0.02)",borderRadius:4,border:"1px solid rgba(255,255,255,0.05)"}}>
+                          <div key={i} style={{fontSize:11,color:"var(--gfi-text-muted)",fontFamily:"Inter,sans-serif",padding:"6px 12px",background:"var(--gfi-bg-secondary)",borderRadius:4,border:"1px solid var(--gfi-border-subtle)"}}>
                             ${t.monto.toLocaleString("es-AR")} · {t.fecha} {t.descripcion && `· ${t.descripcion.slice(0,60)}`}
                           </div>
                         ))}
@@ -2365,7 +2365,7 @@ export default function AdminPage() {
                       <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"#d4960c",marginBottom:8}}>⚠ PAGOS DECLARADOS SIN MATCH EN BANCO</div>
                       <div style={{display:"flex",flexDirection:"column",gap:4}}>
                         {clearingResult.pagos_no_encontrados.map((p: any, i: number) => (
-                          <div key={i} style={{fontSize:11,color:"rgba(255,255,255,0.5)",fontFamily:"Inter,sans-serif",padding:"6px 12px",background:"rgba(249,115,22,0.04)",borderRadius:4,border:"1px solid rgba(249,115,22,0.1)"}}>
+                          <div key={i} style={{fontSize:11,color:"var(--gfi-text-secondary)",fontFamily:"Inter,sans-serif",padding:"6px 12px",background:"rgba(249,115,22,0.04)",borderRadius:4,border:"1px solid rgba(249,115,22,0.1)"}}>
                             {p.perfiles?.nombre} {p.perfiles?.apellido} — declaró ${Number(p.monto_declarado_ars).toLocaleString("es-AR")} el {p.fecha_pago_declarado} (no aparece en el extracto)
                           </div>
                         ))}
@@ -2422,7 +2422,7 @@ export default function AdminPage() {
               <div key={doc.id} className="doc-row">
                 <div className="doc-icono">{doc.archivo_url?.includes(".pdf") ? "📄" : doc.archivo_url?.includes(".doc") ? "📝" : "📊"}</div>
                 <div className="doc-info">
-                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}><span className="doc-nombre">{doc.titulo}</span>{doc.nivel && <span style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",padding:"2px 6px",borderRadius:3}}>{doc.nivel}</span>}</div>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}><span className="doc-nombre">{doc.titulo}</span>{doc.nivel && <span style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--gfi-text-muted)",background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",padding:"2px 6px",borderRadius:3}}>{doc.nivel}</span>}</div>
                   {doc.descripcion && <div className="doc-desc">{doc.descripcion}</div>}
                   <div className="doc-meta" style={{marginTop:6}}>Por: {doc.perfiles?.nombre} {doc.perfiles?.apellido}{doc.perfiles?.matricula && ` · Mat. ${doc.perfiles.matricula}`} · {new Date(doc.created_at).toLocaleDateString("es-AR",{day:"numeric",month:"short",year:"numeric"})}{doc.archivo_url && <a href={doc.archivo_url} target="_blank" rel="noopener noreferrer" style={{marginLeft:10,color:"var(--gfi-red)",textDecoration:"none",fontSize:10}}>Ver archivo →</a>}</div>
                 </div>
@@ -2456,7 +2456,7 @@ export default function AdminPage() {
                       <td><div className="adm-nombre">{p.apellido}, {p.nombre}</div>{p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}{p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}</td>
                       <td>
                         <select value={p.tipo} onChange={e => setTipoUser(p.id, e.target.value)}
-                          style={{ background: "#0f172a", color: p.tipo === "master" ? "#990000" : p.tipo === "admin" ? "#a855f7" : p.tipo === "constructora" ? "#d4960c" : p.tipo === "proveedor" ? "#d4960c" : p.tipo === "colaborador" ? "#06b6d4" : "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", width: "100%", marginBottom: ["corredor","colaborador"].includes(p.tipo) ? 4 : 0 }}>
+                          style={{ background: "#0f172a", color: p.tipo === "master" ? "#990000" : p.tipo === "admin" ? "#a855f7" : p.tipo === "constructora" ? "#d4960c" : p.tipo === "proveedor" ? "#d4960c" : p.tipo === "colaborador" ? "#06b6d4" : "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", width: "100%", marginBottom: ["corredor","colaborador"].includes(p.tipo) ? 4 : 0 }}>
                           <option value="corredor">Corredor</option>
                           <option value="colaborador">Colaborador</option>
                           <option value="constructora">Constructora</option>
@@ -2466,7 +2466,7 @@ export default function AdminPage() {
                         </select>
                         {["corredor","colaborador"].includes(p.tipo) && (
                           <select value={p.rubro ?? ""} onChange={e => setRubroUser(p.id, e.target.value)}
-                            style={{ background: "#0a0a0a", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "2px 6px", fontSize: 10, fontFamily: "Inter,sans-serif", cursor: "pointer", width: "100%" }}>
+                            style={{ background: "#0a0a0a", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 4, padding: "2px 6px", fontSize: 10, fontFamily: "Inter,sans-serif", cursor: "pointer", width: "100%" }}>
                             <option value="">— rubro —</option>
                             <option value="alquiler">Alquiler</option>
                             <option value="venta">Venta</option>
@@ -2478,7 +2478,7 @@ export default function AdminPage() {
                         <select
                           value={p.categoria ?? "standard"}
                           onChange={e => setCategoriaUser(p.id, e.target.value)}
-                          style={{ background: "#0f172a", color: cat.color, border: `1px solid ${cat.color}44`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", marginBottom: 4, width: "100%" }}
+                          style={{ background: "#0f172a", color: cat.color, border: `1px solid ${cat.color}44`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", marginBottom: 4, width: "100%" }}
                         >
                           {CATEGORIAS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                         </select>
@@ -2487,25 +2487,25 @@ export default function AdminPage() {
                             type="number" min={0} max={100}
                             defaultValue={bonif}
                             onBlur={e => setBonificacionUser(p.id, Number(e.target.value))}
-                            style={{ width: 50, background: "var(--gfi-bg-input)", color: bonif === 100 ? "var(--gfi-green-text)" : "var(--gfi-text-secondary)", border: `1px solid ${bonif === 100 ? "rgba(58,186,182,0.4)" : "var(--gfi-border)"}`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", textAlign: "center" }}
+                            style={{ width: 50, background: "var(--gfi-bg-input)", color: bonif === 100 ? "var(--gfi-green-text)" : "var(--gfi-text-secondary)", border: `1px solid ${bonif === 100 ? "rgba(58,186,182,0.4)" : "var(--gfi-border)"}`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "var(--font-display)", textAlign: "center" }}
                           />
                           <span style={{ fontSize: 10, color: bonif === 100 ? "var(--gfi-green-text)" : "var(--gfi-text-muted)" }}>% bonif{bonif === 100 ? " ✓ gratis" : ""}</span>
                         </div>
                       </td>
                       <td>{p.matricula && <div>Mat. {p.matricula}</div>}{p.dni && <div>DNI {p.dni}</div>}</td>
                       <td>{p.telefono && <div>{p.telefono}</div>}{p.email && <div className="adm-sub">{p.email}</div>}</td>
-                      <td style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{formatFecha(p.created_at)}</td>
+                      <td style={{fontSize:12,color:"var(--gfi-text-muted)"}}>{formatFecha(p.created_at)}</td>
                       <td><span className={`badge ${ESTADO_BADGE[p.estado] ?? "badge-pendiente"}`}>{ESTADO_LABEL[p.estado] ?? p.estado}</span></td>
                       <td>
                         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                           {procesando === p.id ? <span className="adm-spinner" /> : p.estado === "pendiente" ? (<div className="adm-acciones"><button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>✓ Aprobar</button><button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>✗ Rechazar</button></div>) : p.estado === "aprobado" ? (<button className="adm-btn-rechazar" onClick={() => cambiarEstado(p.id, "rechazado")}>Revocar</button>) : (<button className="adm-btn-aprobar" onClick={() => cambiarEstado(p.id, "aprobado")}>Reactivar</button>)}
                           <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
                             <button onClick={() => toggleInsignia(p.id, "insignia_mentor", !!p.insignia_mentor)}
-                              style={{ padding: "3px 8px", fontSize: 10, border: `1px solid ${p.insignia_mentor ? "rgba(168,85,247,0.5)" : "rgba(255,255,255,0.12)"}`, background: p.insignia_mentor ? "rgba(168,85,247,0.12)" : "transparent", borderRadius: 3, color: p.insignia_mentor ? "#a855f7" : "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              style={{ padding: "3px 8px", fontSize: 10, border: `1px solid ${p.insignia_mentor ? "rgba(168,85,247,0.5)" : "var(--gfi-border)"}`, background: p.insignia_mentor ? "rgba(168,85,247,0.12)" : "transparent", borderRadius: 3, color: p.insignia_mentor ? "#a855f7" : "var(--gfi-text-muted)", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                               🎓 {p.insignia_mentor ? "Mentor ✓" : "Mentor"}
                             </button>
                             <button onClick={() => toggleInsignia(p.id, "insignia_tasador", !!p.insignia_tasador)}
-                              style={{ padding: "3px 8px", fontSize: 10, border: `1px solid ${p.insignia_tasador ? "var(--gfi-orange-border)" : "var(--gfi-border)"}`, background: p.insignia_tasador ? "var(--gfi-orange-soft)" : "transparent", borderRadius: 3, color: p.insignia_tasador ? "var(--gfi-orange)" : "var(--gfi-text-muted)", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              style={{ padding: "3px 8px", fontSize: 10, border: `1px solid ${p.insignia_tasador ? "var(--gfi-orange-border)" : "var(--gfi-border)"}`, background: p.insignia_tasador ? "var(--gfi-orange-soft)" : "transparent", borderRadius: 3, color: p.insignia_tasador ? "var(--gfi-orange)" : "var(--gfi-text-muted)", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                               ⚖️ {p.insignia_tasador ? "Tasador ✓" : "Tasador"}
                             </button>
                           </div>
@@ -2533,7 +2533,7 @@ export default function AdminPage() {
                     {ind.clave.includes("_usd") ? `USD ${ind.valor}` : new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(ind.valor))}
                   </div>
                   {ind.clave === "valor_jus" && jusActualizadoAt && (
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginBottom: 4 }}>
+                    <div style={{ fontSize: 10, color: "var(--gfi-text-dim)", marginBottom: 4 }}>
                       Actualizado: {new Date(jusActualizadoAt).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}
                     </div>
                   )}
@@ -2545,7 +2545,7 @@ export default function AdminPage() {
                     <button
                       onClick={sincronizarJus}
                       disabled={sincronizandoJus}
-                      style={{ marginTop: 6, padding: "5px 10px", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: sincronizandoJus ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.6)", cursor: sincronizandoJus ? "not-allowed" : "pointer", width: "100%" }}
+                      style={{ marginTop: 6, padding: "5px 10px", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", borderRadius: 3, color: sincronizandoJus ? "var(--gfi-text-muted)" : "var(--gfi-text-secondary)", cursor: sincronizandoJus ? "not-allowed" : "pointer", width: "100%" }}
                     >
                       {sincronizandoJus ? "Sincronizando..." : "↻ Sincronizar JUS"}
                     </button>
@@ -2568,7 +2568,7 @@ export default function AdminPage() {
                 <div className="adm-ind-actual" style={{ fontSize: 13, marginBottom: 10 }}>
                   {freeUntil && new Date() < new Date(freeUntil)
                     ? <span style={{ color: "var(--gfi-green-text)" }}>🟢 Extendido hasta {new Date(freeUntil).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
-                    : <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin extensión — nuevos ingresos tienen 30 días gratis por defecto</span>}
+                    : <span style={{ color: "var(--gfi-text-muted)" }}>Sin extensión — nuevos ingresos tienen 30 días gratis por defecto</span>}
                 </div>
                 <div className="adm-ind-form">
                   <input type="date" className="adm-ind-input" value={freeUntil} onChange={e => setFreeUntil(e.target.value)} style={{ colorScheme: "dark" }} />
@@ -2578,11 +2578,11 @@ export default function AdminPage() {
                 {freeUntil && new Date() < new Date(freeUntil) && (
                   <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
                     <button onClick={notificarPromo} disabled={notificandoPromo}
-                      style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.4)", color: "#a5b4fc", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                      style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.4)", color: "#a5b4fc", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                       {notificandoPromo ? "Enviando..." : "🔔 Notificar suscriptores"}
                     </button>
                     <button onClick={async () => { setFreeUntil(""); await supabase.from("indicadores").upsert({ clave: "free_until", valor_texto: "", valor: 0 }, { onConflict: "clave" }); mostrarToast("Extensión eliminada"); }}
-                      style={{ background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                      style={{ background: "none", border: "none", color: "rgba(255,100,100,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       Quitar extensión
                     </button>
                   </div>
@@ -2593,10 +2593,10 @@ export default function AdminPage() {
                 <div className="adm-ind-actual" style={{ fontSize: 13, marginBottom: 12 }}>
                   {mirGratuito
                     ? <span style={{ color: "var(--gfi-green-text)" }}>🟢 Gratuitos por el momento</span>
-                    : <span style={{ color: "rgba(255,255,255,0.3)" }}>Con costo según tarifa</span>}
+                    : <span style={{ color: "var(--gfi-text-muted)" }}>Con costo según tarifa</span>}
                 </div>
                 <button onClick={toggleMirGratuito} disabled={guardandoMirGratuito}
-                  style={{ background: mirGratuito ? "var(--gfi-red-soft)" : "var(--gfi-green-soft)", border: `1px solid ${mirGratuito ? "var(--gfi-red-border)" : "rgba(58,186,182,0.25)"}`, color: mirGratuito ? "var(--gfi-red)" : "var(--gfi-green-text)", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  style={{ background: mirGratuito ? "var(--gfi-red-soft)" : "var(--gfi-green-soft)", border: `1px solid ${mirGratuito ? "var(--gfi-red-border)" : "rgba(58,186,182,0.25)"}`, color: mirGratuito ? "var(--gfi-red)" : "var(--gfi-green-text)", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   {guardandoMirGratuito ? "..." : mirGratuito ? "Activar cobro" : "Activar gratuito"}
                 </button>
               </div>
@@ -2612,7 +2612,7 @@ export default function AdminPage() {
                 {bonifConfig.map(b => (
                   <div key={b.id} className="adm-ind-card">
                     <div className="adm-ind-label" style={{ textTransform: "capitalize" }}>{b.accion}</div>
-                    {b.descripcion && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 8, lineHeight: 1.4 }}>{b.descripcion}</div>}
+                    {b.descripcion && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 8, lineHeight: 1.4 }}>{b.descripcion}</div>}
                     <div className="adm-ind-actual">USD {b.descuento_usd}/acción</div>
                     <div className="adm-ind-form">
                       <input className="adm-ind-input" value={editandoBonif[b.accion] ?? ""} onChange={e => setEditandoBonif(prev => ({ ...prev, [b.accion]: e.target.value }))} placeholder="Ej: 1.50" />
@@ -2634,8 +2634,8 @@ export default function AdminPage() {
                   <div key={d.id} style={{ background: "var(--gfi-red-soft)", border: "1px solid var(--gfi-red-border)", borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", gap: 14 }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, color: "#f8fafc", fontSize: 13 }}>⚑ {d.tipo_contenido} · Motivo: {d.motivo}</div>
-                      {d.descripcion && <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 2 }}>{d.descripcion}</div>}
-                      <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 4 }}>ID: {d.contenido_id.slice(0, 12)}... · {new Date(d.created_at).toLocaleDateString("es-AR")}</div>
+                      {d.descripcion && <div style={{ color: "var(--gfi-text-muted)", fontSize: 12, marginTop: 2 }}>{d.descripcion}</div>}
+                      <div style={{ color: "var(--gfi-text-dim)", fontSize: 11, marginTop: 4 }}>ID: {d.contenido_id.slice(0, 12)}... · {new Date(d.created_at).toLocaleDateString("es-AR")}</div>
                     </div>
                     <div style={{ display: "flex", gap: 6 }}>
                       <button onClick={async () => { await supabase.from("denuncias").update({ estado: "resuelto" }).eq("id", d.id); setDenuncias(prev => prev.filter(x => x.id !== d.id)); }}
@@ -2644,7 +2644,7 @@ export default function AdminPage() {
                         Resuelto
                       </button>
                       <button onClick={async () => { await supabase.from("denuncias").update({ estado: "rechazado" }).eq("id", d.id); setDenuncias(prev => prev.filter(x => x.id !== d.id)); }}
-                        style={{ background: "transparent", color: "rgba(255,255,255,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 12 }}>
+                        style={{ background: "transparent", color: "var(--gfi-text-muted)", border: "1px solid var(--gfi-border)", borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 12 }}>
                         Rechazar
                       </button>
                     </div>
@@ -2663,14 +2663,14 @@ export default function AdminPage() {
 
           {/* ── Estadísticas por usuario ── */}
           <div style={{marginTop:32}}>
-            <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:14}}>Actividad CRM por usuario</div>
-            {loadingStats ? <div style={{color:"rgba(255,255,255,0.3)",fontSize:12}}>Cargando...</div> : statsColab.length === 0 ? <div style={{color:"rgba(255,255,255,0.2)",fontSize:12}}>No hay datos.</div> : (
+            <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:14}}>Actividad CRM por usuario</div>
+            {loadingStats ? <div style={{color:"var(--gfi-text-muted)",fontSize:12}}>Cargando...</div> : statsColab.length === 0 ? <div style={{color:"var(--gfi-text-dim)",fontSize:12}}>No hay datos.</div> : (
               <div style={{overflowX:"auto"}}>
                 <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"Inter,sans-serif",fontSize:12}}>
                   <thead>
-                    <tr style={{borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
+                    <tr style={{borderBottom:"1px solid var(--gfi-border)"}}>
                       {["Nombre","Tipo","Contactos","Interacciones","Negocios","Actividad"].map(h => (
-                        <th key={h} style={{padding:"8px 12px",textAlign:"left",color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase"}}>{h}</th>
+                        <th key={h} style={{padding:"8px 12px",textAlign:"left",color:"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",fontSize:9,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase"}}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -2678,12 +2678,12 @@ export default function AdminPage() {
                     {statsColab.map((s: any) => {
                       const actColor = s.nInts > 5 ? "var(--gfi-green-text)" : s.nInts > 0 ? "var(--gfi-orange)" : "var(--gfi-red)";
                       return (
-                        <tr key={s.id} style={{borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                        <tr key={s.id} style={{borderBottom:"1px solid var(--gfi-border-subtle)"}}>
                           <td style={{padding:"10px 12px",color:"#fff"}}>{s.nombre} {s.apellido}</td>
-                          <td style={{padding:"10px 12px"}}><span style={{padding:"2px 8px",borderRadius:8,background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.4)",fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em"}}>{s.tipo}</span></td>
-                          <td style={{padding:"10px 12px",color:"rgba(255,255,255,0.6)"}}>{s.nContacts}</td>
-                          <td style={{padding:"10px 12px",color:"rgba(255,255,255,0.6)"}}>{s.nInts}</td>
-                          <td style={{padding:"10px 12px",color:"rgba(255,255,255,0.6)"}}>{s.nNegocios}</td>
+                          <td style={{padding:"10px 12px"}}><span style={{padding:"2px 8px",borderRadius:8,background:"var(--gfi-border-subtle)",color:"var(--gfi-text-muted)",fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.08em"}}>{s.tipo}</span></td>
+                          <td style={{padding:"10px 12px",color:"var(--gfi-text-secondary)"}}>{s.nContacts}</td>
+                          <td style={{padding:"10px 12px",color:"var(--gfi-text-secondary)"}}>{s.nInts}</td>
+                          <td style={{padding:"10px 12px",color:"var(--gfi-text-secondary)"}}>{s.nNegocios}</td>
                           <td style={{padding:"10px 12px"}}>
                             <div style={{display:"flex",alignItems:"center",gap:6}}>
                               <div style={{width:48,height:4,borderRadius:2,background:"rgba(255,255,255,0.06)"}}>
@@ -2710,12 +2710,12 @@ export default function AdminPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
               {/* Formulario */}
               <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "20px 24px" }}>
-                <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 16 }}>
                   Nueva notificación
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Título *</div>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 4, fontFamily: "var(--font-display)", fontWeight: 700 }}>Título *</div>
                     <input
                       className="adm-ind-input"
                       style={{ width: "100%" }}
@@ -2726,7 +2726,7 @@ export default function AdminPage() {
                     />
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Mensaje *</div>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 4, fontFamily: "var(--font-display)", fontWeight: 700 }}>Mensaje *</div>
                     <textarea
                       className="adm-ind-input"
                       style={{ width: "100%", minHeight: 72, resize: "vertical", fontFamily: "Inter,sans-serif", fontSize: 13 }}
@@ -2737,7 +2737,7 @@ export default function AdminPage() {
                     />
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>URL de destino (opcional)</div>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 4, fontFamily: "var(--font-display)", fontWeight: 700 }}>URL de destino (opcional)</div>
                     <input
                       className="adm-ind-input"
                       style={{ width: "100%" }}
@@ -2747,7 +2747,7 @@ export default function AdminPage() {
                     />
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Destinatarios</div>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 4, fontFamily: "var(--font-display)", fontWeight: 700 }}>Destinatarios</div>
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                       {[
                         { k: "todos", label: "Todos" },
@@ -2762,7 +2762,7 @@ export default function AdminPage() {
                             background: pushForm.filtro === f.k ? "var(--gfi-red-soft)" : "transparent",
                             border: `1px solid ${pushForm.filtro === f.k ? "var(--gfi-red)" : "var(--gfi-border)"}`,
                             borderRadius: 4, color: pushForm.filtro === f.k ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)",
-                            fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer",
+                            fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, cursor: "pointer",
                             letterSpacing: "0.1em", textTransform: "uppercase",
                           }}
                         >
@@ -2778,7 +2778,7 @@ export default function AdminPage() {
                     disabled={enviandoPush || !pushForm.titulo || !pushForm.cuerpo}
                   >
                     {enviandoPush
-                      ? <><span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite", marginRight: 8 }} />Enviando...</>
+                      ? <><span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid var(--gfi-text-muted)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite", marginRight: 8 }} />Enviando...</>
                       : "📣 Enviar notificación"}
                   </button>
                   {pushRes && (
@@ -2791,18 +2791,18 @@ export default function AdminPage() {
 
               {/* Historial */}
               <div>
-                <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 12 }}>
                   Últimos envíos
                 </div>
                 {broadcasts.length === 0 ? (
-                  <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, fontStyle: "italic" }}>Sin envíos aún.</div>
+                  <div style={{ color: "var(--gfi-text-dim)", fontSize: 12, fontStyle: "italic" }}>Sin envíos aún.</div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {broadcasts.slice(0, 8).map(b => (
-                      <div key={b.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, padding: "10px 14px" }}>
+                      <div key={b.id} style={{ background: "var(--gfi-bg-card)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, padding: "10px 14px" }}>
                         <div style={{ fontWeight: 600, fontSize: 13, color: "#fff", marginBottom: 2 }}>{b.titulo}</div>
-                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>{b.cuerpo}</div>
-                        <div style={{ display: "flex", gap: 12, fontSize: 11, color: "rgba(255,255,255,0.25)", flexWrap: "wrap" }}>
+                        <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 4 }}>{b.cuerpo}</div>
+                        <div style={{ display: "flex", gap: 12, fontSize: 11, color: "var(--gfi-text-dim)", flexWrap: "wrap" }}>
                           <span>✉ {b.enviados} dispositivos</span>
                           <span style={{ textTransform: "capitalize" }}>{b.filtro}</span>
                           <span>{new Date(b.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
@@ -2966,7 +2966,7 @@ export default function AdminPage() {
               const items = CONFIGURACION_SITIO_DEF.filter(c => c.categoria === cat.key);
               return (
                 <div key={cat.key} style={{ marginBottom: 28 }}>
-                  <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 12, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                     {cat.label}
                   </div>
                   <div className="adm-ind-grid">
@@ -2974,12 +2974,12 @@ export default function AdminPage() {
                       <div key={item.clave} className="adm-ind-card">
                         <div className="adm-ind-label">{item.label}</div>
                         {item.descripcion && (
-                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginBottom: 6 }}>{item.descripcion}</div>
+                          <div style={{ fontSize: 10, color: "var(--gfi-text-dim)", marginBottom: 6 }}>{item.descripcion}</div>
                         )}
                         {configuracion[item.clave] && item.tipo !== "textarea" && item.tipo !== "color" && (
                           <div className="adm-ind-actual" style={{ fontSize: 12, wordBreak: "break-all" }}>
                             {item.tipo === "color"
-                              ? <span style={{ display: "inline-block", width: 14, height: 14, borderRadius: 2, background: configuracion[item.clave], border: "1px solid rgba(255,255,255,0.2)", verticalAlign: "middle", marginRight: 6 }} />
+                              ? <span style={{ display: "inline-block", width: 14, height: 14, borderRadius: 2, background: configuracion[item.clave], border: "1px solid var(--gfi-text-dim)", verticalAlign: "middle", marginRight: 6 }} />
                               : null
                             }
                             {configuracion[item.clave]}
@@ -2988,7 +2988,7 @@ export default function AdminPage() {
                         {item.tipo === "color" && configuracion[item.clave] && (
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                             <div style={{ width: 28, height: 28, borderRadius: 4, background: configuracion[item.clave] || "#990000", border: "1px solid rgba(255,255,255,0.15)" }} />
-                            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{configuracion[item.clave]}</span>
+                            <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{configuracion[item.clave]}</span>
                           </div>
                         )}
                         <div className="adm-ind-form" style={{ alignItems: item.tipo === "textarea" ? "flex-start" : "center" }}>
@@ -3059,7 +3059,7 @@ export default function AdminPage() {
                   </div>
                 </div>
                 {tieneOtrasMonedas && (
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 12, fontStyle: "italic" }}>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 12, fontStyle: "italic" }}>
                     * El balance solo incluye registros en ARS. Hay registros en otras monedas (USD/EUR/USDT) que no están convertidos.
                   </div>
                 )}
@@ -3125,7 +3125,7 @@ export default function AdminPage() {
                               <div className="liq-mini-val" style={{ fontSize: 13, color: "#fde68a" }}>{fmtARS(Math.max(0, distribuibleProy))}</div>
                             </div>
                           </div>
-                          <div style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>
+                          <div style={{ marginTop: 6, fontSize: 10, color: "var(--gfi-text-dim)", fontStyle: "italic" }}>
                             Proyección lineal basada en {diaActual} días de {diasMes} transcurridos. Los gastos no se proyectan.
                           </div>
                         </div>
@@ -3133,7 +3133,7 @@ export default function AdminPage() {
                         {/* Distribución por socio */}
                         {neto > 0 && socios.length > 0 && (
                           <div style={{ marginTop: 16 }}>
-                            <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>
+                            <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 10 }}>
                               Distribución por socio
                               {Math.abs(totalPorcentajes - 100) > 0.01 && (
                                 <span style={{ color: "var(--gfi-red)", marginLeft: 8 }}>⚠ Los porcentajes suman {totalPorcentajes.toFixed(1)}% (deben sumar 100%)</span>
@@ -3175,7 +3175,7 @@ export default function AdminPage() {
                                     {/* Form retiro inline */}
                                     {formRetiro?.socio_id === socio.id && (
                                       <div className="liq-form-retiro">
-                                        <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-orange)", marginBottom: 2 }}>
+                                        <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-orange)", marginBottom: 2 }}>
                                           Registrar retiro — {socio.nombre}
                                         </div>
                                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 2fr", gap: 8 }}>
@@ -3209,7 +3209,7 @@ export default function AdminPage() {
                                     {/* Historial de retiros */}
                                     {retirosSocio.length > 0 && (
                                       <div className="liq-retiros-lista" style={{ marginTop: 8 }}>
-                                        <div style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", marginBottom: 4 }}>Retiros del mes</div>
+                                        <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 4 }}>Retiros del mes</div>
                                         {retirosSocio.map(r => (
                                           <div key={r.id} className="liq-retiro-item">
                                             <span>{new Date(r.fecha + "T12:00:00").toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" })} — {r.concepto ?? "Sin concepto"}</span>
@@ -3229,7 +3229,7 @@ export default function AdminPage() {
                         )}
 
                         {socios.length === 0 && !loadingSocios && (
-                          <div style={{ textAlign: "center", padding: "16px 0", fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+                          <div style={{ textAlign: "center", padding: "16px 0", fontSize: 12, color: "var(--gfi-text-muted)" }}>
                             No hay socios configurados. Agregá uno para ver la distribución.
                           </div>
                         )}
@@ -3241,7 +3241,7 @@ export default function AdminPage() {
                           </button>
                           {mostrarGestionSocios && (
                             <div className="liq-gestion-socios" style={{ marginTop: 12 }}>
-                              <div style={{ fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>
+                              <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", marginBottom: 10 }}>
                                 Socios activos
                                 {socios.length > 0 && (
                                   <span style={{ marginLeft: 10, color: Math.abs(totalPorcentajes - 100) < 0.01 ? "var(--gfi-green-text)" : "var(--gfi-red)" }}>
@@ -3250,9 +3250,9 @@ export default function AdminPage() {
                                 )}
                               </div>
                               {socios.map(s => (
-                                <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, padding: "6px 10px", background: "rgba(255,255,255,0.02)", borderRadius: 5 }}>
+                                <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, padding: "6px 10px", background: "var(--gfi-bg-secondary)", borderRadius: 5 }}>
                                   <span style={{ flex: 1, fontSize: 13, color: "#fff" }}>{s.nombre}</span>
-                                  <span style={{ fontSize: 12, color: "var(--gfi-orange)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{s.porcentaje}%</span>
+                                  <span style={{ fontSize: 12, color: "var(--gfi-orange)", fontFamily: "var(--font-display)", fontWeight: 700 }}>{s.porcentaje}%</span>
                                   <button className="fin-btn-del" onClick={() => eliminarSocio(s.id)}>✕</button>
                                 </div>
                               ))}
@@ -3341,9 +3341,9 @@ export default function AdminPage() {
 
                 {/* Tabla */}
                 {loadingFinanzas ? (
-                  <div style={{ color: "rgba(255,255,255,0.3)", padding: 16 }}>Cargando...</div>
+                  <div style={{ color: "var(--gfi-text-muted)", padding: 16 }}>Cargando...</div>
                 ) : finanzasFiltradas.length === 0 ? (
-                  <div style={{ color: "rgba(255,255,255,0.3)", padding: 16, textAlign: "center" }}>Sin registros para este período y filtro.</div>
+                  <div style={{ color: "var(--gfi-text-muted)", padding: 16, textAlign: "center" }}>Sin registros para este período y filtro.</div>
                 ) : (
                   <div className="adm-tabla-wrap">
                     <table className="adm-tabla">
@@ -3361,11 +3361,11 @@ export default function AdminPage() {
                       <tbody>
                         {finanzasFiltradas.map(f => (
                           <tr key={f.id}>
-                            <td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, whiteSpace: "nowrap" }}>{fmtFecha(f.fecha)}</td>
+                            <td style={{ color: "var(--gfi-text-muted)", fontSize: 11, whiteSpace: "nowrap" }}>{fmtFecha(f.fecha)}</td>
                             <td><span className={f.tipo === "ingreso" ? "fin-badge-ingreso" : "fin-badge-gasto"}>{f.tipo === "ingreso" ? "↑ Ingreso" : "↓ Gasto"}</span></td>
-                            <td style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "capitalize" }}>{f.categoria}</td>
+                            <td style={{ color: "var(--gfi-text-secondary)", fontSize: 11, textTransform: "capitalize" }}>{f.categoria}</td>
                             <td style={{ maxWidth: 220 }}>{f.concepto}</td>
-                            <td style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{f.referencia ?? "—"}</td>
+                            <td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{f.referencia ?? "—"}</td>
                             <td style={{ fontWeight: 700, color: f.tipo === "ingreso" ? "var(--gfi-green-text)" : "var(--gfi-red)", whiteSpace: "nowrap", fontFamily: "var(--font-mono)" }}>{fmtMonto(f)}</td>
                             <td><button className="fin-btn-del" onClick={() => eliminarFinanza(f.id)}>✕</button></td>
                           </tr>
@@ -3386,7 +3386,7 @@ export default function AdminPage() {
             </div>
             <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
               {(["abierto","en_proceso","resuelto","todos"] as const).map(f => (
-                <button key={f} onClick={() => setFiltroSoporte(f)} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${filtroSoporte === f ? "var(--gfi-red)" : "var(--gfi-border)"}`, fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroSoporte === f ? "var(--gfi-red-soft)" : "transparent", color: filtroSoporte === f ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)" }}>
+                <button key={f} onClick={() => setFiltroSoporte(f)} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${filtroSoporte === f ? "var(--gfi-red)" : "var(--gfi-border)"}`, fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroSoporte === f ? "var(--gfi-red-soft)" : "transparent", color: filtroSoporte === f ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)" }}>
                   {f === "abierto" ? `⏳ Abiertos (${soporteTickets.filter(t => t.estado === "abierto").length})` : f === "en_proceso" ? `🔵 En proceso` : f === "resuelto" ? `✓ Resueltos` : "Todos"}
                 </button>
               ))}
@@ -3404,14 +3404,14 @@ export default function AdminPage() {
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 3 }}>{t.asunto}</div>
                           <div className="adm-sub">{t.perfiles ? `${t.perfiles.nombre} ${t.perfiles.apellido}` : "—"} · Mat. {t.perfiles?.matricula ?? "—"}</div>
-                          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 500 }}>{t.descripcion}</div>
+                          <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 500 }}>{t.descripcion}</div>
                         </div>
                         <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
-                          <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: PRIORIDAD_COLOR[t.prioridad], color: PRIORIDAD_TEXT[t.prioridad] }}>{t.prioridad}</span>
-                          <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: t.estado === "resuelto" ? "var(--gfi-green-soft)" : t.estado === "en_proceso" ? "var(--gfi-red-soft)" : "var(--gfi-orange-soft)", color: t.estado === "resuelto" ? "var(--gfi-green-text)" : t.estado === "en_proceso" ? "var(--gfi-text-secondary)" : "var(--gfi-orange)" }}>{t.estado.replace("_"," ")}</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: PRIORIDAD_COLOR[t.prioridad], color: PRIORIDAD_TEXT[t.prioridad] }}>{t.prioridad}</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", background: t.estado === "resuelto" ? "var(--gfi-green-soft)" : t.estado === "en_proceso" ? "var(--gfi-red-soft)" : "var(--gfi-orange-soft)", color: t.estado === "resuelto" ? "var(--gfi-green-text)" : t.estado === "en_proceso" ? "var(--gfi-text-secondary)" : "var(--gfi-orange)" }}>{t.estado.replace("_"," ")}</span>
                         </div>
                       </div>
-                      <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.2)" }}>{new Date(t.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
+                      <div style={{ marginTop: 6, fontSize: 11, color: "var(--gfi-text-dim)" }}>{new Date(t.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
                     </div>
                   ))}
                 </div>
@@ -3439,35 +3439,35 @@ export default function AdminPage() {
                         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
                           <div>
                             <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{rp.nombre}</div>
-                            {rp.sitio_web && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{rp.sitio_web}</div>}
+                            {rp.sitio_web && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{rp.sitio_web}</div>}
                           </div>
                           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                             {suscVigente
-                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-green-soft)", border: "1px solid rgba(58,186,182,0.25)", color: "var(--gfi-green-text)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-green-soft)", border: "1px solid rgba(58,186,182,0.25)", color: "var(--gfi-green-text)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                   ✓ Suscripción activa hasta {vence!.toLocaleDateString("es-AR",{month:"short",year:"numeric"})}
                                 </span>
-                              : <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-red-soft)", border: "1px solid var(--gfi-red-border)", color: "var(--gfi-red)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              : <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-red-soft)", border: "1px solid var(--gfi-red-border)", color: "var(--gfi-red)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                   Sin suscripción activa
                                 </span>
                             }
                             {rp.portal_user_id
-                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                   Portal: {rp.portal_usuario?.nombre} {rp.portal_usuario?.apellido}
                                 </span>
-                              : <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Sin acceso al portal</span>
+                              : <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700 }}>Sin acceso al portal</span>
                             }
                           </div>
                         </div>
 
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                           <div>
-                            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Cargar saldo (USD)</div>
+                            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>Cargar saldo (USD)</div>
                             <div style={{ display: "flex", gap: 8 }}>
                               <input
                                 type="number" min="0" step="10" placeholder="Ej: 500"
                                 value={sponsorSaldoForm[rp.id] ?? ""}
                                 onChange={e => setSponsorSaldoForm(f => ({ ...f, [rp.id]: e.target.value }))}
-                                style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
+                                style={{ flex: 1, padding: "8px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
                               />
                               <button
                                 onClick={() => cargarSaldoSponsor(rp.id)}
@@ -3479,7 +3479,7 @@ export default function AdminPage() {
                           </div>
 
                           <div>
-                            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
+                            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>
                               Mensualidad — plan actual: <strong style={{ color: "#d4960c" }}>${rp.plan_mensual_usd}/mes</strong>
                             </div>
                             <div style={{ display: "flex", gap: 8 }}>
@@ -3487,11 +3487,11 @@ export default function AdminPage() {
                                 type="number" min="0" step="10" placeholder={`Cambiar plan (actual $${rp.plan_mensual_usd})`}
                                 value={sponsorPlanForm[rp.id] ?? ""}
                                 onChange={e => setSponsorPlanForm(f => ({ ...f, [rp.id]: e.target.value }))}
-                                style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
+                                style={{ flex: 1, padding: "8px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
                               />
                               <button
                                 onClick={() => guardarPlanSponsor(rp.id)}
-                                style={{ padding: "8px 12px", background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: 4, color: "#d4960c", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}
+                                style={{ padding: "8px 12px", background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: 4, color: "#d4960c", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, cursor: "pointer" }}
                               >Guardar plan</button>
                               <button
                                 onClick={() => cobrarSuscripcionSponsor(rp.id)}
@@ -3503,13 +3503,13 @@ export default function AdminPage() {
                           </div>
 
                           <div>
-                            <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>Vincular acceso al portal (email del usuario)</div>
+                            <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>Vincular acceso al portal (email del usuario)</div>
                             <div style={{ display: "flex", gap: 8 }}>
                               <input
                                 type="email" placeholder="email@sponsor.com"
                                 value={sponsorPortalForm[rp.id] ?? ""}
                                 onChange={e => setSponsorPortalForm(f => ({ ...f, [rp.id]: e.target.value }))}
-                                style={{ flex: 1, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
+                                style={{ flex: 1, padding: "8px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none" }}
                               />
                               <button
                                 onClick={() => vincularPortalSponsor(rp.id)}
@@ -3556,7 +3556,7 @@ export default function AdminPage() {
 
                 {/* Grupos */}
                 <div>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>Grupos configurados</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 12 }}>Grupos configurados</div>
                   <div className="adm-tabla-wrap">
                     <table className="adm-tabla">
                       <thead><tr>
@@ -3569,7 +3569,7 @@ export default function AdminPage() {
                             <td><code style={{ fontSize: 10, background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: 4 }}>{g.grupo_gfi}</code></td>
                             <td>{g.miembros.toLocaleString("es-AR")}</td>
                             <td style={{ color: g.mensajes_30d > 0 ? "var(--gfi-green-text)" : "var(--gfi-text-muted)" }}>{g.mensajes_30d}</td>
-                            <td style={{ color: g.procesados_30d > 0 ? "#d4960c" : "rgba(255,255,255,0.3)" }}>{g.procesados_30d}</td>
+                            <td style={{ color: g.procesados_30d > 0 ? "#d4960c" : "var(--gfi-text-muted)" }}>{g.procesados_30d}</td>
                             <td><span className={`badge badge-${g.activo ? "aprobado" : "rechazado"}`}>{g.activo ? "Activo" : "Inactivo"}</span></td>
                             <td>{g.wa_link ? <a href={g.wa_link} target="_blank" rel="noreferrer" style={{ color: "var(--gfi-green-text)", fontSize: 11 }}>Abrir</a> : <span style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>—</span>}</td>
                             <td>
@@ -3586,7 +3586,7 @@ export default function AdminPage() {
 
                 {/* Form grupo */}
                 <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: 20 }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 14 }}>
                     {waGrupoForm.id ? "Editar grupo" : "Agregar grupo"}
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
@@ -3608,7 +3608,7 @@ export default function AdminPage() {
 
                 {/* Enviar mensaje WA */}
                 <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: 20 }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 14 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 14 }}>
                     Enviar mensaje WhatsApp
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 10, marginBottom: 12 }}>
@@ -3623,7 +3623,7 @@ export default function AdminPage() {
                 {/* Últimos mensajes recibidos */}
                 {waMensajes.length > 0 && (
                   <div>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>Últimos mensajes recibidos</div>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 12 }}>Últimos mensajes recibidos</div>
                     <div className="adm-tabla-wrap">
                       <table className="adm-tabla">
                         <thead><tr><th>De</th><th>Contenido</th><th>Grupo inf.</th><th>Estado</th><th>Fecha</th></tr></thead>
@@ -3632,7 +3632,7 @@ export default function AdminPage() {
                             <tr key={m.id}>
                               <td>
                                 <div style={{ fontWeight: 600, color: "#fff", fontSize: 12 }}>{m.nombre_from ?? m.numero_from}</div>
-                                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{m.numero_from}</div>
+                                <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{m.numero_from}</div>
                               </td>
                               <td style={{ maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 12 }}>{m.contenido}</td>
                               <td><code style={{ fontSize: 10, background: "rgba(255,255,255,0.06)", padding: "2px 5px", borderRadius: 4 }}>{m.grupo_gfi ?? "—"}</code></td>
@@ -3644,7 +3644,7 @@ export default function AdminPage() {
                                   : <span className="badge badge-pendiente">Pendiente</span>
                                 }
                               </td>
-                              <td style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>{new Date(m.created_at).toLocaleDateString("es-AR")}</td>
+                              <td style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{new Date(m.created_at).toLocaleDateString("es-AR")}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -3677,11 +3677,11 @@ export default function AdminPage() {
                     { label: "Vencen en <15d", val: porVencer.length, color: "#d4960c", bg: "rgba(245,158,11,0.08)" },
                     { label: "Pendientes de confirmación", val: pendientes.length, color: "var(--gfi-orange)", bg: "var(--gfi-orange-soft)" },
                     { label: "Sin suscripción", val: sinSub.length, color: "var(--gfi-red)", bg: "var(--gfi-red-soft)" },
-                    { label: "Total corredores", val: rankingPago.length, color: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.04)" },
+                    { label: "Total corredores", val: rankingPago.length, color: "var(--gfi-text-secondary)", bg: "var(--gfi-border-subtle)" },
                   ].map(k => (
                     <div key={k.label} style={{ background: k.bg, border: `1px solid ${k.color}33`, borderRadius: 10, padding: "12px 18px", minWidth: 120 }}>
-                      <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: k.color }}>{k.val}</div>
-                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 2 }}>{k.label}</div>
+                      <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "var(--font-display)", color: k.color }}>{k.val}</div>
+                      <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 2 }}>{k.label}</div>
                     </div>
                   ))}
                 </div>
@@ -3691,7 +3691,7 @@ export default function AdminPage() {
             {/* Filtros + búsqueda */}
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
               {(["todos","activa","pendiente","vencida"] as const).map(f => (
-                <button key={f} onClick={() => setFiltroRanking(f)} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${filtroRanking === f ? "var(--gfi-red)" : "var(--gfi-border)"}`, fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroRanking === f ? "var(--gfi-red-soft)" : "transparent", color: filtroRanking === f ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)" }}>
+                <button key={f} onClick={() => setFiltroRanking(f)} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${filtroRanking === f ? "var(--gfi-red)" : "var(--gfi-border)"}`, fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroRanking === f ? "var(--gfi-red-soft)" : "transparent", color: filtroRanking === f ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)" }}>
                   {f === "todos" ? "Todos" : f === "activa" ? "✓ Activos" : f === "pendiente" ? "⏳ Pendientes" : "⚠ Sin/Vencidos"}
                 </button>
               ))}
@@ -3699,7 +3699,7 @@ export default function AdminPage() {
                 placeholder="Buscar corredor..."
                 value={rankingBusqueda}
                 onChange={e => setRankingBusqueda(e.target.value)}
-                style={{ marginLeft: "auto", padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 200 }}
+                style={{ marginLeft: "auto", padding: "6px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 200 }}
               />
             </div>
 
@@ -3746,19 +3746,19 @@ export default function AdminPage() {
                         const catConf = CATEGORIAS.find(c => c.value === r.categoria);
                         return (
                           <tr key={r.id}>
-                            <td style={{ color: "rgba(255,255,255,0.25)", fontSize: 12, fontWeight: 700 }}>{idx + 1}</td>
+                            <td style={{ color: "var(--gfi-text-dim)", fontSize: 12, fontWeight: 700 }}>{idx + 1}</td>
                             <td>
                               <div style={{ fontWeight: 600, fontSize: 13, color: "#fff" }}>{r.apellido}, {r.nombre}</div>
-                              {r.email && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{r.email}</div>}
+                              {r.email && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{r.email}</div>}
                             </td>
-                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>{r.matricula ?? "—"}</td>
+                            <td style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>{r.matricula ?? "—"}</td>
                             <td>
                               {catConf
-                                ? <span style={{ padding: "2px 8px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${catConf.color}22`, color: catConf.color }}>{catConf.label}</span>
-                                : <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 12 }}>—</span>}
+                                ? <span style={{ padding: "2px 8px", borderRadius: 10, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, background: `${catConf.color}22`, color: catConf.color }}>{catConf.label}</span>
+                                : <span style={{ color: "var(--gfi-text-dim)", fontSize: 12 }}>—</span>}
                             </td>
                             <td>
-                              <span style={{ padding: "3px 10px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: estadoBg, color: estadoColor }}>{estadoLabel}</span>
+                              <span style={{ padding: "3px 10px", borderRadius: 10, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, background: estadoBg, color: estadoColor }}>{estadoLabel}</span>
                               {diasRestantes !== null && estaActiva && diasRestantes <= 15 && (
                                 <div style={{ fontSize: 10, color: "#d4960c", marginTop: 2 }}>⚠ {diasRestantes}d restantes</div>
                               )}
@@ -3766,8 +3766,8 @@ export default function AdminPage() {
                             <td style={{ fontSize: 12, color: venc && venc < hoy ? "var(--gfi-red)" : "var(--gfi-text-secondary)" }}>
                               {r.fecha_vencimiento ? new Date(r.fecha_vencimiento).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
                             </td>
-                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{r.periodo ?? "—"}</td>
-                            <td style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>
+                            <td style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>{r.periodo ?? "—"}</td>
+                            <td style={{ fontSize: 12, color: "var(--gfi-text-secondary)", fontWeight: 600 }}>
                               {r.monto_usd != null ? `USD ${r.monto_usd}` : "—"}
                             </td>
                           </tr>
@@ -3797,32 +3797,32 @@ export default function AdminPage() {
                 { label: "Propiedades en CRM", val: s.totalPropiedades, icon: "🏠", color: "#06b6d4", bg: "rgba(6,182,212,0.08)" },
                 { label: "Entradas MIR", val: s.totalMIR, icon: "⚡", color: "var(--gfi-orange)", bg: "var(--gfi-orange-soft)" },
                 { label: "Negocios totales", val: s.totalNegocios, icon: "🤝", color: "#990000", bg: "rgba(153,0,0,0.08)" },
-                { label: "Logins este mes", val: s.activosMes, icon: "🔐", color: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.04)" },
+                { label: "Logins este mes", val: s.activosMes, icon: "🔐", color: "var(--gfi-text-secondary)", bg: "var(--gfi-border-subtle)" },
               ];
               return (
                 <div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12, marginBottom: 24 }}>
                     {kpis.map(k => (
                       <div key={k.label} style={{ background: k.bg, border: `1px solid ${k.color}33`, borderRadius: 10, padding: "14px 16px" }}>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>{k.icon} {k.label}</div>
-                        <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: k.color }}>{k.val}</div>
+                        <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>{k.icon} {k.label}</div>
+                        <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "var(--font-display)", color: k.color }}>{k.val}</div>
                       </div>
                     ))}
                   </div>
 
                   {s.topZonas.length > 0 && (
-                    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "16px 20px" }}>
-                      <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>Top barrios por propiedades</div>
+                    <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "16px 20px" }}>
+                      <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 14 }}>Top barrios por propiedades</div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                         {s.topZonas.map((z, i) => {
                           const pct = s.topZonas[0].count > 0 ? Math.round((z.count / s.topZonas[0].count) * 100) : 0;
                           return (
                             <div key={z.zona} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                              <div style={{ width: 20, fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{i + 1}</div>
+                              <div style={{ width: 20, fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>{i + 1}</div>
                               <div style={{ flex: 1 }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
                                   <span style={{ fontSize: 12, color: "#fff" }}>{z.zona}</span>
-                                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{z.count}</span>
+                                  <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>{z.count}</span>
                                 </div>
                                 <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
                                   <div style={{ height: "100%", width: `${pct}%`, background: "#990000", borderRadius: 2 }} />
@@ -3848,7 +3848,7 @@ export default function AdminPage() {
 
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
               {(["todos","autenticacion","pagos","crm","admin"] as const).map(f => (
-                <button key={f} onClick={() => setFiltroLogs(f)} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${filtroLogs === f ? "var(--gfi-red)" : "var(--gfi-border)"}`, fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroLogs === f ? "var(--gfi-red-soft)" : "transparent", color: filtroLogs === f ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)" }}>
+                <button key={f} onClick={() => setFiltroLogs(f)} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${filtroLogs === f ? "var(--gfi-red)" : "var(--gfi-border)"}`, fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", background: filtroLogs === f ? "var(--gfi-red-soft)" : "transparent", color: filtroLogs === f ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)" }}>
                   {f === "todos" ? "Todos" : f === "autenticacion" ? "🔐 Auth" : f === "pagos" ? "💰 Pagos" : f === "crm" ? "📋 CRM" : "⚙ Admin"}
                 </button>
               ))}
@@ -3856,7 +3856,7 @@ export default function AdminPage() {
                 placeholder="Buscar acción o usuario..."
                 value={busquedaLogs}
                 onChange={e => setBusquedaLogs(e.target.value)}
-                style={{ marginLeft: "auto", padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 220 }}
+                style={{ marginLeft: "auto", padding: "6px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 220 }}
               />
               <button onClick={cargarLogsActividad} className="adm-btn-volver">↻ Actualizar</button>
             </div>
@@ -3888,23 +3888,23 @@ export default function AdminPage() {
                     <tbody>
                       {filtrados.slice(0, 100).map(l => (
                         <tr key={l.id}>
-                          <td style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>{new Date(l.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</td>
+                          <td style={{ fontSize: 11, color: "var(--gfi-text-muted)", whiteSpace: "nowrap" }}>{new Date(l.created_at).toLocaleDateString("es-AR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</td>
                           <td>
                             {l.perfiles ? (
                               <div>
                                 <div style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>{l.perfiles.nombre} {l.perfiles.apellido}</div>
-                                {l.perfiles.matricula && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>Mat. {l.perfiles.matricula}</div>}
+                                {l.perfiles.matricula && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>Mat. {l.perfiles.matricula}</div>}
                               </div>
-                            ) : <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 12 }}>Sistema</span>}
+                            ) : <span style={{ color: "var(--gfi-text-dim)", fontSize: 12 }}>Sistema</span>}
                           </td>
                           <td style={{ fontSize: 12, color: "#fff", fontWeight: 600 }}>{l.accion}</td>
-                          <td>{l.modulo && <span style={{ padding: "2px 8px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${MODULO_COLOR[l.modulo] ?? "#6b7280"}22`, color: MODULO_COLOR[l.modulo] ?? "#6b7280" }}>{l.modulo}</span>}</td>
-                          <td style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.detalle ?? "—"}</td>
+                          <td>{l.modulo && <span style={{ padding: "2px 8px", borderRadius: 10, fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, background: `${MODULO_COLOR[l.modulo] ?? "#6b7280"}22`, color: MODULO_COLOR[l.modulo] ?? "#6b7280" }}>{l.modulo}</span>}</td>
+                          <td style={{ fontSize: 12, color: "var(--gfi-text-secondary)", maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.detalle ?? "—"}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  {filtrados.length > 100 && <div style={{ textAlign: "center", padding: "12px 0", fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Mostrando 100 de {filtrados.length} entradas. Usá el filtro para acotar.</div>}
+                  {filtrados.length > 100 && <div style={{ textAlign: "center", padding: "12px 0", fontSize: 12, color: "var(--gfi-text-muted)" }}>Mostrando 100 de {filtrados.length} entradas. Usá el filtro para acotar.</div>}
                 </div>
               );
             })()}
@@ -3917,23 +3917,23 @@ export default function AdminPage() {
       {ticketVer && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
           onClick={e => { if (e.target === e.currentTarget) { setTicketVer(null); setRespuestaForm(""); } }}>
-          <div style={{ background: "#0f0f0f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: 24, width: "100%", maxWidth: 640, maxHeight: "90vh", overflowY: "auto" }}>
+          <div style={{ background: "var(--gfi-bg-primary)", border: "1px solid var(--gfi-border)", borderRadius: 12, padding: 24, width: "100%", maxWidth: 640, maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 4 }}>Ticket de {ticketVer.perfiles ? `${ticketVer.perfiles.nombre} ${ticketVer.perfiles.apellido}` : "—"}</div>
+                <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 4 }}>Ticket de {ticketVer.perfiles ? `${ticketVer.perfiles.nombre} ${ticketVer.perfiles.apellido}` : "—"}</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{ticketVer.asunto}</div>
               </div>
-              <button onClick={() => { setTicketVer(null); setRespuestaForm(""); }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer" }}>✕</button>
+              <button onClick={() => { setTicketVer(null); setRespuestaForm(""); }} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 18, cursor: "pointer" }}>✕</button>
             </div>
 
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "12px 16px", marginBottom: 16 }}>
-              <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Descripción del usuario</div>
+            <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "12px 16px", marginBottom: 16 }}>
+              <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>Descripción del usuario</div>
               <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{ticketVer.descripcion}</div>
             </div>
 
             <div style={{ marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Respuesta</div>
-              <button onClick={resolverConIA} disabled={resolviendoIA} style={{ padding: "6px 14px", background: resolviendoIA ? "rgba(255,255,255,0.06)" : "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", borderRadius: 6, color: "#a78bfa", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>
+              <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>Respuesta</div>
+              <button onClick={resolverConIA} disabled={resolviendoIA} style={{ padding: "6px 14px", background: resolviendoIA ? "rgba(255,255,255,0.06)" : "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", borderRadius: 6, color: "#a78bfa", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>
                 {resolviendoIA ? "✨ Generando..." : "✨ Resolver con IA"}
               </button>
             </div>

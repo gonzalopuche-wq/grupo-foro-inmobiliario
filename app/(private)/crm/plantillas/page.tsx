@@ -18,7 +18,7 @@ const TIPOS: Record<string, { label: string; color: string; bg: string }> = {
   email:       { label: 'Email',      color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
   visita:      { label: 'Visita',     color: '#d4960c', bg: 'rgba(245,158,11,0.12)' },
   reunion:     { label: 'Reunión',    color: '#d4960c', bg: 'rgba(249,115,22,0.12)' },
-  nota:        { label: 'Nota',       color: 'rgba(255,255,255,0.4)', bg: 'rgba(255,255,255,0.06)' },
+  nota:        { label: 'Nota',       color: 'var(--gfi-text-muted)', bg: 'rgba(255,255,255,0.06)' },
 }
 
 const TIPO_LIST = ['whatsapp', 'email', 'llamada', 'visita', 'reunion', 'nota']
@@ -108,12 +108,12 @@ export default function PlantillasPage() {
     page: { color: '#fff', fontFamily: 'Inter,sans-serif' } as React.CSSProperties,
     header: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap' as const, gap: 12 },
     titulo: { margin: 0, fontSize: 18, fontWeight: 800, fontFamily: 'Montserrat,sans-serif' },
-    sub: { margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.35)' },
+    sub: { margin: '4px 0 0', fontSize: 12, color: 'var(--gfi-text-muted)' },
     btnNuevo: { display: 'flex', alignItems: 'center', gap: 8, background: '#990000', border: 'none', color: '#fff', padding: '9px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' },
     filtros: { display: 'flex', gap: 6, flexWrap: 'wrap' as const, marginBottom: 20 },
-    chip: (activo: boolean) => ({ padding: '6px 14px', borderRadius: 20, border: `1px solid ${activo ? '#990000' : 'rgba(255,255,255,0.1)'}`, background: activo ? 'rgba(200,0,0,0.1)' : 'transparent', color: activo ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' } as React.CSSProperties),
-    card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '16px 20px', marginBottom: 10 } as React.CSSProperties,
-    badge: (tipo: string) => ({ display: 'inline-block', padding: '2px 9px', borderRadius: 10, fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.08em', background: TIPOS[tipo]?.bg ?? 'rgba(255,255,255,0.06)', color: TIPOS[tipo]?.color ?? 'rgba(255,255,255,0.4)' } as React.CSSProperties),
+    chip: (activo: boolean) => ({ padding: '6px 14px', borderRadius: 20, border: `1px solid ${activo ? '#990000' : 'var(--gfi-border)'}`, background: activo ? 'rgba(200,0,0,0.1)' : 'transparent', color: activo ? '#fff' : 'var(--gfi-text-muted)', fontSize: 11, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' } as React.CSSProperties),
+    card: { background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border)', borderRadius: 10, padding: '16px 20px', marginBottom: 10 } as React.CSSProperties,
+    badge: (tipo: string) => ({ display: 'inline-block', padding: '2px 9px', borderRadius: 10, fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.08em', background: TIPOS[tipo]?.bg ?? 'rgba(255,255,255,0.06)', color: TIPOS[tipo]?.color ?? 'var(--gfi-text-muted)' } as React.CSSProperties),
   }
 
   return (
@@ -143,9 +143,9 @@ export default function PlantillasPage() {
       </div>
 
       {cargando ? (
-        <div style={{ textAlign: 'center', padding: 48, color: 'rgba(255,255,255,0.3)' }}>Cargando…</div>
+        <div style={{ textAlign: 'center', padding: 48, color: 'var(--gfi-text-muted)' }}>Cargando…</div>
       ) : filtradas.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 64, color: 'rgba(255,255,255,0.25)' }}>
+        <div style={{ textAlign: 'center', padding: 64, color: 'var(--gfi-text-dim)' }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>📝</div>
           <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
             {plantillas.length === 0 ? 'No tenés plantillas todavía' : 'Sin plantillas de ese tipo'}
@@ -168,11 +168,11 @@ export default function PlantillasPage() {
               <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                 <button
                   onClick={() => copiar(p.contenido, p.id)}
-                  style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '5px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}
+                  style={{ background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', color: '#fff', padding: '5px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}
                 >
                   {copiado === p.id ? '¡Copiado!' : 'Copiar'}
                 </button>
-                <button onClick={() => abrirEditar(p)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', padding: '5px 8px' }}>Editar</button>
+                <button onClick={() => abrirEditar(p)} style={{ background: 'none', border: 'none', color: 'var(--gfi-text-muted)', fontSize: 12, cursor: 'pointer', padding: '5px 8px' }}>Editar</button>
                 <button onClick={() => eliminar(p.id)} style={{ background: 'none', border: 'none', color: 'rgba(200,0,0,0.5)', fontSize: 12, cursor: 'pointer', padding: '5px 8px' }}>Eliminar</button>
               </div>
             </div>
@@ -186,17 +186,17 @@ export default function PlantillasPage() {
       {/* Modal */}
       {modal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: 16 }}>
-          <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: 28, width: '100%', maxWidth: 540 }}>
+          <div style={{ background: 'var(--gfi-bg-secondary)', border: '1px solid var(--gfi-border)', borderRadius: 12, padding: 28, width: '100%', maxWidth: 540 }}>
             <h3 style={{ margin: '0 0 20px', fontSize: 16, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', color: '#fff' }}>
               {editId ? 'Editar plantilla' : 'Nueva plantilla'}
             </h3>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 5, fontFamily: 'Montserrat,sans-serif' }}>Tipo</label>
+              <label style={{ display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gfi-text-muted)', marginBottom: 5, fontFamily: 'Montserrat,sans-serif' }}>Tipo</label>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {TIPO_LIST.map(t => (
                   <button key={t} onClick={() => setForm(f => ({ ...f, tipo: t }))}
-                    style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${form.tipo === t ? '#990000' : 'rgba(255,255,255,0.1)'}`, background: form.tipo === t ? 'rgba(200,0,0,0.12)' : 'transparent', color: form.tipo === t ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
+                    style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${form.tipo === t ? '#990000' : 'var(--gfi-border)'}`, background: form.tipo === t ? 'rgba(200,0,0,0.12)' : 'transparent', color: form.tipo === t ? '#fff' : 'var(--gfi-text-muted)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
                     {TIPOS[t]?.label}
                   </button>
                 ))}
@@ -204,22 +204,22 @@ export default function PlantillasPage() {
             </div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 5, fontFamily: 'Montserrat,sans-serif' }}>Título</label>
+              <label style={{ display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gfi-text-muted)', marginBottom: 5, fontFamily: 'Montserrat,sans-serif' }}>Título</label>
               <input
                 value={form.titulo}
                 onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))}
                 placeholder="Ej: Seguimiento post-visita"
-                style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '9px 12px', color: '#fff', fontSize: 13, outline: 'none', boxSizing: 'border-box', fontFamily: 'Inter,sans-serif' }}
+                style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 6, padding: '9px 12px', color: '#fff', fontSize: 13, outline: 'none', boxSizing: 'border-box', fontFamily: 'Inter,sans-serif' }}
               />
             </div>
 
             <div style={{ marginBottom: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-                <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', fontFamily: 'Montserrat,sans-serif' }}>Mensaje</label>
+                <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif' }}>Mensaje</label>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {VARIABLES.map(v => (
                     <button key={v} onClick={() => insertarVariable(v)}
-                      style={{ padding: '2px 7px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, fontSize: 9, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>
+                      style={{ padding: '2px 7px', background: 'rgba(255,255,255,0.06)', border: '1px solid var(--gfi-border)', borderRadius: 4, fontSize: 9, color: 'var(--gfi-text-muted)', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>
                       {v}
                     </button>
                   ))}
@@ -230,15 +230,15 @@ export default function PlantillasPage() {
                 onChange={e => setForm(f => ({ ...f, contenido: e.target.value }))}
                 placeholder="Escribí el mensaje. Usá {nombre}, {apellido}, {propiedad}, etc. para personalizarlo."
                 rows={5}
-                style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '9px 12px', color: '#fff', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'Inter,sans-serif', lineHeight: 1.6 }}
+                style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 6, padding: '9px 12px', color: '#fff', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'Inter,sans-serif', lineHeight: 1.6 }}
               />
             </div>
-            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', marginBottom: 20 }}>
+            <p style={{ fontSize: 10, color: 'var(--gfi-text-dim)', marginBottom: 20 }}>
               Las variables entre llaves se reemplazan automáticamente al usar la plantilla desde el CRM.
             </p>
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setModal(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '9px 18px', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
+              <button onClick={() => setModal(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--gfi-border)', color: '#fff', padding: '9px 18px', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
                 Cancelar
               </button>
               <button onClick={guardar} disabled={guardando || !form.titulo.trim() || !form.contenido.trim()}

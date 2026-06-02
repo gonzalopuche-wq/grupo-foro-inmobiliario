@@ -224,7 +224,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           width: 220px;
           flex-shrink: 0;
           background: #0a0a0a;
-          border-right: 1px solid rgba(255,255,255,0.07);
+          border-right: 1px solid var(--gfi-border-subtle);
           display: flex;
           flex-direction: column;
           height: 100%;
@@ -232,22 +232,22 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           overflow-x: hidden;
         }
         .crm2-sidebar::-webkit-scrollbar { width: 3px; }
-        .crm2-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+        .crm2-sidebar::-webkit-scrollbar-thumb { background: var(--gfi-border); }
 
         .crm2-sb-brand {
           padding: 20px 16px 14px;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
+          border-bottom: 1px solid var(--gfi-border-subtle);
           flex-shrink: 0;
         }
         .crm2-sb-logo {
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
           font-size: 15px; font-weight: 800;
           color: #990000; letter-spacing: 0.06em;
         }
         .crm2-sb-sub {
           display: block;
-          font-size: 10px; color: rgba(255,255,255,0.3);
-          margin-top: 2px; font-family: 'Inter', sans-serif;
+          font-size: 10px; color: var(--gfi-text-muted);
+          margin-top: 2px; font-family: var(--font-body);
         }
 
         .crm2-sb-nav {
@@ -265,13 +265,13 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           background: transparent; border: none; width: 100%;
           text-align: left;
           color: rgba(255,255,255,0.65);
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
           font-size: 13px; font-weight: 500;
           border-left: 2px solid transparent;
           transition: background 0.12s, color 0.12s, border-color 0.12s;
         }
         .crm2-nav-item:hover {
-          background: rgba(255,255,255,0.04);
+          background: var(--gfi-border-subtle);
           color: rgba(255,255,255,0.9);
           border-left-color: rgba(255,255,255,0.15);
         }
@@ -284,11 +284,11 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         .crm2-nav-ico { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
         .crm2-nav-lbl { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .crm2-nav-arrow {
-          font-size: 16px; color: rgba(255,255,255,0.3);
+          font-size: 16px; color: var(--gfi-text-muted);
           transition: transform 0.18s;
           line-height: 1;
         }
-        .crm2-nav-arrow.open { transform: rotate(90deg); color: rgba(255,255,255,0.5); }
+        .crm2-nav-arrow.open { transform: rotate(90deg); color: var(--gfi-text-secondary); }
 
         /* Sub-items */
         .crm2-nav-children { padding-bottom: 2px; }
@@ -297,16 +297,16 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           padding: 0 16px 0 46px; height: 32px;
           line-height: 32px;
           text-decoration: none;
-          font-family: 'Inter', sans-serif; font-size: 12px;
-          color: rgba(255,255,255,0.5);
+          font-family: var(--font-body); font-size: 12px;
+          color: var(--gfi-text-secondary);
           border-left: 2px solid transparent;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
           transition: background 0.1s, color 0.1s, border-color 0.1s;
         }
         .crm2-nav-child:hover {
-          background: rgba(255,255,255,0.03);
+          background: var(--gfi-bg-card);
           color: rgba(255,255,255,0.8);
-          border-left-color: rgba(255,255,255,0.12);
+          border-left-color: var(--gfi-border);
         }
         .crm2-nav-child.act {
           color: #fff; font-weight: 500;
@@ -321,15 +321,15 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           padding: 0 12px;
           height: 52px;
           background: #0a0a0a;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+          border-bottom: 1px solid var(--gfi-border);
           position: sticky; top: 0; z-index: 40;
         }
         .crm2-hamburger {
           width: 36px; height: 36px;
           border-radius: 8px;
           background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
-          color: rgba(255,255,255,0.7);
+          border: 1px solid var(--gfi-border);
+          color: var(--gfi-text-primary);
           font-size: 16px;
           cursor: pointer; flex-shrink: 0;
           display: flex; align-items: center; justify-content: center;
@@ -338,18 +338,18 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           flex: 1;
           display: flex; align-items: center;
           background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid var(--gfi-border);
           border-radius: 8px;
           padding: 0 12px; gap: 8px; height: 36px;
         }
         .crm2-header-search input {
           flex: 1; background: none; border: none; outline: none;
-          color: #fff; font-size: 13px; font-family: 'Inter', sans-serif;
+          color: #fff; font-size: 13px; font-family: var(--font-body);
         }
-        .crm2-header-search input::placeholder { color: rgba(255,255,255,0.3); }
-        .crm2-header-search .srch-ico { color: rgba(255,255,255,0.3); font-size: 14px; }
+        .crm2-header-search input::placeholder { color: var(--gfi-text-muted); }
+        .crm2-header-search .srch-ico { color: var(--gfi-text-muted); font-size: 14px; }
         .crm2-header-title {
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
           font-size: 14px; font-weight: 800;
           color: #990000; flex-shrink: 0;
         }
@@ -368,7 +368,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           position: absolute; top: 0; left: 0; bottom: 0;
           width: 280px; max-width: 85vw;
           background: #0a0a0a;
-          border-right: 1px solid rgba(255,255,255,0.08);
+          border-right: 1px solid var(--gfi-border);
           overflow-y: auto;
           animation: crm2-slide-in 0.22s ease;
         }
@@ -379,14 +379,14 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         .crm2-drawer-header {
           display: flex; align-items: center; justify-content: space-between;
           padding: 16px 16px 12px;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
+          border-bottom: 1px solid var(--gfi-border-subtle);
         }
         .crm2-drawer-close {
           width: 32px; height: 32px;
           border-radius: 6px;
           background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
-          color: rgba(255,255,255,0.6);
+          border: 1px solid var(--gfi-border);
+          color: var(--gfi-text-secondary);
           font-size: 16px; cursor: pointer;
           display: flex; align-items: center; justify-content: center;
         }

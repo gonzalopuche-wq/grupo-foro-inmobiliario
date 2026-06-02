@@ -89,7 +89,7 @@ interface Props {
 
 function Chip({ label, icon }: { label: string; icon?: string }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 600, fontFamily: 'Inter,sans-serif' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.06)', border: '1px solid var(--gfi-border)', color: 'var(--gfi-text-primary)', fontSize: 11, fontWeight: 600, fontFamily: 'Inter,sans-serif' }}>
       {icon && <span>{icon}</span>}{label}
     </span>
   )
@@ -97,7 +97,7 @@ function Chip({ label, icon }: { label: string; icon?: string }) {
 
 function SectionTitle({ label }: { label: string }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10, marginTop: 20 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10, marginTop: 20 }}>
       {label}
     </div>
   )
@@ -188,24 +188,24 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
     >
       <div
         onClick={e => e.stopPropagation()}
-        style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, width: '100%', maxWidth: 920, maxHeight: '94vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+        style={{ background: 'var(--gfi-bg-secondary)', border: '1px solid var(--gfi-border)', borderRadius: 14, width: '100%', maxWidth: 920, maxHeight: '94vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 18px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 18px', borderBottom: '1px solid var(--gfi-border)', flexShrink: 0 }}>
           <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 20, background: color, color: fuente === 'mercadolibre' ? '#000' : '#fff', fontFamily: 'Montserrat,sans-serif', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
             {label}
           </span>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: 4, display: 'flex' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--gfi-text-secondary)', cursor: 'pointer', padding: 4, display: 'flex' }}>
             <X style={{ width: 20, height: 20 }} />
           </button>
         </div>
 
         {cargando ? (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gfi-text-muted)', fontSize: 14 }}>
             Cargando...
           </div>
         ) : !prop ? (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gfi-text-muted)', fontSize: 14 }}>
             No se pudo cargar la propiedad.
           </div>
         ) : (
@@ -234,10 +234,10 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
                       <div style={{ position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 5, maxWidth: '80%', overflow: 'hidden' }}>
                         {fotos.slice(0, 20).map((_, i) => (
                           <button key={i} onClick={() => setFotoIdx(i)}
-                            style={{ width: i === fotoIdx ? 20 : 7, height: 7, borderRadius: 4, background: i === fotoIdx ? '#fff' : 'rgba(255,255,255,0.35)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0, flexShrink: 0 }} />
+                            style={{ width: i === fotoIdx ? 20 : 7, height: 7, borderRadius: 4, background: i === fotoIdx ? '#fff' : 'var(--gfi-text-muted)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0, flexShrink: 0 }} />
                         ))}
                       </div>
-                      <div style={{ position: 'absolute', bottom: 12, right: 16, background: 'rgba(0,0,0,0.6)', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: 'rgba(255,255,255,0.7)' }}>
+                      <div style={{ position: 'absolute', bottom: 12, right: 16, background: 'rgba(0,0,0,0.6)', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: 'var(--gfi-text-primary)' }}>
                         {fotoIdx + 1} / {fotos.length}
                       </div>
                     </>
@@ -265,12 +265,12 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
                     </div>
                   )}
                   {precioAntStr && (
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through', fontFamily: 'Montserrat,sans-serif' }}>
+                    <div style={{ fontSize: 12, color: 'var(--gfi-text-muted)', textDecoration: 'line-through', fontFamily: 'Montserrat,sans-serif' }}>
                       {precioAntStr}
                     </div>
                   )}
                   {prop.expensas && (
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: 'Inter,sans-serif' }}>
+                    <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Inter,sans-serif' }}>
                       + exp. $ {prop.expensas.toLocaleString('es-AR')}
                     </div>
                   )}
@@ -320,56 +320,56 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
                   <SectionTitle label="Detalles" />
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 4 }}>
                     {prop.orientacion && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Orientación</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Orientación</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🧭 {prop.orientacion}</div>
                       </div>
                     )}
                     {prop.disposicion && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Disposición</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Disposición</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>↔️ {prop.disposicion}</div>
                       </div>
                     )}
                     {prop.toilettes != null && prop.toilettes > 0 && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Toilettes</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Toilettes</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🚽 {prop.toilettes}</div>
                       </div>
                     )}
                     {prop.tipo_unidad && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Tipo unidad</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Tipo unidad</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🏠 {prop.tipo_unidad}</div>
                       </div>
                     )}
                     {prop.ocupacion && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Ocupación</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Ocupación</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🔑 {prop.ocupacion}</div>
                       </div>
                     )}
                     {prop.piso != null && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Piso</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Piso</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🏢 {prop.piso}</div>
                       </div>
                     )}
                     {prop.cocheras != null && prop.cocheras > 0 && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Cocheras</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Cocheras</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🚗 {prop.cocheras}</div>
                       </div>
                     )}
                     {prop.baulera && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Baulera</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Baulera</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>📦 Sí</div>
                       </div>
                     )}
                     {prop.antiguedad && (
-                      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Antigüedad</div>
+                      <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 8, padding: '10px 14px', border: '1px solid var(--gfi-border-subtle)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Antigüedad</div>
                         <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>🏛️ {prop.antiguedad}</div>
                       </div>
                     )}
@@ -411,7 +411,7 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
               {prop.descripcion && (
                 <>
                   <SectionTitle label="Descripción" />
-                  <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.75, whiteSpace: 'pre-line' }}>
+                  <p style={{ margin: 0, fontSize: 13, color: 'var(--gfi-text-secondary)', lineHeight: 1.75, whiteSpace: 'pre-line' }}>
                     {prop.descripcion}
                   </p>
                 </>
@@ -443,7 +443,7 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
               {(prop.agente_nombre || prop.agente_telefono || prop.agente_email) && (
                 <>
                   <SectionTitle label="Contacto del corredor" />
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '14px 18px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ background: 'var(--gfi-border-subtle)', borderRadius: 10, padding: '14px 18px', border: '1px solid var(--gfi-border)', display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {prop.agente_nombre && (
                       <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', fontFamily: 'Montserrat,sans-serif' }}>
                         👤 {prop.agente_nombre}

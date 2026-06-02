@@ -98,41 +98,41 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
         .prm-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; width: 100%; max-width: 420px; position: relative; overflow: hidden; animation: prm-in 0.2s ease; }
         @keyframes prm-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
         .prm-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); }
-        .prm-close { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.4); font-size: 14px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; z-index: 2; }
-        .prm-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        .prm-close { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-muted); font-size: 14px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; z-index: 2; }
+        .prm-close:hover { color: #fff; background: var(--gfi-border); }
         .prm-header { padding: 22px 22px 16px; display: flex; gap: 16px; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .prm-avatar { width: 56px; height: 56px; border-radius: 10px; background: rgba(200,0,0,0.15); border: 2px solid rgba(200,0,0,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #990000; flex-shrink: 0; overflow: hidden; }
+        .prm-avatar { width: 56px; height: 56px; border-radius: 10px; background: rgba(200,0,0,0.15); border: 2px solid rgba(200,0,0,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; font-weight: 800; color: #990000; flex-shrink: 0; overflow: hidden; }
         .prm-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .prm-info { flex: 1; min-width: 0; }
-        .prm-nombre { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; }
-        .prm-mat { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; font-family: 'Montserrat',sans-serif; }
+        .prm-nombre { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; }
+        .prm-mat { font-size: 11px; color: var(--gfi-text-muted); margin-top: 2px; font-family: var(--font-display); }
         .prm-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-        .prm-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; font-family: 'Montserrat',sans-serif; }
+        .prm-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; font-family: var(--font-display); }
         .prm-badge.mat { background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); color: #990000; }
         .prm-badge.cir { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25); color: #818cf8; }
         .prm-badge.admin { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.25); color: #d4960c; }
         .prm-body { padding: 16px 22px; display: flex; flex-direction: column; gap: 12px; }
         .prm-row { display: flex; flex-direction: column; gap: 4px; }
-        .prm-row-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.25); }
-        .prm-row-val { font-size: 13px; color: rgba(255,255,255,0.7); }
+        .prm-row-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-dim); }
+        .prm-row-val { font-size: 13px; color: var(--gfi-text-primary); }
         .prm-especialidades { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
-        .prm-esp { font-size: 10px; padding: 3px 8px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-        .prm-bio { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.6; font-style: italic; background: rgba(255,255,255,0.03); border-left: 2px solid rgba(200,0,0,0.25); padding: 8px 12px; border-radius: 0 4px 4px 0; }
-        .prm-desde { font-size: 11px; color: rgba(255,255,255,0.25); }
+        .prm-esp { font-size: 10px; padding: 3px 8px; border-radius: 20px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); color: var(--gfi-text-secondary); }
+        .prm-bio { font-size: 12px; color: var(--gfi-text-secondary); line-height: 1.6; font-style: italic; background: var(--gfi-bg-card); border-left: 2px solid rgba(200,0,0,0.25); padding: 8px 12px; border-radius: 0 4px 4px 0; }
+        .prm-desde { font-size: 11px; color: var(--gfi-text-dim); }
         .prm-acciones { padding: 14px 22px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; gap: 8px; flex-wrap: wrap; }
-        .prm-btn { flex: 1; min-width: 100px; padding: 9px 14px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: 1px solid; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap; }
+        .prm-btn { flex: 1; min-width: 100px; padding: 9px 14px; border-radius: 4px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: 1px solid; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap; }
         .prm-btn-wa { background: rgba(37,211,102,0.1); border-color: rgba(37,211,102,0.3); color: #25d366; }
         .prm-btn-wa:hover { background: rgba(37,211,102,0.2); }
         .prm-btn-crm { background: rgba(200,0,0,0.1); border-color: rgba(200,0,0,0.3); color: #990000; }
         .prm-btn-crm:hover:not(:disabled) { background: rgba(200,0,0,0.2); color: #fff; }
         .prm-btn-crm:disabled { opacity: 0.5; cursor: not-allowed; }
         .prm-btn-crm.guardado { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #3abab6; }
-        .prm-btn-perfil { background: transparent; border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.4); }
-        .prm-btn-perfil:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+        .prm-btn-perfil { background: transparent; border-color: var(--gfi-border); color: var(--gfi-text-muted); }
+        .prm-btn-perfil:hover { border-color: var(--gfi-text-muted); color: #fff; }
         .prm-spinner { display: flex; align-items: center; justify-content: center; padding: 40px; }
         .prm-spin { width: 24px; height: 24px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .prm-toast { position: fixed; bottom: 28px; right: 28px; padding: 10px 18px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; animation: toastIn 0.3s ease; }
+        .prm-toast { position: fixed; bottom: 28px; right: 28px; padding: 10px 18px; border-radius: 5px; font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; animation: toastIn 0.3s ease; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
 
@@ -143,7 +143,7 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
           {loading ? (
             <div className="prm-spinner"><div className="prm-spin" /></div>
           ) : !perfil ? (
-            <div style={{ padding: 32, textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 13 }}>
+            <div style={{ padding: 32, textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 13 }}>
               No se encontró el perfil
             </div>
           ) : (

@@ -112,7 +112,7 @@ export default function MarketplacePage() {
     <div style={{ maxWidth: 760, margin: '0 auto', padding: '24px 0 64px' }}>
 
       {toast && (
-        <div style={{ position: 'fixed', bottom: 24, right: 24, background: '#111', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
+        <div style={{ position: 'fixed', bottom: 24, right: 24, background: 'var(--gfi-bg-secondary)', border: '1px solid var(--gfi-border)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
           {toast}
         </div>
       )}
@@ -120,9 +120,9 @@ export default function MarketplacePage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>Módulos 50 / 51</div>
+          <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gfi-text-dim)', marginBottom: 6 }}>Módulos 50 / 51</div>
           <h1 style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>Marketplace GFI</h1>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: 'var(--gfi-text-muted)', marginTop: 4 }}>
             Intercambiá servicios, equipamiento y oportunidades laborales entre miembros
           </p>
         </div>
@@ -133,11 +133,11 @@ export default function MarketplacePage() {
 
       {/* Filtros tipo */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-        <button onClick={() => setFiltro('todos')} style={{ padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === 'todos' ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === 'todos' ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+        <button onClick={() => setFiltro('todos')} style={{ padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === 'todos' ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === 'todos' ? '#fff' : 'var(--gfi-text-muted)' }}>
           Todos ({items.length})
         </button>
         {Object.entries(TIPOS).map(([k, v]) => (
-          <button key={k} onClick={() => setFiltro(k)} style={{ padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === k ? v.color + '22' : 'rgba(255,255,255,0.06)', color: filtro === k ? v.color : 'rgba(255,255,255,0.4)', outline: filtro === k ? `1px solid ${v.color}44` : 'none' }}>
+          <button key={k} onClick={() => setFiltro(k)} style={{ padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === k ? v.color + '22' : 'rgba(255,255,255,0.06)', color: filtro === k ? v.color : 'var(--gfi-text-muted)', outline: filtro === k ? `1px solid ${v.color}44` : 'none' }}>
             {v.icon} {v.label} ({items.filter(i => i.tipo === k).length})
           </button>
         ))}
@@ -145,26 +145,26 @@ export default function MarketplacePage() {
 
       {/* Lista */}
       {cargando ? (
-        <div style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
+        <div style={{ color: 'var(--gfi-text-muted)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
       ) : filtrados.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '56px 0' }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>🏪</div>
-          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, marginBottom: 8 }}>
+          <div style={{ color: 'var(--gfi-text-muted)', fontSize: 14, marginBottom: 8 }}>
             {filtro === 'todos' ? 'Todavía no hay publicaciones' : `No hay publicaciones de tipo "${TIPOS[filtro]?.label}"`}
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>Sé el primero en publicar algo útil para la comunidad GFI</div>
+          <div style={{ color: 'var(--gfi-text-dim)', fontSize: 12 }}>Sé el primero en publicar algo útil para la comunidad GFI</div>
         </div>
       ) : (
         <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
           {filtrados.map(item => {
             const tipo = TIPOS[item.tipo]
             return (
-              <div key={item.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div key={item.id} style={{ background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border-subtle)', borderRadius: 10, padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', justifyContent: 'space-between' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 10, color: tipo.color, background: tipo.bg, padding: '3px 8px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>{tipo.icon} {tipo.label}</span>
-                      {item.categoria && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '3px 8px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 600 }}>{item.categoria}</span>}
+                      {item.categoria && <span style={{ fontSize: 10, color: 'var(--gfi-text-muted)', background: 'var(--gfi-border-subtle)', padding: '3px 8px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 600 }}>{item.categoria}</span>}
                     </div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>{item.titulo}</div>
                   </div>
@@ -173,7 +173,7 @@ export default function MarketplacePage() {
                   )}
                 </div>
 
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{item.descripcion}</div>
+                <div style={{ fontSize: 13, color: 'var(--gfi-text-secondary)', lineHeight: 1.5 }}>{item.descripcion}</div>
 
                 {item.precio && (
                   <div style={{ fontSize: 16, fontWeight: 800, color: tipo.color, fontFamily: 'Montserrat,sans-serif' }}>
@@ -181,10 +181,10 @@ export default function MarketplacePage() {
                   </div>
                 )}
 
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ borderTop: '1px solid var(--gfi-border-subtle)', paddingTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
-                    {item.autor_nombre && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{item.autor_nombre}</div>}
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>
+                    {item.autor_nombre && <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)' }}>{item.autor_nombre}</div>}
+                    <div style={{ fontSize: 10, color: 'var(--gfi-text-dim)' }}>
                       {new Date(item.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short' })}
                     </div>
                   </div>
@@ -210,15 +210,15 @@ export default function MarketplacePage() {
       {/* Modal */}
       {modal && (
         <div onClick={e => { if (e.target === e.currentTarget) setModal(false) }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 28, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto' }}>
+          <div style={{ background: '#141414', border: '1px solid var(--gfi-border)', borderRadius: 14, padding: 28, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Nueva publicación</div>
 
             {/* Tipo */}
             <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 8 }}>Tipo</label>
+              <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 8 }}>Tipo</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
                 {(Object.entries(TIPOS) as [TipoPublicacion, typeof TIPOS[string]][]).map(([k, v]) => (
-                  <button key={k} onClick={() => setForm(f => ({ ...f, tipo: k, categoria: '' }))} style={{ padding: '8px 4px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: form.tipo === k ? v.color + '22' : 'rgba(255,255,255,0.04)', color: form.tipo === k ? v.color : 'rgba(255,255,255,0.4)', outline: form.tipo === k ? `1px solid ${v.color}44` : 'none', textAlign: 'center' }}>
+                  <button key={k} onClick={() => setForm(f => ({ ...f, tipo: k, categoria: '' }))} style={{ padding: '8px 4px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: form.tipo === k ? v.color + '22' : 'var(--gfi-border-subtle)', color: form.tipo === k ? v.color : 'var(--gfi-text-muted)', outline: form.tipo === k ? `1px solid ${v.color}44` : 'none', textAlign: 'center' }}>
                     <div style={{ fontSize: 16, marginBottom: 2 }}>{v.icon}</div>
                     {v.label}
                   </button>
@@ -227,32 +227,32 @@ export default function MarketplacePage() {
             </div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Título *</label>
-              <input value={form.titulo} onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))} placeholder="Título de la publicación" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Título *</label>
+              <input value={form.titulo} onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))} placeholder="Título de la publicación" style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
             </div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Descripción *</label>
-              <textarea value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} placeholder="Describí lo que ofrecés o buscás..." rows={3} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
+              <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Descripción *</label>
+              <textarea value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} placeholder="Describí lo que ofrecés o buscás..." rows={3} style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Categoría</label>
-                <select value={form.categoria} onChange={e => setForm(f => ({ ...f, categoria: e.target.value }))} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit' }}>
+                <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Categoría</label>
+                <select value={form.categoria} onChange={e => setForm(f => ({ ...f, categoria: e.target.value }))} style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit' }}>
                   <option value="" style={{ background: '#141414' }}>— Sin categoría —</option>
                   {getCategorias(form.tipo).map(c => <option key={c} value={c} style={{ background: '#141414' }}>{c}</option>)}
                 </select>
               </div>
               {(form.tipo === 'venta' || form.tipo === 'servicio') && (
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Precio</label>
+                  <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Precio</label>
                   <div style={{ display: 'flex', gap: 4 }}>
-                    <select value={form.moneda} onChange={e => setForm(f => ({ ...f, moneda: e.target.value }))} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 8px', fontSize: 13, fontFamily: 'inherit', width: 60 }}>
+                    <select value={form.moneda} onChange={e => setForm(f => ({ ...f, moneda: e.target.value }))} style={{ background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 8px', fontSize: 13, fontFamily: 'inherit', width: 60 }}>
                       <option value="ARS" style={{ background: '#141414' }}>$</option>
                       <option value="USD" style={{ background: '#141414' }}>U$D</option>
                     </select>
-                    <input type="number" value={form.precio} onChange={e => setForm(f => ({ ...f, precio: e.target.value }))} placeholder="0" style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit' }} />
+                    <input type="number" value={form.precio} onChange={e => setForm(f => ({ ...f, precio: e.target.value }))} placeholder="0" style={{ flex: 1, background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit' }} />
                   </div>
                 </div>
               )}
@@ -260,17 +260,17 @@ export default function MarketplacePage() {
 
             <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>WhatsApp</label>
-                <input value={form.contacto_whatsapp} onChange={e => setForm(f => ({ ...f, contacto_whatsapp: e.target.value }))} placeholder="+54 341 ..." style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>WhatsApp</label>
+                <input value={form.contacto_whatsapp} onChange={e => setForm(f => ({ ...f, contacto_whatsapp: e.target.value }))} placeholder="+54 341 ..." style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Email</label>
-                <input type="email" value={form.contacto_email} onChange={e => setForm(f => ({ ...f, contacto_email: e.target.value }))} placeholder="email@ejemplo.com" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Email</label>
+                <input type="email" value={form.contacto_email} onChange={e => setForm(f => ({ ...f, contacto_email: e.target.value }))} placeholder="email@ejemplo.com" style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
             </div>
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
+              <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'var(--gfi-text-secondary)', border: '1px solid var(--gfi-border)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
               <button onClick={guardar} disabled={guardando || !form.titulo.trim() || !form.descripcion.trim()} style={{ padding: '10px 24px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.titulo.trim() || !form.descripcion.trim() ? 0.5 : 1 }}>
                 {guardando ? 'Publicando...' : 'Publicar'}
               </button>

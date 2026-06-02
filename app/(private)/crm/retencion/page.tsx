@@ -41,7 +41,7 @@ function diasDesde(fecha: string | null): number {
 }
 
 function riesgoColor(r: ContactoAnalizado["riesgo"]) {
-  return r === "caliente" ? "#3abab6" : r === "tibio" ? "#d4960c" : r === "frio" ? "#990000" : "rgba(255,255,255,0.2)";
+  return r === "caliente" ? "#3abab6" : r === "tibio" ? "#d4960c" : r === "frio" ? "#990000" : "var(--gfi-text-dim)";
 }
 
 function riesgoLabel(r: ContactoAnalizado["riesgo"]) {
@@ -137,19 +137,19 @@ export default function Retencion() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <span style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Inter',sans-serif" }}>Cargando retención...</span>
+      <span style={{ color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>Cargando retención...</span>
     </div>
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "var(--font-body)" }}>
       {/* Header */}
-      <div style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
-        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "-0.02em" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
+        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "-0.02em" }}>
           Retención de Clientes
         </h1>
-        <span style={{ marginLeft: "auto", fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{stats.total} contactos activos</span>
+        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--gfi-text-muted)" }}>{stats.total} contactos activos</span>
       </div>
 
       <div style={{ padding: "24px", maxWidth: 1100, margin: "0 auto" }}>
@@ -159,20 +159,20 @@ export default function Retencion() {
             { label: "Al día", count: stats.caliente, color: "#3abab6", desc: "≤14 días", riesgo: "caliente" as const },
             { label: "Tibios", count: stats.tibio, color: "#d4960c", desc: "15–45 días", riesgo: "tibio" as const },
             { label: "En riesgo", count: stats.frio, color: "#990000", desc: "46–120 días", riesgo: "frio" as const },
-            { label: "Inactivos", count: stats.inactivo, color: "rgba(255,255,255,0.2)", desc: "+120 días", riesgo: "inactivo" as const },
+            { label: "Inactivos", count: stats.inactivo, color: "var(--gfi-text-dim)", desc: "+120 días", riesgo: "inactivo" as const },
           ].map(kpi => (
-            <div key={kpi.label} onClick={() => setFiltroRiesgo(filtroRiesgo === kpi.riesgo ? "todos" : kpi.riesgo)} style={{ background: filtroRiesgo === kpi.riesgo ? `${kpi.color}11` : "rgba(255,255,255,0.02)", border: `1px solid ${filtroRiesgo === kpi.riesgo ? kpi.color + "44" : "rgba(255,255,255,0.06)"}`, borderRadius: 12, padding: "16px 20px", cursor: "pointer", transition: "all 0.15s" }}>
-              <p style={{ margin: "0 0 8px 0", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>{kpi.label}</p>
-              <p style={{ margin: 0, fontSize: 32, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: kpi.color }}>{kpi.count}</p>
-              <p style={{ margin: "4px 0 0 0", fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{kpi.desc}</p>
+            <div key={kpi.label} onClick={() => setFiltroRiesgo(filtroRiesgo === kpi.riesgo ? "todos" : kpi.riesgo)} style={{ background: filtroRiesgo === kpi.riesgo ? `${kpi.color}11` : "var(--gfi-bg-secondary)", border: `1px solid ${filtroRiesgo === kpi.riesgo ? kpi.color + "44" : "rgba(255,255,255,0.06)"}`, borderRadius: 12, padding: "16px 20px", cursor: "pointer", transition: "all 0.15s" }}>
+              <p style={{ margin: "0 0 8px 0", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>{kpi.label}</p>
+              <p style={{ margin: 0, fontSize: 32, fontFamily: "var(--font-display)", fontWeight: 800, color: kpi.color }}>{kpi.count}</p>
+              <p style={{ margin: "4px 0 0 0", fontSize: 10, color: "var(--gfi-text-muted)" }}>{kpi.desc}</p>
             </div>
           ))}
         </div>
 
         {/* Barra de retención */}
-        <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Salud del pipeline de clientes</span>
+            <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Salud del pipeline de clientes</span>
             <span style={{ fontSize: 11, color: stats.caliente / Math.max(stats.total, 1) > 0.5 ? "#3abab6" : "#990000", fontWeight: 700 }}>
               {((stats.caliente + stats.tibio) / Math.max(stats.total, 1) * 100).toFixed(0)}% activos
             </span>
@@ -182,7 +182,7 @@ export default function Retencion() {
               { v: stats.caliente, c: "#3abab6" },
               { v: stats.tibio, c: "#d4960c" },
               { v: stats.frio, c: "#990000" },
-              { v: stats.inactivo, c: "rgba(255,255,255,0.1)" },
+              { v: stats.inactivo, c: "var(--gfi-border)" },
             ].map((seg, i) => seg.v > 0 && (
               <div key={i} style={{ flex: seg.v, background: seg.c, transition: "flex 0.5s" }} />
             ))}
@@ -196,15 +196,15 @@ export default function Retencion() {
             placeholder="Buscar contacto..."
             value={busqueda}
             onChange={e => setBusqueda(e.target.value)}
-            style={{ flex: 1, minWidth: 180, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", padding: "7px 12px", fontFamily: "'Inter',sans-serif", fontSize: 13 }}
+            style={{ flex: 1, minWidth: 180, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, color: "#fff", padding: "7px 12px", fontFamily: "var(--font-body)", fontSize: 13 }}
           />
-          <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.7)", padding: "7px 10px", fontFamily: "'Inter',sans-serif", fontSize: 12 }}>
+          <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)} style={{ background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, color: "var(--gfi-text-primary)", padding: "7px 10px", fontFamily: "var(--font-body)", fontSize: 12 }}>
             <option value="todos">Todos los tipos</option>
             {tipos.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
           <div style={{ display: "flex", gap: 6 }}>
             {(["riesgo","dias","interacciones"] as const).map(o => (
-              <button key={o} onClick={() => setOrdenar(o)} style={{ padding: "6px 12px", borderRadius: 20, border: `1px solid ${ordenar === o ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: ordenar === o ? "rgba(153,0,0,0.12)" : "transparent", color: ordenar === o ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              <button key={o} onClick={() => setOrdenar(o)} style={{ padding: "6px 12px", borderRadius: 20, border: `1px solid ${ordenar === o ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`, background: ordenar === o ? "rgba(153,0,0,0.12)" : "transparent", color: ordenar === o ? "#990000" : "var(--gfi-text-muted)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 {o === "riesgo" ? "Por riesgo" : o === "dias" ? "Por días" : "Interacciones"}
               </button>
             ))}
@@ -212,18 +212,18 @@ export default function Retencion() {
         </div>
 
         {/* Tabla */}
-        <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr style={{ background: "rgba(255,255,255,0.03)" }}>
+              <tr style={{ background: "var(--gfi-bg-card)" }}>
                 {["Estado", "Contacto", "Tipo", "Último contacto", "Días sin contacto", "Interacciones", "Score", "Acción"].map(h => (
-                  <th key={h} style={{ padding: "10px 14px", textAlign: h === "Contacto" || h === "Acción" ? "left" : "center", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>{h}</th>
+                  <th key={h} style={{ padding: "10px 14px", textAlign: h === "Contacto" || h === "Acción" ? "left" : "center", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", borderBottom: "1px solid var(--gfi-border-subtle)" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filtrados.length === 0 ? (
-                <tr><td colSpan={8} style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Sin resultados</td></tr>
+                <tr><td colSpan={8} style={{ padding: 40, textAlign: "center", color: "var(--gfi-text-dim)", fontSize: 13 }}>Sin resultados</td></tr>
               ) : filtrados.map((c, idx) => (
                 <tr key={c.id} style={{ background: idx % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)", borderLeft: `2px solid ${riesgoColor(c.riesgo)}22` }}>
                   <td style={{ padding: "10px 14px", textAlign: "center" }}>
@@ -231,14 +231,14 @@ export default function Retencion() {
                   </td>
                   <td style={{ padding: "10px 14px" }}>
                     <div style={{ fontWeight: 600, fontSize: 13 }}>{c.nombre} {c.apellido}</div>
-                    {c.email && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{c.email}</div>}
+                    {c.email && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{c.email}</div>}
                   </td>
                   <td style={{ padding: "10px 14px", textAlign: "center" }}>
-                    <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                    <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       {c.tipo ?? "—"}
                     </span>
                   </td>
-                  <td style={{ padding: "10px 14px", textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                  <td style={{ padding: "10px 14px", textAlign: "center", fontSize: 11, color: "var(--gfi-text-muted)" }}>
                     {c.ultimaInteraccion ? new Date(c.ultimaInteraccion).toLocaleDateString("es-AR") : "Nunca"}
                   </td>
                   <td style={{ padding: "10px 14px", textAlign: "center" }}>
@@ -246,17 +246,17 @@ export default function Retencion() {
                       {c.diasSinContacto === 9999 ? "∞" : c.diasSinContacto + "d"}
                     </span>
                   </td>
-                  <td style={{ padding: "10px 14px", textAlign: "center", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>{c.totalInteracciones}</td>
+                  <td style={{ padding: "10px 14px", textAlign: "center", fontSize: 12, color: "var(--gfi-text-secondary)" }}>{c.totalInteracciones}</td>
                   <td style={{ padding: "10px 14px", textAlign: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 4, justifyContent: "center" }}>
                       <div style={{ width: 30, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
                         <div style={{ height: "100%", width: `${Math.min(100, c.score)}%`, background: riesgoColor(c.riesgo), borderRadius: 2 }} />
                       </div>
-                      <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{c.score.toFixed(0)}</span>
+                      <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{c.score.toFixed(0)}</span>
                     </div>
                   </td>
                   <td style={{ padding: "10px 14px" }}>
-                    <span style={{ fontSize: 10, color: riesgoColor(c.riesgo), fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                    <span style={{ fontSize: 10, color: riesgoColor(c.riesgo), fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       {c.riesgo === "caliente" ? "Mantener" :
                        c.riesgo === "tibio" ? "Contactar pronto" :
                        c.riesgo === "frio" ? "URGENTE" : "Reactivar"}
@@ -274,7 +274,7 @@ export default function Retencion() {
         {/* Tip re-engagement */}
         {stats.frio + stats.inactivo > 0 && (
           <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: "rgba(153,0,0,0.06)", border: "1px solid rgba(153,0,0,0.15)" }}>
-            <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.7)", lineHeight: 1.6 }}>
+            <p style={{ margin: 0, fontSize: 12, color: "var(--gfi-text-primary)", lineHeight: 1.6 }}>
               <strong style={{ color: "#990000" }}>⚡ {stats.frio + stats.inactivo} contactos requieren atención.</strong>{" "}
               Considera enviar un mensaje de re-engagement: actualizaciones de mercado, nuevas propiedades en su zona de interés, o simplemente un check-in. El contacto proactivo aumenta la tasa de conversión en un 40%.
             </p>

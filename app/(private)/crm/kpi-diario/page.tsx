@@ -181,8 +181,8 @@ function Counter({
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "var(--gfi-border-subtle)",
+        border: "1px solid var(--gfi-border)",
         borderRadius: 10,
         padding: "12px 14px",
         display: "flex",
@@ -197,7 +197,7 @@ function Counter({
             {campo.label}
           </span>
         </div>
-        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter, sans-serif" }}>
+        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif" }}>
           meta: {meta}
         </span>
       </div>
@@ -208,7 +208,7 @@ function Counter({
           style={{
             width: 32, height: 32,
             background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            border: "1px solid var(--gfi-border)",
             borderRadius: 6,
             color: "white",
             fontSize: 18,
@@ -231,13 +231,13 @@ function Counter({
           style={{
             width: 60,
             textAlign: "center",
-            background: "rgba(255,255,255,0.08)",
+            background: "var(--gfi-border)",
             border: "1px solid rgba(255,255,255,0.15)",
             borderRadius: 6,
             color: "white",
             fontSize: 18,
             fontWeight: 700,
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             padding: "4px 0",
             outline: "none",
           }}
@@ -332,20 +332,20 @@ function RadarChart({ dias, meta }: { dias: DiaKPI[]; meta: MetaDiaria }) {
             return `${x},${y}`;
           }).join(" ")}
           fill="none"
-          stroke="rgba(255,255,255,0.08)"
+          stroke="var(--gfi-border)"
           strokeWidth={1}
         />
       ))}
       {/* Axes */}
       {RADAR_CAMPOS.map((_, i) => {
         const [x, y] = polarPoint(cx, cy, maxR, i, N);
-        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />;
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="var(--gfi-border)" strokeWidth={1} />;
       })}
       {/* Meta polygon */}
       <polygon
         points={points(metaSemana, metaSemana)}
         fill="rgba(255,255,255,0.06)"
-        stroke="rgba(255,255,255,0.25)"
+        stroke="var(--gfi-text-dim)"
         strokeWidth={1.5}
       />
       {/* Actual polygon */}
@@ -388,7 +388,7 @@ function BarChart({ dias, campo }: { dias: DiaKPI[]; campo: KPIKey }) {
 
   if (!last30.length) {
     return (
-      <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 40, fontFamily: "Inter, sans-serif" }}>
+      <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 40, fontFamily: "Inter, sans-serif" }}>
         Sin datos históricos aún
       </div>
     );
@@ -411,7 +411,7 @@ function BarChart({ dias, campo }: { dias: DiaKPI[]; campo: KPIKey }) {
           return (
             <g key={l}>
               <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
-              <text x={padL - 4} y={y} textAnchor="end" dominantBaseline="middle" fill="rgba(255,255,255,0.3)" fontSize={9} fontFamily="Inter, sans-serif">
+              <text x={padL - 4} y={y} textAnchor="end" dominantBaseline="middle" fill="var(--gfi-text-muted)" fontSize={9} fontFamily="Inter, sans-serif">
                 {(maxVal * l).toFixed(l === 0 ? 0 : maxVal < 2 ? 1 : 0)}
               </text>
             </g>
@@ -437,13 +437,13 @@ function BarChart({ dias, campo }: { dias: DiaKPI[]; campo: KPIKey }) {
               />
               {isHover && (
                 <g>
-                  <rect x={x - 20} y={y - 30} width={56} height={22} fill="rgba(20,20,20,0.95)" rx={4} stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
+                  <rect x={x - 20} y={y - 30} width={56} height={22} fill="var(--gfi-bg-elevated)" rx={4} stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
                   <text x={x + barW / 2} y={y - 15} textAnchor="middle" fill="white" fontSize={11} fontFamily="Montserrat, sans-serif" fontWeight={700}>{val}</text>
                 </g>
               )}
               {/* X label every 7 days */}
               {i % 7 === 0 && (
-                <text x={x + barW / 2} y={H - padB + 14} textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize={9} fontFamily="Inter, sans-serif">
+                <text x={x + barW / 2} y={H - padB + 14} textAnchor="middle" fill="var(--gfi-text-muted)" fontSize={9} fontFamily="Inter, sans-serif">
                   {formatFechaCorta(dia.fecha)}
                 </text>
               )}
@@ -640,13 +640,13 @@ export default function KPIDiarioPage() {
       padding: "24px 20px 60px",
     } as React.CSSProperties,
     heading: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 800,
       color: "white",
     } as React.CSSProperties,
     card: {
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.08)",
+      background: "var(--gfi-bg-card)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 12,
       padding: 20,
     } as React.CSSProperties,
@@ -654,10 +654,10 @@ export default function KPIDiarioPage() {
       padding: "8px 20px",
       borderRadius: 8,
       border: "1px solid",
-      borderColor: active ? "#990000" : "rgba(255,255,255,0.1)",
+      borderColor: active ? "#990000" : "var(--gfi-border)",
       background: active ? "rgba(153,0,0,0.15)" : "transparent",
-      color: active ? "white" : "rgba(255,255,255,0.5)",
-      fontFamily: "Montserrat, sans-serif",
+      color: active ? "white" : "var(--gfi-text-secondary)",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       fontSize: 13,
       cursor: "pointer",
@@ -665,7 +665,7 @@ export default function KPIDiarioPage() {
     navBtn: {
       width: 36, height: 36,
       background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       color: "white",
       fontSize: 16,
@@ -674,7 +674,7 @@ export default function KPIDiarioPage() {
     } as React.CSSProperties,
     input: {
       background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
+      border: "1px solid var(--gfi-border)",
       borderRadius: 8,
       color: "white",
       fontSize: 14,
@@ -688,7 +688,7 @@ export default function KPIDiarioPage() {
       border: "none",
       borderRadius: 8,
       color: "white",
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "var(--font-display)",
       fontWeight: 700,
       fontSize: 14,
       padding: "10px 24px",
@@ -711,7 +711,7 @@ export default function KPIDiarioPage() {
             position: "fixed", top: 20, right: 20, zIndex: 9999,
             background: "#3abab6", color: "white",
             padding: "10px 20px", borderRadius: 8,
-            fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14,
+            fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
             boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
             animation: "none",
           }}
@@ -723,7 +723,7 @@ export default function KPIDiarioPage() {
       {/* Header */}
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <div style={{ marginBottom: 8 }}>
-          <span style={{ fontSize: 11, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>
+          <span style={{ fontSize: 11, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>
             CRM · Tracker Diario
           </span>
         </div>
@@ -736,11 +736,11 @@ export default function KPIDiarioPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <button style={s.navBtn} onClick={() => setFechaActiva((f) => addDays(f, -1))}>←</button>
             <div style={{ flex: 1, minWidth: 200 }}>
-              <div style={{ fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "white" }}>
+              <div style={{ fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800, color: "white" }}>
                 {formatFechaLarga(fechaActiva)}
               </div>
               {fechaActiva === hoy && (
-                <span style={{ fontSize: 11, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: 1 }}>
+                <span style={{ fontSize: 11, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: 1 }}>
                   HOY
                 </span>
               )}
@@ -812,13 +812,13 @@ export default function KPIDiarioPage() {
             onClick={() => setMetaOpen((o) => !o)}
             style={{
               background: "none", border: "none", color: "white",
-              fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+              fontFamily: "var(--font-display)", fontWeight: 700,
               fontSize: 15, cursor: "pointer", padding: 0,
               display: "flex", alignItems: "center", gap: 8, width: "100%",
             }}
           >
             <span>Metas Diarias</span>
-            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{metaOpen ? "▲" : "▼"}</span>
+            <span style={{ color: "var(--gfi-text-muted)", fontSize: 12 }}>{metaOpen ? "▲" : "▼"}</span>
           </button>
 
           {metaOpen && (
@@ -895,23 +895,23 @@ export default function KPIDiarioPage() {
                     key={dia.fecha}
                     onClick={() => setFechaActiva(dia.fecha)}
                     style={{
-                      background: esHoy ? "rgba(153,0,0,0.08)" : "rgba(255,255,255,0.03)",
-                      border: `1px solid ${esHoy ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.08)"}`,
+                      background: esHoy ? "rgba(153,0,0,0.08)" : "var(--gfi-bg-card)",
+                      border: `1px solid ${esHoy ? "rgba(153,0,0,0.3)" : "var(--gfi-border)"}`,
                       borderRadius: 10,
                       padding: "12px 10px",
                       cursor: "pointer",
                       transition: "border-color 0.2s",
                     }}
                   >
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-secondary)", marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
                       {formatFechaCorta(dia.fecha)}
                     </div>
                     {tieneDatos ? (
                       <>
-                        <div style={{ fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "white", marginBottom: 4 }}>
+                        <div style={{ fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800, color: "white", marginBottom: 4 }}>
                           {total}
                         </div>
-                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
+                        <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
                           de {Math.round(totalMetaDia)}
                         </div>
                         <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden", marginBottom: 4 }}>
@@ -920,7 +920,7 @@ export default function KPIDiarioPage() {
                         <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, marginTop: 4 }} />
                       </>
                     ) : (
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "Inter, sans-serif" }}>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter, sans-serif" }}>
                         Sin datos
                       </div>
                     )}
@@ -946,13 +946,13 @@ export default function KPIDiarioPage() {
                 return (
                   <div key={f.key} style={{ ...s.card, padding: 12 }}>
                     <div style={{ fontSize: 14, marginBottom: 4 }}>{f.icon}</div>
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 4, fontFamily: "Inter, sans-serif" }}>
+                    <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginBottom: 4, fontFamily: "Inter, sans-serif" }}>
                       {f.label}
                     </div>
-                    <div style={{ fontSize: 18, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color }}>
+                    <div style={{ fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, color }}>
                       {totalSem}
                     </div>
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif" }}>
+                    <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif" }}>
                       / {metaSem.toFixed(f.key === "cierres" ? 1 : 0)}
                     </div>
                   </div>
@@ -970,10 +970,10 @@ export default function KPIDiarioPage() {
                 }}
               />
               <div>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, color: semaforo(pctCumplimientoSemana) }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, color: semaforo(pctCumplimientoSemana) }}>
                   {pctCumplimientoSemana.toFixed(0)}%
                 </div>
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>
+                <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", fontFamily: "Inter, sans-serif" }}>
                   cumplimiento general de la semana
                 </div>
               </div>
@@ -981,7 +981,7 @@ export default function KPIDiarioPage() {
 
             {/* Radar chart */}
             <div style={s.card}>
-              <h3 style={{ ...s.heading, fontSize: 14, margin: "0 0 16px", color: "rgba(255,255,255,0.7)" }}>
+              <h3 style={{ ...s.heading, fontSize: 14, margin: "0 0 16px", color: "var(--gfi-text-primary)" }}>
                 Radar de la semana
               </h3>
               <div style={{ display: "flex", justifyContent: "center" }}>
@@ -990,11 +990,11 @@ export default function KPIDiarioPage() {
               <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <div style={{ width: 12, height: 3, background: "#990000", borderRadius: 2 }} />
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>Real</span>
+                  <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)", fontFamily: "Inter, sans-serif" }}>Real</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 12, height: 3, background: "rgba(255,255,255,0.25)", borderRadius: 2 }} />
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>Meta</span>
+                  <div style={{ width: 12, height: 3, background: "var(--gfi-text-dim)", borderRadius: 2 }} />
+                  <span style={{ fontSize: 11, color: "var(--gfi-text-secondary)", fontFamily: "Inter, sans-serif" }}>Meta</span>
                 </div>
               </div>
             </div>
@@ -1006,7 +1006,7 @@ export default function KPIDiarioPage() {
           <div>
             <div style={{ ...s.card, marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-                <h3 style={{ ...s.heading, fontSize: 14, margin: 0, color: "rgba(255,255,255,0.7)" }}>
+                <h3 style={{ ...s.heading, fontSize: 14, margin: 0, color: "var(--gfi-text-primary)" }}>
                   Evolución de KPI
                 </h3>
                 <select
@@ -1031,20 +1031,20 @@ export default function KPIDiarioPage() {
 
             {/* Tabla de los últimos 30 días */}
             <div style={s.card}>
-              <h3 style={{ ...s.heading, fontSize: 14, margin: "0 0 14px", color: "rgba(255,255,255,0.7)" }}>
+              <h3 style={{ ...s.heading, fontSize: 14, margin: "0 0 14px", color: "var(--gfi-text-primary)" }}>
                 Detalle últimos 30 días
               </h3>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "Inter, sans-serif" }}>
                   <thead>
                     <tr>
-                      <th style={{ textAlign: "left", padding: "6px 8px", color: "rgba(255,255,255,0.4)", fontWeight: 600, whiteSpace: "nowrap" }}>Fecha</th>
+                      <th style={{ textAlign: "left", padding: "6px 8px", color: "var(--gfi-text-muted)", fontWeight: 600, whiteSpace: "nowrap" }}>Fecha</th>
                       {KPI_FIELDS.map((f) => (
-                        <th key={f.key} style={{ textAlign: "center", padding: "6px 8px", color: "rgba(255,255,255,0.4)", fontWeight: 600, whiteSpace: "nowrap" }}>
+                        <th key={f.key} style={{ textAlign: "center", padding: "6px 8px", color: "var(--gfi-text-muted)", fontWeight: 600, whiteSpace: "nowrap" }}>
                           {f.icon}
                         </th>
                       ))}
-                      <th style={{ textAlign: "center", padding: "6px 8px", color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>Total</th>
+                      <th style={{ textAlign: "center", padding: "6px 8px", color: "var(--gfi-text-muted)", fontWeight: 600 }}>Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1056,14 +1056,14 @@ export default function KPIDiarioPage() {
                         return (
                           <tr
                             key={dia.fecha}
-                            style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+                            style={{ borderTop: "1px solid var(--gfi-border-subtle)" }}
                             onClick={() => setFechaActiva(dia.fecha)}
                           >
-                            <td style={{ padding: "8px 8px", color: "rgba(255,255,255,0.7)", whiteSpace: "nowrap", cursor: "pointer" }}>
+                            <td style={{ padding: "8px 8px", color: "var(--gfi-text-primary)", whiteSpace: "nowrap", cursor: "pointer" }}>
                               {formatFechaCorta(dia.fecha)}
                             </td>
                             {KPI_FIELDS.map((f) => (
-                              <td key={f.key} style={{ textAlign: "center", padding: "8px 8px", color: dia[f.key] > 0 ? "white" : "rgba(255,255,255,0.2)" }}>
+                              <td key={f.key} style={{ textAlign: "center", padding: "8px 8px", color: dia[f.key] > 0 ? "white" : "var(--gfi-text-dim)" }}>
                                 {dia[f.key]}
                               </td>
                             ))}
@@ -1103,16 +1103,16 @@ export default function KPIDiarioPage() {
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
                       {f.label}
                     </div>
-                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 24, color }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 24, color }}>
                       {f.key === "cierres" ? totalMes.toFixed(1) : totalMes}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 8, fontFamily: "Inter, sans-serif" }}>
+                    <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 8, fontFamily: "Inter, sans-serif" }}>
                       meta: {f.key === "cierres" ? metaMes.toFixed(1) : Math.round(metaMes)}
                     </div>
                     <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${Math.min(pct, 100)}%`, background: color, borderRadius: 2 }} />
                     </div>
-                    <div style={{ fontSize: 10, color, marginTop: 4, fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                    <div style={{ fontSize: 10, color, marginTop: 4, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       {pct.toFixed(0)}%
                     </div>
                   </div>
@@ -1130,39 +1130,39 @@ export default function KPIDiarioPage() {
               }}
             >
               <div style={{ ...s.card, textAlign: "center" }}>
-                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000", marginBottom: 4 }}>
+                <div style={{ fontSize: 32, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", marginBottom: 4 }}>
                   {diasDelMes.length}
                 </div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", fontFamily: "Inter, sans-serif" }}>
                   días registrados
                 </div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif", marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif", marginTop: 2 }}>
                   de {diasHabiles} hábiles
                 </div>
               </div>
 
               <div style={{ ...s.card, textAlign: "center" }}>
-                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#d4960c", marginBottom: 4 }}>
+                <div style={{ fontSize: 32, fontFamily: "var(--font-display)", fontWeight: 800, color: "#d4960c", marginBottom: 4 }}>
                   {racha}
                 </div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", fontFamily: "Inter, sans-serif" }}>
                   {racha === 1 ? "día" : "días"} de racha
                 </div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif", marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif", marginTop: 2 }}>
                   consecutivos registrando
                 </div>
               </div>
 
               <div style={{ ...s.card, textAlign: "center" }}>
-                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#3abab6", marginBottom: 4 }}>
+                <div style={{ fontSize: 32, fontFamily: "var(--font-display)", fontWeight: 800, color: "#3abab6", marginBottom: 4 }}>
                   {diasDelMes.length > 0
                     ? Math.round(diasDelMes.reduce((acc, d) => acc + totalActividades(d), 0) / diasDelMes.length)
                     : 0}
                 </div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", fontFamily: "Inter, sans-serif" }}>
                   promedio por día
                 </div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter, sans-serif", marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter, sans-serif", marginTop: 2 }}>
                   actividades totales
                 </div>
               </div>
@@ -1170,11 +1170,11 @@ export default function KPIDiarioPage() {
 
             {/* Top 5 días del mes */}
             <div style={s.card}>
-              <h3 style={{ ...s.heading, fontSize: 14, margin: "0 0 14px", color: "rgba(255,255,255,0.7)" }}>
+              <h3 style={{ ...s.heading, fontSize: 14, margin: "0 0 14px", color: "var(--gfi-text-primary)" }}>
                 Top 5 mejores días del mes
               </h3>
               {top5Mes.length === 0 ? (
-                <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, fontFamily: "Inter, sans-serif" }}>
+                <div style={{ color: "var(--gfi-text-muted)", fontSize: 13, fontFamily: "Inter, sans-serif" }}>
                   Sin datos este mes
                 </div>
               ) : (
@@ -1192,7 +1192,7 @@ export default function KPIDiarioPage() {
                           alignItems: "center",
                           gap: 12,
                           padding: "10px 12px",
-                          background: "rgba(255,255,255,0.03)",
+                          background: "var(--gfi-bg-card)",
                           borderRadius: 8,
                           cursor: "pointer",
                         }}
@@ -1207,7 +1207,7 @@ export default function KPIDiarioPage() {
                             <div style={{ height: "100%", width: `${pct}%`, background: "#990000", borderRadius: 2 }} />
                           </div>
                         </div>
-                        <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 18, color: "#990000", minWidth: 36, textAlign: "right" }}>
+                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#990000", minWidth: 36, textAlign: "right" }}>
                           {total}
                         </div>
                       </div>

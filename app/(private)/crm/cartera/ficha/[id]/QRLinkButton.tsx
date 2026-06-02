@@ -53,7 +53,7 @@ export function QRLinkButton({ propiedadId, titulo }: Props) {
   return (
     <div style={{ marginTop: 20 }}>
       <hr style={{ border: "none", borderTop: "1px solid #eee", margin: "20px 0" }} />
-      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#999", marginBottom: 14 }}>
+      <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#999", marginBottom: 14 }}>
         Compartir propiedad
       </div>
 
@@ -65,7 +65,7 @@ export function QRLinkButton({ propiedadId, titulo }: Props) {
             alt="QR de la propiedad"
             style={{ width: 120, height: 120, borderRadius: 8, border: "1px solid #eee", display: "block" }}
           />
-          <div style={{ fontSize: 10, color: "#aaa", marginTop: 4, fontFamily: "Montserrat,sans-serif" }}>
+          <div style={{ fontSize: 10, color: "#aaa", marginTop: 4, fontFamily: "var(--font-display)" }}>
             {mostrarQR && linkRastreable ? "Link rastreable" : "Link directo"}
           </div>
         </div>
@@ -75,7 +75,7 @@ export function QRLinkButton({ propiedadId, titulo }: Props) {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <button
               onClick={() => copiar(fichaUrl)}
-              style={{ padding: "8px 16px", background: "#f0f0f0", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", textAlign: "left", fontFamily: "Montserrat,sans-serif" }}>
+              style={{ padding: "8px 16px", background: "#f0f0f0", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-display)" }}>
               {copiado ? "✓ ¡Copiado!" : "📋 Copiar link directo"}
             </button>
 
@@ -83,14 +83,14 @@ export function QRLinkButton({ propiedadId, titulo }: Props) {
               <button
                 onClick={generarLink}
                 disabled={loading}
-                style={{ padding: "8px 16px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontFamily: "Montserrat,sans-serif", opacity: loading ? 0.7 : 1 }}>
+                style={{ padding: "8px 16px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontFamily: "var(--font-display)", opacity: loading ? 0.7 : 1 }}>
                 {loading ? "Generando..." : "🔗 Generar link rastreable"}
               </button>
             ) : (
               <>
                 <button
                   onClick={() => copiar(linkRastreable)}
-                  style={{ padding: "8px 16px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", textAlign: "left", fontFamily: "Montserrat,sans-serif" }}>
+                  style={{ padding: "8px 16px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-display)" }}>
                   {copiado ? "✓ ¡Copiado!" : "🔗 Copiar link rastreable"}
                 </button>
                 <div style={{ fontSize: 11, color: "#888", padding: "4px 0" }}>
@@ -103,7 +103,7 @@ export function QRLinkButton({ propiedadId, titulo }: Props) {
               href={`https://wa.me/?text=${encodeURIComponent(`📍 *${titulo}*\n\n${linkRastreable ?? fichaUrl}`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ padding: "8px 16px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#25d366", textDecoration: "none", display: "block", fontFamily: "Montserrat,sans-serif" }}>
+              style={{ padding: "8px 16px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#25d366", textDecoration: "none", display: "block", fontFamily: "var(--font-display)" }}>
               💬 Compartir por WhatsApp
             </a>
           </div>

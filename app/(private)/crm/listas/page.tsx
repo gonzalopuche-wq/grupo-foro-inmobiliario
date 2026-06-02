@@ -57,22 +57,22 @@ export default function ListasPage() {
     page: { minHeight:'100vh', background:'#0a0a0a', color:'#fff', padding:24, fontFamily:'Inter,sans-serif' },
     header: { display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24, maxWidth:900 },
     titulo: { margin:0, fontSize:18, fontWeight:800, fontFamily:'Montserrat,sans-serif', color:'#fff' },
-    subtitulo: { margin:'4px 0 0', fontSize:12, color:'rgba(255,255,255,0.35)' },
+    subtitulo: { margin:'4px 0 0', fontSize:12, color:'var(--gfi-text-muted)' },
     btnNuevo: { display:'flex', alignItems:'center', gap:8, background:'#990000', border:'none', color:'#fff', padding:'9px 16px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none' },
-    card: { background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, padding:'16px 20px', marginBottom:12, maxWidth:900, display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:16 },
+    card: { background:'var(--gfi-bg-card)', border:'1px solid var(--gfi-border)', borderRadius:10, padding:'16px 20px', marginBottom:12, maxWidth:900, display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:16 },
     nombre: { margin:0, fontSize:15, fontWeight:700, fontFamily:'Montserrat,sans-serif', color:'#fff' },
-    desc: { margin:'4px 0 0', fontSize:12, color:'rgba(255,255,255,0.35)' },
-    meta: { display:'flex', flexWrap:'wrap' as const, gap:12, marginTop:8, fontSize:11, color:'rgba(255,255,255,0.3)' },
+    desc: { margin:'4px 0 0', fontSize:12, color:'var(--gfi-text-muted)' },
+    meta: { display:'flex', flexWrap:'wrap' as const, gap:12, marginTop:8, fontSize:11, color:'var(--gfi-text-muted)' },
     linkWrap: { display:'flex', alignItems:'center', gap:8, background:'rgba(0,0,0,0.3)', borderRadius:6, padding:'6px 10px', marginTop:10 },
     linkText: { color:'#990000', fontSize:11, flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const },
     acciones: { display:'flex', flexDirection:'column' as const, gap:6, flexShrink:0 },
-    btnVer: { background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)', color:'#fff', padding:'7px 14px', borderRadius:6, fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none', textAlign:'center' as const },
+    btnVer: { background:'var(--gfi-border-subtle)', border:'1px solid var(--gfi-border)', color:'#fff', padding:'7px 14px', borderRadius:6, fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none', textAlign:'center' as const },
     btnDel: { background:'none', border:'none', color:'rgba(200,0,0,0.6)', fontSize:11, cursor:'pointer', textAlign:'center' as const },
   }
 
   if (cargando) return (
     <div style={{...s.page, display:'flex', alignItems:'center', justifyContent:'center'}}>
-      <span style={{color:'rgba(255,255,255,0.3)'}}>Cargando...</span>
+      <span style={{color:'var(--gfi-text-muted)'}}>Cargando...</span>
     </div>
   )
 
@@ -89,7 +89,7 @@ export default function ListasPage() {
       </div>
 
       {listas.length === 0 ? (
-        <div style={{textAlign:'center',padding:'64px 0',color:'rgba(255,255,255,0.25)',maxWidth:900}}>
+        <div style={{textAlign:'center',padding:'64px 0',color:'var(--gfi-text-dim)',maxWidth:900}}>
           <p style={{fontSize:14,marginBottom:16}}>Todavía no tenés listas guardadas</p>
           <Link href="/crm/busqueda" style={s.btnNuevo}>
             Ir a búsqueda inteligente
@@ -113,11 +113,11 @@ export default function ListasPage() {
                 <div style={s.linkWrap}>
                   <span style={s.linkText}>{url}</span>
                   <button onClick={() => copiarLink(lista.slug)}
-                    style={{background:'rgba(255,255,255,0.1)',border:'none',color:'#fff',padding:'4px 10px',borderRadius:4,fontSize:11,cursor:'pointer'}}>
+                    style={{background:'var(--gfi-border)',border:'none',color:'#fff',padding:'4px 10px',borderRadius:4,fontSize:11,cursor:'pointer'}}>
                     {copiado === lista.slug ? '¡Copiado!' : 'Copiar'}
                   </button>
                   <a href={url} target="_blank" rel="noopener noreferrer"
-                    style={{color:'rgba(255,255,255,0.4)',fontSize:11,textDecoration:'none'}}>
+                    style={{color:'var(--gfi-text-muted)',fontSize:11,textDecoration:'none'}}>
                     Vista cliente ↗
                   </a>
                 </div>

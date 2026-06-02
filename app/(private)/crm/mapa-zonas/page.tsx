@@ -161,74 +161,74 @@ export default function MapaZonasPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .mz-wrap { max-width: 1000px; display: flex; flex-direction: column; gap: 20px; font-family: 'Inter', sans-serif; }
-        .mz-titulo { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+        .mz-wrap { max-width: 1000px; display: flex; flex-direction: column; gap: 20px; font-family: var(--font-body); }
+        .mz-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; }
         .mz-titulo span { color: #990000; }
-        .mz-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+        .mz-sub { font-size: 13px; color: var(--gfi-text-muted); margin-top: 3px; }
         /* KPIs */
         .mz-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
-        .mz-kpi { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 16px; }
-        .mz-kpi-val { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
-        .mz-kpi-label { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 4px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+        .mz-kpi { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 14px 16px; }
+        .mz-kpi-val { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: #fff; }
+        .mz-kpi-label { font-size: 10px; color: var(--gfi-text-muted); margin-top: 4px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
         /* Métricas selector */
         .mz-metricas { display: flex; gap: 6px; flex-wrap: wrap; }
-        .mz-metrica-btn { padding: 6px 13px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: all 0.15s; }
+        .mz-metrica-btn { padding: 6px 13px; border-radius: 20px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; border: 1px solid var(--gfi-border); transition: all 0.15s; }
         /* Tabs */
-        .mz-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .mz-tab { padding: 10px 18px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
+        .mz-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--gfi-border); }
+        .mz-tab { padding: 10px 18px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
         .mz-tab.on { color: #fff; border-bottom-color: #990000; }
         /* Mapa grilla */
-        .mz-grid-wrap { position: relative; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); background: rgba(8,8,8,0.95); }
+        .mz-grid-wrap { position: relative; overflow: hidden; border-radius: 8px; border: 1px solid var(--gfi-border-subtle); background: rgba(8,8,8,0.95); }
         .mz-grid { display: grid; gap: 3px; padding: 12px; }
         .mz-celda { aspect-ratio: 1.4; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden; }
         .mz-celda:hover { transform: scale(1.06); z-index: 2; }
-        .mz-celda.vacia { background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.05); cursor: default; }
+        .mz-celda.vacia { background: var(--gfi-bg-secondary); border: 1px dashed var(--gfi-border-subtle); cursor: default; }
         .mz-celda.vacia:hover { transform: none; }
-        .mz-celda-nombre { font-family: 'Montserrat',sans-serif; font-size: 7.5px; font-weight: 700; text-align: center; line-height: 1.3; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); padding: 2px; }
-        .mz-celda-val { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+        .mz-celda-nombre { font-family: var(--font-display); font-size: 7.5px; font-weight: 700; text-align: center; line-height: 1.3; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); padding: 2px; }
+        .mz-celda-val { font-family: var(--font-display); font-size: 9px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         .mz-celda-tend { position: absolute; top: 3px; right: 4px; font-size: 8px; font-weight: 800; }
         /* Tooltip */
         .mz-tooltip { position: fixed; background: rgba(10,10,10,0.97); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 14px 16px; pointer-events: none; z-index: 100; min-width: 200px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
-        .mz-tooltip-nombre { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .mz-tooltip-nombre { font-family: var(--font-display); font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 8px; }
         .mz-tooltip-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 4px; font-size: 11px; }
-        .mz-tooltip-key { color: rgba(255,255,255,0.4); }
-        .mz-tooltip-val { color: #fff; font-weight: 600; font-family: 'Montserrat',sans-serif; }
+        .mz-tooltip-key { color: var(--gfi-text-muted); }
+        .mz-tooltip-val { color: #fff; font-weight: 600; font-family: var(--font-display); }
         /* Leyenda */
-        .mz-leyenda { display: flex; gap: 4px; align-items: center; justify-content: flex-end; font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; }
+        .mz-leyenda { display: flex; gap: 4px; align-items: center; justify-content: flex-end; font-size: 10px; color: var(--gfi-text-muted); font-family: var(--font-display); }
         .mz-leyenda-grad { width: 80px; height: 8px; border-radius: 4px; }
         /* Panel detalle */
-        .mz-detalle { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 18px 20px; }
-        .mz-detalle-titulo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+        .mz-detalle { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 8px; padding: 18px 20px; }
+        .mz-detalle-titulo { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 12px; }
         .mz-detalle-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-        .mz-detalle-stat { background: rgba(255,255,255,0.04); border-radius: 6px; padding: 10px 12px; }
-        .mz-detalle-stat-val { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; }
-        .mz-detalle-stat-label { font-size: 9px; color: rgba(255,255,255,0.35); margin-top: 3px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+        .mz-detalle-stat { background: var(--gfi-border-subtle); border-radius: 6px; padding: 10px 12px; }
+        .mz-detalle-stat-val { font-family: var(--font-display); font-size: 16px; font-weight: 800; }
+        .mz-detalle-stat-label { font-size: 9px; color: var(--gfi-text-muted); margin-top: 3px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
         /* Barras de oferta/demanda */
         .mz-barra-row { margin-bottom: 6px; }
-        .mz-barra-label { display: flex; justify-content: space-between; font-size: 10px; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
-        .mz-barra-bg { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+        .mz-barra-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--gfi-text-muted); margin-bottom: 3px; }
+        .mz-barra-bg { height: 6px; background: var(--gfi-border); border-radius: 3px; overflow: hidden; }
         .mz-barra-fill { height: 100%; border-radius: 3px; }
         /* Tabla */
         .mz-tabla-wrap { overflow-x: auto; }
         .mz-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .mz-tabla th { padding: 8px 10px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; white-space: nowrap; user-select: none; }
-        .mz-tabla th:hover { color: rgba(255,255,255,0.5); }
-        .mz-tabla td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'Inter',sans-serif; color: rgba(255,255,255,0.7); white-space: nowrap; }
-        .mz-tabla tr:hover td { background: rgba(255,255,255,0.02); }
+        .mz-tabla th { padding: 8px 10px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-dim); border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; white-space: nowrap; user-select: none; }
+        .mz-tabla th:hover { color: var(--gfi-text-secondary); }
+        .mz-tabla td { padding: 9px 10px; border-bottom: 1px solid var(--gfi-border-subtle); font-family: var(--font-body); color: var(--gfi-text-primary); white-space: nowrap; }
+        .mz-tabla tr:hover td { background: var(--gfi-bg-secondary); }
         /* Filtros */
         .mz-filtros { display: flex; gap: 6px; align-items: center; }
-        .mz-filtro-btn { padding: 5px 12px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4); transition: all 0.15s; }
+        .mz-filtro-btn { padding: 5px 12px; border-radius: 20px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; border: 1px solid var(--gfi-border); background: var(--gfi-border-subtle); color: var(--gfi-text-muted); transition: all 0.15s; }
         .mz-filtro-btn.on { background: rgba(153,0,0,0.15); border-color: rgba(153,0,0,0.3); color: #990000; }
         /* Ranking */
-        .mz-rank-item { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.06); border-radius: 7px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 6px; transition: border-color 0.15s; cursor: pointer; }
+        .mz-rank-item { background: var(--gfi-bg-card); border: 1px solid rgba(255,255,255,0.06); border-radius: 7px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 6px; transition: border-color 0.15s; cursor: pointer; }
         .mz-rank-item:hover { border-color: rgba(255,255,255,0.14); }
-        .mz-rank-num { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.15); width: 30px; flex-shrink: 0; text-align: right; }
+        .mz-rank-num { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.15); width: 30px; flex-shrink: 0; text-align: right; }
         .mz-rank-num.top { color: #990000; }
-        .mz-rank-nombre { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; }
-        .mz-rank-barrio { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+        .mz-rank-nombre { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #fff; }
+        .mz-rank-barrio { font-size: 11px; color: var(--gfi-text-muted); margin-top: 2px; }
         .mz-rank-barra-wrap { flex: 1; }
         .mz-rank-barra-bg { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-bottom: 3px; }
-        .mz-rank-val { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; text-align: right; flex-shrink: 0; min-width: 90px; }
+        .mz-rank-val { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; text-align: right; flex-shrink: 0; min-width: 90px; }
         .mz-rank-tend { font-size: 11px; font-weight: 800; text-align: right; margin-top: 2px; }
         @media (max-width: 700px) {
           .mz-kpis { grid-template-columns: repeat(2,1fr); }
@@ -273,9 +273,9 @@ export default function MapaZonasPage() {
               className="mz-metrica-btn"
               onClick={() => setMetrica(m.id)}
               style={{
-                background: metrica === m.id ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
-                borderColor: metrica === m.id ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.1)",
-                color: metrica === m.id ? "#990000" : "rgba(255,255,255,0.4)",
+                background: metrica === m.id ? "rgba(153,0,0,0.15)" : "var(--gfi-border-subtle)",
+                borderColor: metrica === m.id ? "rgba(153,0,0,0.3)" : "var(--gfi-border)",
+                color: metrica === m.id ? "#990000" : "var(--gfi-text-muted)",
               }}
             >
               {m.label}
@@ -323,7 +323,7 @@ export default function MapaZonasPage() {
                           className="mz-celda"
                           style={{
                             background: bg,
-                            border: isSelected ? "2px solid #fff" : "1px solid rgba(255,255,255,0.1)",
+                            border: isSelected ? "2px solid #fff" : "1px solid var(--gfi-border)",
                           }}
                           onMouseEnter={() => setZonaHover(zona)}
                           onMouseLeave={() => setZonaHover(null)}
@@ -342,7 +342,7 @@ export default function MapaZonasPage() {
                   )}
                 </div>
               </div>
-              <div style={{ marginTop: 8, fontSize: 10, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif" }}>
+              <div style={{ marginTop: 8, fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>
                 Hacé clic en una zona para ver el detalle. Los datos son de referencia para CABA.
               </div>
             </div>
@@ -354,11 +354,11 @@ export default function MapaZonasPage() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                     <div>
                       <div className="mz-detalle-titulo">{zonaSeleccionada.nombre}</div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: -8 }}>{zonaSeleccionada.barrio} · {zonaSeleccionada.ciudad}</div>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: -8 }}>{zonaSeleccionada.barrio} · {zonaSeleccionada.ciudad}</div>
                     </div>
                     <button
                       onClick={() => setZonaSeleccionada(null)}
-                      style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16 }}
+                      style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 16 }}
                     >×</button>
                   </div>
 
@@ -425,19 +425,19 @@ export default function MapaZonasPage() {
                     const color = presion > 20 ? "#990000" : presion > 5 ? "#d4960c" : "#3abab6";
                     const label = presion > 20 ? "Alta presión compradora" : presion > 5 ? "Mercado equilibrado" : "Oferta abundante";
                     return (
-                      <div style={{ padding: "8px 12px", background: `${color}12`, border: `1px solid ${color}30`, borderRadius: 6, fontSize: 11, color, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                      <div style={{ padding: "8px 12px", background: `${color}12`, border: `1px solid ${color}30`, borderRadius: 6, fontSize: 11, color, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                         {label} ({presion > 0 ? "+" : ""}{presion}pts)
                       </div>
                     );
                   })()}
                 </div>
               ) : (
-                <div style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "40px 20px", textAlign: "center" }}>
+                <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "40px 20px", textAlign: "center" }}>
                   <div style={{ fontSize: 28, marginBottom: 10 }}>🗺️</div>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-muted)" }}>
                     Hacé clic en una zona del mapa
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginTop: 4 }}>para ver el detalle completo</div>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", marginTop: 4 }}>para ver el detalle completo</div>
                 </div>
               )}
             </div>
@@ -446,7 +446,7 @@ export default function MapaZonasPage() {
 
         {/* ═══ TABLA ═══ */}
         {vista === "tabla" && (
-          <div style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, overflow: "hidden" }}>
+          <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, overflow: "hidden" }}>
             <div className="mz-tabla-wrap">
               <table className="mz-tabla">
                 <thead>
@@ -472,14 +472,14 @@ export default function MapaZonasPage() {
                   {ranking.map(z => (
                     <tr key={z.id}>
                       <td>
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff", fontSize: 12 }}>{z.nombre}</div>
-                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{z.barrio}</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff", fontSize: 12 }}>{z.nombre}</div>
+                        <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{z.barrio}</div>
                       </td>
-                      <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: "#fff" }}>{fmtUSD(z.precioM2Venta)}</td>
+                      <td style={{ fontFamily: "var(--font-display)", fontWeight: 600, color: "#fff" }}>{fmtUSD(z.precioM2Venta)}</td>
                       <td>{fmtARS(z.precioM2Alquiler)}</td>
                       <td>
                         <span style={{
-                          padding: "2px 8px", borderRadius: 10, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
+                          padding: "2px 8px", borderRadius: 10, fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700,
                           background: z.diasMercado < 30 ? "rgba(34,197,94,0.15)" : z.diasMercado < 60 ? "rgba(234,179,8,0.15)" : "rgba(153,0,0,0.15)",
                           color: z.diasMercado < 30 ? "#3abab6" : z.diasMercado < 60 ? "#d4960c" : "#b80000",
                         }}>
@@ -489,27 +489,27 @@ export default function MapaZonasPage() {
                       <td>{z.cantPropiedades}</td>
                       <td>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <div style={{ width: 40, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+                          <div style={{ width: 40, height: 4, background: "var(--gfi-border)", borderRadius: 2, overflow: "hidden" }}>
                             <div style={{ width: `${z.demanda}%`, height: "100%", background: "#3abab6", borderRadius: 2 }} />
                           </div>
-                          <span style={{ fontSize: 11, color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{z.demanda}%</span>
+                          <span style={{ fontSize: 11, color: "#3abab6", fontFamily: "var(--font-display)", fontWeight: 700 }}>{z.demanda}%</span>
                         </div>
                       </td>
                       <td>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <div style={{ width: 40, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+                          <div style={{ width: 40, height: 4, background: "var(--gfi-border)", borderRadius: 2, overflow: "hidden" }}>
                             <div style={{ width: `${z.oferta}%`, height: "100%", background: "#4ab8d8", borderRadius: 2 }} />
                           </div>
-                          <span style={{ fontSize: 11, color: "#4ab8d8", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{z.oferta}%</span>
+                          <span style={{ fontSize: 11, color: "#4ab8d8", fontFamily: "var(--font-display)", fontWeight: 700 }}>{z.oferta}%</span>
                         </div>
                       </td>
                       <td style={{
-                        fontFamily: "Montserrat,sans-serif", fontWeight: 700,
+                        fontFamily: "var(--font-display)", fontWeight: 700,
                         color: z.variacion12m >= 0 ? "#3abab6" : "#b80000",
                       }}>
                         {z.variacion12m > 0 ? "+" : ""}{z.variacion12m.toFixed(1)}%
                       </td>
-                      <td style={{ color: tendenciaColor(z.tendencia), fontFamily: "Montserrat,sans-serif", fontWeight: 800 }}>
+                      <td style={{ color: tendenciaColor(z.tendencia), fontFamily: "var(--font-display)", fontWeight: 800 }}>
                         {tendenciaIcon(z.tendencia)} {z.tendencia}
                       </td>
                     </tr>
@@ -524,7 +524,7 @@ export default function MapaZonasPage() {
         {vista === "ranking" && (
           <div>
             <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 14, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Tendencia:</span>
+              <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Tendencia:</span>
               <div className="mz-filtros">
                 {(["todas","sube","estable","baja"] as const).map(f => (
                   <button key={f} className={`mz-filtro-btn${filtroTendencia === f ? " on" : ""}`} onClick={() => setFiltroTendencia(f)}>
@@ -534,8 +534,8 @@ export default function MapaZonasPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: 8, fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
-              Ordenado por: <strong style={{ color: "rgba(255,255,255,0.5)" }}>{metricaInfo.label}</strong>
+            <div style={{ marginBottom: 8, fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>
+              Ordenado por: <strong style={{ color: "var(--gfi-text-secondary)" }}>{metricaInfo.label}</strong>
               {sortDir === "desc" ? " (mayor → menor)" : " (menor → mayor)"}
             </div>
 
@@ -558,8 +558,8 @@ export default function MapaZonasPage() {
                       <div style={{ height: "100%", width: `${pct}%`, background: barColor, borderRadius: 2, transition: "width 0.5s" }} />
                     </div>
                     <div style={{ display: "flex", gap: 12, marginTop: 3 }}>
-                      <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{z.diasMercado}d en mercado</span>
-                      <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>Demanda {z.demanda}%</span>
+                      <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{z.diasMercado}d en mercado</span>
+                      <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>Demanda {z.demanda}%</span>
                     </div>
                   </div>
                   <div style={{ textAlign: "right", flexShrink: 0, minWidth: 100 }}>

@@ -594,7 +594,7 @@ export default function CampanasMarketingPage() {
           <h1
             style={{
               margin: 0,
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 26,
               color: "#e0e0e0",
@@ -709,7 +709,7 @@ export default function CampanasMarketingPage() {
               <div style={{ fontSize: 11, color: "#888", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>
                 Inversión activa
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Montserrat, sans-serif", color: "#990000" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "var(--font-display)", color: "#990000" }}>
                 {formatARS(inversionTotal)}
               </div>
               <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>en campañas activas/planificadas</div>
@@ -718,7 +718,7 @@ export default function CampanasMarketingPage() {
               <div style={{ fontSize: 11, color: "#888", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>
                 Leads obtenidos
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Montserrat, sans-serif", color: "#3b82f6" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "var(--font-display)", color: "#3b82f6" }}>
                 {leadsTotal}
               </div>
               <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>campañas activas/planificadas</div>
@@ -727,7 +727,7 @@ export default function CampanasMarketingPage() {
               <div style={{ fontSize: 11, color: "#888", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>
                 Tasa de conversión
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Montserrat, sans-serif", color: "#3abab6" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "var(--font-display)", color: "#3abab6" }}>
                 {conversionTotal.toFixed(1)}%
               </div>
               <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>conversiones / leads</div>
@@ -740,7 +740,7 @@ export default function CampanasMarketingPage() {
                 style={{
                   fontSize: 22,
                   fontWeight: 700,
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   color: roiEstimado >= 0 ? "#3abab6" : "#990000",
                 }}
               >
@@ -785,7 +785,7 @@ export default function CampanasMarketingPage() {
                     <div>
                       <div
                         style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 16,
                           marginBottom: 6,
@@ -1132,7 +1132,7 @@ export default function CampanasMarketingPage() {
           <div style={{ ...styleCard, marginBottom: 20 }}>
             <div
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 14,
                 marginBottom: 16,
@@ -1152,7 +1152,7 @@ export default function CampanasMarketingPage() {
           <div style={{ ...styleCard }}>
             <div
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 14,
                 marginBottom: 16,
@@ -1178,7 +1178,7 @@ export default function CampanasMarketingPage() {
           <div style={{ ...styleCard, marginBottom: 20, overflowX: "auto" }}>
             <div
               style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 14,
                 marginBottom: 16,
@@ -1221,7 +1221,7 @@ export default function CampanasMarketingPage() {
               </div>
               <div
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   fontSize: 18,
                   color: "#3abab6",
@@ -1240,7 +1240,7 @@ export default function CampanasMarketingPage() {
               </div>
               <div
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   fontSize: 18,
                   color: "#3b82f6",
@@ -1260,7 +1260,7 @@ export default function CampanasMarketingPage() {
               </div>
               <div
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   fontSize: 18,
                   color: "#d4960c",
@@ -1307,7 +1307,7 @@ export default function CampanasMarketingPage() {
             <h2
               style={{
                 margin: "0 0 20px",
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 18,
                 color: "#e0e0e0",
@@ -1546,7 +1546,7 @@ function GanttChart({
         return (
           <g key={d.c.id}>
             {/* Row bg */}
-            <rect x={0} y={y} width={W} height={ROW_H} fill={i % 2 === 0 ? "#0d0d0d" : "transparent"} />
+            <rect x={0} y={y} width={W} height={ROW_H} fill={i % 2 === 0 ? "var(--gfi-bg-primary)" : "transparent"} />
             {/* Name */}
             <text x={6} y={y + ROW_H / 2 + 4} fill="#cccccc" fontSize={11} textAnchor="start">
               {d.c.nombre.length > 22 ? d.c.nombre.slice(0, 22) + "…" : d.c.nombre}

@@ -320,31 +320,31 @@ export default function ListaDetallePage() {
   const s: Record<string, React.CSSProperties> = {
     page: { minHeight: '100vh', color: '#fff', padding: 24, fontFamily: 'Inter,sans-serif' },
     header: { maxWidth: 900, marginBottom: 24 },
-    breadcrumb: { fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 },
+    breadcrumb: { fontSize: 12, color: 'var(--gfi-text-muted)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 },
     titulo: { margin: 0, fontSize: 20, fontWeight: 800, fontFamily: 'Montserrat,sans-serif', color: '#fff' },
-    subtitulo: { margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.35)' },
-    linkBar: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 16, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, maxWidth: 900 },
+    subtitulo: { margin: '4px 0 0', fontSize: 12, color: 'var(--gfi-text-muted)' },
+    linkBar: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 16, padding: '10px 14px', background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border)', borderRadius: 8, maxWidth: 900 },
     linkText: { flex: 1, fontSize: 12, color: '#990000', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-    btnCopiar: { background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', padding: '5px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap' },
+    btnCopiar: { background: 'var(--gfi-border)', border: 'none', color: '#fff', padding: '5px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap' },
     btnWa: { background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.25)', color: '#25D366', padding: '5px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', textDecoration: 'none', whiteSpace: 'nowrap' },
-    btnVista: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', padding: '5px 12px', borderRadius: 5, fontSize: 11, cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap' },
-    card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, overflow: 'hidden', maxWidth: 900, marginBottom: 12, display: 'flex', alignItems: 'stretch' },
-    cardImg: { width: 140, flexShrink: 0, objectFit: 'cover' as const, background: 'rgba(255,255,255,0.04)' },
-    cardImgPlaceholder: { width: 140, flexShrink: 0, background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 },
+    btnVista: { background: 'rgba(255,255,255,0.06)', border: '1px solid var(--gfi-border)', color: 'var(--gfi-text-secondary)', padding: '5px 12px', borderRadius: 5, fontSize: 11, cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap' },
+    card: { background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border)', borderRadius: 10, overflow: 'hidden', maxWidth: 900, marginBottom: 12, display: 'flex', alignItems: 'stretch' },
+    cardImg: { width: 140, flexShrink: 0, objectFit: 'cover' as const, background: 'var(--gfi-border-subtle)' },
+    cardImgPlaceholder: { width: 140, flexShrink: 0, background: 'var(--gfi-border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 },
     cardBody: { flex: 1, padding: '14px 18px', minWidth: 0 },
     cardTitulo: { fontFamily: 'Montserrat,sans-serif', fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
     chip: { display: 'inline-block', padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', marginRight: 5, marginBottom: 5 },
     cardAcciones: { display: 'flex', flexDirection: 'column' as const, gap: 6, padding: '14px 14px 14px 0', flexShrink: 0, justifyContent: 'center' },
     btnEliminar: { background: 'none', border: 'none', color: 'rgba(200,0,0,0.5)', fontSize: 12, cursor: 'pointer', padding: '4px 10px', borderRadius: 5 },
     btnAgregar: { display: 'flex', alignItems: 'center', gap: 8, background: '#990000', border: 'none', color: '#fff', padding: '9px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', maxWidth: 900, marginBottom: 16 },
-    importBox: { maxWidth: 900, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '16px 20px', marginBottom: 16 },
-    urlInput: { flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, padding: '9px 12px', color: '#fff', fontSize: 13, outline: 'none', fontFamily: 'Inter,sans-serif' },
+    importBox: { maxWidth: 900, background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border)', borderRadius: 10, padding: '16px 20px', marginBottom: 16 },
+    urlInput: { flex: 1, background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 6, padding: '9px 12px', color: '#fff', fontSize: 13, outline: 'none', fontFamily: 'Inter,sans-serif' },
     btnImportar: { background: '#990000', border: 'none', color: '#fff', padding: '9px 18px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap' },
   }
 
   if (cargando) return (
     <div style={{ ...s.page, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <span style={{ color: 'rgba(255,255,255,0.3)' }}>Cargando lista…</span>
+      <span style={{ color: 'var(--gfi-text-muted)' }}>Cargando lista…</span>
     </div>
   )
 
@@ -356,9 +356,9 @@ export default function ListaDetallePage() {
     <div style={s.page}>
       {/* Breadcrumb */}
       <div style={s.breadcrumb}>
-        <Link href="/crm/listas" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Listas</Link>
+        <Link href="/crm/listas" style={{ color: 'var(--gfi-text-muted)', textDecoration: 'none' }}>Listas</Link>
         <span>/</span>
-        <span style={{ color: 'rgba(255,255,255,0.6)' }}>{lista.nombre}</span>
+        <span style={{ color: 'var(--gfi-text-secondary)' }}>{lista.nombre}</span>
       </div>
 
       {/* Header */}
@@ -368,7 +368,7 @@ export default function ListaDetallePage() {
         {lista.contacto && (
           <p style={{ ...s.subtitulo, marginTop: 4 }}>
             👤 {lista.contacto.nombre} {lista.contacto.apellido}
-            {lista.contacto.email && <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.2)' }}>{lista.contacto.email}</span>}
+            {lista.contacto.email && <span style={{ marginLeft: 8, color: 'var(--gfi-text-dim)' }}>{lista.contacto.email}</span>}
           </p>
         )}
       </div>
@@ -396,7 +396,7 @@ export default function ListaDetallePage() {
           <button style={s.btnAgregar} onClick={() => setModoAgregar('url')}>
             + Desde portal (URL)
           </button>
-          <button style={{ ...s.btnAgregar, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }} onClick={abrirCartera}>
+          <button style={{ ...s.btnAgregar, background: 'rgba(255,255,255,0.06)', border: '1px solid var(--gfi-border)' }} onClick={abrirCartera}>
             🏠 Desde mi cartera
           </button>
           <button style={{ ...s.btnAgregar, background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', color: '#f87171' }} onClick={abrirRedGFI}>
@@ -407,7 +407,7 @@ export default function ListaDetallePage() {
 
       {modoAgregar === 'url' && (
         <div style={s.importBox}>
-          <div style={{ fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 10, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'var(--gfi-text-muted)', marginBottom: 10, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
             Pegar URL de portal inmobiliario
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
@@ -424,7 +424,7 @@ export default function ListaDetallePage() {
             </button>
             <button
               onClick={() => { setModoAgregar(null); setUrlInput(''); setImportError('') }}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 18, padding: '0 4px' }}
+              style={{ background: 'none', border: 'none', color: 'var(--gfi-text-muted)', cursor: 'pointer', fontSize: 18, padding: '0 4px' }}
             >
               ✕
             </button>
@@ -432,7 +432,7 @@ export default function ListaDetallePage() {
           {importError && (
             <p style={{ margin: '8px 0 0', fontSize: 12, color: '#f87171' }}>{importError}</p>
           )}
-          <p style={{ margin: '8px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
+          <p style={{ margin: '8px 0 0', fontSize: 11, color: 'var(--gfi-text-dim)' }}>
             Portales soportados: ZonaProp, Argenprop, MercadoLibre, Red Propia y otros
           </p>
         </div>
@@ -441,10 +441,10 @@ export default function ListaDetallePage() {
       {modoAgregar === 'cartera' && (
         <div style={{ ...s.importBox, marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <div style={{ fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'var(--gfi-text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               Mis propiedades en cartera
             </div>
-            <button onClick={() => setModoAgregar(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 18 }}>✕</button>
+            <button onClick={() => setModoAgregar(null)} style={{ background: 'none', border: 'none', color: 'var(--gfi-text-muted)', cursor: 'pointer', fontSize: 18 }}>✕</button>
           </div>
           <input
             style={{ ...s.urlInput, marginBottom: 12 }}
@@ -453,9 +453,9 @@ export default function ListaDetallePage() {
             onChange={e => setCarteraBusqueda(e.target.value)}
           />
           {cargandoCartera ? (
-            <div style={{ textAlign: 'center', padding: 24, color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>Cargando cartera…</div>
+            <div style={{ textAlign: 'center', padding: 24, color: 'var(--gfi-text-muted)', fontSize: 13 }}>Cargando cartera…</div>
           ) : carteraFiltrada.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 24, color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>
+            <div style={{ textAlign: 'center', padding: 24, color: 'var(--gfi-text-dim)', fontSize: 13 }}>
               {carteraItems.length === 0 ? 'No hay propiedades activas en tu cartera.' : 'Sin resultados para tu búsqueda.'}
             </div>
           ) : (
@@ -463,14 +463,14 @@ export default function ListaDetallePage() {
               {carteraFiltrada.map(prop => {
                 const enLista = yaEnLista.has(`gfi://cartera/${prop.id}`)
                 return (
-                  <div key={prop.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: `1px solid ${enLista ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}` }}>
+                  <div key={prop.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'var(--gfi-bg-card)', borderRadius: 8, border: `1px solid ${enLista ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}` }}>
                     {prop.fotos?.[0]
                       ? <img src={prop.fotos[0]} alt="" style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} />
                       : <div style={{ width: 60, height: 45, background: 'rgba(255,255,255,0.06)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🏠</div>
                     }
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.titulo}</div>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', marginTop: 2 }}>
                         {[prop.zona, prop.ciudad].filter(Boolean).join(', ')}
                         {prop.precio ? ` · ${fmtPrecio(prop.precio, prop.moneda)}` : ''}
                       </div>
@@ -500,7 +500,7 @@ export default function ListaDetallePage() {
             <div style={{ fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(220,38,38,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               🔴 Red GFI — propiedades de colegas
             </div>
-            <button onClick={() => setModoAgregar(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 18 }}>✕</button>
+            <button onClick={() => setModoAgregar(null)} style={{ background: 'none', border: 'none', color: 'var(--gfi-text-muted)', cursor: 'pointer', fontSize: 18 }}>✕</button>
           </div>
           <input
             style={{ ...s.urlInput, marginBottom: 12 }}
@@ -509,9 +509,9 @@ export default function ListaDetallePage() {
             onChange={e => setRedGFIBusqueda(e.target.value)}
           />
           {cargandoRedGFI ? (
-            <div style={{ textAlign: 'center', padding: 24, color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>Cargando Red GFI…</div>
+            <div style={{ textAlign: 'center', padding: 24, color: 'var(--gfi-text-muted)', fontSize: 13 }}>Cargando Red GFI…</div>
           ) : redGFIFiltrado.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 24, color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>
+            <div style={{ textAlign: 'center', padding: 24, color: 'var(--gfi-text-dim)', fontSize: 13 }}>
               {redGFIItems.length === 0 ? 'No hay propiedades disponibles en la Red GFI.' : 'Sin resultados para tu búsqueda.'}
             </div>
           ) : (
@@ -519,7 +519,7 @@ export default function ListaDetallePage() {
               {redGFIFiltrado.map(prop => {
                 const enLista = yaEnLista.has(`gfi://red-gfi/${prop.id}`)
                 return (
-                  <div key={prop.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: `1px solid ${enLista ? 'rgba(34,197,94,0.2)' : 'rgba(220,38,38,0.1)'}` }}>
+                  <div key={prop.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'var(--gfi-bg-card)', borderRadius: 8, border: `1px solid ${enLista ? 'rgba(34,197,94,0.2)' : 'rgba(220,38,38,0.1)'}` }}>
                     {prop.fotos?.[0]
                       ? <img src={prop.fotos[0]} alt="" style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} />
                       : <div style={{ width: 60, height: 45, background: 'rgba(220,38,38,0.06)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🔴</div>
@@ -528,7 +528,7 @@ export default function ListaDetallePage() {
                       <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {prop.tipo_propiedad} · {prop.ciudad}{prop.zona ? ` · ${prop.zona}` : ''}
                       </div>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: 'var(--gfi-text-muted)', marginTop: 2 }}>
                         {prop.operacion}
                         {prop.precio ? ` · ${fmtPrecio(prop.precio, prop.moneda)}` : ''}
                         {prop.dormitorios ? ` · ${prop.dormitorios} dorm.` : ''}
@@ -556,12 +556,12 @@ export default function ListaDetallePage() {
 
       {/* Lista de propiedades */}
       {propiedades.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: 'rgba(255,255,255,0.2)', maxWidth: 900, fontFamily: 'Inter,sans-serif', fontSize: 13, fontStyle: 'italic' }}>
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--gfi-text-dim)', maxWidth: 900, fontFamily: 'Inter,sans-serif', fontSize: 13, fontStyle: 'italic' }}>
           Esta lista no tiene propiedades todavía. Agregá una con el botón de arriba.
         </div>
       ) : (
         <div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', maxWidth: 900, marginBottom: 12 }}>
+          <div style={{ fontSize: 11, color: 'var(--gfi-text-dim)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', maxWidth: 900, marginBottom: 12 }}>
             {propiedades.length} propiedad{propiedades.length !== 1 ? 'es' : ''} en esta lista
           </div>
           {propiedades.map(prop => (
@@ -575,7 +575,7 @@ export default function ListaDetallePage() {
                 <div style={s.cardTitulo}>{prop.titulo ?? prop.url_original}</div>
                 <div style={{ marginBottom: 6 }}>
                   {prop.tipo && (
-                    <span style={{ ...s.chip, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }}>
+                    <span style={{ ...s.chip, background: 'rgba(255,255,255,0.06)', border: '1px solid var(--gfi-border)', color: 'var(--gfi-text-secondary)' }}>
                       {prop.tipo}
                     </span>
                   )}
@@ -603,7 +603,7 @@ export default function ListaDetallePage() {
               <div style={s.cardAcciones}>
                 {prop.url_original.startsWith('http') && (
                   <a href={prop.url_original} target="_blank" rel="noopener noreferrer"
-                    style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', padding: '4px 10px', textAlign: 'center' }}>
+                    style={{ fontSize: 11, color: 'var(--gfi-text-muted)', textDecoration: 'none', padding: '4px 10px', textAlign: 'center' }}>
                     Ver ↗
                   </a>
                 )}

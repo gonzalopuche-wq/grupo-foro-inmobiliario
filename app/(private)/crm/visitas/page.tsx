@@ -217,8 +217,8 @@ export default function VisitasPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0a0a; color: #fff; }
         .vis-wrap { min-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; }
-        .vis-topbar { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); background: #0a0a0a; flex-shrink: 0; }
-        .vis-back { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); text-decoration: none; text-transform: uppercase; }
+        .vis-topbar { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--gfi-border-subtle); background: #0a0a0a; flex-shrink: 0; }
+        .vis-back { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--gfi-text-muted); text-decoration: none; text-transform: uppercase; }
         .vis-back:hover { color: #fff; }
         .vis-titulo { font-family: Montserrat,sans-serif; font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 0.05em; }
         .vis-badge { background: #990000; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; font-family: Montserrat,sans-serif; }
@@ -226,28 +226,28 @@ export default function VisitasPage() {
         .vis-btn { padding: 8px 16px; border-radius: 6px; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: none; }
         .vis-btn-primary { background: #990000; color: #fff; }
         .vis-btn-primary:hover { background: #aa0000; }
-        .vis-toolbar { display: flex; gap: 8px; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
-        .vis-search { flex: 1; min-width: 200px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
-        .vis-select { padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 12px; outline: none; cursor: pointer; }
+        .vis-toolbar { display: flex; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--gfi-border-subtle); flex-wrap: wrap; }
+        .vis-search { flex: 1; min-width: 200px; padding: 8px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
+        .vis-select { padding: 8px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 12px; outline: none; cursor: pointer; }
         .vis-list { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
-        .vis-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px; display: flex; gap: 16px; align-items: flex-start; }
+        .vis-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 10px; padding: 16px; display: flex; gap: 16px; align-items: flex-start; }
         .vis-card:hover { border-color: rgba(255,255,255,0.15); }
-        .vis-card-num { font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.3); min-width: 80px; }
+        .vis-card-num { font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; color: var(--gfi-text-muted); min-width: 80px; }
         .vis-card-body { flex: 1; }
         .vis-card-cliente { font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 3px; }
-        .vis-card-prop { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
-        .vis-card-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11px; color: rgba(255,255,255,0.4); }
+        .vis-card-prop { font-size: 12px; color: var(--gfi-text-secondary); margin-bottom: 6px; }
+        .vis-card-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11px; color: var(--gfi-text-muted); }
         .vis-estado-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: Montserrat,sans-serif; text-transform: uppercase; }
         .vis-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-        .vis-action-btn { padding: 5px 10px; border-radius: 4px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); }
-        .vis-action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .vis-empty { text-align: center; color: rgba(255,255,255,0.3); font-size: 14px; padding: 60px 20px; }
+        .vis-action-btn { padding: 5px 10px; border-radius: 4px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--gfi-border); background: var(--gfi-border-subtle); color: var(--gfi-text-secondary); }
+        .vis-action-btn:hover { background: var(--gfi-border); color: #fff; }
+        .vis-empty { text-align: center; color: var(--gfi-text-muted); font-size: 14px; padding: 60px 20px; }
         .vis-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .vis-modal { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 28px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
+        .vis-modal { background: #111; border: 1px solid var(--gfi-border); border-radius: 12px; padding: 28px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
         .vis-modal-title { font-family: Montserrat,sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
         .vis-field { margin-bottom: 14px; }
-        .vis-label { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 5px; display: block; }
-        .vis-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; font-family: Inter,sans-serif; }
+        .vis-label { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; display: block; }
+        .vis-input { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 13px; outline: none; font-family: Inter,sans-serif; }
         .vis-input:focus { border-color: rgba(153,0,0,0.5); }
         .vis-row { display: flex; gap: 10px; }
         .vis-row .vis-field { flex: 1; }
@@ -302,13 +302,13 @@ export default function VisitasPage() {
                     {v.cliente_telefono && <span>📱 {v.cliente_telefono}</span>}
                     {v.cliente_dni && <span>DNI {v.cliente_dni}</span>}
                   </div>
-                  {v.observaciones && <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>{v.observaciones}</div>}
+                  {v.observaciones && <div style={{ marginTop: 8, fontSize: 11, color: "var(--gfi-text-muted)", fontStyle: "italic" }}>{v.observaciones}</div>}
                   {v.feedback_at && (
                     <div style={{ marginTop: 8, padding: "6px 10px", background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.18)", borderRadius: 6, fontSize: 11 }}>
                       <span style={{ color: "#3abab6", fontWeight: 700 }}>Feedback recibido</span>
                       {v.feedback_puntaje != null && <span style={{ marginLeft: 8 }}>{"⭐".repeat(v.feedback_puntaje)}</span>}
-                      {v.feedback_interes && <span style={{ marginLeft: 8, color: "rgba(255,255,255,0.4)" }}>{v.feedback_interes === "si" ? "✅ Interesado" : v.feedback_interes === "tal_vez" ? "🤔 Tal vez" : "❌ No interesado"}</span>}
-                      {v.feedback_comentario && <div style={{ color: "rgba(255,255,255,0.35)", marginTop: 4, fontStyle: "italic" }}>"{v.feedback_comentario}"</div>}
+                      {v.feedback_interes && <span style={{ marginLeft: 8, color: "var(--gfi-text-muted)" }}>{v.feedback_interes === "si" ? "✅ Interesado" : v.feedback_interes === "tal_vez" ? "🤔 Tal vez" : "❌ No interesado"}</span>}
+                      {v.feedback_comentario && <div style={{ color: "var(--gfi-text-muted)", marginTop: 4, fontStyle: "italic" }}>"{v.feedback_comentario}"</div>}
                     </div>
                   )}
                   <div className="vis-actions" style={{ marginTop: 10 }}>
@@ -320,7 +320,7 @@ export default function VisitasPage() {
                     {v.cliente_telefono && <button className="vis-action-btn" style={{ color: "#25d366", borderColor: "rgba(37,211,102,0.3)" }} onClick={() => enviarWhatsApp(v)}>📲 WhatsApp</button>}
                     <button className="vis-action-btn" style={{ color: "#4ab8d8", borderColor: "rgba(74,184,216,0.25)" }} onClick={() => compartirFeedback(v)} title="Enviar link de feedback al cliente">⭐ Feedback</button>
                     <button className="vis-action-btn" style={{ color: "#34d399", borderColor: "rgba(52,211,153,0.25)" }} onClick={() => enviarACalendar(v)} disabled={enviandoCalendar === v.id} title="Añadir a Google Calendar">{enviandoCalendar === v.id ? "..." : "📅 Cal"}</button>
-                    <button className="vis-action-btn" style={{ color: "rgba(255,255,255,0.25)" }} onClick={() => eliminar(v.id)}>🗑</button>
+                    <button className="vis-action-btn" style={{ color: "var(--gfi-text-dim)" }} onClick={() => eliminar(v.id)}>🗑</button>
                   </div>
                 </div>
               </div>
@@ -372,7 +372,7 @@ export default function VisitasPage() {
               <button className="vis-btn vis-btn-primary" onClick={guardar} disabled={guardando || !form.cliente_nombre.trim()}>
                 {guardando ? "Guardando..." : editandoId ? "Guardar cambios" : "Crear orden"}
               </button>
-              <button className="vis-btn" style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)" }} onClick={() => setMostrarForm(false)}>
+              <button className="vis-btn" style={{ background: "var(--gfi-border-subtle)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)" }} onClick={() => setMostrarForm(false)}>
                 Cancelar
               </button>
             </div>

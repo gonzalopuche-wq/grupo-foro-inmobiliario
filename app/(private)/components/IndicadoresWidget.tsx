@@ -92,7 +92,7 @@ const fmtPeriodo = (p: string | null): string => {
 };
 
 const colorAcum = (n: number | null): string => {
-  if (n === null) return "rgba(255,255,255,0.4)";
+  if (n === null) return "var(--gfi-text-muted)";
   if (n > 0) return "#f87171";  // rojo — sube
   return "#3abab6";              // verde — baja
 };
@@ -267,24 +267,24 @@ export default function IndicadoresWidget({ compact = false }: Props) {
 
       {/* Valor JUS */}
       {(jus.valor || jus.loading) && (
-        <div style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "16px 20px" }}>
+        <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "16px 20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "rgba(255,255,255,0.35)" }}>
+            <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "var(--gfi-text-muted)" }}>
               VALOR JUS · COCIR 2DA CIRC.
             </div>
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.2)" }}>Ley 13.154</span>
+            <span style={{ fontSize: 9, color: "var(--gfi-text-dim)" }}>Ley 13.154</span>
           </div>
           {jus.loading
             ? <Skeleton w={120} h={28} />
-            : <div style={{ fontSize: 26, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff" }}>
+            : <div style={{ fontSize: 26, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>
                 $ {jus.valor?.toLocaleString("es-AR", { minimumFractionDigits: 2 })}
               </div>
           }
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>Honorarios profesionales · COCIR</div>
+          <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4 }}>Honorarios profesionales · COCIR</div>
         </div>
       )}
 
-      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", textAlign: "center" as const, fontStyle: "italic" }}>
+      <div style={{ fontSize: 10, color: "var(--gfi-text-dim)", textAlign: "center" as const, fontStyle: "italic" }}>
         Fuentes: BCRA · INDEC · Cálculo igual a alquiler.com — solo referencia
       </div>
     </div>
@@ -299,12 +299,12 @@ function Skeleton({ w, h }: { w: number; h: number }) {
 
 function IndCard({ label, valor, sub, loading }: { label: string; valor: string | null; sub?: string; loading: boolean }) {
   return (
-    <div style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px" }}>
-      <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>{label}</div>
+    <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "14px 18px" }}>
+      <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "var(--gfi-text-muted)", marginBottom: 6 }}>{label}</div>
       {loading ? <Skeleton w={80} h={20} /> : (
         <>
-          <div style={{ fontSize: 20, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff" }}>{valor ?? "Sin datos"}</div>
-          {sub && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 3 }}>{sub}</div>}
+          <div style={{ fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>{valor ?? "Sin datos"}</div>
+          {sub && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 3 }}>{sub}</div>}
         </>
       )}
       <style>{`@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.8} }`}</style>
@@ -328,18 +328,18 @@ function IndicadorCompleto({ titulo, fuente, ultimo, ultimoPeriodo, acumulados, 
     : ultimo !== null ? `${ultimo.toLocaleString("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })}%` : "—";
 
   return (
-    <div style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "16px 20px" }}>
+    <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "16px 20px" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap" as const, gap: 8 }}>
         <div>
-          <div style={{ fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff" }}>{titulo}</div>
-          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{descripcion}</div>
+          <div style={{ fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>{titulo}</div>
+          <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginTop: 2 }}>{descripcion}</div>
         </div>
         <div style={{ textAlign: "right" as const }}>
           {loading ? <Skeleton w={80} h={24} /> : (
             <>
-              <div style={{ fontSize: 22, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff" }}>{valorUltimo}</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>{fmtPeriodo(ultimoPeriodo)} · {fuente}</div>
+              <div style={{ fontSize: 22, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff" }}>{valorUltimo}</div>
+              <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{fmtPeriodo(ultimoPeriodo)} · {fuente}</div>
             </>
           )}
         </div>
@@ -350,16 +350,16 @@ function IndicadorCompleto({ titulo, fuente, ultimo, ultimoPeriodo, acumulados, 
         {PERIODOS.map(p => {
           const val = acumulados[p.key];
           return (
-            <div key={p.key} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, padding: "10px 12px", textAlign: "center" as const }}>
-              <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
+            <div key={p.key} style={{ background: "var(--gfi-bg-card)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, padding: "10px 12px", textAlign: "center" as const }}>
+              <div style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--gfi-text-muted)", marginBottom: 6 }}>
                 {p.label}
               </div>
               {loading ? <Skeleton w={50} h={18} /> : (
-                <div style={{ fontSize: 16, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: colorAcum(val) }}>
+                <div style={{ fontSize: 16, fontFamily: "var(--font-display)", fontWeight: 800, color: colorAcum(val) }}>
                   {fmt(val, 2)}
                 </div>
               )}
-              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginTop: 3 }}>{p.meses}</div>
+              <div style={{ fontSize: 9, color: "var(--gfi-text-dim)", marginTop: 3 }}>{p.meses}</div>
             </div>
           );
         })}

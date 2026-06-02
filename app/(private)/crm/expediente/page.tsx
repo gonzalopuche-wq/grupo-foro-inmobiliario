@@ -59,31 +59,31 @@ interface NegocioDB {
 
 const ST = {
   card: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    background: "var(--gfi-border-subtle)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: "12px",
     padding: "20px",
   } as React.CSSProperties,
   input: {
     background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: "8px",
     color: "#fff",
     padding: "8px 12px",
     fontSize: "0.9rem",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     outline: "none",
     width: "100%",
     boxSizing: "border-box" as const,
   } as React.CSSProperties,
   select: {
     background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: "8px",
     color: "#fff",
     padding: "8px 12px",
     fontSize: "0.9rem",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     outline: "none",
     width: "100%",
     boxSizing: "border-box" as const,
@@ -96,19 +96,19 @@ const ST = {
     borderRadius: "8px",
     padding: "8px 16px",
     fontSize: "0.85rem",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontWeight: 600,
     cursor: "pointer",
     whiteSpace: "nowrap" as const,
   } as React.CSSProperties,
   btnGhost: {
     background: "rgba(255,255,255,0.06)",
-    color: "rgba(255,255,255,0.7)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    color: "var(--gfi-text-primary)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: "8px",
     padding: "7px 14px",
     fontSize: "0.85rem",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     cursor: "pointer",
     whiteSpace: "nowrap" as const,
   } as React.CSSProperties,
@@ -117,16 +117,16 @@ const ST = {
     color: "rgba(255,255,255,0.45)",
     marginBottom: "4px",
     display: "block",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
   } as React.CSSProperties,
   textarea: {
     background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    border: "1px solid var(--gfi-border)",
     borderRadius: "8px",
     color: "#fff",
     padding: "12px",
     fontSize: "0.9rem",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     outline: "none",
     resize: "vertical" as const,
     width: "100%",
@@ -134,7 +134,7 @@ const ST = {
     lineHeight: 1.6,
   } as React.CSSProperties,
   subheading: {
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: "1rem",
     color: "#fff",
@@ -151,7 +151,7 @@ function chip(color: string, bg: string): React.CSSProperties {
     fontWeight: 600,
     color,
     background: bg,
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
   };
 }
 
@@ -357,19 +357,19 @@ export default function ExpedientePage() {
         background: "#0a0a0a",
         minHeight: "100vh",
         color: "#fff",
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "var(--font-body)",
         padding: "24px",
       }}
     >
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
         {/* Header */}
         <div style={{ marginBottom: "24px" }}>
-          <p style={{ margin: 0, fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", marginBottom: "4px" }}>
+          <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--gfi-text-muted)", marginBottom: "4px" }}>
             CRM · Operaciones
           </p>
           <h1
             style={{
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: "1.6rem",
               color: "#fff",
@@ -385,7 +385,7 @@ export default function ExpedientePage() {
         <div style={{ ...ST.card, marginBottom: "20px" }}>
           <label style={ST.label}>Seleccionar operación</label>
           {loading ? (
-            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.9rem", margin: 0 }}>Cargando negocios...</p>
+            <p style={{ color: "var(--gfi-text-muted)", fontSize: "0.9rem", margin: 0 }}>Cargando negocios...</p>
           ) : (
             <select
               value={negocioId}
@@ -414,7 +414,7 @@ export default function ExpedientePage() {
           <div style={{ ...ST.card, textAlign: "center", padding: "56px 24px" }}>
             <div style={{ fontSize: "2.5rem", marginBottom: "16px" }}>📂</div>
             <p style={{ ...ST.subheading, marginBottom: "8px" }}>Seleccioná una operación para comenzar</p>
-            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.9rem", margin: 0 }}>
+            <p style={{ color: "var(--gfi-text-muted)", fontSize: "0.9rem", margin: 0 }}>
               El expediente centraliza partes, documentos, timeline y notas de cada negocio.
             </p>
           </div>
@@ -431,7 +431,7 @@ export default function ExpedientePage() {
                 display: "flex",
                 gap: "4px",
                 marginBottom: "20px",
-                borderBottom: "1px solid rgba(255,255,255,0.07)",
+                borderBottom: "1px solid var(--gfi-border-subtle)",
               }}
             >
               {TABS.map((t) => (
@@ -445,7 +445,7 @@ export default function ExpedientePage() {
                     color: tab === t.id ? "#fff" : "rgba(255,255,255,0.45)",
                     padding: "10px 16px",
                     fontSize: "0.88rem",
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "var(--font-body)",
                     fontWeight: tab === t.id ? 600 : 400,
                     cursor: "pointer",
                     transition: "color 0.2s",
@@ -513,7 +513,7 @@ function ResumenNegocio({ negocio, exp }: { negocio: NegocioDB; exp: Expediente 
 
       {/* Progress bar */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-        <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.5)" }}>
+        <span style={{ fontSize: "0.82rem", color: "var(--gfi-text-secondary)" }}>
           Documentos obligatorios aprobados
         </span>
         <span style={{ fontSize: "0.82rem", fontWeight: 700, color: pct === 100 ? "#34d399" : "#fff" }}>
@@ -523,7 +523,7 @@ function ResumenNegocio({ negocio, exp }: { negocio: NegocioDB; exp: Expediente 
       <div
         style={{
           height: "6px",
-          background: "rgba(255,255,255,0.08)",
+          background: "var(--gfi-border)",
           borderRadius: "999px",
           overflow: "hidden",
         }}
@@ -699,7 +699,7 @@ function TabDocumentos({
                   gap: "8px",
                   cursor: "pointer",
                   fontSize: "0.85rem",
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-body)",
                 }}
               >
                 <input
@@ -734,7 +734,7 @@ function TabDocumentos({
       )}
 
       {exp.documentos.length === 0 ? (
-        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
+        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "var(--gfi-text-muted)" }}>
           No hay documentos. Agregá uno o usá la plantilla.
         </div>
       ) : (
@@ -762,7 +762,7 @@ function TabDocumentos({
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                   <span style={{ flex: 1, fontWeight: 600, fontSize: "0.9rem" }}>{doc.nombre}</span>
-                  <span style={chip(ROL_COLORS[doc.responsable] ?? "#9ca3af", "rgba(255,255,255,0.07)")}>
+                  <span style={chip(ROL_COLORS[doc.responsable] ?? "#9ca3af", "var(--gfi-border-subtle)")}>
                     {doc.responsable}
                   </span>
                   <span style={chip(meta.color, meta.bg)}>{meta.label}</span>
@@ -773,20 +773,20 @@ function TabDocumentos({
                     <span
                       style={{
                         fontSize: "0.75rem",
-                        color: vencido ? "#990000" : porVencer ? "#d4960c" : "rgba(255,255,255,0.4)",
+                        color: vencido ? "#990000" : porVencer ? "#d4960c" : "var(--gfi-text-muted)",
                       }}
                     >
                       {vencido ? "⚠ Vencido" : porVencer ? "⏰" : ""}{" "}
                       {new Date(doc.fechaVencimiento).toLocaleDateString("es-AR")}
                     </span>
                   )}
-                  <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.8rem" }}>
+                  <span style={{ color: "var(--gfi-text-dim)", fontSize: "0.8rem" }}>
                     {isOpen ? "▲" : "▼"}
                   </span>
                 </div>
 
                 {!isOpen && doc.notas && (
-                  <p style={{ margin: "6px 0 0", fontSize: "0.8rem", color: "rgba(255,255,255,0.35)" }}>
+                  <p style={{ margin: "6px 0 0", fontSize: "0.8rem", color: "var(--gfi-text-muted)" }}>
                     {doc.notas}
                   </p>
                 )}
@@ -795,7 +795,7 @@ function TabDocumentos({
                   <div
                     style={{
                       marginTop: "14px",
-                      borderTop: "1px solid rgba(255,255,255,0.07)",
+                      borderTop: "1px solid var(--gfi-border-subtle)",
                       paddingTop: "14px",
                     }}
                     onClick={(e) => e.stopPropagation()}
@@ -867,7 +867,7 @@ function TabDocumentos({
                             gap: "8px",
                             cursor: "pointer",
                             fontSize: "0.85rem",
-                            fontFamily: "'Inter', sans-serif",
+                            fontFamily: "var(--font-body)",
                           }}
                         >
                           <input
@@ -1032,7 +1032,7 @@ function TabPartes({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn
       )}
 
       {exp.partes.length === 0 ? (
-        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
+        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "var(--gfi-text-muted)" }}>
           No hay partes registradas.
         </div>
       ) : (
@@ -1074,14 +1074,14 @@ function TabPartes({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn
                         marginBottom: "6px",
                         textTransform: "uppercase" as const,
                         letterSpacing: "0.05em",
-                        fontFamily: "'Inter', sans-serif",
+                        fontFamily: "var(--font-body)",
                       }}
                     >
                       {parte.rol}
                     </span>
                     <p style={{ margin: 0, fontWeight: 700, fontSize: "1rem" }}>
                       {parte.nombre || (
-                        <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin nombre</span>
+                        <span style={{ color: "var(--gfi-text-muted)" }}>Sin nombre</span>
                       )}
                     </p>
                   </div>
@@ -1125,7 +1125,7 @@ function TabPartes({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn
                         style={{
                           margin: 0,
                           fontSize: "0.8rem",
-                          color: "rgba(255,255,255,0.35)",
+                          color: "var(--gfi-text-muted)",
                           fontStyle: "italic",
                         }}
                       >
@@ -1276,7 +1276,7 @@ function TabTimeline({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExp
       )}
 
       {sorted.length === 0 ? (
-        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.3)" }}>
+        <div style={{ ...ST.card, textAlign: "center", padding: "40px", color: "var(--gfi-text-muted)" }}>
           No hay hitos en el timeline.
         </div>
       ) : (
@@ -1288,7 +1288,7 @@ function TabTimeline({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExp
               top: 0,
               bottom: 0,
               width: "2px",
-              background: "rgba(255,255,255,0.07)",
+              background: "var(--gfi-border-subtle)",
             }}
           />
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -1300,7 +1300,7 @@ function TabTimeline({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExp
                     height: "40px",
                     borderRadius: "50%",
                     background: "#1a1a1a",
-                    border: "2px solid rgba(255,255,255,0.1)",
+                    border: "2px solid var(--gfi-border)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -1329,19 +1329,19 @@ function TabTimeline({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExp
                           color: "#990000",
                           textTransform: "uppercase" as const,
                           letterSpacing: "0.06em",
-                          fontFamily: "'Inter', sans-serif",
+                          fontFamily: "var(--font-body)",
                         }}
                       >
                         {hito.tipo}
                       </span>
                       {hito.autor && (
-                        <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>
+                        <span style={{ fontSize: "0.75rem", color: "var(--gfi-text-muted)" }}>
                           · {hito.autor}
                         </span>
                       )}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)" }}>
+                      <span style={{ fontSize: "0.75rem", color: "var(--gfi-text-muted)" }}>
                         {fechaRelativa(hito.fecha)}
                       </span>
                       <button
@@ -1350,7 +1350,7 @@ function TabTimeline({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExp
                           ...ST.btnGhost,
                           padding: "2px 8px",
                           fontSize: "0.7rem",
-                          color: "rgba(255,255,255,0.3)",
+                          color: "var(--gfi-text-muted)",
                         }}
                       >
                         ✕
@@ -1405,13 +1405,13 @@ function TabNotas({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn 
           marginBottom: "12px",
         }}
       >
-        <p style={{ ...ST.subheading, fontSize: "0.9rem", color: "rgba(255,255,255,0.5)" }}>
+        <p style={{ ...ST.subheading, fontSize: "0.9rem", color: "var(--gfi-text-secondary)" }}>
           Notas libres del expediente
         </p>
         <span
           style={{
             fontSize: "0.78rem",
-            color: guardando ? "#d4960c" : guardado ? "#34d399" : "rgba(255,255,255,0.25)",
+            color: guardando ? "#d4960c" : guardado ? "#34d399" : "var(--gfi-text-dim)",
             fontStyle: "italic",
             transition: "color 0.3s",
           }}
@@ -1428,7 +1428,7 @@ function TabNotas({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn 
       />
 
       <div
-        style={{ marginTop: "8px", textAlign: "right", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)" }}
+        style={{ marginTop: "8px", textAlign: "right", fontSize: "0.75rem", color: "var(--gfi-text-dim)" }}
       >
         {localNotas.length} caracteres · Última actualización:{" "}
         {new Date(exp.updatedAt).toLocaleString("es-AR")}

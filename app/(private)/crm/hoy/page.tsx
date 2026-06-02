@@ -265,12 +265,12 @@ export default function CrmHoyPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .hoy-card { background:rgba(14,14,14,0.9); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:16px; }
-        .hoy-btn { padding:5px 10px; border:none; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.07em; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
-        .hoy-section { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.3); font-family:'Montserrat',sans-serif; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
-        .hoy-item { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .hoy-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:8px; padding:16px; }
+        .hoy-btn { padding:5px 10px; border:none; border-radius:4px; font-family:var(--font-display); font-size:10px; font-weight:700; letter-spacing:0.07em; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
+        .hoy-section { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gfi-text-muted); font-family:var(--font-display); margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
+        .hoy-item { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--gfi-border-subtle); }
         .hoy-item:last-child { border-bottom:none; }
-        .hoy-check { width:20px; height:20px; border-radius:4px; border:2px solid rgba(255,255,255,0.2); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; font-size:11px; color:#fff; transition:all 0.15s; }
+        .hoy-check { width:20px; height:20px; border-radius:4px; border:2px solid var(--gfi-text-dim); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; font-size:11px; color:#fff; transition:all 0.15s; }
         .hoy-check:hover { border-color:#3abab6; background:rgba(34,197,94,0.1); }
         @media(max-width:700px){.hoy-cols{flex-direction:column!important;}}
       `}</style>
@@ -280,28 +280,28 @@ export default function CrmHoyPage() {
         {/* ── Header con fecha y hora ── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "#fff" }}>
               Buenos días <span style={{ color: "#990000" }}>🌅</span>
             </div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", marginTop: 3 }}>
+            <div style={{ fontSize: 13, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 3 }}>
               {fechaHoy} · {hora}
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             {total > 0 && (
-              <div style={{ padding: "8px 14px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 20, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#b80000" }}>
+              <div style={{ padding: "8px 14px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 20, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "#b80000" }}>
                 {total} pendiente{total !== 1 ? "s" : ""}
               </div>
             )}
             <button onClick={() => uid && cargar(uid)}
-              style={{ padding: "8px 14px", borderRadius: 5, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}>
+              style={{ padding: "8px 14px", borderRadius: 5, background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
               ↻ Actualizar
             </button>
           </div>
         </div>
 
         {loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 48, fontFamily: "Inter,sans-serif" }}>Cargando tu agenda...</div>
+          <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 48, fontFamily: "Inter,sans-serif" }}>Cargando tu agenda...</div>
         ) : (
           <div className="hoy-cols" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
 
@@ -312,10 +312,10 @@ export default function CrmHoyPage() {
               <div className="hoy-card">
                 <div className="hoy-section">
                   <span>✅ Tareas urgentes ({tareas.length})</span>
-                  <Link href="/crm/tareas" style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>Ver todas ↗</Link>
+                  <Link href="/crm/tareas" style={{ fontSize: 10, color: "var(--gfi-text-muted)", textDecoration: "none", fontFamily: "var(--font-display)" }}>Ver todas ↗</Link>
                 </div>
                 {tareas.length === 0 ? (
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", textAlign: "center", padding: "12px 0" }}>Sin tareas urgentes 🎉</div>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", textAlign: "center", padding: "12px 0" }}>Sin tareas urgentes 🎉</div>
                 ) : tareas.map(t => {
                   const venciday = t.fecha_vencimiento && t.fecha_vencimiento < hoy();
                   const venceHoy = t.fecha_vencimiento === hoy();
@@ -324,15 +324,15 @@ export default function CrmHoyPage() {
                       <button className="hoy-check" onClick={() => completarTarea(t.id)}>✓</button>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff" }}>{t.titulo}</span>
-                          <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280"}18`, color: PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280", border: `1px solid ${PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280"}35` }}>
+                          <span style={{ fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>{t.titulo}</span>
+                          <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 8, fontFamily: "var(--font-display)", fontWeight: 700, background: `${PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280"}18`, color: PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280", border: `1px solid ${PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280"}35` }}>
                             {t.prioridad}
                           </span>
-                          {venciday && <span style={{ fontSize: 10, color: "#b80000", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>⚠ Vencida</span>}
-                          {venceHoy && !venciday && <span style={{ fontSize: 10, color: "#d4960c", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Vence hoy</span>}
+                          {venciday && <span style={{ fontSize: 10, color: "#b80000", fontFamily: "var(--font-display)", fontWeight: 700 }}>⚠ Vencida</span>}
+                          {venceHoy && !venciday && <span style={{ fontSize: 10, color: "#d4960c", fontFamily: "var(--font-display)", fontWeight: 700 }}>Vence hoy</span>}
                         </div>
-                        {t.contacto && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>👤 {(t.contacto as { nombre: string; apellido: string }).nombre} {(t.contacto as { nombre: string; apellido: string }).apellido}</div>}
-                        {t.descripcion && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>{t.descripcion}</div>}
+                        {t.contacto && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>👤 {(t.contacto as { nombre: string; apellido: string }).nombre} {(t.contacto as { nombre: string; apellido: string }).apellido}</div>}
+                        {t.descripcion && <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>{t.descripcion}</div>}
                       </div>
                     </div>
                   );
@@ -343,10 +343,10 @@ export default function CrmHoyPage() {
               <div className="hoy-card">
                 <div className="hoy-section">
                   <span>🔔 Recordatorios próximos ({recordatorios.length})</span>
-                  <Link href="/crm/recordatorios" style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>Ver todos ↗</Link>
+                  <Link href="/crm/recordatorios" style={{ fontSize: 10, color: "var(--gfi-text-muted)", textDecoration: "none", fontFamily: "var(--font-display)" }}>Ver todos ↗</Link>
                 </div>
                 {recordatorios.length === 0 ? (
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", textAlign: "center", padding: "12px 0" }}>Sin recordatorios pendientes</div>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", textAlign: "center", padding: "12px 0" }}>Sin recordatorios pendientes</div>
                 ) : recordatorios.map(r => {
                   const venc = r.fecha_recordatorio.slice(0, 10);
                   const esHoy = venc === hoy();
@@ -358,8 +358,8 @@ export default function CrmHoyPage() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 13, fontFamily: "Inter,sans-serif", color: "#fff", lineHeight: 1.4 }}>{r.titulo || r.descripcion}</div>
                         <div style={{ fontSize: 11, marginTop: 3, fontFamily: "Inter,sans-serif" }}>
-                          {ctc && <span style={{ color: "rgba(255,255,255,0.35)", marginRight: 8 }}>👤 {ctc.nombre} {ctc.apellido}</span>}
-                          <span style={{ color: pasado ? "#b80000" : esHoy ? "#d4960c" : "rgba(255,255,255,0.35)", fontWeight: pasado || esHoy ? 700 : 400 }}>
+                          {ctc && <span style={{ color: "var(--gfi-text-muted)", marginRight: 8 }}>👤 {ctc.nombre} {ctc.apellido}</span>}
+                          <span style={{ color: pasado ? "#b80000" : esHoy ? "#d4960c" : "var(--gfi-text-muted)", fontWeight: pasado || esHoy ? 700 : 400 }}>
                             {pasado ? "⚠ Vencido" : esHoy ? "🔔 Hoy" : fmtHora(r.fecha_recordatorio)}
                           </span>
                         </div>
@@ -374,7 +374,7 @@ export default function CrmHoyPage() {
                 <div className="hoy-card" style={{ border: "1px solid rgba(6,182,212,0.2)", background: "rgba(6,182,212,0.03)" }}>
                   <div className="hoy-section">
                     <span style={{ color: "#06b6d4" }}>⚖️ Hitos próximos 7 días ({hitos.length})</span>
-                    <Link href="/crm/escrituras" style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>Ver todos ↗</Link>
+                    <Link href="/crm/escrituras" style={{ fontSize: 10, color: "var(--gfi-text-muted)", textDecoration: "none", fontFamily: "var(--font-display)" }}>Ver todos ↗</Link>
                   </div>
                   {hitos.map(h => {
                     const neg = h.negocio as { titulo: string } | null;
@@ -382,13 +382,13 @@ export default function CrmHoyPage() {
                       <div key={h.id} className="hoy-item">
                         <span style={{ fontSize: 20, flexShrink: 0 }}>{TIPO_HITO_ICON[h.tipo] ?? "📌"}</span>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff" }}>{h.tipo.charAt(0).toUpperCase() + h.tipo.slice(1)}</div>
-                          {neg && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>🤝 {neg.titulo}</div>}
+                          <div style={{ fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 700, color: "#fff" }}>{h.tipo.charAt(0).toUpperCase() + h.tipo.slice(1)}</div>
+                          {neg && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>🤝 {neg.titulo}</div>}
                           <div style={{ fontSize: 11, marginTop: 2, fontFamily: "Inter,sans-serif" }}>
                             {h.fecha.slice(0, 10)} · {diasHastaHito(h.fecha + "T12:00:00")}
                           </div>
                         </div>
-                        <Link href={`/crm/negocios/${h.negocio_id}`} style={{ padding: "4px 10px", borderRadius: 4, background: "rgba(6,182,212,0.1)", border: "1px solid rgba(6,182,212,0.25)", color: "#06b6d4", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>↗</Link>
+                        <Link href={`/crm/negocios/${h.negocio_id}`} style={{ padding: "4px 10px", borderRadius: 4, background: "rgba(6,182,212,0.1)", border: "1px solid rgba(6,182,212,0.25)", color: "#06b6d4", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, textDecoration: "none" }}>↗</Link>
                       </div>
                     );
                   })}
@@ -402,32 +402,32 @@ export default function CrmHoyPage() {
               <div className="hoy-card">
                 <div className="hoy-section">
                   <span>🎯 Contactar hoy ({leads.length})</span>
-                  <Link href="/crm/seguimiento" style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>Scoring ↗</Link>
+                  <Link href="/crm/seguimiento" style={{ fontSize: 10, color: "var(--gfi-text-muted)", textDecoration: "none", fontFamily: "var(--font-display)" }}>Scoring ↗</Link>
                 </div>
                 {leads.length === 0 ? (
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", textAlign: "center", padding: "20px 0" }}>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", textAlign: "center", padding: "20px 0" }}>
                     Sin leads prioritarios. Buen trabajo! 🎉
                   </div>
                 ) : leads.map(l => {
                   const dias = diasSinContacto(l.ultima_interaccion);
                   return (
-                    <div key={l.id} style={{ padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <div key={l.id} style={{ padding: "12px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                        <div style={{ width: 34, height: 34, borderRadius: "50%", background: l.etapa_negocio ? `${ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280"}18` : "rgba(255,255,255,0.06)", border: `2px solid ${l.etapa_negocio ? (ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280") + "50" : "rgba(255,255,255,0.1)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: l.etapa_negocio ? (ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280") : "rgba(255,255,255,0.4)", flexShrink: 0 }}>
+                        <div style={{ width: 34, height: 34, borderRadius: "50%", background: l.etapa_negocio ? `${ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280"}18` : "rgba(255,255,255,0.06)", border: `2px solid ${l.etapa_negocio ? (ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280") + "50" : "var(--gfi-border)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 800, color: l.etapa_negocio ? (ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280") : "var(--gfi-text-muted)", flexShrink: 0 }}>
                           {l.nombre[0]}{l.apellido[0]}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <Link href={`/crm/contactos/${l.id}`} style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", textDecoration: "none" }}>
+                          <Link href={`/crm/contactos/${l.id}`} style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff", textDecoration: "none" }}>
                             {l.nombre} {l.apellido}
                           </Link>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 2 }}>
                             {l.etapa_negocio && (
-                              <span style={{ fontSize: 9, padding: "1px 7px", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280"}15`, color: ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280" }}>
+                              <span style={{ fontSize: 9, padding: "1px 7px", borderRadius: 8, fontFamily: "var(--font-display)", fontWeight: 700, background: `${ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280"}15`, color: ETAPA_COLOR[l.etapa_negocio] ?? "#6b7280" }}>
                                 {l.etapa_negocio.replace("_", " ")}
                               </span>
                             )}
                             {dias !== null && (
-                              <span style={{ fontSize: 10, color: dias > 14 ? "#d4960c" : "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
+                              <span style={{ fontSize: 10, color: dias > 14 ? "#d4960c" : "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                                 {dias === 0 ? "Hoy" : dias === 1 ? "Ayer" : `Hace ${dias}d`}
                               </span>
                             )}
@@ -459,7 +459,7 @@ export default function CrmHoyPage() {
                         )}
                         <button
                           onClick={() => registrarInteraccion(l.id, "nota")}
-                          style={{ flex: 1, padding: "6px 0", textAlign: "center", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, fontSize: 13, cursor: "pointer" }}>
+                          style={{ flex: 1, padding: "6px 0", textAlign: "center", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 5, fontSize: 13, cursor: "pointer" }}>
                           ✓
                         </button>
                       </div>
@@ -481,9 +481,9 @@ export default function CrmHoyPage() {
                     { href: "/agenda",              label: "🗓️ Agenda completa" },
                   ].map(l => (
                     <Link key={l.href} href={l.href}
-                      style={{ display: "block", padding: "9px 12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, fontSize: 12, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.55)", textDecoration: "none", transition: "all 0.15s" }}
+                      style={{ display: "block", padding: "9px 12px", background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, fontSize: 12, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.55)", textDecoration: "none", transition: "all 0.15s" }}
                       onMouseEnter={e => { e.currentTarget.style.background = "rgba(153,0,0,0.06)"; e.currentTarget.style.color = "#990000"; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; e.currentTarget.style.color = "rgba(255,255,255,0.55)"; }}>
+                      onMouseLeave={e => { e.currentTarget.style.background = "var(--gfi-bg-secondary)"; e.currentTarget.style.color = "rgba(255,255,255,0.55)"; }}>
                       {l.label}
                     </Link>
                   ))}
@@ -496,7 +496,7 @@ export default function CrmHoyPage() {
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
           {toast}
         </div>
       )}

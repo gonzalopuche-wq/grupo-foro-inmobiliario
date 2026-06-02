@@ -146,10 +146,10 @@ export default function ActividadCRM() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>⚡ Actividad del CRM</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>⚡ Actividad del CRM</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Timeline de todas las interacciones — últimos {filtroDias} días</p>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -165,7 +165,7 @@ export default function ActividadCRM() {
             <button key={v} onClick={() => setVistaMode(v)} style={{
               background: vistaMode === v ? "#990000" : "#1a1a1a", border: "1px solid #333",
               borderRadius: 6, color: "#fff", padding: "6px 12px", fontSize: 12, cursor: "pointer",
-              fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+              fontFamily: "var(--font-display)", fontWeight: 700,
             }}>{v === "timeline" ? "🕐 Timeline" : "📊 Stats"}</button>
           ))}
         </div>
@@ -178,8 +178,8 @@ export default function ActividadCRM() {
         ) : vistaMode === "estadisticas" ? (
           <>
             {/* Actividad por semana */}
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-              <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+              <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                 Actividad semanal ({stats.total} interacciones)
               </h2>
               <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 120 }}>
@@ -202,8 +202,8 @@ export default function ActividadCRM() {
             </div>
 
             {/* Por tipo */}
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
-              <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" }}>
+              <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                 Por tipo de interacción
               </h2>
               {Object.entries(stats.porTipo).sort((a, b) => b[1] - a[1]).map(([tipo, count]) => {
@@ -226,7 +226,7 @@ export default function ActividadCRM() {
         ) : (
           /* Timeline */
           filtradas.length === 0 ? (
-            <div style={{ background: "#111", border: "1px solid #333", borderRadius: 10, padding: 48, textAlign: "center", color: "#666" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 10, padding: 48, textAlign: "center", color: "#666" }}>
               <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
               <p>Sin interacciones para los filtros seleccionados.</p>
             </div>
@@ -241,7 +241,7 @@ export default function ActividadCRM() {
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                   <div style={{ height: 1, flex: 1, background: "#1a1a1a" }} />
                   <span style={{
-                    fontSize: 11, fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase",
+                    fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase",
                     color: esHoy ? "#990000" : "#666", letterSpacing: "0.05em",
                   }}>
                     {esHoy ? "HOY" : diaLabel}
@@ -257,14 +257,14 @@ export default function ActividadCRM() {
                     return (
                       <div key={item.id} style={{
                         display: "flex", gap: 12, padding: "12px 16px",
-                        background: "#111", border: "1px solid #1a1a1a", borderRadius: 8,
+                        background: "var(--gfi-bg-secondary)", border: "1px solid #1a1a1a", borderRadius: 8,
                         borderLeft: `3px solid ${cfg.color}`,
                       }}>
                         <span style={{ fontSize: 18, flexShrink: 0 }}>{cfg.icon}</span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
                             <div>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: cfg.color, fontFamily: "Montserrat, sans-serif" }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: cfg.color, fontFamily: "var(--font-display)" }}>
                                 {cfg.label}
                               </span>
                               {item.crm_contactos && (

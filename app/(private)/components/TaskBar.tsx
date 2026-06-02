@@ -27,7 +27,7 @@ export default function TaskBar() {
           .gfi-taskbar-win-btn {
             display: flex; align-items: center; gap: 6px;
             padding: 4px 10px; border-radius: 6px;
-            font-family: 'Inter',sans-serif; font-size: 11px; font-weight: 500;
+            font-family: var(--font-body); font-size: 11px; font-weight: 500;
             max-width: 155px; overflow: hidden;
             transition: all 0.12s; flex-shrink: 0;
             height: 30px; cursor: pointer; position: relative;
@@ -50,7 +50,7 @@ export default function TaskBar() {
             title={`${win.title}${win.minimized ? " (minimizada)" : ""} — clic der. para cerrar`}
             className="gfi-taskbar-win-btn"
             style={{
-              background: win.minimized ? "rgba(255,255,255,0.04)" : "rgba(153,0,0,0.10)",
+              background: win.minimized ? "var(--gfi-border-subtle)" : "rgba(153,0,0,0.10)",
               border: `1px solid ${win.minimized ? "#252a35" : "rgba(153,0,0,0.28)"}`,
               color: win.minimized ? "#4a5568" : "#f0f4f8",
             }}
@@ -64,7 +64,7 @@ export default function TaskBar() {
         {windows.length === 0 && (
           <span style={{
             fontSize: 10, color: "#2d3748",
-            fontFamily: "'Inter',sans-serif", paddingLeft: 4,
+            fontFamily: "var(--font-body)", paddingLeft: 4,
             userSelect: "none", letterSpacing: "0.03em",
           }}>
             Hover sobre un módulo y hacé clic en ⊞ para abrirlo en ventana flotante
@@ -79,12 +79,12 @@ export default function TaskBar() {
           title="Ver todas las ventanas"
           style={{
             height: 30, padding: "0 12px", borderRadius: 6,
-            background: showGrid ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)",
+            background: showGrid ? "rgba(153,0,0,0.12)" : "var(--gfi-border-subtle)",
             border: `1px solid ${showGrid ? "rgba(153,0,0,0.30)" : "#252a35"}`,
             color: showGrid ? "#990000" : "#8892a4",
             cursor: "pointer", fontSize: 11,
             display: "flex", alignItems: "center", gap: 6,
-            fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+            fontFamily: "var(--font-display)", fontWeight: 700,
             letterSpacing: "0.08em", textTransform: "uppercase",
             flexShrink: 0, transition: "all 0.15s",
           }}

@@ -306,7 +306,7 @@ export default function BaseConocimientoPage() {
       <div
         style={{
           background: "#0a0a0a",
-          color: "rgba(255,255,255,0.4)",
+          color: "var(--gfi-text-muted)",
           height: "calc(100vh - 140px)",
           display: "flex",
           alignItems: "center",
@@ -339,7 +339,7 @@ export default function BaseConocimientoPage() {
       >
         <h1
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: 22,
             color: "#fff",
@@ -353,7 +353,7 @@ export default function BaseConocimientoPage() {
           style={{
             fontFamily: "Inter, sans-serif",
             fontSize: 13,
-            color: "rgba(255,255,255,0.4)",
+            color: "var(--gfi-text-muted)",
             margin: "4px 0 0",
           }}
         >
@@ -391,7 +391,7 @@ export default function BaseConocimientoPage() {
               style={{
                 width: "100%",
                 boxSizing: "border-box",
-                background: "#111",
+                background: "var(--gfi-bg-secondary)",
                 border: "1px solid #2a2a2a",
                 borderRadius: 6,
                 padding: "8px 10px",
@@ -432,7 +432,7 @@ export default function BaseConocimientoPage() {
                     background: activo
                       ? `${color}22`
                       : "transparent",
-                    color: activo ? color : "rgba(255,255,255,0.4)",
+                    color: activo ? color : "var(--gfi-text-muted)",
                     cursor: "pointer",
                     textTransform: "uppercase",
                     letterSpacing: "0.4px",
@@ -451,7 +451,7 @@ export default function BaseConocimientoPage() {
               <div
                 style={{
                   padding: "24px 16px",
-                  color: "rgba(255,255,255,0.3)",
+                  color: "var(--gfi-text-muted)",
                   fontFamily: "Inter, sans-serif",
                   fontSize: 13,
                   textAlign: "center",
@@ -544,7 +544,7 @@ export default function BaseConocimientoPage() {
                           style={{
                             fontFamily: "Inter, sans-serif",
                             fontSize: 10,
-                            color: "rgba(255,255,255,0.35)",
+                            color: "var(--gfi-text-muted)",
                             background: "rgba(255,255,255,0.06)",
                             borderRadius: 3,
                             padding: "1px 5px",
@@ -558,7 +558,7 @@ export default function BaseConocimientoPage() {
                           style={{
                             fontFamily: "Inter, sans-serif",
                             fontSize: 10,
-                            color: "rgba(255,255,255,0.25)",
+                            color: "var(--gfi-text-dim)",
                           }}
                         >
                           +{a.tags.length - 3}
@@ -587,7 +587,7 @@ export default function BaseConocimientoPage() {
                 borderRadius: 6,
                 padding: "9px 0",
                 color: "#fff",
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
@@ -610,7 +610,7 @@ export default function BaseConocimientoPage() {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "rgba(255,255,255,0.2)",
+                color: "var(--gfi-text-dim)",
                 fontFamily: "Inter, sans-serif",
                 gap: 12,
               }}
@@ -628,7 +628,7 @@ export default function BaseConocimientoPage() {
                   borderRadius: 6,
                   padding: "8px 20px",
                   color: "#990000",
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   fontSize: 13,
                   cursor: "pointer",
@@ -644,10 +644,10 @@ export default function BaseConocimientoPage() {
             <div style={{ maxWidth: 760 }}>
               <h2
                 style={{
-                  fontFamily: "Montserrat, sans-serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   fontSize: 16,
-                  color: "rgba(255,255,255,0.6)",
+                  color: "var(--gfi-text-secondary)",
                   margin: "0 0 20px",
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
@@ -668,7 +668,7 @@ export default function BaseConocimientoPage() {
                     ...inputStyle,
                     fontSize: 18,
                     fontWeight: 600,
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                   }}
                 />
               </div>
@@ -695,7 +695,7 @@ export default function BaseConocimientoPage() {
               <div style={{ marginBottom: 16 }}>
                 <label style={labelStyle}>
                   Tags{" "}
-                  <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}>
+                  <span style={{ color: "var(--gfi-text-muted)", fontWeight: 400 }}>
                     (separados por coma)
                   </span>
                 </label>
@@ -718,7 +718,7 @@ export default function BaseConocimientoPage() {
                     cursor: "pointer",
                     fontFamily: "Inter, sans-serif",
                     fontSize: 13,
-                    color: "rgba(255,255,255,0.6)",
+                    color: "var(--gfi-text-secondary)",
                   }}
                 >
                   <input
@@ -745,7 +745,7 @@ export default function BaseConocimientoPage() {
                     fontFamily: "monospace",
                     fontSize: 13,
                     lineHeight: 1.6,
-                    background: "#111",
+                    background: "var(--gfi-bg-secondary)",
                   }}
                 />
               </div>
@@ -760,7 +760,7 @@ export default function BaseConocimientoPage() {
                     borderRadius: 6,
                     padding: "10px 24px",
                     color: "#fff",
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     fontSize: 13,
                     cursor: "pointer",
@@ -775,7 +775,7 @@ export default function BaseConocimientoPage() {
                     border: "1px solid #2a2a2a",
                     borderRadius: 6,
                     padding: "10px 20px",
-                    color: "rgba(255,255,255,0.5)",
+                    color: "var(--gfi-text-secondary)",
                     fontFamily: "Inter, sans-serif",
                     fontSize: 13,
                     cursor: "pointer",
@@ -805,7 +805,7 @@ export default function BaseConocimientoPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                     <h2
                       style={{
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 800,
                         fontSize: 22,
                         color: "#fff",
@@ -866,7 +866,7 @@ export default function BaseConocimientoPage() {
                       ...accionBtnStyle,
                       color: articuloSeleccionado.favorito
                         ? "#d4960c"
-                        : "rgba(255,255,255,0.5)",
+                        : "var(--gfi-text-secondary)",
                     }}
                   >
                     {articuloSeleccionado.favorito ? "★" : "☆"}
@@ -900,9 +900,9 @@ export default function BaseConocimientoPage() {
                       style={{
                         fontFamily: "Inter, sans-serif",
                         fontSize: 11,
-                        color: "rgba(255,255,255,0.5)",
-                        background: "rgba(255,255,255,0.07)",
-                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "var(--gfi-text-secondary)",
+                        background: "var(--gfi-border-subtle)",
+                        border: "1px solid var(--gfi-border)",
                         borderRadius: 4,
                         padding: "3px 8px",
                       }}
@@ -945,7 +945,7 @@ export default function BaseConocimientoPage() {
                   borderTop: "1px solid #1a1a1a",
                   fontFamily: "Inter, sans-serif",
                   fontSize: 11,
-                  color: "rgba(255,255,255,0.25)",
+                  color: "var(--gfi-text-dim)",
                 }}
               >
                 Última actualización: {fmtFecha(articuloSeleccionado.updated_at)}
@@ -970,7 +970,7 @@ const labelStyle: React.CSSProperties = {
   fontFamily: "Inter, sans-serif",
   fontSize: 12,
   fontWeight: 600,
-  color: "rgba(255,255,255,0.4)",
+  color: "var(--gfi-text-muted)",
   textTransform: "uppercase",
   letterSpacing: "0.5px",
   marginBottom: 6,
@@ -979,7 +979,7 @@ const labelStyle: React.CSSProperties = {
 const inputStyle: React.CSSProperties = {
   width: "100%",
   boxSizing: "border-box",
-  background: "#111",
+  background: "var(--gfi-bg-secondary)",
   border: "1px solid #2a2a2a",
   borderRadius: 6,
   padding: "10px 12px",
@@ -995,7 +995,7 @@ const accionBtnStyle: React.CSSProperties = {
   border: "1px solid #2a2a2a",
   borderRadius: 6,
   padding: "7px 14px",
-  color: "rgba(255,255,255,0.6)",
+  color: "var(--gfi-text-secondary)",
   fontFamily: "Inter, sans-serif",
   fontSize: 12,
   cursor: "pointer",

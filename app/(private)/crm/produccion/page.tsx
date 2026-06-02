@@ -220,12 +220,12 @@ export default function ProduccionPage() {
 
         .prod-input {
           padding: 8px 12px;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.1);
+          background: var(--gfi-border-subtle);
+          border: 1px solid var(--gfi-border);
           border-radius: 5px;
           color: #fff;
           font-size: 13px;
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
           outline: none;
         }
         .prod-input:focus { border-color: rgba(153,0,0,0.5); }
@@ -233,11 +233,11 @@ export default function ProduccionPage() {
         .prod-select {
           padding: 8px 12px;
           background: rgba(10,10,10,0.95);
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid var(--gfi-border);
           border-radius: 5px;
           color: #fff;
           font-size: 13px;
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
           outline: none;
           cursor: pointer;
         }
@@ -246,11 +246,11 @@ export default function ProduccionPage() {
         .prod-table-row {
           position: relative;
           overflow: hidden;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--gfi-border-subtle);
           transition: background 0.15s;
           cursor: pointer;
         }
-        .prod-table-row:hover { background: rgba(255,255,255,0.03); }
+        .prod-table-row:hover { background: var(--gfi-bg-card); }
 
         .prod-table-bar {
           position: absolute;
@@ -263,8 +263,8 @@ export default function ProduccionPage() {
         }
 
         .prod-expand {
-          background: rgba(14,14,14,0.95);
-          border-top: 1px solid rgba(255,255,255,0.05);
+          background: var(--gfi-bg-card);
+          border-top: 1px solid var(--gfi-border-subtle);
           padding: 14px 20px;
         }
 
@@ -272,9 +272,9 @@ export default function ProduccionPage() {
           display: flex;
           gap: 16px;
           padding: 7px 0;
-          border-bottom: 1px solid rgba(255,255,255,0.04);
+          border-bottom: 1px solid var(--gfi-border-subtle);
           font-size: 12px;
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
           color: rgba(255,255,255,0.55);
           flex-wrap: wrap;
           align-items: center;
@@ -294,7 +294,7 @@ export default function ProduccionPage() {
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
           <div>
             <h1 style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 22,
               color: "#fff",
@@ -306,7 +306,7 @@ export default function ProduccionPage() {
             <p style={{
               fontFamily: "Inter, sans-serif",
               fontSize: 13,
-              color: "rgba(255,255,255,0.35)",
+              color: "var(--gfi-text-muted)",
               margin: "6px 0 0",
             }}>
               Honorarios netos, operaciones cerradas y pipeline activo por corredor
@@ -320,12 +320,12 @@ export default function ProduccionPage() {
           >
             <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <span style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontSize: 9,
                 fontWeight: 700,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.3)",
+                color: "var(--gfi-text-muted)",
               }}>
                 Año
               </span>
@@ -341,12 +341,12 @@ export default function ProduccionPage() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <span style={{
-                fontFamily: "Montserrat, sans-serif",
+                fontFamily: "var(--font-display)",
                 fontSize: 9,
                 fontWeight: 700,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.3)",
+                color: "var(--gfi-text-muted)",
               }}>
                 USD / ARS
               </span>
@@ -368,7 +368,7 @@ export default function ProduccionPage() {
             textAlign: "center",
             padding: "60px 20px",
             fontFamily: "Inter, sans-serif",
-            color: "rgba(255,255,255,0.3)",
+            color: "var(--gfi-text-muted)",
             fontSize: 14,
           }}>
             Cargando datos de producción...
@@ -380,16 +380,16 @@ export default function ProduccionPage() {
           <div style={{
             textAlign: "center",
             padding: "60px 20px",
-            background: "rgba(14,14,14,0.8)",
-            border: "1px solid rgba(255,255,255,0.07)",
+            background: "var(--gfi-bg-secondary)",
+            border: "1px solid var(--gfi-border-subtle)",
             borderRadius: 10,
           }}>
             <div style={{ fontSize: 44, marginBottom: 14 }}>📊</div>
             <div style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: 16,
-              color: "rgba(255,255,255,0.6)",
+              color: "var(--gfi-text-secondary)",
               marginBottom: 8,
             }}>
               Sin datos de producción para {anio}
@@ -397,7 +397,7 @@ export default function ProduccionPage() {
             <div style={{
               fontFamily: "Inter, sans-serif",
               fontSize: 13,
-              color: "rgba(255,255,255,0.25)",
+              color: "var(--gfi-text-dim)",
             }}>
               No hay operaciones cerradas registradas para este período.<br />
               Verificá que existan negocios con estado &quot;cerrado&quot; y corredor asignado.
@@ -409,12 +409,12 @@ export default function ProduccionPage() {
         {!loading && !sinDatos && top3.length > 0 && (
           <div>
             <div style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.3)",
+              color: "var(--gfi-text-muted)",
               marginBottom: 14,
             }}>
               Top Asesores {anio}
@@ -447,7 +447,7 @@ export default function ProduccionPage() {
                       position: "absolute",
                       right: 12,
                       top: 8,
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 800,
                       fontSize: 64,
                       color: medal.border,
@@ -461,7 +461,7 @@ export default function ProduccionPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 22 }}>{MEDALLAS[idx]}</span>
                       <span style={{
-                        fontFamily: "Montserrat, sans-serif",
+                        fontFamily: "var(--font-display)",
                         fontWeight: 700,
                         fontSize: 13,
                         color: "#fff",
@@ -472,7 +472,7 @@ export default function ProduccionPage() {
                     </div>
 
                     <div style={{
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontWeight: 800,
                       fontSize: 20,
                       color: medal.text,
@@ -483,18 +483,18 @@ export default function ProduccionPage() {
                     <div style={{ display: "flex", gap: 14 }}>
                       <div>
                         <div style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontSize: 9,
                           fontWeight: 700,
                           letterSpacing: "0.1em",
                           textTransform: "uppercase",
-                          color: "rgba(255,255,255,0.3)",
+                          color: "var(--gfi-text-muted)",
                           marginBottom: 2,
                         }}>
                           Operaciones
                         </div>
                         <div style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 16,
                           color: "#fff",
@@ -504,18 +504,18 @@ export default function ProduccionPage() {
                       </div>
                       <div>
                         <div style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontSize: 9,
                           fontWeight: 700,
                           letterSpacing: "0.1em",
                           textTransform: "uppercase",
-                          color: "rgba(255,255,255,0.3)",
+                          color: "var(--gfi-text-muted)",
                           marginBottom: 2,
                         }}>
                           % Total
                         </div>
                         <div style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 16,
                           color: "#fff",
@@ -528,7 +528,7 @@ export default function ProduccionPage() {
                     {/* Barra de progreso */}
                     <div style={{
                       height: 3,
-                      background: "rgba(255,255,255,0.07)",
+                      background: "var(--gfi-border-subtle)",
                       borderRadius: 2,
                       overflow: "hidden",
                     }}>
@@ -551,20 +551,20 @@ export default function ProduccionPage() {
         {!loading && !sinDatos && metricas.length > 0 && (
           <div>
             <div style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.3)",
+              color: "var(--gfi-text-muted)",
               marginBottom: 14,
             }}>
               Ranking completo
             </div>
 
             <div style={{
-              background: "rgba(14,14,14,0.9)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "var(--gfi-bg-card)",
+              border: "1px solid var(--gfi-border-subtle)",
               borderRadius: 10,
               overflow: "hidden",
             }}>
@@ -573,20 +573,20 @@ export default function ProduccionPage() {
                 display: "grid",
                 gridTemplateColumns: "40px 1fr 80px 120px 110px 120px 80px",
                 padding: "10px 16px",
-                background: "rgba(255,255,255,0.03)",
-                borderBottom: "1px solid rgba(255,255,255,0.07)",
+                background: "var(--gfi-bg-card)",
+                borderBottom: "1px solid var(--gfi-border-subtle)",
               }}>
                 {["#", "Asesor", "Ops.", "Hon. Netos USD", "Ticket Prom.", "Pipeline USD", "% Total"].map((h) => (
                   <span
                     key={h}
                     className="prod-table-th"
                     style={{
-                      fontFamily: "Montserrat, sans-serif",
+                      fontFamily: "var(--font-display)",
                       fontSize: 9,
                       fontWeight: 700,
                       letterSpacing: "0.12em",
                       textTransform: "uppercase",
-                      color: "rgba(255,255,255,0.3)",
+                      color: "var(--gfi-text-muted)",
                       padding: "0 4px",
                     }}
                   >
@@ -624,10 +624,10 @@ export default function ProduccionPage() {
                       >
                         {/* Rank */}
                         <span style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 800,
                           fontSize: 12,
-                          color: idx === 0 ? "#ffd700" : idx === 1 ? "#c0c0c0" : idx === 2 ? "#cd7f32" : "rgba(255,255,255,0.3)",
+                          color: idx === 0 ? "#ffd700" : idx === 1 ? "#c0c0c0" : idx === 2 ? "#cd7f32" : "var(--gfi-text-muted)",
                           paddingRight: 4,
                         }}>
                           {idx < 3 ? MEDALLAS[idx] : `#${idx + 1}`}
@@ -636,7 +636,7 @@ export default function ProduccionPage() {
                         {/* Nombre */}
                         <div style={{ minWidth: 0 }}>
                           <div style={{
-                            fontFamily: "Montserrat, sans-serif",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 700,
                             fontSize: 13,
                             color: "#fff",
@@ -650,7 +650,7 @@ export default function ProduccionPage() {
                             <div style={{
                               fontFamily: "Inter, sans-serif",
                               fontSize: 10,
-                              color: "rgba(255,255,255,0.25)",
+                              color: "var(--gfi-text-dim)",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
                               whiteSpace: "nowrap",
@@ -663,7 +663,7 @@ export default function ProduccionPage() {
 
                         {/* Ops */}
                         <span style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 14,
                           color: "#fff",
@@ -674,7 +674,7 @@ export default function ProduccionPage() {
 
                         {/* Hon. Netos */}
                         <span style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: 13,
                           color: "#990000",
@@ -705,10 +705,10 @@ export default function ProduccionPage() {
 
                         {/* % total */}
                         <span style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontWeight: 600,
                           fontSize: 12,
-                          color: "rgba(255,255,255,0.5)",
+                          color: "var(--gfi-text-secondary)",
                           paddingLeft: 4,
                         }}>
                           {porcentajeDelTotal(c.honorariosNetaUSD, totalHonorarios)}
@@ -720,12 +720,12 @@ export default function ProduccionPage() {
                     {isOpen && (
                       <div className="prod-expand">
                         <div style={{
-                          fontFamily: "Montserrat, sans-serif",
+                          fontFamily: "var(--font-display)",
                           fontSize: 10,
                           fontWeight: 700,
                           letterSpacing: "0.12em",
                           textTransform: "uppercase",
-                          color: "rgba(255,255,255,0.3)",
+                          color: "var(--gfi-text-muted)",
                           marginBottom: 10,
                         }}>
                           Últimas 5 operaciones cerradas — {anio}
@@ -734,7 +734,7 @@ export default function ProduccionPage() {
                           <div style={{
                             fontFamily: "Inter, sans-serif",
                             fontSize: 12,
-                            color: "rgba(255,255,255,0.2)",
+                            color: "var(--gfi-text-dim)",
                             fontStyle: "italic",
                           }}>
                             Sin operaciones en este período.
@@ -743,7 +743,7 @@ export default function ProduccionPage() {
                           ops.map((op) => (
                             <div key={op.id} className="prod-op-row">
                               <span style={{
-                                fontFamily: "Montserrat, sans-serif",
+                                fontFamily: "var(--font-display)",
                                 fontWeight: 700,
                                 fontSize: 10,
                                 background: "rgba(153,0,0,0.15)",
@@ -755,7 +755,7 @@ export default function ProduccionPage() {
                               }}>
                                 {op.tipo_operacion ?? "—"}
                               </span>
-                              <span style={{ color: "rgba(255,255,255,0.4)" }}>
+                              <span style={{ color: "var(--gfi-text-muted)" }}>
                                 {fmtFecha(op.fecha_cierre)}
                               </span>
                               <span style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -771,12 +771,12 @@ export default function ProduccionPage() {
                               </span>
                               {op.etapa && (
                                 <span style={{
-                                  fontFamily: "Montserrat, sans-serif",
+                                  fontFamily: "var(--font-display)",
                                   fontSize: 9,
                                   fontWeight: 700,
-                                  background: "rgba(255,255,255,0.05)",
-                                  color: "rgba(255,255,255,0.3)",
-                                  border: "1px solid rgba(255,255,255,0.08)",
+                                  background: "var(--gfi-border-subtle)",
+                                  color: "var(--gfi-text-muted)",
+                                  border: "1px solid var(--gfi-border)",
                                   borderRadius: 4,
                                   padding: "2px 6px",
                                   flexShrink: 0,
@@ -800,20 +800,20 @@ export default function ProduccionPage() {
         {!loading && !sinDatos && chartData.length > 0 && (
           <div>
             <div style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.3)",
+              color: "var(--gfi-text-muted)",
               marginBottom: 14,
             }}>
               Comparativo — Honorarios Netos USD {anio}
             </div>
 
             <div style={{
-              background: "rgba(14,14,14,0.9)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "var(--gfi-bg-card)",
+              border: "1px solid var(--gfi-border-subtle)",
               borderRadius: 10,
               padding: "20px 16px",
               overflowX: "auto",
@@ -855,7 +855,7 @@ export default function ProduccionPage() {
                         y={y}
                         width={700 - LABEL_W - VAL_W - 16}
                         height={BAR_HEIGHT}
-                        fill="rgba(255,255,255,0.04)"
+                        fill="var(--gfi-border-subtle)"
                         rx={4}
                       />
 

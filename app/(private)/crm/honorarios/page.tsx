@@ -191,17 +191,17 @@ export default function HonorariosPage() {
   return (
     <div style={{ maxWidth: 840, margin: "0 auto", padding: "0 0 64px" }}>
       <style>{`
-        .hon-input { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:9px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; box-sizing:border-box; }
+        .hon-input { width:100%; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:9px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; box-sizing:border-box; }
         .hon-input:focus { border-color:rgba(153,0,0,0.4); }
-        .hon-select { width:100%; background:#111; border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:9px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; }
-        .hon-label { font-size:10px; font-family:Montserrat,sans-serif; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:5px; display:block; }
+        .hon-select { width:100%; background:var(--gfi-bg-secondary); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:9px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; }
+        .hon-label { font-size:10px; font-family:Montserrat,sans-serif; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--gfi-text-muted); margin-bottom:5px; display:block; }
         .hon-field { margin-bottom:13px; }
         .hon-row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
         @media(max-width:520px){.hon-row2{grid-template-columns:1fr;}}
       `}</style>
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, padding: "10px 20px", borderRadius: 8, fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700, zIndex: 9999, background: toast.tipo === "err" ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)", border: `1px solid ${toast.tipo === "err" ? "rgba(239,68,68,0.4)" : "rgba(34,197,94,0.4)"}`, color: toast.tipo === "err" ? "#b80000" : "#3abab6" }}>
+        <div style={{ position: "fixed", bottom: 24, right: 24, padding: "10px 20px", borderRadius: 8, fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 700, zIndex: 9999, background: toast.tipo === "err" ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)", border: `1px solid ${toast.tipo === "err" ? "rgba(239,68,68,0.4)" : "rgba(34,197,94,0.4)"}`, color: toast.tipo === "err" ? "#b80000" : "#3abab6" }}>
           {toast.msg}
         </div>
       )}
@@ -209,13 +209,13 @@ export default function HonorariosPage() {
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 6 }}>CRM — Gestión de Honorarios</div>
-          <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", margin: 0 }}>Honorarios y Comisiones</h1>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>
+          <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 6 }}>CRM — Gestión de Honorarios</div>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "#fff", margin: 0 }}>Honorarios y Comisiones</h1>
+          <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4 }}>
             {items.length} operación{items.length !== 1 ? "es" : ""} registrada{items.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <button onClick={abrirNuevo} style={{ padding: "10px 20px", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+        <button onClick={abrirNuevo} style={{ padding: "10px 20px", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
           + Nueva comisión
         </button>
       </div>
@@ -228,20 +228,20 @@ export default function HonorariosPage() {
           { label: "Pendiente de cobro", valor: `$${pendiente.toLocaleString("es-AR")}`, sub: `${items.filter(c => c.estado === "pendiente" || c.estado === "parcial").length} ops`, color: "#d4960c" },
           { label: "Operaciones perdidas", valor: String(items.filter(c => c.estado === "perdida").length), sub: "que no se concretaron", color: "#b80000" },
         ].map(k => (
-          <div key={k.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 18px" }}>
-            <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>{k.label}</div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: k.color, lineHeight: 1 }}>{k.valor}</div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>{k.sub}</div>
+          <div key={k.label} style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 12, padding: "16px 18px" }}>
+            <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 6 }}>{k.label}</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: k.color, lineHeight: 1 }}>{k.valor}</div>
+            <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4 }}>{k.sub}</div>
           </div>
         ))}
       </div>
 
       {/* Barra de cobro */}
       {total > 0 && (
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 18px", marginBottom: 20 }}>
+        <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "12px 18px", marginBottom: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Ratio de cobro</span>
-            <span style={{ fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#3abab6" }}>{pctCobro}%</span>
+            <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>Ratio de cobro</span>
+            <span style={{ fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 800, color: "#3abab6" }}>{pctCobro}%</span>
           </div>
           <div style={{ height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
             <div style={{ height: "100%", width: `${pctCobro}%`, background: "#3abab6", borderRadius: 4, transition: "width 0.5s" }} />
@@ -254,7 +254,7 @@ export default function HonorariosPage() {
         {LABEL_FILT.map(f => {
           const count = f.key === "todos" ? items.length : items.filter(c => c.estado === f.key).length;
           return (
-            <button key={f.key} onClick={() => setFiltro(f.key)} style={{ padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, background: filtro === f.key ? "#990000" : "rgba(255,255,255,0.06)", color: filtro === f.key ? "#fff" : "rgba(255,255,255,0.4)" }}>
+            <button key={f.key} onClick={() => setFiltro(f.key)} style={{ padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, background: filtro === f.key ? "#990000" : "rgba(255,255,255,0.06)", color: filtro === f.key ? "#fff" : "var(--gfi-text-muted)" }}>
               {f.label} <span style={{ opacity: 0.7, fontSize: 10, marginLeft: 4 }}>{count}</span>
             </button>
           );
@@ -263,15 +263,15 @@ export default function HonorariosPage() {
 
       {/* Lista */}
       {loading ? (
-        <div style={{ textAlign: "center", padding: "48px 0", color: "rgba(255,255,255,0.3)" }}>Cargando...</div>
+        <div style={{ textAlign: "center", padding: "48px 0", color: "var(--gfi-text-muted)" }}>Cargando...</div>
       ) : filtrados.length === 0 ? (
         <div style={{ textAlign: "center", padding: "64px 0" }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>💰</div>
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 14, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+          <div style={{ color: "var(--gfi-text-muted)", fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 700 }}>
             {filtro === "todos" ? "Sin comisiones registradas" : `Sin operaciones en estado "${LABEL_FILT.find(f => f.key === filtro)?.label}"`}
           </div>
           {filtro === "todos" && (
-            <button onClick={abrirNuevo} style={{ marginTop: 16, padding: "10px 24px", background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 8, color: "#990000", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+            <button onClick={abrirNuevo} style={{ marginTop: 16, padding: "10px 24px", background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 8, color: "#990000", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
               Registrar primera comisión
             </button>
           )}
@@ -282,7 +282,7 @@ export default function HonorariosPage() {
             const est = ESTADO_META[c.estado];
             const isOpen = expandido === c.id;
             return (
-              <div key={c.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+              <div key={c.id} style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden" }}>
                 {/* Fila principal */}
                 <div
                   onClick={() => setExpandido(isOpen ? null : c.id)}
@@ -297,16 +297,16 @@ export default function HonorariosPage() {
                       {c.descripcion}
                     </div>
                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                      <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
                         {TIPO_LABELS[c.tipo_operacion] ?? c.tipo_operacion}
                       </span>
                       {c.cliente_nombre && (
-                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+                        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
                           · {c.cliente_nombre}
                         </span>
                       )}
                       {c.fecha_operacion && (
-                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+                        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
                           · {fmtFecha(c.fecha_operacion)}
                         </span>
                       )}
@@ -315,15 +315,15 @@ export default function HonorariosPage() {
 
                   {/* Monto */}
                   <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: est.color }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: est.color }}>
                       {fmtNum(c.monto_comision, c.moneda_comision)}
                     </div>
-                    <span style={{ fontSize: 10, color: est.color, background: est.bg, padding: "2px 8px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                    <span style={{ fontSize: 10, color: est.color, background: est.bg, padding: "2px 8px", borderRadius: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       {est.label}
                     </span>
                   </div>
 
-                  <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 14, flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
+                  <span style={{ color: "var(--gfi-text-dim)", fontSize: 14, flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
                 </div>
 
                 {/* Detalle expandido */}
@@ -336,36 +336,36 @@ export default function HonorariosPage() {
                         { label: "Monto cobrado", val: fmtNum(c.monto_cobrado, c.moneda_comision) },
                         { label: "Saldo pendiente", val: fmtNum(Math.max(0, c.monto_comision - c.monto_cobrado), c.moneda_comision) },
                       ].map(d => (
-                        <div key={d.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "10px 12px" }}>
-                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{d.label}</div>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "Montserrat,sans-serif" }}>{d.val}</div>
+                        <div key={d.label} style={{ background: "var(--gfi-bg-card)", borderRadius: 8, padding: "10px 12px" }}>
+                          <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{d.label}</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "var(--font-display)" }}>{d.val}</div>
                         </div>
                       ))}
                     </div>
 
                     {c.notas && (
-                      <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+                      <div style={{ background: "var(--gfi-bg-card)", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 12, color: "var(--gfi-text-secondary)", lineHeight: 1.6 }}>
                         {c.notas}
                       </div>
                     )}
 
                     {/* Acciones */}
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      <button onClick={() => abrirEditar(c)} style={{ padding: "6px 14px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 7, color: "rgba(255,255,255,0.6)", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 600, cursor: "pointer" }}>
+                      <button onClick={() => abrirEditar(c)} style={{ padding: "6px 14px", background: "rgba(255,255,255,0.06)", border: "1px solid var(--gfi-border)", borderRadius: 7, color: "var(--gfi-text-secondary)", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 600, cursor: "pointer" }}>
                         ✏ Editar
                       </button>
                       {c.estado !== "cobrada" && (
-                        <button onClick={() => cambiarEstado(c.id, "cobrada")} style={{ padding: "6px 14px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 7, color: "#3abab6", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}>
+                        <button onClick={() => cambiarEstado(c.id, "cobrada")} style={{ padding: "6px 14px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 7, color: "#3abab6", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
                           ✓ Marcar cobrada
                         </button>
                       )}
                       {c.estado === "pendiente" && (
-                        <button onClick={() => cambiarEstado(c.id, "parcial")} style={{ padding: "6px 14px", background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.3)", borderRadius: 7, color: "#3b82f6", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}>
+                        <button onClick={() => cambiarEstado(c.id, "parcial")} style={{ padding: "6px 14px", background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.3)", borderRadius: 7, color: "#3b82f6", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>
                           Cobro parcial
                         </button>
                       )}
                       {c.estado !== "perdida" && (
-                        <button onClick={() => cambiarEstado(c.id, "perdida")} style={{ padding: "6px 14px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 7, color: "#b80000", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 600, cursor: "pointer" }}>
+                        <button onClick={() => cambiarEstado(c.id, "perdida")} style={{ padding: "6px 14px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 7, color: "#b80000", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 600, cursor: "pointer" }}>
                           Operación perdida
                         </button>
                       )}
@@ -384,8 +384,8 @@ export default function HonorariosPage() {
       {/* Modal nueva / editar comisión */}
       {modal && (
         <div onClick={e => { if (e.target === e.currentTarget) setModal(false); }} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#141414", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: 28, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 17, fontWeight: 800, color: "#fff", marginBottom: 22 }}>
+          <div style={{ background: "#141414", border: "1px solid var(--gfi-border)", borderRadius: 14, padding: 28, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 800, color: "#fff", marginBottom: 22 }}>
               {editId ? "Editar comisión" : "Nueva comisión"}
             </div>
 
@@ -449,10 +449,10 @@ export default function HonorariosPage() {
             </div>
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
-              <button onClick={() => setModal(false)} style={{ padding: "10px 20px", background: "transparent", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+              <button onClick={() => setModal(false)} style={{ padding: "10px 20px", background: "transparent", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 8, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                 Cancelar
               </button>
-              <button onClick={guardar} disabled={guardando} style={{ padding: "10px 24px", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}>
+              <button onClick={guardar} disabled={guardando} style={{ padding: "10px 24px", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}>
                 {guardando ? "Guardando..." : editId ? "Guardar cambios" : "Registrar comisión"}
               </button>
             </div>

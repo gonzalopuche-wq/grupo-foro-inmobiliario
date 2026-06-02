@@ -63,7 +63,7 @@ function BarChart({ data, colorKey }: { data: { label: string; value: number; co
           <div style={{ width: 110, fontSize: 11, color: "rgba(255,255,255,0.55)", textAlign: "right", flexShrink: 0, fontFamily: "Inter,sans-serif" }}>
             {d.label}
           </div>
-          <div style={{ flex: 1, height: 22, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden" }}>
+          <div style={{ flex: 1, height: 22, background: "var(--gfi-border-subtle)", borderRadius: 4, overflow: "hidden" }}>
             <div style={{
               height: "100%", borderRadius: 4,
               width: `${(d.value / max) * 100}%`,
@@ -71,7 +71,7 @@ function BarChart({ data, colorKey }: { data: { label: string; value: number; co
               transition: "width 0.5s ease",
               display: "flex", alignItems: "center", paddingLeft: 8,
             }}>
-              <span style={{ fontSize: 10, color: "#fff", fontWeight: 600, fontFamily: "Montserrat,sans-serif" }}>
+              <span style={{ fontSize: 10, color: "#fff", fontWeight: 600, fontFamily: "var(--font-display)" }}>
                 {d.value > 0 ? formatNum(d.value) : ""}
               </span>
             </div>
@@ -85,12 +85,12 @@ function BarChart({ data, colorKey }: { data: { label: string; value: number; co
 function StatCard({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
+      background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)",
       borderRadius: 12, padding: "18px 20px",
     }}>
-      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 700, color: color ?? "#fff", fontFamily: "Montserrat,sans-serif" }}>{value}</div>
-      {sub && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>{sub}</div>}
+      <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>{label}</div>
+      <div style={{ fontSize: 22, fontWeight: 700, color: color ?? "#fff", fontFamily: "var(--font-display)" }}>{value}</div>
+      {sub && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>{sub}</div>}
     </div>
   );
 }
@@ -241,7 +241,7 @@ export default function EstadisticasMercadoPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
           <span style={{ fontSize: 28 }}>📊</span>
           <div>
-            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, fontFamily: "Montserrat,sans-serif" }}>
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, fontFamily: "var(--font-display)" }}>
               Estadísticas del Mercado
             </h1>
             <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
@@ -255,10 +255,10 @@ export default function EstadisticasMercadoPage() {
             <button key={p} onClick={() => setPeriodo(p)} style={{
               padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600,
               border: "1px solid",
-              borderColor: periodo === p ? "#990000" : "rgba(255,255,255,0.1)",
+              borderColor: periodo === p ? "#990000" : "var(--gfi-border)",
               background: periodo === p ? "rgba(200,0,0,0.15)" : "transparent",
               color: periodo === p ? "#fff" : "rgba(255,255,255,0.45)",
-              cursor: "pointer", fontFamily: "Montserrat,sans-serif",
+              cursor: "pointer", fontFamily: "var(--font-display)",
             }}>
               {p === "todo" ? "Todo" : p === "3m" ? "3 meses" : p === "6m" ? "6 meses" : "12 meses"}
             </button>
@@ -267,7 +267,7 @@ export default function EstadisticasMercadoPage() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>Cargando estadísticas...</div>
+        <div style={{ textAlign: "center", padding: 60, color: "var(--gfi-text-muted)" }}>Cargando estadísticas...</div>
       ) : (
         <>
           {/* KPIs */}
@@ -283,12 +283,12 @@ export default function EstadisticasMercadoPage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
             {/* Negocios por etapa */}
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
-              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20 }}>
+              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                 Negocios por etapa
               </h3>
               {negociosPorEtapa.length === 0 ? (
-                <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Sin datos</p>
+                <p style={{ color: "var(--gfi-text-muted)", fontSize: 13 }}>Sin datos</p>
               ) : (
                 <BarChart data={negociosPorEtapa.map(e => ({
                   label: ETAPA_LABELS[e.etapa] ?? e.etapa,
@@ -299,12 +299,12 @@ export default function EstadisticasMercadoPage() {
             </div>
 
             {/* Propiedades por tipo */}
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
-              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20 }}>
+              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                 Cartera por tipo de operación
               </h3>
               {propiedadesPorTipo.length === 0 ? (
-                <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Sin propiedades cargadas</p>
+                <p style={{ color: "var(--gfi-text-muted)", fontSize: 13 }}>Sin propiedades cargadas</p>
               ) : (
                 <BarChart data={propiedadesPorTipo.map(p => ({
                   label: TIPO_LABELS[p.operacion] ?? p.operacion,
@@ -313,9 +313,9 @@ export default function EstadisticasMercadoPage() {
                 }))} />
               )}
               {propiedadesPorTipo.length > 0 && (
-                <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--gfi-border-subtle)" }}>
                   {propiedadesPorTipo.map(p => p.precio_promedio > 0 && (
-                    <div key={p.operacion} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>
+                    <div key={p.operacion} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--gfi-text-muted)", marginBottom: 3 }}>
                       <span>{TIPO_LABELS[p.operacion] ?? p.operacion} — precio prom.</span>
                       <span>{formatMoneda(p.precio_promedio)}</span>
                     </div>
@@ -327,20 +327,20 @@ export default function EstadisticasMercadoPage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
             {/* Negocios por mes */}
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
-              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20 }}>
+              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                 Negocios cargados por mes
               </h3>
               <BarChart data={negociosMes.map(m => ({ label: m.mes, value: m.cantidad, color: "rgba(200,0,0,0.65)" }))} />
             </div>
 
             {/* Propiedades por zona */}
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
-              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20 }}>
+              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                 Cartera por zona
               </h3>
               {propiedadesPorZona.length === 0 ? (
-                <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Sin zonas registradas</p>
+                <p style={{ color: "var(--gfi-text-muted)", fontSize: 13 }}>Sin zonas registradas</p>
               ) : (
                 <BarChart data={propiedadesPorZona.map(z => ({
                   label: z.zona.length > 14 ? z.zona.slice(0, 12) + "…" : z.zona,
@@ -353,26 +353,26 @@ export default function EstadisticasMercadoPage() {
 
           {/* Tabla honorarios por etapa */}
           {negociosPorEtapa.some(e => e.valor_total > 0) && (
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 20 }}>
-              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20, marginBottom: 20 }}>
+              <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                 Valor y honorarios por etapa (USD)
               </h3>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                 <thead>
-                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                  <tr style={{ borderBottom: "1px solid var(--gfi-border)" }}>
                     {["Etapa","Cant.","Valor total","Hon. estimados"].map(h => (
-                      <th key={h} style={{ padding: "8px 10px", textAlign: "left", color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.05em" }}>{h}</th>
+                      <th key={h} style={{ padding: "8px 10px", textAlign: "left", color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 600, letterSpacing: "0.05em" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {negociosPorEtapa.filter(e => e.valor_total > 0).map(e => (
-                    <tr key={e.etapa} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    <tr key={e.etapa} style={{ borderBottom: "1px solid var(--gfi-border-subtle)" }}>
                       <td style={{ padding: "8px 10px" }}>
                         <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: ETAPA_COLORS[e.etapa] ?? "#888", marginRight: 7 }} />
                         {ETAPA_LABELS[e.etapa] ?? e.etapa}
                       </td>
-                      <td style={{ padding: "8px 10px", color: "rgba(255,255,255,0.6)" }}>{e.cantidad}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--gfi-text-secondary)" }}>{e.cantidad}</td>
                       <td style={{ padding: "8px 10px", color: "#fff" }}>{formatMoneda(e.valor_total)}</td>
                       <td style={{ padding: "8px 10px", color: "#d4960c", fontWeight: 600 }}>
                         {e.honorarios_total > 0 ? formatMoneda(e.honorarios_total) : "—"}
@@ -384,7 +384,7 @@ export default function EstadisticasMercadoPage() {
             </div>
           )}
 
-          <div style={{ textAlign: "center", padding: "12px 0", color: "rgba(255,255,255,0.2)", fontSize: 11 }}>
+          <div style={{ textAlign: "center", padding: "12px 0", color: "var(--gfi-text-dim)", fontSize: 11 }}>
             Estadísticas basadas en tu actividad personal en GFI® CRM · Actualizado en tiempo real
           </div>
         </>

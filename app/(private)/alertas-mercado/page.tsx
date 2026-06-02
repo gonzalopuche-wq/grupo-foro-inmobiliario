@@ -140,15 +140,15 @@ export default function AlertasMercadoPage() {
         .am-body { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
         .am-title { font-family: Montserrat,sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
         .am-title span { color: #990000; }
-        .am-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 22px; }
+        .am-sub { font-size: 13px; color: var(--gfi-text-muted); margin-bottom: 22px; }
         .am-tabs { display: flex; gap: 6px; margin-bottom: 24px; }
-        .am-tab { padding: 8px 18px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .am-tab { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .am-tab.activo { background: #990000; border-color: #990000; color: #fff; }
-        .am-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; }
-        .am-card:hover { border-color: rgba(255,255,255,0.12); }
-        .am-empty { padding: 48px 20px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; }
+        .am-card { background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; }
+        .am-card:hover { border-color: var(--gfi-border); }
+        .am-empty { padding: 48px 20px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; }
         .am-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; text-transform: uppercase; }
-        .am-input { padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #fff; font-size: 13px; font-family: Inter,sans-serif; outline: none; }
+        .am-input { padding: 8px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 5px; color: #fff; font-size: 13px; font-family: Inter,sans-serif; outline: none; }
         .am-input:focus { border-color: rgba(153,0,0,0.5); }
         .am-btn { padding: 8px 16px; background: #990000; border: none; border-radius: 5px; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .am-btn-sm { padding: 5px 12px; background: transparent; border: 1px solid rgba(239,68,68,0.3); border-radius: 5px; color: rgba(239,68,68,0.8); font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; cursor: pointer; }
@@ -159,7 +159,7 @@ export default function AlertasMercadoPage() {
       <div className="am-root">
         <header className="am-header">
           <div className="am-logo">GFI<span>®</span> — Alertas de Mercado</div>
-          <Link href="/dashboard" style={{ padding: "6px 14px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, textTransform: "uppercase", textDecoration: "none" }}>← Dashboard</Link>
+          <Link href="/dashboard" style={{ padding: "6px 14px", background: "transparent", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, textTransform: "uppercase", textDecoration: "none" }}>← Dashboard</Link>
         </header>
 
         <div className="am-body">
@@ -186,7 +186,7 @@ export default function AlertasMercadoPage() {
                 </div>
               ) : (
                 <div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 14, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 14, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                     {matches.length} match{matches.length !== 1 ? "es" : ""} encontrado{matches.length !== 1 ? "s" : ""}
                   </div>
                   {matches.map(m => {
@@ -201,7 +201,7 @@ export default function AlertasMercadoPage() {
                               <span className="am-badge" style={{ background: esOfrecido ? "rgba(59,130,246,0.15)" : "rgba(34,197,94,0.15)", color: esOfrecido ? "#4ab8d8" : "#3abab6" }}>
                                 {esOfrecido ? "Tu oferta" : "Tu búsqueda"}
                               </span>
-                              {prop && <span className="am-badge" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)" }}>{prop.tipo_propiedad}</span>}
+                              {prop && <span className="am-badge" style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-muted)" }}>{prop.tipo_propiedad}</span>}
                             </div>
 
                             {prop && (
@@ -212,7 +212,7 @@ export default function AlertasMercadoPage() {
                                   {prop.sup_cubierta && ` · ${prop.sup_cubierta}m²`}
                                 </div>
                                 {prop.precio && (
-                                  <div style={{ fontSize: 13, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                                  <div style={{ fontSize: 13, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                     {fmtUSD(prop.precio)}
                                   </div>
                                 )}
@@ -220,34 +220,34 @@ export default function AlertasMercadoPage() {
                             )}
 
                             {busq && !esOfrecido && (
-                              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+                              <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>
                                 Búsqueda: {busq.tipo_propiedad} en {busq.zona ?? busq.ciudad}
                                 {busq.presupuesto_max && ` · hasta ${fmtUSD(busq.presupuesto_max)}`}
                               </div>
                             )}
 
                             {!esOfrecido && m.ofrecido?.perfiles && (
-                              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
+                              <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4 }}>
                                 Corredor que oferta: {(m.ofrecido.perfiles as any).nombre} {(m.ofrecido.perfiles as any).apellido}
                               </div>
                             )}
                             {esOfrecido && m.busqueda?.perfiles && (
-                              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
+                              <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4 }}>
                                 Corredor interesado: {(m.busqueda.perfiles as any).nombre} {(m.busqueda.perfiles as any).apellido}
                               </div>
                             )}
                           </div>
                           <div style={{ textAlign: "right", flexShrink: 0 }}>
-                            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginBottom: 8 }}>{fmtFecha(m.created_at)}</div>
+                            <div style={{ fontSize: 10, color: "var(--gfi-text-dim)", marginBottom: 8 }}>{fmtFecha(m.created_at)}</div>
                             {m.costo_desbloqueo && m.costo_desbloqueo > 0 && (
-                              <span style={{ fontSize: 10, padding: "3px 8px", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 10, color: "#d4960c", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              <span style={{ fontSize: 10, padding: "3px 8px", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 10, color: "#d4960c", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                                 Desbloqueo: ${m.costo_desbloqueo}
                               </span>
                             )}
                           </div>
                         </div>
                         <div style={{ marginTop: 10, display: "flex", gap: 8 }}>
-                          <Link href="/mir" style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "6px 14px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 5, color: "#990000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                          <Link href="/mir" style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "6px 14px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 5, color: "#990000", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                             Ver en MIR →
                           </Link>
                         </div>
@@ -259,7 +259,7 @@ export default function AlertasMercadoPage() {
             </>
           ) : vista === "mercado" ? (
             <>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 14, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 14, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 Actividad de comparables por barrio — Rosario
               </div>
               {barrioAlerts.length === 0 ? (
@@ -271,15 +271,15 @@ export default function AlertasMercadoPage() {
                     return (
                       <div key={b.barrio} className="am-card" style={{ borderColor: esAlertado ? "rgba(153,0,0,0.25)" : undefined }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                          <div style={{ width: 28, fontSize: 14, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: i < 3 ? "#d4960c" : "rgba(255,255,255,0.25)" }}>#{i + 1}</div>
+                          <div style={{ width: 28, fontSize: 14, fontWeight: 800, fontFamily: "var(--font-display)", color: i < 3 ? "#d4960c" : "var(--gfi-text-dim)" }}>#{i + 1}</div>
                           <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                               <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{b.barrio}</span>
                               {esAlertado && <span className="am-badge" style={{ background: "rgba(153,0,0,0.15)", color: "#990000" }}>🔔 Seguido</span>}
                             </div>
                             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{b.count} comparables</span>
-                              {b.precio_m2_avg > 0 && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{fmtUSD(b.precio_m2_avg)}/m²</span>}
+                              <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>{b.count} comparables</span>
+                              {b.precio_m2_avg > 0 && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "var(--font-display)", fontWeight: 700 }}>{fmtUSD(b.precio_m2_avg)}/m²</span>}
                             </div>
                           </div>
                           <div style={{ width: 120 }}>
@@ -292,7 +292,7 @@ export default function AlertasMercadoPage() {
                     );
                   })}
                   <div style={{ marginTop: 12, textAlign: "center" }}>
-                    <Link href="/observatorio" style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", textDecoration: "none", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                    <Link href="/observatorio" style={{ fontSize: 12, color: "var(--gfi-text-muted)", textDecoration: "none", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                       Ver datos completos en el Observatorio →
                     </Link>
                   </div>
@@ -303,8 +303,8 @@ export default function AlertasMercadoPage() {
             /* Configuración */
             <div>
               <div className="am-card">
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 14 }}>Zonas que seguís</div>
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 16 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 14 }}>Zonas que seguís</div>
+                <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", marginBottom: 16 }}>
                   Agregá barrios o zonas para que se resalten en la vista de actividad de mercado.
                 </div>
 
@@ -333,20 +333,20 @@ export default function AlertasMercadoPage() {
               </div>
 
               <div className="am-card" style={{ marginTop: 12 }}>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 12 }}>Alertas MIR</div>
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 12 }}>Alertas MIR</div>
+                <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", lineHeight: 1.6 }}>
                   Cuando publiques una oferta o búsqueda en el MIR, el sistema cruza automáticamente con el resto de la comunidad.
                   Los nuevos matches aparecen en la pestaña <strong style={{ color: "#fff" }}>Mis matches MIR</strong>.
                 </div>
                 <div style={{ marginTop: 14 }}>
-                  <Link href="/mir" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 6, color: "#990000", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <Link href="/mir" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 6, color: "#990000", fontSize: 12, fontFamily: "var(--font-display)", fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     Ir al MIR →
                   </Link>
                 </div>
               </div>
 
               <div style={{ marginTop: 20, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12 }}>
-                {confOk && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>✓ Guardado</span>}
+                {confOk && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "var(--font-display)", fontWeight: 700 }}>✓ Guardado</span>}
                 <button className="am-btn" onClick={guardarConfiguracion} disabled={guardandoConf}>
                   {guardandoConf ? "Guardando..." : "Guardar configuración"}
                 </button>

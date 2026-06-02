@@ -246,14 +246,14 @@ const S = {
     background: "#0a0a0a",
     minHeight: "100vh",
     color: "#e0e0e0",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     padding: "24px 16px 80px",
     maxWidth: 1100,
     margin: "0 auto",
   } as React.CSSProperties,
 
   heading: {
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 28,
     color: "#e0e0e0",
@@ -261,7 +261,7 @@ const S = {
   } as React.CSSProperties,
 
   subheading: {
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 18,
     color: "#e0e0e0",
@@ -288,7 +288,7 @@ const S = {
     border: "1px solid #333333",
     borderRadius: 7,
     color: "#e0e0e0",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontSize: 14,
     padding: "9px 12px",
     outline: "none",
@@ -301,7 +301,7 @@ const S = {
     border: "1px solid #333333",
     borderRadius: 7,
     color: "#e0e0e0",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontSize: 14,
     padding: "9px 12px",
     outline: "none",
@@ -315,7 +315,7 @@ const S = {
     border: "1px solid #333333",
     borderRadius: 7,
     color: "#e0e0e0",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontSize: 14,
     padding: "9px 12px",
     outline: "none",
@@ -330,7 +330,7 @@ const S = {
     border: "none",
     borderRadius: 7,
     color: "#fff",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontWeight: 600,
     fontSize: 14,
     padding: "9px 18px",
@@ -343,7 +343,7 @@ const S = {
     border: "1px solid #333333",
     borderRadius: 7,
     color: "#e0e0e0",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontWeight: 500,
     fontSize: 14,
     padding: "9px 16px",
@@ -355,7 +355,7 @@ const S = {
     border: "1px solid #990000",
     borderRadius: 7,
     color: "#990000",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontWeight: 500,
     fontSize: 14,
     padding: "9px 16px",
@@ -364,7 +364,7 @@ const S = {
 
   label: {
     display: "block",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-body)",
     fontWeight: 500,
     fontSize: 13,
     color: "#999",
@@ -459,7 +459,7 @@ function PlantillaCard({ p, onToggleFav, onUsar, onEditar, copiadoId, onCopiar }
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: 8, justifyContent: "space-between" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 5, flex: 1, minWidth: 0 }}>
-          <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: 14, color: "#e0e0e0", lineHeight: 1.3 }}>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#e0e0e0", lineHeight: 1.3 }}>
             {p.nombre}
           </span>
           <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
@@ -1005,14 +1005,14 @@ function Tab3Estadisticas({ plantillas }: Tab3Props) {
         ].map(({ label, value, color }) => (
           <div key={label} style={{ ...S.card, textAlign: "center" }}>
             <p style={{ margin: "0 0 4px", fontSize: 13, color: "#666" }}>{label}</p>
-            <p style={{ margin: 0, fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 32, color }}>{value}</p>
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 32, color }}>{value}</p>
           </div>
         ))}
         <div style={{ ...S.card, textAlign: "center" }}>
           <p style={{ margin: "0 0 4px", fontSize: 13, color: "#666" }}>Más usada</p>
           {masUsada ? (
             <>
-              <p style={{ margin: "0 0 2px", fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: 14, color: "#e0e0e0" }}>
+              <p style={{ margin: "0 0 2px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#e0e0e0" }}>
                 {masUsada.nombre}
               </p>
               <p style={{ margin: 0, fontSize: 12, color: "#555" }}>{masUsada.usos} uso{masUsada.usos !== 1 ? "s" : ""}</p>
@@ -1274,7 +1274,7 @@ export default function PlantillasMensajesPage() {
               border: "none",
               borderBottom: tab === i ? "2px solid #990000" : "2px solid transparent",
               color: tab === i ? "#e0e0e0" : "#555",
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "var(--font-body)",
               fontWeight: tab === i ? 600 : 400,
               fontSize: 14,
               padding: "10px 14px",
@@ -1327,7 +1327,7 @@ export default function PlantillasMensajesPage() {
             bottom: 90,
             left: "50%",
             transform: "translateX(-50%)",
-            background: "#111",
+            background: "var(--gfi-bg-secondary)",
             border: "1px solid #333",
             borderRadius: 8,
             padding: "10px 20px",

@@ -182,7 +182,7 @@ const formatHora = (iso: string) =>
 
 const Toggle = ({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => onChange(!value)}>
-    <div style={{ width: 38, height: 22, borderRadius: 11, background: value ? "#990000" : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
+    <div style={{ width: 38, height: 22, borderRadius: 11, background: value ? "#990000" : "var(--gfi-border)", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
       <div style={{ position: "absolute", top: 3, left: value ? 19 : 3, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
     </div>
     <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)" }}>{label}</span>
@@ -669,21 +669,21 @@ export default function MirPage() {
     return (
       <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
         <button
-          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaInteresa ? "rgba(34,197,94,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaInteresa ? "rgba(34,197,94,0.1)" : "transparent", color: yaInteresa ? "#3abab6" : "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: yaInteresa ? "default" : "pointer", transition: "all 0.15s" }}
+          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaInteresa ? "rgba(34,197,94,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaInteresa ? "rgba(34,197,94,0.1)" : "transparent", color: yaInteresa ? "#3abab6" : "var(--gfi-text-secondary)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: yaInteresa ? "default" : "pointer", transition: "all 0.15s" }}
           onClick={() => !yaInteresa && setModalInteres({ pub, tipo: "me_interesa", pubTipo })}
           disabled={interesando === pub.id}
         >
           {yaInteresa ? "✓ Interesado" : "Me interesa"}
         </button>
         <button
-          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaTengo ? "rgba(74,184,216,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaTengo ? "rgba(74,184,216,0.1)" : "transparent", color: yaTengo ? "#4ab8d8" : "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: yaTengo ? "default" : "pointer", transition: "all 0.15s" }}
+          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaTengo ? "rgba(74,184,216,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaTengo ? "rgba(74,184,216,0.1)" : "transparent", color: yaTengo ? "#4ab8d8" : "var(--gfi-text-secondary)", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: yaTengo ? "default" : "pointer", transition: "all 0.15s" }}
           onClick={() => !yaTengo && setModalInteres({ pub, tipo: "tengo", pubTipo })}
           disabled={interesando === pub.id}
         >
           {yaTengo ? "✓ Enviado" : "Tengo"}
         </button>
         {cantIntereses(pub.id) > 0 && (
-          <span style={{ padding: "5px 10px", borderRadius: 20, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.25)", color: "#990000", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+          <span style={{ padding: "5px 10px", borderRadius: 20, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.25)", color: "#990000", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
             {cantIntereses(pub.id)} nuevo{cantIntereses(pub.id) !== 1 ? "s" : ""}
           </span>
         )}
@@ -721,9 +721,9 @@ export default function MirPage() {
         .mir-precio { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--gfi-green-text); font-variant-numeric: tabular-nums; }
         .mir-zona { font-size: 12px; color: var(--gfi-text-secondary); }
         .mir-detalles { display: flex; gap: 8px; flex-wrap: wrap; }
-        .mir-det { font-size: 11px; color: var(--gfi-text-muted); background: rgba(255,255,255,0.04); padding: 3px 8px; border-radius: var(--gfi-radius-sm); border: 1px solid var(--gfi-border-subtle); }
+        .mir-det { font-size: 11px; color: var(--gfi-text-muted); background: var(--gfi-border-subtle); padding: 3px 8px; border-radius: var(--gfi-radius-sm); border: 1px solid var(--gfi-border-subtle); }
         .mir-extras { display: flex; gap: 6px; flex-wrap: wrap; }
-        .mir-extra { font-size: 9px; color: var(--gfi-text-secondary); background: rgba(255,255,255,0.03); border: 1px solid var(--gfi-border-subtle); padding: 2px 7px; border-radius: 10px; }
+        .mir-extra { font-size: 9px; color: var(--gfi-text-secondary); background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); padding: 2px 7px; border-radius: 10px; }
         .mir-desc { font-size: 12px; color: var(--gfi-text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .mir-card-footer { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 2px; }
         .mir-corredor { font-size: 11px; color: var(--gfi-text-muted); }
@@ -836,7 +836,7 @@ export default function MirPage() {
         .fn-btn-guardar { padding: 10px 24px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-sm); color: #fff; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; box-shadow: var(--gfi-shadow-red); transition: var(--gfi-transition); }
         .fn-btn-guardar:hover { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
         .fn-btn-guardar:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-        .fn-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: gfi-spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
+        .fn-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--gfi-text-muted); border-top-color: #fff; border-radius: 50%; animation: gfi-spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
         .fn-sup-tipos { display: flex; gap: 6px; margin-top: 6px; }
         .fn-sup-tipo { padding: 4px 10px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); font-size: 10px; cursor: pointer; transition: var(--gfi-transition); font-family: var(--font-body); }
         .fn-sup-tipo.activo { border-color: var(--gfi-red-border); background: var(--gfi-red-soft); color: var(--gfi-text-primary); }
@@ -872,7 +872,7 @@ export default function MirPage() {
               Filtrar {cantFiltrosActivos > 0 && <span className="mir-filtro-badge">{cantFiltrosActivos}</span>}
             </button>
             {cantFiltrosActivos > 0 && (
-              <button style={{background:"none",border:"none",color:"rgba(200,0,0,0.7)",fontSize:11,cursor:"pointer",fontFamily:"'Montserrat',sans-serif",fontWeight:700}} onClick={() => setFiltro(FILTRO_VACIO)}>
+              <button style={{background:"none",border:"none",color:"rgba(200,0,0,0.7)",fontSize:11,cursor:"pointer",fontFamily:"var(--font-display)",fontWeight:700}} onClick={() => setFiltro(FILTRO_VACIO)}>
                 Limpiar filtros
               </button>
             )}
@@ -1029,13 +1029,13 @@ export default function MirPage() {
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0}}>
                     <div style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:6,padding:"10px 14px",minWidth:160}}>
-                      <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#3abab6",marginBottom:6}}>CONTACTO</div>
+                      <div style={{fontSize:9,fontFamily:"var(--font-display)",fontWeight:700,letterSpacing:"0.1em",color:"#3abab6",marginBottom:6}}>CONTACTO</div>
                       <div style={{fontSize:12,color:"#fff",fontWeight:600}}>{esDuenioOf ? bu?.perfiles?.nombre : of?.perfiles?.nombre} {esDuenioOf ? bu?.perfiles?.apellido : of?.perfiles?.apellido}</div>
-                      {(esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:3}}>📱 {esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono}</div>}
-                      {(esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>✉️ {esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email}</div>}
+                      {(esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono) && <div style={{fontSize:11,color:"var(--gfi-text-secondary)",marginTop:3}}>📱 {esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono}</div>}
+                      {(esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email) && <div style={{fontSize:11,color:"var(--gfi-text-secondary)"}}>✉️ {esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email}</div>}
                       {otroId && (
                         <button onClick={() => abrirChat(m.ofrecido_id, "ofrecido", otroId)}
-                          style={{marginTop:8,padding:"5px 12px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:4,color:"#3abab6",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer",width:"100%"}}>
+                          style={{marginTop:8,padding:"5px 12px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:4,color:"#3abab6",fontSize:10,fontFamily:"var(--font-display)",fontWeight:700,cursor:"pointer",width:"100%"}}>
                           Abrir chat
                         </button>
                       )}
@@ -1053,7 +1053,7 @@ export default function MirPage() {
         <div className="mir-chats-layout">
           <div className="mir-chats-lista">
             {chats.length === 0 ? (
-              <div style={{padding:32,textAlign:"center",color:"rgba(255,255,255,0.2)",fontSize:13,fontStyle:"italic"}}>
+              <div style={{padding:32,textAlign:"center",color:"var(--gfi-text-dim)",fontSize:13,fontStyle:"italic"}}>
                 No tenes chats todavia.<br/>
                 <span style={{fontSize:11}}>Toca "Me interesa" o "Tengo" en una publicacion para iniciar.</span>
               </div>
@@ -1092,14 +1092,14 @@ export default function MirPage() {
                     <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>
                       {(chatActivo as any).perfil_otro?.apellido}, {(chatActivo as any).perfil_otro?.nombre}
                     </div>
-                    <div style={{fontSize:10,color:"rgba(255,255,255,0.35)"}}>
+                    <div style={{fontSize:10,color:"var(--gfi-text-muted)"}}>
                       {(chatActivo as any).publicacion_titulo}
                     </div>
                   </div>
                 </div>
                 <div className="mir-chat-mensajes">
                   {mensajes.length === 0 && (
-                    <div style={{textAlign:"center",color:"rgba(255,255,255,0.2)",fontSize:12,fontStyle:"italic",padding:"20px 0"}}>
+                    <div style={{textAlign:"center",color:"var(--gfi-text-dim)",fontSize:12,fontStyle:"italic",padding:"20px 0"}}>
                       Empeza la conversacion
                     </div>
                   )}
@@ -1205,25 +1205,25 @@ export default function MirPage() {
       {modalInteres && (
         <div className="mir-interes-bg" onClick={e => { if (e.target === e.currentTarget) setModalInteres(null); }}>
           <div className="mir-interes-modal">
-            <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:15,fontWeight:800,color:"#fff",marginBottom:6}}>
+            <div style={{fontFamily:"var(--font-display)",fontSize:15,fontWeight:800,color:"#fff",marginBottom:6}}>
               {modalInteres.tipo === "me_interesa" ? "Me interesa" : "Tengo"} <span style={{color:"#990000"}}>esta publicacion</span>
             </div>
-            <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:16}}>
+            <div style={{fontSize:12,color:"var(--gfi-text-muted)",marginBottom:16}}>
               {modalInteres.pub.tipo_propiedad} · {modalInteres.pub.ciudad}
               {(modalInteres.pub as Ofrecido).precio ? ` · ${formatPeso((modalInteres.pub as Ofrecido).precio!, modalInteres.pub.moneda)}` : ""}
             </div>
             <div style={{marginBottom:14}}>
-              <label style={{display:"block",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:6}}>
+              <label style={{display:"block",fontSize:10,fontFamily:"var(--font-display)",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:6}}>
                 Mensaje inicial (opcional)
               </label>
               <textarea
-                style={{width:"100%",padding:"10px 13px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"#fff",fontSize:13,outline:"none",fontFamily:"'Inter',sans-serif",resize:"vertical",minHeight:80}}
+                style={{width:"100%",padding:"10px 13px",background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:4,color:"#fff",fontSize:13,outline:"none",fontFamily:"var(--font-body)",resize:"vertical",minHeight:80}}
                 placeholder={modalInteres.tipo === "me_interesa" ? "Hola, me interesa tu ofrecido. Puedo agendar visita..." : "Hola, tengo una propiedad que puede coincidir con tu busqueda..."}
                 value={msgInteres}
                 onChange={e => setMsgInteres(e.target.value)}
               />
             </div>
-            <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginBottom:16,background:"rgba(200,0,0,0.04)",border:"1px solid rgba(200,0,0,0.1)",borderRadius:4,padding:"8px 12px"}}>
+            <div style={{fontSize:11,color:"var(--gfi-text-dim)",marginBottom:16,background:"rgba(200,0,0,0.04)",border:"1px solid rgba(200,0,0,0.1)",borderRadius:4,padding:"8px 12px"}}>
               Se abrira un chat directo con el corredor titular de la publicacion.
             </div>
             <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
@@ -1247,7 +1247,7 @@ export default function MirPage() {
                 <div style={{background:"rgba(200,0,0,0.05)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:"12px 14px",marginBottom:12}}>
                   <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:10}}>⚠️ Publicación como colaborador — datos obligatorios</div>
                   <div style={{marginBottom:10}}>
-                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:5}}>Tu nombre completo *</label>
+                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:5}}>Tu nombre completo *</label>
                     <input
                       style={{width:"100%",padding:"8px 11px",background:"rgba(255,255,255,0.035)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif",boxSizing:"border-box"}}
                       placeholder="Ej: María García"
@@ -1256,7 +1256,7 @@ export default function MirPage() {
                     />
                   </div>
                   <div>
-                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:5}}>C.I. responsable (matriculado) *</label>
+                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:5}}>C.I. responsable (matriculado) *</label>
                     <select
                       style={{width:"100%",padding:"8px 11px",background:"rgba(12,12,12,0.95)",border:`1px solid ${!formO.ci_responsable_id?"rgba(200,0,0,0.3)":"rgba(255,255,255,0.09)"}`,borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif"}}
                       value={formO.ci_responsable_id}
@@ -1267,7 +1267,7 @@ export default function MirPage() {
                         <option key={c.id} value={c.id}>{c.apellido}, {c.nombre} — Mat. {c.matricula}</option>
                       ))}
                     </select>
-                    <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:4,fontFamily:"Inter,sans-serif"}}>El corredor inmobiliario matriculado que avala esta publicación. Obligatorio por normativa COCIR.</div>
+                    <div style={{fontSize:10,color:"var(--gfi-text-dim)",marginTop:4,fontFamily:"Inter,sans-serif"}}>El corredor inmobiliario matriculado que avala esta publicación. Obligatorio por normativa COCIR.</div>
                   </div>
                 </div>
               )}
@@ -1351,7 +1351,7 @@ export default function MirPage() {
                 <div style={{background:"rgba(200,0,0,0.05)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:"12px 14px",marginBottom:12}}>
                   <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:10}}>⚠️ Publicación como colaborador — datos obligatorios</div>
                   <div style={{marginBottom:10}}>
-                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:5}}>Tu nombre completo *</label>
+                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:5}}>Tu nombre completo *</label>
                     <input
                       style={{width:"100%",padding:"8px 11px",background:"rgba(255,255,255,0.035)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif",boxSizing:"border-box"}}
                       placeholder="Ej: María García"
@@ -1360,7 +1360,7 @@ export default function MirPage() {
                     />
                   </div>
                   <div>
-                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:5}}>C.I. responsable (matriculado) *</label>
+                    <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:5}}>C.I. responsable (matriculado) *</label>
                     <select
                       style={{width:"100%",padding:"8px 11px",background:"rgba(12,12,12,0.95)",border:`1px solid ${!formB.ci_responsable_id?"rgba(200,0,0,0.3)":"rgba(255,255,255,0.09)"}`,borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif"}}
                       value={formB.ci_responsable_id}
@@ -1371,7 +1371,7 @@ export default function MirPage() {
                         <option key={c.id} value={c.id}>{c.apellido}, {c.nombre} — Mat. {c.matricula}</option>
                       ))}
                     </select>
-                    <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:4,fontFamily:"Inter,sans-serif"}}>El corredor inmobiliario matriculado que avala esta publicación. Obligatorio por normativa COCIR.</div>
+                    <div style={{fontSize:10,color:"var(--gfi-text-dim)",marginTop:4,fontFamily:"Inter,sans-serif"}}>El corredor inmobiliario matriculado que avala esta publicación. Obligatorio por normativa COCIR.</div>
                   </div>
                 </div>
               )}

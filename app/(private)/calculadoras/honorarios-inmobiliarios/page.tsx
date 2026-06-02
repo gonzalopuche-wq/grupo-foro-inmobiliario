@@ -65,7 +65,7 @@ const cardStyle: React.CSSProperties = {
 };
 
 const sectionTitleStyle: React.CSSProperties = {
-  fontFamily: "Montserrat, sans-serif",
+  fontFamily: "var(--font-display)",
   fontWeight: 700,
   fontSize: 14,
   color: C.red,
@@ -106,7 +106,7 @@ function SummaryCard({ label, usd, ars, accent }: SummaryCardProps) {
     >
       <div style={{ fontSize: 11, color: C.muted, fontFamily: "Inter, sans-serif", marginBottom: 6 }}>{label}</div>
       {usd != null && (
-        <div style={{ fontSize: 18, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: C.text }}>
+        <div style={{ fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, color: C.text }}>
           {fmtUSD(usd)}
         </div>
       )}
@@ -772,7 +772,7 @@ function TabEscenarios() {
           <div style={{ fontSize: 12, color: C.muted, fontFamily: "Inter, sans-serif", marginBottom: 4 }}>
             Para ganar {fmtARS(metaMensualARS)}/mes necesitás
           </div>
-          <div style={{ fontSize: 40, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: C.red }}>
+          <div style={{ fontSize: 40, fontFamily: "var(--font-display)", fontWeight: 800, color: C.red }}>
             {calc.opsMeta.toFixed(1)}
           </div>
           <div style={{ fontSize: 14, color: C.text, fontFamily: "Inter, sans-serif" }}>
@@ -783,7 +783,7 @@ function TabEscenarios() {
           <div style={{ fontSize: 12, color: C.muted, fontFamily: "Inter, sans-serif", marginBottom: 4 }}>
             Monto total a cerrar
           </div>
-          <div style={{ fontSize: 28, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: C.text }}>
+          <div style={{ fontSize: 28, fontFamily: "var(--font-display)", fontWeight: 700, color: C.text }}>
             {fmtUSD(calc.montoTotalUSD)}
           </div>
           <div style={{ fontSize: 12, color: C.muted, fontFamily: "Inter, sans-serif", marginTop: 2 }}>
@@ -794,7 +794,7 @@ function TabEscenarios() {
           <div style={{ fontSize: 12, color: C.muted, fontFamily: "Inter, sans-serif", marginBottom: 4 }}>
             Neto por operación
           </div>
-          <div style={{ fontSize: 22, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: C.text }}>
+          <div style={{ fontSize: 22, fontFamily: "var(--font-display)", fontWeight: 700, color: C.text }}>
             {fmtARS(calc.netoPorOpARS)}
           </div>
           <div style={{ fontSize: 12, color: C.muted, fontFamily: "Inter, sans-serif", marginTop: 2 }}>
@@ -870,7 +870,7 @@ function TabEscenarios() {
               <div style={{ fontSize: 11, color: p.color, fontFamily: "Inter, sans-serif", marginBottom: 4, fontWeight: 600 }}>
                 {p.label}
               </div>
-              <div style={{ fontSize: 22, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: C.text }}>
+              <div style={{ fontSize: 22, fontFamily: "var(--font-display)", fontWeight: 800, color: C.text }}>
                 {p.ventas} ventas/mes
               </div>
               <div style={{ fontSize: 16, color: C.text, fontFamily: "Inter, sans-serif", marginTop: 6 }}>
@@ -915,7 +915,7 @@ export default function HonorariosInmobiliariosPage() {
         <div style={{ marginBottom: 28 }}>
           <h1
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: "clamp(22px, 4vw, 32px)",
               color: C.text,

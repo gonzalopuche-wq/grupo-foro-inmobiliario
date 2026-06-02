@@ -90,7 +90,7 @@ interface DonutProps {
 
 function DonutSVG({ ventas, alquileres }: DonutProps) {
   const total = ventas + alquileres;
-  if (total === 0) return <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>Sin datos</div>;
+  if (total === 0) return <div style={{ color: "var(--gfi-text-dim)", fontSize: 13 }}>Sin datos</div>;
 
   const r = 60;
   const cx = 80;
@@ -119,20 +119,20 @@ function DonutSVG({ ventas, alquileres }: DonutProps) {
           style={{ transition: "stroke-dasharray 0.6s" }}
         />
         <text x={cx} y={cy - 6} textAnchor="middle" fill="#fff" fontSize={18} fontWeight={800} fontFamily="Montserrat,sans-serif">{total}</text>
-        <text x={cx} y={cy + 14} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize={10} fontFamily="Montserrat,sans-serif">TOTAL</text>
+        <text x={cx} y={cy + 14} textAnchor="middle" fill="var(--gfi-text-muted)" fontSize={10} fontFamily="Montserrat,sans-serif">TOTAL</text>
       </svg>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 12, height: 12, borderRadius: 2, background: "#990000", flexShrink: 0 }} />
-          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif" }}>Ventas</span>
+          <span style={{ fontSize: 13, color: "var(--gfi-text-primary)", fontFamily: "Inter,sans-serif" }}>Ventas</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginLeft: "auto", paddingLeft: 16 }}>{ventas}</span>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>({Math.round((ventas / total) * 100)}%)</span>
+          <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>({Math.round((ventas / total) * 100)}%)</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 12, height: 12, borderRadius: 2, background: "#3b82f6", flexShrink: 0 }} />
-          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif" }}>Alquileres</span>
+          <span style={{ fontSize: 13, color: "var(--gfi-text-primary)", fontFamily: "Inter,sans-serif" }}>Alquileres</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginLeft: "auto", paddingLeft: 16 }}>{alquileres}</span>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>({Math.round((alquileres / total) * 100)}%)</span>
+          <span style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>({Math.round((alquileres / total) * 100)}%)</span>
         </div>
       </div>
     </div>
@@ -169,7 +169,7 @@ function BarChart({ data }: BarChartProps) {
           <g key={pct}>
             <line x1={PAD.left} x2={W - PAD.right} y1={y} y2={y} stroke="#1a1a1a" strokeWidth={1} />
             {pct > 0 && (
-              <text x={PAD.left - 4} y={y + 4} textAnchor="end" fill="rgba(255,255,255,0.2)" fontSize={9} fontFamily="Inter,sans-serif">{val}</text>
+              <text x={PAD.left - 4} y={y + 4} textAnchor="end" fill="var(--gfi-text-dim)" fontSize={9} fontFamily="Inter,sans-serif">{val}</text>
             )}
           </g>
         );
@@ -214,7 +214,7 @@ function BarChart({ data }: BarChartProps) {
               <text
                 x={x} y={PAD.top + innerH - totalH - 6}
                 textAnchor="middle"
-                fill="rgba(255,255,255,0.6)"
+                fill="var(--gfi-text-secondary)"
                 fontSize={10}
                 fontFamily="Montserrat,sans-serif"
                 fontWeight={700}
@@ -226,7 +226,7 @@ function BarChart({ data }: BarChartProps) {
             <text
               x={x} y={H - PAD.bottom + 16}
               textAnchor="middle"
-              fill="rgba(255,255,255,0.35)"
+              fill="var(--gfi-text-muted)"
               fontSize={9}
               fontFamily="Inter,sans-serif"
             >
@@ -273,7 +273,7 @@ function LineChart({ data }: LineChartProps) {
         return (
           <g key={pct}>
             <line x1={PAD.left} x2={W - PAD.right} y1={y} y2={y} stroke="#1a1a1a" strokeWidth={1} />
-            <text x={PAD.left - 6} y={y + 4} textAnchor="end" fill="rgba(255,255,255,0.2)" fontSize={9} fontFamily="Inter,sans-serif">
+            <text x={PAD.left - 6} y={y + 4} textAnchor="end" fill="var(--gfi-text-dim)" fontSize={9} fontFamily="Inter,sans-serif">
               {val >= 1000 ? `${(val / 1000).toFixed(0)}K` : val}
             </text>
           </g>
@@ -300,7 +300,7 @@ function LineChart({ data }: LineChartProps) {
           <text x={p.x} y={p.y - 12} textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize={10} fontFamily="Montserrat,sans-serif" fontWeight={700}>
             {p.honorarios >= 1000 ? `${(p.honorarios / 1000).toFixed(1)}K` : p.honorarios}
           </text>
-          <text x={p.x} y={H - PAD.bottom + 16} textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize={10} fontFamily="Inter,sans-serif">
+          <text x={p.x} y={H - PAD.bottom + 16} textAnchor="middle" fill="var(--gfi-text-muted)" fontSize={10} fontFamily="Inter,sans-serif">
             {p.anio}
           </text>
         </g>
@@ -356,9 +356,9 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
 
   if (negocios.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "60px 20px", color: "rgba(255,255,255,0.25)" }}>
+      <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--gfi-text-dim)" }}>
         <div style={{ fontSize: 42, marginBottom: 14 }}>🏁</div>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
           Aún no tenés operaciones cerradas
         </div>
         <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13 }}>
@@ -378,7 +378,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
           placeholder="Buscar por descripción o contacto..."
           style={{
             flex: 1, minWidth: 200, padding: "8px 12px",
-            background: "#111", border: "1px solid #222",
+            background: "var(--gfi-bg-secondary)", border: "1px solid #222",
             borderRadius: 5, color: "#e0e0e0", fontSize: 13,
             fontFamily: "Inter,sans-serif", outline: "none",
             boxSizing: "border-box",
@@ -387,7 +387,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
         <select
           value={filtroTipo}
           onChange={e => setFiltroTipo(e.target.value)}
-          style={{ padding: "8px 10px", background: "#111", border: "1px solid #222", borderRadius: 5, color: "#e0e0e0", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
+          style={{ padding: "8px 10px", background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 5, color: "#e0e0e0", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
         >
           <option value="todos">Todos los tipos</option>
           <option value="venta">Venta</option>
@@ -396,7 +396,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
         <select
           value={filtroAnio}
           onChange={e => setFiltroAnio(e.target.value)}
-          style={{ padding: "8px 10px", background: "#111", border: "1px solid #222", borderRadius: 5, color: "#e0e0e0", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
+          style={{ padding: "8px 10px", background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 5, color: "#e0e0e0", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
         >
           <option value="todos">Todos los años</option>
           {anios.map(a => <option key={a} value={a}>{a}</option>)}
@@ -404,7 +404,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
         <select
           value={filtroMoneda}
           onChange={e => setFiltroMoneda(e.target.value)}
-          style={{ padding: "8px 10px", background: "#111", border: "1px solid #222", borderRadius: 5, color: "#e0e0e0", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
+          style={{ padding: "8px 10px", background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 5, color: "#e0e0e0", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
         >
           <option value="todas">Todas las monedas</option>
           <option value="USD">USD</option>
@@ -413,7 +413,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
       </div>
 
       {filtrados.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "40px 20px", color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 600 }}>
+        <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 600 }}>
           No hay operaciones que coincidan con los filtros.
         </div>
       ) : (
@@ -432,7 +432,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
                 <div key={n.id}>
                   {showAnio && (
                     <div style={{ paddingLeft: 48, paddingTop: idx > 0 ? 20 : 0, paddingBottom: 8 }}>
-                      <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, letterSpacing: "0.14em", color: "rgba(255,255,255,0.25)", textTransform: "uppercase" }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 800, letterSpacing: "0.14em", color: "var(--gfi-text-dim)", textTransform: "uppercase" }}>
                         {anio}
                       </span>
                     </div>
@@ -445,7 +445,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
                       background: "#990000", border: "2px solid #0a0a0a",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       flexShrink: 0, zIndex: 1,
-                      fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 800,
+                      fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 800,
                       color: "#fff", letterSpacing: "0.06em",
                     }}>
                       {anio}
@@ -456,7 +456,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
                         <span style={{
                           display: "inline-block", padding: "2px 8px", borderRadius: 10,
-                          fontSize: 10, fontWeight: 700, fontFamily: "Montserrat,sans-serif",
+                          fontSize: 10, fontWeight: 700, fontFamily: "var(--font-display)",
                           background: esVenta ? "rgba(153,0,0,0.18)" : "rgba(59,130,246,0.18)",
                           color: esVenta ? "#990000" : "#3b82f6",
                           border: `1px solid ${esVenta ? "rgba(153,0,0,0.4)" : "rgba(59,130,246,0.4)"}`,
@@ -485,7 +485,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
                             📊 Hon. {fmtNum(((n.valor_operacion ?? 0) * (n.honorarios_pct ?? 3) / 100), n.moneda)}
                           </span>
                         )}
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginLeft: "auto" }}>
+                        <span style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginLeft: "auto" }}>
                           {fmtFecha(n.created_at)}
                         </span>
                       </div>
@@ -603,9 +603,9 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
 
   if (negocios.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "60px 20px", color: "rgba(255,255,255,0.25)" }}>
+      <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--gfi-text-dim)" }}>
         <div style={{ fontSize: 42, marginBottom: 14 }}>📊</div>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
           No hay operaciones cerradas.
         </div>
         <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13 }}>
@@ -621,13 +621,13 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
       {/* Selector de año */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>
           Año
         </span>
         <select
           value={anioSel}
           onChange={e => setAnioSel(Number(e.target.value))}
-          style={{ padding: "7px 10px", background: "#111", border: "1px solid #222", borderRadius: 5, color: "#e0e0e0", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
+          style={{ padding: "7px 10px", background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 5, color: "#e0e0e0", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none" }}
         >
           {(anios.length > 0 ? anios : [anioActual]).map(a => <option key={a} value={a}>{a}</option>)}
         </select>
@@ -636,36 +636,36 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
         {/* Total operaciones */}
-        <div style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: "16px 18px" }}>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: "16px 18px" }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>
             Operaciones
           </div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 28, fontWeight: 800, color: "#fff" }}>{kpis.totalOps}</div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginTop: 4 }}>cerradas en {anioSel}</div>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, color: "#fff" }}>{kpis.totalOps}</div>
+          <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 4 }}>cerradas en {anioSel}</div>
         </div>
 
         {/* Volumen por moneda */}
         {Object.entries(kpis.porMoneda).map(([mon, data]) => (
-          <div key={`vol-${mon}`} style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: "16px 18px" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
+          <div key={`vol-${mon}`} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: "16px 18px" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>
               Volumen {mon}
             </div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: data.volumen >= 1_000_000 ? 18 : 22, fontWeight: 800, color: "#3abab6" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: data.volumen >= 1_000_000 ? 18 : 22, fontWeight: 800, color: "#3abab6" }}>
               {data.volumen >= 1_000_000
                 ? `${mon} ${(data.volumen / 1_000_000).toFixed(1)}M`
                 : fmtNum(data.volumen, mon)}
             </div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginTop: 4 }}>{data.count} op.</div>
+            <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 4 }}>{data.count} op.</div>
           </div>
         ))}
 
         {/* Honorarios por moneda */}
         {Object.entries(kpis.porMoneda).map(([mon, data]) => (
-          <div key={`hon-${mon}`} style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: "16px 18px" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
+          <div key={`hon-${mon}`} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: "16px 18px" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>
               Honorarios {mon}
             </div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: data.honorarios >= 1_000_000 ? 18 : 22, fontWeight: 800, color: "#990000" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: data.honorarios >= 1_000_000 ? 18 : 22, fontWeight: 800, color: "#990000" }}>
               {data.honorarios >= 1_000_000
                 ? `${mon} ${(data.honorarios / 1_000_000).toFixed(1)}M`
                 : fmtNum(data.honorarios, mon)}
@@ -675,35 +675,35 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
 
         {/* Promedio por operación */}
         {Object.entries(kpis.promedio).map(([mon, prom]) => (
-          <div key={`prom-${mon}`} style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: "16px 18px" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
+          <div key={`prom-${mon}`} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: "16px 18px" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>
               Promedio {mon}
             </div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: prom >= 1_000_000 ? 16 : 20, fontWeight: 800, color: "#d4960c" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: prom >= 1_000_000 ? 16 : 20, fontWeight: 800, color: "#d4960c" }}>
               {prom >= 1_000_000
                 ? `${mon} ${(prom / 1_000_000).toFixed(1)}M`
                 : fmtNum(Math.round(prom), mon)}
             </div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginTop: 4 }}>por operación</div>
+            <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 4 }}>por operación</div>
           </div>
         ))}
 
         {/* Operación más grande */}
         {masGrande && (
-          <div style={{ background: "#111", border: "1px solid #222222", borderRadius: 8, padding: "16px 18px", gridColumn: "span 2" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222222", borderRadius: 8, padding: "16px 18px", gridColumn: "span 2" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>
               Mayor operación del año
             </div>
             <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#e0e0e0" }}>
               {masGrande.descripcion ?? "Sin descripción"}
             </div>
             {masGrande.valor_operacion != null && masGrande.moneda && (
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", marginTop: 6 }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: "#fff", marginTop: 6 }}>
                 {fmtNum(masGrande.valor_operacion, masGrande.moneda)}
               </div>
             )}
             {masGrande.crm_contactos?.[0]?.nombre && (
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>
                 👤 {masGrande.crm_contactos?.[0]?.nombre}
               </div>
             )}
@@ -712,8 +712,8 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
       </div>
 
       {/* Gráfico de barras */}
-      <div style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: "20px" }}>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 16 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: "20px" }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 16 }}>
           Operaciones por mes — {anioSel}
         </div>
         <div style={{ display: "flex", gap: 16, marginBottom: 12 }}>
@@ -730,8 +730,8 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
       </div>
 
       {/* Tabla mensual */}
-      <div style={{ background: "#111", border: "1px solid #222", borderRadius: 8, overflow: "hidden" }}>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: "16px 20px 8px" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, overflow: "hidden" }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", padding: "16px 20px 8px" }}>
           Detalle mensual
         </div>
         <div style={{ overflowX: "auto" }}>
@@ -739,7 +739,7 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
             <thead>
               <tr style={{ borderBottom: "1px solid #222" }}>
                 {["Mes", "Ventas", "Alquileres", "Total", "Honorarios"].map(h => (
-                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>
+                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>
                     {h}
                   </th>
                 ))}
@@ -748,18 +748,18 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
             <tbody>
               {tablaMensual.filter(r => r.total > 0).map(r => (
                 <tr key={r.mes} style={{ borderBottom: "1px solid #1a1a1a" }}>
-                  <td style={{ padding: "10px 16px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 600, color: "#e0e0e0" }}>{MESES_FULL[r.mes]}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.ventas > 0 ? "#990000" : "rgba(255,255,255,0.2)" }}>{r.ventas}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.alquileres > 0 ? "#3b82f6" : "rgba(255,255,255,0.2)" }}>{r.alquileres}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>{r.total}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.honorarios > 0 ? "#3abab6" : "rgba(255,255,255,0.2)" }}>
+                  <td style={{ padding: "10px 16px", fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 600, color: "#e0e0e0" }}>{MESES_FULL[r.mes]}</td>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.ventas > 0 ? "#990000" : "var(--gfi-text-dim)" }}>{r.ventas}</td>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.alquileres > 0 ? "#3b82f6" : "var(--gfi-text-dim)" }}>{r.alquileres}</td>
+                  <td style={{ padding: "10px 16px", fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff" }}>{r.total}</td>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.honorarios > 0 ? "#3abab6" : "var(--gfi-text-dim)" }}>
                     {r.honorarios > 0 ? fmtNum(r.honorarios, r.moneda) : "—"}
                   </td>
                 </tr>
               ))}
               {tablaMensual.every(r => r.total === 0) && (
                 <tr>
-                  <td colSpan={5} style={{ padding: "20px 16px", textAlign: "center", color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
+                  <td colSpan={5} style={{ padding: "20px 16px", textAlign: "center", color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
                     Sin operaciones en {anioSel}
                   </td>
                 </tr>
@@ -844,9 +844,9 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
 
   if (negocios.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "60px 20px", color: "rgba(255,255,255,0.25)" }}>
+      <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--gfi-text-dim)" }}>
         <div style={{ fontSize: 42, marginBottom: 14 }}>📈</div>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
           No hay operaciones cerradas.
         </div>
         <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13 }}>
@@ -859,16 +859,16 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
       {/* Gráfico de líneas */}
-      <div style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: 20 }}>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 16 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: 20 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 16 }}>
           Honorarios por año — últimos 5 años
         </div>
         <LineChart data={lineData} />
       </div>
 
       {/* Tabla resumen por año */}
-      <div style={{ background: "#111", border: "1px solid #222", borderRadius: 8, overflow: "hidden" }}>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: "16px 20px 8px" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, overflow: "hidden" }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", padding: "16px 20px 8px" }}>
           Resumen por año
         </div>
         <div style={{ overflowX: "auto" }}>
@@ -876,7 +876,7 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
             <thead>
               <tr style={{ borderBottom: "1px solid #222" }}>
                 {["Año", "Operaciones", "Volumen", "Honorarios", "Crecimiento"].map(h => (
-                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>
+                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>
                     {h}
                   </th>
                 ))}
@@ -885,19 +885,19 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
             <tbody>
               {porAnio.map(r => (
                 <tr key={r.anio} style={{ borderBottom: "1px solid #1a1a1a" }}>
-                  <td style={{ padding: "10px 16px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>{r.anio}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.ops > 0 ? "#e0e0e0" : "rgba(255,255,255,0.2)" }}>{r.ops}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.volumen > 0 ? "#3abab6" : "rgba(255,255,255,0.2)" }}>
+                  <td style={{ padding: "10px 16px", fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff" }}>{r.anio}</td>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.ops > 0 ? "#e0e0e0" : "var(--gfi-text-dim)" }}>{r.ops}</td>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.volumen > 0 ? "#3abab6" : "var(--gfi-text-dim)" }}>
                     {r.volumen > 0
                       ? (r.volumen >= 1_000_000 ? `${r.moneda} ${(r.volumen / 1_000_000).toFixed(1)}M` : fmtNum(r.volumen, r.moneda))
                       : "—"}
                   </td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.honorarios > 0 ? "#990000" : "rgba(255,255,255,0.2)" }}>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.honorarios > 0 ? "#990000" : "var(--gfi-text-dim)" }}>
                     {r.honorarios > 0 ? fmtNum(r.honorarios, r.moneda) : "—"}
                   </td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700 }}>
+                  <td style={{ padding: "10px 16px", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700 }}>
                     {r.crecimiento === null ? (
-                      <span style={{ color: "rgba(255,255,255,0.2)" }}>—</span>
+                      <span style={{ color: "var(--gfi-text-dim)" }}>—</span>
                     ) : r.crecimiento >= 0 ? (
                       <span style={{ color: "#3abab6" }}>↑ {r.crecimiento.toFixed(1)}%</span>
                     ) : (
@@ -912,8 +912,8 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
       </div>
 
       {/* Distribución donut */}
-      <div style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: 20 }}>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 16 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: 20 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 16 }}>
           Distribución global — ventas vs. alquileres
         </div>
         <DonutSVG ventas={totales.ventas} alquileres={totales.alquileres} />
@@ -921,8 +921,8 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
 
       {/* Top zonas */}
       {topZonas.length > 0 && (
-        <div style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: 20 }}>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 16 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 8, padding: 20 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 16 }}>
             Palabras clave más frecuentes en descripciones
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -935,7 +935,7 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
                     <span style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#e0e0e0" }}>
                       #{i + 1} <span style={{ fontWeight: 600 }}>{kw}</span>
                     </span>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#990000" }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "#990000" }}>
                       {count} {count === 1 ? "vez" : "veces"}
                     </span>
                   </div>
@@ -999,10 +999,10 @@ export default function HistorialOperacionesPage() {
 
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", lineHeight: 1.2 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "#fff", lineHeight: 1.2 }}>
             Historial de <span style={{ color: "#990000" }}>Operaciones</span>
           </div>
-          <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 5 }}>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "var(--gfi-text-muted)", marginTop: 5 }}>
             Registro completo de ventas y alquileres cerrados
           </div>
         </div>
@@ -1016,13 +1016,13 @@ export default function HistorialOperacionesPage() {
               onClick={() => setTab(t.id)}
               style={{
                 padding: "10px 18px",
-                fontFamily: "Montserrat,sans-serif",
+                fontFamily: "var(--font-display)",
                 fontSize: 12,
                 fontWeight: 700,
                 letterSpacing: "0.06em",
                 border: "none",
                 borderBottom: tab === t.id ? "2px solid #990000" : "2px solid transparent",
-                color: tab === t.id ? "#990000" : "rgba(255,255,255,0.4)",
+                color: tab === t.id ? "#990000" : "var(--gfi-text-muted)",
                 marginBottom: -1,
               }}
             >
@@ -1044,7 +1044,7 @@ export default function HistorialOperacionesPage() {
 
         {/* Footer info cuando hay UID pero no hay datos */}
         {!loading && uid === null && (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.25)", padding: 40, fontFamily: "Inter,sans-serif" }}>
+          <div style={{ textAlign: "center", color: "var(--gfi-text-dim)", padding: 40, fontFamily: "Inter,sans-serif" }}>
             Iniciá sesión para ver tu historial.
           </div>
         )}

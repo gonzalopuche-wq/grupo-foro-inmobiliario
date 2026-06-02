@@ -360,25 +360,25 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080a0c", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
       <div style={{ width: 36, height: 36, border: "2px solid rgba(153,0,0,0.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite", boxShadow: "0 0 20px rgba(153,0,0,0.15)" }} />
-      <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "#4a5568" }}>GFI® Cargando</div>
+      <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "#4a5568" }}>GFI® Cargando</div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 
   if (suscripcionBlocked) {
     const montoArs = dolarBlue ? Math.round(precioUsd * dolarBlue) : null;
-    const inp: React.CSSProperties = { width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "10px 12px", color: "#fff", fontSize: 14, fontFamily: "'Inter',sans-serif", outline: "none", boxSizing: "border-box" };
+    const inp: React.CSSProperties = { width: "100%", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, padding: "10px 12px", color: "#fff", fontSize: 14, fontFamily: "var(--font-body)", outline: "none", boxSizing: "border-box" };
     const row = (label: string, valor: string, key: string): React.ReactNode => (
-      <div key={key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", minWidth: 80 }}>{label}</span>
-        <span style={{ fontSize: 13, color: "#fff", fontFamily: "'Inter',sans-serif", fontWeight: 500 }}>{valor}</span>
-        <button onClick={() => copiarBloq(valor, key)} style={{ background: copiadoBloq === key ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, color: copiadoBloq === key ? "#3abab6" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "3px 10px", cursor: "pointer", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>
+      <div key={key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+        <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", minWidth: 80 }}>{label}</span>
+        <span style={{ fontSize: 13, color: "#fff", fontFamily: "var(--font-body)", fontWeight: 500 }}>{valor}</span>
+        <button onClick={() => copiarBloq(valor, key)} style={{ background: copiadoBloq === key ? "rgba(34,197,94,0.15)" : "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: copiadoBloq === key ? "#3abab6" : "var(--gfi-text-muted)", fontSize: 11, padding: "3px 10px", cursor: "pointer", fontFamily: "var(--font-body)", flexShrink: 0 }}>
           {copiadoBloq === key ? "✓" : "Copiar"}
         </button>
       </div>
     );
     return (
-      <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px 16px", fontFamily: "'Inter',sans-serif" }}>
+      <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px 16px", fontFamily: "var(--font-body)" }}>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');`}</style>
         <div style={{ width: "100%", maxWidth: 480 }}>
           {/* Logo */}
@@ -389,7 +389,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           {/* Alert */}
           <div style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.25)", borderRadius: 8, padding: "16px 20px", marginBottom: 20, textAlign: "center" }}>
             <div style={{ fontSize: 22, marginBottom: 8 }}>🔒</div>
-            <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 14, color: "#fff", letterSpacing: "0.04em", marginBottom: 6 }}>Acceso pausado por falta de pago</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, color: "#fff", letterSpacing: "0.04em", marginBottom: 6 }}>Acceso pausado por falta de pago</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.5 }}>
               Tu suscripción está vencida. Realizá la transferencia y registrala abajo — el equipo GFI confirmará el acceso.
             </div>
@@ -398,20 +398,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           {/* Monto — solo CI paga */}
           {tipoUsuario === "colaborador" ? (
             <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 8, padding: "16px 18px", marginBottom: 16, textAlign: "center" }}>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, color: "#d4960c", marginBottom: 6 }}>Tu acceso es gestionado por tu corredor</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>El pago de tu suscripción lo realiza el corredor al que estás vinculado. Contactalo para regularizar el acceso.</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#d4960c", marginBottom: 6 }}>Tu acceso es gestionado por tu corredor</div>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", lineHeight: 1.5 }}>El pago de tu suscripción lo realiza el corredor al que estás vinculado. Contactalo para regularizar el acceso.</div>
             </div>
           ) : (
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px", marginBottom: 16 }}>
+            <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "14px 18px", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: cantColabs > 0 ? 10 : 0 }}>
-                <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Cuota mensual</span>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, color: "var(--gfi-text-muted)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Cuota mensual</span>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", fontFamily: "'Montserrat',sans-serif" }}>USD {precioUsd}</div>
-                  {montoArs && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>≈ $ {montoArs.toLocaleString("es-AR")} ARS</div>}
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", fontFamily: "var(--font-display)" }}>USD {precioUsd}</div>
+                  {montoArs && <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>≈ $ {montoArs.toLocaleString("es-AR")} ARS</div>}
                 </div>
               </div>
               {cantColabs > 0 && (
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 8 }}>
+                <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 8 }}>
                   USD 15 (CI) + USD {cantColabs * 5} ({cantColabs} colaborador{cantColabs > 1 ? "es" : ""} × USD 5)
                 </div>
               )}
@@ -419,8 +419,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           )}
 
           {/* CBU */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
-            <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>Datos de transferencia</div>
+          <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, color: "var(--gfi-text-muted)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>Datos de transferencia</div>
             {row("Titular", cbuDatos.titular, "titular")}
             {row("CVU / CBU", cbuDatos.cvu, "cvu")}
             {row("Alias", cbuDatos.alias, "alias")}
@@ -430,31 +430,31 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
           {/* Formulario */}
           {!pagoEnviado ? (
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "18px 18px" }}>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 14 }}>Registrar transferencia</div>
+            <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "18px 18px" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, color: "var(--gfi-text-muted)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 14 }}>Registrar transferencia</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
-                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 4 }}>Fecha de transferencia *</label>
+                  <label style={{ fontSize: 11, color: "var(--gfi-text-muted)", display: "block", marginBottom: 4 }}>Fecha de transferencia *</label>
                   <input type="date" value={pagoFecha} onChange={e => setPagoFecha(e.target.value)} style={inp} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 4 }}>Monto transferido (ARS) *</label>
+                  <label style={{ fontSize: 11, color: "var(--gfi-text-muted)", display: "block", marginBottom: 4 }}>Monto transferido (ARS) *</label>
                   <input type="text" inputMode="numeric" placeholder="Ej: 150000" value={pagoMonto} onChange={e => setPagoMonto(e.target.value)} style={inp} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 4 }}>Número de comprobante *</label>
+                  <label style={{ fontSize: 11, color: "var(--gfi-text-muted)", display: "block", marginBottom: 4 }}>Número de comprobante *</label>
                   <input type="text" placeholder="Ej: 20240516001234" value={pagoComprobante} onChange={e => setPagoComprobante(e.target.value)} style={inp} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 4 }}>CBU / alias de origen (opcional)</label>
+                  <label style={{ fontSize: 11, color: "var(--gfi-text-muted)", display: "block", marginBottom: 4 }}>CBU / alias de origen (opcional)</label>
                   <input type="text" placeholder="Tu CBU o alias de homebanking" value={pagoCbu} onChange={e => setPagoCbu(e.target.value)} style={inp} />
                 </div>
               </div>
-              {pagoError && <div style={{ marginTop: 10, fontSize: 12, color: "#ff6666", fontFamily: "'Inter',sans-serif" }}>{pagoError}</div>}
+              {pagoError && <div style={{ marginTop: 10, fontSize: 12, color: "#ff6666", fontFamily: "var(--font-body)" }}>{pagoError}</div>}
               <button
                 onClick={declararPago}
                 disabled={pagoEnviando}
-                style={{ marginTop: 16, width: "100%", padding: "12px", background: pagoEnviando ? "rgba(200,0,0,0.4)" : "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", cursor: pagoEnviando ? "not-allowed" : "pointer" }}
+                style={{ marginTop: 16, width: "100%", padding: "12px", background: pagoEnviando ? "rgba(200,0,0,0.4)" : "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", cursor: pagoEnviando ? "not-allowed" : "pointer" }}
               >
                 {pagoEnviando ? "Enviando..." : "Registrar pago"}
               </button>
@@ -462,13 +462,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           ) : (
             <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "24px 20px", textAlign: "center" }}>
               <div style={{ fontSize: 28, marginBottom: 10 }}>✅</div>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 14, color: "#3abab6", marginBottom: 8 }}>Pago registrado</div>
-              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>El equipo GFI confirmará dentro de las 24hs hábiles. Recibirás acceso completo una vez aprobado.</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, color: "#3abab6", marginBottom: 8 }}>Pago registrado</div>
+              <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", lineHeight: 1.6 }}>El equipo GFI confirmará dentro de las 24hs hábiles. Recibirás acceso completo una vez aprobado.</div>
             </div>
           )}
 
           <div style={{ textAlign: "center", marginTop: 20 }}>
-            <button onClick={handleLogout} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", fontSize: 12, cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>Cerrar sesión</button>
+            <button onClick={handleLogout} style={{ background: "none", border: "none", color: "var(--gfi-text-dim)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-body)" }}>Cerrar sesión</button>
           </div>
         </div>
       </div>
@@ -505,9 +505,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           width: calc(100% - 36px); height: 1px; margin: 12px 18px 0;
           background: linear-gradient(90deg, #990000 0%, rgba(153,0,0,0.2) 50%, transparent 100%);
         }
-        .sidebar-logo-txt { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 900; color: #f0f4f8; letter-spacing: 0.06em; }
+        .sidebar-logo-txt { font-family: var(--font-display); font-size: 14px; font-weight: 900; color: #f0f4f8; letter-spacing: 0.06em; }
         .sidebar-logo-txt span { color: #990000; }
-        .sidebar-logo-sub { font-size: 8px; color: #4a5568; margin-top: 1px; font-family: 'Montserrat',sans-serif; letter-spacing: 0.18em; text-transform: uppercase; }
+        .sidebar-logo-sub { font-size: 8px; color: #4a5568; margin-top: 1px; font-family: var(--font-display); letter-spacing: 0.18em; text-transform: uppercase; }
 
         /* Nav */
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0 4px; }
@@ -519,7 +519,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           padding: 12px 18px 4px;
           font-size: 8px; font-weight: 700; letter-spacing: 0.20em;
           text-transform: uppercase; color: #4a5568;
-          font-family: 'Montserrat',sans-serif;
+          font-family: var(--font-display);
         }
 
         /* Nav item */
@@ -527,7 +527,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           display: flex; align-items: center; gap: 10px;
           padding: 8px 18px 8px 15px;
           color: #8892a4;
-          font-size: 12.5px; font-family: 'Inter',sans-serif; font-weight: 500;
+          font-size: 12.5px; font-family: var(--font-body); font-weight: 500;
           text-decoration: none;
           transition: all 0.15s;
           border-left: 3px solid transparent;
@@ -535,7 +535,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         }
         .nav-item:hover {
           color: #f0f4f8;
-          background: rgba(255,255,255,0.04);
+          background: var(--gfi-border-subtle);
           border-left-color: #252a35;
         }
         .nav-item:hover .nav-item-text { transform: translateX(2px); }
@@ -550,7 +550,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           display: flex; align-items: center; justify-content: center;
           width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0;
           font-size: 14px;
-          background: rgba(255,255,255,0.04);
+          background: var(--gfi-border-subtle);
           border: 1px solid #252a35;
           transition: all 0.15s;
         }
@@ -558,14 +558,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           background: rgba(153,0,0,0.15);
           border-color: rgba(153,0,0,0.30);
         }
-        .nav-item:hover .nav-item-icon { background: rgba(255,255,255,0.07); }
+        .nav-item:hover .nav-item-icon { background: var(--gfi-border-subtle); }
         .nav-item-text { transition: transform 0.15s; }
 
         /* Role badge */
         .sidebar-rol-badge {
           margin: 4px 14px 8px;
           padding: 4px 12px; border-radius: 20px;
-          font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700;
+          font-size: 8px; font-family: var(--font-display); font-weight: 700;
           letter-spacing: 0.14em; text-transform: uppercase; text-align: center;
           background: rgba(196,74,0,0.10); border: 1px solid rgba(196,74,0,0.25);
           color: #c44a00;
@@ -576,19 +576,19 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           padding: 12px 14px;
           border-top: 1px solid #252a35;
           display: flex; align-items: center; gap: 10px;
-          background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+          background: linear-gradient(135deg, var(--gfi-bg-secondary) 0%, transparent 100%);
         }
         .sidebar-avatar {
           width: 34px; height: 34px; border-radius: 8px;
           background: rgba(153,0,0,0.12); border: 2px solid rgba(153,0,0,0.30);
           display: flex; align-items: center; justify-content: center;
-          font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800;
+          font-family: var(--font-display); font-size: 11px; font-weight: 800;
           color: #990000; flex-shrink: 0; overflow: hidden;
           box-shadow: 0 0 12px rgba(153,0,0,0.15);
         }
         .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .sidebar-perfil-info { flex: 1; min-width: 0; }
-        .sidebar-perfil-nombre { font-size: 12px; font-weight: 600; color: #f0f4f8; font-family: 'Inter',sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-perfil-nombre { font-size: 12px; font-weight: 600; color: #f0f4f8; font-family: var(--font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .sidebar-perfil-mat { font-size: 9px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; letter-spacing: 0.05em; }
         .sidebar-logout {
           padding: 6px 7px; background: none; border: 1px solid #252a35;
@@ -616,7 +616,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           background: linear-gradient(90deg, #990000 0%, transparent 40%);
         }
         .topbar-logo {
-          font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 900;
+          font-family: var(--font-display); font-size: 15px; font-weight: 900;
           color: #f0f4f8; flex: 1; text-align: center; letter-spacing: 0.05em;
           text-shadow: 0 0 20px rgba(153,0,0,0.3);
         }
@@ -660,7 +660,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           flex: 1; display: flex; flex-direction: column; align-items: center;
           justify-content: center; gap: 3px;
           background: none; border: none; color: #4a5568;
-          font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700;
+          font-family: var(--font-display); font-size: 8px; font-weight: 700;
           letter-spacing: 0.05em; cursor: pointer; text-decoration: none;
           transition: all 0.15s; position: relative;
           -webkit-tap-highlight-color: transparent; padding: 0; min-height: 44px;
@@ -678,7 +678,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           background: #990000; color: #fff; font-size: 7px; font-weight: 800;
           min-width: 14px; height: 14px; border-radius: 7px;
           display: flex; align-items: center; justify-content: center;
-          padding: 0 3px; font-family: 'Inter',sans-serif;
+          padding: 0 3px; font-family: var(--font-body);
           box-shadow: 0 2px 6px rgba(153,0,0,0.4);
         }
 
@@ -697,13 +697,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           background: #990000; color: #fff; font-size: 7px; font-weight: 800;
           min-width: 13px; height: 13px; border-radius: 7px;
           display: flex; align-items: center; justify-content: center;
-          padding: 0 2px; font-family: 'Inter',sans-serif;
+          padding: 0 2px; font-family: var(--font-body);
         }
 
         /* Badge pills in nav */
         .nav-badge {
           margin-left: auto; padding: 1px 6px; border-radius: 10px;
-          font-size: 8px; font-weight: 800; font-family: 'Inter',sans-serif;
+          font-size: 8px; font-weight: 800; font-family: var(--font-body);
           line-height: 16px; min-width: 16px; text-align: center; flex-shrink: 0;
         }
         .nav-badge--red { background: #990000; color: #fff; box-shadow: 0 1px 4px rgba(153,0,0,0.4); }
@@ -780,7 +780,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   style={{
                     position: "absolute", right: 6,
                     width: 20, height: 20, borderRadius: 4,
-                    background: "rgba(255,255,255,0.05)",
+                    background: "var(--gfi-border-subtle)",
                     border: "1px solid #252a35",
                     color: "#8892a4", cursor: "pointer",
                     fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center",
@@ -843,15 +843,15 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           </div>
           {suscripcionWarning === "gracia" && (
             <div style={{ background: "rgba(196,74,0,0.08)", borderBottom: "1px solid rgba(196,74,0,0.20)", padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <span style={{ fontSize: 12, color: "#d4960c", fontFamily: "'Inter',sans-serif" }}>
+              <span style={{ fontSize: 12, color: "#d4960c", fontFamily: "var(--font-body)" }}>
                 Tu suscripción venció. Período de gracia activo — realizá el pago para mantener el acceso.
               </span>
-              <a href="/suscripcion" style={{ flexShrink: 0, background: "rgba(196,74,0,0.85)", color: "#fff", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, letterSpacing: "0.10em", textTransform: "uppercase", padding: "5px 14px", borderRadius: 5, textDecoration: "none" }}>Pagar ahora</a>
+              <a href="/suscripcion" style={{ flexShrink: 0, background: "rgba(196,74,0,0.85)", color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, letterSpacing: "0.10em", textTransform: "uppercase", padding: "5px 14px", borderRadius: 5, textDecoration: "none" }}>Pagar ahora</a>
             </div>
           )}
           {suscripcionWarning === "pendiente" && (
             <div style={{ background: "rgba(10,37,64,0.60)", borderBottom: "1px solid rgba(30,74,122,0.30)", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 12, color: "#4ab8d8", fontFamily: "'Inter',sans-serif" }}>
+              <span style={{ fontSize: 12, color: "#4ab8d8", fontFamily: "var(--font-body)" }}>
                 Tu pago está siendo verificado. El acceso se mantiene mientras el equipo GFI confirma la transferencia.
               </span>
             </div>

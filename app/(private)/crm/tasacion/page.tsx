@@ -147,10 +147,10 @@ export default function TasacionRapida() {
     fontFamily: "Inter, sans-serif", boxSizing: "border-box" as const,
   };
   const labelStyle: React.CSSProperties = {
-    fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+    fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700,
     textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 4, display: "block",
   };
-  const sectionStyle: React.CSSProperties = { background: "#111", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" };
+  const sectionStyle: React.CSSProperties = { background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, padding: "20px 24px" };
 
   const exportPDF = () => {
     if (!tasacion) return;
@@ -184,16 +184,16 @@ export default function TasacionRapida() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
-      <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid #222", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
         <Link href="/crm" style={{ color: "#888", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>🏠 Tasación Rápida</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontFamily: "var(--font-display)", fontWeight: 800 }}>🏠 Tasación Rápida</h1>
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Estimación de valor basada en comparables de la cartera activa</p>
         </div>
         <button onClick={exportPDF} disabled={!tasacion} style={{
           background: tasacion ? "#990000" : "#333", color: "#fff", border: "none", borderRadius: 8,
           padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: tasacion ? "pointer" : "not-allowed",
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
         }}>📄 Informe PDF</button>
       </div>
 
@@ -202,7 +202,7 @@ export default function TasacionRapida() {
         {/* Inputs propiedad */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <div style={sectionStyle}>
-            <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000", textTransform: "uppercase" }}>Propiedad a tasar</h2>
+            <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", textTransform: "uppercase" }}>Propiedad a tasar</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div>
                 <label style={labelStyle}>Tipo</label>
@@ -240,7 +240,7 @@ export default function TasacionRapida() {
           </div>
 
           <div style={sectionStyle}>
-            <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#3b82f6", textTransform: "uppercase" }}>Atributos de ajuste</h2>
+            <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#3b82f6", textTransform: "uppercase" }}>Atributos de ajuste</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 <div>
@@ -290,13 +290,13 @@ export default function TasacionRapida() {
           <>
             {/* KPIs principales */}
             <div style={{
-              background: "#111", border: "2px solid #990000", borderRadius: 12, padding: "24px",
+              background: "var(--gfi-bg-secondary)", border: "2px solid #990000", borderRadius: 12, padding: "24px",
               display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
             }}>
-              <div style={{ fontSize: 12, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
+              <div style={{ fontSize: 12, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>
                 Valor estimado (basado en {comparables.length} comparable{comparables.length !== 1 ? "s" : ""})
               </div>
-              <div style={{ fontSize: 42, fontWeight: 800, color: "#fff", fontFamily: "Montserrat, sans-serif" }}>
+              <div style={{ fontSize: 42, fontWeight: 800, color: "#fff", fontFamily: "var(--font-display)" }}>
                 {fmtUSD(tasacion.valorEstimado)}
               </div>
               <div style={{ fontSize: 16, color: "#888" }}>
@@ -315,17 +315,17 @@ export default function TasacionRapida() {
                 { label: "Rango comps (mín)", val: fmtUSD(tasacion.pm2Min) + "/m²", color: "#3abab6" },
                 { label: "Rango comps (máx)", val: fmtUSD(tasacion.pm2Max) + "/m²", color: "#d4960c" },
               ].map((kpi, i) => (
-                <div key={i} style={{ background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "12px 14px" }}>
-                  <div style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
+                <div key={i} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "12px 14px" }}>
+                  <div style={{ fontSize: 11, color: "#888", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
                   <div style={{ fontSize: 16, fontWeight: 700, color: kpi.color, marginTop: 4 }}>{kpi.val}</div>
                 </div>
               ))}
             </div>
 
             {/* Comparables */}
-            <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, overflow: "hidden" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #222", borderRadius: 10, overflow: "hidden" }}>
               <div style={{ padding: "16px 20px", borderBottom: "1px solid #222" }}>
-                <h2 style={{ margin: 0, fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
+                <h2 style={{ margin: 0, fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>
                   Comparables ({comparables.length})
                 </h2>
               </div>
@@ -333,13 +333,13 @@ export default function TasacionRapida() {
                 <thead>
                   <tr style={{ borderBottom: "1px solid #1a1a1a" }}>
                     {["Dirección / Barrio","Tipo","Sup.","Precio/m²","Score similitud"].map(h => (
-                      <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>{h}</th>
+                      <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700 }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {comparables.map((c, i) => (
-                    <tr key={c.id} style={{ borderBottom: "1px solid #111", background: i % 2 === 0 ? "#0d0d0d" : "transparent" }}>
+                    <tr key={c.id} style={{ borderBottom: "1px solid #111", background: i % 2 === 0 ? "var(--gfi-bg-primary)" : "transparent" }}>
                       <td style={{ padding: "10px 16px" }}>
                         <div style={{ fontSize: 13, color: "#fff" }}>{c.direccion}</div>
                         <div style={{ fontSize: 11, color: "#666" }}>{c.zona ?? "—"}</div>
@@ -364,7 +364,7 @@ export default function TasacionRapida() {
             </div>
           </>
         ) : (
-          <div style={{ background: "#111", border: "1px solid #333", borderRadius: 10, padding: 32, textAlign: "center", color: "#666" }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 10, padding: 32, textAlign: "center", color: "#666" }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
             <p>No hay comparables suficientes en la cartera activa para los filtros seleccionados.</p>
             <p style={{ fontSize: 12 }}>Probá cambiando el tipo de propiedad o dejando la zona en blanco.</p>

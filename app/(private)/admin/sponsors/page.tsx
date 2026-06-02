@@ -196,56 +196,56 @@ export default function AdminSponsorsPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .sp-wrap{display:flex;flex-direction:column;gap:20px}
         .sp-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
-        .sp-titulo{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:#fff}
+        .sp-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;color:#fff}
         .sp-titulo span{color:#990000}
-        .sp-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:4px}
-        .sp-tabs{display:flex;gap:4px;background:rgba(255,255,255,0.04);border-radius:6px;padding:4px;width:fit-content}
-        .sp-tab{padding:7px 18px;border-radius:4px;border:none;background:transparent;color:rgba(255,255,255,0.4);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;position:relative}
+        .sp-sub{font-size:13px;color:var(--gfi-text-muted);margin-top:4px}
+        .sp-tabs{display:flex;gap:4px;background:var(--gfi-border-subtle);border-radius:6px;padding:4px;width:fit-content}
+        .sp-tab{padding:7px 18px;border-radius:4px;border:none;background:transparent;color:var(--gfi-text-muted);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;position:relative}
         .sp-tab.activo{background:rgba(200,0,0,0.15);color:#fff;border:1px solid rgba(200,0,0,0.3)}
         .sp-tab-badge{position:absolute;top:-4px;right:-4px;background:#990000;color:#fff;font-size:8px;font-weight:800;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
         .sp-stats{display:flex;gap:10px;flex-wrap:wrap}
-        .sp-stat{background:rgba(14,14,14,0.95);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:12px 18px;text-align:center;min-width:90px}
-        .sp-stat-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#fff}
+        .sp-stat{background:var(--gfi-bg-card);border:1px solid var(--gfi-border-subtle);border-radius:6px;padding:12px 18px;text-align:center;min-width:90px}
+        .sp-stat-num{font-family:var(--font-display);font-size:22px;font-weight:800;color:#fff}
         .sp-stat-num.verde{color:#3abab6} .sp-stat-num.rojo{color:#990000} .sp-stat-num.amarillo{color:#d4960c}
-        .sp-stat-label{font-size:9px;color:rgba(255,255,255,0.3);font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
+        .sp-stat-label{font-size:9px;color:var(--gfi-text-muted);font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
         .sp-filtros{display:flex;gap:6px;flex-wrap:wrap}
-        .sp-filtro-btn{padding:6px 14px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+        .sp-filtro-btn{padding:6px 14px;border-radius:4px;border:1px solid var(--gfi-border);background:transparent;color:var(--gfi-text-muted);font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
         .sp-filtro-btn.activo{border-color:rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#990000}
-        .sp-btn-nuevo{padding:10px 20px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+        .sp-btn-nuevo{padding:10px 20px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
         .sp-grid{display:flex;flex-direction:column;gap:10px}
-        .sp-card{background:rgba(14,14,14,0.98);border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden}
+        .sp-card{background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:8px;overflow:hidden}
         .sp-card.activa{border-color:rgba(34,197,94,0.2)} .sp-card.vencida{border-color:rgba(245,158,11,0.25)} .sp-card.suspendida{border-color:rgba(200,0,0,0.2)}
         .sp-card-top{padding:16px 20px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
-        .sp-logo{width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);flex-shrink:0}
-        .sp-logo-ph{width:48px;height:48px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+        .sp-logo{width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--gfi-border);flex-shrink:0}
+        .sp-logo-ph{width:48px;height:48px;border-radius:8px;background:var(--gfi-border-subtle);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
         .sp-info{flex:1;min-width:0}
-        .sp-nombre{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-        .sp-badge-estado{font-size:8px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
+        .sp-nombre{font-family:var(--font-display);font-size:15px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .sp-badge-estado{font-size:8px;font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
         .sp-badge-estado.activa{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#3abab6}
         .sp-badge-estado.vencida{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#d4960c}
         .sp-badge-estado.suspendida{background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.3);color:#ff6666}
-        .sp-badge-estado.sin-estado,.sp-badge-estado.pendiente{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4)}
+        .sp-badge-estado.sin-estado,.sp-badge-estado.pendiente{background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);color:var(--gfi-text-muted)}
         .sp-destacado{color:#d4960c;font-size:14px}
         .sp-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
-        .sp-meta-item{font-size:11px;color:rgba(255,255,255,0.4)}
+        .sp-meta-item{font-size:11px;color:var(--gfi-text-muted)}
         .sp-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6;margin-top:6px;font-style:italic}
         .sp-nota-admin{font-size:11px;color:rgba(245,158,11,0.6);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:6px 10px;margin-top:6px}
         .sp-beneficio{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,0.65);background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.2);border-radius:4px;padding:6px 10px;margin-top:6px;line-height:1.5}
-        .sp-beneficio strong{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#990000;margin-right:4px;flex-shrink:0}
-        .sp-interesados-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;color:#3abab6;margin-top:6px;cursor:pointer;transition:background 0.2s}
+        .sp-beneficio strong{font-family:var(--font-display);font-size:8px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#990000;margin-right:4px;flex-shrink:0}
+        .sp-interesados-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);font-family:var(--font-display);font-size:9px;font-weight:700;color:#3abab6;margin-top:6px;cursor:pointer;transition:background 0.2s}
         .sp-interesados-chip:hover{background:rgba(34,197,94,0.18)}
-        .sp-interesados-chip.cero{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);cursor:default}
+        .sp-interesados-chip.cero{background:var(--gfi-border-subtle);border-color:var(--gfi-border);color:var(--gfi-text-muted);cursor:default}
         .sp-lista-tabla{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
-        .sp-lista-tabla th{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:6px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07)}
-        .sp-lista-tabla td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);color:rgba(255,255,255,0.75);vertical-align:middle}
+        .sp-lista-tabla th{font-family:var(--font-display);font-size:8px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--gfi-text-muted);padding:6px 10px;text-align:left;border-bottom:1px solid var(--gfi-border-subtle)}
+        .sp-lista-tabla td{padding:8px 10px;border-bottom:1px solid var(--gfi-border-subtle);color:rgba(255,255,255,0.75);vertical-align:middle}
         .sp-lista-tabla tr:last-child td{border-bottom:none}
-        .sp-lista-tabla tr:hover td{background:rgba(255,255,255,0.02)}
-        .sp-gfi-num{font-family:'Montserrat',sans-serif;font-weight:800;color:#990000;font-size:11px}
-        .sp-lista-empty{padding:28px;text-align:center;color:rgba(255,255,255,0.2);font-style:italic;font-size:13px}
+        .sp-lista-tabla tr:hover td{background:var(--gfi-bg-secondary)}
+        .sp-gfi-num{font-family:var(--font-display);font-weight:800;color:#990000;font-size:11px}
+        .sp-lista-empty{padding:28px;text-align:center;color:var(--gfi-text-dim);font-style:italic;font-size:13px}
         .sp-acciones{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
-        .sp-btn{padding:6px 12px;border-radius:3px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;white-space:nowrap;border:1px solid}
-        .sp-btn-editar{background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.5)}
-        .sp-btn-editar:hover{border-color:rgba(255,255,255,0.3);color:#fff}
+        .sp-btn{padding:6px 12px;border-radius:3px;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;white-space:nowrap;border:1px solid}
+        .sp-btn-editar{background:transparent;border-color:rgba(255,255,255,0.15);color:var(--gfi-text-secondary)}
+        .sp-btn-editar:hover{border-color:var(--gfi-text-muted);color:#fff}
         .sp-btn-extender{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#3abab6}
         .sp-btn-extender:hover{background:rgba(34,197,94,0.2)}
         .sp-btn-activar{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#3abab6}
@@ -253,45 +253,45 @@ export default function AdminSponsorsPage() {
         .sp-btn-star{background:transparent;border-color:rgba(234,179,8,0.3);color:#d4960c}
         .sp-btn-beneficios{background:rgba(200,0,0,0.08);border-color:rgba(200,0,0,0.3);color:#990000}
         .sp-btn-beneficios:hover{background:rgba(200,0,0,0.18)}
-        .sp-venc{font-size:10px;padding:4px 8px;border-radius:3px;font-family:'Inter',sans-serif}
+        .sp-venc{font-size:10px;padding:4px 8px;border-radius:3px;font-family:var(--font-body)}
         .sp-venc.ok{background:rgba(34,197,94,0.07);color:rgba(34,197,94,0.7)}
         .sp-venc.pronto{background:rgba(245,158,11,0.1);color:#d4960c}
         .sp-venc.vencido{background:rgba(200,0,0,0.07);color:rgba(200,0,0,0.7)}
-        .sp-empty{padding:48px;text-align:center;color:rgba(255,255,255,0.2);font-size:13px;font-style:italic;background:rgba(14,14,14,0.9);border:1px solid rgba(255,255,255,0.07);border-radius:6px}
+        .sp-empty{padding:48px;text-align:center;color:var(--gfi-text-dim);font-size:13px;font-style:italic;background:var(--gfi-bg-card);border:1px solid var(--gfi-border-subtle);border-radius:6px}
         .sp-spin-wrap{padding:48px;display:flex;justify-content:center}
         .sp-spin{width:28px;height:28px;border:2px solid rgba(200,0,0,0.2);border-top-color:#990000;border-radius:50%;animation:spin 0.7s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
         /* Solicitudes */
-        .sol-card{background:rgba(14,14,14,0.95);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+        .sol-card{background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:8px;padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
         .sol-card.pendiente{border-color:rgba(245,158,11,0.25)}
         .sol-card.aprobada{border-color:rgba(34,197,94,0.15);opacity:0.6}
         .sol-card.rechazada{border-color:rgba(200,0,0,0.1);opacity:0.45}
-        .sol-empresa{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;color:#fff}
-        .sol-rubro{font-size:9px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-left:8px}
-        .sol-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
-        .sol-desc{font-size:12px;color:rgba(255,255,255,0.5);margin-top:6px;line-height:1.5}
-        .sol-msg{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;padding:7px 10px;background:rgba(255,255,255,0.03);border-radius:4px;border-left:2px solid rgba(200,0,0,0.3);font-style:italic}
+        .sol-empresa{font-family:var(--font-display);font-size:14px;font-weight:800;color:#fff}
+        .sol-rubro{font-size:9px;font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gfi-text-muted);margin-left:8px}
+        .sol-meta{font-size:11px;color:var(--gfi-text-muted);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
+        .sol-desc{font-size:12px;color:var(--gfi-text-secondary);margin-top:6px;line-height:1.5}
+        .sol-msg{font-size:11px;color:var(--gfi-text-muted);margin-top:6px;padding:7px 10px;background:var(--gfi-bg-card);border-radius:4px;border-left:2px solid rgba(200,0,0,0.3);font-style:italic}
         .sol-acciones{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
-        .sol-btn-aprobar{padding:7px 14px;border-radius:3px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#3abab6;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+        .sol-btn-aprobar{padding:7px 14px;border-radius:3px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#3abab6;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
         .sol-btn-aprobar:hover{background:rgba(34,197,94,0.22)}
-        .sol-btn-rechazar{padding:7px 14px;border-radius:3px;background:transparent;border:1px solid rgba(200,0,0,0.2);color:rgba(200,0,0,0.6);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer}
-        .sol-estado-badge{font-size:9px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
+        .sol-btn-rechazar{padding:7px 14px;border-radius:3px;background:transparent;border:1px solid rgba(200,0,0,0.2);color:rgba(200,0,0,0.6);font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer}
+        .sol-estado-badge{font-size:9px;font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
         .sol-estado-badge.pendiente{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#d4960c}
         .sol-estado-badge.aprobada{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#3abab6}
         .sol-estado-badge.rechazada{background:rgba(200,0,0,0.08);border:1px solid rgba(200,0,0,0.2);color:rgba(200,0,0,0.7)}
         /* Beneficios modal */
         .ben-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
-        .ben-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;overflow:hidden}
+        .ben-item{background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:6px;overflow:hidden}
         .ben-item.inactivo{opacity:0.5}
         .ben-item-img{width:100%;height:100px;object-fit:cover;display:block;background:rgba(200,0,0,0.07)}
         .ben-item-body{padding:10px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
         .ben-item-info{flex:1;min-width:0}
-        .ben-item-titulo{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#fff}
+        .ben-item-titulo{font-family:var(--font-display);font-size:13px;font-weight:800;color:#fff}
         .ben-item-desc{font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px;line-height:1.5}
         .ben-item-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-        .ben-item-chip{font-size:9px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:10px}
+        .ben-item-chip{font-size:9px;font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:10px}
         .ben-item-chip.activo{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#3abab6}
-        .ben-item-chip.inactivo{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)}
+        .ben-item-chip.inactivo{background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);color:var(--gfi-text-muted)}
         .ben-item-chip.freq{background:rgba(200,0,0,0.08);border:1px solid rgba(200,0,0,0.2);color:#990000}
         .ben-item-chip.venc{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:#d4960c}
         .ben-item-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
@@ -299,25 +299,25 @@ export default function AdminSponsorsPage() {
         .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;z-index:400;padding:24px}
         .modal{background:#0f0f0f;border:1px solid rgba(200,0,0,0.25);border-radius:8px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative}
         .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#990000,transparent);border-radius:8px 8px 0 0}
-        .modal-titulo{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-bottom:20px}
+        .modal-titulo{font-family:var(--font-display);font-size:16px;font-weight:800;color:#fff;margin-bottom:20px}
         .modal-titulo span{color:#990000}
         .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
         .modal-grid .full{grid-column:1/-1}
         .field{display:flex;flex-direction:column;gap:5px}
-        .field label{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.35)}
-        .field input,.field select,.field textarea{padding:9px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:'Inter',sans-serif;transition:border-color 0.2s;width:100%}
+        .field label{font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--gfi-text-muted)}
+        .field input,.field select,.field textarea{padding:9px 12px;background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:var(--font-body);transition:border-color 0.2s;width:100%}
         .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(200,0,0,0.4)}
-        .field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,0.2)}
+        .field input::placeholder,.field textarea::placeholder{color:var(--gfi-text-dim)}
         .field select{background:#0f0f0f} .field textarea{resize:vertical;min-height:80px}
-        .field-check{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:4px;cursor:pointer}
+        .field-check{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:4px;cursor:pointer}
         .field-check input{width:16px;height:16px;flex-shrink:0}
-        .field-check-label{font-size:12px;color:rgba(255,255,255,0.6);font-family:'Inter',sans-serif}
+        .field-check-label{font-size:12px;color:var(--gfi-text-secondary);font-family:var(--font-body)}
         .field-check-label strong{color:#d4960c}
-        .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.07)}
-        .btn-cancel{padding:9px 18px;background:transparent;border:1px solid rgba(255,255,255,0.14);border-radius:4px;color:rgba(255,255,255,0.45);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
-        .btn-save{padding:9px 22px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
+        .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--gfi-border-subtle)}
+        .btn-cancel{padding:9px 18px;background:transparent;border:1px solid rgba(255,255,255,0.14);border-radius:4px;color:rgba(255,255,255,0.45);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
+        .btn-save{padding:9px 22px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
         .btn-save:disabled{opacity:0.6;cursor:not-allowed}
-        .toast{position:fixed;bottom:28px;right:28px;padding:12px 20px;border-radius:5px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;z-index:999}
+        .toast{position:fixed;bottom:28px;right:28px;padding:12px 20px;border-radius:5px;font-family:var(--font-display);font-size:12px;font-weight:700;z-index:999}
         .toast.ok{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#3abab6}
         .toast.err{background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.35);color:#ff6666}
         @media(max-width:600px){.sp-card-top{flex-direction:column}.sp-acciones{flex-direction:row;flex-wrap:wrap}.modal-grid{grid-template-columns:1fr}.modal-grid .full{grid-column:1}}
@@ -373,7 +373,7 @@ export default function AdminSponsorsPage() {
                         {s.destacado && <span className="sp-destacado">★</span>}
                         {s.nombre}
                         <span className={`sp-badge-estado ${estado}`}>{estado==="sin-estado"?"Sin estado":estado}</span>
-                        <span style={{fontSize:9,color:"rgba(255,255,255,0.3)",fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase"}}>{s.rubro}</span>
+                        <span style={{fontSize:9,color:"var(--gfi-text-muted)",fontFamily:"var(--font-display)",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase"}}>{s.rubro}</span>
                       </div>
                       <div className="sp-meta">
                         {s.monto_mensual_usd ? <span className="sp-meta-item">💰 USD {s.monto_mensual_usd}/mes</span> : null}
@@ -414,7 +414,7 @@ export default function AdminSponsorsPage() {
 
         {/* ── TAB SOLICITUDES ── */}
         {tab === "solicitudes" && <>
-          <div style={{fontSize:12,color:"rgba(255,255,255,0.3)",padding:"8px 0"}}>
+          <div style={{fontSize:12,color:"var(--gfi-text-muted)",padding:"8px 0"}}>
             Solicitudes de proveedores que quieren ser sponsors. Al aprobar se crea el registro sponsor (en estado pendiente de pago).
           </div>
           {loadingSolicitudes ? <div className="sp-spin-wrap"><div className="sp-spin"/></div>
@@ -433,7 +433,7 @@ export default function AdminSponsorsPage() {
                     <span>✉️ {s.contacto_email}</span>
                     {s.contacto_telefono && <span>📞 {s.contacto_telefono}</span>}
                     {s.sitio_web && <a href={s.sitio_web} target="_blank" rel="noopener noreferrer" style={{color:"#990000",textDecoration:"none",fontSize:11}}>🌐 {s.sitio_web.replace(/https?:\/\//,"")}</a>}
-                    <span style={{marginLeft:"auto",color:"rgba(255,255,255,0.2)",fontSize:10}}>{ff(s.created_at)}</span>
+                    <span style={{marginLeft:"auto",color:"var(--gfi-text-dim)",fontSize:10}}>{ff(s.created_at)}</span>
                   </div>
                   {s.descripcion && <div className="sol-desc">{s.descripcion}</div>}
                   {s.mensaje && <div className="sol-msg">"{s.mensaje}"</div>}
@@ -500,7 +500,7 @@ export default function AdminSponsorsPage() {
                         <span className={`ben-item-chip ${b.activo?"activo":"inactivo"}`}>{b.activo?"Activo":"Inactivo"}</span>
                         {b.republica_frecuencia !== "ninguna" && <span className="ben-item-chip freq">🔄 {FRECUENCIAS.find(f=>f.v===b.republica_frecuencia)?.l}</span>}
                         {b.vigente_hasta && <span className="ben-item-chip venc">hasta {ff(b.vigente_hasta)}</span>}
-                        {b.republica_proxima && b.republica_frecuencia!=="ninguna" && <span style={{fontSize:9,color:"rgba(255,255,255,0.25)"}}>próx. {ff(b.republica_proxima)}</span>}
+                        {b.republica_proxima && b.republica_frecuencia!=="ninguna" && <span style={{fontSize:9,color:"var(--gfi-text-dim)"}}>próx. {ff(b.republica_proxima)}</span>}
                       </div>
                     </div>
                     <div className="ben-item-actions">
@@ -515,8 +515,8 @@ export default function AdminSponsorsPage() {
 
             {/* Formulario agregar/editar beneficio */}
             {mostrarFormBen ? (
-              <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(200,0,0,0.2)",borderRadius:6,padding:"16px",marginTop:8}}>
-                <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.5)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:12}}>
+              <div style={{background:"var(--gfi-bg-card)",border:"1px solid rgba(200,0,0,0.2)",borderRadius:6,padding:"16px",marginTop:8}}>
+                <div style={{fontFamily:"var(--font-display)",fontSize:11,fontWeight:700,color:"var(--gfi-text-secondary)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:12}}>
                   {editandoBenId?"Editar beneficio":"Nuevo beneficio"}
                 </div>
                 <div className="modal-grid" style={{gap:10}}>
@@ -538,7 +538,7 @@ export default function AdminSponsorsPage() {
                 </div>
               </div>
             ) : (
-              <button style={{width:"100%",padding:"10px",background:"rgba(200,0,0,0.1)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:5,color:"#990000",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",cursor:"pointer",marginTop:4}} onClick={()=>{setFormBen(FORM_BEN_VACIO);setEditandoBenId(null);setMostrarFormBen(true);}}>+ Agregar beneficio</button>
+              <button style={{width:"100%",padding:"10px",background:"rgba(200,0,0,0.1)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:5,color:"#990000",fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",cursor:"pointer",marginTop:4}} onClick={()=>{setFormBen(FORM_BEN_VACIO);setEditandoBenId(null);setMostrarFormBen(true);}}>+ Agregar beneficio</button>
             )}
 
             <div className="modal-actions">
@@ -553,7 +553,7 @@ export default function AdminSponsorsPage() {
         <div className="modal-bg" onClick={e=>{if(e.target===e.currentTarget)setViendoLista(null);}}>
           <div className="modal" style={{maxWidth:620}}>
             <div className="modal-titulo">Interesados — <span>{sponsors.find(s=>s.id===viendoLista)?.nombre??""}</span></div>
-            <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:12,lineHeight:1.6}}>Lista para enviar al sponsor: Nro. GFI, nombre, matrícula COCIR y email.</div>
+            <div style={{fontSize:11,color:"var(--gfi-text-muted)",marginBottom:12,lineHeight:1.6}}>Lista para enviar al sponsor: Nro. GFI, nombre, matrícula COCIR y email.</div>
             {cargandoLista ? <div style={{padding:"28px",display:"flex",justifyContent:"center"}}><div className="sp-spin"/></div>
              : listaInteresados.length===0 ? <div className="sp-lista-empty">Todavía no hay corredores interesados.</div>
              : <table className="sp-lista-tabla">
@@ -561,7 +561,7 @@ export default function AdminSponsorsPage() {
               <tbody>
                 {listaInteresados.map((row,i)=>{
                   const p = row.perfiles as any;
-                  return <tr key={i}><td><span className="sp-gfi-num">{gfiNum(p?.numero_gfi??null)}</span></td><td>{p?.apellido?`${p.apellido}, ${p.nombre}`:"—"}</td><td style={{color:"rgba(255,255,255,0.5)"}}>{p?.matricula??"—"}</td><td style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>{p?.email??"—"}</td></tr>;
+                  return <tr key={i}><td><span className="sp-gfi-num">{gfiNum(p?.numero_gfi??null)}</span></td><td>{p?.apellido?`${p.apellido}, ${p.nombre}`:"—"}</td><td style={{color:"var(--gfi-text-secondary)"}}>{p?.matricula??"—"}</td><td style={{color:"var(--gfi-text-secondary)",fontSize:11}}>{p?.email??"—"}</td></tr>;
                 })}
               </tbody>
             </table>}

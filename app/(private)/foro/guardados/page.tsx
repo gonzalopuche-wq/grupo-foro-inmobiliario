@@ -80,7 +80,7 @@ export default function GuardadosPage() {
     <div style={{ maxWidth: 760, margin: '0 auto', padding: '24px 0 64px' }}>
 
       {toast && (
-        <div style={{ position: 'fixed', bottom: 24, right: 24, background: '#111', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
+        <div style={{ position: 'fixed', bottom: 24, right: 24, background: 'var(--gfi-bg-secondary)', border: '1px solid var(--gfi-border)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
           {toast}
         </div>
       )}
@@ -88,24 +88,24 @@ export default function GuardadosPage() {
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-          <Link href="/foro" style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.1em', textDecoration: 'none' }}>
+          <Link href="/foro" style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.1em', textDecoration: 'none' }}>
             ← FORO
           </Link>
         </div>
         <h1 style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>
           Temas Guardados
         </h1>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+        <p style={{ fontSize: 12, color: 'var(--gfi-text-muted)', marginTop: 4 }}>
           {cargando ? '' : `${saved.length} tema${saved.length !== 1 ? 's' : ''} guardado${saved.length !== 1 ? 's' : ''}`}
         </p>
       </div>
 
       {cargando ? (
-        <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, padding: '48px 0', textAlign: 'center' }}>Cargando...</div>
+        <div style={{ color: 'var(--gfi-text-muted)', fontSize: 13, padding: '48px 0', textAlign: 'center' }}>Cargando...</div>
       ) : saved.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '64px 0' }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🔖</div>
-          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, marginBottom: 8 }}>No tenés temas guardados</div>
+          <div style={{ color: 'var(--gfi-text-muted)', fontSize: 14, marginBottom: 8 }}>No tenés temas guardados</div>
           <Link href="/foro" style={{ fontSize: 12, color: '#990000', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textDecoration: 'none' }}>
             Ir al foro →
           </Link>
@@ -119,8 +119,8 @@ export default function GuardadosPage() {
             const autor = t.perfiles
             return (
               <div key={row.topic_id} style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.07)',
+                background: 'var(--gfi-bg-card)',
+                border: '1px solid var(--gfi-border-subtle)',
                 borderRadius: 10, padding: '14px 16px',
                 display: 'flex', gap: 14, alignItems: 'flex-start',
               }}>
@@ -128,7 +128,7 @@ export default function GuardadosPage() {
                   {/* Meta top */}
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6, flexWrap: 'wrap' }}>
                     {c && (
-                      <span style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: 'var(--gfi-text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                         {c.name}
                       </span>
                     )}
@@ -156,21 +156,21 @@ export default function GuardadosPage() {
                   </Link>
 
                   {/* Body excerpt */}
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, marginBottom: 8, margin: 0 }}>
+                  <p style={{ fontSize: 12, color: 'var(--gfi-text-muted)', lineHeight: 1.5, marginBottom: 8, margin: 0 }}>
                     {t.body.length > 120 ? t.body.slice(0, 120) + '…' : t.body}
                   </p>
 
                   {/* Footer meta */}
                   <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' }}>
                     {autor && (
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat,sans-serif' }}>
+                      <span style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif' }}>
                         👤 {autor.nombre}{autor.apellido ? ` ${autor.apellido}` : ''}
                       </span>
                     )}
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', fontFamily: 'Montserrat,sans-serif' }}>
+                    <span style={{ fontSize: 11, color: 'var(--gfi-text-dim)', fontFamily: 'Montserrat,sans-serif' }}>
                       💬 {t.replies_count ?? 0} respuesta{(t.replies_count ?? 0) !== 1 ? 's' : ''}
                     </span>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', fontFamily: 'Montserrat,sans-serif' }}>
+                    <span style={{ fontSize: 11, color: 'var(--gfi-text-dim)', fontFamily: 'Montserrat,sans-serif' }}>
                       {timeAgo(t.last_activity_at ?? t.created_at)}
                     </span>
                   </div>

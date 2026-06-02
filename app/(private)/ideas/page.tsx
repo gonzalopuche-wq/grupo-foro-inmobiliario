@@ -18,7 +18,7 @@ interface Idea {
 
 const CATEGORIAS = ['Plataforma', 'CRM', 'Capacitación', 'Comunidad', 'Legal', 'Otro']
 const ESTADOS: Record<string, { label: string; color: string }> = {
-  pendiente:    { label: 'Pendiente',    color: 'rgba(255,255,255,0.3)' },
+  pendiente:    { label: 'Pendiente',    color: 'var(--gfi-text-muted)' },
   evaluando:    { label: 'Evaluando',    color: '#d4960c' },
   aprobada:     { label: 'Aprobada',     color: '#3abab6' },
   implementada: { label: 'Implementada', color: '#3b82f6' },
@@ -106,7 +106,7 @@ export default function IdeasPage() {
     <div style={{ maxWidth: 740, margin: '0 auto', padding: '24px 0 64px' }}>
 
       {toast && (
-        <div style={{ position: 'fixed', bottom: 24, right: 24, background: '#111', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
+        <div style={{ position: 'fixed', bottom: 24, right: 24, background: 'var(--gfi-bg-secondary)', border: '1px solid var(--gfi-border)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
           {toast}
         </div>
       )}
@@ -114,9 +114,9 @@ export default function IdeasPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>Módulo 06</div>
+          <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gfi-text-dim)', marginBottom: 6 }}>Módulo 06</div>
           <h1 style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>Sistema de Ideas</h1>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: 'var(--gfi-text-muted)', marginTop: 4 }}>
             Proponé mejoras · votá las mejores · ganá reputación
           </p>
         </div>
@@ -126,14 +126,14 @@ export default function IdeasPage() {
       </div>
 
       {/* Banner recompensa */}
-      <div style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+      <div style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 12, color: 'var(--gfi-text-secondary)', lineHeight: 1.6 }}>
         <strong style={{ color: '#3abab6' }}>IDEAS QUE SUMAN</strong> — Las ideas con más de 10 votos son evaluadas por el equipo GFI. Si tu idea se implementa, recibís <strong style={{ color: '#fff' }}>+50 puntos de reputación</strong> y una mención especial en la plataforma.
       </div>
 
       {/* Filtros */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
         {['todas', 'pendiente', 'evaluando', 'aprobada', 'implementada'].map(f => (
-          <button key={f} onClick={() => setFiltro(f)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === f ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === f ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+          <button key={f} onClick={() => setFiltro(f)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === f ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === f ? '#fff' : 'var(--gfi-text-muted)' }}>
             {f === 'todas' ? 'Todas' : ESTADOS[f]?.label}
             {f !== 'todas' && (
               <span style={{ marginLeft: 6, opacity: 0.7 }}>
@@ -146,11 +146,11 @@ export default function IdeasPage() {
 
       {/* Lista */}
       {cargando ? (
-        <div style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
+        <div style={{ color: 'var(--gfi-text-muted)', textAlign: 'center', padding: '48px 0' }}>Cargando...</div>
       ) : ideasFiltradas.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '56px 0' }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>💡</div>
-          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>
+          <div style={{ color: 'var(--gfi-text-muted)', fontSize: 14 }}>
             {filtro === 'todas' ? 'Todavía no hay ideas — ¡sé el primero!' : `No hay ideas en estado "${ESTADOS[filtro]?.label}"`}
           </div>
         </div>
@@ -159,13 +159,13 @@ export default function IdeasPage() {
           {ideasFiltradas.map(idea => {
             const est = ESTADOS[idea.estado]
             return (
-              <div key={idea.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '16px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+              <div key={idea.id} style={{ background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border-subtle)', borderRadius: 10, padding: '16px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                 {/* Votos */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   <button
                     onClick={() => votar(idea)}
                     disabled={votando === idea.id}
-                    style={{ width: 40, height: 40, borderRadius: 8, border: `1px solid ${idea.ya_vote ? '#990000' : 'rgba(255,255,255,0.1)'}`, background: idea.ya_vote ? 'rgba(153,0,0,0.12)' : 'rgba(255,255,255,0.04)', color: idea.ya_vote ? '#990000' : 'rgba(255,255,255,0.4)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ width: 40, height: 40, borderRadius: 8, border: `1px solid ${idea.ya_vote ? '#990000' : 'var(--gfi-border)'}`, background: idea.ya_vote ? 'rgba(153,0,0,0.12)' : 'var(--gfi-border-subtle)', color: idea.ya_vote ? '#990000' : 'var(--gfi-text-muted)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     ▲
                   </button>
@@ -182,9 +182,9 @@ export default function IdeasPage() {
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
                     <span style={{ fontSize: 10, color: '#3b82f6', background: 'rgba(59,130,246,0.1)', padding: '2px 8px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>{idea.categoria}</span>
                     {idea.autor_nombre && (
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>por {idea.autor_nombre}</span>
+                      <span style={{ fontSize: 11, color: 'var(--gfi-text-dim)' }}>por {idea.autor_nombre}</span>
                     )}
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
+                    <span style={{ fontSize: 11, color: 'var(--gfi-text-dim)' }}>
                       {new Date(idea.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
                   </div>
@@ -198,24 +198,24 @@ export default function IdeasPage() {
       {/* Modal nueva idea */}
       {modal && (
         <div onClick={e => { if (e.target === e.currentTarget) setModal(false) }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 28, width: '100%', maxWidth: 480 }}>
+          <div style={{ background: '#141414', border: '1px solid var(--gfi-border)', borderRadius: 14, padding: 28, width: '100%', maxWidth: 480 }}>
             <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Nueva idea</div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Título *</label>
-              <input value={form.titulo} onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))} placeholder="Ej: Integración con portal inmobiliario X" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Título *</label>
+              <input value={form.titulo} onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))} placeholder="Ej: Integración con portal inmobiliario X" style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', boxSizing: 'border-box' }} />
             </div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Descripción *</label>
-              <textarea value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} placeholder="Explicá el problema que resuelve y cómo funcionaría..." rows={4} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
+              <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Descripción *</label>
+              <textarea value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} placeholder="Explicá el problema que resuelve y cómo funcionaría..." rows={4} style={{ width: '100%', background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 7, color: '#fff', padding: '10px 12px', fontSize: 14, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
             </div>
 
             <div style={{ marginBottom: 20 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Categoría</label>
+              <label style={{ fontSize: 11, color: 'var(--gfi-text-muted)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Categoría</label>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {CATEGORIAS.map(c => (
-                  <button key={c} onClick={() => setForm(f => ({ ...f, categoria: c }))} style={{ padding: '5px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: form.categoria === c ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.05)', color: form.categoria === c ? '#3b82f6' : 'rgba(255,255,255,0.4)', outline: form.categoria === c ? '1px solid rgba(59,130,246,0.4)' : 'none' }}>
+                  <button key={c} onClick={() => setForm(f => ({ ...f, categoria: c }))} style={{ padding: '5px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: form.categoria === c ? 'rgba(59,130,246,0.2)' : 'var(--gfi-border-subtle)', color: form.categoria === c ? '#3b82f6' : 'var(--gfi-text-muted)', outline: form.categoria === c ? '1px solid rgba(59,130,246,0.4)' : 'none' }}>
                     {c}
                   </button>
                 ))}
@@ -223,7 +223,7 @@ export default function IdeasPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
+              <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'var(--gfi-text-secondary)', border: '1px solid var(--gfi-border)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
               <button onClick={guardar} disabled={guardando || !form.titulo.trim() || !form.descripcion.trim()} style={{ padding: '10px 24px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.titulo.trim() || !form.descripcion.trim() ? 0.5 : 1 }}>
                 {guardando ? 'Enviando...' : '💡 Enviar idea'}
               </button>

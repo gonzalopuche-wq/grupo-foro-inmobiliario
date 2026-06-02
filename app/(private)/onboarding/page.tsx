@@ -164,8 +164,8 @@ export default function OnboardingPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .ob-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 18px 20px; display: flex; align-items: flex-start; gap: 14px; transition: border-color 0.15s; }
-        .ob-card:hover { border-color: rgba(255,255,255,0.12); }
+        .ob-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 18px 20px; display: flex; align-items: flex-start; gap: 14px; transition: border-color 0.15s; }
+        .ob-card:hover { border-color: var(--gfi-border); }
         .ob-card.done { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }
         .ob-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
         .ob-check.done { border-color: #3abab6; background: rgba(34,197,94,0.15); }
@@ -174,28 +174,28 @@ export default function OnboardingPage() {
       <div style={{ maxWidth: 720, display: "flex", flexDirection: "column", gap: 20 }}>
         {/* Header */}
         <div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", marginBottom: 4 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "#fff", marginBottom: 4 }}>
             Checklist de <span style={{ color: "#990000" }}>Onboarding</span>
           </div>
-          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
+          <div style={{ fontSize: 13, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
             {perfil ? `Hola, ${perfil.nombre}. ` : ""}Completá estos pasos para aprovechar al máximo la plataforma GFI®.
           </div>
         </div>
 
         {/* Progreso */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "20px 24px" }}>
+        <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "20px 24px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff" }}>
               Tu progreso
             </div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: porcentaje === 100 ? "#3abab6" : "#990000" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: porcentaje === 100 ? "#3abab6" : "#990000" }}>
               {cargando ? "…" : `${porcentaje}%`}
             </div>
           </div>
           <div style={{ height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
             <div style={{ height: "100%", width: cargando ? "0%" : `${porcentaje}%`, background: porcentaje === 100 ? "#3abab6" : "#990000", borderRadius: 4, transition: "width 0.5s ease" }} />
           </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+          <div style={{ marginTop: 8, fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
             {cargando ? "Verificando…" : `${totalCompletados} de ${PASOS.length} pasos completados`}
           </div>
         </div>
@@ -203,8 +203,8 @@ export default function OnboardingPage() {
         {porcentaje === 100 && !cargando && (
           <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 10, padding: "16px 20px", textAlign: "center" }}>
             <div style={{ fontSize: 28, marginBottom: 6 }}>🎉</div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#3abab6", marginBottom: 4 }}>¡Onboarding completo!</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "#3abab6", marginBottom: 4 }}>¡Onboarding completo!</div>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", fontFamily: "Inter,sans-serif" }}>
               Tenés todo listo para aprovechar al máximo GFI®. Seguí participando para bonificar tu suscripción.
             </div>
           </div>
@@ -222,18 +222,18 @@ export default function OnboardingPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
                     <span style={{ fontSize: 16 }}>{paso.icon}</span>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: hecho ? "rgba(255,255,255,0.5)" : "#fff", textDecoration: hecho ? "line-through" : "none" }}>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: hecho ? "var(--gfi-text-secondary)" : "#fff", textDecoration: hecho ? "line-through" : "none" }}>
                       {paso.titulo}
                     </div>
                     {hecho && (
-                      <span style={{ fontSize: 9, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#3abab6", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 4, padding: "2px 6px", letterSpacing: "0.1em" }}>LISTO</span>
+                      <span style={{ fontSize: 9, fontWeight: 800, fontFamily: "var(--font-display)", color: "#3abab6", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 4, padding: "2px 6px", letterSpacing: "0.1em" }}>LISTO</span>
                     )}
                   </div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", lineHeight: 1.5, marginBottom: hecho ? 0 : 8 }}>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", lineHeight: 1.5, marginBottom: hecho ? 0 : 8 }}>
                     {paso.descripcion}
                   </div>
                   {!hecho && (
-                    <Link href={paso.href} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: paso.color, background: `${paso.color}12`, border: `1px solid ${paso.color}30`, borderRadius: 5, padding: "4px 10px", textDecoration: "none", letterSpacing: "0.06em" }}>
+                    <Link href={paso.href} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700, fontFamily: "var(--font-display)", color: paso.color, background: `${paso.color}12`, border: `1px solid ${paso.color}30`, borderRadius: 5, padding: "4px 10px", textDecoration: "none", letterSpacing: "0.06em" }}>
                       Ir ahora →
                     </Link>
                   )}
@@ -243,7 +243,7 @@ export default function OnboardingPage() {
           })}
         </div>
 
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", textAlign: "center", paddingTop: 4 }}>
+        <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", textAlign: "center", paddingTop: 4 }}>
           Los pasos se verifican automáticamente con tus datos reales. Recargá la página para actualizar.
         </div>
       </div>

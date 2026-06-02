@@ -58,12 +58,12 @@ const FORM_VACIO = {
 const NOVEDAD_VACIO = { titulo: "", contenido: "", tipo: "nota" };
 
 const inputStyle: React.CSSProperties = {
-  width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+  width: "100%", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)",
   borderRadius: 7, padding: "9px 12px", color: "#fff", fontFamily: "Inter,sans-serif",
   fontSize: 13, outline: "none", boxSizing: "border-box",
 };
 const labelStyle: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif",
+  fontSize: 10, fontWeight: 700, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)",
   letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4, display: "block",
 };
 
@@ -175,8 +175,8 @@ export default function PortalVendedorPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .pv-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; transition: border-color 0.15s; }
-        .pv-card:hover { border-color: rgba(255,255,255,0.12); }
+        .pv-card { background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border-subtle); border-radius: 12px; transition: border-color 0.15s; }
+        .pv-card:hover { border-color: var(--gfi-border); }
         .pv-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: Montserrat,sans-serif; border: none; transition: opacity 0.15s; }
         .pv-btn:hover { opacity: 0.85; }
       `}</style>
@@ -185,15 +185,15 @@ export default function PortalVendedorPage() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24, gap: 12, flexWrap: "wrap" }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "Montserrat,sans-serif" }}>
+            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "var(--font-display)" }}>
               🏠 Portal Vendedor
             </h1>
-            <p style={{ margin: "4px 0 0", fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+            <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--gfi-text-muted)" }}>
               Creá un link seguro para que tu cliente vendedor vea el estado de su propiedad.
             </p>
           </div>
           <button className="pv-btn" onClick={() => setMostrarForm(v => !v)}
-            style={{ background: mostrarForm ? "rgba(255,255,255,0.08)" : "#990000", color: "#fff" }}>
+            style={{ background: mostrarForm ? "var(--gfi-border)" : "#990000", color: "#fff" }}>
             {mostrarForm ? "✕ Cancelar" : "+ Nuevo portal"}
           </button>
         </div>
@@ -206,8 +206,8 @@ export default function PortalVendedorPage() {
 
         {/* Formulario nuevo portal */}
         {mostrarForm && (
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)", marginBottom: 16 }}>Nuevo portal</div>
+          <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 12, padding: 20, marginBottom: 24 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "var(--gfi-text-primary)", marginBottom: 16 }}>Nuevo portal</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
               <div>
                 <label style={labelStyle}>Nombre del vendedor *</label>
@@ -244,16 +244,16 @@ export default function PortalVendedorPage() {
               <button className="pv-btn" onClick={guardar} disabled={guardando || !form.vendedor_nombre.trim() || !form.titulo.trim()} style={{ background: "#990000", color: "#fff", opacity: guardando ? 0.6 : 1 }}>
                 {guardando ? "Creando…" : "Crear portal"}
               </button>
-              <button className="pv-btn" onClick={() => setMostrarForm(false)} style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}>Cancelar</button>
+              <button className="pv-btn" onClick={() => setMostrarForm(false)} style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)" }}>Cancelar</button>
             </div>
           </div>
         )}
 
         {/* Lista portales */}
         {loading ? (
-          <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>Cargando portales…</div>
+          <div style={{ textAlign: "center", padding: 60, color: "var(--gfi-text-muted)" }}>Cargando portales…</div>
         ) : portales.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.2)" }}>
+          <div style={{ textAlign: "center", padding: 60, color: "var(--gfi-text-dim)" }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>🏠</div>
             <div style={{ fontSize: 14, marginBottom: 6 }}>Sin portales creados</div>
             <div style={{ fontSize: 12 }}>Creá un portal para compartirle a tu cliente vendedor</div>
@@ -269,28 +269,28 @@ export default function PortalVendedorPage() {
                   <div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                        <span style={{ fontWeight: 700, fontSize: 14, fontFamily: "Montserrat,sans-serif", color: "#fff" }}>{p.titulo}</span>
-                        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>— {p.vendedor_nombre}</span>
-                        {!p.activo && <span style={{ fontSize: 9, fontWeight: 700, color: "#b80000", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 4, padding: "1px 6px", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.08em" }}>INACTIVO</span>}
+                        <span style={{ fontWeight: 700, fontSize: 14, fontFamily: "var(--font-display)", color: "#fff" }}>{p.titulo}</span>
+                        <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>— {p.vendedor_nombre}</span>
+                        {!p.activo && <span style={{ fontSize: 9, fontWeight: 700, color: "#b80000", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 4, padding: "1px 6px", fontFamily: "var(--font-display)", letterSpacing: "0.08em" }}>INACTIVO</span>}
                       </div>
-                      <div style={{ display: "flex", gap: 14, fontSize: 11, color: "rgba(255,255,255,0.35)", flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: 14, fontSize: 11, color: "var(--gfi-text-muted)", flexWrap: "wrap" }}>
                         <span>👁 {p.vistas} vistas</span>
                         <span>📅 {fmtFecha(p.created_at)}</span>
                         {p.etapa_actual && <span style={{ color: "#3abab6" }}>⬤ {p.etapa_actual}</span>}
-                        {p.expires_at && <span style={{ color: new Date(p.expires_at) < new Date() ? "#b80000" : "rgba(255,255,255,0.35)" }}>Vence {fmtFecha(p.expires_at)}</span>}
+                        {p.expires_at && <span style={{ color: new Date(p.expires_at) < new Date() ? "#b80000" : "var(--gfi-text-muted)" }}>Vence {fmtFecha(p.expires_at)}</span>}
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap" }}>
                       <button className="pv-btn" onClick={() => copiarLink(p.token)}
-                        style={{ background: copiadoToken === p.token ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", color: copiadoToken === p.token ? "#3abab6" : "rgba(255,255,255,0.6)", border: `1px solid ${copiadoToken === p.token ? "#3abab644" : "transparent"}` }}>
+                        style={{ background: copiadoToken === p.token ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", color: copiadoToken === p.token ? "#3abab6" : "var(--gfi-text-secondary)", border: `1px solid ${copiadoToken === p.token ? "#3abab644" : "transparent"}` }}>
                         {copiadoToken === p.token ? "✓ Copiado" : "🔗 Link"}
                       </button>
                       <button className="pv-btn" onClick={() => toggleActivo(p)}
-                        style={{ background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                        style={{ background: "var(--gfi-border-subtle)", color: "var(--gfi-text-muted)", border: "1px solid var(--gfi-border)" }}>
                         {p.activo ? "Desactivar" : "Activar"}
                       </button>
                       <button className="pv-btn" onClick={() => abrirPortal(p.id)}
-                        style={{ background: abierto ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.04)", color: abierto ? "#990000" : "rgba(255,255,255,0.5)", border: `1px solid ${abierto ? "rgba(200,0,0,0.3)" : "rgba(255,255,255,0.08)"}` }}>
+                        style={{ background: abierto ? "rgba(200,0,0,0.15)" : "var(--gfi-border-subtle)", color: abierto ? "#990000" : "var(--gfi-text-secondary)", border: `1px solid ${abierto ? "rgba(200,0,0,0.3)" : "var(--gfi-border)"}` }}>
                         {abierto ? "▲ Cerrar" : "▼ Gestionar"}
                       </button>
                     </div>
@@ -308,10 +308,10 @@ export default function PortalVendedorPage() {
                           </select>
                         </div>
                         {/* Info vendedor */}
-                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
+                        <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>
                           <div style={{ marginBottom: 4 }}>{p.vendedor_email && `✉ ${p.vendedor_email}`}</div>
                           <div>{p.vendedor_telefono && `📞 ${p.vendedor_telefono}`}</div>
-                          <div style={{ marginTop: 6, wordBreak: "break-all", fontSize: 10, color: "rgba(255,255,255,0.2)" }}>
+                          <div style={{ marginTop: 6, wordBreak: "break-all", fontSize: 10, color: "var(--gfi-text-dim)" }}>
                             {window.location.origin}/vendor/{p.token}
                           </div>
                         </div>
@@ -319,13 +319,13 @@ export default function PortalVendedorPage() {
 
                       {/* Agregar novedad */}
                       <div style={{ marginBottom: 14 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
                           Agregar novedad
                         </div>
                         <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
                           {Object.entries(TIPO_NOVEDAD).map(([k, v]) => (
                             <button key={k} onClick={() => setNovForm(prev => ({ ...prev, tipo: k }))}
-                              style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "Inter,sans-serif", border: `1px solid ${novForm.tipo === k ? v.color + "88" : "rgba(255,255,255,0.08)"}`, background: novForm.tipo === k ? v.color + "18" : "transparent", color: novForm.tipo === k ? v.color : "rgba(255,255,255,0.4)" }}>
+                              style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "Inter,sans-serif", border: `1px solid ${novForm.tipo === k ? v.color + "88" : "var(--gfi-border)"}`, background: novForm.tipo === k ? v.color + "18" : "transparent", color: novForm.tipo === k ? v.color : "var(--gfi-text-muted)" }}>
                               {v.icon} {v.label}
                             </button>
                           ))}
@@ -343,17 +343,17 @@ export default function PortalVendedorPage() {
                       {/* Historial novedades */}
                       {novsPortal.length > 0 && (
                         <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
                             Historial ({novsPortal.length})
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                             {novsPortal.map(n => {
                               const tc = TIPO_NOVEDAD[n.tipo] ?? TIPO_NOVEDAD.otro;
                               return (
-                                <div key={n.id} style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${tc.color}22`, borderLeft: `3px solid ${tc.color}88`, borderRadius: 6, padding: "8px 12px" }}>
+                                <div key={n.id} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${tc.color}22`, borderLeft: `3px solid ${tc.color}88`, borderRadius: 6, padding: "8px 12px" }}>
                                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
                                     <span style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>{tc.icon} {n.titulo}</span>
-                                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{fmtFecha(n.created_at)}</span>
+                                    <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{fmtFecha(n.created_at)}</span>
                                   </div>
                                   {n.contenido && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>{n.contenido}</div>}
                                 </div>

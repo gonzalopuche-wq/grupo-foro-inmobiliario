@@ -145,12 +145,12 @@ export default function ListaPage() {
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 20 }}>
-        <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer", padding: "4px 8px", marginTop: 2 }}>←</button>
+        <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 18, cursor: "pointer", padding: "4px 8px", marginTop: 2 }}>←</button>
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 2 }}>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 2 }}>
             📢 {lista?.nombre}
           </h1>
-          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
+          <p style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
             {miembros.length} {miembros.length === 1 ? "destinatario" : "destinatarios"}
             {lista?.descripcion ? ` · ${lista.descripcion}` : ""}
           </p>
@@ -158,13 +158,13 @@ export default function ListaPage() {
         <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
           <button
             onClick={toggleActiva}
-            style={{ padding: "6px 12px", background: lista?.activa ? "rgba(255,255,255,0.05)" : "rgba(34,197,94,0.1)", border: `1px solid ${lista?.activa ? "rgba(255,255,255,0.1)" : "rgba(34,197,94,0.3)"}`, borderRadius: 6, color: lista?.activa ? "rgba(255,255,255,0.4)" : "#4ade80", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
+            style={{ padding: "6px 12px", background: lista?.activa ? "var(--gfi-border-subtle)" : "rgba(34,197,94,0.1)", border: `1px solid ${lista?.activa ? "var(--gfi-border)" : "rgba(34,197,94,0.3)"}`, borderRadius: 6, color: lista?.activa ? "var(--gfi-text-muted)" : "#4ade80", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
           >
             {lista?.activa ? "Pausar" : "Activar"}
           </button>
           <button
             onClick={() => setConfirmEliminar(true)}
-            style={{ padding: "6px 12px", background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 6, color: "#990000", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
+            style={{ padding: "6px 12px", background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 6, color: "#990000", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
           >
             Eliminar
           </button>
@@ -172,8 +172,8 @@ export default function ListaPage() {
       </div>
 
       {/* Enviar mensaje */}
-      <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: 16, marginBottom: 20 }}>
-        <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: 16, marginBottom: 20 }}>
+        <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
           Enviar mensaje a todos
         </div>
         <textarea
@@ -182,13 +182,13 @@ export default function ListaPage() {
           onChange={e => setMensajeTexto(e.target.value)}
           disabled={!lista?.activa}
           rows={3}
-          style={{ width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", resize: "vertical", boxSizing: "border-box", opacity: lista?.activa ? 1 : 0.5 }}
+          style={{ width: "100%", padding: "10px 12px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", resize: "vertical", boxSizing: "border-box", opacity: lista?.activa ? 1 : 0.5 }}
         />
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
           <button
             onClick={enviarMensaje}
             disabled={enviando || !mensajeTexto.trim() || !lista?.activa || miembros.length === 0}
-            style={{ padding: "9px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", opacity: (enviando || !mensajeTexto.trim() || !lista?.activa || miembros.length === 0) ? 0.5 : 1 }}
+            style={{ padding: "9px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer", opacity: (enviando || !mensajeTexto.trim() || !lista?.activa || miembros.length === 0) ? 0.5 : 1 }}
           >
             {enviando ? "Enviando..." : `➤ Enviar a ${miembros.length} destinatarios`}
           </button>
@@ -197,45 +197,45 @@ export default function ListaPage() {
 
       {/* Miembros */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-        <span style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Destinatarios</span>
+        <span style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Destinatarios</span>
         <button
           onClick={() => setMostrarAgregar(v => !v)}
-          style={{ padding: "5px 12px", background: mostrarAgregar ? "rgba(200,0,0,0.1)" : "rgba(255,255,255,0.05)", border: `1px solid ${mostrarAgregar ? "rgba(200,0,0,0.3)" : "rgba(255,255,255,0.1)"}`, borderRadius: 6, color: mostrarAgregar ? "#990000" : "rgba(255,255,255,0.5)", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
+          style={{ padding: "5px 12px", background: mostrarAgregar ? "rgba(200,0,0,0.1)" : "var(--gfi-border-subtle)", border: `1px solid ${mostrarAgregar ? "rgba(200,0,0,0.3)" : "var(--gfi-border)"}`, borderRadius: 6, color: mostrarAgregar ? "#990000" : "var(--gfi-text-secondary)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
         >
           {mostrarAgregar ? "Cancelar" : "+ Agregar"}
         </button>
       </div>
 
       {mostrarAgregar && (
-        <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden", marginBottom: 12 }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden", marginBottom: 12 }}>
           <div style={{ padding: "10px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
             <input
               autoFocus
               placeholder="Buscar colega..."
               value={busquedaAgregar}
               onChange={e => setBusquedaAgregar(e.target.value)}
-              style={{ width: "100%", padding: "7px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 6, color: "#fff", fontSize: 12, outline: "none", fontFamily: "Inter,sans-serif", boxSizing: "border-box" }}
+              style={{ width: "100%", padding: "7px 10px", background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 6, color: "#fff", fontSize: 12, outline: "none", fontFamily: "Inter,sans-serif", boxSizing: "border-box" }}
             />
           </div>
           <div style={{ maxHeight: 240, overflowY: "auto" }}>
             {colegasNoAgregados.length === 0 ? (
-              <div style={{ padding: "20px", textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
+              <div style={{ padding: "20px", textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
                 {busquedaAgregar ? "Sin resultados" : "Todos los colegas ya están en la lista"}
               </div>
             ) : colegasNoAgregados.map(c => (
               <div
                 key={c.id}
                 onClick={() => agregarMiembro(c)}
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.15s" }}
-                onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid var(--gfi-border-subtle)", transition: "background 0.15s" }}
+                onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
                 onMouseOut={e => (e.currentTarget.style.background = "transparent")}
               >
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "rgba(255,255,255,0.4)", flexShrink: 0 }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 800, color: "var(--gfi-text-muted)", flexShrink: 0 }}>
                   {initials(c)}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 12, color: "#fff", fontFamily: "Inter,sans-serif", fontWeight: 600 }}>{c.apellido}, {c.nombre}</div>
-                  {c.matricula && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>Mat. {c.matricula}</div>}
+                  {c.matricula && <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>Mat. {c.matricula}</div>}
                 </div>
                 <span style={{ fontSize: 18, color: "rgba(34,197,94,0.7)" }}>+</span>
               </div>
@@ -244,21 +244,21 @@ export default function ListaPage() {
         </div>
       )}
 
-      <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden" }}>
         {miembros.length === 0 ? (
-          <div style={{ padding: "30px 20px", textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 13, fontFamily: "Inter,sans-serif" }}>
+          <div style={{ padding: "30px 20px", textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 13, fontFamily: "Inter,sans-serif" }}>
             Sin destinatarios. Agregá colegas con el botón de arriba.
           </div>
         ) : miembros.map(m => (
-          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden" }}>
+          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden" }}>
               {m.foto_url ? <img src={m.foto_url} alt={m.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : initials(m)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", fontFamily: "Inter,sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {m.apellido}, {m.nombre}
               </div>
-              {m.matricula && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>Mat. {m.matricula}</div>}
+              {m.matricula && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>Mat. {m.matricula}</div>}
             </div>
             <button
               onClick={() => quitarMiembro(m.id)}
@@ -272,19 +272,19 @@ export default function ListaPage() {
       </div>
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "90vw", textAlign: "center" }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "90vw", textAlign: "center" }}>
           {toast}
         </div>
       )}
 
       {confirmEliminar && (
         <div onClick={() => setConfirmEliminar(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: "#1a1a1a", borderRadius: 12, padding: "24px 20px", width: "100%", maxWidth: 360, border: "1px solid rgba(255,255,255,0.1)" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 8 }}>Eliminar lista</div>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 20, lineHeight: 1.5 }}>¿Eliminás permanentemente la lista "{lista?.nombre}"? Esta acción no se puede deshacer.</p>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#1a1a1a", borderRadius: 12, padding: "24px 20px", width: "100%", maxWidth: 360, border: "1px solid var(--gfi-border)" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 8 }}>Eliminar lista</div>
+            <p style={{ fontSize: 13, color: "var(--gfi-text-secondary)", marginBottom: 20, lineHeight: 1.5 }}>¿Eliminás permanentemente la lista "{lista?.nombre}"? Esta acción no se puede deshacer.</p>
             <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setConfirmEliminar(false)} style={{ flex: 1, padding: 11, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
-              <button onClick={eliminarLista} style={{ flex: 1, padding: 11, background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Eliminar</button>
+              <button onClick={() => setConfirmEliminar(false)} style={{ flex: 1, padding: 11, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 8, color: "#fff", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
+              <button onClick={eliminarLista} style={{ flex: 1, padding: 11, background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Eliminar</button>
             </div>
           </div>
         </div>

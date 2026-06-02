@@ -189,26 +189,26 @@ export default function ReporteSemanal() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <span style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Inter',sans-serif" }}>Generando reporte...</span>
+      <span style={{ color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>Generando reporte...</span>
     </div>
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "var(--font-body)" }}>
       {/* Header */}
-      <div style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
-        <Link href="/crm" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
-        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, letterSpacing: "-0.02em" }}>
+      <div style={{ background: "var(--gfi-bg-secondary)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+        <Link href="/crm" style={{ color: "var(--gfi-text-muted)", textDecoration: "none", fontSize: 12 }}>← CRM</Link>
+        <h1 style={{ margin: 0, fontSize: 18, fontFamily: "var(--font-display)", fontWeight: 800, letterSpacing: "-0.02em" }}>
           Reporte Semanal
         </h1>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
-          <button onClick={() => setSemanaOffset(s => s - 1)} style={{ padding: "5px 10px", borderRadius: 6, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)", fontSize: 14, cursor: "pointer" }}>◀</button>
-          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", minWidth: 160, textAlign: "center" }}>{reporte.fechaLabel}</span>
-          <button onClick={() => setSemanaOffset(s => Math.min(0, s + 1))} style={{ padding: "5px 10px", borderRadius: 6, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: semanaOffset === 0 ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.6)", fontSize: 14, cursor: semanaOffset === 0 ? "default" : "pointer" }}>▶</button>
-          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginLeft: 8 }}>TC: $</span>
-          <input type="number" value={tcDolar} onChange={e => setTcDolar(+e.target.value)} style={{ width: 75, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "#fff", padding: "4px 7px", fontSize: 11 }} />
-          <input type="number" step="0.5" value={honorariosPct} onChange={e => setHonorariosPct(+e.target.value)} style={{ width: 50, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "#fff", padding: "4px 7px", fontSize: 11 }} />
-          <button onClick={exportarPDF} style={{ padding: "5px 14px", borderRadius: 8, background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>PDF</button>
+          <button onClick={() => setSemanaOffset(s => s - 1)} style={{ padding: "5px 10px", borderRadius: 6, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", fontSize: 14, cursor: "pointer" }}>◀</button>
+          <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)", minWidth: 160, textAlign: "center" }}>{reporte.fechaLabel}</span>
+          <button onClick={() => setSemanaOffset(s => Math.min(0, s + 1))} style={{ padding: "5px 10px", borderRadius: 6, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", color: semanaOffset === 0 ? "var(--gfi-text-dim)" : "var(--gfi-text-secondary)", fontSize: 14, cursor: semanaOffset === 0 ? "default" : "pointer" }}>▶</button>
+          <span style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginLeft: 8 }}>TC: $</span>
+          <input type="number" value={tcDolar} onChange={e => setTcDolar(+e.target.value)} style={{ width: 75, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "#fff", padding: "4px 7px", fontSize: 11 }} />
+          <input type="number" step="0.5" value={honorariosPct} onChange={e => setHonorariosPct(+e.target.value)} style={{ width: 50, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "#fff", padding: "4px 7px", fontSize: 11 }} />
+          <button onClick={exportarPDF} style={{ padding: "5px 14px", borderRadius: 8, background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer" }}>PDF</button>
         </div>
       </div>
 
@@ -222,9 +222,9 @@ export default function ReporteSemanal() {
             { label: "Operaciones cerradas", val: reporte.negociosCerrados, color: "#3abab6" },
             { label: "Honorarios est.", val: `USD ${fmt(reporte.honorariosEstimados)}`, color: "#990000" },
           ].map(kpi => (
-            <div key={kpi.label} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "14px 16px" }}>
-              <p style={{ margin: "0 0 6px 0", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>{kpi.label}</p>
-              <p style={{ margin: 0, fontSize: 24, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
+            <div key={kpi.label} style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "14px 16px" }}>
+              <p style={{ margin: "0 0 6px 0", fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>{kpi.label}</p>
+              <p style={{ margin: 0, fontSize: 24, fontFamily: "var(--font-display)", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
               {"var" in kpi && kpi.var !== undefined && (
                 <p style={{ margin: "4px 0 0 0", fontSize: 10, color: kpi.var >= 0 ? "#3abab6" : "#990000" }}>
                   {kpi.var >= 0 ? "▲" : "▼"} {Math.abs(kpi.var).toFixed(0)}% vs sem. ant.
@@ -236,18 +236,18 @@ export default function ReporteSemanal() {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           {/* Operaciones cerradas */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
-            <div style={{ padding: "14px 18px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#3abab6", letterSpacing: "0.08em", textTransform: "uppercase" }}>✅ Operaciones Cerradas</span>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
+            <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--gfi-border-subtle)", display: "flex", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "#3abab6", letterSpacing: "0.08em", textTransform: "uppercase" }}>✅ Operaciones Cerradas</span>
               <span style={{ fontSize: 11, color: "#3abab6", fontWeight: 700 }}>USD {fmt(reporte.valorCerradoUSD)}</span>
             </div>
             {reporte.negociosCerradosLista.length === 0 ? (
-              <p style={{ padding: "24px 18px", color: "rgba(255,255,255,0.2)", fontSize: 12, margin: 0, textAlign: "center" }}>Sin cierres esta semana</p>
+              <p style={{ padding: "24px 18px", color: "var(--gfi-text-dim)", fontSize: 12, margin: 0, textAlign: "center" }}>Sin cierres esta semana</p>
             ) : reporte.negociosCerradosLista.map(n => (
-              <div key={n.id} style={{ padding: "12px 18px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between" }}>
+              <div key={n.id} style={{ padding: "12px 18px", borderBottom: "1px solid var(--gfi-border-subtle)", display: "flex", justifyContent: "space-between" }}>
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 600 }}>{n.titulo}</div>
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{n.tipo_operacion ?? "—"}</div>
+                  <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{n.tipo_operacion ?? "—"}</div>
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#3abab6" }}>{n.moneda} {fmt(n.valor_operacion ?? 0)}</span>
               </div>
@@ -255,31 +255,31 @@ export default function ReporteSemanal() {
           </div>
 
           {/* Nuevos contactos */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
-            <div style={{ padding: "14px 18px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-              <span style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#3b82f6", letterSpacing: "0.08em", textTransform: "uppercase" }}>👤 Nuevos Contactos</span>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
+            <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+              <span style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "#3b82f6", letterSpacing: "0.08em", textTransform: "uppercase" }}>👤 Nuevos Contactos</span>
             </div>
             {reporte.contactosNuevosLista.length === 0 ? (
-              <p style={{ padding: "24px 18px", color: "rgba(255,255,255,0.2)", fontSize: 12, margin: 0, textAlign: "center" }}>Sin nuevos contactos esta semana</p>
+              <p style={{ padding: "24px 18px", color: "var(--gfi-text-dim)", fontSize: 12, margin: 0, textAlign: "center" }}>Sin nuevos contactos esta semana</p>
             ) : reporte.contactosNuevosLista.map(c => (
-              <div key={c.id} style={{ padding: "10px 18px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between" }}>
+              <div key={c.id} style={{ padding: "10px 18px", borderBottom: "1px solid var(--gfi-border-subtle)", display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 12, fontWeight: 600 }}>{c.nombre} {c.apellido}</span>
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{new Date(c.created_at).toLocaleDateString("es-AR")}</span>
+                <span style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{new Date(c.created_at).toLocaleDateString("es-AR")}</span>
               </div>
             ))}
           </div>
 
           {/* Actividad por tipo */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20 }}>
-            <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Actividad por Tipo</p>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20 }}>
+            <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Actividad por Tipo</p>
             {reporte.interaccionesPorTipo.length === 0 ? (
-              <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, margin: 0, textAlign: "center" }}>Sin interacciones esta semana</p>
+              <p style={{ color: "var(--gfi-text-dim)", fontSize: 12, margin: 0, textAlign: "center" }}>Sin interacciones esta semana</p>
             ) : reporte.interaccionesPorTipo.map(([tipo, cant]) => {
               const maxCant = reporte.interaccionesPorTipo[0][1];
               return (
                 <div key={tipo} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                  <span style={{ fontSize: 11, width: 100, color: "rgba(255,255,255,0.6)", textTransform: "capitalize" }}>{tipo}</span>
-                  <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
+                  <span style={{ fontSize: 11, width: 100, color: "var(--gfi-text-secondary)", textTransform: "capitalize" }}>{tipo}</span>
+                  <div style={{ flex: 1, height: 6, background: "var(--gfi-border-subtle)", borderRadius: 3, overflow: "hidden" }}>
                     <div style={{ height: "100%", width: `${(cant / maxCant) * 100}%`, background: "#d4960c", borderRadius: 3 }} />
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 700, width: 24, textAlign: "right" }}>{cant}</span>
@@ -289,21 +289,21 @@ export default function ReporteSemanal() {
           </div>
 
           {/* Pipeline y tareas */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20 }}>
-            <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Estado del Pipeline</p>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20 }}>
+            <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Estado del Pipeline</p>
             {[
               { label: "Valor total en pipeline", val: `USD ${fmt(reporte.pipelineUSD)}`, color: "#a78bfa" },
               { label: "Tareas completadas (sem.)", val: reporte.tareasCompletadas, color: "#3abab6" },
               { label: "Tareas pendientes", val: reporte.tareasPendientes, color: reporte.tareasPendientes > 10 ? "#990000" : "#d4960c" },
             ].map(row => (
-              <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{row.label}</span>
-                <span style={{ fontSize: 18, fontWeight: 800, fontFamily: "'Montserrat',sans-serif", color: row.color }}>{row.val}</span>
+              <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>{row.label}</span>
+                <span style={{ fontSize: 18, fontWeight: 800, fontFamily: "var(--font-display)", color: row.color }}>{row.val}</span>
               </div>
             ))}
 
-            <div style={{ marginTop: 16, padding: 12, borderRadius: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
+            <div style={{ marginTop: 16, padding: 12, borderRadius: 8, background: "var(--gfi-bg-card)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <p style={{ margin: 0, fontSize: 11, color: "var(--gfi-text-muted)", lineHeight: 1.6 }}>
                 {reporte.negociosCerrados > 0
                   ? `🎉 ¡Buena semana! ${reporte.negociosCerrados} operación${reporte.negociosCerrados !== 1 ? "es" : ""} cerrada${reporte.negociosCerrados !== 1 ? "s" : ""}.`
                   : reporte.interaccionesSemana > 5

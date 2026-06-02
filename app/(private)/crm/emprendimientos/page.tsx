@@ -221,67 +221,67 @@ export default function EmprendimientosPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        .emp-root { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; }
-        .emp-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 56px; background: rgba(14,14,14,0.98); border-bottom: 1px solid rgba(255,255,255,0.06); position: sticky; top: 0; z-index: 100; }
-        .emp-topbar-logo { font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 800; }
+        .emp-root { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: var(--font-body); }
+        .emp-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 56px; background: var(--gfi-bg-card); border-bottom: 1px solid rgba(255,255,255,0.06); position: sticky; top: 0; z-index: 100; }
+        .emp-topbar-logo { font-family: var(--font-display); font-size: 17px; font-weight: 800; }
         .emp-topbar-logo span { color: #990000; }
         .emp-content { max-width: 1180px; margin: 0 auto; padding: 28px 24px; }
         .emp-header { margin-bottom: 24px; }
-        .emp-header h1 { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; }
+        .emp-header h1 { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
         .emp-header h1 span { color: #990000; }
-        .emp-header p { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 5px; }
+        .emp-header p { font-size: 13px; color: var(--gfi-text-muted); margin-top: 5px; }
         .emp-vista-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
-        .emp-vista-tab { padding: 7px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .emp-vista-tab { padding: 7px 16px; border-radius: 6px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .emp-vista-tab.activo { background: #990000; border-color: #990000; color: #fff; }
         .emp-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .emp-filter-btn { padding: 6px 13px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); transition: all 0.15s; }
+        .emp-filter-btn { padding: 6px 13px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 5px; cursor: pointer; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-muted); transition: all 0.15s; }
         .emp-filter-btn.activo { border-color: rgba(153,0,0,0.5); color: #990000; background: rgba(153,0,0,0.08); }
-        .emp-search { padding: 7px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #fff; font-size: 12px; font-family: Inter,sans-serif; outline: none; width: 200px; }
-        .emp-btn-nuevo { margin-left: auto; padding: 8px 18px; background: #990000; border: none; border-radius: 5px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+        .emp-search { padding: 7px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 5px; color: #fff; font-size: 12px; font-family: Inter,sans-serif; outline: none; width: 200px; }
+        .emp-btn-nuevo { margin-left: auto; padding: 8px 18px; background: #990000; border: none; border-radius: 5px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
         .emp-btn-nuevo:hover { background: #aa0000; }
         .emp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
-        .emp-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.2s, transform 0.2s; }
+        .emp-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.2s, transform 0.2s; }
         .emp-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
         .emp-card-head { padding: 16px 16px 0; }
         .emp-card-body { padding: 10px 16px 14px; flex: 1; display: flex; flex-direction: column; gap: 7px; }
-        .emp-etapa-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
-        .emp-card-title { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 2px; }
-        .emp-card-sub { font-size: 11px; color: rgba(255,255,255,0.35); }
-        .emp-card-footer { padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 8px; flex-wrap: wrap; }
-        .emp-btn-sm { padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.45); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-        .emp-btn-sm:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
-        .emp-btn-del { padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: transparent; color: rgba(239,68,68,0.6); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .emp-etapa-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+        .emp-card-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 2px; }
+        .emp-card-sub { font-size: 11px; color: var(--gfi-text-muted); }
+        .emp-card-footer { padding: 10px 16px; border-top: 1px solid var(--gfi-border-subtle); display: flex; gap: 8px; flex-wrap: wrap; }
+        .emp-btn-sm { padding: 5px 12px; border-radius: 4px; border: 1px solid var(--gfi-border); background: transparent; color: rgba(255,255,255,0.45); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .emp-btn-sm:hover { border-color: var(--gfi-text-muted); color: #fff; }
+        .emp-btn-del { padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: transparent; color: rgba(239,68,68,0.6); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .emp-btn-del:hover { border-color: rgba(239,68,68,0.5); color: #b80000; }
-        .emp-btn-contacto { padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(37,211,102,0.25); background: rgba(37,211,102,0.06); color: #25d366; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .emp-btn-contacto { padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(37,211,102,0.25); background: rgba(37,211,102,0.06); color: #25d366; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .emp-btn-contacto:hover { background: rgba(37,211,102,0.12); }
-        .emp-empty { padding: 60px 20px; text-align: center; color: rgba(255,255,255,0.2); font-size: 14px; }
-        .emp-loading { padding: 60px 20px; text-align: center; color: rgba(255,255,255,0.3); font-size: 13px; }
+        .emp-empty { padding: 60px 20px; text-align: center; color: var(--gfi-text-dim); font-size: 14px; }
+        .emp-loading { padding: 60px 20px; text-align: center; color: var(--gfi-text-muted); font-size: 13px; }
         /* comision badge */
-        .emp-comision { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; background: rgba(153,0,0,0.1); border: 1px solid rgba(153,0,0,0.2); font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: #990000; }
+        .emp-comision { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; background: rgba(153,0,0,0.1); border: 1px solid rgba(153,0,0,0.2); font-size: 10px; font-family: var(--font-display); font-weight: 700; color: #990000; }
         /* Modal */
         .emp-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
-        .emp-modal { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; width: 100%; max-width: 600px; padding: 28px; margin: auto; }
-        .emp-modal h2 { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 20px; }
+        .emp-modal { background: #111; border: 1px solid var(--gfi-border); border-radius: 10px; width: 100%; max-width: 600px; padding: 28px; margin: auto; }
+        .emp-modal h2 { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 20px; }
         .emp-modal h2 span { color: #990000; }
-        .emp-modal-section { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin: 16px 0 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .emp-modal-section { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin: 16px 0 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .emp-modal-field { margin-bottom: 12px; }
-        .emp-modal-label { display: block; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 5px; }
-        .emp-modal-input, .emp-modal-select, .emp-modal-textarea { width: 100%; padding: 8px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-family: 'Inter',sans-serif; font-size: 13px; outline: none; transition: border-color 0.2s; }
+        .emp-modal-label { display: block; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; }
+        .emp-modal-input, .emp-modal-select, .emp-modal-textarea { width: 100%; padding: 8px 11px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.2s; }
         .emp-modal-input:focus, .emp-modal-select:focus, .emp-modal-textarea:focus { border-color: rgba(153,0,0,0.5); }
         .emp-modal-textarea { min-height: 70px; resize: vertical; }
         .emp-modal-select option { background: #111; }
         .emp-modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .emp-modal-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .emp-amenity-grid { display: flex; flex-wrap: wrap; gap: 6px; }
-        .emp-amenity-btn { padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+        .emp-amenity-btn { padding: 4px 10px; border-radius: 4px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 9px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
         .emp-amenity-btn.activo { border-color: rgba(153,0,0,0.5); background: rgba(153,0,0,0.1); color: #990000; }
         .emp-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
-        .emp-modal-btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; }
-        .emp-modal-btn-save { padding: 9px 20px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .emp-modal-btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; }
+        .emp-modal-btn-save { padding: 9px 20px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; }
         .emp-modal-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
         /* Contacto pop */
         .emp-contacto-pop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1100; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .emp-contacto-box { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 24px; width: 100%; max-width: 380px; }
+        .emp-contacto-box { background: #111; border: 1px solid var(--gfi-border); border-radius: 10px; padding: 24px; width: 100%; max-width: 380px; }
         @media (max-width: 640px) {
           .emp-modal-row, .emp-modal-row3 { grid-template-columns: 1fr; }
           .emp-grid { grid-template-columns: 1fr; }
@@ -291,7 +291,7 @@ export default function EmprendimientosPage() {
       <div className="emp-root">
         <header className="emp-topbar">
           <div className="emp-topbar-logo">GFI<span>®</span> — Emprendimientos</div>
-          <a href="/dashboard" style={{ padding: "6px 14px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>← Dashboard</a>
+          <a href="/dashboard" style={{ padding: "6px 14px", background: "transparent", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>← Dashboard</a>
         </header>
 
         <main className="emp-content">
@@ -318,7 +318,7 @@ export default function EmprendimientosPage() {
             {ETAPAS_EMP.map(e => (
               <button key={e.value} className={`emp-filter-btn${filtroEtapa === e.value ? " activo" : ""}`} onClick={() => setFiltroEtapa(e.value)}>{e.label}</button>
             ))}
-            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
+            <div style={{ width: 1, height: 20, background: "var(--gfi-border)" }} />
             <button className={`emp-filter-btn${filtroTipo === "todos" ? " activo" : ""}`} onClick={() => setFiltroTipo("todos")}>Todos</button>
             {TIPOS_EMP.map(t => (
               <button key={t} className={`emp-filter-btn${filtroTipo === t ? " activo" : ""}`} onClick={() => setFiltroTipo(t)}>{t}</button>
@@ -352,27 +352,27 @@ export default function EmprendimientosPage() {
                       )}
                     </div>
                     <div className="emp-card-body">
-                      {emp.tipo && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>{emp.tipo}</div>}
+                      {emp.tipo && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>{emp.tipo}</div>}
 
                       {(emp.dormitorios_desde || emp.sup_desde) && (
-                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", display: "flex", gap: 12 }}>
+                        <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", display: "flex", gap: 12 }}>
                           {emp.dormitorios_desde && <span>🛏 {emp.dormitorios_desde}{emp.dormitorios_hasta && emp.dormitorios_hasta !== emp.dormitorios_desde ? `–${emp.dormitorios_hasta}` : ""} dorm.</span>}
                           {emp.sup_desde && <span>📐 {emp.sup_desde}{emp.sup_hasta && emp.sup_hasta !== emp.sup_desde ? `–${emp.sup_hasta}` : ""}m²</span>}
                         </div>
                       )}
 
                       {emp.unidades_disponibles != null && (
-                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
+                        <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>
                           <strong style={{ color: "#fff" }}>{emp.unidades_disponibles}</strong> unidades disponibles{emp.total_unidades ? ` de ${emp.total_unidades}` : ""}
                         </div>
                       )}
 
                       {fmtPrecio(emp) && (
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#990000" }}>{fmtPrecio(emp)}</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#990000" }}>{fmtPrecio(emp)}</div>
                       )}
 
                       {emp.fecha_entrega && (
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>Entrega: {fmtEntrega(emp.fecha_entrega)}</div>
+                        <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>Entrega: {fmtEntrega(emp.fecha_entrega)}</div>
                       )}
 
                       {vista === "marketplace" && emp.comision_corredor_pct != null && emp.comision_corredor_pct > 0 && (
@@ -380,7 +380,7 @@ export default function EmprendimientosPage() {
                       )}
 
                       {emp.perfiles && vista === "marketplace" && (
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
+                        <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                           {emp.perfiles.inmobiliaria ?? `${emp.perfiles.nombre} ${emp.perfiles.apellido}`}
                         </div>
                       )}
@@ -388,9 +388,9 @@ export default function EmprendimientosPage() {
                       {emp.amenities && emp.amenities.length > 0 && (
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 2 }}>
                           {emp.amenities.slice(0, 4).map(a => (
-                            <span key={a} style={{ padding: "2px 7px", borderRadius: 10, background: "rgba(255,255,255,0.06)", fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{a}</span>
+                            <span key={a} style={{ padding: "2px 7px", borderRadius: 10, background: "rgba(255,255,255,0.06)", fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700 }}>{a}</span>
                           ))}
-                          {emp.amenities.length > 4 && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>+{emp.amenities.length - 4} más</span>}
+                          {emp.amenities.length > 4 && <span style={{ fontSize: 10, color: "var(--gfi-text-dim)" }}>+{emp.amenities.length - 4} más</span>}
                         </div>
                       )}
                     </div>
@@ -408,7 +408,7 @@ export default function EmprendimientosPage() {
                         <>
                           <button className="emp-btn-sm" onClick={() => abrirEditar(emp)}>Editar</button>
                           <button className="emp-btn-del" onClick={() => eliminar(emp.id)}>Eliminar</button>
-                          {!emp.es_publica && <span style={{ fontSize: 10, color: "rgba(255,165,0,0.7)", padding: "5px 0", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>⚠ Oculto</span>}
+                          {!emp.es_publica && <span style={{ fontSize: 10, color: "rgba(255,165,0,0.7)", padding: "5px 0", fontFamily: "var(--font-display)", fontWeight: 700 }}>⚠ Oculto</span>}
                         </>
                       )}
                     </div>
@@ -491,7 +491,7 @@ export default function EmprendimientosPage() {
             <div className="emp-modal-row">
               <div className="emp-modal-field"><label className="emp-modal-label">Comisión corredor (%)</label><input className="emp-modal-input" type="number" step="0.5" value={form.comision_corredor_pct} onChange={e => setForm(f => ({...f, comision_corredor_pct: e.target.value}))} /></div>
               <div className="emp-modal-field" style={{ display: "flex", alignItems: "flex-end", paddingBottom: 4 }}>
-                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.6)" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)" }}>
                   <input type="checkbox" checked={form.es_publica} onChange={e => setForm(f => ({...f, es_publica: e.target.checked}))} />
                   Publicar en marketplace
                 </label>
@@ -517,19 +517,19 @@ export default function EmprendimientosPage() {
           <div className="emp-contacto-pop" onClick={e => { if (e.target === e.currentTarget) setContactoEmp(null); }}>
             <div className="emp-contacto-box">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800 }}>{emp.nombre}</div>
-                <button onClick={() => setContactoEmp(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer" }}>✕</button>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 800 }}>{emp.nombre}</div>
+                <button onClick={() => setContactoEmp(null)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 18, cursor: "pointer" }}>✕</button>
               </div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16 }}>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 16 }}>
                 {emp.perfiles?.inmobiliaria ?? nombre}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {wa && <a href={`https://wa.me/${wa.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.25)", borderRadius: 6, color: "#25d366", fontSize: 13, fontWeight: 700, textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>💬 WhatsApp</a>}
-                {email && <a href={`mailto:${email}`} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 700, textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>✉ Email</a>}
-                {emp.web_url && <a href={emp.web_url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 700, textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>🌐 Ver web</a>}
+                {wa && <a href={`https://wa.me/${wa.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.25)", borderRadius: 6, color: "#25d366", fontSize: 13, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-display)" }}>💬 WhatsApp</a>}
+                {email && <a href={`mailto:${email}`} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "var(--gfi-text-primary)", fontSize: 13, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-display)" }}>✉ Email</a>}
+                {emp.web_url && <a href={emp.web_url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "var(--gfi-text-primary)", fontSize: 13, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-display)" }}>🌐 Ver web</a>}
               </div>
               {emp.comision_corredor_pct != null && emp.comision_corredor_pct > 0 && (
-                <div style={{ marginTop: 16, padding: "10px 14px", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 6, fontSize: 12, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                <div style={{ marginTop: 16, padding: "10px 14px", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 6, fontSize: 12, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700 }}>
                   🤝 Comisión para el corredor: {emp.comision_corredor_pct}%
                 </div>
               )}

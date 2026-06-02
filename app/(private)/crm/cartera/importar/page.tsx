@@ -153,52 +153,52 @@ export default function ImportarPropiedadesPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .imp-wrap { max-width: 900px; display: flex; flex-direction: column; gap: 20px; font-family: 'Inter',sans-serif; }
-        .imp-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+        .imp-wrap { max-width: 900px; display: flex; flex-direction: column; gap: 20px; font-family: var(--font-body); }
+        .imp-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; }
         .imp-titulo span { color: #990000; }
-        .imp-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+        .imp-sub { font-size: 13px; color: var(--gfi-text-muted); margin-top: 3px; }
         /* Stepper */
         .imp-steps { display: flex; gap: 0; align-items: center; }
         .imp-step { display: flex; align-items: center; gap: 8px; }
-        .imp-step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; flex-shrink: 0; transition: all 0.2s; }
-        .imp-step-label { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-        .imp-step-sep { flex: 1; height: 1px; background: rgba(255,255,255,0.08); margin: 0 10px; min-width: 20px; }
+        .imp-step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 800; flex-shrink: 0; transition: all 0.2s; }
+        .imp-step-label { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .imp-step-sep { flex: 1; height: 1px; background: var(--gfi-border); margin: 0 10px; min-width: 20px; }
         /* Drop zone */
         .imp-drop { border: 2px dashed rgba(255,255,255,0.15); border-radius: 10px; padding: 50px 30px; text-align: center; cursor: pointer; transition: all 0.2s; }
         .imp-drop:hover, .imp-drop.over { border-color: #990000; background: rgba(153,0,0,0.05); }
         .imp-drop-icon { font-size: 36px; margin-bottom: 12px; }
-        .imp-drop-txt { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
-        .imp-drop-sub { font-size: 12px; color: rgba(255,255,255,0.3); }
+        .imp-drop-txt { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--gfi-text-secondary); margin-bottom: 6px; }
+        .imp-drop-sub { font-size: 12px; color: var(--gfi-text-muted); }
         /* Buttons */
-        .imp-btn { padding: 11px 22px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; border: none; transition: all 0.15s; }
+        .imp-btn { padding: 11px 22px; border-radius: 5px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; border: none; transition: all 0.15s; }
         .imp-btn-primary { background: #990000; color: #fff; }
         .imp-btn-primary:hover { background: #e00; }
         .imp-btn-primary:disabled { background: rgba(153,0,0,0.3); cursor: not-allowed; }
-        .imp-btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
-        .imp-btn-secondary:hover { background: rgba(255,255,255,0.08); }
-        .imp-btn-ghost { background: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); padding: 8px 14px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .imp-btn-secondary { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); color: var(--gfi-text-secondary); }
+        .imp-btn-secondary:hover { background: var(--gfi-border); }
+        .imp-btn-ghost { background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--gfi-text-muted); padding: 8px 14px; border-radius: 5px; font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; }
         /* Card */
-        .imp-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 22px; }
+        .imp-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 20px 22px; }
         /* Error */
-        .imp-error { padding: 10px 14px; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.25); border-radius: 6px; font-size: 12px; color: rgba(255,100,100,0.9); font-family: 'Inter',sans-serif; }
+        .imp-error { padding: 10px 14px; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.25); border-radius: 6px; font-size: 12px; color: rgba(255,100,100,0.9); font-family: var(--font-body); }
         /* Tabla preview */
         .imp-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .imp-tabla th { padding: 8px 10px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .imp-tabla td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
-        .imp-tabla tr:hover td { background: rgba(255,255,255,0.02); }
+        .imp-tabla th { padding: 8px 10px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-dim); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .imp-tabla td { padding: 9px 10px; border-bottom: 1px solid var(--gfi-border-subtle); vertical-align: middle; }
+        .imp-tabla tr:hover td { background: var(--gfi-bg-secondary); }
         .imp-tabla tr.excluida td { opacity: 0.35; }
         /* Badge */
-        .imp-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; }
+        .imp-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.06em; }
         /* Checkbox */
         .imp-cb { width: 15px; height: 15px; cursor: pointer; accent-color: #990000; }
         /* Spinner */
-        .imp-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
+        .imp-spinner { width: 16px; height: 16px; border: 2px solid var(--gfi-border); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         /* Resultado */
         .imp-success { text-align: center; padding: 40px 20px; }
         .imp-success-icon { font-size: 48px; margin-bottom: 14px; }
-        .imp-success-num { font-family: 'Montserrat',sans-serif; font-size: 52px; font-weight: 800; color: #3abab6; line-height: 1; }
-        .imp-success-label { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+        .imp-success-num { font-family: var(--font-display); font-size: 52px; font-weight: 800; color: #3abab6; line-height: 1; }
+        .imp-success-label { font-size: 14px; color: var(--gfi-text-secondary); margin-top: 6px; }
         @media (max-width: 700px) {
           .imp-step-label { display: none; }
           .imp-tabla th:nth-child(n+5) { display: none; }
@@ -213,7 +213,7 @@ export default function ImportarPropiedadesPage() {
             <div className="imp-titulo">Importar <span>propiedades</span></div>
             <div className="imp-sub">Cargá tu cartera desde CSV — compatible con ZonaProp, KiteProp, Argenprop y formato propio GFI.</div>
           </div>
-          <Link href="/crm/cartera" style={{ padding: "7px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, textDecoration: "none", letterSpacing: "0.08em" }}>
+          <Link href="/crm/cartera" style={{ padding: "7px 14px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, textDecoration: "none", letterSpacing: "0.08em" }}>
             ← Volver a cartera
           </Link>
         </div>
@@ -230,12 +230,12 @@ export default function ImportarPropiedadesPage() {
               <div className="imp-step">
                 <div className="imp-step-num" style={{
                   background: paso === n ? "#990000" : paso > n ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.06)",
-                  color: paso === n ? "#fff" : paso > n ? "#3abab6" : "rgba(255,255,255,0.3)",
+                  color: paso === n ? "#fff" : paso > n ? "#3abab6" : "var(--gfi-text-muted)",
                   border: paso > n ? "1px solid rgba(34,197,94,0.3)" : "none",
                 }}>
                   {paso > n ? "✓" : n}
                 </div>
-                <div className="imp-step-label" style={{ color: paso >= n ? "#fff" : "rgba(255,255,255,0.3)" }}>{label}</div>
+                <div className="imp-step-label" style={{ color: paso >= n ? "#fff" : "var(--gfi-text-muted)" }}>{label}</div>
               </div>
               {i < 3 && <div className="imp-step-sep" />}
             </div>
@@ -262,14 +262,14 @@ export default function ImportarPropiedadesPage() {
 
             {/* Info de columnas soportadas */}
             <div className="imp-card">
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>Columnas reconocidas automáticamente</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 10 }}>Columnas reconocidas automáticamente</div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {["titulo", "tipo", "operacion", "precio", "moneda", "ciudad", "zona", "direccion", "dormitorios", "baños", "ambientes", "sup. cubierta", "sup. total", "descripcion", "código", "expensas", "video", "fotos"].map(col => (
-                  <span key={col} className="imp-badge" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.08)" }}>{col}</span>
+                  <span key={col} className="imp-badge" style={{ background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "1px solid var(--gfi-border)" }}>{col}</span>
                 ))}
               </div>
               <div style={{ marginTop: 12, display: "flex", gap: 8, alignItems: "center" }}>
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>¿No tenés el formato? Descargá la plantilla:</span>
+                <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>¿No tenés el formato? Descargá la plantilla:</span>
                 <button className="imp-btn-ghost" onClick={e => { e.stopPropagation(); descargarPlantilla(); }}>
                   ⬇ Plantilla CSV
                 </button>
@@ -284,8 +284,8 @@ export default function ImportarPropiedadesPage() {
             <div className="imp-card">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
                 <div>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>📄 {csvNombre}</div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff" }}>📄 {csvNombre}</div>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4 }}>
                     {csvText.split("\n").filter(Boolean).length - 1} filas detectadas
                   </div>
                 </div>
@@ -294,7 +294,7 @@ export default function ImportarPropiedadesPage() {
                 </button>
               </div>
 
-              <div style={{ marginTop: 14, padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 6, fontFamily: "monospace", fontSize: 11, color: "rgba(255,255,255,0.4)", maxHeight: 80, overflow: "hidden" }}>
+              <div style={{ marginTop: 14, padding: "10px 12px", background: "var(--gfi-bg-card)", borderRadius: 6, fontFamily: "monospace", fontSize: 11, color: "var(--gfi-text-muted)", maxHeight: 80, overflow: "hidden" }}>
                 {csvText.split("\n").slice(0, 3).join("\n")}
               </div>
             </div>
@@ -311,7 +311,7 @@ export default function ImportarPropiedadesPage() {
         {paso === 3 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
-              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontFamily: "Inter,sans-serif" }}>
+              <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", fontFamily: "Inter,sans-serif" }}>
                 <strong style={{ color: "#fff" }}>{preview.length}</strong> propiedades detectadas ·{" "}
                 <strong style={{ color: "#3abab6" }}>{seleccionados.size}</strong> seleccionadas para importar
               </div>
@@ -349,8 +349,8 @@ export default function ImportarPropiedadesPage() {
                           <td onClick={e => e.stopPropagation()}>
                             <input type="checkbox" className="imp-cb" checked={sel} onChange={() => toggleSeleccion(row.idx)} />
                           </td>
-                          <td style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{i + 1}</td>
-                          <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: "#fff", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{i + 1}</td>
+                          <td style={{ fontFamily: "var(--font-display)", fontWeight: 600, color: "#fff", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {row.titulo}
                           </td>
                           <td>
@@ -367,12 +367,12 @@ export default function ImportarPropiedadesPage() {
                               {row.operacion}
                             </span>
                           </td>
-                          <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: "#fff" }}>
+                          <td style={{ fontFamily: "var(--font-display)", fontWeight: 600, color: "#fff" }}>
                             {fmtPrecio(row.precio, row.moneda)}
                           </td>
-                          <td style={{ color: "rgba(255,255,255,0.5)" }}>{row.ciudad || "—"}</td>
-                          <td style={{ color: "rgba(255,255,255,0.5)" }}>{row.dormitorios ?? "—"}</td>
-                          <td style={{ color: "rgba(255,255,255,0.5)" }}>{row.superficie_cubierta ? `${row.superficie_cubierta}m²` : "—"}</td>
+                          <td style={{ color: "var(--gfi-text-secondary)" }}>{row.ciudad || "—"}</td>
+                          <td style={{ color: "var(--gfi-text-secondary)" }}>{row.dormitorios ?? "—"}</td>
+                          <td style={{ color: "var(--gfi-text-secondary)" }}>{row.superficie_cubierta ? `${row.superficie_cubierta}m²` : "—"}</td>
                         </tr>
                       );
                     })}
@@ -393,7 +393,7 @@ export default function ImportarPropiedadesPage() {
 
               {resultado.errores.length > 0 && (
                 <div style={{ marginTop: 16, padding: "10px 14px", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 6, fontSize: 11, color: "#d4960c", textAlign: "left" }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 6 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 6 }}>
                     {resultado.errores.length} fila{resultado.errores.length > 1 ? "s" : ""} con error:
                   </div>
                   {resultado.errores.slice(0, 5).map((e, i) => (
@@ -404,7 +404,7 @@ export default function ImportarPropiedadesPage() {
               )}
 
               <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
-                <Link href="/crm/cartera" style={{ padding: "11px 22px", background: "#990000", borderRadius: 5, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, textDecoration: "none", letterSpacing: "0.1em" }}>
+                <Link href="/crm/cartera" style={{ padding: "11px 22px", background: "#990000", borderRadius: 5, color: "#fff", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, textDecoration: "none", letterSpacing: "0.1em" }}>
                   Ver cartera →
                 </Link>
                 <button

@@ -129,7 +129,7 @@ export default function CampanasPage() {
 
   const adhId = (id: string) => misAdhesiones.find(a => a.campana_id === id);
 
-  if (loading) return <div style={{ padding: 64, textAlign: "center", color: "rgba(255,255,255,0.3)" }}>Cargando campañas...</div>;
+  if (loading) return <div style={{ padding: 64, textAlign: "center", color: "var(--gfi-text-muted)" }}>Cargando campañas...</div>;
 
   const misCampanas = campanas.filter(c => adhId(c.id));
   const disponibles = campanas.filter(c => !adhId(c.id));
@@ -138,36 +138,36 @@ export default function CampanasPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
-        .camp-hdr { font-family:'Montserrat',sans-serif; font-size:22px; font-weight:800; color:#fff; margin-bottom:6px; }
-        .camp-sub { font-size:13px; color:rgba(255,255,255,0.35); margin-bottom:24px; }
-        .camp-sec { font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,0.25); margin:24px 0 12px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.06); }
+        .camp-hdr { font-family:var(--font-display); font-size:22px; font-weight:800; color:#fff; margin-bottom:6px; }
+        .camp-sub { font-size:13px; color:var(--gfi-text-muted); margin-bottom:24px; }
+        .camp-sec { font-family:var(--font-display); font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--gfi-text-dim); margin:24px 0 12px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.06); }
         .camp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
-        .camp-card { background:rgba(14,14,14,.95); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:12px; transition:border-color .2s; }
+        .camp-card { background:var(--gfi-bg-card); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:12px; transition:border-color .2s; }
         .camp-card:hover { border-color:rgba(255,255,255,.14); }
         .camp-card.adherido { border-color:rgba(34,197,94,.25); background:rgba(34,197,94,.03); }
         .camp-logo { width:44px; height:44px; border-radius:8px; object-fit:contain; background:rgba(255,255,255,.06); padding:4px; flex-shrink:0; }
         .camp-logo-ph { width:44px; height:44px; border-radius:8px; background:rgba(200,0,0,.12); border:1px solid rgba(200,0,0,.2); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
         .camp-sponsor-row { display:flex; align-items:center; gap:10px; }
-        .camp-sponsor-nom { font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:rgba(255,255,255,.5); letter-spacing:.06em; text-transform:uppercase; }
-        .camp-titulo { font-family:'Montserrat',sans-serif; font-size:15px; font-weight:800; color:#fff; line-height:1.3; }
+        .camp-sponsor-nom { font-family:var(--font-display); font-size:11px; font-weight:700; color:rgba(255,255,255,.5); letter-spacing:.06em; text-transform:uppercase; }
+        .camp-titulo { font-family:var(--font-display); font-size:15px; font-weight:800; color:#fff; line-height:1.3; }
         .camp-desc { font-size:12px; color:rgba(255,255,255,.45); line-height:1.6; }
-        .camp-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
+        .camp-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-family:var(--font-display); font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
         .camp-detalle { font-size:13px; font-weight:600; color:#fff; padding:10px 14px; background:rgba(255,255,255,.04); border-radius:6px; border:1px solid rgba(255,255,255,.08); }
         .camp-costo { font-size:11px; color:rgba(255,255,255,.35); }
         .camp-costo strong { color:#990000; }
-        .camp-input { width:100%; padding:10px 13px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:4px; color:#fff; font-size:13px; outline:none; font-family:'Inter',sans-serif; box-sizing:border-box; }
+        .camp-input { width:100%; padding:10px 13px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:4px; color:#fff; font-size:13px; outline:none; font-family:var(--font-body); box-sizing:border-box; }
         .camp-input:focus { border-color:rgba(200,0,0,.4); }
-        .btn-sumar { padding:11px; background:#990000; border:none; border-radius:4px; color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; width:100%; }
+        .btn-sumar { padding:11px; background:#990000; border:none; border-radius:4px; color:#fff; font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; width:100%; }
         .btn-sumar:hover:not(:disabled) { background:#e60000; }
         .btn-sumar:disabled { opacity:.5; cursor:not-allowed; }
         .camp-link-box { background:rgba(34,197,94,.06); border:1px solid rgba(34,197,94,.2); border-radius:6px; padding:12px 14px; }
-        .camp-link-url { font-family:'Inter',sans-serif; font-size:11px; color:rgba(34,197,94,.8); word-break:break-all; margin-bottom:8px; }
-        .btn-copy { padding:7px 14px; background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.25); border-radius:4px; color:#3abab6; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; cursor:pointer; }
+        .camp-link-url { font-family:var(--font-body); font-size:11px; color:rgba(34,197,94,.8); word-break:break-all; margin-bottom:8px; }
+        .btn-copy { padding:7px 14px; background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.25); border-radius:4px; color:#3abab6; font-family:var(--font-display); font-size:10px; font-weight:700; cursor:pointer; }
         .camp-stats-row { display:flex; gap:12px; flex-wrap:wrap; }
         .camp-stat { display:flex; flex-direction:column; gap:2px; }
-        .camp-stat-val { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; color:#990000; }
+        .camp-stat-val { font-family:var(--font-display); font-size:18px; font-weight:800; color:#990000; }
         .camp-stat-label { font-size:10px; color:rgba(255,255,255,.35); }
-        .toast { position:fixed; bottom:28px; right:28px; padding:12px 20px; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; z-index:999; }
+        .toast { position:fixed; bottom:28px; right:28px; padding:12px 20px; border-radius:5px; font-family:var(--font-display); font-size:12px; font-weight:700; z-index:999; }
         .toast.ok { background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.35); color:#3abab6; }
         .toast.err { background:rgba(200,0,0,.15); border:1px solid rgba(200,0,0,.35); color:#ff6666; }
       `}</style>
@@ -182,7 +182,7 @@ export default function CampanasPage() {
         {/* Declarar admins */}
         {!cantAdmins && (
           <div style={{ background: "rgba(200,0,0,.06)", border: "1px solid rgba(200,0,0,.2)", borderRadius: 8, padding: "16px 20px", marginBottom: 24 }}>
-            <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
               ¿Cuántos consorcios o propiedades administrás?
             </div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,.4)", marginBottom: 12 }}>
@@ -226,7 +226,7 @@ export default function CampanasPage() {
                       <div className="camp-stat"><div className="camp-stat-val">${adh.monto_cobrado_usd}</div><div className="camp-stat-label">cobrado al sponsor</div></div>
                     </div>
                     <div className="camp-link-box">
-                      <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(34,197,94,.6)", marginBottom: 6, letterSpacing: ".1em", textTransform: "uppercase" }}>
+                      <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, color: "rgba(34,197,94,.6)", marginBottom: 6, letterSpacing: ".1em", textTransform: "uppercase" }}>
                         Tu link de referido
                       </div>
                       <div className="camp-link-url">{linkUrl}</div>
@@ -280,7 +280,7 @@ export default function CampanasPage() {
                     {/* Input admins si no está declarado */}
                     {!cantAdmins && (
                       <div>
-                        <label style={{ fontSize: 10, color: "rgba(255,255,255,.35)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em", display: "block", marginBottom: 5 }}>
+                        <label style={{ fontSize: 10, color: "rgba(255,255,255,.35)", fontFamily: "var(--font-display)", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em", display: "block", marginBottom: 5 }}>
                           Cantidad de administraciones
                         </label>
                         <input
@@ -317,7 +317,7 @@ export default function CampanasPage() {
         {campanas.length === 0 && (
           <div style={{ textAlign: "center", padding: "64px 0", color: "rgba(255,255,255,.2)" }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>📢</div>
-            <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>Sin campañas activas por ahora</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>Sin campañas activas por ahora</div>
           </div>
         )}
       </div>

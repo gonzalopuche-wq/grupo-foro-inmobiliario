@@ -78,8 +78,8 @@ export default function FloatingWindow({ win }: { win: GFIWindow }) {
         position: "fixed", left: win.x, top: win.y,
         width: win.width, height: win.height,
         zIndex: win.zIndex,
-        background: "#111",
-        border: "1px solid rgba(255,255,255,0.1)",
+        background: "var(--gfi-bg-secondary)",
+        border: "1px solid var(--gfi-border)",
         borderRadius: 8,
         boxShadow: "0 24px 64px rgba(0,0,0,0.85)",
         display: "flex", flexDirection: "column",
@@ -93,7 +93,7 @@ export default function FloatingWindow({ win }: { win: GFIWindow }) {
         style={{
           height: 36, flexShrink: 0,
           background: "rgba(16,16,16,0.99)",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          borderBottom: "1px solid var(--gfi-border-subtle)",
           display: "flex", alignItems: "center",
           padding: "0 10px", gap: 8, cursor: "grab",
         }}
@@ -105,7 +105,7 @@ export default function FloatingWindow({ win }: { win: GFIWindow }) {
 
         <span style={{ fontSize: 13, marginLeft: 4 }}>{win.icon}</span>
         <span style={{
-          flex: 1, fontSize: 12, fontFamily: "'Inter',sans-serif",
+          flex: 1, fontSize: 12, fontFamily: "var(--font-body)",
           color: "rgba(255,255,255,0.65)", fontWeight: 500,
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>
@@ -127,7 +127,7 @@ export default function FloatingWindow({ win }: { win: GFIWindow }) {
         style={{
           position: "absolute", bottom: 0, right: 0,
           width: 18, height: 18, cursor: "nwse-resize",
-          background: "linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.12) 50%)",
+          background: "linear-gradient(135deg, transparent 50%, var(--gfi-border) 50%)",
           borderRadius: "0 0 7px 0",
         }}
       />

@@ -174,18 +174,18 @@ export default function GastosPage() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>💸 Gastos Operativos</h1>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, color: "#fff", margin: 0 }}>💸 Gastos Operativos</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Control de gastos mensuales de la inmobiliaria</p>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
-            <button onClick={exportarPDF} style={{ background: "#1f2937", color: "#e5e5e5", border: "1px solid #374151", borderRadius: 6, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>📄 PDF</button>
+            <button onClick={exportarPDF} style={{ background: "var(--gfi-border)", color: "#e5e5e5", border: "1px solid #374151", borderRadius: 6, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>📄 PDF</button>
             <button onClick={abrirNuevo} style={{ background: "#99000033", color: "#990000", border: "1px solid #99000066", borderRadius: 8, padding: "7px 16px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>+ Nuevo Gasto</button>
           </div>
         </div>
 
         {/* Config */}
-        <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 20, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
+        <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 14, marginBottom: 20, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
           <div>
             <label style={lblStyle}>Mes</label>
             <select value={filtroMes} onChange={e => setFiltroMes(e.target.value)}
@@ -228,16 +228,16 @@ export default function GastosPage() {
               { label: "Ratio Gastos", val: `${(100 - stats.margen).toFixed(1)}%`, color: "#9ca3af" },
             ] : []),
           ].map(k => (
-            <div key={k.label} style={{ background: "#111", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "10px 13px" }}>
+            <div key={k.label} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "10px 13px" }}>
               <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 3, fontWeight: 600 }}>{k.label}</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 17, color: k.color }}>{k.val}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 17, color: k.color }}>{k.val}</div>
             </div>
           ))}
         </div>
 
         {/* Barra de progreso ingresos vs gastos */}
         {ingresosMes > 0 && (
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 16, marginBottom: 20 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 10, padding: 16, marginBottom: 20 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6b7280", marginBottom: 6 }}>
               <span>Gastos sobre ingresos</span>
               <span style={{ color: stats.margen >= 0 ? "#3abab6" : "#990000" }}>
@@ -255,8 +255,8 @@ export default function GastosPage() {
 
         {/* Por categoría */}
         {Object.keys(stats.porCat).length > 0 && (
-          <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 18, marginBottom: 20 }}>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 12 }}>Por Categoría</div>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #1f2937", borderRadius: 12, padding: 18, marginBottom: 20 }}>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 12 }}>Por Categoría</div>
             {Object.entries(stats.porCat).sort((a, b) => b[1] - a[1]).map(([cat, monto]) => (
               <div key={cat} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                 <div style={{ width: 160, fontSize: 12, color: "#9ca3af", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cat}</div>
@@ -277,7 +277,7 @@ export default function GastosPage() {
           {gastosFiltrados
             .sort((a, b) => b.fecha.localeCompare(a.fecha))
             .map(g => (
-              <div key={g.id} style={{ background: "#111", border: `1px solid ${colCat(g.categoria)}33`, borderLeft: `3px solid ${colCat(g.categoria)}`, borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+              <div key={g.id} style={{ background: "var(--gfi-bg-secondary)", border: `1px solid ${colCat(g.categoria)}33`, borderLeft: `3px solid ${colCat(g.categoria)}`, borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ flex: 2, minWidth: 140 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#e5e5e5" }}>{g.descripcion}</div>
                   <div style={{ fontSize: 11, color: "#6b7280" }}>
@@ -302,9 +302,9 @@ export default function GastosPage() {
         {/* Modal */}
         {formOpen && (
           <div style={{ position: "fixed", inset: 0, background: "#000000cc", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 24 }}>
-            <div style={{ background: "#111", border: "1px solid #333", borderRadius: 14, padding: 28, width: "100%", maxWidth: 560 }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid #333", borderRadius: 14, padding: 28, width: "100%", maxWidth: 560 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-                <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#fff" }}>{editId ? "Editar Gasto" : "Nuevo Gasto"}</span>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>{editId ? "Editar Gasto" : "Nuevo Gasto"}</span>
                 <button onClick={() => setFormOpen(false)} style={{ background: "transparent", border: "none", color: "#6b7280", cursor: "pointer", fontSize: 18 }}>✕</button>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>

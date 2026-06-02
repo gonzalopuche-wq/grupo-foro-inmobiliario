@@ -207,11 +207,11 @@ export default function ComunidadPage() {
   const GrupoItem = ({ g }: { g: Grupo }) => (
     <div
       onClick={() => router.push(`/comunidad/${g.id}`)}
-      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.15s" }}
-      onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid var(--gfi-border-subtle)", transition: "background 0.15s" }}
+      onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
       onMouseOut={e => (e.currentTarget.style.background = "transparent")}
     >
-      <div style={{ width: 44, height: 44, borderRadius: 10, background: g.va_al_mir ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)", border: g.va_al_mir ? "1px solid rgba(200,0,0,0.25)" : "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
+      <div style={{ width: 44, height: 44, borderRadius: 10, background: g.va_al_mir ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)", border: g.va_al_mir ? "1px solid rgba(200,0,0,0.25)" : "1px solid var(--gfi-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
         {g.icono}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -221,14 +221,14 @@ export default function ComunidadPage() {
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
             {g.va_al_mir && (
-              <span style={{ fontSize: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#990000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "2px 5px", borderRadius: 3 }}>MIR</span>
+              <span style={{ fontSize: 8, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#990000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "2px 5px", borderRadius: 3 }}>MIR</span>
             )}
             {g.ultimo_at && (
-              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>{tiempoRelativo(g.ultimo_at)}</span>
+              <span style={{ fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>{tiempoRelativo(g.ultimo_at)}</span>
             )}
           </div>
         </div>
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <p style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {g.ultimo_autor && g.ultimo_mensaje
             ? `${g.ultimo_autor}: ${g.ultimo_mensaje}`
             : "Sin mensajes aún"}
@@ -243,16 +243,16 @@ export default function ComunidadPage() {
     return (
       <div
         onClick={() => router.push(`/comunidad/dm/${otro?.id}`)}
-        style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.15s" }}
-        onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+        style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid var(--gfi-border-subtle)", transition: "background 0.15s" }}
+        onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
         onMouseOut={e => (e.currentTarget.style.background = "transparent")}
       >
-        <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden", position: "relative" }}>
+        <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden", position: "relative" }}>
           {otro?.foto_url
             ? <img src={otro.foto_url} alt={nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : initials(otro?.nombre ?? "", otro?.apellido ?? "")}
           {dm.no_leido > 0 && (
-            <div style={{ position: "absolute", top: 0, right: 0, width: 16, height: 16, borderRadius: "50%", background: "#990000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff", border: "2px solid #0a0a0a" }}>
+            <div style={{ position: "absolute", top: 0, right: 0, width: 16, height: 16, borderRadius: "50%", background: "#990000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 800, color: "#fff", border: "2px solid #0a0a0a" }}>
               {dm.no_leido > 9 ? "9+" : dm.no_leido}
             </div>
           )}
@@ -263,10 +263,10 @@ export default function ComunidadPage() {
               {nombre}
             </span>
             {dm.ultimo_mensaje_at && (
-              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", flexShrink: 0 }}>{tiempoRelativo(dm.ultimo_mensaje_at)}</span>
+              <span style={{ fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", flexShrink: 0 }}>{tiempoRelativo(dm.ultimo_mensaje_at)}</span>
             )}
           </div>
-          <p style={{ fontSize: 11, color: dm.no_leido > 0 ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: dm.no_leido > 0 ? 600 : 400 }}>
+          <p style={{ fontSize: 11, color: dm.no_leido > 0 ? "rgba(255,255,255,0.55)" : "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: dm.no_leido > 0 ? 600 : 400 }}>
             {dm.ultimo_texto ?? "Iniciar conversación"}
           </p>
         </div>
@@ -277,11 +277,11 @@ export default function ComunidadPage() {
   const ListaItem = ({ l }: { l: Lista }) => (
     <div
       onClick={() => router.push(`/comunidad/listas/${l.id}`)}
-      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.15s" }}
-      onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid var(--gfi-border-subtle)", transition: "background 0.15s" }}
+      onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
       onMouseOut={e => (e.currentTarget.style.background = "transparent")}
     >
-      <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
+      <div style={{ width: 44, height: 44, borderRadius: 10, background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
         📢
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -290,10 +290,10 @@ export default function ComunidadPage() {
             {l.nombre}
           </span>
           {!l.activa && (
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: 3, flexShrink: 0 }}>Pausada</span>
+            <span style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", padding: "1px 6px", borderRadius: 3, flexShrink: 0 }}>Pausada</span>
           )}
         </div>
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>
+        <p style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>
           {l._miembros ?? 0} {l._miembros === 1 ? "destinatario" : "destinatarios"}
           {l.descripcion ? ` · ${l.descripcion}` : ""}
         </p>
@@ -313,7 +313,7 @@ export default function ComunidadPage() {
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       <div style={{ marginBottom: 16 }}>
-        <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff", marginBottom: 4 }}>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#fff", marginBottom: 4 }}>
           Comunidad GFI®
         </h1>
       </div>
@@ -326,7 +326,7 @@ export default function ComunidadPage() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: "flex", gap: 0, marginBottom: 20, background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+      <div style={{ display: "flex", gap: 0, marginBottom: 20, background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden" }}>
         {([
           { key: "grupos", label: "Grupos", badge: 0 },
           { key: "mensajes", label: "Mensajes", badge: totalNoLeidos },
@@ -338,8 +338,8 @@ export default function ComunidadPage() {
             style={{
               flex: 1, padding: "12px 8px", background: tab === t.key ? "rgba(200,0,0,0.1)" : "transparent",
               border: "none", borderBottom: tab === t.key ? "2px solid #990000" : "2px solid transparent",
-              color: tab === t.key ? "#fff" : "rgba(255,255,255,0.4)",
-              fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
+              color: tab === t.key ? "#fff" : "var(--gfi-text-muted)",
+              fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
               textTransform: "uppercase", cursor: "pointer", transition: "all 0.15s", display: "flex",
               alignItems: "center", justifyContent: "center", gap: 6,
             }}
@@ -357,22 +357,22 @@ export default function ComunidadPage() {
       {/* Tab: Grupos */}
       {tab === "grupos" && (
         <>
-          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginBottom: 14 }}>
+          <p style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", marginBottom: 14 }}>
             {grupos.length} grupos · Los grupos MIR cargan al Motor de Match automáticamente
           </p>
           {gruposOperaciones.length > 0 && (
-            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden", marginBottom: 20 }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden", marginBottom: 20 }}>
               <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Operaciones</span>
-                <span style={{ fontSize: 9, color: "#990000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "1px 6px", borderRadius: 3, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>→ MIR automático</span>
+                <span style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>Operaciones</span>
+                <span style={{ fontSize: 9, color: "#990000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "1px 6px", borderRadius: 3, fontFamily: "var(--font-display)", fontWeight: 700 }}>→ MIR automático</span>
               </div>
               {gruposOperaciones.map(g => <GrupoItem key={g.id} g={g} />)}
             </div>
           )}
           {gruposComunidad.length > 0 && (
-            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden" }}>
               <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>Comunidad</span>
+                <span style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>Comunidad</span>
               </div>
               {gruposComunidad.map(g => <GrupoItem key={g.id} g={g} />)}
             </div>
@@ -384,12 +384,12 @@ export default function ComunidadPage() {
       {tab === "mensajes" && (
         <>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+            <p style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
               Chat privado con colegas
             </p>
             <button
               onClick={() => router.push("/comunidad/dm/nuevo")}
-              style={{ padding: "7px 14px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}
+              style={{ padding: "7px 14px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}
             >
               + Nuevo mensaje
             </button>
@@ -399,19 +399,19 @@ export default function ComunidadPage() {
               <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
             </div>
           ) : dms.length === 0 ? (
-            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "40px 20px", textAlign: "center" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "40px 20px", textAlign: "center" }}>
               <div style={{ fontSize: 32, marginBottom: 10 }}>💬</div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>Sin conversaciones</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", marginBottom: 20 }}>Iniciá un chat privado con algún colega</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: "var(--gfi-text-secondary)", marginBottom: 6 }}>Sin conversaciones</div>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", marginBottom: 20 }}>Iniciá un chat privado con algún colega</div>
               <button
                 onClick={() => router.push("/comunidad/dm/nuevo")}
-                style={{ padding: "9px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
+                style={{ padding: "9px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
               >
                 Nuevo mensaje
               </button>
             </div>
           ) : (
-            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden" }}>
               {dms.map(dm => <DMItem key={dm.id} dm={dm} />)}
             </div>
           )}
@@ -422,12 +422,12 @@ export default function ComunidadPage() {
       {tab === "listas" && (
         <>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+            <p style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
               Enviá un mensaje a varios colegas a la vez
             </p>
             <button
               onClick={() => router.push("/comunidad/listas/nueva")}
-              style={{ padding: "7px 14px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}
+              style={{ padding: "7px 14px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}
             >
               + Nueva lista
             </button>
@@ -437,19 +437,19 @@ export default function ComunidadPage() {
               <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
             </div>
           ) : listas.length === 0 ? (
-            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "40px 20px", textAlign: "center" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "40px 20px", textAlign: "center" }}>
               <div style={{ fontSize: 32, marginBottom: 10 }}>📢</div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>Sin listas de distribución</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", marginBottom: 20 }}>Creá una lista para enviar mensajes masivos a colegas</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: "var(--gfi-text-secondary)", marginBottom: 6 }}>Sin listas de distribución</div>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif", marginBottom: 20 }}>Creá una lista para enviar mensajes masivos a colegas</div>
               <button
                 onClick={() => router.push("/comunidad/listas/nueva")}
-                style={{ padding: "9px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
+                style={{ padding: "9px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
               >
                 Crear lista
               </button>
             </div>
           ) : (
-            <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, overflow: "hidden" }}>
+            <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden" }}>
               {listas.map(l => <ListaItem key={l.id} l={l} />)}
             </div>
           )}

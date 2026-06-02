@@ -37,7 +37,7 @@ const ESTADO_TEXT: Record<string, string> = {
   abierto: "#d4960c",
   en_proceso: "#3b82f6",
   resuelto: "#3abab6",
-  cerrado: "rgba(255,255,255,0.4)",
+  cerrado: "var(--gfi-text-muted)",
 };
 
 const ASUNTOS = [
@@ -115,25 +115,25 @@ export default function SoportePage() {
   return (
     <div style={{ maxWidth: 720, margin: "0 auto", padding: "24px 0 64px" }}>
       <style>{`
-        .sp-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:10px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
-        .sp-card { background:rgba(14,14,14,0.9); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:16px 20px; cursor:pointer; transition:border-color 0.15s; }
+        .sp-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:10px; font-family:var(--font-display); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+        .sp-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:10px; padding:16px 20px; cursor:pointer; transition:border-color 0.15s; }
         .sp-card:hover { border-color:rgba(255,255,255,0.14); }
-        .sp-form-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
+        .sp-form-input { width:100%; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:var(--font-body); outline:none; box-sizing:border-box; }
         .sp-form-input:focus { border-color:rgba(153,0,0,0.5); }
-        .sp-form-textarea { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:'Inter',sans-serif; outline:none; resize:vertical; min-height:120px; box-sizing:border-box; }
+        .sp-form-textarea { width:100%; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:var(--font-body); outline:none; resize:vertical; min-height:120px; box-sizing:border-box; }
         .sp-form-textarea:focus { border-color:rgba(153,0,0,0.5); }
-        .sp-form-select { width:100%; background:rgba(20,20,20,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:'Inter',sans-serif; outline:none; }
+        .sp-form-select { width:100%; background:var(--gfi-bg-elevated); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:var(--font-body); outline:none; }
         .sp-form-select:focus { border-color:rgba(153,0,0,0.5); }
-        .sp-label { font-size:11px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px; display:block; }
+        .sp-label { font-size:11px; font-family:var(--font-display); font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--gfi-text-muted); margin-bottom:6px; display:block; }
         .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200; display:flex; align-items:center; justify-content:center; padding:16px; }
-        .modal-box { background:#0f0f0f; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:24px; width:100%; max-width:600px; max-height:85vh; overflow-y:auto; }
+        .modal-box { background:#0f0f0f; border:1px solid var(--gfi-border); border-radius:12px; padding:24px; width:100%; max-width:600px; max-height:85vh; overflow-y:auto; }
         .sp-respuesta-box { background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:14px 18px; margin-top:16px; }
-        .sp-respuesta-label { font-size:10px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#3abab6; margin-bottom:8px; }
+        .sp-respuesta-label { font-size:10px; font-family:var(--font-display); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#3abab6; margin-bottom:8px; }
         .sp-respuesta-texto { font-size:13px; color:rgba(255,255,255,0.8); line-height:1.7; white-space:pre-wrap; }
       `}</style>
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: toast.tipo === "err" ? "#7f1d1d" : "#111", border: `1px solid ${toast.tipo === "err" ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.1)"}`, color: "#fff", padding: "10px 20px", borderRadius: 8, fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 600, zIndex: 999 }}>
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: toast.tipo === "err" ? "#7f1d1d" : "var(--gfi-bg-secondary)", border: `1px solid ${toast.tipo === "err" ? "rgba(239,68,68,0.3)" : "var(--gfi-border)"}`, color: "#fff", padding: "10px 20px", borderRadius: 8, fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 600, zIndex: 999 }}>
           {toast.msg}
         </div>
       )}
@@ -141,13 +141,13 @@ export default function SoportePage() {
       {/* Header */}
       <div style={{ marginBottom: 24, display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
         <div>
-          <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 6 }}>Módulo soporte</div>
-          <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", margin: 0 }}>Soporte Técnico</h1>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>Reportá un problema y te respondemos lo antes posible</p>
+          <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gfi-text-dim)", marginBottom: 6 }}>Módulo soporte</div>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "#fff", margin: 0 }}>Soporte Técnico</h1>
+          <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 4 }}>Reportá un problema y te respondemos lo antes posible</p>
         </div>
         <button
           onClick={() => setMostrarForm(true)}
-          style={{ padding: "10px 20px", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+          style={{ padding: "10px 20px", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
         >
           + Nuevo ticket
         </button>
@@ -160,9 +160,9 @@ export default function SoportePage() {
 
       {/* Ticket list */}
       {loading ? (
-        <div style={{ color: "rgba(255,255,255,0.3)", textAlign: "center", padding: "48px 0" }}>Cargando...</div>
+        <div style={{ color: "var(--gfi-text-muted)", textAlign: "center", padding: "48px 0" }}>Cargando...</div>
       ) : tickets.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "64px 0", color: "rgba(255,255,255,0.2)", fontFamily: "Montserrat,sans-serif" }}>
+        <div style={{ textAlign: "center", padding: "64px 0", color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)" }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>🎉</div>
           <div style={{ fontWeight: 700, marginBottom: 4 }}>Sin tickets abiertos</div>
           <div style={{ fontSize: 12 }}>Todo funcionando bien por ahora</div>
@@ -174,7 +174,7 @@ export default function SoportePage() {
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 4 }}>{t.asunto}</div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 400 }}>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 400 }}>
                     {t.descripcion}
                   </div>
                 </div>
@@ -185,7 +185,7 @@ export default function SoportePage() {
                   {t.respuesta && <span style={{ fontSize: 11, color: "#3abab6" }}>✓ Respondido</span>}
                 </div>
               </div>
-              <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.25)" }}>
+              <div style={{ marginTop: 8, fontSize: 11, color: "var(--gfi-text-dim)" }}>
                 {new Date(t.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
               </div>
             </div>
@@ -197,7 +197,7 @@ export default function SoportePage() {
       {mostrarForm && (
         <div className="modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarForm(false); }}>
           <div className="modal-box">
-            <h2 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 17, fontWeight: 800, color: "#fff", margin: "0 0 20px" }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 800, color: "#fff", margin: "0 0 20px" }}>
               Nuevo ticket de <span style={{ color: "#990000" }}>soporte</span>
             </h2>
             <div style={{ marginBottom: 14 }}>
@@ -217,10 +217,10 @@ export default function SoportePage() {
               />
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => { setMostrarForm(false); setForm(FORM_VACIO); }} style={{ padding: "10px 18px", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+              <button onClick={() => { setMostrarForm(false); setForm(FORM_VACIO); }} style={{ padding: "10px 18px", background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "none", borderRadius: 7, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                 Cancelar
               </button>
-              <button onClick={guardar} disabled={guardando} style={{ padding: "10px 22px", background: "#990000", color: "#fff", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}>
+              <button onClick={guardar} disabled={guardando} style={{ padding: "10px 22px", background: "#990000", color: "#fff", border: "none", borderRadius: 7, fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}>
                 {guardando ? "Enviando..." : "Enviar ticket"}
               </button>
             </div>
@@ -234,7 +234,7 @@ export default function SoportePage() {
           <div className="modal-box">
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 4 }}>Ticket de soporte</div>
+                <div style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 4 }}>Ticket de soporte</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{ticketVer.asunto}</div>
               </div>
               <span className="sp-badge" style={{ background: ESTADO_COLOR[ticketVer.estado], border: `1px solid ${ESTADO_BORDER[ticketVer.estado]}`, color: ESTADO_TEXT[ticketVer.estado], flexShrink: 0 }}>
@@ -242,12 +242,12 @@ export default function SoportePage() {
               </span>
             </div>
 
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginBottom: 14 }}>
               Abierto el {new Date(ticketVer.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
             </div>
 
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "12px 16px", marginBottom: 16 }}>
-              <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Tu descripción</div>
+            <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 8, padding: "12px 16px", marginBottom: 16 }}>
+              <div style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gfi-text-muted)", marginBottom: 8 }}>Tu descripción</div>
               <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{ticketVer.descripcion}</div>
             </div>
 
@@ -266,12 +266,12 @@ export default function SoportePage() {
               {ticketVer.estado !== "cerrado" && ticketVer.respuesta && (
                 <button
                   onClick={() => cerrarTicket(ticketVer.id)}
-                  style={{ padding: "8px 16px", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
+                  style={{ padding: "8px 16px", background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "none", borderRadius: 7, fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
                 >
                   ✓ Marcar como resuelto
                 </button>
               )}
-              <button onClick={() => setTicketVer(null)} style={{ marginLeft: "auto", padding: "8px 16px", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+              <button onClick={() => setTicketVer(null)} style={{ marginLeft: "auto", padding: "8px 16px", background: "rgba(255,255,255,0.06)", color: "var(--gfi-text-secondary)", border: "none", borderRadius: 7, fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
                 Cerrar
               </button>
             </div>

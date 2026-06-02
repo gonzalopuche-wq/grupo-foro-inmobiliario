@@ -397,7 +397,7 @@ function ModalTarea({ tarea, onClose, onSave, onDelete, initialData }: ModalProp
       >
         <h2
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: "18px",
             color: "#e0e0e0",
@@ -980,7 +980,7 @@ function SeccionTareas({ titulo, tareas, bgHeader, onToggle, onEdit }: SeccionPr
       >
         <span
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: "11px",
             color: "#aaaaaa",
@@ -1109,7 +1109,7 @@ function TabKanban({ tareas, onMover, onEdit, onNueva }: TabKanbanProps) {
               >
                 <span
                   style={{
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     fontSize: "12px",
                     color: "#e0e0e0",
@@ -1134,7 +1134,7 @@ function TabKanban({ tareas, onMover, onEdit, onNueva }: TabKanbanProps) {
               {/* Cards */}
               <div
                 style={{
-                  background: "#0d0d0d",
+                  background: "var(--gfi-bg-primary)",
                   border: "1px solid #1a1a1a",
                   borderTop: "none",
                   borderRadius: "0 0 8px 8px",
@@ -1466,7 +1466,7 @@ function TabHistorial({ tareas }: TabHistorialProps) {
       >
         <h3
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: "14px",
             color: "#e0e0e0",
@@ -1577,7 +1577,7 @@ function TabHistorial({ tareas }: TabHistorialProps) {
         >
           <h3
             style={{
-              fontFamily: "Montserrat, sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: "14px",
               color: "#e0e0e0",
@@ -1609,7 +1609,7 @@ function TabHistorial({ tareas }: TabHistorialProps) {
               }}
             >
               <thead>
-                <tr style={{ background: "#0d0d0d" }}>
+                <tr style={{ background: "var(--gfi-bg-primary)" }}>
                   {["Título", "Categoría", "Creada", "Completada", "Días"].map(
                     (h) => (
                       <th
@@ -1636,7 +1636,7 @@ function TabHistorial({ tareas }: TabHistorialProps) {
                   <tr
                     key={t.id}
                     style={{
-                      background: i % 2 === 0 ? "transparent" : "#0d0d0d",
+                      background: i % 2 === 0 ? "transparent" : "var(--gfi-bg-primary)",
                       borderTop: "1px solid #1a1a1a",
                     }}
                   >
@@ -1709,7 +1709,7 @@ function KpiCard({
       </p>
       <p
         style={{
-          fontFamily: "Montserrat, sans-serif",
+          fontFamily: "var(--font-display)",
           fontWeight: 800,
           fontSize: "26px",
           color: "#e0e0e0",
@@ -1875,7 +1875,7 @@ export default function GestionTareasPage() {
       <div style={{ marginBottom: "28px" }}>
         <h1
           style={{
-            fontFamily: "Montserrat, sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: "26px",
             color: "#e0e0e0",

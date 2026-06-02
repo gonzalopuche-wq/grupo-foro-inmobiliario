@@ -305,109 +305,109 @@ export default function NoticiasPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
 
         .not-container { display: flex; gap: 20px; height: calc(100vh - 120px); min-height: 500px; }
-        .not-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 0; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow: hidden; }
-        .not-sidebar-header { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-        .not-sidebar-title { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
-        .not-tabs { display: flex; gap: 0; padding: 10px 18px; border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; }
-        .not-tab { flex: 1; padding: 7px; background: none; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; position: relative; }
+        .not-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 0; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; overflow: hidden; }
+        .not-sidebar-header { padding: 14px 18px; border-bottom: 1px solid var(--gfi-border-subtle); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .not-sidebar-title { font-family: var(--font-display); font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-secondary); }
+        .not-tabs { display: flex; gap: 0; padding: 10px 18px; border-bottom: 1px solid var(--gfi-border-subtle); flex-shrink: 0; }
+        .not-tab { flex: 1; padding: 7px; background: none; border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; position: relative; }
         .not-tab:first-child { border-radius: 3px 0 0 3px; }
         .not-tab:last-child { border-radius: 0 3px 3px 0; border-left: none; }
         .not-tab.activo { background: rgba(200,0,0,0.1); border-color: #990000; color: #fff; }
         .not-tab-badge { position: absolute; top: -5px; right: -5px; background: #990000; color: #fff; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 8px; min-width: 14px; text-align: center; }
         .not-lista { flex: 1; overflow-y: auto; }
         .not-lista::-webkit-scrollbar { width: 3px; }
-        .not-lista::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
-        .not-item { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.15s; display: flex; gap: 10px; }
-        .not-item:hover { background: rgba(255,255,255,0.03); }
+        .not-lista::-webkit-scrollbar-thumb { background: var(--gfi-border); }
+        .not-item { padding: 14px 18px; border-bottom: 1px solid var(--gfi-border-subtle); cursor: pointer; transition: background 0.15s; display: flex; gap: 10px; }
+        .not-item:hover { background: var(--gfi-bg-card); }
         .not-item.activo { background: rgba(200,0,0,0.07); border-left: 2px solid #990000; }
-        .not-item-img { width: 52px; height: 52px; border-radius: 5px; object-fit: cover; flex-shrink: 0; background: rgba(255,255,255,0.05); }
+        .not-item-img { width: 52px; height: 52px; border-radius: 5px; object-fit: cover; flex-shrink: 0; background: var(--gfi-border-subtle); }
         .not-item-img-placeholder { width: 52px; height: 52px; border-radius: 5px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .not-item-info { flex: 1; min-width: 0; }
-        .not-item-titulo { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .not-item-meta { font-size: 10px; color: rgba(255,255,255,0.3); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-        .not-item-fuente { font-size: 9px; color: #990000; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
-        .not-badge-dest { font-size: 8px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); color: #d4960c; padding: 1px 5px; border-radius: 3px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-        .not-badge-pend { font-size: 8px; background: rgba(251,146,60,0.12); border: 1px solid rgba(251,146,60,0.25); color: #fb923c; padding: 1px 5px; border-radius: 3px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-        .not-btn-nueva { padding: 7px 14px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
+        .not-item-titulo { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .not-item-meta { font-size: 10px; color: var(--gfi-text-muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .not-item-fuente { font-size: 9px; color: #990000; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+        .not-badge-dest { font-size: 8px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); color: #d4960c; padding: 1px 5px; border-radius: 3px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .not-badge-pend { font-size: 8px; background: rgba(251,146,60,0.12); border: 1px solid rgba(251,146,60,0.25); color: #fb923c; padding: 1px 5px; border-radius: 3px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .not-btn-nueva { padding: 7px 14px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .not-btn-nueva:hover { background: #e60000; }
 
         /* Detalle */
-        .not-detalle { flex: 1; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow-y: auto; display: flex; flex-direction: column; }
+        .not-detalle { flex: 1; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; overflow-y: auto; display: flex; flex-direction: column; }
         .not-detalle::-webkit-scrollbar { width: 4px; }
-        .not-detalle::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+        .not-detalle::-webkit-scrollbar-thumb { background: var(--gfi-border); }
         .not-detalle-empty { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; color: rgba(255,255,255,0.15); }
         .not-detalle-imagen { width: 100%; height: 220px; object-fit: cover; border-radius: 8px 8px 0 0; }
         .not-detalle-body { padding: 24px 28px; flex: 1; }
-        .not-detalle-fuente { font-size: 10px; color: #990000; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-        .not-detalle-titulo { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 10px; }
-        .not-detalle-meta { font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 18px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-        .not-detalle-cuerpo { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.8; font-family: 'Inter', sans-serif; white-space: pre-wrap; word-break: break-word; }
-        .not-detalle-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; color: #990000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
+        .not-detalle-fuente { font-size: 10px; color: #990000; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+        .not-detalle-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 10px; }
+        .not-detalle-meta { font-size: 11px; color: var(--gfi-text-muted); margin-bottom: 18px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .not-detalle-cuerpo { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.8; font-family: var(--font-body); white-space: pre-wrap; word-break: break-word; }
+        .not-detalle-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
         .not-detalle-link:hover { background: rgba(200,0,0,0.15); color: #fff; }
-        .not-detalle-actions { display: flex; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07); flex-wrap: wrap; }
-        .not-btn-aprobar { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #3abab6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .not-detalle-actions { display: flex; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gfi-border-subtle); flex-wrap: wrap; }
+        .not-btn-aprobar { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #3abab6; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .not-btn-aprobar:hover { background: rgba(34,197,94,0.2); }
-        .not-btn-rechazar { padding: 8px 16px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-rechazar { padding: 8px 16px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .not-btn-rechazar:hover { border-color: rgba(200,0,0,0.3); color: #990000; }
-        .not-btn-eliminar { padding: 8px 16px; background: transparent; border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-eliminar { padding: 8px 16px; background: transparent; border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .not-btn-eliminar:hover { background: rgba(200,0,0,0.1); color: #ff4444; }
-        .not-btn-dest { padding: 8px 16px; background: transparent; border: 1px solid rgba(234,179,8,0.2); border-radius: 3px; color: rgba(234,179,8,0.7); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-dest { padding: 8px 16px; background: transparent; border: 1px solid rgba(234,179,8,0.2); border-radius: 3px; color: rgba(234,179,8,0.7); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .not-btn-dest:hover { background: rgba(234,179,8,0.1); color: #d4960c; }
-        .not-btn-redes { padding: 8px 16px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 3px; color: #3b82f6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .not-btn-redes { padding: 8px 16px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 3px; color: #3b82f6; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .not-btn-redes:hover { background: rgba(59,130,246,0.2); }
         .not-btn-redes:disabled { opacity: 0.5; cursor: not-allowed; }
         .not-redes-resultado { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-        .not-red-badge { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
+        .not-red-badge { font-size: 9px; font-family: var(--font-display); font-weight: 700; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
 
         /* Modal form */
         .not-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: flex-start; justify-content: center; z-index: 200; padding: 24px; overflow-y: auto; }
         .not-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 28px 32px; width: 100%; max-width: 600px; position: relative; margin: auto; }
         .not-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
-        .not-modal-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
+        .not-modal-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
         .not-modal-title span { color: #990000; }
         .not-field { margin-bottom: 14px; }
-        .not-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 5px; font-family: 'Montserrat', sans-serif; }
-        .not-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
+        .not-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
+        .not-input { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); transition: border-color 0.2s; }
         .not-input:focus { border-color: rgba(200,0,0,0.5); }
-        .not-input::placeholder { color: rgba(255,255,255,0.2); }
-        .not-textarea { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 13px; outline: none; resize: vertical; min-height: 120px; font-family: 'Inter', sans-serif; line-height: 1.6; }
+        .not-input::placeholder { color: var(--gfi-text-dim); }
+        .not-textarea { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 13px; outline: none; resize: vertical; min-height: 120px; font-family: var(--font-body); line-height: 1.6; }
         .not-textarea:focus { border-color: rgba(200,0,0,0.5); }
         .not-modal-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
-        .not-btn-cancelar { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-guardar { padding: 10px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-cancelar { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-guardar { padding: 10px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .not-btn-guardar:hover { background: #e60000; }
         .not-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
-        .not-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
+        .not-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--gfi-text-muted); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .not-toggle-row { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .not-toggle { width: 38px; height: 22px; border-radius: 11px; position: relative; transition: background 0.2s; flex-shrink: 0; }
         .not-toggle-knob { position: absolute; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left 0.2s; }
-        .not-empty { padding: 60px 32px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
-        .not-btn-verificar { padding: 7px 14px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; color: #8b5cf6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+        .not-empty { padding: 60px 32px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; font-style: italic; }
+        .not-btn-verificar { padding: 7px 14px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; color: #8b5cf6; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
         .not-btn-verificar:hover { background: rgba(139,92,246,0.2); }
         .not-btn-verificar:disabled { opacity: 0.5; cursor: not-allowed; }
-        .not-verif-panel { background: rgba(14,14,14,0.98); border: 1px solid rgba(139,92,246,0.25); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-        .not-verif-titulo { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #8b5cf6; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .not-verif-panel { background: var(--gfi-bg-card); border: 1px solid rgba(139,92,246,0.25); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .not-verif-titulo { font-family: var(--font-display); font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #8b5cf6; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
         .not-verif-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
         .not-verif-card { padding: 12px 14px; border-radius: 6px; border: 1px solid; }
-        .not-verif-red { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+        .not-verif-red { font-family: var(--font-display); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
         .not-verif-nombre { font-size: 13px; font-weight: 600; }
         .not-verif-detalle { font-size: 10px; margin-top: 2px; opacity: 0.55; }
         .not-verif-error { font-size: 11px; margin-top: 4px; }
 
         /* AI Feed */
-        .not-ai-score { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: 0.06em; }
-        .not-ai-cat { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'Montserrat', sans-serif; }
-        .not-ai-resumen { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: rgba(255,255,255,0.7); font-family: 'Inter', sans-serif; line-height: 1.6; }
-        .not-ai-resumen-label { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; color: rgba(255,255,255,0.25); letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 6px; }
-        .not-btn-traer { padding: 5px 10px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; color: #8b5cf6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+        .not-ai-score { font-size: 9px; font-family: var(--font-display); font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: 0.06em; }
+        .not-ai-cat { font-size: 9px; color: var(--gfi-text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-display); }
+        .not-ai-resumen { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: var(--gfi-text-primary); font-family: var(--font-body); line-height: 1.6; }
+        .not-ai-resumen-label { font-size: 9px; font-family: var(--font-display); font-weight: 700; color: var(--gfi-text-dim); letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+        .not-btn-traer { padding: 5px 10px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; color: #8b5cf6; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
         .not-btn-traer:hover { background: rgba(139,92,246,0.2); }
         .not-btn-traer:disabled { opacity: 0.5; cursor: not-allowed; }
-        .not-btn-publicar-ai { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #3abab6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .not-btn-publicar-ai { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #3abab6; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .not-btn-publicar-ai:hover { background: rgba(34,197,94,0.2); }
         .not-btn-publicar-ai:disabled { opacity: 0.5; cursor: not-allowed; }
-        .not-btn-descartar-ai { padding: 8px 16px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-descartar-ai { padding: 8px 16px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .not-btn-descartar-ai:hover { border-color: rgba(200,0,0,0.3); color: #990000; }
         .not-btn-descartar-ai:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -421,10 +421,10 @@ export default function NoticiasPage() {
       {/* Barra superior */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
         <div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, color: "#fff" }}>
             Noticias <span style={{ color: "#990000" }}>del Sector</span>
           </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
+          <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
             Información relevante para el corredor inmobiliario
           </div>
         </div>
@@ -452,27 +452,27 @@ export default function NoticiasPage() {
         <div className="not-verif-panel">
           <div className="not-verif-titulo">
             <span>Estado de conexiones — Chequeo interno</span>
-            <button onClick={() => setMostrarVerificacion(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 16, cursor: "pointer" }}>✕</button>
+            <button onClick={() => setMostrarVerificacion(false)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 16, cursor: "pointer" }}>✕</button>
           </div>
           {verificando ? (
-            <div style={{ display: "flex", gap: 10, alignItems: "center", color: "rgba(255,255,255,0.4)", fontSize: 13 }}>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", color: "var(--gfi-text-muted)", fontSize: 13 }}>
               <div style={{ width: 16, height: 16, border: "2px solid rgba(139,92,246,0.3)", borderTopColor: "#8b5cf6", borderRadius: "50%", animation: "spin 0.7s linear infinite", flexShrink: 0 }} />
               Consultando APIs de cada red social...
             </div>
           ) : (
             <div className="not-verif-grid">
               {(verificacionResult ?? []).map(r => (
-                <div key={r.red} className="not-verif-card" style={{ background: r.ok ? "rgba(34,197,94,0.05)" : r.configurada ? "rgba(239,68,68,0.05)" : "rgba(255,255,255,0.03)", borderColor: r.ok ? "rgba(34,197,94,0.2)" : r.configurada ? "rgba(239,68,68,0.2)" : "rgba(255,255,255,0.07)" }}>
-                  <div className="not-verif-red" style={{ color: r.ok ? "#3abab6" : r.configurada ? "#b80000" : "rgba(255,255,255,0.3)" }}>
+                <div key={r.red} className="not-verif-card" style={{ background: r.ok ? "rgba(34,197,94,0.05)" : r.configurada ? "rgba(239,68,68,0.05)" : "var(--gfi-bg-card)", borderColor: r.ok ? "rgba(34,197,94,0.2)" : r.configurada ? "rgba(239,68,68,0.2)" : "var(--gfi-border-subtle)" }}>
+                  <div className="not-verif-red" style={{ color: r.ok ? "#3abab6" : r.configurada ? "#b80000" : "var(--gfi-text-muted)" }}>
                     {r.ok ? "✓" : r.configurada ? "✗" : "—"} {r.red}
                   </div>
                   {r.ok ? (
                     <>
                       <div className="not-verif-nombre" style={{ color: "#fff" }}>{r.nombre}</div>
-                      {r.detalle && <div className="not-verif-detalle" style={{ color: "rgba(255,255,255,0.5)" }}>{r.detalle}</div>}
+                      {r.detalle && <div className="not-verif-detalle" style={{ color: "var(--gfi-text-secondary)" }}>{r.detalle}</div>}
                     </>
                   ) : (
-                    <div className="not-verif-error" style={{ color: r.configurada ? "#b80000" : "rgba(255,255,255,0.3)" }}>
+                    <div className="not-verif-error" style={{ color: r.configurada ? "#b80000" : "var(--gfi-text-muted)" }}>
                       {r.error ?? (r.configurada ? "Error de autenticación" : "Sin configurar")}
                     </div>
                   )}
@@ -490,10 +490,10 @@ export default function NoticiasPage() {
       ) : errorCarga ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 12 }}>
           <span style={{ fontSize: 36 }}>⚠️</span>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>No se pudieron cargar las noticias</div>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: "var(--gfi-text-secondary)" }}>No se pudieron cargar las noticias</div>
           <button
             onClick={() => cargarNoticias(esAdmin)}
-            style={{ padding: "8px 20px", background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 4, color: "#990000", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.1em" }}
+            style={{ padding: "8px 20px", background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 4, color: "#990000", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.1em" }}
           >
             Reintentar
           </button>
@@ -586,7 +586,7 @@ export default function NoticiasPage() {
                 <div className="not-detalle-empty">
                   <span style={{ fontSize: 48 }}>🤖</span>
                   <span style={{ fontSize: 13 }}>Seleccioná una noticia AI para revisarla</span>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.1)" }}>Las noticias se ordenan por relevancia inmobiliaria</span>
+                  <span style={{ fontSize: 11, color: "var(--gfi-border)" }}>Las noticias se ordenan por relevancia inmobiliaria</span>
                 </div>
               ) : (
                 <>
@@ -609,7 +609,7 @@ export default function NoticiasPage() {
                           </span>
                         );
                       })()}
-                      {aiFeedActivo.categoria && <span style={{ fontFamily: "Montserrat", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", padding: "2px 8px", borderRadius: 3 }}>{aiFeedActivo.categoria}</span>}
+                      {aiFeedActivo.categoria && <span style={{ fontFamily: "Montserrat", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--gfi-text-muted)", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", padding: "2px 8px", borderRadius: 3 }}>{aiFeedActivo.categoria}</span>}
                       {aiFeedActivo.fecha_fuente && <span>· {formatFecha(aiFeedActivo.fecha_fuente)}</span>}
                     </div>
                     {aiFeedActivo.resumen && (
@@ -748,7 +748,7 @@ export default function NoticiasPage() {
             {esAdmin && (
               <div className="not-field">
                 <div className="not-toggle-row" onClick={() => setForm(p => ({ ...p, destacado: !p.destacado }))}>
-                  <div className="not-toggle" style={{ background: form.destacado ? "#990000" : "rgba(255,255,255,0.1)" }}>
+                  <div className="not-toggle" style={{ background: form.destacado ? "#990000" : "var(--gfi-border)" }}>
                     <div className="not-toggle-knob" style={{ left: form.destacado ? 19 : 3 }} />
                   </div>
                   <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)" }}>Marcar como destacada</span>
@@ -756,7 +756,7 @@ export default function NoticiasPage() {
               </div>
             )}
             {!esAdmin && (
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", background: "rgba(200,0,0,0.04)", border: "1px solid rgba(200,0,0,0.1)", borderRadius: 4, padding: "8px 12px", marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", background: "rgba(200,0,0,0.04)", border: "1px solid rgba(200,0,0,0.1)", borderRadius: 4, padding: "8px 12px", marginBottom: 14 }}>
                 Tu noticia quedará pendiente de aprobación por un administrador.
               </div>
             )}

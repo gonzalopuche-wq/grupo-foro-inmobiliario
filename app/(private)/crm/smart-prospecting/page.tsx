@@ -128,21 +128,21 @@ export default function SmartProspectingPage() {
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", fontFamily: "Inter,sans-serif" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", margin: "0 0 6px" }}>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "#fff", margin: "0 0 6px" }}>
           Smart Prospecting
         </h1>
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", margin: 0 }}>
+        <p style={{ fontSize: 13, color: "var(--gfi-text-muted)", margin: 0 }}>
           Contactos de tu CRM con propiedades de tu cartera que coinciden con sus criterios de búsqueda.
         </p>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>Analizando coincidencias…</div>
+        <div style={{ textAlign: "center", padding: 60, color: "var(--gfi-text-muted)" }}>Analizando coincidencias…</div>
       ) : matches.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 60, background: "rgba(255,255,255,0.03)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ textAlign: "center", padding: 60, background: "var(--gfi-bg-card)", borderRadius: 12, border: "1px solid var(--gfi-border-subtle)" }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
-          <div style={{ fontWeight: 600, color: "rgba(255,255,255,0.6)", marginBottom: 6 }}>Sin coincidencias por ahora</div>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", maxWidth: 380, margin: "0 auto" }}>
+          <div style={{ fontWeight: 600, color: "var(--gfi-text-secondary)", marginBottom: 6 }}>Sin coincidencias por ahora</div>
+          <p style={{ fontSize: 13, color: "var(--gfi-text-muted)", maxWidth: 380, margin: "0 auto" }}>
             Completá los campos <strong>Zona de interés</strong> y <strong>Presupuesto</strong> en tus contactos del CRM para que el sistema detecte propiedades compatibles.
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function SmartProspectingPage() {
             const abierto = contactoAbierto === contacto.id;
             const nombre = [contacto.nombre, contacto.apellido].filter(Boolean).join(" ") || "Sin nombre";
             return (
-              <div key={contacto.id} style={{ background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, overflow: "hidden" }}>
+              <div key={contacto.id} style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 12, overflow: "hidden" }}>
                 {/* Header contacto */}
                 <button
                   onClick={() => setContactoAbierto(abierto ? null : contacto.id)}
@@ -168,7 +168,7 @@ export default function SmartProspectingPage() {
                     </div>
                     <div>
                       <div style={{ fontWeight: 700, fontSize: 15, color: "#fff" }}>{nombre}</div>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                      <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                         {contacto.zona_interes && `📍 ${contacto.zona_interes}`}
                         {contacto.presupuesto_max && ` · hasta ${fmt(contacto.presupuesto_max, contacto.moneda ?? "USD")}`}
                         {contacto.interes && ` · ${contacto.interes}`}
@@ -179,13 +179,13 @@ export default function SmartProspectingPage() {
                     <span style={{ fontSize: 11, fontWeight: 700, color: "#990000", background: "rgba(153,0,0,0.12)", padding: "3px 10px", borderRadius: 20, border: "1px solid rgba(153,0,0,0.25)" }}>
                       {propiedades.length} propiedad{propiedades.length > 1 ? "es" : ""}
                     </span>
-                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 14 }}>{abierto ? "▲" : "▼"}</span>
+                    <span style={{ color: "var(--gfi-text-muted)", fontSize: 14 }}>{abierto ? "▲" : "▼"}</span>
                   </div>
                 </button>
 
                 {/* Propiedades */}
                 {abierto && (
-                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", padding: "12px 20px 20px" }}>
+                  <div style={{ borderTop: "1px solid var(--gfi-border-subtle)", padding: "12px 20px 20px" }}>
                     {contacto.telefono && (
                       <a
                         href={`https://wa.me/${contacto.telefono.replace(/\D/g,"")}`}
@@ -201,7 +201,7 @@ export default function SmartProspectingPage() {
                         const wa = waLink(contacto, prop);
                         const foto = prop.fotos?.[0];
                         return (
-                          <div key={prop.id} style={{ display: "flex", gap: 12, background: "rgba(255,255,255,0.03)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                          <div key={prop.id} style={{ display: "flex", gap: 12, background: "var(--gfi-bg-card)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
                             <div style={{ width: 80, height: 68, flexShrink: 0, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
                               {foto
                                 ? <img src={foto} alt={prop.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -209,7 +209,7 @@ export default function SmartProspectingPage() {
                             </div>
                             <div style={{ flex: 1, padding: "10px 0", minWidth: 0 }}>
                               <div style={{ fontWeight: 600, fontSize: 13, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{prop.titulo}</div>
-                              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>
                                 {[prop.zona, prop.ciudad].filter(Boolean).join(", ")}
                                 {prop.dormitorios && ` · ${prop.dormitorios} dorm.`}
                                 {prop.superficie_cubierta && ` · ${prop.superficie_cubierta}m²`}

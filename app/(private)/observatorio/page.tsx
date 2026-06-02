@@ -43,15 +43,15 @@ function HBar({
       <div style={{ width: 120, fontSize: 11, color: "rgba(255,255,255,0.55)", textAlign: "right", flexShrink: 0, fontFamily: "Inter,sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {label}
       </div>
-      <div style={{ flex: 1, height: 22, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden" }}>
+      <div style={{ flex: 1, height: 22, background: "var(--gfi-border-subtle)", borderRadius: 4, overflow: "hidden" }}>
         <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 4, transition: "width 0.5s ease", display: "flex", alignItems: "center", paddingLeft: 6 }}>
-          <span style={{ fontSize: 10, color: "#fff", fontWeight: 600, fontFamily: "Montserrat,sans-serif", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: 10, color: "#fff", fontWeight: 600, fontFamily: "var(--font-display)", whiteSpace: "nowrap" }}>
             {value > 0 ? fmtNum(value) : ""}
           </span>
         </div>
       </div>
       {sub && (
-        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", flexShrink: 0, minWidth: 80, textAlign: "right" }}>
+        <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif", flexShrink: 0, minWidth: 80, textAlign: "right" }}>
           {sub}
         </div>
       )}
@@ -61,13 +61,13 @@ function HBar({
 
 function StatCard({ icon, label, value, sub, color }: { icon: string; label: string; value: string; sub?: string; color?: string }) {
   return (
-    <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "18px 20px" }}>
+    <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 12, padding: "18px 20px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
         <span style={{ fontSize: 20 }}>{icon}</span>
-        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</div>
+        <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</div>
       </div>
-      <div style={{ fontSize: 24, fontWeight: 800, color: color ?? "#fff", fontFamily: "Montserrat,sans-serif" }}>{value}</div>
-      {sub && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>{sub}</div>}
+      <div style={{ fontSize: 24, fontWeight: 800, color: color ?? "#fff", fontFamily: "var(--font-display)" }}>{value}</div>
+      {sub && <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>{sub}</div>}
     </div>
   );
 }
@@ -239,7 +239,7 @@ export default function ObservatorioPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
             <span style={{ fontSize: 28 }}>🔭</span>
             <div>
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, fontFamily: "Montserrat,sans-serif" }}>
+              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, fontFamily: "var(--font-display)" }}>
                 Observatorio del Mercado
               </h1>
               <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>
@@ -257,10 +257,10 @@ export default function ObservatorioPage() {
                 style={{
                   padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer",
                   border: "1px solid",
-                  borderColor: periodo === p ? "#990000" : "rgba(255,255,255,0.1)",
+                  borderColor: periodo === p ? "#990000" : "var(--gfi-border)",
                   background: periodo === p ? "rgba(200,0,0,0.15)" : "transparent",
                   color: periodo === p ? "#fff" : "rgba(255,255,255,0.45)",
-                  fontFamily: "Montserrat,sans-serif",
+                  fontFamily: "var(--font-display)",
                   transition: "all 0.15s",
                 }}
               >
@@ -271,7 +271,7 @@ export default function ObservatorioPage() {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: "center", padding: 80, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+          <div style={{ textAlign: "center", padding: 80, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
             Procesando datos del mercado…
           </div>
         ) : (
@@ -294,17 +294,17 @@ export default function ObservatorioPage() {
             <div style={{ background: "rgba(168,85,247,0.05)", border: "1px solid rgba(168,85,247,0.2)", borderRadius: 14, padding: 20, marginBottom: 24 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: analisisIA ? 14 : 0 }}>
                 <div>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)", marginBottom: 2 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "var(--gfi-text-primary)", marginBottom: 2 }}>
                     🤖 Análisis IA del mercado
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                     Síntesis automática de los datos del Observatorio para el período seleccionado
                   </div>
                 </div>
                 <button
                   onClick={generarAnalisisIA}
                   disabled={generandoAnalisis || loading}
-                  style={{ padding: "8px 16px", background: generandoAnalisis ? "rgba(168,85,247,0.1)" : "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.35)", borderRadius: 6, color: "#c084fc", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", cursor: generandoAnalisis || loading ? "not-allowed" : "pointer", opacity: generandoAnalisis || loading ? 0.6 : 1, whiteSpace: "nowrap" }}
+                  style={{ padding: "8px 16px", background: generandoAnalisis ? "rgba(168,85,247,0.1)" : "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.35)", borderRadius: 6, color: "#c084fc", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", cursor: generandoAnalisis || loading ? "not-allowed" : "pointer", opacity: generandoAnalisis || loading ? 0.6 : 1, whiteSpace: "nowrap" }}
                 >
                   {generandoAnalisis ? "Analizando..." : analisisIA ? "↺ Regenerar" : "✨ Generar análisis"}
                 </button>
@@ -324,30 +324,30 @@ export default function ObservatorioPage() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
               {/* Actividad por barrio */}
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
-                <h3 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20 }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                   Actividad por barrio
                 </h3>
-                <p style={{ margin: "0 0 16px", fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                <p style={{ margin: "0 0 16px", fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                   Operaciones registradas en comparables GFI®
                 </p>
                 {barrioStats.length === 0 ? (
-                  <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Sin datos suficientes en el período</p>
+                  <p style={{ color: "var(--gfi-text-muted)", fontSize: 13 }}>Sin datos suficientes en el período</p>
                 ) : barrioStats.map(b => (
                   <HBar key={b.barrio} label={b.barrio} value={b.cant} max={maxBarrioCant} color="rgba(200,0,0,0.7)" sub={`${b.cant} op.`} />
                 ))}
               </div>
 
               {/* Precio m² por barrio */}
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
-                <h3 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20 }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                   Precio m² por barrio
                 </h3>
-                <p style={{ margin: "0 0 16px", fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                <p style={{ margin: "0 0 16px", fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                   USD/m² promedio · Precio de venta efectiva
                 </p>
                 {barrioStats.filter(b => b.precio_m2_avg > 0).length === 0 ? (
-                  <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Sin datos de precio/m² en el período</p>
+                  <p style={{ color: "var(--gfi-text-muted)", fontSize: 13 }}>Sin datos de precio/m² en el período</p>
                 ) : (
                   [...barrioStats]
                     .filter(b => b.precio_m2_avg > 0)
@@ -368,30 +368,30 @@ export default function ObservatorioPage() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
               {/* Tipo de inmueble */}
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
-                <h3 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20 }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                   Operaciones por tipo de inmueble
                 </h3>
-                <p style={{ margin: "0 0 16px", fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                <p style={{ margin: "0 0 16px", fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                   Comparables registrados por categoría
                 </p>
                 {tipoStats.length === 0 ? (
-                  <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Sin datos</p>
+                  <p style={{ color: "var(--gfi-text-muted)", fontSize: 13 }}>Sin datos</p>
                 ) : tipoStats.map(t => (
                   <HBar key={t.tipo} label={t.tipo} value={t.cant} max={maxTipo} color="rgba(99,102,241,0.7)" />
                 ))}
               </div>
 
               {/* MIR Oferta vs Demanda */}
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
-                <h3 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20 }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                   MIR — Oferta vs Demanda
                 </h3>
-                <p style={{ margin: "0 0 16px", fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                <p style={{ margin: "0 0 16px", fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                   Publicaciones activas en el Motor de Intercambio Recíproco
                 </p>
                 {mirStats.length === 0 ? (
-                  <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Sin publicaciones en el período</p>
+                  <p style={{ color: "var(--gfi-text-muted)", fontSize: 13 }}>Sin publicaciones en el período</p>
                 ) : (
                   <>
                     {mirStats.map(m => {
@@ -407,7 +407,7 @@ export default function ObservatorioPage() {
                               <span style={{ color: "#a78bfa" }}>{m.busquedas} bús.</span>
                             </span>
                           </div>
-                          <div style={{ display: "flex", height: 8, borderRadius: 4, overflow: "hidden", background: "rgba(255,255,255,0.04)" }}>
+                          <div style={{ display: "flex", height: 8, borderRadius: 4, overflow: "hidden", background: "var(--gfi-border-subtle)" }}>
                             {m.ofrecidos > 0 && (
                               <div style={{ width: `${pctOf}%`, background: "rgba(249,115,22,0.7)", transition: "width 0.5s" }} />
                             )}
@@ -418,7 +418,7 @@ export default function ObservatorioPage() {
                         </div>
                       );
                     })}
-                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: 20, fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
+                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: 20, fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "Inter,sans-serif" }}>
                       <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
                         <span style={{ width: 10, height: 10, borderRadius: 2, background: "rgba(249,115,22,0.7)", display: "inline-block" }} />
                         Ofrecidos
@@ -435,15 +435,15 @@ export default function ObservatorioPage() {
 
             {/* Tabla detalle precios por barrio */}
             {barrioStats.some(b => b.precio_venta_avg > 0 || b.precio_m2_avg > 0) && (
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 20, overflowX: "auto" }}>
-                <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.7)" }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 14, padding: 20, marginBottom: 20, overflowX: "auto" }}>
+                <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                   Tabla de precios por barrio
                 </h3>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "Inter,sans-serif" }}>
                   <thead>
-                    <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                    <tr style={{ borderBottom: "1px solid var(--gfi-border)" }}>
                       {["Barrio", "Operaciones", "Precio venta promedio", "Precio m² promedio"].map(h => (
-                        <th key={h} style={{ padding: "8px 12px", textAlign: "left", color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 600, letterSpacing: "0.05em", fontSize: 11 }}>
+                        <th key={h} style={{ padding: "8px 12px", textAlign: "left", color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 600, letterSpacing: "0.05em", fontSize: 11 }}>
                           {h}
                         </th>
                       ))}
@@ -453,9 +453,9 @@ export default function ObservatorioPage() {
                     {[...barrioStats]
                       .sort((a, b) => b.precio_m2_avg - a.precio_m2_avg)
                       .map(b => (
-                        <tr key={b.barrio} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <tr key={b.barrio} style={{ borderBottom: "1px solid var(--gfi-border-subtle)" }}>
                           <td style={{ padding: "9px 12px", color: "#fff", fontWeight: 500 }}>{b.barrio}</td>
-                          <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.5)" }}>{b.cant}</td>
+                          <td style={{ padding: "9px 12px", color: "var(--gfi-text-secondary)" }}>{b.cant}</td>
                           <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.8)" }}>
                             {b.precio_venta_avg > 0 ? fmtUSD(b.precio_venta_avg) : "—"}
                           </td>
@@ -469,7 +469,7 @@ export default function ObservatorioPage() {
               </div>
             )}
 
-            <div style={{ textAlign: "center", padding: "12px 0", color: "rgba(255,255,255,0.2)", fontSize: 11, fontFamily: "Inter,sans-serif" }}>
+            <div style={{ textAlign: "center", padding: "12px 0", color: "var(--gfi-text-dim)", fontSize: 11, fontFamily: "Inter,sans-serif" }}>
               Datos anonimizados aportados por corredores matriculados GFI® · Actualizado en tiempo real · Exclusivo para miembros
             </div>
           </>

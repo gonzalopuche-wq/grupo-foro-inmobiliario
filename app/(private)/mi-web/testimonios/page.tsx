@@ -136,7 +136,7 @@ export default function TestimoniosPage() {
     <div style={{ padding: "24px 28px", maxWidth: 740, margin: "0 auto" }}>
       {/* Toast */}
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#111", color: "#fff", padding: "10px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, zIndex: 9999, boxShadow: "0 4px 16px rgba(0,0,0,0.3)" }}>
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: "var(--gfi-bg-secondary)", color: "#fff", padding: "10px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, zIndex: 9999, boxShadow: "0 4px 16px rgba(0,0,0,0.3)" }}>
           {toast}
         </div>
       )}
@@ -146,7 +146,7 @@ export default function TestimoniosPage() {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
             <span style={{ fontSize: 22 }}>💬</span>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: "#111", margin: 0 }}>Testimonios</h1>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--gfi-bg-secondary)", margin: 0 }}>Testimonios</h1>
             <span style={{ background: "#f3f4f6", color: "#6b7280", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
               {items.filter(i => i.activo).length} activos
             </span>
@@ -181,7 +181,7 @@ export default function TestimoniosPage() {
             >
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>{t.nombre_cliente}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--gfi-bg-secondary)" }}>{t.nombre_cliente}</span>
                   {t.cargo_cliente && (
                     <span style={{ fontSize: 11, color: "#6b7280", background: "#f3f4f6", padding: "1px 7px", borderRadius: 10 }}>{t.cargo_cliente}</span>
                   )}
@@ -226,7 +226,7 @@ export default function TestimoniosPage() {
         >
           <div style={{ background: "#fff", borderRadius: 12, padding: 28, width: "100%", maxWidth: 500, boxShadow: "0 20px 60px rgba(0,0,0,0.25)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111", margin: 0 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--gfi-bg-secondary)", margin: 0 }}>
                 {editandoId ? "Editar testimonio" : "Nuevo testimonio"}
               </h2>
               <button onClick={cerrar} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#9ca3af" }}>×</button>
