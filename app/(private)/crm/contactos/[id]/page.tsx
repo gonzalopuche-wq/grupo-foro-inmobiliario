@@ -72,13 +72,15 @@ const fmtMon = (n: number, m: string) =>
   m === "USD" ? `USD ${n.toLocaleString("es-AR")}` : `$ ${n.toLocaleString("es-AR")}`;
 
 const TIPO_INTERACCION: Record<string, { icon: string; color: string }> = {
-  llamada:    { icon: "📞", color: "#22c55e" },
-  whatsapp:   { icon: "💬", color: "#25d366" },
-  email:      { icon: "📧", color: "#60a5fa" },
-  reunion:    { icon: "🤝", color: "#a78bfa" },
-  visita:     { icon: "🏠", color: "#f59e0b" },
-  nota:       { icon: "📝", color: "#6b7280" },
-  otro:       { icon: "📌", color: "#6b7280" },
+  llamada:   { icon: "📞", color: "#22c55e" },
+  email:     { icon: "📧", color: "#60a5fa" },
+  visita:    { icon: "🏠", color: "#f97316" },
+  whatsapp:  { icon: "💬", color: "#25d366" },
+  "reunión": { icon: "🤝", color: "#a855f7" },
+  reunion:   { icon: "🤝", color: "#a855f7" },
+  nota:      { icon: "📝", color: "rgba(255,255,255,0.5)" },
+  propuesta: { icon: "📋", color: "#fbbf24" },
+  otro:      { icon: "⚡", color: "#cc0000" },
 };
 
 const ETAPA_COLOR: Record<string, string> = {
@@ -117,6 +119,9 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
 
   // ── Tab ──
   const [tab, setTab] = useState<"historial" | "negocios" | "tareas">("historial");
+
+  // ── Filtro de interacciones ──
+  const [filtroTipo, setFiltroTipo] = useState<string>("todos");
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -239,6 +244,18 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
         .action-btn.wa { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.3); color: #25d366; }
         .int-row:hover { background: rgba(255,255,255,0.03); }
         @media (max-width: 700px) { .two-col { grid-template-columns: 1fr !important; } }
+        .tl-wrap { position: relative; padding-left: 32px; }
+        .tl-wrap::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: rgba(200,0,0,0.15); }
+        .tl-item { position: relative; margin-bottom: 14px; }
+        .tl-dot { position: absolute; left: -26px; top: 4px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; border: 2px solid rgba(0,0,0,0.3); }
+        .tl-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px; transition: border-color 0.15s; }
+        .tl-card:hover { border-color: rgba(255,255,255,0.15); }
+        .tl-tipo { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+        .tl-desc { font-size: 12px; color: rgba(255,255,255,0.75); font-family: 'Inter',sans-serif; line-height: 1.4; }
+        .tl-fecha { font-size: 9px; color: rgba(255,255,255,0.3); margin-top: 4px; font-family: 'Inter',sans-serif; }
+        .filtro-btn { padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .filtro-btn:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.7); }
+        .filtro-btn.on { background: rgba(204,0,0,0.15); border-color: rgba(204,0,0,0.4); color: #cc0000; }
       `}</style>
 
       {/* Toast */}
@@ -439,38 +456,68 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
           {/* ── Tab: Historial ── */}
           {tab === "historial" && (
             <div>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
-                <button className="action-btn primary" onClick={() => setShowIntModal(true)}>+ Registrar interacción</button>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+                {/* Filtros por tipo */}
+                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                  {[
+                    { key: "todos", label: "Todos" },
+                    { key: "llamada", label: "📞 Llamadas" },
+                    { key: "email", label: "📧 Emails" },
+                    { key: "visita", label: "🏠 Visitas" },
+                    { key: "whatsapp", label: "💬 WhatsApp" },
+                    { key: "nota", label: "📝 Notas" },
+                    { key: "propuesta", label: "📋 Propuestas" },
+                  ].map(({ key, label }) => (
+                    <button
+                      key={key}
+                      className={`filtro-btn${filtroTipo === key ? " on" : ""}`}
+                      onClick={() => setFiltroTipo(key)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <button className="action-btn primary" onClick={() => setShowIntModal(true)}>+ Registrar</button>
               </div>
 
               {interacciones.length === 0 ? (
                 <div style={{ ...cardSt, textAlign: "center", padding: "32px 20px", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>
                   No hay interacciones registradas todavía.
                 </div>
-              ) : (
-                <div style={{ position: "relative" }}>
-                  {/* Timeline line */}
-                  <div style={{ position: "absolute", left: 17, top: 0, bottom: 0, width: 2, background: "rgba(255,255,255,0.06)" }} />
-                  {interacciones.map((int, i) => {
-                    const cfg = TIPO_INTERACCION[int.tipo] ?? TIPO_INTERACCION.otro;
-                    return (
-                      <div key={int.id} className="int-row" style={{ display: "flex", gap: 14, marginBottom: 12, padding: "10px 12px", borderRadius: 8, transition: "background 0.15s", position: "relative" }}>
-                        {/* Icono */}
-                        <div style={{ width: 36, height: 36, borderRadius: "50%", background: `${cfg.color}15`, border: `2px solid ${cfg.color}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16, zIndex: 1, position: "relative" }}>
-                          {cfg.icon}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                            <span style={{ fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: cfg.color }}>{int.tipo}</span>
-                            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>{fmtFechaHora(int.created_at)}</span>
+              ) : (() => {
+                const filtradas = filtroTipo === "todos"
+                  ? interacciones
+                  : interacciones.filter(i => i.tipo === filtroTipo);
+                if (filtradas.length === 0) {
+                  return (
+                    <div style={{ ...cardSt, textAlign: "center", padding: "24px 20px", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>
+                      No hay interacciones de este tipo.
+                    </div>
+                  );
+                }
+                return (
+                  <div className="tl-wrap">
+                    {filtradas.map((int) => {
+                      const cfg = TIPO_INTERACCION[int.tipo] ?? TIPO_INTERACCION.otro;
+                      return (
+                        <div key={int.id} className="tl-item">
+                          <div
+                            className="tl-dot"
+                            style={{ background: `${cfg.color}22`, borderColor: `${cfg.color}60` }}
+                          >
+                            {cfg.icon}
                           </div>
-                          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.5 }}>{int.descripcion}</div>
+                          <div className="tl-card">
+                            <div className="tl-tipo" style={{ color: cfg.color }}>{int.tipo}</div>
+                            <div className="tl-desc">{int.descripcion}</div>
+                            <div className="tl-fecha">{fmtFechaHora(int.created_at)}</div>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           )}
 
