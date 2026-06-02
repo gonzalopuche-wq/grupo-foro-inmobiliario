@@ -144,7 +144,7 @@ function PropCard({ p }: { p: Propiedad }) {
         }}
       >
         {/* Imagen */}
-        <div style={{ position: "relative", height: 160, background: "var(--gfi-bg-secondary)", flexShrink: 0 }}>
+        <div style={{ position: "relative", height: 200, background: "var(--gfi-bg-secondary)", flexShrink: 0 }}>
           {img ? (
             <img
               src={img}
@@ -182,13 +182,24 @@ function PropCard({ p }: { p: Propiedad }) {
         </div>
 
         {/* Contenido */}
-        <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-          {/* Portal */}
-          <PortalBadge portal={p.portal} />
+        <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
+          {/* Portal + tipo */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <PortalBadge portal={p.portal} />
+          </div>
+
+          {/* Precio — jerarquía principal */}
+          <p style={{
+            fontSize: 22, fontWeight: 800, lineHeight: 1.1,
+            color: p.moneda === "USD" ? "#3abab6" : "#fff",
+            fontFamily: "var(--font-display)", margin: 0,
+          }}>
+            {precio}
+          </p>
 
           {/* Título */}
           <p style={{
-            fontSize: 12, color: "rgba(255,255,255,0.82)", fontWeight: 500,
+            fontSize: 12, color: "rgba(255,255,255,0.75)", fontWeight: 500,
             fontFamily: "var(--font-body)", margin: 0,
             overflow: "hidden", display: "-webkit-box",
             WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
@@ -197,21 +208,13 @@ function PropCard({ p }: { p: Propiedad }) {
             {p.titulo}
           </p>
 
-          {/* Precio */}
-          <p style={{
-            fontSize: 15, fontWeight: 700, color: "#fff",
-            fontFamily: "var(--font-display)", margin: 0,
-          }}>
-            {precio}
-          </p>
-
-          {/* Specs */}
+          {/* Specs — sin emojis, con pipes */}
           {specs.length > 0 && (
             <p style={{
               fontSize: 11, color: "rgba(255,255,255,0.45)",
               fontFamily: "var(--font-body)", margin: 0,
             }}>
-              {specs.join(" · ")}
+              {specs.join(" | ")}
             </p>
           )}
 
@@ -220,7 +223,7 @@ function PropCard({ p }: { p: Propiedad }) {
             fontSize: 11, color: "var(--gfi-text-muted)",
             fontFamily: "var(--font-body)", margin: 0, marginTop: "auto",
           }}>
-            📍 {[p.barrio, p.ciudad].filter(Boolean).join(", ")}
+            {[p.barrio, p.ciudad].filter(Boolean).join(", ")}
           </p>
         </div>
       </div>
@@ -330,7 +333,7 @@ export default function PropiedadesMercadoPage() {
   return (
     <div style={{ padding: "28px 24px 80px", maxWidth: 1400, margin: "0 auto" }}>
       <style>{`
-        .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+        .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
         .pm-input { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 5px; color: #fff; padding: 8px 12px; font-size: 12px; font-family: var(--font-body); outline: none; width: 100%; }
         .pm-input:focus { border-color: rgba(200,0,0,0.5); }
         .pm-input::placeholder { color: var(--gfi-text-dim); }

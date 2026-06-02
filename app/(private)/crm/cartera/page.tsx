@@ -1316,9 +1316,9 @@ export default function CarteraPage() {
         .cart-card:hover { border-color: #333b4d; box-shadow: 0 6px 28px rgba(0,0,0,0.55); }
 
         /* Foto */
-        .cart-card-foto { width: 210px; min-width: 210px; flex-shrink: 0; position: relative; background: #0d1017; overflow: hidden; min-height: 148px; }
-        .cart-card-foto img { width: 100%; height: 100%; object-fit: cover; min-height: 148px; display: block; }
-        .cart-card-foto-empty { width: 100%; min-height: 148px; display: flex; align-items: center; justify-content: center; font-size: 36px; color: #1c2030; }
+        .cart-card-foto { width: 220px; min-width: 220px; flex-shrink: 0; position: relative; background: #0d1017; overflow: hidden; min-height: 190px; }
+        .cart-card-foto img { width: 100%; height: 100%; object-fit: cover; min-height: 190px; display: block; }
+        .cart-card-foto-empty { width: 100%; min-height: 190px; display: flex; align-items: center; justify-content: center; font-size: 36px; color: #1c2030; }
         .cart-estado-badge { position: absolute; top: 10px; left: 10px; padding: 3px 9px; border-radius: 20px; font-family: var(--font-display); font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .cart-foto-count { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.75); color: #8892a4; font-size: 9px; padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 600; backdrop-filter: blur(4px); }
         /* Banner operación sobre la foto (parte inferior) */
@@ -1337,7 +1337,7 @@ export default function CarteraPage() {
         .cart-precio-op-venta { background: rgba(10,61,46,0.40); color: #3abab6; border: 1px solid rgba(58,186,182,0.22); }
         .cart-precio-op-alquiler { background: rgba(10,37,64,0.50); color: #4ab8d8; border: 1px solid rgba(74,184,216,0.22); }
         .cart-precio-op-temporal { background: rgba(196,74,0,0.12); color: #d4960c; border: 1px solid rgba(196,74,0,0.28); }
-        .cart-card-precio { font-family: 'JetBrains Mono','Courier New',monospace; font-size: 18px; font-weight: 700; color: #f0f4f8; white-space: nowrap; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+        .cart-card-precio { font-family: 'JetBrains Mono','Courier New',monospace; font-size: 22px; font-weight: 700; color: #f0f4f8; white-space: nowrap; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
         .cart-card-precio.usd { color: #3abab6; }
         .cart-card-precio.ars { color: #d4960c; }
         .cart-card-exp { font-size: 10px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; margin-top: 2px; font-variant-numeric: tabular-nums; }
@@ -1733,7 +1733,7 @@ export default function CarteraPage() {
                       </div>
                       <div className="cart-precio-block">
                         <div className={`cart-precio-op ${opClass}`}>{opLabel}</div>
-                        <div className="cart-card-precio">{p.moneda === "USD" ? "U$D" : "$"} {fmt(p.precio)}</div>
+                        <div className={`cart-card-precio ${p.moneda === "USD" ? "usd" : "ars"}`}>{p.moneda === "USD" ? "U$D" : "$"} {fmt(p.precio)}</div>
                         {p.expensas && <div className="cart-card-exp">+ Exp. {p.moneda_expensas ?? "ARS"} {fmt(p.expensas)}</div>}
                       </div>
                     </div>
@@ -1743,14 +1743,18 @@ export default function CarteraPage() {
 
                     {/* Specs */}
                     <div className="cart-card-specs">
-                      {p.dormitorios != null && <span className="cart-spec-item">🛏 {p.dormitorios} dorm.</span>}
-                      {p.banos != null && <span className="cart-spec-item">🚿 {p.banos} baños</span>}
-                      {(p as any).toilettes != null && <span className="cart-spec-item">🚽 {(p as any).toilettes} toil.</span>}
-                      {p.ambientes != null && <span className="cart-spec-item">🏠 {p.ambientes} amb.</span>}
-                      {p.superficie_cubierta != null && <span className="cart-spec-item">📐 {p.superficie_cubierta} m²</span>}
-                      {(p as any).sup_terreno != null && <span className="cart-spec-item">🌿 {(p as any).sup_terreno} m² tot.</span>}
-                      {p.piso && <span className="cart-spec-item">🏢 Piso {p.piso}</span>}
-                      {(p as any).estacionamientos > 0 && <span className="cart-spec-item">🚗 {(p as any).estacionamientos} coch.</span>}
+                      {[
+                        p.dormitorios != null ? `${p.dormitorios} dorm.` : null,
+                        p.banos != null ? `${p.banos} baños` : null,
+                        (p as any).toilettes != null ? `${(p as any).toilettes} toil.` : null,
+                        p.ambientes != null ? `${p.ambientes} amb.` : null,
+                        p.superficie_cubierta != null ? `${p.superficie_cubierta} m²` : null,
+                        (p as any).sup_terreno != null ? `${(p as any).sup_terreno} m² tot.` : null,
+                        p.piso ? `Piso ${p.piso}` : null,
+                        (p as any).estacionamientos > 0 ? `${(p as any).estacionamientos} coch.` : null,
+                      ].filter(Boolean).map((s, i, arr) => (
+                        <span key={i} className="cart-spec-item">{s}{i < arr.length - 1 ? " |" : ""}</span>
+                      ))}
                     </div>
 
                     {/* Chips de condiciones */}
@@ -2082,11 +2086,11 @@ export default function CarteraPage() {
                           {ubicacion && <div className="cart-card-dir">📍 {ubicacion}</div>}
 
                           <div className="cart-card-specs">
-                            {p.ambientes && <div className="cart-spec-item">🛋 {p.ambientes} amb.</div>}
-                            {!p.ambientes && p.dormitorios && <div className="cart-spec-item">🛏 {p.dormitorios} dorm.</div>}
-                            {p.banos && <div className="cart-spec-item">🚿 {p.banos} baños</div>}
-                            {p.superficie_cubierta && <div className="cart-spec-item">📐 {p.superficie_cubierta} m² cub.</div>}
-                            {!p.superficie_cubierta && p.sup_terreno && <div className="cart-spec-item">📐 {p.sup_terreno} m² terreno</div>}
+                            {[
+                              p.ambientes ? `${p.ambientes} amb.` : p.dormitorios ? `${p.dormitorios} dorm.` : null,
+                              p.banos ? `${p.banos} baños` : null,
+                              p.superficie_cubierta ? `${p.superficie_cubierta} m² cub.` : p.sup_terreno ? `${p.sup_terreno} m² terreno` : null,
+                            ].filter(Boolean).join(" | ")}
                           </div>
 
                           <div className="cart-card-footer">

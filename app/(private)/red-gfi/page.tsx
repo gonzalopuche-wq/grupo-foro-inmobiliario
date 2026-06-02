@@ -154,13 +154,13 @@ export default function RedGFIPage() {
         .rgfi-card { background:var(--gfi-bg-card); border:1px solid rgba(255,255,255,0.06); border-radius:10px; overflow:hidden; cursor:pointer; transition:border-color 0.15s,transform 0.1s; }
         .rgfi-card:hover { border-color:rgba(153,0,0,0.3); transform:translateY(-1px); }
         .rgfi-card.selected { border-color:#990000; }
-        .rgfi-card-foto { height:160px; background:var(--gfi-bg-card); position:relative; overflow:hidden; }
+        .rgfi-card-foto { height:190px; background:var(--gfi-bg-card); position:relative; overflow:hidden; }
         .rgfi-card-foto img { width:100%; height:100%; object-fit:cover; }
         .rgfi-card-foto-empty { height:100%; display:flex; align-items:center; justify-content:center; font-size:40px; }
         .rgfi-op-badge { position:absolute; top:8px; left:8px; padding:3px 8px; border-radius:4px; font-family:var(--font-display); font-size:9px; font-weight:800; letter-spacing:0.08em; }
         .rgfi-card-body { padding:14px; }
         .rgfi-card-tipo { font-size:11px; color:var(--gfi-text-muted); font-family:var(--font-display); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
-        .rgfi-card-precio { font-family:var(--font-display); font-size:18px; font-weight:800; color:#fff; margin:4px 0; }
+        .rgfi-card-precio { font-family:var(--font-display); font-size:22px; font-weight:800; color:#fff; margin:4px 0 2px; line-height:1.1; }
         .rgfi-card-loc { font-size:12px; color:rgba(255,255,255,0.45); margin-bottom:8px; }
         .rgfi-card-meta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
         .rgfi-meta-item { font-size:11px; color:var(--gfi-text-muted); }
@@ -316,19 +316,19 @@ export default function RedGFIPage() {
                   </div>
                   <div className="rgfi-card-body">
                     <div className="rgfi-card-tipo">{item.tipo_propiedad}</div>
-                    <div className="rgfi-card-precio">
+                    <div className="rgfi-card-precio" style={{ color: item.moneda === "USD" ? "#3abab6" : "#fff" }}>
                       {item.precio ? `${item.moneda} ${fmt(item.precio)}` : "Consultar"}
                     </div>
                     <div className="rgfi-card-loc">
                       📍 {item.ciudad}{item.zona ? ` · ${item.zona}` : ""}
                     </div>
-                    <div className="rgfi-card-meta">
-                      {item.dormitorios != null && <span className="rgfi-meta-item">🛏 {item.dormitorios}</span>}
-                      {item.banos != null && <span className="rgfi-meta-item">🚿 {item.banos}</span>}
-                      {item.superficie_cubierta != null && <span className="rgfi-meta-item">📐 {item.superficie_cubierta} m²</span>}
-                      {item.superficie_total != null && item.superficie_total !== item.superficie_cubierta && (
-                        <span className="rgfi-meta-item">🗺 {item.superficie_total} m² tot.</span>
-                      )}
+                    <div className="rgfi-card-meta" style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "var(--font-body)" }}>
+                      {[
+                        item.dormitorios != null ? `${item.dormitorios} dorm.` : null,
+                        item.banos != null ? `${item.banos} baño${item.banos !== 1 ? "s" : ""}` : null,
+                        item.superficie_cubierta != null ? `${item.superficie_cubierta} m²` : null,
+                        item.superficie_total != null && item.superficie_total !== item.superficie_cubierta ? `${item.superficie_total} m² tot.` : null,
+                      ].filter(Boolean).join(" | ")}
                     </div>
                     <div className="rgfi-chips">
                       {item.apto_credito && <span className="rgfi-chip">Apto crédito</span>}
