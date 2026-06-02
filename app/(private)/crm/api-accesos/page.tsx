@@ -68,7 +68,7 @@ export default function ApiAccesosPage() {
   }
 
   async function revocarKey(keyId: string) {
-    if (!token || !confirm("¿Revocar esta key? UrbixPro dejará de poder sincronizar con este token.")) return;
+    if (!token || !confirm("¿Revocar esta key? Los sistemas externos que la usen dejarán de poder sincronizar.")) return;
     setRevocando(keyId);
     try {
       const res = await fetch(`/api/admin/api-keys?key_id=${keyId}`, {
@@ -141,7 +141,7 @@ export default function ApiAccesosPage() {
       <div className="ak-wrap">
         <div>
           <div className="ak-titulo"><span>GFI®</span> API Keys</div>
-          <div className="ak-sub">Conectá UrbixPro u otros sistemas externos. La key se muestra una sola vez al crearla.</div>
+          <div className="ak-sub">Conectá sistemas externos al CRM GFI. La key se muestra una sola vez al crearla.</div>
         </div>
 
         {/* Endpoint info */}
@@ -160,7 +160,7 @@ export default function ApiAccesosPage() {
           <div className="ak-row">
             <input
               className="ak-input"
-              placeholder="Nombre · ej: URBIX PRO, Script propio..."
+              placeholder="Nombre · ej: Integración Tokko, Script propio..."
               value={nombreInput}
               onChange={e => setNombreInput(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") crearKey(); }}
@@ -184,7 +184,7 @@ export default function ApiAccesosPage() {
               </button>
             </div>
             <div className="ak-nueva-key-aviso">
-              Pegá este valor como <strong>X-GFI-Key</strong> en la configuración de UrbixPro. Una vez cerrado este mensaje no hay forma de recuperarla.
+              Pegá este valor como <strong>X-GFI-Key</strong> en la configuración del sistema externo. Una vez cerrado este mensaje no hay forma de recuperarla.
             </div>
             <button
               className="ak-btn-sm"
@@ -281,10 +281,10 @@ export default function ApiAccesosPage() {
           </div>
         )}
 
-        {/* Datos para UrbixPro */}
+        {/* Datos de integración */}
         {userId && (
           <div className="ak-card" style={{ borderColor: "rgba(99,102,241,0.2)", background: "rgba(99,102,241,0.04)" }}>
-            <div className="ak-card-titulo" style={{ color: "#818cf8" }}>Datos para configurar en UrbixPro</div>
+            <div className="ak-card-titulo" style={{ color: "#818cf8" }}>Datos para configurar la integración</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 12, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.6)" }}>
               <div>
                 <span style={{ color: "rgba(255,255,255,0.3)" }}>URL base GFI → </span>

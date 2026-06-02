@@ -1,6 +1,6 @@
 /**
  * POST /api/v1/propiedades
- * Endpoint público para UrbixPro → GFI.
+ * Endpoint de integración externa → GFI.
  * Autenticación: X-GFI-Key (SHA-256 hash comparado contra api_keys).
  */
 import { NextRequest, NextResponse } from "next/server";
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     ciudad:              body.ciudad ?? body.city ?? null,
     latitud:             body.lat ?? null,
     longitud:            body.lng ?? null,
-    origen:              "urbix",
+    origen:              "api_externa",
     updated_at:          new Date().toISOString(),
   };
   if (externalId) payload.external_id = externalId;
