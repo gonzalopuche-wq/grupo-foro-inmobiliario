@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import { ContactForm, TasacionForm } from "./WebForms";
 import PropChat from "@/app/components/ai/PropChat";
+import ChatPortal from "./ChatPortal";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -573,6 +574,13 @@ function WebTemplate({ cfg, perfil, propiedades, testimonios, noticias = [] }: {
           <span>WhatsApp</span>
         </a>
       )}
+
+      {/* ── CHATBOT IA FLOTANTE ── */}
+      <ChatPortal
+        perfilId={cfg.perfil_id}
+        nombreCorredor={nombre}
+        colorPrimario={cfg.color_primario}
+      />
 
       {/* Google Analytics */}
       {cfg.google_analytics && (
