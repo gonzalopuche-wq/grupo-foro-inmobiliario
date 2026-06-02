@@ -153,6 +153,8 @@ export default function ScoringPage() {
   const [filtro, setFiltro] = useState<"todos" | "caliente" | "tibio" | "frio">("todos");
   const [busqueda, setBusqueda] = useState("");
   const [seleccionado, setSeleccionado] = useState<ContactoScore | null>(null);
+  const [iaAnalisis, setIaAnalisis] = useState<Record<string, { temperatura: string; prioridad: string; resumen: string; proximo_paso: string; estrategia: string; riesgo: string; oportunidad: string }>>({});
+  const [iaLoading, setIaLoading] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -332,6 +334,49 @@ export default function ScoringPage() {
                   {seleccionado.ultimaInteraccion && <div style={{ color: "#9ca3af" }}>🕐 Última: {diasDesde(seleccionado.ultimaInteraccion)}</div>}
                 </div>
               </div>
+
+              {/* Análisis IA */}
+              {iaAnalisis[seleccionado.contacto.id] ? (
+                <div style={{ marginTop: 14, padding: 14, background: "#0a0a0a", borderRadius: 8, border: "1px solid rgba(139,92,246,0.25)" }}>
+                  <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 10, color: "#8b5cf6", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
+                    🤖 Análisis IA
+                  </div>
+                  <div style={{ fontSize: 12, color: "#d1d5db", lineHeight: 1.6, marginBottom: 8 }}>
+                    {iaAnalisis[seleccionado.contacto.id].resumen}
+                  </div>
+                  <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, padding: 10, marginBottom: 8 }}>
+                    <div style={{ fontSize: 10, color: "#22c55e", fontWeight: 700, marginBottom: 4, fontFamily: "Montserrat,sans-serif", textTransform: "uppercase" }}>Próximo paso</div>
+                    <div style={{ fontSize: 12, color: "#d1d5db" }}>{iaAnalisis[seleccionado.contacto.id].proximo_paso}</div>
+                  </div>
+                  {iaAnalisis[seleccionado.contacto.id].riesgo && (
+                    <div style={{ fontSize: 11, color: "#f87171", marginBottom: 4 }}>⚠️ {iaAnalisis[seleccionado.contacto.id].riesgo}</div>
+                  )}
+                  {iaAnalisis[seleccionado.contacto.id].oportunidad && (
+                    <div style={{ fontSize: 11, color: "#34d399" }}>✨ {iaAnalisis[seleccionado.contacto.id].oportunidad}</div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  disabled={iaLoading === seleccionado.contacto.id}
+                  onClick={async () => {
+                    setIaLoading(seleccionado.contacto.id);
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      const res = await fetch("/api/crm/scoring-ia", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token ?? ""}` },
+                        body: JSON.stringify({ contacto_id: seleccionado.contacto.id }),
+                      });
+                      const data = await res.json();
+                      if (data.analisis) setIaAnalisis(prev => ({ ...prev, [seleccionado.contacto.id]: data.analisis }));
+                    } finally {
+                      setIaLoading(null);
+                    }
+                  }}
+                  style={{ width: "100%", marginTop: 12, background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.3)", borderRadius: 6, color: "#8b5cf6", padding: "10px", fontSize: 12, fontWeight: 700, cursor: iaLoading === seleccionado.contacto.id ? "not-allowed" : "pointer", fontFamily: "Montserrat,sans-serif", opacity: iaLoading === seleccionado.contacto.id ? 0.7 : 1 }}>
+                  {iaLoading === seleccionado.contacto.id ? "Analizando con IA..." : "🤖 Analizar con IA"}
+                </button>
+              )}
 
               <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
                 <Link href={`/crm/contactos?id=${seleccionado.contacto.id}`}

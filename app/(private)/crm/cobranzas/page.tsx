@@ -9,7 +9,9 @@ interface Contrato {
   perfil_id: string;
   inquilino_nombre: string;
   inquilino_telefono: string | null;
+  inquilino_email: string | null;
   propietario_nombre: string;
+  propietario_email: string | null;
   direccion: string;
   alquiler_actual: number;
   moneda: "ARS" | "USD";
@@ -87,6 +89,7 @@ export default function CobranzasPage() {
   const [guardando, setGuardando] = useState(false);
   const [toast, setToast]         = useState<string | null>(null);
   const [verFinalizados, setVerFinalizados] = useState(false);
+  const [enviandoComprobante, setEnviandoComprobante] = useState<string | null>(null);
 
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(null), 3200); };
 
@@ -102,7 +105,7 @@ export default function CobranzasPage() {
     setLoading(true);
     const [{ data: c }, { data: p }] = await Promise.all([
       supabase.from("crm_contratos")
-        .select("id,perfil_id,inquilino_nombre,inquilino_telefono,propietario_nombre,direccion,alquiler_actual,moneda,dia_vencimiento,fecha_inicio,fecha_fin,estado,notas")
+        .select("id,perfil_id,inquilino_nombre,inquilino_telefono,inquilino_email,propietario_nombre,propietario_email,direccion,alquiler_actual,moneda,dia_vencimiento,fecha_inicio,fecha_fin,estado,notas")
         .eq("perfil_id", id)
         .order("created_at", { ascending: false }),
       supabase.from("crm_pagos_alquiler").select("*").eq("perfil_id", id),
@@ -144,6 +147,52 @@ export default function CobranzasPage() {
     await supabase.from("crm_contratos").delete().eq("id", id);
     showToast("Contrato eliminado");
     cargar(uid!);
+  };
+
+  const enviarComprobante = async (c: Contrato) => {
+    const pago = getPago(c.id, mes);
+    if (!pago || pago.estado !== "pagado") {
+      showToast("Solo se puede generar comprobante de pagos marcados como Pagado");
+      return;
+    }
+    setEnviandoComprobante(c.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/crm/comprobante-pago", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token ?? ""}`,
+        },
+        body: JSON.stringify({
+          pago_id: pago.id,
+          inquilino: c.inquilino_nombre,
+          propietario: c.propietario_nombre,
+          direccion: c.direccion,
+          mes,
+          monto: pago.monto ?? c.alquiler_actual,
+          moneda: c.moneda,
+          fecha_pago: pago.fecha_pago ?? new Date().toISOString().slice(0, 10),
+          email_inquilino: c.inquilino_email ?? undefined,
+          email_propietario: c.propietario_email ?? undefined,
+          notas: pago.notas ?? undefined,
+        }),
+      });
+      const data = await res.json();
+      if (data.html) {
+        const win = window.open("", "_blank");
+        if (win) { win.document.write(data.html); win.document.close(); }
+      }
+      if (data.enviado) {
+        showToast(`Comprobante enviado a ${data.destinatarios.join(", ")}`);
+      } else {
+        showToast(`Comprobante generado (${data.nro}) — sin email configurado`);
+      }
+    } catch {
+      showToast("Error al generar comprobante");
+    } finally {
+      setEnviandoComprobante(null);
+    }
   };
 
   const getPago = (contratoId: string, m: string): Pago | undefined =>
@@ -352,6 +401,14 @@ export default function CobranzasPage() {
                         style={{ background: "rgba(37,211,102,0.12)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 5, color: "#25d366", padding: "4px 12px", fontSize: 10, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em" }}>
                         💬 WA
                       </a>
+                    )}
+                    {estado === "pagado" && (
+                      <button className="cob-btn"
+                        disabled={enviandoComprobante === c.id}
+                        style={{ background: "rgba(245,158,11,0.1)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.3)", padding: "4px 12px", fontSize: 10, opacity: enviandoComprobante === c.id ? 0.6 : 1 }}
+                        onClick={() => enviarComprobante(c)}>
+                        {enviandoComprobante === c.id ? "..." : "🧾 Comprobante"}
+                      </button>
                     )}
                     <button className="cob-btn"
                       style={{ background: "rgba(239,68,68,0.08)", color: "rgba(239,68,68,0.6)", border: "1px solid rgba(239,68,68,0.2)", padding: "4px 10px", fontSize: 10, marginLeft: "auto" }}
