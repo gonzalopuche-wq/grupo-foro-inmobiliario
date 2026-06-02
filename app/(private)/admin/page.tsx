@@ -118,9 +118,9 @@ function CobrosMatchesAdmin() {
       {loading ? <div style={{ color: "rgba(255,255,255,0.3)", padding: 16 }}>Cargando...</div> : (
         <>
           <div style={{ display: "flex", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
-            <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "12px 20px" }}>
+            <div style={{ background: "var(--gfi-green-soft)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 8, padding: "12px 20px" }}>
               <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>Total acumulado</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: "#22c55e" }}>{fmt(total)}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: "var(--gfi-green-text)", fontFamily: "var(--font-mono)", fontVariantNumeric: "tabular-nums" }}>{fmt(total)}</div>
             </div>
             <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "12px 20px" }}>
               <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>MIR</div>
@@ -135,7 +135,7 @@ function CobrosMatchesAdmin() {
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8, fontFamily: "Montserrat,sans-serif" }}>MIR — desbloqueos</div>
               <div className="adm-tabla-wrap"><table className="adm-tabla"><thead><tr><th>Corredor</th><th>Mat.</th><th>Tipo</th><th>Monto</th><th>Fecha</th></tr></thead>
-                <tbody>{mirItems.map(x => (<tr key={x.id}><td>{x.perfiles?.apellido}, {x.perfiles?.nombre}</td><td>{x.perfiles?.matricula ?? "—"}</td><td style={{ textTransform: "capitalize" }}>{x.tipo}</td><td style={{ color: "#22c55e", fontWeight: 700 }}>{fmt(x.monto)}</td><td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{fmtDate(x.created_at)}</td></tr>))}</tbody>
+                <tbody>{mirItems.map(x => (<tr key={x.id}><td>{x.perfiles?.apellido}, {x.perfiles?.nombre}</td><td>{x.perfiles?.matricula ?? "—"}</td><td style={{ textTransform: "capitalize" }}>{x.tipo}</td><td style={{ color: "var(--gfi-green-text)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{fmt(x.monto)}</td><td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{fmtDate(x.created_at)}</td></tr>))}</tbody>
               </table></div>
             </div>
           )}
@@ -143,7 +143,7 @@ function CobrosMatchesAdmin() {
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8, fontFamily: "Montserrat,sans-serif" }}>Divisas — accesos a contacto</div>
               <div className="adm-tabla-wrap"><table className="adm-tabla"><thead><tr><th>Corredor</th><th>Mat.</th><th>Monto</th><th>Fecha</th></tr></thead>
-                <tbody>{divisasItems.map(x => (<tr key={x.id}><td>{x.accedido?.apellido}, {x.accedido?.nombre}</td><td>{x.accedido?.matricula ?? "—"}</td><td style={{ color: "#22c55e", fontWeight: 700 }}>{fmt(x.monto)}</td><td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{fmtDate(x.created_at)}</td></tr>))}</tbody>
+                <tbody>{divisasItems.map(x => (<tr key={x.id}><td>{x.accedido?.apellido}, {x.accedido?.nombre}</td><td>{x.accedido?.matricula ?? "—"}</td><td style={{ color: "var(--gfi-green-text)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{fmt(x.monto)}</td><td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{fmtDate(x.created_at)}</td></tr>))}</tbody>
               </table></div>
             </div>
           )}
@@ -1724,8 +1724,8 @@ export default function AdminPage() {
                 display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer",
                 padding: "10px 20px", borderRadius: 4, fontFamily: "Montserrat,sans-serif",
                 fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
-                background: importandoPadron ? "rgba(255,255,255,0.04)" : "rgba(200,0,0,0.12)",
-                border: "1px solid rgba(200,0,0,0.4)", color: importandoPadron ? "rgba(255,255,255,0.4)" : "#fff",
+                background: importandoPadron ? "var(--gfi-bg-secondary)" : "var(--gfi-red-soft)",
+                border: "1px solid var(--gfi-red-border)", color: importandoPadron ? "var(--gfi-text-muted)" : "var(--gfi-text-primary)",
                 pointerEvents: importandoPadron ? "none" : "auto",
               }}>
                 {importandoPadron
@@ -1742,10 +1742,10 @@ export default function AdminPage() {
             {importPadronRes && (
               <div style={{
                 padding: "12px 16px", borderRadius: 4, marginBottom: 12,
-                background: importPadronRes.ok ? "rgba(34,197,94,0.06)" : "rgba(200,0,0,0.06)",
-                border: `1px solid ${importPadronRes.ok ? "rgba(34,197,94,0.2)" : "rgba(200,0,0,0.2)"}`,
+                background: importPadronRes.ok ? "var(--gfi-green-soft)" : "var(--gfi-red-soft)",
+                border: `1px solid ${importPadronRes.ok ? "rgba(16,185,129,0.25)" : "var(--gfi-red-border)"}`,
                 fontSize: 12, fontFamily: "Inter,sans-serif",
-                color: importPadronRes.ok ? "#22c55e" : "#ff6666",
+                color: importPadronRes.ok ? "var(--gfi-green-text)" : "var(--gfi-red)",
               }}>
                 {importPadronRes.ok ? (
                   <>✓ <strong>{(importPadronRes as any).insertados ?? 0} nuevos</strong> agregados · <strong>{(importPadronRes as any).actualizados ?? 0} actualizados</strong> ({importPadronRes.total} total).</>
@@ -1768,7 +1768,7 @@ export default function AdminPage() {
               </button>
               {syncCocirRes && (
                 <div style={{ marginTop: 8, width: "100%" }}>
-                  <span style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: syncCocirRes.ok ? "#22c55e" : "#ff6666" }}>
+                  <span style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: syncCocirRes.ok ? "var(--gfi-green-text)" : "var(--gfi-red)" }}>
                     {syncCocirRes.ok ? `✓ ${syncCocirRes.total_scrapeados ?? 0} registros` : `✗ ${syncCocirRes.error ?? "Error desconocido"}`}
                   </span>
                   {!syncCocirRes.ok && syncCocirRes.debug && (
@@ -1821,7 +1821,7 @@ export default function AdminPage() {
                       <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:6}}>
                         <span style={{fontFamily:"'Montserrat',sans-serif",fontSize:13,fontWeight:800,color:"#fff"}}>{ev.titulo}</span>
                         <span className="badge badge-pendiente">{TIPOS_EV[ev.tipo] ?? ev.tipo}</span>
-                        <span className="badge" style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",color:"#22c55e"}}>{ev.gratuito ? "Gratuito" : `$${ev.precio_entrada?.toLocaleString("es-AR")}`}</span>
+                        <span className="badge" style={{background:"var(--gfi-green-soft)",border:"1px solid rgba(16,185,129,0.25)",color:"var(--gfi-green-text)"}}>{ev.gratuito ? "Gratuito" : `$${ev.precio_entrada?.toLocaleString("es-AR")}`}</span>
                       </div>
                       {ev.descripcion && <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:6,lineHeight:1.5}}>{ev.descripcion.substring(0,200)}{ev.descripcion.length > 200 ? "..." : ""}</div>}
                       <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",display:"flex",gap:16,flexWrap:"wrap"}}>
@@ -2018,7 +2018,7 @@ export default function AdminPage() {
                   <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
                     <span className="doc-nombre">{n.titulo}</span>
                     {n.destacado && <span style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"var(--gfi-orange)",background:"var(--gfi-orange-soft)",border:"1px solid var(--gfi-orange-border)",padding:"2px 6px",borderRadius:10}}>⭐ DESTACADA</span>}
-                    {n.fuente && <span style={{fontSize:9,color:"rgba(200,0,0,0.6)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>{n.fuente}</span>}
+                    {n.fuente && <span style={{fontSize:9,color:"var(--gfi-red)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>{n.fuente}</span>}
                   </div>
                   <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",lineHeight:1.5,marginBottom:6}}>{n.cuerpo?.substring(0,200)}{n.cuerpo?.length > 200 ? "..." : ""}</div>
                   <div className="doc-meta">Por: {n.perfiles?.nombre} {n.perfiles?.apellido}{n.perfiles?.matricula ? ` · Mat. ${n.perfiles.matricula}` : ""} · {formatFecha(n.created_at)}{n.link && <a href={n.link} target="_blank" rel="noopener noreferrer" style={{marginLeft:10,color:"var(--gfi-red)",textDecoration:"none",fontSize:10}}>Ver link →</a>}</div>
@@ -2047,7 +2047,7 @@ export default function AdminPage() {
               {(["pendiente","activa","suspendida","todos"] as const).map(f => (
                 <button key={f} className={`adm-filtro-btn${filtroPagos === f ? " activo" : ""}`} onClick={() => setFiltroPagos(f)}>
                   {f === "pendiente" ? "Pendientes" : f === "activa" ? "Activos" : f === "suspendida" ? "Suspendidos" : "Todos"}
-                  {(contadoresPagos[f] ?? 0) > 0 && <span className="adm-filtro-count" style={f === "suspendida" ? {background:"rgba(200,0,0,0.25)",color:"#ff6666"} : {}}>{contadoresPagos[f]}</span>}
+                  {(contadoresPagos[f] ?? 0) > 0 && <span className="adm-filtro-count" style={f === "suspendida" ? {background:"var(--gfi-red-soft)",color:"var(--gfi-red)"} : {}}>{contadoresPagos[f]}</span>}
                 </button>
               ))}
               <button style={{marginLeft:"auto",fontSize:11,padding:"4px 12px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:4,color:"rgba(255,255,255,0.5)",cursor:"pointer"}} onClick={cargarPagos}>↻ Actualizar</button>
@@ -2117,7 +2117,7 @@ export default function AdminPage() {
                       { label: "Colaboradores (adicionales)", val: String(totalColab), color: "var(--gfi-text-secondary)" },
                       { label: `Subtotal USD (s/ IVA)`, val: `USD ${totalUsd.toFixed(2)}`, color: "#fff" },
                       { label: `IVA ${resumenFact.iva_pct}%`, val: ivaArs ? fmtARS(ivaArs) : "—", color: "var(--gfi-orange)" },
-                      { label: "Total ARS (c/ IVA)", val: totalArs ? fmtARS(totalArs) : "—", color: "#22c55e" },
+                      { label: "Total ARS (c/ IVA)", val: totalArs ? fmtARS(totalArs) : "—", color: "var(--gfi-green-text)" },
                       { label: "Dólar blue ref.", val: resumenFact.dolar_ref ? `$ ${resumenFact.dolar_ref.toLocaleString("es-AR")}` : "—", color: "rgba(255,255,255,0.5)" },
                     ].map(card => (
                       <div key={card.label} style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 8, padding: "16px 18px" }}>
@@ -2161,7 +2161,7 @@ export default function AdminPage() {
                               <td style={{ fontWeight: 700 }}>USD {subtUsd}</td>
                               <td>{subtArs ? fmtARS(subtArs) : "—"}</td>
                               <td style={{ color: "var(--gfi-orange)" }}>{ivaRow ? fmtARS(ivaRow) : "—"}</td>
-                              <td style={{ color: "#22c55e", fontWeight: 700 }}>{totRow ? fmtARS(totRow) : "—"}</td>
+                              <td style={{ color: "var(--gfi-green-text)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{totRow ? fmtARS(totRow) : "—"}</td>
                             </tr>
                           );
                         })}
@@ -2170,12 +2170,12 @@ export default function AdminPage() {
                   </div>
 
                   {/* Totales finales + registro */}
-                  <div style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                  <div style={{ background: "var(--gfi-green-soft)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 8, padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                     <div>
                       <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
                         Total a facturar — {resumenFact.periodo}
                       </div>
-                      <div style={{ fontSize: 26, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#22c55e" }}>
+                      <div style={{ fontSize: 26, fontFamily: "var(--font-mono)", fontWeight: 800, color: "var(--gfi-green-text)", fontVariantNumeric: "tabular-nums" }}>
                         {totalArs ? fmtARS(totalArs) : `USD ${totalUsd.toFixed(2)}`}
                       </div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>
@@ -2195,7 +2195,8 @@ export default function AdminPage() {
                       <button
                         onClick={registrarFacturaEmitida}
                         disabled={guardandoFactura}
-                        style={{ padding: "9px 20px", background: "#22c55e", border: "none", borderRadius: 4, color: "#000", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoFactura ? 0.6 : 1 }}
+                        className="adm-btn-aprobar"
+                        style={{ padding: "9px 20px", opacity: guardandoFactura ? 0.6 : 1 }}
                       >
                         {guardandoFactura ? "Guardando..." : "✓ Registrar factura"}
                       </button>
@@ -2242,10 +2243,10 @@ export default function AdminPage() {
                                <td><span style={{fontSize:10,fontFamily:"Montserrat,sans-serif",fontWeight:700,padding:"2px 8px",borderRadius:10,background:r.tipo==="corredor"?"var(--gfi-red-soft)":r.tipo==="cliente"?"var(--gfi-green-soft)":"var(--gfi-orange-soft)",color:r.tipo==="corredor"?"var(--gfi-red)":r.tipo==="cliente"?"var(--gfi-green-text)":"var(--gfi-orange)"}}>{r.tipo}</span></td>
                                <td>
                                  {r.referido_email && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>{r.referido_email}</div>}
-                                 {r.referido_telefono && <a href={`https://wa.me/${r.referido_telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"rgba(34,197,94,0.7)",textDecoration:"none"}}>💬 {r.referido_telefono}</a>}
+                                 {r.referido_telefono && <a href={`https://wa.me/${r.referido_telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"var(--gfi-green-text)",textDecoration:"none"}}>💬 {r.referido_telefono}</a>}
                                </td>
                                <td><span style={{fontSize:11,fontWeight:600,color:r.estado==="activo"?"var(--gfi-green-text)":r.estado==="pendiente"?"var(--gfi-orange)":"var(--gfi-red)"}}>{r.estado}</span></td>
-                               <td>{r.recompensa_aplicada ? <span style={{fontSize:11,color:"#22c55e",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>✓ Aplicada</span> : <span style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>—</span>}</td>
+                               <td>{r.recompensa_aplicada ? <span style={{fontSize:11,color:"var(--gfi-green-text)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>✓ Aplicada</span> : <span style={{fontSize:11,color:"var(--gfi-text-muted)"}}>—</span>}</td>
                                <td>
                                  {procesandoReferido === r.id ? <span className="adm-spinner" /> : r.estado === "pendiente" ? (
                                    <div className="adm-acciones">
@@ -2289,14 +2290,14 @@ export default function AdminPage() {
             </div>
             <div style={{background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border)",borderRadius:8,padding:"22px 24px"}}>
               <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:16}}>
-                <label style={{display:"inline-flex",alignItems:"center",gap:8,padding:"9px 18px",background:clearingCargando?"rgba(255,255,255,0.04)":"rgba(200,0,0,0.12)",border:"1px solid rgba(200,0,0,0.4)",borderRadius:6,cursor:clearingCargando?"not-allowed":"pointer",color:clearingCargando?"rgba(255,255,255,0.4)":"#fff",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.08em"}}>
+                <label style={{display:"inline-flex",alignItems:"center",gap:8,padding:"9px 18px",background:clearingCargando?"var(--gfi-bg-secondary)":"var(--gfi-red-soft)",border:"1px solid var(--gfi-red-border)",borderRadius:6,cursor:clearingCargando?"not-allowed":"pointer",color:clearingCargando?"var(--gfi-text-muted)":"var(--gfi-text-primary)",fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.08em"}}>
                   {clearingCargando?<><span style={{display:"inline-block",width:13,height:13,border:"2px solid rgba(255,255,255,0.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/> Procesando...</>:"📊 Subir extracto bancario"}
                   <input type="file" accept=".xlsx,.xls,.csv,.ods" onChange={procesarClearingBancario} style={{display:"none"}} disabled={clearingCargando}/>
                 </label>
                 <span style={{fontSize:11,color:"rgba(255,255,255,0.3)",fontFamily:"Inter,sans-serif"}}>Formatos: .xlsx · .xls · .csv — Columnas detectadas automáticamente (fecha, importe, descripción, CBU)</span>
               </div>
 
-              {clearingError && <div style={{padding:"10px 14px",background:"rgba(200,0,0,0.08)",border:"1px solid rgba(200,0,0,0.2)",borderRadius:6,fontSize:12,color:"#ff6666",marginBottom:12}}>{clearingError}</div>}
+              {clearingError && <div style={{padding:"10px 14px",background:"var(--gfi-red-soft)",border:"1px solid var(--gfi-red-border)",borderRadius:6,fontSize:12,color:"var(--gfi-red)",marginBottom:12}}>{clearingError}</div>}
 
               {clearingResult && (
                 <>
@@ -2305,7 +2306,7 @@ export default function AdminPage() {
                     {[
                       {l:"Transacciones banco",v:clearingResult.total_transacciones,c:"var(--gfi-text-secondary)"},
                       {l:"Pagos pendientes DB",v:clearingResult.total_pagos_pendientes,c:"var(--gfi-orange)"},
-                      {l:"Matches encontrados",v:clearingResult.matches?.length??0,c:"#22c55e"},
+                      {l:"Matches encontrados",v:clearingResult.matches?.length??0,c:"var(--gfi-green-text)"},
                     ].map(s => (
                       <div key={s.l} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"12px 16px"}}>
                         <div style={{fontSize:22,fontWeight:800,color:s.c,fontFamily:"Montserrat,sans-serif"}}>{s.v}</div>
@@ -2324,10 +2325,10 @@ export default function AdminPage() {
                   {/* Matches confirmables */}
                   {clearingResult.matches?.length > 0 && (
                     <div style={{marginBottom:20}}>
-                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"#22c55e",marginBottom:10}}>✓ MATCHES DETECTADOS — PENDIENTES DE CONFIRMAR</div>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"var(--gfi-green-text)",marginBottom:10}}>✓ MATCHES DETECTADOS — PENDIENTES DE CONFIRMAR</div>
                       <div style={{display:"flex",flexDirection:"column",gap:8}}>
                         {clearingResult.matches.map((m: any, i: number) => (
-                          <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:"rgba(34,197,94,0.05)",border:"1px solid rgba(34,197,94,0.15)",borderRadius:8}}>
+                          <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:"var(--gfi-green-soft)",border:"1px solid rgba(16,185,129,0.25)",borderRadius:8}}>
                             <div style={{flex:1,minWidth:0}}>
                               <div style={{fontSize:12,color:"#fff",fontWeight:600,marginBottom:2}}>{m.pago.perfiles?.nombre} {m.pago.perfiles?.apellido}{m.pago.perfiles?.matricula?` · Mat. ${m.pago.perfiles.matricula}`:""}</div>
                               <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"Inter,sans-serif"}}>
@@ -2390,7 +2391,7 @@ export default function AdminPage() {
                   <div style={{flex:1}}>
                     <div className="prov-nombre">{p.nombre} {!p.activo && <span style={{fontSize:9,color:"var(--gfi-orange)",fontFamily:"Montserrat",fontWeight:700,letterSpacing:"0.1em",marginLeft:8}}>INACTIVO</span>}</div>
                     {p.monedas && p.monedas.length > 0 && <div className="prov-tags">{p.monedas.map((m,i) => <span key={i} className="prov-tag">{m}</span>)}</div>}
-                    {(p.compra_usd || p.venta_usd) && <div className="prov-cot">{p.compra_usd && <div className="prov-cot-item compra">Compra: <strong>{formatARS(p.compra_usd)}</strong></div>}{p.venta_usd && <div className="prov-cot-item venta">Venta: <strong>{formatARS(p.venta_usd)}</strong></div>}{p.compra_usd && p.venta_usd && <div className="prov-cot-item">Promedio: <strong style={{color:"#22c55e"}}>{formatARS((p.compra_usd + p.venta_usd) / 2)}</strong></div>}</div>}
+                    {(p.compra_usd || p.venta_usd) && <div className="prov-cot">{p.compra_usd && <div className="prov-cot-item compra">Compra: <strong>{formatARS(p.compra_usd)}</strong></div>}{p.venta_usd && <div className="prov-cot-item venta">Venta: <strong>{formatARS(p.venta_usd)}</strong></div>}{p.compra_usd && p.venta_usd && <div className="prov-cot-item">Promedio: <strong style={{color:"var(--gfi-green-text)"}}>{formatARS((p.compra_usd + p.venta_usd) / 2)}</strong></div>}</div>}
                     {p.actualizado_cot && <div className="prov-hora">Act: {formatHora(p.actualizado_cot)}</div>}
                     {p.servicios && p.servicios.length > 0 && <div className="prov-wa">{p.servicios.join(" · ")}</div>}
                     {p.contacto_whatsapp && <div className="prov-wa">📱 {p.contacto_whatsapp}</div>}
@@ -2486,9 +2487,9 @@ export default function AdminPage() {
                             type="number" min={0} max={100}
                             defaultValue={bonif}
                             onBlur={e => setBonificacionUser(p.id, Number(e.target.value))}
-                            style={{ width: 50, background: "#0f172a", color: bonif === 100 ? "#22c55e" : "rgba(255,255,255,0.6)", border: `1px solid ${bonif === 100 ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.12)"}`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", textAlign: "center" }}
+                            style={{ width: 50, background: "var(--gfi-bg-input)", color: bonif === 100 ? "var(--gfi-green-text)" : "var(--gfi-text-secondary)", border: `1px solid ${bonif === 100 ? "rgba(16,185,129,0.4)" : "var(--gfi-border)"}`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", textAlign: "center" }}
                           />
-                          <span style={{ fontSize: 10, color: bonif === 100 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>% bonif{bonif === 100 ? " ✓ gratis" : ""}</span>
+                          <span style={{ fontSize: 10, color: bonif === 100 ? "var(--gfi-green-text)" : "var(--gfi-text-muted)" }}>% bonif{bonif === 100 ? " ✓ gratis" : ""}</span>
                         </div>
                       </td>
                       <td>{p.matricula && <div>Mat. {p.matricula}</div>}{p.dni && <div>DNI {p.dni}</div>}</td>
@@ -2566,7 +2567,7 @@ export default function AdminPage() {
                 <div className="adm-ind-label">Extender período gratuito hasta</div>
                 <div className="adm-ind-actual" style={{ fontSize: 13, marginBottom: 10 }}>
                   {freeUntil && new Date() < new Date(freeUntil)
-                    ? <span style={{ color: "#22c55e" }}>🟢 Extendido hasta {new Date(freeUntil).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
+                    ? <span style={{ color: "var(--gfi-green-text)" }}>🟢 Extendido hasta {new Date(freeUntil).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
                     : <span style={{ color: "rgba(255,255,255,0.3)" }}>Sin extensión — nuevos ingresos tienen 30 días gratis por defecto</span>}
                 </div>
                 <div className="adm-ind-form">
@@ -2591,11 +2592,11 @@ export default function AdminPage() {
                 <div className="adm-ind-label">Matches MIR</div>
                 <div className="adm-ind-actual" style={{ fontSize: 13, marginBottom: 12 }}>
                   {mirGratuito
-                    ? <span style={{ color: "#22c55e" }}>🟢 Gratuitos por el momento</span>
+                    ? <span style={{ color: "var(--gfi-green-text)" }}>🟢 Gratuitos por el momento</span>
                     : <span style={{ color: "rgba(255,255,255,0.3)" }}>Con costo según tarifa</span>}
                 </div>
                 <button onClick={toggleMirGratuito} disabled={guardandoMirGratuito}
-                  style={{ background: mirGratuito ? "rgba(239,68,68,0.1)" : "rgba(34,197,94,0.1)", border: `1px solid ${mirGratuito ? "rgba(239,68,68,0.3)" : "rgba(34,197,94,0.3)"}`, color: mirGratuito ? "#fca5a5" : "#86efac", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  style={{ background: mirGratuito ? "var(--gfi-red-soft)" : "var(--gfi-green-soft)", border: `1px solid ${mirGratuito ? "var(--gfi-red-border)" : "rgba(16,185,129,0.25)"}`, color: mirGratuito ? "var(--gfi-red)" : "var(--gfi-green-text)", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   {guardandoMirGratuito ? "..." : mirGratuito ? "Activar cobro" : "Activar gratuito"}
                 </button>
               </div>
@@ -2630,7 +2631,7 @@ export default function AdminPage() {
               <div className="adm-ind-subtitulo">Revisá y moderá el contenido denunciado por los corredores.</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {denuncias.map(d => (
-                  <div key={d.id} style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", gap: 14 }}>
+                  <div key={d.id} style={{ background: "var(--gfi-red-soft)", border: "1px solid var(--gfi-red-border)", borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", gap: 14 }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, color: "#f8fafc", fontSize: 13 }}>⚑ {d.tipo_contenido} · Motivo: {d.motivo}</div>
                       {d.descripcion && <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 2 }}>{d.descripcion}</div>}
@@ -2638,7 +2639,8 @@ export default function AdminPage() {
                     </div>
                     <div style={{ display: "flex", gap: 6 }}>
                       <button onClick={async () => { await supabase.from("denuncias").update({ estado: "resuelto" }).eq("id", d.id); setDenuncias(prev => prev.filter(x => x.id !== d.id)); }}
-                        style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
+                        className="adm-btn-aprobar"
+                        style={{ padding: "5px 12px" }}>
                         Resuelto
                       </button>
                       <button onClick={async () => { await supabase.from("denuncias").update({ estado: "rechazado" }).eq("id", d.id); setDenuncias(prev => prev.filter(x => x.id !== d.id)); }}
@@ -2757,9 +2759,9 @@ export default function AdminPage() {
                           onClick={() => setPushForm(p => ({ ...p, filtro: f.k }))}
                           style={{
                             padding: "5px 14px",
-                            background: pushForm.filtro === f.k ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.04)",
-                            border: `1px solid ${pushForm.filtro === f.k ? "rgba(200,0,0,0.5)" : "rgba(255,255,255,0.1)"}`,
-                            borderRadius: 4, color: pushForm.filtro === f.k ? "#fff" : "rgba(255,255,255,0.4)",
+                            background: pushForm.filtro === f.k ? "var(--gfi-red-soft)" : "transparent",
+                            border: `1px solid ${pushForm.filtro === f.k ? "var(--gfi-red)" : "var(--gfi-border)"}`,
+                            borderRadius: 4, color: pushForm.filtro === f.k ? "var(--gfi-text-primary)" : "var(--gfi-text-muted)",
                             fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer",
                             letterSpacing: "0.1em", textTransform: "uppercase",
                           }}
@@ -2780,7 +2782,7 @@ export default function AdminPage() {
                       : "📣 Enviar notificación"}
                   </button>
                   {pushRes && (
-                    <div style={{ fontSize: 12, color: pushRes.ok ? "#22c55e" : "#ff6666", fontFamily: "Inter,sans-serif" }}>
+                    <div style={{ fontSize: 12, color: pushRes.ok ? "var(--gfi-green-text)" : "var(--gfi-red)", fontFamily: "Inter,sans-serif" }}>
                       {pushRes.ok ? `✓ Enviado a ${pushRes.enviados} dispositivo${pushRes.enviados !== 1 ? "s" : ""}` : `✗ ${pushRes.error}`}
                     </div>
                   )}
@@ -3053,7 +3055,7 @@ export default function AdminPage() {
                   </div>
                   <div className="fin-card">
                     <div className="fin-card-label">Balance ARS</div>
-                    <div className={`fin-card-value balance`} style={{ color: balance >= 0 ? "#22c55e" : "#ef4444" }}>{new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(balance)}</div>
+                    <div className={`fin-card-value balance`} style={{ color: balance >= 0 ? "var(--gfi-green-text)" : "var(--gfi-red)" }}>{new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(balance)}</div>
                   </div>
                 </div>
                 {tieneOtrasMonedas && (
@@ -3091,7 +3093,7 @@ export default function AdminPage() {
                         <div className="liq-grid">
                           <div className="liq-card">
                             <div className="liq-card-label">Neto del período</div>
-                            <div className="liq-card-val" style={{ color: neto >= 0 ? "#22c55e" : "#ef4444" }}>{fmtARS(neto)}</div>
+                            <div className="liq-card-val" style={{ color: neto >= 0 ? "var(--gfi-green-text)" : "var(--gfi-red)" }}>{fmtARS(neto)}</div>
                             <div className="liq-card-pct">Ingresos − Gastos</div>
                           </div>
                           <div className="liq-card">
@@ -3101,7 +3103,7 @@ export default function AdminPage() {
                           </div>
                           <div className="liq-card">
                             <div className="liq-card-label">Distribuible 70%</div>
-                            <div className="liq-card-val" style={{ color: "#fbbf24" }}>{fmtARS(Math.max(0, distribuible))}</div>
+                            <div className="liq-card-val" style={{ color: "var(--gfi-orange)" }}>{fmtARS(Math.max(0, distribuible))}</div>
                             <div className="liq-card-pct">A repartir entre socios</div>
                           </div>
                         </div>
@@ -3112,7 +3114,7 @@ export default function AdminPage() {
                           <div className="liq-proy-grid">
                             <div>
                               <div className="liq-mini-label">Neto proyectado</div>
-                              <div className="liq-mini-val" style={{ fontSize: 13, color: netoProy >= 0 ? "#34d399" : "#f87171" }}>{fmtARS(netoProy)}</div>
+                              <div className="liq-mini-val" style={{ fontSize: 13, color: netoProy >= 0 ? "var(--gfi-green-text)" : "var(--gfi-red)" }}>{fmtARS(netoProy)}</div>
                             </div>
                             <div>
                               <div className="liq-mini-label">Reserva proyectada</div>
@@ -3134,7 +3136,7 @@ export default function AdminPage() {
                             <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>
                               Distribución por socio
                               {Math.abs(totalPorcentajes - 100) > 0.01 && (
-                                <span style={{ color: "#f87171", marginLeft: 8 }}>⚠ Los porcentajes suman {totalPorcentajes.toFixed(1)}% (deben sumar 100%)</span>
+                                <span style={{ color: "var(--gfi-red)", marginLeft: 8 }}>⚠ Los porcentajes suman {totalPorcentajes.toFixed(1)}% (deben sumar 100%)</span>
                               )}
                             </div>
                             <div className="liq-socios">
@@ -3158,22 +3160,22 @@ export default function AdminPage() {
                                     <div className="liq-socio-stats">
                                       <div className="liq-mini-card">
                                         <div className="liq-mini-label">Le corresponde</div>
-                                        <div className="liq-mini-val" style={{ color: "#fbbf24" }}>{fmtARS(montoSocio)}</div>
+                                        <div className="liq-mini-val" style={{ color: "var(--gfi-orange)" }}>{fmtARS(montoSocio)}</div>
                                       </div>
                                       <div className="liq-mini-card">
                                         <div className="liq-mini-label">Ya retirado</div>
-                                        <div className="liq-mini-val" style={{ color: "#f87171" }}>{fmtARS(retiradoSocio)}</div>
+                                        <div className="liq-mini-val" style={{ color: "var(--gfi-red)" }}>{fmtARS(retiradoSocio)}</div>
                                       </div>
                                       <div className="liq-mini-card">
                                         <div className="liq-mini-label">Disponible</div>
-                                        <div className="liq-mini-val" style={{ color: disponible >= 0 ? "#22c55e" : "#ef4444" }}>{fmtARS(disponible)}</div>
+                                        <div className="liq-mini-val" style={{ color: disponible >= 0 ? "var(--gfi-green-text)" : "var(--gfi-red)" }}>{fmtARS(disponible)}</div>
                                       </div>
                                     </div>
 
                                     {/* Form retiro inline */}
                                     {formRetiro?.socio_id === socio.id && (
                                       <div className="liq-form-retiro">
-                                        <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#fbbf24", marginBottom: 2 }}>
+                                        <div style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-orange)", marginBottom: 2 }}>
                                           Registrar retiro — {socio.nombre}
                                         </div>
                                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 2fr", gap: 8 }}>
@@ -3212,7 +3214,7 @@ export default function AdminPage() {
                                           <div key={r.id} className="liq-retiro-item">
                                             <span>{new Date(r.fecha + "T12:00:00").toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" })} — {r.concepto ?? "Sin concepto"}</span>
                                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                              <span style={{ color: "#f87171", fontWeight: 700 }}>{new Intl.NumberFormat("es-AR").format(r.monto)} {r.moneda}</span>
+                                              <span style={{ color: "var(--gfi-red)", fontWeight: 700 }}>{new Intl.NumberFormat("es-AR").format(r.monto)} {r.moneda}</span>
                                               <button className="fin-btn-del" style={{ padding: "2px 7px", fontSize: 10 }} onClick={() => eliminarRetiro(r.id)}>✕</button>
                                             </div>
                                           </div>
@@ -3242,7 +3244,7 @@ export default function AdminPage() {
                               <div style={{ fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>
                                 Socios activos
                                 {socios.length > 0 && (
-                                  <span style={{ marginLeft: 10, color: Math.abs(totalPorcentajes - 100) < 0.01 ? "#22c55e" : "#f87171" }}>
+                                  <span style={{ marginLeft: 10, color: Math.abs(totalPorcentajes - 100) < 0.01 ? "var(--gfi-green-text)" : "var(--gfi-red)" }}>
                                     Suma: {totalPorcentajes.toFixed(1)}%
                                   </span>
                                 )}
@@ -3250,7 +3252,7 @@ export default function AdminPage() {
                               {socios.map(s => (
                                 <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, padding: "6px 10px", background: "rgba(255,255,255,0.02)", borderRadius: 5 }}>
                                   <span style={{ flex: 1, fontSize: 13, color: "#fff" }}>{s.nombre}</span>
-                                  <span style={{ fontSize: 12, color: "#fbbf24", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{s.porcentaje}%</span>
+                                  <span style={{ fontSize: 12, color: "var(--gfi-orange)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{s.porcentaje}%</span>
                                   <button className="fin-btn-del" onClick={() => eliminarSocio(s.id)}>✕</button>
                                 </div>
                               ))}
@@ -3364,7 +3366,7 @@ export default function AdminPage() {
                             <td style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "capitalize" }}>{f.categoria}</td>
                             <td style={{ maxWidth: 220 }}>{f.concepto}</td>
                             <td style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{f.referencia ?? "—"}</td>
-                            <td style={{ fontWeight: 700, color: f.tipo === "ingreso" ? "#22c55e" : "#ef4444", whiteSpace: "nowrap" }}>{fmtMonto(f)}</td>
+                            <td style={{ fontWeight: 700, color: f.tipo === "ingreso" ? "var(--gfi-green-text)" : "var(--gfi-red)", whiteSpace: "nowrap", fontFamily: "var(--font-mono)" }}>{fmtMonto(f)}</td>
                             <td><button className="fin-btn-del" onClick={() => eliminarFinanza(f.id)}>✕</button></td>
                           </tr>
                         ))}
@@ -3441,10 +3443,10 @@ export default function AdminPage() {
                           </div>
                           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                             {suscVigente
-                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-green-soft)", border: "1px solid rgba(16,185,129,0.25)", color: "var(--gfi-green-text)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                                   ✓ Suscripción activa hasta {vence!.toLocaleDateString("es-AR",{month:"short",year:"numeric"})}
                                 </span>
-                              : <span style={{ padding: "3px 10px", borderRadius: 10, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              : <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-red-soft)", border: "1px solid var(--gfi-red-border)", color: "var(--gfi-red)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                                   Sin suscripción activa
                                 </span>
                             }
@@ -3470,7 +3472,8 @@ export default function AdminPage() {
                               <button
                                 onClick={() => cargarSaldoSponsor(rp.id)}
                                 disabled={cargandoSaldo === rp.id}
-                                style={{ padding: "8px 16px", background: "#22c55e", border: "none", borderRadius: 4, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: cargandoSaldo === rp.id ? 0.6 : 1 }}
+                                className="adm-btn-aprobar"
+                                style={{ padding: "8px 16px", opacity: cargandoSaldo === rp.id ? 0.6 : 1 }}
                               >{cargandoSaldo === rp.id ? "..." : "+ Saldo"}</button>
                             </div>
                           </div>
@@ -3540,9 +3543,9 @@ export default function AdminPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px,1fr))", gap: 12 }}>
                   {[
                     { label: "Grupos configurados", val: waGrupos.length, color: "var(--gfi-text-secondary)" },
-                    { label: "Mensajes recibidos (30d)", val: waGrupos.reduce((s, g) => s + g.mensajes_30d, 0), color: "#22c55e" },
+                    { label: "Mensajes recibidos (30d)", val: waGrupos.reduce((s, g) => s + g.mensajes_30d, 0), color: "var(--gfi-green-text)" },
                     { label: "Entradas MIR creadas (30d)", val: waGrupos.reduce((s, g) => s + g.procesados_30d, 0), color: "#f59e0b" },
-                    { label: "Mensajes sin parsear", val: waMensajes.filter(m => !m.procesado).length, color: "#ef4444" },
+                    { label: "Mensajes sin parsear", val: waMensajes.filter(m => !m.procesado).length, color: "var(--gfi-red)" },
                   ].map((s, i) => (
                     <div key={i} className="adm-ind-card">
                       <div className="adm-ind-label">{s.label}</div>
@@ -3565,10 +3568,10 @@ export default function AdminPage() {
                             <td><span style={{ fontWeight: 600, color: "#fff" }}>{g.nombre}</span></td>
                             <td><code style={{ fontSize: 10, background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: 4 }}>{g.grupo_gfi}</code></td>
                             <td>{g.miembros.toLocaleString("es-AR")}</td>
-                            <td style={{ color: g.mensajes_30d > 0 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>{g.mensajes_30d}</td>
+                            <td style={{ color: g.mensajes_30d > 0 ? "var(--gfi-green-text)" : "var(--gfi-text-muted)" }}>{g.mensajes_30d}</td>
                             <td style={{ color: g.procesados_30d > 0 ? "#f59e0b" : "rgba(255,255,255,0.3)" }}>{g.procesados_30d}</td>
                             <td><span className={`badge badge-${g.activo ? "aprobado" : "rechazado"}`}>{g.activo ? "Activo" : "Inactivo"}</span></td>
-                            <td>{g.wa_link ? <a href={g.wa_link} target="_blank" rel="noreferrer" style={{ color: "#22c55e", fontSize: 11 }}>Abrir</a> : <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 11 }}>—</span>}</td>
+                            <td>{g.wa_link ? <a href={g.wa_link} target="_blank" rel="noreferrer" style={{ color: "var(--gfi-green-text)", fontSize: 11 }}>Abrir</a> : <span style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>—</span>}</td>
                             <td>
                               <button className="adm-btn-destacar" onClick={() => setWaGrupoForm({ id: g.id, nombre: g.nombre, grupo_gfi: g.grupo_gfi, descripcion: g.descripcion ?? "", wa_link: g.wa_link ?? "", miembros: String(g.miembros) })}>
                                 Editar
@@ -3670,10 +3673,10 @@ export default function AdminPage() {
               return (
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
                   {[
-                    { label: "Activas", val: activos.length, color: "#22c55e", bg: "rgba(34,197,94,0.08)" },
+                    { label: "Activas", val: activos.length, color: "var(--gfi-green-text)", bg: "var(--gfi-green-soft)" },
                     { label: "Vencen en <15d", val: porVencer.length, color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
                     { label: "Pendientes de confirmación", val: pendientes.length, color: "var(--gfi-orange)", bg: "var(--gfi-orange-soft)" },
-                    { label: "Sin suscripción", val: sinSub.length, color: "#ef4444", bg: "rgba(239,68,68,0.08)" },
+                    { label: "Sin suscripción", val: sinSub.length, color: "var(--gfi-red)", bg: "var(--gfi-red-soft)" },
                     { label: "Total corredores", val: rankingPago.length, color: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.04)" },
                   ].map(k => (
                     <div key={k.label} style={{ background: k.bg, border: `1px solid ${k.color}33`, borderRadius: 10, padding: "12px 18px", minWidth: 120 }}>
@@ -3760,7 +3763,7 @@ export default function AdminPage() {
                                 <div style={{ fontSize: 10, color: "#f59e0b", marginTop: 2 }}>⚠ {diasRestantes}d restantes</div>
                               )}
                             </td>
-                            <td style={{ fontSize: 12, color: venc && venc < hoy ? "#ef4444" : "rgba(255,255,255,0.6)" }}>
+                            <td style={{ fontSize: 12, color: venc && venc < hoy ? "var(--gfi-red)" : "var(--gfi-text-secondary)" }}>
                               {r.fecha_vencimiento ? new Date(r.fecha_vencimiento).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
                             </td>
                             <td style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{r.periodo ?? "—"}</td>
@@ -3788,7 +3791,7 @@ export default function AdminPage() {
               const s = statsEstrategicas;
               const kpis = [
                 { label: "Corredores activos", val: s.totalCorredores, icon: "👥", color: "var(--gfi-text-secondary)", bg: "var(--gfi-bg-secondary)" },
-                { label: "Suscripciones activas", val: s.suscripcionesActivas, icon: "✅", color: "#22c55e", bg: "rgba(34,197,94,0.08)" },
+                { label: "Suscripciones activas", val: s.suscripcionesActivas, icon: "✅", color: "var(--gfi-green-text)", bg: "var(--gfi-green-soft)" },
                 { label: "Nuevos este mes", val: s.nuevosMes, icon: "🆕", color: "#a78bfa", bg: "rgba(167,139,250,0.08)" },
                 { label: "Ingresos confirmados este mes", val: `USD ${s.ingresosMesUSD.toFixed(0)}`, icon: "💰", color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
                 { label: "Propiedades en CRM", val: s.totalPropiedades, icon: "🏠", color: "#06b6d4", bg: "rgba(6,182,212,0.08)" },
@@ -3855,7 +3858,7 @@ export default function AdminPage() {
                 onChange={e => setBusquedaLogs(e.target.value)}
                 style={{ marginLeft: "auto", padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "#fff", fontSize: 12, fontFamily: "Inter,sans-serif", outline: "none", width: 220 }}
               />
-              <button onClick={cargarLogsActividad} style={{ padding: "6px 12px", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.5)", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>↻ Actualizar</button>
+              <button onClick={cargarLogsActividad} className="adm-btn-volver">↻ Actualizar</button>
             </div>
 
             {loadingLogs ? <div className="adm-loading">Cargando logs...</div> : (() => {
@@ -3938,12 +3941,12 @@ export default function AdminPage() {
               value={respuestaForm}
               onChange={e => setRespuestaForm(e.target.value)}
               placeholder="Escribí la respuesta o usá '✨ Resolver con IA' para generar una sugerencia..."
-              style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", padding: "12px 14px", fontSize: 13, fontFamily: "Inter,sans-serif", outline: "none", resize: "vertical", minHeight: 160, boxSizing: "border-box" }}
+              style={{ width: "100%", background: "var(--gfi-bg-input)", border: "1px solid var(--gfi-border)", borderRadius: 8, color: "var(--gfi-text-primary)", padding: "12px 14px", fontSize: 13, fontFamily: "var(--font-body),sans-serif", outline: "none", resize: "vertical", minHeight: 160, boxSizing: "border-box" }}
             />
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
-              <button onClick={() => { setTicketVer(null); setRespuestaForm(""); }} style={{ padding: "10px 18px", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
-              <button onClick={responderTicket} disabled={guardandoRespuesta || !respuestaForm.trim()} style={{ padding: "10px 22px", background: "#22c55e", color: "#fff", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: guardandoRespuesta || !respuestaForm.trim() ? 0.5 : 1 }}>
+              <button onClick={() => { setTicketVer(null); setRespuestaForm(""); }} className="modal-btn-cancel">Cancelar</button>
+              <button onClick={responderTicket} disabled={guardandoRespuesta || !respuestaForm.trim()} className="adm-btn-aprobar" style={{ padding: "10px 22px", opacity: guardandoRespuesta || !respuestaForm.trim() ? 0.5 : 1 }}>
                 {guardandoRespuesta ? "Enviando..." : "✓ Enviar respuesta"}
               </button>
             </div>
