@@ -167,80 +167,81 @@ export default function NetworkingPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .net-root { display: flex; flex-direction: column; gap: 20px; }
         .net-header { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .net-titulo { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
-        .net-titulo span { color: #cc0000; }
-        .net-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
-        .net-btn-nuevo { padding: 9px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
-        .net-btn-nuevo:hover { background: #e60000; }
+        .net-titulo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--gfi-text-primary); }
+        .net-titulo span { color: var(--gfi-red); }
+        .net-sub { font-size: 13px; color: var(--gfi-text-secondary); margin-top: 4px; }
+        .net-btn-nuevo { padding: 9px 20px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-md); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; box-shadow: var(--gfi-shadow-red); transition: var(--gfi-transition); }
+        .net-btn-nuevo:hover { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
         .net-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .net-filtro { padding: 7px 14px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-        .net-filtro:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
-        .net-filtro.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
-        .net-filtro-count { font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 10px; }
-        .net-filtro.activo .net-filtro-count { background: rgba(200,0,0,0.3); }
-        .net-grid { display: flex; flex-direction: column; gap: 12px; }
-        .net-card { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow: hidden; display: flex; transition: border-color 0.2s; cursor: pointer; }
-        .net-card:hover { border-color: rgba(200,0,0,0.2); }
-        .net-tipo-col { width: 6px; flex-shrink: 0; }
+        .net-filtro { padding: 7px 14px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); cursor: pointer; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-secondary); transition: var(--gfi-transition); display: flex; align-items: center; gap: 6px; }
+        .net-filtro:hover { border-color: var(--gfi-red-border); color: var(--gfi-text-primary); }
+        .net-filtro.activo { border-color: var(--gfi-red); color: var(--gfi-text-primary); background: var(--gfi-red-soft); }
+        .net-filtro-count { font-size: 9px; font-weight: 800; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 10px; font-family: var(--font-mono); }
+        .net-filtro.activo .net-filtro-count { background: var(--gfi-red-soft); color: var(--gfi-red); }
+        .net-grid { display: flex; flex-direction: column; gap: 10px; }
+        .net-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); overflow: hidden; display: flex; transition: var(--gfi-transition); cursor: pointer; }
+        .net-card:hover { border-color: var(--gfi-red-border); box-shadow: var(--gfi-shadow-md); }
+        .net-tipo-col { width: 4px; flex-shrink: 0; }
         .net-card-body { flex: 1; padding: 16px 18px; min-width: 0; }
         .net-card-top { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-        .net-card-titulo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; line-height: 1.3; flex: 1; }
-        .net-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; border: 1px solid; white-space: nowrap; }
-        .net-card-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .net-card-titulo { font-family: var(--font-display); font-size: 14px; font-weight: 800; color: var(--gfi-text-primary); line-height: 1.3; flex: 1; }
+        .net-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; border: 1px solid; white-space: nowrap; }
+        .net-card-desc { font-size: 13px; color: var(--gfi-text-secondary); line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .net-card-meta { display: flex; gap: 14px; flex-wrap: wrap; }
-        .net-meta-item { font-size: 11px; color: rgba(255,255,255,0.35); display: flex; align-items: center; gap: 4px; }
-        .net-precio { font-size: 16px; font-weight: 800; color: #22c55e; font-family: 'Montserrat',sans-serif; }
+        .net-meta-item { font-size: 11px; color: var(--gfi-text-muted); display: flex; align-items: center; gap: 4px; }
+        .net-precio { font-size: 16px; font-weight: 700; color: var(--gfi-green-text); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
         .net-fotos { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-        .net-foto { width: 60px; height: 60px; border-radius: 4px; object-fit: cover; border: 1px solid rgba(255,255,255,0.08); cursor: zoom-in; }
-        .net-empty { padding: 48px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; }
-        /* Modal */
+        .net-foto { width: 60px; height: 60px; border-radius: var(--gfi-radius-sm); object-fit: cover; border: 1px solid var(--gfi-border); cursor: zoom-in; }
+        .net-empty { padding: 48px; text-align: center; color: var(--gfi-text-muted); font-size: 13px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); }
         .net-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
-        .net-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; padding: 28px 32px; width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; position: relative; }
-        .net-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 8px 8px 0 0; }
-        .net-modal-titulo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
-        .net-modal-titulo span { color: #cc0000; }
+        .net-modal { background: var(--gfi-bg-panel); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-lg); padding: 28px 32px; width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: var(--gfi-shadow-lg); }
+        .net-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gfi-red), transparent); border-radius: var(--gfi-radius-lg) var(--gfi-radius-lg) 0 0; }
+        .net-modal-titulo { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--gfi-text-primary); margin-bottom: 20px; }
+        .net-modal-titulo span { color: var(--gfi-red); }
         .net-field { margin-bottom: 14px; }
-        .net-label { display: block; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 6px; }
-        .net-input { width: 100%; padding: 9px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; }
-        .net-input:focus { border-color: rgba(200,0,0,0.4); }
-        .net-textarea { width: 100%; padding: 9px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; resize: vertical; min-height: 100px; transition: border-color 0.2s; }
-        .net-textarea:focus { border-color: rgba(200,0,0,0.4); }
-        .net-select { width: 100%; padding: 9px 13px; background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
+        .net-label { display: block; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 6px; }
+        .net-input { width: 100%; padding: 9px 13px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); transition: var(--gfi-transition); }
+        .net-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .net-input::placeholder { color: var(--gfi-text-muted); }
+        .net-textarea { width: 100%; padding: 9px 13px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); resize: vertical; min-height: 100px; transition: var(--gfi-transition); }
+        .net-textarea:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .net-textarea::placeholder { color: var(--gfi-text-muted); }
+        .net-select { width: 100%; padding: 9px 13px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); }
+        .net-select:focus { border-color: var(--gfi-red); }
         .net-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .net-tipo-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-        .net-tipo-btn { padding: 7px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 700; font-family: 'Montserrat',sans-serif; cursor: pointer; transition: all 0.15s; }
-        .net-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px; }
-        .net-btn-cancel { padding: 9px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .net-btn-save { padding: 9px 24px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .net-btn-save:hover { background: #e60000; }
-        .net-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        .net-sec { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin: 16px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px; }
-        /* Detail modal */
-        .net-det-autor { font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .net-det-mat { font-size: 11px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2px 9px; color: rgba(255,255,255,0.35); }
-        .net-det-desc { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.7; white-space: pre-wrap; margin-bottom: 16px; }
-        .net-det-caract { font-size: 13px; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px 14px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 14px; }
-        .net-det-contact { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); border-radius: 6px; padding: 14px 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-        .net-det-contact-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(34,197,94,0.7); margin-bottom: 4px; }
-        .net-det-wa { padding: 8px 16px; background: #22c55e; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-decoration: none; display: inline-block; }
+        .net-tipo-btn { padding: 7px 14px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-secondary); font-size: 11px; font-weight: 700; font-family: var(--font-display); cursor: pointer; transition: var(--gfi-transition); }
+        .net-tipo-btn:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-primary); }
+        .net-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid var(--gfi-border-subtle); padding-top: 16px; }
+        .net-btn-cancel { padding: 9px 20px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .net-btn-cancel:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-primary); }
+        .net-btn-save { padding: 9px 24px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-md); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; box-shadow: var(--gfi-shadow-red); transition: var(--gfi-transition); }
+        .net-btn-save:hover { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
+        .net-btn-save:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        .net-sec { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-muted); margin: 16px 0 12px; border-bottom: 1px solid var(--gfi-border-subtle); padding-bottom: 6px; }
+        .net-det-autor { font-size: 13px; color: var(--gfi-text-secondary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .net-det-mat { font-size: 11px; background: rgba(255,255,255,0.04); border: 1px solid var(--gfi-border); border-radius: 20px; padding: 2px 9px; color: var(--gfi-text-muted); }
+        .net-det-desc { font-size: 14px; color: var(--gfi-text-primary); line-height: 1.7; white-space: pre-wrap; margin-bottom: 16px; }
+        .net-det-caract { font-size: 13px; color: var(--gfi-text-secondary); background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 12px 14px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 14px; }
+        .net-det-contact { background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.2); border-radius: var(--gfi-radius-md); padding: 14px 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .net-det-contact-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-green-text); margin-bottom: 4px; }
+        .net-det-wa { padding: 8px 16px; background: var(--gfi-green-text); border: none; border-radius: var(--gfi-radius-md); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-decoration: none; display: inline-block; transition: var(--gfi-transition); }
+        .net-det-wa:hover { filter: brightness(1.1); }
         .net-owner-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-        .net-btn-sm { padding: 6px 12px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-        .net-btn-sm:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); }
-        .net-btn-sm.danger { border-color: rgba(239,68,68,0.3); color: rgba(239,68,68,0.6); }
-        .net-btn-sm.danger:hover { border-color: #ef4444; color: #ef4444; }
-        .net-btn-sm.success { border-color: rgba(34,197,94,0.3); color: rgba(34,197,94,0.6); }
-        .net-btn-sm.success:hover { border-color: #22c55e; color: #22c55e; }
-        .net-mis-btn { padding: 7px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); transition: all 0.2s; }
-        .net-mis-btn.activo { border-color: #cc0000; color: #cc0000; background: rgba(200,0,0,0.06); }
-        .net-estado-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; border: 1px solid; }
-        .net-toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: ntIn 0.3s ease; }
-        .net-toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
-        .net-toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
-        @keyframes ntIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .net-btn-sm { padding: 6px 12px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm); color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .net-btn-sm:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-primary); }
+        .net-btn-sm.danger { border-color: var(--gfi-red-border); color: var(--gfi-red); }
+        .net-btn-sm.danger:hover { border-color: var(--gfi-red); background: var(--gfi-red-soft); }
+        .net-btn-sm.success { border-color: rgba(16,185,129,0.25); color: var(--gfi-green-text); }
+        .net-btn-sm.success:hover { border-color: var(--gfi-green-text); background: var(--gfi-green-soft); }
+        .net-mis-btn { padding: 7px 14px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); cursor: pointer; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-secondary); transition: var(--gfi-transition); }
+        .net-mis-btn.activo { border-color: var(--gfi-red); color: var(--gfi-red); background: var(--gfi-red-soft); }
+        .net-estado-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; border: 1px solid; }
+        .net-toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-fade-in 0.3s ease; }
+        .net-toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(16,185,129,0.35); color: var(--gfi-green-text); }
+        .net-toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
         @media (max-width: 600px) { .net-row2 { grid-template-columns: 1fr; } }
       `}</style>
 

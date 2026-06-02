@@ -211,86 +211,85 @@ export default function ComparablesPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .cmp-wrap { display: flex; flex-direction: column; gap: 20px; }
         .cmp-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .cmp-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .cmp-titulo span { color: #cc0000; }
-        .cmp-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+        .cmp-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--gfi-text-primary); }
+        .cmp-titulo span { color: var(--gfi-red); }
+        .cmp-sub { font-size: 13px; color: var(--gfi-text-muted); margin-top: 4px; }
         .cmp-stats { display: flex; gap: 12px; flex-wrap: wrap; }
-        .cmp-stat { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 10px 16px; text-align: center; min-width: 80px; }
-        .cmp-stat-val { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #cc0000; }
-        .cmp-stat-label { font-size: 9px; color: rgba(255,255,255,0.3); margin-top: 2px; font-family: 'Montserrat',sans-serif; text-transform: uppercase; letter-spacing: 0.1em; }
-        .cmp-btn-nuevo { padding: 10px 20px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
-        .cmp-btn-nuevo:hover { background: #e60000; }
+        .cmp-stat { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 10px 16px; text-align: center; min-width: 80px; }
+        .cmp-stat-val { font-family: var(--font-mono); font-size: 20px; font-weight: 800; color: var(--gfi-red); font-variant-numeric: tabular-nums; }
+        .cmp-stat-label { font-size: 9px; color: var(--gfi-text-muted); margin-top: 2px; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.1em; }
+        .cmp-btn-nuevo { padding: 10px 20px; background: var(--gfi-red); border: none; border-radius: var(--gfi-radius-sm); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: var(--gfi-transition); }
+        .cmp-btn-nuevo:hover { background: var(--gfi-red-hover); }
         .cmp-filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .cmp-search { flex: 1; min-width: 180px; padding: 9px 12px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
-        .cmp-search:focus { border-color: rgba(200,0,0,0.4); }
-        .cmp-search::placeholder { color: rgba(255,255,255,0.2); }
-        .cmp-select { padding: 9px 10px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.6); font-size: 12px; outline: none; font-family: 'Inter',sans-serif; cursor: pointer; }
+        .cmp-search { flex: 1; min-width: 180px; padding: 9px 12px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); transition: var(--gfi-transition); }
+        .cmp-search:focus { border-color: var(--gfi-red-border); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .cmp-search::placeholder { color: var(--gfi-text-muted); }
+        .cmp-select { padding: 9px 10px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm); color: var(--gfi-text-secondary); font-size: 12px; outline: none; font-family: var(--font-body); cursor: pointer; transition: var(--gfi-transition); }
+        .cmp-select:focus { border-color: var(--gfi-red-border); }
         .cmp-toggle { display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
         .cmp-toggle-switch { width: 32px; height: 16px; border-radius: 8px; position: relative; transition: background 0.2s; flex-shrink: 0; }
         .cmp-toggle-knob { position: absolute; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: left 0.2s; }
-        .cmp-toggle-label { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-        .cmp-count { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; }
+        .cmp-toggle-label { font-size: 11px; color: var(--gfi-text-muted); font-family: var(--font-display); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+        .cmp-count { font-size: 11px; color: var(--gfi-text-muted); white-space: nowrap; font-family: var(--font-mono); }
 
         /* Tabla */
-        .cmp-tabla-wrap { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: auto; }
+        .cmp-tabla-wrap { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); overflow: auto; }
         .cmp-tabla { width: 100%; border-collapse: collapse; min-width: 900px; }
-        .cmp-tabla thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .cmp-tabla th { padding: 11px 14px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); white-space: nowrap; }
-        .cmp-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+        .cmp-tabla thead tr { background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--gfi-border); }
+        .cmp-tabla th { padding: 11px 14px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); white-space: nowrap; }
+        .cmp-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background var(--gfi-transition); }
         .cmp-tabla tbody tr:last-child { border-bottom: none; }
         .cmp-tabla tbody tr:hover { background: rgba(255,255,255,0.02); }
-        .cmp-tabla td { padding: 12px 14px; font-size: 12px; color: rgba(255,255,255,0.7); vertical-align: middle; }
-        .cmp-direccion { font-weight: 600; color: #fff; font-size: 13px; }
-        .cmp-sub-info { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
-        .cmp-tipo-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.2); color: #cc0000; }
-        .cmp-precio { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #22c55e; }
-        .cmp-precio-pub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; text-decoration: line-through; }
+        .cmp-tabla td { padding: 12px 14px; font-size: 12px; color: var(--gfi-text-secondary); vertical-align: middle; }
+        .cmp-direccion { font-weight: 600; color: var(--gfi-text-primary); font-size: 13px; }
+        .cmp-sub-info { font-size: 10px; color: var(--gfi-text-muted); margin-top: 2px; }
+        .cmp-tipo-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
+        .cmp-precio { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--gfi-green-text); font-variant-numeric: tabular-nums; }
+        .cmp-precio-pub { font-family: var(--font-mono); font-size: 10px; color: var(--gfi-text-muted); margin-top: 2px; text-decoration: line-through; font-variant-numeric: tabular-nums; }
         .cmp-acciones { display: flex; gap: 6px; }
-        .cmp-btn-sm { padding: 5px 10px; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: 1px solid; }
-        .cmp-btn-editar { background: transparent; border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); }
-        .cmp-btn-editar:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
-        .cmp-btn-eliminar { background: transparent; border-color: rgba(200,0,0,0.2); color: rgba(200,0,0,0.5); }
-        .cmp-btn-eliminar:hover { background: rgba(200,0,0,0.1); border-color: #ff4444; color: #ff4444; }
-        .cmp-mio { font-size: 8px; color: #cc0000; font-family: 'Montserrat',sans-serif; font-weight: 700; }
-        .cmp-empty { padding: 64px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
+        .cmp-btn-sm { padding: 5px 10px; border-radius: var(--gfi-radius-sm); font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); border: 1px solid; }
+        .cmp-btn-editar { background: transparent; border-color: var(--gfi-border); color: var(--gfi-text-muted); }
+        .cmp-btn-editar:hover { border-color: rgba(255,255,255,0.3); color: var(--gfi-text-primary); }
+        .cmp-btn-eliminar { background: transparent; border-color: var(--gfi-red-border); color: rgba(204,0,0,0.5); }
+        .cmp-btn-eliminar:hover { background: var(--gfi-red-soft); border-color: var(--gfi-red); color: var(--gfi-red); }
+        .cmp-mio { font-size: 8px; color: var(--gfi-red); font-family: var(--font-display); font-weight: 700; }
+        .cmp-empty { padding: 64px; text-align: center; color: var(--gfi-text-muted); font-size: 13px; font-style: italic; }
         .cmp-spinner { display: flex; align-items: center; justify-content: center; padding: 64px; }
-        .cmp-spin { width: 28px; height: 28px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .cmp-spin { width: 28px; height: 28px; border: 2px solid var(--gfi-red-soft); border-top-color: var(--gfi-red); border-radius: 50%; animation: gfi-spin 0.7s linear infinite; }
 
         /* Modal */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 400; padding: 20px; }
-        .modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.25); border-radius: 6px; padding: 28px 30px; width: 100%; max-width: 720px; position: relative; max-height: 92vh; overflow-y: auto; }
-        .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,transparent,#cc0000,transparent); border-radius: 6px 6px 0 0; }
-        .modal-titulo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
-        .modal-titulo span { color: #cc0000; }
-        .modal-seccion { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .modal { background: var(--gfi-bg-card); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-md); padding: 28px 30px; width: 100%; max-width: 720px; position: relative; max-height: 92vh; overflow-y: auto; box-shadow: var(--gfi-shadow-lg); }
+        .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--gfi-red-gradient); border-radius: var(--gfi-radius-md) var(--gfi-radius-md) 0 0; }
+        .modal-titulo { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--gfi-text-primary); margin-bottom: 20px; }
+        .modal-titulo span { color: var(--gfi-red); }
+        .modal-seccion { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gfi-text-muted); margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gfi-border); }
         .modal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .modal-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .full { grid-column: 1 / -1; }
         .field { display: flex; flex-direction: column; gap: 4px; }
-        .field label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
-        .field input, .field select, .field textarea { padding: 8px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; width: 100%; }
-        .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(200,0,0,0.4); }
-        .field input::placeholder, .field textarea::placeholder { color: rgba(255,255,255,0.2); }
-        .field select { background: #0f0f0f; }
+        .field label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); }
+        .field input, .field select, .field textarea { padding: 8px 11px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); transition: var(--gfi-transition); width: 100%; }
+        .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gfi-red-border); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .field input::placeholder, .field textarea::placeholder { color: var(--gfi-text-muted); }
+        .field select { background: var(--gfi-bg-card); }
         .field textarea { resize: vertical; min-height: 70px; }
         .checks { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
-        .check-item { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 12px; color: rgba(255,255,255,0.5); }
-        .check-item input { width: 14px; height: 14px; cursor: pointer; accent-color: #cc0000; }
-        .dolar-ref { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 3px; }
-        .dolar-ref strong { color: #22c55e; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07); }
-        .btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 3px; color: rgba(255,255,255,0.45); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .btn-save { padding: 9px 22px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .btn-save:hover:not(:disabled) { background: #e60000; }
-        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
-        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
-        .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
-        @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .check-item { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 12px; color: var(--gfi-text-secondary); }
+        .check-item input { width: 14px; height: 14px; cursor: pointer; accent-color: var(--gfi-red); }
+        .dolar-ref { font-size: 11px; color: var(--gfi-text-muted); margin-top: 3px; font-family: var(--font-mono); }
+        .dolar-ref strong { color: var(--gfi-green-text); }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gfi-border); }
+        .btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm); color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .btn-cancel:hover { border-color: rgba(255,255,255,0.25); color: var(--gfi-text-primary); }
+        .btn-save { padding: 9px 22px; background: var(--gfi-red); border: none; border-radius: var(--gfi-radius-sm); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .btn-save:hover:not(:disabled) { background: var(--gfi-red-hover); }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-slide-up 0.3s ease; box-shadow: var(--gfi-shadow-md); }
+        .toast.ok { background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.3); color: var(--gfi-green-text); }
+        .toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
         @media print { body * { display: none !important; } }
       `}</style>
 
@@ -312,10 +311,10 @@ export default function ComparablesPage() {
                 <div className="cmp-stat-label">Míos</div>
               </div>
             </div>
-            <Link href="/comparables/barrios" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
+            <Link href="/comparables/barrios" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "var(--gfi-bg-elevated)", border: "1px solid var(--gfi-border)", borderRadius: "var(--gfi-radius-sm)", color: "var(--gfi-text-secondary)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
               📍 Consulta Barrios
             </Link>
-            <Link href="/comparables/tasador" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 4, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
+            <Link href="/comparables/tasador" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "var(--gfi-red-soft)", border: "1px solid var(--gfi-red-border)", borderRadius: "var(--gfi-radius-sm)", color: "var(--gfi-red)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
               🤖 Tasador IA
             </Link>
             <button className="cmp-btn-nuevo" onClick={() => { setForm({...FORM_VACIO,cotizacion_dolar:dolarBlue?.toString()??""}); setEditandoId(null); setMostrarForm(true); }}>
@@ -355,7 +354,7 @@ export default function ComparablesPage() {
           </div>
 
           {mostrarFiltrosAvanzados && (
-            <div className="cmp-filtros" style={{background:"rgba(14,14,14,0.6)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:4,padding:"10px 12px"}}>
+            <div className="cmp-filtros" style={{background:"var(--gfi-bg-secondary)",border:"1px solid var(--gfi-border)",borderRadius:"var(--gfi-radius-sm)",padding:"10px 12px"}}>
               <select className="cmp-select" value={filtroAnio} onChange={e=>setFiltroAnio(e.target.value)}>
                 {aniosUnicos.map(a=><option key={a} value={a}>{a==="todos"?"Todos los años":a}</option>)}
               </select>
@@ -363,17 +362,17 @@ export default function ComparablesPage() {
                 {ciudadesUnicas.map(c=><option key={c} value={c}>{c==="todos"?"Todas las ciudades":c}</option>)}
               </select>
               <div style={{display:"flex",alignItems:"center",gap:6}}>
-                <span style={{fontSize:11,color:"rgba(255,255,255,0.3)",whiteSpace:"nowrap"}}>Precio USD:</span>
+                <span style={{fontSize:11,color:"var(--gfi-text-muted)",whiteSpace:"nowrap",fontFamily:"var(--font-body)"}}>Precio USD:</span>
                 <input className="cmp-search" style={{width:90,minWidth:0}} placeholder="Desde" value={precioMin} onChange={e=>setPrecioMin(e.target.value)} type="number" />
-                <span style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>—</span>
+                <span style={{fontSize:11,color:"var(--gfi-text-muted)"}}>—</span>
                 <input className="cmp-search" style={{width:90,minWidth:0}} placeholder="Hasta" value={precioMax} onChange={e=>setPrecioMax(e.target.value)} type="number" />
               </div>
               <div style={{display:"flex",alignItems:"center",gap:6}}>
-                <span style={{fontSize:11,color:"rgba(255,255,255,0.3)",whiteSpace:"nowrap"}}>Sup. mín (m²):</span>
+                <span style={{fontSize:11,color:"var(--gfi-text-muted)",whiteSpace:"nowrap",fontFamily:"var(--font-body)"}}>Sup. mín (m²):</span>
                 <input className="cmp-search" style={{width:80,minWidth:0}} placeholder="Ej: 50" value={supMin} onChange={e=>setSupMin(e.target.value)} type="number" />
               </div>
               <button
-                style={{padding:"6px 12px",background:"transparent",border:"1px solid rgba(255,255,255,0.12)",borderRadius:3,color:"rgba(255,255,255,0.35)",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
+                style={{padding:"6px 12px",background:"transparent",border:"1px solid var(--gfi-border)",borderRadius:"var(--gfi-radius-sm)",color:"var(--gfi-text-muted)",fontSize:10,fontFamily:"var(--font-display)",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
                 onClick={()=>{ setFiltroAnio("todos"); setFiltroCiudad("todos"); setPrecioMin(""); setPrecioMax(""); setSupMin(""); setFiltroTipo("todos"); setFiltroBarrio("todos"); setFiltroDorm("todos"); setBusqueda(""); setSoloMios(false); }}
               >
                 Limpiar todo
@@ -407,7 +406,7 @@ export default function ComparablesPage() {
                   const esPropio = c.perfil_id === userId;
                   return (
                     <tr key={c.id}>
-                      <td style={{whiteSpace:"nowrap",fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>
+                      <td style={{whiteSpace:"nowrap",fontSize:11,color:"var(--gfi-text-muted)",fontFamily:"var(--font-mono)",fontWeight:700,fontVariantNumeric:"tabular-nums"}}>
                         {MESES[c.mes-1]?.slice(0,3)} {c.anio}
                       </td>
                       <td>
@@ -427,10 +426,10 @@ export default function ComparablesPage() {
                           <div className="cmp-precio-pub">{formatUSD(c.precio_publicacion)}</div>
                         )}
                       </td>
-                      <td style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>
+                      <td style={{fontSize:11,color:"var(--gfi-text-muted)",fontFamily:"var(--font-mono)",fontVariantNumeric:"tabular-nums"}}>
                         {c.cotizacion_dolar ? `$${formatNum(c.cotizacion_dolar)}` : "—"}
                       </td>
-                      <td style={{fontSize:11,color:"rgba(255,255,255,0.5)",maxWidth:120}}>{c.propuesta_pago ?? "—"}</td>
+                      <td style={{fontSize:11,color:"var(--gfi-text-secondary)",maxWidth:120,fontFamily:"var(--font-body)"}}>{c.propuesta_pago ?? "—"}</td>
                       <td>
                         {esPropio && (
                           <div className="cmp-acciones">

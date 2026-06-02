@@ -92,14 +92,14 @@ export default function ReciboPage() {
   }, [id]);
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter,sans-serif", fontSize: 14, color: "#666" }}>
+    <div style={{ minHeight: "100vh", background: "var(--gfi-bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-body)", fontSize: 14, color: "var(--gfi-text-muted)" }}>
       Cargando comprobante...
     </div>
   );
 
   if (error) return (
-    <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter,sans-serif" }}>
-      <div style={{ textAlign: "center", color: "#cc0000" }}>{error}</div>
+    <div style={{ minHeight: "100vh", background: "var(--gfi-bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-body)" }}>
+      <div style={{ textAlign: "center", color: "var(--gfi-red)" }}>{error}</div>
     </div>
   );
 
@@ -116,19 +116,17 @@ export default function ReciboPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body { background: #f5f5f5; }
-
+        /* Screen wrapper — dark GFI background */
         .recibo-wrapper {
           min-height: 100vh;
-          background: #f5f5f5;
+          background: var(--gfi-bg-primary);
           display: flex;
           flex-direction: column;
           align-items: center;
           padding: 32px 16px 48px;
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
         }
 
         .recibo-actions {
@@ -141,25 +139,27 @@ export default function ReciboPage() {
 
         .btn-print {
           padding: 10px 22px;
-          background: #cc0000;
+          background: var(--gfi-red);
           border: none;
-          border-radius: 4px;
+          border-radius: var(--gfi-radius-sm);
           color: #fff;
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
           font-size: 12px;
           font-weight: 700;
           letter-spacing: 0.12em;
           text-transform: uppercase;
           cursor: pointer;
+          transition: var(--gfi-transition);
         }
+        .btn-print:hover { background: var(--gfi-red-hover); }
 
         .btn-volver {
           padding: 10px 18px;
           background: transparent;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          color: #666;
-          font-family: 'Montserrat', sans-serif;
+          border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-sm);
+          color: var(--gfi-text-secondary);
+          font-family: var(--font-display);
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.12em;
@@ -168,16 +168,19 @@ export default function ReciboPage() {
           text-decoration: none;
           display: inline-flex;
           align-items: center;
+          transition: var(--gfi-transition);
         }
+        .btn-volver:hover { border-color: rgba(255,255,255,0.25); color: var(--gfi-text-primary); }
 
+        /* Document card — white for readability / print */
         .recibo {
           width: 100%;
           max-width: 680px;
           background: #fff;
           border: 1px solid #e0e0e0;
-          border-radius: 4px;
+          border-radius: var(--gfi-radius-md);
           overflow: hidden;
-          box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+          box-shadow: 0 4px 32px rgba(0,0,0,0.4);
         }
 
         /* Cabecera */
@@ -237,11 +240,13 @@ export default function ReciboPage() {
           font-size: 16px;
           font-weight: 800;
           color: #111;
+          font-variant-numeric: tabular-nums;
         }
         .recibo-doc-fecha {
           font-size: 12px;
           color: #888;
           margin-top: 4px;
+          font-variant-numeric: tabular-nums;
         }
 
         /* Cuerpo */
@@ -340,8 +345,10 @@ export default function ReciboPage() {
 
         .recibo-montos td:last-child {
           text-align: right;
-          font-weight: 600;
+          font-weight: 700;
           color: #333;
+          font-family: 'JetBrains Mono', 'Courier New', monospace;
+          font-variant-numeric: tabular-nums;
         }
 
         .recibo-montos td:first-child {
@@ -355,6 +362,10 @@ export default function ReciboPage() {
           font-weight: 800 !important;
           color: #111 !important;
           border-top: 2px solid #111 !important;
+        }
+        .recibo-total-row td:last-child {
+          font-family: 'JetBrains Mono', 'Courier New', monospace;
+          font-variant-numeric: tabular-nums;
         }
 
         /* Estado */
@@ -370,8 +381,8 @@ export default function ReciboPage() {
           letter-spacing: 0.12em;
           text-transform: uppercase;
           margin-top: 12px;
-          background: rgba(34,197,94,0.1);
-          border: 1px solid rgba(34,197,94,0.3);
+          background: rgba(22,163,74,0.08);
+          border: 1px solid rgba(22,163,74,0.25);
           color: #16a34a;
         }
 
@@ -387,19 +398,19 @@ export default function ReciboPage() {
 
         .recibo-footer-left {
           font-size: 10px;
-          color: #bbb;
+          color: #aaa;
           line-height: 1.6;
         }
 
         .recibo-footer-aviso {
           font-size: 9px;
-          color: #ccc;
+          color: #bbb;
           text-align: right;
           max-width: 240px;
           line-height: 1.5;
         }
 
-        /* Print */
+        /* Print — restore white, hide screen chrome */
         @media print {
           body { background: #fff !important; }
           .recibo-wrapper { background: #fff !important; padding: 0 !important; }
