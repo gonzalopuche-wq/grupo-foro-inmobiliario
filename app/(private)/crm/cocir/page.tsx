@@ -35,6 +35,39 @@ interface PadronStats {
   ultimaSync: string | null;
 }
 
+type PhoneStatus = "ok" | "sin_telefono_gfi" | "diferente" | "sin_padron";
+
+interface PhoneStatusEntry {
+  id: string;
+  nombre: string;
+  apellido: string;
+  matricula: string;
+  foto_url: string | null;
+  tipo: string;
+  estado_gfi: string;
+  telefono_gfi: string | null;
+  celular_oficina_gfi: string | null;
+  whatsapp_negocio_gfi: string | null;
+  email_gfi: string | null;
+  inmobiliaria_gfi: string | null;
+  telefono_cocir: string | null;
+  celular_cocir: string | null;
+  email_cocir: string | null;
+  inmobiliaria_cocir: string | null;
+  estado_cocir: string | null;
+  tiene_padron: boolean;
+  status: PhoneStatus;
+}
+
+interface PhoneStatusResponse {
+  data: PhoneStatusEntry[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+  totales: { total: number; sin_telefono_gfi: number; diferente: number; sin_padron: number; ok: number };
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function estadoColor(estado: string | null) {
@@ -53,7 +86,7 @@ export default function COCIRPage() {
   const [busqueda, setBusqueda] = useState("");
   const [resultados, setResultados] = useState<PadronEntry[]>([]);
   const [buscando, setBuscando] = useState(false);
-  const [tab, setTab] = useState<"padron" | "sync" | "buscar">("padron");
+  const [tab, setTab] = useState<"padron" | "sync" | "buscar" | "telefonos">("padron");
   const [syncCampos, setSyncCampos] = useState<string[]>(["telefono"]);
   const [syncForzar, setSyncForzar] = useState(false);
   const [syncCargando, setSyncCargando] = useState(false);
@@ -62,6 +95,14 @@ export default function COCIRPage() {
   const [esAdmin, setEsAdmin] = useState(false);
   const [perfilCargado, setPerfilCargado] = useState(false);
   const [contacto, setContacto] = useState<PadronEntry | null>(null);
+  // Phone status tab state
+  const [phoneFilter, setPhoneFilter] = useState<PhoneStatus | "todos">("sin_telefono_gfi");
+  const [phoneData, setPhoneData] = useState<PhoneStatusResponse | null>(null);
+  const [phonePage, setPhonePage] = useState(0);
+  const [phoneCargando, setPhoneCargando] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
+  const [syncedIds, setSyncedIds] = useState<Set<string>>(new Set());
 
   // Verificar rol admin
   useEffect(() => {
@@ -199,6 +240,61 @@ export default function COCIRPage() {
     );
   };
 
+  const cargarPhoneStatus = useCallback(async (filtro: PhoneStatus | "todos", page: number) => {
+    setPhoneCargando(true);
+    setPhoneError("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) { setPhoneError("Sesión expirada."); return; }
+      const res = await fetch(`/api/admin/cocir-phone-status?estado=${filtro}&page=${page}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const json = await res.json();
+      if (!res.ok || json.error) { setPhoneError(json.error ?? "Error"); return; }
+      setPhoneData(json as PhoneStatusResponse);
+    } catch (e) {
+      setPhoneError(e instanceof Error ? e.message : "Error de red");
+    } finally {
+      setPhoneCargando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tab === "telefonos" && esAdmin) {
+      cargarPhoneStatus(phoneFilter, phonePage);
+    }
+  }, [tab, phoneFilter, phonePage, esAdmin, cargarPhoneStatus]);
+
+  const syncPhoneIndividual = async (entry: PhoneStatusEntry) => {
+    setSyncingIds(prev => new Set(prev).add(entry.id));
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) return;
+      const res = await fetch("/api/admin/cocir-phone-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ perfil_id: entry.id, campos: ["telefono", "celular"] }),
+      });
+      const json = await res.json();
+      if (json.ok && json.actualizados > 0) {
+        setSyncedIds(prev => new Set(prev).add(entry.id));
+        setPhoneData(prev => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            data: prev.data.map(d =>
+              d.id === entry.id
+                ? { ...d, telefono_gfi: entry.telefono_cocir ?? d.telefono_gfi, status: "ok" as PhoneStatus }
+                : d
+            ),
+          };
+        });
+      }
+    } finally {
+      setSyncingIds(prev => { const s = new Set(prev); s.delete(entry.id); return s; });
+    }
+  };
+
   if (!perfilCargado) return null;
 
   return (
@@ -246,8 +342,31 @@ export default function COCIRPage() {
         .cc-sync-stat { background: rgba(255,255,255,0.04); border-radius: 6px; padding: 12px 16px; text-align: center; }
         .cc-sync-stat-val { font-family: 'Montserrat',sans-serif; font-size: 28px; font-weight: 800; }
         .cc-sync-stat-label { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 3px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        /* Phone status */
+        .cc-phone-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+        .cc-phone-pill { padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: all 0.15s; }
+        .cc-phone-pill:hover { background: rgba(255,255,255,0.07); color: #fff; }
+        .cc-phone-pill.on { background: rgba(204,0,0,0.12); border-color: rgba(204,0,0,0.4); color: #ff4444; }
+        .cc-phone-pill.ok.on { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.35); color: #22c55e; }
+        .cc-phone-pill.diferente.on { background: rgba(234,179,8,0.1); border-color: rgba(234,179,8,0.35); color: #eab308; }
+        .cc-phone-pill.sin-padron.on { background: rgba(100,116,139,0.12); border-color: rgba(100,116,139,0.35); color: #64748b; }
+        .cc-phone-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.1s; }
+        .cc-phone-row:hover { background: rgba(255,255,255,0.02); }
+        .cc-phone-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: rgba(255,255,255,0.08); flex-shrink: 0; }
+        .cc-phone-name { font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; color: #fff; }
+        .cc-phone-mat { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; color: #cc0000; }
+        .cc-phone-tel { font-size: 11px; color: rgba(255,255,255,0.6); font-family: 'Montserrat',sans-serif; }
+        .cc-phone-cocir { font-size: 11px; color: #22c55e; font-family: 'Montserrat',sans-serif; font-weight: 600; }
+        .cc-phone-missing { font-size: 11px; color: rgba(255,255,255,0.2); font-style: italic; }
+        .cc-phone-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; }
+        .cc-sync-btn { padding: 5px 12px; border-radius: 4px; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+        .cc-sync-btn:hover { background: rgba(34,197,94,0.2); }
+        .cc-sync-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .cc-sync-done { padding: 5px 12px; border-radius: 4px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: rgba(34,197,94,0.6); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; }
+        .cc-phone-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
         @media (max-width: 700px) {
           .cc-kpis { grid-template-columns: repeat(3,1fr); }
+          .cc-phone-kpis { grid-template-columns: repeat(2,1fr); }
         }
       `}</style>
 
@@ -304,7 +423,8 @@ export default function COCIRPage() {
         <div className="cc-tabs">
           <button className={`cc-tab${tab === "padron" ? " on" : ""}`} onClick={() => setTab("padron")}>📋 Padrón</button>
           <button className={`cc-tab${tab === "buscar" ? " on" : ""}`} onClick={() => setTab("buscar")}>🔍 Buscar matriculado</button>
-          {esAdmin && <button className={`cc-tab${tab === "sync" ? " on" : ""}`} onClick={() => setTab("sync")}>🔄 Sincronizar teléfonos</button>}
+          {esAdmin && <button className={`cc-tab${tab === "telefonos" ? " on" : ""}`} onClick={() => setTab("telefonos")}>📱 Teléfonos GFI vs COCIR</button>}
+          {esAdmin && <button className={`cc-tab${tab === "sync" ? " on" : ""}`} onClick={() => setTab("sync")}>🔄 Sincronizar masivo</button>}
         </div>
 
         {/* ═══ PADRÓN ═══ */}
@@ -408,6 +528,168 @@ export default function COCIRPage() {
                 <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>
                   Ingresá al menos 2 caracteres para buscar
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ═══ TELÉFONOS GFI vs COCIR (solo admin) ═══ */}
+        {tab === "telefonos" && esAdmin && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {/* KPIs de estado */}
+            {phoneData?.totales && (
+              <div className="cc-phone-kpis">
+                <div className="cc-kpi" style={{ borderColor: "rgba(204,0,0,0.2)" }}>
+                  <div className="cc-kpi-val" style={{ color: "#ff4444" }}>{phoneData.totales.sin_telefono_gfi}</div>
+                  <div className="cc-kpi-label">Sin teléfono en GFI</div>
+                </div>
+                <div className="cc-kpi" style={{ borderColor: "rgba(234,179,8,0.2)" }}>
+                  <div className="cc-kpi-val" style={{ color: "#eab308" }}>{phoneData.totales.diferente}</div>
+                  <div className="cc-kpi-label">Número diferente</div>
+                </div>
+                <div className="cc-kpi" style={{ borderColor: "rgba(34,197,94,0.2)" }}>
+                  <div className="cc-kpi-val" style={{ color: "#22c55e" }}>{phoneData.totales.ok}</div>
+                  <div className="cc-kpi-label">Coinciden / OK</div>
+                </div>
+                <div className="cc-kpi">
+                  <div className="cc-kpi-val" style={{ color: "rgba(255,255,255,0.3)" }}>{phoneData.totales.sin_padron}</div>
+                  <div className="cc-kpi-label">Sin registro COCIR</div>
+                </div>
+              </div>
+            )}
+
+            {/* Filtros */}
+            <div className="cc-phone-filters">
+              {[
+                { id: "sin_telefono_gfi", label: "Sin teléfono en GFI", cls: "" },
+                { id: "diferente", label: "Número diferente", cls: "diferente" },
+                { id: "ok", label: "OK / coincide", cls: "ok" },
+                { id: "sin_padron", label: "Sin registro COCIR", cls: "sin-padron" },
+                { id: "todos", label: "Todos", cls: "" },
+              ].map(f => (
+                <button
+                  key={f.id}
+                  className={`cc-phone-pill ${f.cls}${phoneFilter === f.id ? " on" : ""}`}
+                  onClick={() => { setPhoneFilter(f.id as PhoneStatus | "todos"); setPhonePage(0); }}
+                >
+                  {f.label}
+                  {phoneData?.totales && f.id !== "todos" && (
+                    <span style={{ marginLeft: 4, opacity: 0.7 }}>
+                      ({phoneData.totales[f.id as keyof typeof phoneData.totales] ?? 0})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Lista */}
+            <div className="cc-card" style={{ padding: 0, overflow: "hidden" }}>
+              {phoneCargando && (
+                <div style={{ padding: "20px 16px", display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+                  <div className="cc-spinner" /> Cargando comparación de teléfonos...
+                </div>
+              )}
+              {phoneError && (
+                <div style={{ padding: "14px 16px", fontSize: 12, color: "#ff4444" }}>⚠ {phoneError}</div>
+              )}
+              {!phoneCargando && !phoneError && phoneData && phoneData.data.length === 0 && (
+                <div style={{ padding: "30px 20px", textAlign: "center", fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+                  No hay registros en esta categoría.
+                </div>
+              )}
+              {!phoneCargando && phoneData && phoneData.data.map(entry => {
+                const syncing = syncingIds.has(entry.id);
+                const synced = syncedIds.has(entry.id);
+                const canSync = !syncing && !synced && entry.tiene_padron && (entry.status === "sin_telefono_gfi" || entry.status === "diferente");
+                const telCOCIR = entry.telefono_cocir ?? entry.celular_cocir;
+                const telGFI = entry.telefono_gfi ?? entry.celular_oficina_gfi;
+
+                const statusColors: Record<PhoneStatus, string> = {
+                  ok: "#22c55e",
+                  sin_telefono_gfi: "#ff4444",
+                  diferente: "#eab308",
+                  sin_padron: "#64748b",
+                };
+                const statusLabels: Record<PhoneStatus, string> = {
+                  ok: "OK",
+                  sin_telefono_gfi: "Sin teléfono GFI",
+                  diferente: "Diferente",
+                  sin_padron: "Sin COCIR",
+                };
+
+                return (
+                  <div key={entry.id} className="cc-phone-row">
+                    {/* Avatar */}
+                    {entry.foto_url
+                      ? <img src={entry.foto_url} alt="" className="cc-phone-avatar" referrerPolicy="no-referrer" onError={e => { (e.target as HTMLImageElement).src = ""; }} />
+                      : <div className="cc-phone-avatar" style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>
+                          {entry.apellido?.[0] ?? "?"}
+                        </div>
+                    }
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="cc-phone-name">{entry.apellido}, {entry.nombre}</div>
+                      <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 2 }}>
+                        <span className="cc-phone-mat">#{entry.matricula}</span>
+                        <span className="cc-phone-status" style={{
+                          background: `${statusColors[entry.status]}18`,
+                          border: `1px solid ${statusColors[entry.status]}35`,
+                          color: statusColors[entry.status],
+                        }}>
+                          {statusLabels[entry.status]}
+                        </span>
+                      </div>
+                    </div>
+                    {/* Teléfonos */}
+                    <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em", color: "rgba(255,255,255,0.25)", marginBottom: 2 }}>GFI</div>
+                      {telGFI
+                        ? <span className="cc-phone-tel">{telGFI}</span>
+                        : <span className="cc-phone-missing">sin teléfono</span>
+                      }
+                    </div>
+                    <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em", color: "rgba(255,255,255,0.25)", marginBottom: 2 }}>COCIR</div>
+                      {telCOCIR
+                        ? <span className="cc-phone-cocir">{telCOCIR}</span>
+                        : <span className="cc-phone-missing">—</span>
+                      }
+                    </div>
+                    {/* Acción */}
+                    <div style={{ flexShrink: 0 }}>
+                      {synced ? (
+                        <span className="cc-sync-done">✓ Sync</span>
+                      ) : canSync ? (
+                        <button
+                          className="cc-sync-btn"
+                          disabled={syncing}
+                          onClick={() => syncPhoneIndividual(entry)}
+                        >
+                          {syncing ? <span className="cc-spinner" style={{ margin: 0 }} /> : "↓ Sincronizar"}
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Paginación */}
+            {phoneData && (phoneData.page > 0 || phoneData.hasMore) && (
+              <div style={{ display: "flex", justifyContent: "center", gap: 10 }}>
+                {phoneData.page > 0 && (
+                  <button className="cc-btn" style={{ background: "rgba(255,255,255,0.06)", color: "#fff" }} onClick={() => setPhonePage(p => p - 1)}>
+                    ← Anterior
+                  </button>
+                )}
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", alignSelf: "center" }}>
+                  Página {phoneData.page + 1} · {phoneData.total} perfiles
+                </span>
+                {phoneData.hasMore && (
+                  <button className="cc-btn cc-btn-primary" onClick={() => setPhonePage(p => p + 1)}>
+                    Siguiente →
+                  </button>
+                )}
               </div>
             )}
           </div>
