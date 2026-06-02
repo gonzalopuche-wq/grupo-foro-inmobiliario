@@ -1658,9 +1658,11 @@ export default function CarteraPage() {
                   {/* ── Foto ── */}
                   <div className="cart-card-foto">
                     {foto
-                      ? <img src={foto} alt={p.titulo} />
-                      : <div className="cart-card-foto-empty">🏠</div>
-                    }
+                      ? <img src={foto} alt={p.titulo} loading="lazy"
+                          onError={e => { const el = e.currentTarget; el.style.display = "none"; const ph = el.parentElement?.querySelector(".cart-card-foto-empty-dyn") as HTMLElement; if (ph) ph.style.display = "flex"; }}
+                        />
+                      : null}
+                    <div className="cart-card-foto-empty cart-card-foto-empty-dyn" style={{ display: foto ? "none" : "flex" }}>🏠</div>
                     <div className="cart-estado-badge" style={{background:est.color,color:"#000"}}>{est.label}</div>
                     {(p.fotos ?? []).length > 1 && <div className="cart-foto-count">📷 {p.fotos!.length}</div>}
                     {/* Banner operación en la parte inferior de la foto */}
@@ -2002,10 +2004,10 @@ export default function CarteraPage() {
                       <div key={p.id} className="cart-card" onClick={() => setSelectedPropExt({ id: p.id, fuente: p.portal })} style={{ cursor: "pointer" }}>
                         {/* Foto */}
                         <div className="cart-card-foto">
-                          {img
-                            ? <img src={img} alt={p.titulo ?? "Propiedad"} loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                            : <div className="cart-card-foto-empty">🏠</div>
-                          }
+                          {img && <img src={img} alt={p.titulo ?? "Propiedad"} loading="lazy" referrerPolicy="no-referrer"
+                            onError={e => { const el = e.currentTarget; el.style.display = "none"; const ph = el.parentElement?.querySelector(".cart-card-foto-empty") as HTMLElement; if (ph) ph.style.display = "flex"; }}
+                          />}
+                          <div className="cart-card-foto-empty" style={{ display: img ? "none" : "flex" }}>🏠</div>
                           {/* Badge portal arriba izq */}
                           {portal && <span className="cart-estado-badge" style={{ background: portal.bg, color: portal.color, border: `1px solid ${portal.color}44` }}>{portal.label}</span>}
                           {/* Banner operación abajo */}
