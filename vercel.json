@@ -63,6 +63,18 @@
     {
       "path": "/api/cron/sync-portales-scraper",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/noticias/fetch-ai",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/noticias/fetch-ai",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/noticias/fetch-ai",
+      "schedule": "0 22 * * *"
     }
   ]
 }

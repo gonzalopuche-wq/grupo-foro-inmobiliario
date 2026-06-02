@@ -26,6 +26,20 @@ interface Perfil {
   apellido: string;
 }
 
+interface AiFeedItem {
+  id: string;
+  titulo: string;
+  resumen: string | null;
+  url: string;
+  imagen_url: string | null;
+  fuente: string | null;
+  fecha_fuente: string | null;
+  categoria: string | null;
+  score: number;
+  estado: string;
+  fetched_at: string;
+}
+
 const FORM_VACIO = {
   titulo: "",
   cuerpo: "",
@@ -53,7 +67,7 @@ export default function NoticiasPage() {
   const [form, setForm] = useState(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
   const [noticiaActiva, setNoticiaActiva] = useState<Noticia | null>(null);
-  const [vista, setVista] = useState<"todas" | "pendientes">("todas");
+  const [vista, setVista] = useState<"todas" | "pendientes" | "ai">("todas");
   const [aprobando, setAprobando] = useState<string | null>(null);
   const [fetchandoLink, setFetchandoLink] = useState(false);
   const [publicandoRedes, setPublicandoRedes] = useState<string | null>(null);
@@ -61,6 +75,12 @@ export default function NoticiasPage() {
   const [verificando, setVerificando] = useState(false);
   const [verificacionResult, setVerificacionResult] = useState<{ red: string; ok: boolean; configurada: boolean; nombre?: string; detalle?: string; error?: string }[] | null>(null);
   const [mostrarVerificacion, setMostrarVerificacion] = useState(false);
+  const [aiFeedItems, setAiFeedItems] = useState<AiFeedItem[]>([]);
+  const [aiFeedLoading, setAiFeedLoading] = useState(false);
+  const [aiFeedFetchando, setAiFeedFetchando] = useState(false);
+  const [aiFeedActivo, setAiFeedActivo] = useState<AiFeedItem | null>(null);
+  const [publicandoAI, setPublicandoAI] = useState<string | null>(null);
+  const [descartandoAI, setDescartandoAI] = useState<string | null>(null);
 
   const fetchLinkPreview = async (url: string) => {
     if (!url.startsWith("http")) return;
@@ -168,6 +188,66 @@ export default function NoticiasPage() {
       setVerificacionResult([{ red: "Error", ok: false, configurada: false, error: "No se pudo conectar al servidor" }]);
     }
     setVerificando(false);
+  };
+
+  const cargarAiFeed = async () => {
+    setAiFeedLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/noticias/fetch-ai?estado=pendiente", {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+      const data = await res.json();
+      setAiFeedItems(data.items ?? []);
+    } catch {}
+    setAiFeedLoading(false);
+  };
+
+  const traerNoticiasAI = async () => {
+    if (aiFeedFetchando) return;
+    setAiFeedFetchando(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      await fetch("/api/noticias/fetch-ai", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+      await cargarAiFeed();
+    } catch {}
+    setAiFeedFetchando(false);
+  };
+
+  const publicarDesdeAI = async (item: AiFeedItem) => {
+    if (publicandoAI) return;
+    setPublicandoAI(item.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/noticias/publicar-ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ id: item.id }),
+      });
+      if (res.ok) {
+        setAiFeedItems(prev => prev.filter(i => i.id !== item.id));
+        setAiFeedActivo(null);
+      }
+    } catch {}
+    setPublicandoAI(null);
+  };
+
+  const descartarAI = async (item: AiFeedItem) => {
+    if (descartandoAI) return;
+    setDescartandoAI(item.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      await fetch(`/api/noticias/publicar-ai?id=${item.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+      setAiFeedItems(prev => prev.filter(i => i.id !== item.id));
+      setAiFeedActivo(null);
+    } catch {}
+    setDescartandoAI(null);
   };
 
   const publicarEnRedes = async (noticia: Noticia) => {
@@ -316,6 +396,21 @@ export default function NoticiasPage() {
         .not-verif-detalle { font-size: 10px; margin-top: 2px; opacity: 0.55; }
         .not-verif-error { font-size: 11px; margin-top: 4px; }
 
+        /* AI Feed */
+        .not-ai-score { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: 0.06em; }
+        .not-ai-cat { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'Montserrat', sans-serif; }
+        .not-ai-resumen { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: rgba(255,255,255,0.7); font-family: 'Inter', sans-serif; line-height: 1.6; }
+        .not-ai-resumen-label { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; color: rgba(255,255,255,0.25); letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+        .not-btn-traer { padding: 5px 10px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; color: #8b5cf6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+        .not-btn-traer:hover { background: rgba(139,92,246,0.2); }
+        .not-btn-traer:disabled { opacity: 0.5; cursor: not-allowed; }
+        .not-btn-publicar-ai { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #22c55e; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .not-btn-publicar-ai:hover { background: rgba(34,197,94,0.2); }
+        .not-btn-publicar-ai:disabled { opacity: 0.5; cursor: not-allowed; }
+        .not-btn-descartar-ai { padding: 8px 16px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-descartar-ai:hover { border-color: rgba(200,0,0,0.3); color: #cc0000; }
+        .not-btn-descartar-ai:disabled { opacity: 0.5; cursor: not-allowed; }
+
         @media (max-width: 768px) {
           .not-container { flex-direction: column; height: auto; }
           .not-sidebar { width: 100%; height: 320px; }
@@ -334,14 +429,21 @@ export default function NoticiasPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          {esAdmin && (
+          {esAdmin && vista === "ai" && (
+            <button className="not-btn-traer" style={{ fontSize: 11, padding: "8px 16px" }} onClick={traerNoticiasAI} disabled={aiFeedFetchando}>
+              {aiFeedFetchando ? "Buscando..." : "🤖 Traer noticias ahora"}
+            </button>
+          )}
+          {esAdmin && vista !== "ai" && (
             <button className="not-btn-verificar" onClick={verificarRedes} disabled={verificando}>
               {verificando ? "Verificando..." : "🔍 Verificar redes"}
             </button>
           )}
-          <button className="not-btn-nueva" onClick={() => setMostrarForm(true)}>
-            + Nueva noticia
-          </button>
+          {vista !== "ai" && (
+            <button className="not-btn-nueva" onClick={() => setMostrarForm(true)}>
+              + Nueva noticia
+            </button>
+          )}
         </div>
       </div>
 
@@ -409,15 +511,51 @@ export default function NoticiasPage() {
                 <button className={`not-tab${vista === "todas" ? " activo" : ""}`} onClick={() => setVista("todas")}>
                   Publicadas
                 </button>
-                <button className={`not-tab${vista === "pendientes" ? " activo" : ""}`} onClick={() => setVista("pendientes")} style={{ position: "relative" }}>
+                <button className={`not-tab${vista === "pendientes" ? " activo" : ""}`} onClick={() => setVista("pendientes")} style={{ position: "relative", borderLeft: "none" }}>
                   Pendientes
                   {pendientesCount > 0 && <span className="not-tab-badge">{pendientesCount}</span>}
+                </button>
+                <button className={`not-tab${vista === "ai" ? " activo" : ""}`} onClick={() => { setVista("ai"); if (aiFeedItems.length === 0) cargarAiFeed(); }} style={{ borderLeft: "none" }}>
+                  🤖 AI
+                  {aiFeedItems.length > 0 && <span className="not-tab-badge">{aiFeedItems.length}</span>}
                 </button>
               </div>
             )}
 
             <div className="not-lista">
-              {noticiasFiltradas.length === 0 ? (
+              {vista === "ai" ? (
+                aiFeedLoading ? (
+                  <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
+                    <div style={{ width: 20, height: 20, border: "2px solid rgba(139,92,246,0.3)", borderTopColor: "#8b5cf6", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                  </div>
+                ) : aiFeedItems.length === 0 ? (
+                  <div className="not-empty">
+                    Sin noticias AI pendientes.<br />Presioná "Traer noticias ahora" para buscar.
+                  </div>
+                ) : (
+                  aiFeedItems.map(item => {
+                    const scoreColor = item.score >= 70 ? "#22c55e" : item.score >= 50 ? "#eab308" : "#fb923c";
+                    const scoreBg = item.score >= 70 ? "rgba(34,197,94,0.15)" : item.score >= 50 ? "rgba(234,179,8,0.15)" : "rgba(251,146,60,0.15)";
+                    const scoreBorder = item.score >= 70 ? "rgba(34,197,94,0.3)" : item.score >= 50 ? "rgba(234,179,8,0.3)" : "rgba(251,146,60,0.3)";
+                    return (
+                      <div key={item.id} className={`not-item${aiFeedActivo?.id === item.id ? " activo" : ""}`} onClick={() => setAiFeedActivo(item)}>
+                        {item.imagen_url
+                          ? <img src={item.imagen_url} alt="" className="not-item-img" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          : <div className="not-item-img-placeholder">🤖</div>
+                        }
+                        <div className="not-item-info">
+                          <div className="not-item-titulo">{item.titulo}</div>
+                          <div className="not-item-meta">
+                            {item.fuente && <span className="not-item-fuente">{item.fuente}</span>}
+                            <span className="not-ai-score" style={{ background: scoreBg, color: scoreColor, border: `1px solid ${scoreBorder}` }}>{item.score}</span>
+                            {item.categoria && <span className="not-ai-cat">{item.categoria}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )
+              ) : noticiasFiltradas.length === 0 ? (
                 <div className="not-empty">
                   {vista === "pendientes" ? "No hay noticias pendientes." : "No hay noticias publicadas todavía."}
                 </div>
@@ -443,7 +581,58 @@ export default function NoticiasPage() {
 
           {/* Detalle */}
           <div className="not-detalle">
-            {!noticiaActiva ? (
+            {vista === "ai" ? (
+              !aiFeedActivo ? (
+                <div className="not-detalle-empty">
+                  <span style={{ fontSize: 48 }}>🤖</span>
+                  <span style={{ fontSize: 13 }}>Seleccioná una noticia AI para revisarla</span>
+                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.1)" }}>Las noticias se ordenan por relevancia inmobiliaria</span>
+                </div>
+              ) : (
+                <>
+                  {aiFeedActivo.imagen_url && (
+                    <img src={aiFeedActivo.imagen_url} alt="" className="not-detalle-imagen"
+                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  )}
+                  <div className="not-detalle-body">
+                    {aiFeedActivo.fuente && <div className="not-detalle-fuente">{aiFeedActivo.fuente}</div>}
+                    <div className="not-detalle-titulo">{aiFeedActivo.titulo}</div>
+                    <div className="not-detalle-meta">
+                      {(() => {
+                        const s = aiFeedActivo.score;
+                        const c = s >= 70 ? "#22c55e" : s >= 50 ? "#eab308" : "#fb923c";
+                        const bg = s >= 70 ? "rgba(34,197,94,0.12)" : s >= 50 ? "rgba(234,179,8,0.12)" : "rgba(251,146,60,0.12)";
+                        const bd = s >= 70 ? "rgba(34,197,94,0.3)" : s >= 50 ? "rgba(234,179,8,0.3)" : "rgba(251,146,60,0.3)";
+                        return (
+                          <span className="not-ai-score" style={{ background: bg, color: c, border: `1px solid ${bd}`, fontSize: 11, padding: "2px 8px" }}>
+                            Relevancia: {s}/100
+                          </span>
+                        );
+                      })()}
+                      {aiFeedActivo.categoria && <span style={{ fontFamily: "Montserrat", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", padding: "2px 8px", borderRadius: 3 }}>{aiFeedActivo.categoria}</span>}
+                      {aiFeedActivo.fecha_fuente && <span>· {formatFecha(aiFeedActivo.fecha_fuente)}</span>}
+                    </div>
+                    {aiFeedActivo.resumen && (
+                      <div className="not-ai-resumen">
+                        <span className="not-ai-resumen-label">Análisis IA</span>
+                        {aiFeedActivo.resumen}
+                      </div>
+                    )}
+                    <a href={aiFeedActivo.url} target="_blank" rel="noopener noreferrer" className="not-detalle-link">
+                      🔗 Ver noticia original
+                    </a>
+                    <div className="not-detalle-actions">
+                      <button className="not-btn-publicar-ai" onClick={() => publicarDesdeAI(aiFeedActivo)} disabled={!!publicandoAI}>
+                        {publicandoAI === aiFeedActivo.id ? "Publicando..." : "✓ Publicar en noticias"}
+                      </button>
+                      <button className="not-btn-descartar-ai" onClick={() => descartarAI(aiFeedActivo)} disabled={!!descartandoAI}>
+                        {descartandoAI === aiFeedActivo.id ? "Descartando..." : "✗ Descartar"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )
+            ) : !noticiaActiva ? (
               <div className="not-detalle-empty">
                 <span style={{ fontSize: 48 }}>📰</span>
                 <span style={{ fontSize: 13 }}>Seleccioná una noticia para leerla</span>
