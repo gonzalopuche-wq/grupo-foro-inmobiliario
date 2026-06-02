@@ -249,7 +249,7 @@ export default function MapaCarteraPage() {
                 >
                   <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
                     {p.fotos?.[0] ? (
-                      <img src={p.fotos[0]} alt="" style={{ width: 48, height: 40, objectFit: "cover", borderRadius: 4, flexShrink: 0 }} />
+                      <img src={p.fotos[0]} alt="" style={{ width: 48, height: 40, objectFit: "cover", borderRadius: 4, flexShrink: 0 }} referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                     ) : (
                       <div style={{ width: 48, height: 40, background: "var(--gfi-border-subtle)", borderRadius: 4, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🏠</div>
                     )}
@@ -281,7 +281,7 @@ export default function MapaCarteraPage() {
                 <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
               </div>
               {selected.fotos?.[0] && (
-                <img src={selected.fotos[0]} alt="" style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />
+                <img src={selected.fotos[0]} alt="" style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
               )}
               <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 9, fontFamily: "var(--font-display)", fontWeight: 700, color: OP_COLOR[selected.operacion] ?? "#990000", background: `${(OP_COLOR[selected.operacion] ?? "#990000")}18`, border: `1px solid ${(OP_COLOR[selected.operacion] ?? "#990000")}30`, borderRadius: 4, padding: "2px 7px" }}>{selected.operacion}</span>

@@ -204,7 +204,7 @@ export default function SmartProspectingPage() {
                           <div key={prop.id} style={{ display: "flex", gap: 12, background: "var(--gfi-bg-card)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
                             <div style={{ width: 80, height: 68, flexShrink: 0, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
                               {foto
-                                ? <img src={foto} alt={prop.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                ? <img src={foto} alt={prop.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                                 : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>🏠</div>}
                             </div>
                             <div style={{ flex: 1, padding: "10px 0", minWidth: 0 }}>

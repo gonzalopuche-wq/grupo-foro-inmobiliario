@@ -406,6 +406,7 @@ export default function BusquedaPage() {
                       <div style={{height:160, background:'var(--gfi-border-subtle)', overflow:'hidden', position:'relative'}}>
                         {p.foto_principal
                           ? <img src={p.foto_principal} alt={p.titulo ?? ''} style={{width:'100%', height:'100%', objectFit:'cover'}}
+                              referrerPolicy="no-referrer"
                               onError={e => { const t = e.currentTarget; t.style.display='none'; (t.nextSibling as HTMLElement | null)?.style && ((t.nextSibling as HTMLElement).style.display='flex'); }} />
                           : null}
                         <div style={{display: p.foto_principal ? 'none' : 'flex', alignItems:'center', justifyContent:'center', height:'100%', fontSize:28, color:'var(--gfi-border)'}}>🏠</div>

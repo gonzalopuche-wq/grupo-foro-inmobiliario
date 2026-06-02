@@ -1704,7 +1704,7 @@ export default function CarteraPage() {
                   {/* ── Foto ── */}
                   <div className="cart-card-foto">
                     {foto
-                      ? <img src={foto} alt={p.titulo} loading="lazy"
+                      ? <img src={foto} alt={p.titulo} loading="lazy" referrerPolicy="no-referrer"
                           onError={e => { const el = e.currentTarget; el.style.display = "none"; const ph = el.parentElement?.querySelector(".cart-card-foto-empty-dyn") as HTMLElement; if (ph) ph.style.display = "flex"; }}
                         />
                       : null}

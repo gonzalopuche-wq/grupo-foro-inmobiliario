@@ -389,14 +389,14 @@ export default async function FichaPage({ params }: Props) {
         {/* Fotos */}
         <div className="ficha-fotos">
           {fotos.length > 0
-            ? <img src={fotos[0]} alt={prop.titulo} className="ficha-foto-main" />
+            ? <img src={fotos[0]} alt={prop.titulo} className="ficha-foto-main" referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
             : <div className="ficha-foto-placeholder">🏠</div>}
           <div className="ficha-op-badge">{prop.operacion}</div>
           <div className="ficha-tipo-badge">{prop.tipo}</div>
           {fotos.length > 1 && (
             <div className="ficha-fotos-strip">
               {fotos.slice(1, 4).map((f, i) => (
-                <img key={i} src={f} alt="" className="ficha-foto-thumb" />
+                <img key={i} src={f} alt="" className="ficha-foto-thumb" referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
               ))}
             </div>
           )}

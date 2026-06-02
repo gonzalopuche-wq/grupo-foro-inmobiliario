@@ -312,7 +312,7 @@ export default function MapaRedGFI() {
               <Popup>
                 <div style={{ minWidth: 180, fontSize: 13 }}>
                   {p.fotos?.[0] && (
-                    <img src={p.fotos[0]} alt="" style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 4, marginBottom: 6 }} />
+                    <img src={p.fotos[0]} alt="" style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 4, marginBottom: 6 }} referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                   )}
                   <strong>{p.tipo_propiedad}</strong>
                   <br />
@@ -396,7 +396,7 @@ function TarjetaMapa({ p, dimmed }: { p: PropMapa; dimmed?: boolean }) {
       opacity: dimmed ? 0.6 : 1,
     }}>
       {p.fotos?.[0]
-        ? <img src={p.fotos[0]} alt="" style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} />
+        ? <img src={p.fotos[0]} alt="" style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
         : <div style={{ width: 60, height: 45, background: 'var(--gfi-border-subtle)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>🏠</div>
       }
       <div style={{ flex: 1, minWidth: 0 }}>

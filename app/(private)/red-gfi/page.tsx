@@ -308,7 +308,7 @@ export default function RedGFIPage() {
                 >
                   <div className="rgfi-card-foto">
                     {foto
-                      ? <img src={foto} alt={item.nombre_publicante ?? item.tipo_propiedad} loading="lazy" />
+                      ? <img src={foto} alt={item.nombre_publicante ?? item.tipo_propiedad} loading="lazy" referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                       : <div className="rgfi-card-foto-empty">🏠</div>
                     }
                     <div className="rgfi-op-badge" style={{ background: opColor + "22", color: opColor, border:`1px solid ${opColor}44` }}>{opLabel}</div>
@@ -400,7 +400,7 @@ export default function RedGFIPage() {
             {(selected.fotos ?? []).length > 0 && (
               <div className="rgfi-detail-fotos">
                 {selected.fotos!.map((f, i) => (
-                  <img key={i} src={f} alt={`Foto ${i + 1}`} />
+                  <img key={i} src={f} alt={`Foto ${i + 1}`} referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                 ))}
               </div>
             )}

@@ -317,7 +317,7 @@ export default function NetworkingPage() {
                     {post.fotos && post.fotos.length > 0 && (
                       <div className="net-fotos" onClick={e => e.stopPropagation()}>
                         {post.fotos.slice(0, 4).map((f, i) => (
-                          <img key={i} src={f} alt="" className="net-foto" onClick={() => {}} />
+                          <img key={i} src={f} alt="" className="net-foto" onClick={() => {}} referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                         ))}
                         {post.fotos.length > 4 && (
                           <div style={{ width: 60, height: 60, borderRadius: 4, background: "rgba(0,0,0,0.6)", border: "1px solid var(--gfi-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-secondary)" }}>+{post.fotos.length - 4}</div>
@@ -366,7 +366,7 @@ export default function NetworkingPage() {
                   {postVer.fotos && postVer.fotos.length > 0 && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
                       {postVer.fotos.map((f, i) => (
-                        <img key={i} src={f} alt="" style={{ width: 90, height: 90, borderRadius: 6, objectFit: "cover", border: "1px solid var(--gfi-border)", cursor: "zoom-in" }} />
+                        <img key={i} src={f} alt="" style={{ width: 90, height: 90, borderRadius: 6, objectFit: "cover", border: "1px solid var(--gfi-border)", cursor: "zoom-in" }} referrerPolicy="no-referrer" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                       ))}
                     </div>
                   )}
