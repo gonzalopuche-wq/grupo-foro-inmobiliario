@@ -774,6 +774,83 @@ export default function PerfilPage() {
             </div>
           )}
 
+          {/* TARJETA DIGITAL Y QR */}
+          {seccion === "profesional" && perfil.matricula && (
+            <div className="pf-section" style={{ marginTop: 16 }}>
+              <div className="pf-section-title">📇 Tarjeta <span>digital</span></div>
+              <div className="pf-section-sub">Tu tarjeta profesional y QR para compartir con clientes</div>
+
+              {/* Preview tarjeta */}
+              <div style={{ background: "#0a0a0a", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 12, padding: "20px 24px", marginBottom: 16, maxWidth: 380 }}>
+                <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 14 }}>
+                  {perfil.foto_url ? (
+                    <img src={perfil.foto_url} alt="Foto" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover" }} />
+                  ) : (
+                    <div style={{ width: 52, height: 52, borderRadius: 10, background: "rgba(204,0,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#cc0000" }}>
+                      {perfil.nombre?.charAt(0)}{perfil.apellido?.charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 15, color: "#fff" }}>{perfil.nombre} {perfil.apellido}</div>
+                    {perfil.inmobiliaria && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{perfil.inmobiliaria}</div>}
+                    <div style={{ fontSize: 10, color: "#cc0000", marginTop: 2, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em" }}>Mat. {perfil.matricula} · COCIR</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {perfil.telefono && (
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.05)", padding: "3px 10px", borderRadius: 4 }}>📞 {perfil.telefono}</span>
+                  )}
+                  {perfil.instagram && (
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.05)", padding: "3px 10px", borderRadius: 4 }}>📷 @{perfil.instagram}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* QR + botones */}
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
+                <div style={{ textAlign: "center" }}>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`https://wa.me/${(perfil.telefono ?? "").replace(/\D/g, "")}`)}&bgcolor=0a0a0a&color=ffffff&margin=10`}
+                    alt="QR WhatsApp"
+                    style={{ width: 120, height: 120, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)" }}
+                  />
+                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 4, fontFamily: "Montserrat,sans-serif" }}>QR WhatsApp</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {perfil.telefono && (
+                    <a
+                      href={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://wa.me/${(perfil.telefono).replace(/\D/g, "")}`)}&bgcolor=0a0a0a&color=ffffff&margin=10`}
+                      download={`QR-${perfil.apellido}-GFI.png`}
+                      target="_blank" rel="noreferrer"
+                      style={{ padding: "8px 16px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#25d366", textDecoration: "none", fontFamily: "Montserrat,sans-serif" }}>
+                      ⬇ Descargar QR
+                    </a>
+                  )}
+                  <button
+                    onClick={() => {
+                      const vcard = [
+                        "BEGIN:VCARD", "VERSION:3.0",
+                        `FN:${perfil.nombre} ${perfil.apellido}`,
+                        `N:${perfil.apellido};${perfil.nombre};;;`,
+                        perfil.inmobiliaria ? `ORG:${perfil.inmobiliaria}` : "",
+                        perfil.telefono ? `TEL;TYPE=CELL:${perfil.telefono}` : "",
+                        `NOTE:Corredor Inmobiliario - Matrícula ${perfil.matricula} COCIR`,
+                        "END:VCARD"
+                      ].filter(Boolean).join("\n");
+                      const blob = new Blob([vcard], { type: "text/vcard" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url; a.download = `${perfil.apellido}-GFI.vcf`; a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    style={{ padding: "8px 16px", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#818cf8", cursor: "pointer", fontFamily: "Montserrat,sans-serif" }}>
+                    📱 Exportar vCard
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* NOTIFICACIONES */}
           {seccion === "notificaciones" && (
             <div className="pf-section">
@@ -957,8 +1034,8 @@ export default function PerfilPage() {
                   <div className="sus-plan-sub">Acceso completo a todos los módulos</div>
                 </div>
                 <div>
-                  <div className="sus-plan-precio">USD {perfil.tipo === "colaborador" ? "5" : "10"}<span style={{ fontSize: 13, fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>/mes</span></div>
-                  <div className="sus-plan-sub">Equivalente en ARS al tipo de cambio del día</div>
+                  <div className="sus-plan-precio">USD {perfil.tipo === "colaborador" ? "5" : "15"}<span style={{ fontSize: 13, fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>/mes</span></div>
+                  <div className="sus-plan-sub">{perfil.tipo === "colaborador" ? "Gestionado por tu corredor" : "Equivalente en ARS al tipo de cambio del día"}</div>
                 </div>
               </div>
 
@@ -966,7 +1043,7 @@ export default function PerfilPage() {
               {(() => {
                 const icoMap: Record<string, string> = { biblioteca: "📚", foro: "💬", comparables: "📊", seniority: "⭐", referidos: "👥" };
                 const totalDescuento = bonHistorial.reduce((sum, h) => sum + (h.descuento_aplicado ?? 0), 0);
-                const precioBase = perfil.tipo === "colaborador" ? 5 : 10;
+                const precioBase = perfil.tipo === "colaborador" ? 5 : 15;
                 const precioFinal = Math.max(0, precioBase - totalDescuento);
                 return (
                   <>
