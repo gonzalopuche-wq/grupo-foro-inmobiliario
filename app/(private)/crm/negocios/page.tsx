@@ -33,16 +33,16 @@ interface Negocio {
 interface Contacto { id: string; nombre: string; apellido: string; }
 
 const ETAPAS = [
-  { value: "prospecto",        label: "Prospecto",       color: "#6b7280" },
-  { value: "contactado",       label: "Contactado",      color: "#3b82f6" },
-  { value: "visita_coordinada",label: "Visita coord.",   color: "#8b5cf6" },
-  { value: "visita_realizada", label: "Visita realizada",color: "#a78bfa" },
-  { value: "oferta_enviada",   label: "Oferta enviada",  color: "#f59e0b" },
-  { value: "negociacion",      label: "Negociación",     color: "#f97316" },
-  { value: "reserva",          label: "Reserva",         color: "#06b6d4" },
-  { value: "escritura",        label: "Escritura",       color: "#10b981" },
-  { value: "cerrado",          label: "Cerrado ✓",       color: "#22c55e" },
-  { value: "perdido",          label: "Perdido",         color: "#ef4444" },
+  { value: "prospecto",        label: "Prospecto",        color: "var(--gfi-text-muted)",   badgeClass: "gfi-badge--gray"   },
+  { value: "contactado",       label: "Contactado",       color: "#60a5fa",                 badgeClass: "gfi-badge--blue"   },
+  { value: "visita_coordinada",label: "Visita coord.",    color: "#a78bfa",                 badgeClass: "gfi-badge--gray"   },
+  { value: "visita_realizada", label: "Visita realizada", color: "#c084fc",                 badgeClass: "gfi-badge--gray"   },
+  { value: "oferta_enviada",   label: "Oferta enviada",   color: "#f97316",                 badgeClass: "gfi-badge--orange" },
+  { value: "negociacion",      label: "Negociación",      color: "#fb923c",                 badgeClass: "gfi-badge--orange" },
+  { value: "reserva",          label: "Reserva",          color: "#22d3ee",                 badgeClass: "gfi-badge--blue"   },
+  { value: "escritura",        label: "Escritura",        color: "var(--gfi-green-text)",   badgeClass: "gfi-badge--green"  },
+  { value: "cerrado",          label: "Cerrado ✓",        color: "var(--gfi-green-text)",   badgeClass: "gfi-badge--green"  },
+  { value: "perdido",          label: "Perdido",          color: "var(--gfi-red)",          badgeClass: "gfi-badge--red"    },
 ];
 
 const TIPOS_OP = [
@@ -193,8 +193,7 @@ export default function CrmNegociosPage() {
     if (idx < 0 || idx >= ETAPAS.length - 1) return;
     const nuevaEtapa = ETAPAS[idx + 1].value;
     await supabase.from("crm_negocios").update({
-      etapa: nuevaEtapa,
-      updated_at: new Date().toISOString(),
+      etapa: nuevaEtapa, updated_at: new Date().toISOString(),
     }).eq("id", n.id);
     setNegocios(prev => prev.map(x => x.id === n.id ? { ...x, etapa: nuevaEtapa } : x));
     showToast(`→ ${ETAPAS[idx + 1].label}`);
@@ -218,94 +217,166 @@ export default function CrmNegociosPage() {
 
   const etapaInfo = (v: string) => ETAPAS.find(e => e.value === v) ?? ETAPAS[0];
   const tipoLabel = (v: string) => TIPOS_OP.find(t => t.value === v)?.label ?? v;
-  const contactoNombre = (id: string | null) => {
-    if (!id) return null;
-    const c = contactos.find(x => x.id === id);
+  const contactoNombre = (cid: string | null) => {
+    if (!cid) return null;
+    const c = contactos.find(x => x.id === cid);
     return c ? `${c.nombre} ${c.apellido}` : null;
   };
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .n-wrap { max-width: 900px; display: flex; flex-direction: column; gap: 16px; }
-        .n-stat { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 12px 16px; text-align: center; }
-        .n-stat-n { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; }
-        .n-stat-l { font-size: 10px; color: rgba(255,255,255,0.35); font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
-        .n-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px; transition: border-color 0.15s; }
-        .n-card:hover { border-color: rgba(255,255,255,0.14); }
-        .n-input { width: 100%; padding: 9px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; box-sizing: border-box; }
-        .n-input:focus { border-color: rgba(200,0,0,0.5); }
-        .n-select { width: 100%; padding: 9px 11px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; }
-        .n-btn { padding: 8px 14px; border: none; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
-        .n-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
-        .n-field { margin-bottom: 12px; }
-        .n-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: 'Montserrat',sans-serif; }
-        .n-kanban-wrap { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 16px; }
-        .n-kanban-col { flex-shrink: 0; width: 220px; display: flex; flex-direction: column; gap: 8px; }
-        .n-kanban-header { padding: 8px 12px; border-radius: 6px 6px 0 0; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
-        .n-kanban-body { display: flex; flex-direction: column; gap: 6px; min-height: 60px; }
-        .n-kanban-card { background: rgba(14,14,14,0.92); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 12px; cursor: pointer; transition: border-color 0.15s; }
-        .n-kanban-card:hover { border-color: rgba(255,255,255,0.18); }
-        @media (max-width: 600px) {
-          .n-stats { grid-template-columns: repeat(2, 1fr) !important; }
-          .n-grid { grid-template-columns: 1fr !important; }
+        /* ── Negocios GFI ── */
+        .neg-wrap { display: flex; flex-direction: column; gap: 16px; }
+
+        /* Stats */
+        .neg-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+        @media(max-width:600px){ .neg-stats { grid-template-columns: repeat(2,1fr) !important; } }
+        .neg-stat {
+          background: var(--gfi-bg-card); border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-lg); padding: 14px 16px; text-align: center;
+        }
+        .neg-stat-n {
+          font-family: var(--font-display); font-weight: 900; line-height: 1;
+          letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+        }
+        .neg-stat-l {
+          font-size: 9px; color: var(--gfi-text-muted); font-family: var(--font-display);
+          font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 6px;
+        }
+
+        /* List card */
+        .neg-card {
+          background: var(--gfi-bg-card); border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-lg); padding: 15px 18px;
+          transition: var(--gfi-transition);
+        }
+        .neg-card:hover { border-color: var(--gfi-border-bright); box-shadow: var(--gfi-shadow-sm); }
+
+        /* Kanban */
+        .neg-kanban-wrap { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 16px; }
+        .neg-kanban-col { flex-shrink: 0; width: 210px; display: flex; flex-direction: column; gap: 8px; }
+        .neg-kanban-header {
+          padding: 7px 12px; border-radius: var(--gfi-radius-md) var(--gfi-radius-md) 0 0;
+          font-family: var(--font-display); font-size: 9px; font-weight: 700;
+          letter-spacing: 0.12em; text-transform: uppercase;
+          display: flex; justify-content: space-between; align-items: center;
+        }
+        .neg-kanban-body { display: flex; flex-direction: column; gap: 6px; min-height: 50px; }
+        .neg-kanban-card {
+          background: var(--gfi-bg-elevated); border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-md); padding: 11px 12px;
+          cursor: pointer; transition: var(--gfi-transition);
+        }
+        .neg-kanban-card:hover { border-color: var(--gfi-border-bright); box-shadow: var(--gfi-shadow-sm); }
+
+        /* Form input */
+        .neg-input {
+          width: 100%; padding: 9px 12px;
+          background: var(--gfi-bg-input); border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary);
+          font-size: 13px; font-family: var(--font-body); outline: none;
+          box-sizing: border-box; transition: var(--gfi-transition);
+        }
+        .neg-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.10); }
+        .neg-input::placeholder { color: var(--gfi-text-muted); }
+        .neg-label {
+          display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.16em;
+          text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px;
+          font-family: var(--font-display);
+        }
+        .neg-field { margin-bottom: 13px; }
+
+        /* Vista toggle */
+        .neg-vista-btn {
+          padding: 7px 14px;
+          border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-md);
+          font-family: var(--font-display); font-size: 10px; font-weight: 700;
+          letter-spacing: 0.08em; cursor: pointer; transition: var(--gfi-transition);
+        }
+        .neg-vista-btn.on {
+          background: var(--gfi-red-soft); border-color: var(--gfi-red-border); color: var(--gfi-red);
+        }
+        .neg-vista-btn:not(.on) {
+          background: transparent; color: var(--gfi-text-muted);
+        }
+        .neg-vista-btn:not(.on):hover { color: var(--gfi-text-secondary); border-color: var(--gfi-border-bright); }
+
+        /* Toast */
+        .neg-toast {
+          position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+          background: var(--gfi-bg-elevated); border: 1px solid var(--gfi-border-bright);
+          border-radius: var(--gfi-radius-md); padding: 11px 22px;
+          color: var(--gfi-text-primary); font-family: var(--font-body); font-size: 13px;
+          z-index: 9999; box-shadow: var(--gfi-shadow-md);
+        }
+
+        /* Empty */
+        .neg-empty {
+          text-align: center; padding: "40px 20px";
+          color: var(--gfi-text-muted); font-family: var(--font-display);
+          border: 1px dashed var(--gfi-border-subtle);
+          border-radius: var(--gfi-radius-lg); padding: 44px 20px;
+        }
+
+        @media(max-width:600px){
+          .neg-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
-      <div className="n-wrap">
+      <div className="neg-wrap">
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>
-              Negocios <span style={{ color: "#cc0000" }}>CRM</span>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, color: "var(--gfi-text-primary)", letterSpacing: "-0.01em" }}>
+              Negocios <span style={{ color: "var(--gfi-red)" }}>CRM</span>
             </div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", marginTop: 2 }}>
               Pipeline de operaciones inmobiliarias
             </div>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button className="n-btn"
-              style={{ background: vista === "lista" ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)", color: vista === "lista" ? "#cc0000" : "rgba(255,255,255,0.5)", border: `1px solid ${vista === "lista" ? "rgba(200,0,0,0.4)" : "rgba(255,255,255,0.1)"}` }}
-              onClick={() => setVista("lista")}>☰ Lista</button>
-            <button className="n-btn"
-              style={{ background: vista === "kanban" ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)", color: vista === "kanban" ? "#cc0000" : "rgba(255,255,255,0.5)", border: `1px solid ${vista === "kanban" ? "rgba(200,0,0,0.4)" : "rgba(255,255,255,0.1)"}` }}
-              onClick={() => setVista("kanban")}>⬛ Kanban</button>
-            <button className="n-btn" style={{ background: "#cc0000", color: "#fff" }} onClick={abrirNuevo}>
-              + Nuevo negocio
-            </button>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <button className={`neg-vista-btn${vista === "lista" ? " on" : ""}`} onClick={() => setVista("lista")}>☰ Lista</button>
+            <button className={`neg-vista-btn${vista === "kanban" ? " on" : ""}`} onClick={() => setVista("kanban")}>⬛ Kanban</button>
+            <button className="gfi-btn gfi-btn--primary" onClick={abrirNuevo}>+ Nuevo negocio</button>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="n-stats" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
+        <div className="neg-stats">
           {[
-            { n: stats.total,    l: "Total", c: "#fff" },
-            { n: stats.activos,  l: "Activos", c: "#3b82f6" },
-            { n: stats.cerrados, l: "Cerrados", c: "#22c55e" },
-            { n: `USD ${stats.valor.toLocaleString("es-AR")}`, l: "Valor pipeline", c: "#f59e0b" },
+            { n: stats.total,    l: "Total",         c: "var(--gfi-text-primary)", size: 26 },
+            { n: stats.activos,  l: "Activos",       c: "#60a5fa",                 size: 26 },
+            { n: stats.cerrados, l: "Cerrados",      c: "var(--gfi-green-text)",   size: 26 },
+            { n: `USD ${stats.valor.toLocaleString("es-AR")}`, l: "Valor pipeline", c: "var(--gfi-green-text)", size: 14 },
           ].map(s => (
-            <div key={s.l} className="n-stat">
-              <div className="n-stat-n" style={{ color: s.c, fontSize: typeof s.n === "string" ? 14 : 22 }}>{s.n}</div>
-              <div className="n-stat-l">{s.l}</div>
+            <div key={s.l} className="neg-stat">
+              <div className="neg-stat-n gfi-mono" style={{ color: s.c, fontSize: s.size }}>{s.n}</div>
+              <div className="neg-stat-l">{s.l}</div>
             </div>
           ))}
         </div>
 
         {/* Filtros */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <input className="n-input" style={{ flex: 1, minWidth: 160 }} placeholder="Buscar negocio, dirección..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
-          <select className="n-select" style={{ width: 160 }} value={filtroEtapa} onChange={e => setFiltroEtapa(e.target.value)}>
+        <div className="gfi-filter-bar">
+          <input
+            className="neg-input"
+            style={{ flex: 1, minWidth: 160 }}
+            placeholder="Buscar negocio, dirección..."
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+          />
+          <select className="neg-input" style={{ width: 160 }} value={filtroEtapa} onChange={e => setFiltroEtapa(e.target.value)}>
             <option value="">Todas las etapas</option>
             {ETAPAS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
           </select>
-          <select className="n-select" style={{ width: 140 }} value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)}>
+          <select className="neg-input" style={{ width: 140 }} value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)}>
             <option value="">Todos los tipos</option>
             {TIPOS_OP.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
           <button
-            className="n-btn"
-            style={{ background: verArchivados ? "rgba(107,114,128,0.25)" : "rgba(255,255,255,0.06)", color: verArchivados ? "#9ca3af" : "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}
+            className={`gfi-filter-chip${verArchivados ? " active" : ""}`}
             onClick={() => setVerArchivados(v => !v)}
           >
             {verArchivados ? "Ver activos" : "Archivados"}
@@ -314,54 +385,61 @@ export default function CrmNegociosPage() {
 
         {/* Vista Kanban */}
         {vista === "kanban" && !loading && (
-          <div className="n-kanban-wrap" style={{ maxWidth: "calc(100vw - 240px)" }}>
+          <div className="neg-kanban-wrap" style={{ maxWidth: "calc(100vw - 240px)" }}>
             {ETAPAS.filter(e => !["perdido"].includes(e.value) || negociosFiltrados.some(n => n.etapa === e.value)).map(etapa => {
               const columna = negociosFiltrados.filter(n => n.etapa === etapa.value && !n.archivado);
               const valorCol = columna.reduce((s, n) => s + (n.valor_operacion ?? 0), 0);
               const idxEtapa = ETAPAS.findIndex(e => e.value === etapa.value);
               const siguiente = ETAPAS[idxEtapa + 1];
               return (
-                <div key={etapa.value} className="n-kanban-col">
-                  <div className="n-kanban-header" style={{ background: `${etapa.color}18`, color: etapa.color, border: `1px solid ${etapa.color}35` }}>
+                <div key={etapa.value} className="neg-kanban-col">
+                  <div className="neg-kanban-header" style={{ background: `${etapa.color}15`, color: etapa.color, border: `1px solid ${etapa.color}30` }}>
                     <span>{etapa.label}</span>
-                    <span style={{ background: `${etapa.color}30`, borderRadius: 10, padding: "1px 7px", fontSize: 10 }}>{columna.length}</span>
+                    <span style={{ background: `${etapa.color}25`, borderRadius: 10, padding: "1px 7px", fontSize: 9 }}>{columna.length}</span>
                   </div>
                   {valorCol > 0 && (
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textAlign: "center", padding: "2px 0" }}>
+                    <div style={{ fontSize: 9, color: "var(--gfi-text-muted)", fontFamily: "var(--font-mono)", fontWeight: 600, textAlign: "center", padding: "2px 0" }}>
                       USD {Math.round(valorCol).toLocaleString("es-AR")}
                     </div>
                   )}
-                  <div className="n-kanban-body">
+                  <div className="neg-kanban-body">
                     {columna.length === 0 && (
-                      <div style={{ border: "1px dashed rgba(255,255,255,0.06)", borderRadius: 6, padding: "14px 10px", textAlign: "center", color: "rgba(255,255,255,0.15)", fontSize: 11 }}>vacío</div>
+                      <div style={{ border: "1px dashed var(--gfi-border-subtle)", borderRadius: "var(--gfi-radius-md)", padding: "14px 10px", textAlign: "center", color: "var(--gfi-text-dim)", fontSize: 11 }}>
+                        vacío
+                      </div>
                     )}
                     {columna.map(n => (
-                      <div key={n.id} className="n-kanban-card" onClick={() => abrirEditar(n)}>
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 6, lineHeight: 1.3 }}>{n.titulo}</div>
+                      <div key={n.id} className="neg-kanban-card" onClick={() => abrirEditar(n)}>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, color: "var(--gfi-text-primary)", marginBottom: 6, lineHeight: 1.3 }}>{n.titulo}</div>
                         {n.valor_operacion != null && (
-                          <div style={{ fontSize: 11, color: "#f59e0b", fontWeight: 600, marginBottom: 4 }}>{fmtMoneda(n.valor_operacion, n.moneda)}</div>
+                          <div className="gfi-price-usd" style={{ fontSize: 11, marginBottom: 4 }}>
+                            {fmtMoneda(n.valor_operacion, n.moneda)}
+                          </div>
                         )}
                         {contactoNombre(n.contacto_id) && (
-                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>👤 {contactoNombre(n.contacto_id)}</div>
+                          <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginBottom: 4 }}>👤 {contactoNombre(n.contacto_id)}</div>
                         )}
                         {n.direccion && (
-                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>📍 {n.direccion}</div>
+                          <div style={{ fontSize: 10, color: "var(--gfi-text-muted)", marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>📍 {n.direccion}</div>
                         )}
-                        <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+                        <div style={{ display: "flex", gap: 4, marginTop: 5 }}>
                           {siguiente && !["cerrado","perdido"].includes(n.etapa) && (
-                            <button className="n-btn"
-                              style={{ flex: 1, background: `${siguiente.color}15`, color: siguiente.color, border: `1px solid ${siguiente.color}30`, padding: "4px 0", fontSize: 9 }}
+                            <button
+                              className="gfi-btn gfi-btn--secondary"
+                              style={{ flex: 1, padding: "3px 0", fontSize: 9 }}
                               onClick={e => { e.stopPropagation(); avanzarEtapa(n); }}>
                               → {siguiente.label}
                             </button>
                           )}
                           <Link href={`/crm/negocios/${n.id}`}
                             onClick={e => e.stopPropagation()}
-                            style={{ background: "rgba(204,0,0,0.08)", color: "rgba(204,0,0,0.8)", border: "1px solid rgba(204,0,0,0.2)", padding: "4px 8px", fontSize: 9, borderRadius: 5, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textDecoration: "none" }}>
+                            className="gfi-btn gfi-btn--ghost"
+                            style={{ padding: "3px 8px", fontSize: 9 }}>
                             ↗
                           </Link>
-                          <button className="n-btn"
-                            style={{ background: "rgba(239,68,68,0.08)", color: "rgba(239,68,68,0.7)", border: "1px solid rgba(239,68,68,0.2)", padding: "4px 8px", fontSize: 9 }}
+                          <button
+                            className="gfi-btn gfi-btn--secondary"
+                            style={{ padding: "3px 8px", fontSize: 9, color: "var(--gfi-red)", borderColor: "var(--gfi-red-border)" }}
                             onClick={e => { e.stopPropagation(); eliminar(n.id); }}>×</button>
                         </div>
                       </div>
@@ -375,11 +453,15 @@ export default function CrmNegociosPage() {
 
         {/* Vista Lista */}
         {vista === "lista" && (loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 40, fontFamily: "Inter,sans-serif" }}>Cargando negocios...</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {[1,2,3].map(i => (
+              <div key={i} className="gfi-skeleton" style={{ height: 80, borderRadius: "var(--gfi-radius-lg)" }} />
+            ))}
+          </div>
         ) : negociosFiltrados.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px 20px", color: "rgba(255,255,255,0.25)", fontFamily: "Montserrat,sans-serif" }}>
-            <div style={{ fontSize: 32, marginBottom: 10 }}>🤝</div>
-            <div style={{ fontWeight: 700 }}>No hay negocios{busqueda ? " que coincidan" : ""}</div>
+          <div className="neg-empty">
+            <div style={{ fontSize: 28, marginBottom: 10 }}>🤝</div>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>No hay negocios{busqueda ? " que coincidan" : ""}</div>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -388,42 +470,61 @@ export default function CrmNegociosPage() {
               const idxEtapa = ETAPAS.findIndex(e => e.value === n.etapa);
               const siguiente = ETAPAS[idxEtapa + 1];
               return (
-                <div key={n.id} className="n-card">
+                <div key={n.id} className="neg-card">
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                    {/* Etapa dot */}
-                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: etapa.color, flexShrink: 0, marginTop: 5 }} />
+                    {/* Etapa indicator */}
+                    <div style={{
+                      width: 3, alignSelf: "stretch", flexShrink: 0, borderRadius: 4,
+                      background: etapa.color,
+                      minHeight: 40,
+                    }} />
                     {/* Contenido */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "#fff" }}>{n.titulo}</span>
-                        <span className="n-badge" style={{ background: `${etapa.color}20`, color: etapa.color, border: `1px solid ${etapa.color}40` }}>{etapa.label}</span>
-                        <span className="n-badge" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}>{tipoLabel(n.tipo_operacion)}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, color: "var(--gfi-text-primary)" }}>{n.titulo}</span>
+                        <span className={`gfi-badge ${etapa.badgeClass}`}>{etapa.label}</span>
+                        <span className="gfi-badge gfi-badge--gray">{tipoLabel(n.tipo_operacion)}</span>
                       </div>
-                      <div className="n-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "4px 16px", marginTop: 8 }}>
-                        {n.direccion && <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>📍 {n.direccion}</span>}
-                        {n.valor_operacion != null && <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>💰 {fmtMoneda(n.valor_operacion, n.moneda)}</span>}
-                        {contactoNombre(n.contacto_id) && <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>👤 {contactoNombre(n.contacto_id)}</span>}
-                        {n.honorarios_pct != null && <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>📊 {n.honorarios_pct}% honorarios</span>}
-                        {fmtFecha(n.fecha_visita) && <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>🏠 Visita: {fmtFecha(n.fecha_visita)}</span>}
-                        {fmtFecha(n.fecha_reserva) && <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>📋 Reserva: {fmtFecha(n.fecha_reserva)}</span>}
+                      <div className="neg-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "3px 14px" }}>
+                        {n.direccion && (
+                          <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>📍 {n.direccion}</span>
+                        )}
+                        {n.valor_operacion != null && (
+                          <span className="gfi-price-usd" style={{ fontSize: 12 }}>
+                            {fmtMoneda(n.valor_operacion, n.moneda)}
+                          </span>
+                        )}
+                        {contactoNombre(n.contacto_id) && (
+                          <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>👤 {contactoNombre(n.contacto_id)}</span>
+                        )}
+                        {n.honorarios_pct != null && (
+                          <span style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "var(--font-mono)" }}>{n.honorarios_pct}% honorarios</span>
+                        )}
+                        {fmtFecha(n.fecha_visita) && (
+                          <span style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "var(--font-mono)" }}>Visita: {fmtFecha(n.fecha_visita)}</span>
+                        )}
+                        {fmtFecha(n.fecha_reserva) && (
+                          <span style={{ fontSize: 12, color: "var(--gfi-text-muted)", fontFamily: "var(--font-mono)" }}>Reserva: {fmtFecha(n.fecha_reserva)}</span>
+                        )}
                       </div>
-                      {n.descripcion && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 6, fontFamily: "Inter,sans-serif" }}>{n.descripcion}</div>}
+                      {n.descripcion && (
+                        <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 7 }}>{n.descripcion}</div>
+                      )}
                     </div>
                     {/* Acciones */}
-                    <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    <div style={{ display: "flex", gap: 5, flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
                       {siguiente && !["cerrado","perdido"].includes(n.etapa) && (
-                        <button className="n-btn" style={{ background: `${siguiente.color}15`, color: siguiente.color, border: `1px solid ${siguiente.color}35`, padding: "5px 10px", fontSize: 10 }}
+                        <button className="gfi-btn gfi-btn--secondary" style={{ color: etapa.color, borderColor: `${etapa.color}40`, padding: "5px 10px", fontSize: 9 }}
                           onClick={() => avanzarEtapa(n)}>
                           → {siguiente.label}
                         </button>
                       )}
-                      <Link href={`/crm/negocios/${n.id}`} style={{ padding: "5px 10px", borderRadius: 5, background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.25)", color: "#cc0000", fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textDecoration: "none" }}>Ficha ↗</Link>
-                      <button className="n-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.1)", padding: "5px 10px", fontSize: 10 }}
-                        onClick={() => abrirEditar(n)}>Editar</button>
-                      <button className="n-btn" style={{ background: "rgba(107,114,128,0.12)", color: "#9ca3af", border: "1px solid rgba(107,114,128,0.25)", padding: "5px 10px", fontSize: 10 }}
-                        onClick={() => archivar(n)}>{n.archivado ? "Desarchivar" : "Archivar"}</button>
-                      <button className="n-btn" style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.25)", padding: "5px 10px", fontSize: 10 }}
-                        onClick={() => eliminar(n.id)}>×</button>
+                      <Link href={`/crm/negocios/${n.id}`} className="gfi-btn gfi-btn--ghost" style={{ padding: "5px 10px", fontSize: 9 }}>Ficha ↗</Link>
+                      <button className="gfi-btn gfi-btn--secondary" style={{ padding: "5px 10px", fontSize: 9 }} onClick={() => abrirEditar(n)}>Editar</button>
+                      <button className="gfi-btn gfi-btn--secondary" style={{ padding: "5px 10px", fontSize: 9, color: "var(--gfi-text-muted)" }} onClick={() => archivar(n)}>
+                        {n.archivado ? "Desarchivar" : "Archivar"}
+                      </button>
+                      <button className="gfi-btn gfi-btn--secondary" style={{ padding: "5px 10px", fontSize: 9, color: "var(--gfi-red)", borderColor: "var(--gfi-red-border)" }} onClick={() => eliminar(n.id)}>×</button>
                     </div>
                   </div>
                 </div>
@@ -435,95 +536,96 @@ export default function CrmNegociosPage() {
 
       {/* Modal */}
       {modal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: 24, width: "100%", maxWidth: 580, maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 20 }}>
-              {editId ? "Editar negocio" : "Nuevo negocio"}
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.80)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, backdropFilter: "blur(4px)" }}>
+          <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: "var(--gfi-radius-xl)", padding: 24, width: "100%", maxWidth: 580, maxHeight: "90vh", overflowY: "auto", position: "relative", boxShadow: "var(--gfi-shadow-lg)" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "var(--gfi-red-gradient)", borderRadius: "var(--gfi-radius-xl) var(--gfi-radius-xl) 0 0" }} />
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "var(--gfi-text-primary)", marginBottom: 20 }}>
+              {editId ? "Editar negocio" : <>Nuevo <span style={{ color: "var(--gfi-red)" }}>negocio</span></>}
             </div>
 
-            <div className="n-field">
-              <label className="n-label">Título *</label>
-              <input className="n-input" placeholder="Ej: Depto 3A Palermo - Venta" value={form.titulo} onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))} />
+            <div className="neg-field">
+              <label className="neg-label">Título *</label>
+              <input className="neg-input" placeholder="Ej: Depto 3A Palermo - Venta" value={form.titulo} onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))} />
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div className="n-field">
-                <label className="n-label">Tipo operación</label>
-                <select className="n-select" value={form.tipo_operacion} onChange={e => setForm(f => ({ ...f, tipo_operacion: e.target.value }))}>
+              <div className="neg-field">
+                <label className="neg-label">Tipo operación</label>
+                <select className="neg-input" value={form.tipo_operacion} onChange={e => setForm(f => ({ ...f, tipo_operacion: e.target.value }))}>
                   {TIPOS_OP.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
               </div>
-              <div className="n-field">
-                <label className="n-label">Etapa</label>
-                <select className="n-select" value={form.etapa} onChange={e => setForm(f => ({ ...f, etapa: e.target.value }))}>
+              <div className="neg-field">
+                <label className="neg-label">Etapa</label>
+                <select className="neg-input" value={form.etapa} onChange={e => setForm(f => ({ ...f, etapa: e.target.value }))}>
                   {ETAPAS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
                 </select>
               </div>
             </div>
 
-            <div className="n-field">
-              <label className="n-label">Dirección</label>
-              <input className="n-input" placeholder="Ej: Av. Corrientes 1234, CABA" value={form.direccion} onChange={e => setForm(f => ({ ...f, direccion: e.target.value }))} />
+            <div className="neg-field">
+              <label className="neg-label">Dirección</label>
+              <input className="neg-input" placeholder="Ej: Av. Corrientes 1234, CABA" value={form.direccion} onChange={e => setForm(f => ({ ...f, direccion: e.target.value }))} />
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 80px 1fr", gap: 12 }}>
-              <div className="n-field">
-                <label className="n-label">Valor operación</label>
-                <input className="n-input" type="number" placeholder="0" value={form.valor_operacion} onChange={e => setForm(f => ({ ...f, valor_operacion: e.target.value }))} />
+              <div className="neg-field">
+                <label className="neg-label">Valor operación</label>
+                <input className="neg-input" type="number" placeholder="0" value={form.valor_operacion} onChange={e => setForm(f => ({ ...f, valor_operacion: e.target.value }))} />
               </div>
-              <div className="n-field">
-                <label className="n-label">Moneda</label>
-                <select className="n-select" value={form.moneda} onChange={e => setForm(f => ({ ...f, moneda: e.target.value }))}>
+              <div className="neg-field">
+                <label className="neg-label">Moneda</label>
+                <select className="neg-input" value={form.moneda} onChange={e => setForm(f => ({ ...f, moneda: e.target.value }))}>
                   <option value="USD">USD</option>
                   <option value="ARS">ARS</option>
                 </select>
               </div>
-              <div className="n-field">
-                <label className="n-label">Honorarios %</label>
-                <input className="n-input" type="number" step="0.5" placeholder="3" value={form.honorarios_pct} onChange={e => setForm(f => ({ ...f, honorarios_pct: e.target.value }))} />
+              <div className="neg-field">
+                <label className="neg-label">Honorarios %</label>
+                <input className="neg-input" type="number" step="0.5" placeholder="3" value={form.honorarios_pct} onChange={e => setForm(f => ({ ...f, honorarios_pct: e.target.value }))} />
               </div>
             </div>
 
-            <div className="n-field">
-              <label className="n-label">Contacto vinculado</label>
-              <select className="n-select" value={form.contacto_id} onChange={e => setForm(f => ({ ...f, contacto_id: e.target.value }))}>
+            <div className="neg-field">
+              <label className="neg-label">Contacto vinculado</label>
+              <select className="neg-input" value={form.contacto_id} onChange={e => setForm(f => ({ ...f, contacto_id: e.target.value }))}>
                 <option value="">— Sin contacto —</option>
                 {contactos.map(c => <option key={c.id} value={c.id}>{c.nombre} {c.apellido}</option>)}
               </select>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div className="n-field">
-                <label className="n-label">Primer contacto</label>
-                <input className="n-input" type="date" value={form.fecha_primer_contacto} onChange={e => setForm(f => ({ ...f, fecha_primer_contacto: e.target.value }))} />
+              <div className="neg-field">
+                <label className="neg-label">Primer contacto</label>
+                <input className="neg-input" type="date" style={{ colorScheme: "dark" }} value={form.fecha_primer_contacto} onChange={e => setForm(f => ({ ...f, fecha_primer_contacto: e.target.value }))} />
               </div>
-              <div className="n-field">
-                <label className="n-label">Fecha visita</label>
-                <input className="n-input" type="date" value={form.fecha_visita} onChange={e => setForm(f => ({ ...f, fecha_visita: e.target.value }))} />
+              <div className="neg-field">
+                <label className="neg-label">Fecha visita</label>
+                <input className="neg-input" type="date" style={{ colorScheme: "dark" }} value={form.fecha_visita} onChange={e => setForm(f => ({ ...f, fecha_visita: e.target.value }))} />
               </div>
-              <div className="n-field">
-                <label className="n-label">Fecha reserva</label>
-                <input className="n-input" type="date" value={form.fecha_reserva} onChange={e => setForm(f => ({ ...f, fecha_reserva: e.target.value }))} />
+              <div className="neg-field">
+                <label className="neg-label">Fecha reserva</label>
+                <input className="neg-input" type="date" style={{ colorScheme: "dark" }} value={form.fecha_reserva} onChange={e => setForm(f => ({ ...f, fecha_reserva: e.target.value }))} />
               </div>
-              <div className="n-field">
-                <label className="n-label">Fecha escritura</label>
-                <input className="n-input" type="date" value={form.fecha_escritura} onChange={e => setForm(f => ({ ...f, fecha_escritura: e.target.value }))} />
+              <div className="neg-field">
+                <label className="neg-label">Fecha escritura</label>
+                <input className="neg-input" type="date" style={{ colorScheme: "dark" }} value={form.fecha_escritura} onChange={e => setForm(f => ({ ...f, fecha_escritura: e.target.value }))} />
               </div>
             </div>
 
-            <div className="n-field">
-              <label className="n-label">Descripción</label>
-              <textarea className="n-input" rows={2} style={{ resize: "vertical" }} placeholder="Detalles del inmueble u operación..." value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} />
+            <div className="neg-field">
+              <label className="neg-label">Descripción</label>
+              <textarea className="neg-input" rows={2} style={{ resize: "vertical" }} placeholder="Detalles del inmueble u operación..." value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} />
             </div>
 
-            <div className="n-field">
-              <label className="n-label">Notas internas</label>
-              <textarea className="n-input" rows={2} style={{ resize: "vertical" }} placeholder="Notas privadas..." value={form.notas} onChange={e => setForm(f => ({ ...f, notas: e.target.value }))} />
+            <div className="neg-field">
+              <label className="neg-label">Notas internas</label>
+              <textarea className="neg-input" rows={2} style={{ resize: "vertical" }} placeholder="Notas privadas..." value={form.notas} onChange={e => setForm(f => ({ ...f, notas: e.target.value }))} />
             </div>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
-              <button className="n-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={() => setModal(false)}>Cancelar</button>
-              <button className="n-btn" style={{ background: "#cc0000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardar} disabled={guardando}>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4, paddingTop: 14, borderTop: "1px solid var(--gfi-border-subtle)" }}>
+              <button className="gfi-btn gfi-btn--secondary" onClick={() => setModal(false)}>Cancelar</button>
+              <button className="gfi-btn gfi-btn--primary" onClick={guardar} disabled={guardando}>
                 {guardando ? "Guardando..." : editId ? "Actualizar" : "Crear negocio"}
               </button>
             </div>
@@ -531,11 +633,7 @@ export default function CrmNegociosPage() {
         </div>
       )}
 
-      {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 20px", color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
-          {toast}
-        </div>
-      )}
+      {toast && <div className="neg-toast">{toast}</div>}
     </>
   );
 }

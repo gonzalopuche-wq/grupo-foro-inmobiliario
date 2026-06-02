@@ -22,21 +22,21 @@ interface Contacto {
   updated_at: string;
 }
 
-const TIPO_COLOR: Record<string, string> = {
-  cliente:    "#3b82f6",
-  propietario:"#22c55e",
-  colega:     "#8b5cf6",
-  proveedor:  "#f59e0b",
-  otro:       "#6b7280",
+const TIPO_BADGE: Record<string, string> = {
+  cliente:    "gfi-badge--blue",
+  propietario:"gfi-badge--green",
+  colega:     "gfi-badge--gray",
+  proveedor:  "gfi-badge--orange",
+  otro:       "gfi-badge--gray",
 };
 
-const ESTADO_COLOR: Record<string, string> = {
-  "lead:nuevo":          "#6b7280",
-  "lead:evolucionando":  "#10b981",
-  "lead:esperando":      "#3b82f6",
-  "lead:tomar_accion":   "#f97316",
-  "lead:congelado":      "#94a3b8",
-  "lead:cerrado_lead":   "#22c55e",
+const ESTADO_BADGE: Record<string, string> = {
+  "lead:nuevo":          "gfi-badge--gray",
+  "lead:evolucionando":  "gfi-badge--green",
+  "lead:esperando":      "gfi-badge--blue",
+  "lead:tomar_accion":   "gfi-badge--orange",
+  "lead:congelado":      "gfi-badge--gray",
+  "lead:cerrado_lead":   "gfi-badge--green",
 };
 
 const ESTADO_LABEL: Record<string, string> = {
@@ -58,11 +58,11 @@ function iniciales(nombre: string, apellido: string) {
   return ((nombre[0] ?? "") + (apellido[0] ?? "")).toUpperCase();
 }
 
-function avatarColor(str: string) {
-  const colors = ["#3b82f6","#22c55e","#8b5cf6","#f59e0b","#ec4899","#06b6d4","#f97316"];
+function avatarHue(str: string): number {
   let h = 0;
   for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
-  return colors[Math.abs(h) % colors.length];
+  const hues = [210, 145, 265, 25, 330, 185, 15];
+  return hues[Math.abs(h) % hues.length];
 }
 
 function formatFecha(iso: string) {
@@ -168,131 +168,274 @@ function ContactosContent() {
   return (
     <>
       <style>{`
-        .con-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
-        .con-titulo { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; color:#fff; }
-        .con-titulo span { color:#cc0000; }
-        .con-btn-nuevo { padding:10px 20px; background:#cc0000; border:none; border-radius:6px; color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; }
-        .con-btn-nuevo:hover { background:#e60000; }
-        .con-toolbar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
-        .con-search { flex:1; min-width:200px; padding:9px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; outline:none; font-family:'Inter',sans-serif; }
-        .con-search:focus { border-color:rgba(204,0,0,0.4); }
-        .con-search::placeholder { color:rgba(255,255,255,0.25); }
-        .con-filtro { padding:9px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:rgba(255,255,255,0.7); font-size:13px; outline:none; font-family:'Inter',sans-serif; }
-        .con-count { font-size:12px; color:rgba(255,255,255,0.3); align-self:center; }
+        /* ── Contactos GFI ── */
+        .con-header {
+          display: flex; align-items: center; justify-content: space-between;
+          flex-wrap: wrap; gap: 12px; margin-bottom: 22px;
+        }
+        .con-titulo {
+          font-family: var(--font-display);
+          font-size: 22px; font-weight: 800; color: var(--gfi-text-primary);
+          letter-spacing: -0.01em;
+        }
+        .con-titulo span { color: var(--gfi-red); }
+        .con-subtitulo {
+          font-size: 12px; color: var(--gfi-text-secondary);
+          margin-top: 2px; font-family: var(--font-body);
+        }
 
-        .con-lista { display:flex; flex-direction:column; gap:6px; }
-        .con-item { background:#111; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; display:flex; align-items:center; gap:12px; transition:border-color 0.15s; }
-        .con-item:hover { border-color:rgba(255,255,255,0.15); }
-        .con-avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Montserrat',sans-serif; font-size:13px; font-weight:800; color:#fff; flex-shrink:0; }
-        .con-info { flex:1; min-width:0; }
-        .con-nombre { font-size:14px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .con-meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:3px; }
-        .con-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; font-family:'Montserrat',sans-serif; }
-        .con-sub { font-size:11px; color:rgba(255,255,255,0.4); }
-        .con-acciones { display:flex; gap:6px; flex-shrink:0; }
-        .con-btn-sm { padding:6px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; border:1px solid; font-family:'Inter',sans-serif; transition:all 0.15s; }
-        .con-btn-ver { background:transparent; border-color:rgba(255,255,255,0.15); color:rgba(255,255,255,0.6); text-decoration:none; }
-        .con-btn-ver:hover { border-color:rgba(255,255,255,0.4); color:#fff; }
-        .con-btn-edit { background:transparent; border-color:rgba(59,130,246,0.3); color:#3b82f6; }
-        .con-btn-edit:hover { background:rgba(59,130,246,0.1); }
-        .con-btn-del { background:transparent; border-color:rgba(239,68,68,0.2); color:rgba(239,68,68,0.6); }
-        .con-btn-del:hover { background:rgba(239,68,68,0.1); color:#ef4444; border-color:rgba(239,68,68,0.5); }
+        /* Filter bar */
+        .con-filter-bar {
+          display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+          padding: 10px 14px;
+          background: var(--gfi-bg-card);
+          border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-lg);
+          margin-bottom: 16px;
+        }
+        .con-search {
+          flex: 1; min-width: 180px;
+          padding: 7px 12px;
+          background: var(--gfi-bg-input);
+          border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-md);
+          color: var(--gfi-text-primary);
+          font-size: 13px; outline: none;
+          font-family: var(--font-body);
+          transition: var(--gfi-transition);
+        }
+        .con-search:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.1); }
+        .con-search::placeholder { color: var(--gfi-text-muted); }
 
-        .con-empty { text-align:center; padding:48px 24px; color:rgba(255,255,255,0.2); font-size:13px; }
+        /* List */
+        .con-lista { display: flex; flex-direction: column; gap: 6px; }
+        .con-item {
+          background: var(--gfi-bg-card);
+          border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-lg);
+          padding: 13px 16px;
+          display: flex; align-items: center; gap: 13px;
+          transition: var(--gfi-transition);
+          animation: gfi-fade-in 0.2s ease both;
+        }
+        .con-item:hover {
+          border-color: var(--gfi-border-bright);
+          background: var(--gfi-bg-elevated);
+          box-shadow: var(--gfi-shadow-sm);
+        }
+        .con-avatar {
+          width: 42px; height: 42px; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-display); font-size: 13px; font-weight: 800;
+          flex-shrink: 0; position: relative;
+        }
+        .con-info { flex: 1; min-width: 0; }
+        .con-nombre {
+          font-family: var(--font-display);
+          font-size: 14px; font-weight: 700; color: var(--gfi-text-primary);
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .con-meta {
+          display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 5px;
+        }
+        .con-contact-data {
+          font-family: var(--font-mono); font-size: 11px;
+          color: var(--gfi-text-secondary);
+        }
+        .con-inmob {
+          font-size: 11px; color: var(--gfi-text-muted);
+          font-family: var(--font-body);
+        }
+        .con-acciones { display: flex; gap: 5px; flex-shrink: 0; }
+        .con-btn-sm {
+          padding: 5px 10px; border-radius: var(--gfi-radius-sm);
+          font-size: 10px; font-weight: 700; cursor: pointer;
+          border: 1px solid; font-family: var(--font-display);
+          letter-spacing: 0.06em; text-transform: uppercase;
+          transition: var(--gfi-transition); text-decoration: none;
+          display: inline-flex; align-items: center;
+        }
+        .con-btn-ver {
+          background: transparent;
+          border-color: var(--gfi-border);
+          color: var(--gfi-text-secondary);
+        }
+        .con-btn-ver:hover { border-color: var(--gfi-red-border); color: var(--gfi-red); background: var(--gfi-red-soft); }
+        .con-btn-edit {
+          background: transparent;
+          border-color: var(--gfi-border);
+          color: var(--gfi-text-muted);
+        }
+        .con-btn-edit:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-secondary); background: var(--gfi-bg-hover); }
+        .con-btn-del {
+          background: transparent;
+          border-color: rgba(204,0,0,0.2);
+          color: rgba(204,0,0,0.5);
+        }
+        .con-btn-del:hover { background: var(--gfi-red-soft); border-color: var(--gfi-red-border); color: var(--gfi-red); }
+        .con-wa {
+          color: #25d366; text-decoration: none; font-size: 14px;
+          display: inline-flex; align-items: center;
+        }
+        .con-empty {
+          text-align: center; padding: 52px 24px;
+          color: var(--gfi-text-muted); font-size: 13px;
+          font-family: var(--font-body);
+          border: 1px dashed var(--gfi-border-subtle);
+          border-radius: var(--gfi-radius-lg);
+        }
 
         /* Modal */
-        .con-modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200; display:flex; align-items:flex-end; justify-content:center; padding:0; }
-        @media(min-width:600px){ .con-modal-bg { align-items:center; padding:24px; } }
-        .con-modal { background:#111; border:1px solid rgba(255,255,255,0.1); border-radius:16px 16px 0 0; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; padding:24px; position:relative; }
-        @media(min-width:600px){ .con-modal { border-radius:12px; } }
-        .con-modal::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#cc0000,transparent); border-radius:12px 12px 0 0; }
-        .con-modal h2 { font-family:'Montserrat',sans-serif; font-size:16px; font-weight:800; margin-bottom:18px; }
-        .con-modal h2 span { color:#cc0000; }
-        .con-field { margin-bottom:12px; }
-        .con-label { display:block; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:5px; font-family:'Montserrat',sans-serif; }
-        .con-input { width:100%; padding:10px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; outline:none; font-family:'Inter',sans-serif; box-sizing:border-box; }
-        .con-input:focus { border-color:rgba(204,0,0,0.4); }
-        .con-row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-        .con-modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:18px; }
-        .con-btn-cancelar { padding:10px 18px; background:transparent; border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:rgba(255,255,255,0.5); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; cursor:pointer; }
-        .con-btn-guardar { padding:10px 22px; background:#cc0000; border:none; border-radius:6px; color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; cursor:pointer; }
-        .con-btn-guardar:disabled { opacity:0.6; cursor:not-allowed; }
-        .con-wa { color:#25d366; text-decoration:none; font-size:16px; }
+        .con-modal-bg {
+          position: fixed; inset: 0; background: rgba(0,0,0,0.78);
+          z-index: 200; display: flex; align-items: flex-end;
+          justify-content: center; padding: 0;
+          backdrop-filter: blur(4px);
+        }
+        @media(min-width:600px){ .con-modal-bg { align-items: center; padding: 24px; } }
+        .con-modal {
+          background: var(--gfi-bg-card);
+          border: 1px solid var(--gfi-border);
+          border-radius: 16px 16px 0 0;
+          width: 100%; max-width: 540px; max-height: 90vh;
+          overflow-y: auto; padding: 26px; position: relative;
+          box-shadow: var(--gfi-shadow-lg);
+        }
+        @media(min-width:600px){ .con-modal { border-radius: var(--gfi-radius-xl); } }
+        .con-modal::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+          background: var(--gfi-red-gradient);
+          border-radius: 16px 16px 0 0;
+        }
+        .con-modal h2 {
+          font-family: var(--font-display); font-size: 16px; font-weight: 800;
+          margin-bottom: 20px; color: var(--gfi-text-primary);
+        }
+        .con-modal h2 span { color: var(--gfi-red); }
+        .con-field { margin-bottom: 13px; }
+        .con-label {
+          display: block; font-size: 9px; font-weight: 700;
+          letter-spacing: 0.18em; text-transform: uppercase;
+          color: var(--gfi-text-muted); margin-bottom: 5px;
+          font-family: var(--font-display);
+        }
+        .con-input {
+          width: 100%; padding: 9px 12px;
+          background: var(--gfi-bg-input);
+          border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-md);
+          color: var(--gfi-text-primary); font-size: 13px; outline: none;
+          font-family: var(--font-body); box-sizing: border-box;
+          transition: var(--gfi-transition);
+        }
+        .con-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.10); }
+        .con-input::placeholder { color: var(--gfi-text-muted); }
+        .con-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .con-modal-footer {
+          display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;
+          padding-top: 16px; border-top: 1px solid var(--gfi-border-subtle);
+        }
 
         @media(max-width:500px){
           .con-acciones .con-btn-ver,
-          .con-acciones .con-btn-edit { display:none; }
-          .con-row2 { grid-template-columns:1fr; }
+          .con-acciones .con-btn-edit { display: none; }
+          .con-row2 { grid-template-columns: 1fr; }
         }
       `}</style>
 
       <div className="con-header">
-        <div className="con-titulo">Contactos <span>({filtrados.length})</span></div>
-        <button className="con-btn-nuevo" onClick={() => { setForm(FORM_VACIO); setEditandoId(null); setMostrarForm(true); }}>
+        <div>
+          <div className="con-titulo">
+            Contactos <span>CRM</span>
+          </div>
+          <div className="con-subtitulo">
+            {filtrados.length} contacto{filtrados.length !== 1 ? "s" : ""} encontrado{filtrados.length !== 1 ? "s" : ""}
+          </div>
+        </div>
+        <button className="gfi-btn gfi-btn--primary" onClick={() => { setForm(FORM_VACIO); setEditandoId(null); setMostrarForm(true); }}>
           + Nuevo contacto
         </button>
       </div>
 
-      <div className="con-toolbar">
+      {/* Filter bar */}
+      <div className="con-filter-bar">
         <input
           className="con-search"
-          placeholder="🔍  Buscar por nombre, teléfono, email..."
+          placeholder="Buscar por nombre, teléfono, email..."
           value={busqueda}
           onChange={e => setBusqueda(e.target.value)}
         />
-        <select className="con-filtro" value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)}>
-          <option value="">Todos los tipos</option>
-          <option value="cliente">Cliente</option>
-          <option value="propietario">Propietario</option>
-          <option value="colega">Colega</option>
-          <option value="proveedor">Proveedor</option>
-          <option value="otro">Otro</option>
-        </select>
+        {["", "cliente", "propietario", "colega", "proveedor", "otro"].map(t => (
+          <button
+            key={t}
+            className={`gfi-filter-chip${filtroTipo === t ? " active" : ""}`}
+            onClick={() => setFiltroTipo(t)}
+          >
+            {t === "" ? "Todos" : t.charAt(0).toUpperCase() + t.slice(1)}
+          </button>
+        ))}
       </div>
 
       {loading ? (
-        <div className="con-empty">Cargando contactos...</div>
+        <div className="con-empty">
+          <div className="gfi-skeleton" style={{ width: "100%", height: 60, borderRadius: "var(--gfi-radius-lg)", marginBottom: 6 }} />
+          <div className="gfi-skeleton" style={{ width: "100%", height: 60, borderRadius: "var(--gfi-radius-lg)", marginBottom: 6 }} />
+          <div className="gfi-skeleton" style={{ width: "100%", height: 60, borderRadius: "var(--gfi-radius-lg)" }} />
+        </div>
       ) : filtrados.length === 0 ? (
         <div className="con-empty">
-          {busqueda || filtroTipo ? "No hay resultados para esa búsqueda" : "Todavía no hay contactos — creá el primero"}
+          {busqueda || filtroTipo ? "Sin resultados para esa búsqueda" : "Todavía no hay contactos — creá el primero"}
         </div>
       ) : (
         <div className="con-lista">
           {filtrados.map(c => {
-            const color = avatarColor(c.id);
+            const hue = avatarHue(c.id);
             const estadoLbl = ESTADO_LABEL[c.estado ?? ""] ?? c.estado;
-            const estadoColor = ESTADO_COLOR[c.estado ?? ""] ?? "#6b7280";
-            const tipoColor = TIPO_COLOR[c.tipo ?? ""] ?? "#6b7280";
+            const estadoBadge = ESTADO_BADGE[c.estado ?? ""] ?? "gfi-badge--gray";
+            const tipoBadge = TIPO_BADGE[c.tipo ?? ""] ?? "gfi-badge--gray";
             return (
               <div key={c.id} className="con-item">
-                <div className="con-avatar" style={{background: color + "33", color}}>
+                <div
+                  className="con-avatar"
+                  style={{
+                    background: `hsla(${hue},60%,45%,0.15)`,
+                    border: `1px solid hsla(${hue},60%,45%,0.30)`,
+                    color: `hsl(${hue},60%,65%)`,
+                  }}
+                >
                   {iniciales(c.nombre, c.apellido)}
                 </div>
                 <div className="con-info">
                   <div className="con-nombre">{c.nombre} {c.apellido}</div>
                   <div className="con-meta">
                     {c.tipo && (
-                      <span className="con-badge" style={{background: tipoColor + "22", color: tipoColor}}>
+                      <span className={`gfi-badge gfi-badge--dot ${tipoBadge}`}>
                         {c.tipo}
                       </span>
                     )}
                     {c.estado && (
-                      <span className="con-badge" style={{background: estadoColor + "22", color: estadoColor}}>
+                      <span className={`gfi-badge ${estadoBadge}`}>
                         {estadoLbl}
                       </span>
                     )}
-                    {c.inmobiliaria && <span className="con-sub">{c.inmobiliaria}</span>}
+                    {c.telefono && (
+                      <span className="con-contact-data">{c.telefono}</span>
+                    )}
+                    {c.email && (
+                      <span className="con-contact-data">{c.email}</span>
+                    )}
+                    {c.inmobiliaria && <span className="con-inmob">{c.inmobiliaria}</span>}
                     {c.telefono && (
                       <a href={`https://wa.me/${c.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" className="con-wa" title="WhatsApp">
-                        📱
+                        💬
                       </a>
                     )}
                   </div>
                 </div>
                 <div className="con-acciones">
                   <Link href={`/crm/contactos/${c.id}`} className="con-btn-sm con-btn-ver">Ver</Link>
-                  <button className="con-btn-sm con-btn-edit" onClick={() => editar(c)}>✏️</button>
-                  <button className="con-btn-sm con-btn-del" onClick={() => eliminar(c.id)}>🗑</button>
+                  <button className="con-btn-sm con-btn-edit" onClick={() => editar(c)} title="Editar">✏</button>
+                  <button className="con-btn-sm con-btn-del" onClick={() => eliminar(c.id)} title="Eliminar">×</button>
                 </div>
               </div>
             );
@@ -382,8 +525,8 @@ function ContactosContent() {
               <textarea className="con-input" rows={2} value={form.notas} onChange={inp("notas")} placeholder="Notas internas..." style={{resize:"vertical"}} />
             </div>
             <div className="con-modal-footer">
-              <button className="con-btn-cancelar" onClick={() => { setMostrarForm(false); setEditandoId(null); }}>Cancelar</button>
-              <button className="con-btn-guardar" onClick={guardar} disabled={guardando || !form.nombre.trim()}>
+              <button className="gfi-btn gfi-btn--secondary" onClick={() => { setMostrarForm(false); setEditandoId(null); }}>Cancelar</button>
+              <button className="gfi-btn gfi-btn--primary" onClick={guardar} disabled={guardando || !form.nombre.trim()}>
                 {guardando ? "Guardando..." : editandoId ? "Guardar cambios" : "Crear contacto"}
               </button>
             </div>
@@ -396,7 +539,11 @@ function ContactosContent() {
 
 export default function ContactosPage() {
   return (
-    <Suspense fallback={<div style={{ padding: 40, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>Cargando...</div>}>
+    <Suspense fallback={
+      <div style={{ padding: 40, color: "var(--gfi-text-muted)", textAlign: "center", fontFamily: "var(--font-body)" }}>
+        Cargando...
+      </div>
+    }>
       <ContactosContent />
     </Suspense>
   );

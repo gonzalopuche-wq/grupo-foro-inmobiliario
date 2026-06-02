@@ -330,8 +330,7 @@ export default function PerfilPage() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 64 }}>
-      <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ width: 28, height: 28, border: "2px solid var(--gfi-red-soft)", borderTopColor: "var(--gfi-red)", borderRadius: "50%", animation: "gfi-spin 0.7s linear infinite" }} />
     </div>
   );
 
@@ -343,115 +342,117 @@ export default function PerfilPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .pf-wrap { display: flex; gap: 24px; align-items: flex-start; }
-        .pf-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 84px; }
-        .pf-avatar-box { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 16px; text-align: center; margin-bottom: 8px; }
-        .pf-avatar { width: 72px; height: 72px; border-radius: 12px; background: rgba(200,0,0,0.15); border: 2px solid rgba(200,0,0,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 24px; font-weight: 800; color: #cc0000; margin: 0 auto 12px; overflow: hidden; }
+        .pf-sidebar { width: 228px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 84px; }
+        .pf-avatar-box { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); padding: 20px 16px; text-align: center; margin-bottom: 8px; position: relative; overflow: hidden; }
+        .pf-avatar-box::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(204,0,0,0.1) 70%, transparent 100%); }
+        .pf-avatar { width: 76px; height: 76px; border-radius: 50%; background: var(--gfi-red-soft); border: 2px solid var(--gfi-red-border); box-shadow: 0 0 0 3px var(--gfi-bg-card), 0 0 0 5px var(--gfi-red-border); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--gfi-red); margin: 0 auto 14px; overflow: hidden; }
         .pf-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .pf-avatar-nombre { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 800; color: #fff; }
-        .pf-avatar-mat { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 3px; font-family: 'Montserrat',sans-serif; }
-        .pf-avatar-tipo { display: inline-block; margin-top: 8px; padding: 3px 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); border-radius: 20px; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #cc0000; font-family: 'Montserrat',sans-serif; }
-        .pf-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 4px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
-        .pf-nav-item:hover { background: rgba(255,255,255,0.04); }
-        .pf-nav-item.activo { background: rgba(200,0,0,0.08); border-color: rgba(200,0,0,0.2); }
-        .pf-nav-icon { font-size: 16px; width: 20px; text-align: center; }
-        .pf-nav-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.5); font-family: 'Inter',sans-serif; }
-        .pf-nav-item.activo .pf-nav-label { color: #fff; }
+        .pf-avatar-nombre { font-family: var(--font-display); font-size: 13px; font-weight: 800; color: var(--gfi-text-primary); }
+        .pf-avatar-mat { font-size: 11px; font-family: var(--font-mono); color: var(--gfi-red); margin-top: 4px; letter-spacing: 0.04em; }
+        .pf-avatar-tipo { display: inline-block; margin-top: 8px; padding: 3px 10px; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); border-radius: 20px; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-red); font-family: var(--font-display); }
+        .pf-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--gfi-radius-md); cursor: pointer; transition: var(--gfi-transition); border: 1px solid transparent; }
+        .pf-nav-item:hover { background: var(--gfi-bg-hover); }
+        .pf-nav-item.activo { background: var(--gfi-red-soft); border-color: var(--gfi-red-border); }
+        .pf-nav-icon { font-size: 15px; width: 20px; text-align: center; }
+        .pf-nav-label { font-size: 12px; font-weight: 500; color: var(--gfi-text-secondary); font-family: var(--font-body); }
+        .pf-nav-item.activo .pf-nav-label { color: var(--gfi-text-primary); }
         .pf-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-        .pf-section { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 24px 28px; }
-        .pf-section-title { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
-        .pf-section-title span { color: #cc0000; }
-        .pf-section-sub { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
+        .pf-section { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); padding: 24px 28px; position: relative; overflow: hidden; }
+        .pf-section::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, rgba(255,255,255,0.012) 0%, transparent 60%); pointer-events: none; }
+        .pf-section-title { font-family: var(--font-display); font-size: 14px; font-weight: 800; color: var(--gfi-text-primary); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+        .pf-section-title span { color: var(--gfi-red); }
+        .pf-section-sub { font-size: 12px; color: var(--gfi-text-secondary); margin-bottom: 20px; }
         .pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .pf-grid.full { grid-template-columns: 1fr; }
         .pf-grid .span2 { grid-column: 1 / -1; }
         .pf-field { display: flex; flex-direction: column; gap: 6px; }
-        .pf-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
-        .pf-input { padding: 10px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; }
-        .pf-input:focus { border-color: rgba(200,0,0,0.4); }
-        .pf-input::placeholder { color: rgba(255,255,255,0.2); }
+        .pf-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-muted); }
+        .pf-input { padding: 10px 13px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); transition: var(--gfi-transition); width: 100%; }
+        .pf-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .pf-input::placeholder { color: var(--gfi-text-muted); }
         .pf-input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .pf-select { padding: 10px 13px; background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
-        .pf-select:focus { border-color: rgba(200,0,0,0.4); }
-        .pf-textarea { padding: 10px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; resize: vertical; min-height: 90px; transition: border-color 0.2s; }
-        .pf-textarea:focus { border-color: rgba(200,0,0,0.4); }
-        .pf-textarea::placeholder { color: rgba(255,255,255,0.2); }
+        .pf-select { padding: 10px 13px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); width: 100%; }
+        .pf-select:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .pf-textarea { padding: 10px 13px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); resize: vertical; min-height: 90px; transition: var(--gfi-transition); width: 100%; }
+        .pf-textarea:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .pf-textarea::placeholder { color: var(--gfi-text-muted); }
+        .pf-subsection-title { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--gfi-border-subtle); }
         .esp-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-        .esp-tag { padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: 'Montserrat',sans-serif; }
-        .esp-tag:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
-        .esp-tag.activo { border-color: #cc0000; background: rgba(200,0,0,0.1); color: #fff; }
-        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .esp-tag { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-secondary); font-size: 11px; font-weight: 600; cursor: pointer; transition: var(--gfi-transition); font-family: var(--font-display); }
+        .esp-tag:hover { border-color: var(--gfi-red-border); color: var(--gfi-text-primary); }
+        .esp-tag.activo { border-color: var(--gfi-red); background: var(--gfi-red-soft); color: var(--gfi-text-primary); }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gfi-border-subtle); }
         .toggle-row:last-child { border-bottom: none; }
         .toggle-info { display: flex; flex-direction: column; gap: 3px; }
-        .toggle-label { font-size: 13px; color: #fff; font-weight: 500; }
-        .toggle-sub { font-size: 11px; color: rgba(255,255,255,0.35); }
+        .toggle-label { font-size: 13px; color: var(--gfi-text-primary); font-weight: 500; }
+        .toggle-sub { font-size: 11px; color: var(--gfi-text-secondary); }
         .toggle-btn { width: 44px; height: 24px; border-radius: 12px; border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
-        .toggle-btn.on { background: #cc0000; }
-        .toggle-btn.off { background: rgba(255,255,255,0.12); }
+        .toggle-btn.on { background: var(--gfi-red); }
+        .toggle-btn.off { background: var(--gfi-border); }
         .toggle-knob { position: absolute; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left 0.2s; }
         .toggle-btn.on .toggle-knob { left: 23px; }
         .toggle-btn.off .toggle-knob { left: 3px; }
         .notif-canal { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
-        .canal-btn { padding: 7px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: 'Montserrat',sans-serif; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
-        .canal-btn.on { border-color: #cc0000; background: rgba(200,0,0,0.1); color: #fff; }
-        .push-status { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; margin-top: 8px; }
-        .push-status.activo { border-color: rgba(34,197,94,0.25); background: rgba(34,197,94,0.04); }
+        .canal-btn { padding: 7px 16px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-secondary); font-size: 11px; font-weight: 700; cursor: pointer; transition: var(--gfi-transition); font-family: var(--font-display); letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
+        .canal-btn.on { border-color: var(--gfi-red); background: var(--gfi-red-soft); color: var(--gfi-text-primary); }
+        .push-status { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); margin-top: 8px; }
+        .push-status.activo { border-color: rgba(16,185,129,0.25); background: var(--gfi-green-soft); }
         .push-info { display: flex; flex-direction: column; gap: 3px; }
-        .push-label { font-size: 13px; color: #fff; font-weight: 500; }
-        .push-sub { font-size: 11px; color: rgba(255,255,255,0.35); }
-        .push-btn { padding: 8px 18px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: 1px solid; white-space: nowrap; }
-        .push-btn.activar { background: #cc0000; border-color: #cc0000; color: #fff; }
-        .push-btn.activar:hover { background: #e60000; }
-        .push-btn.desactivar { background: transparent; border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
-        .push-btn.desactivar:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
-        .push-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .seg-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 16px 0; }
+        .push-label { font-size: 13px; color: var(--gfi-text-primary); font-weight: 500; }
+        .push-sub { font-size: 11px; color: var(--gfi-text-secondary); }
+        .push-btn { padding: 8px 18px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); border: 1px solid; white-space: nowrap; }
+        .push-btn.activar { background: var(--gfi-red-gradient); border-color: transparent; color: #fff; box-shadow: var(--gfi-shadow-red); }
+        .push-btn.activar:hover { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
+        .push-btn.desactivar { background: transparent; border-color: var(--gfi-border); color: var(--gfi-text-secondary); }
+        .push-btn.desactivar:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-primary); }
+        .push-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        .seg-divider { height: 1px; background: linear-gradient(90deg, var(--gfi-border) 0%, transparent 100%); margin: 16px 0; }
         .rep-badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 10px; margin-top: 8px; }
-        .rep-badge { padding: 12px 14px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.35); font-family: 'Montserrat',sans-serif; display: flex; align-items: flex-start; gap: 10px; transition: all 0.2s; }
-        .rep-badge.earned { background: rgba(200,0,0,0.08); border-color: rgba(200,0,0,0.3); color: #fff; }
-        .rep-badge.gold { background: rgba(234,179,8,0.08); border-color: rgba(234,179,8,0.3); }
+        .rep-badge { padding: 12px 14px; border-radius: var(--gfi-radius-md); background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); font-size: 12px; font-weight: 600; color: var(--gfi-text-secondary); font-family: var(--font-display); display: flex; align-items: flex-start; gap: 10px; transition: var(--gfi-transition); }
+        .rep-badge.earned { background: var(--gfi-red-soft); border-color: var(--gfi-red-border); color: var(--gfi-text-primary); }
+        .rep-badge.gold { background: rgba(180,140,40,0.08); border-color: rgba(180,140,40,0.3); }
         .rep-badge.silver { background: rgba(148,163,184,0.08); border-color: rgba(148,163,184,0.25); }
         .rep-badge.bronze { background: rgba(180,120,60,0.08); border-color: rgba(180,120,60,0.25); }
         .rep-badge-ico { font-size: 22px; line-height: 1; flex-shrink: 0; filter: grayscale(1); opacity: 0.4; }
         .rep-badge.earned .rep-badge-ico { filter: none; opacity: 1; }
         .rep-badge-body { flex: 1; min-width: 0; }
         .rep-badge-name { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 3px; color: inherit; }
-        .rep-badge-desc { font-size: 10px; font-weight: 400; color: rgba(255,255,255,0.3); line-height: 1.4; }
-        .rep-badge.earned .rep-badge-desc { color: rgba(200,0,0,0.8); }
-        .rep-badge-prog { margin-top: 5px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
-        .rep-badge-prog-fill { height: 100%; background: #cc0000; border-radius: 2px; transition: width 0.5s; }
-        .rep-badge.gold .rep-badge-prog-fill { background: #eab308; }
+        .rep-badge-desc { font-size: 10px; font-weight: 400; color: var(--gfi-text-secondary); line-height: 1.4; }
+        .rep-badge.earned .rep-badge-desc { color: var(--gfi-red); }
+        .rep-badge-prog { margin-top: 5px; height: 3px; background: var(--gfi-border); border-radius: 2px; overflow: hidden; }
+        .rep-badge-prog-fill { height: 100%; background: var(--gfi-red); border-radius: 2px; transition: width 0.5s; }
+        .rep-badge.gold .rep-badge-prog-fill { background: #b8a028; }
         .rep-badge.silver .rep-badge-prog-fill { background: #94a3b8; }
         .rep-badge.bronze .rep-badge-prog-fill { background: #b47c3c; }
-        .rep-stat { display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 18px; }
-        .rep-stat-val { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #cc0000; }
-        .rep-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); }
-        .rep-tier-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin: 16px 0 8px; padding: 4px 10px; border-radius: 4px; display: inline-block; }
+        .rep-stat { display: flex; flex-direction: column; gap: 4px; background: var(--gfi-bg-elevated); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 14px 18px; }
+        .rep-stat-val { font-family: var(--font-display); font-size: 24px; font-weight: 900; color: var(--gfi-red); line-height: 1; font-variant-numeric: tabular-nums; }
+        .rep-stat-label { font-size: 11px; color: var(--gfi-text-secondary); margin-top: 4px; }
+        .rep-tier-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin: 16px 0 8px; padding: 4px 10px; border-radius: var(--gfi-radius-sm); display: inline-block; }
         .rep-tier-label.bronce { background: rgba(180,120,60,0.12); color: rgba(180,120,60,0.8); }
         .rep-tier-label.plata { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.8); }
-        .rep-tier-label.oro { background: rgba(234,179,8,0.12); color: rgba(234,179,8,0.8); }
-        .rep-tier-label.especial { background: rgba(200,0,0,0.12); color: rgba(200,0,0,0.8); }
-        .sus-plan { background: rgba(200,0,0,0.06); border: 1px solid rgba(200,0,0,0.2); border-radius: 6px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .sus-plan-nombre { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
-        .sus-plan-precio { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #cc0000; }
-        .sus-plan-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
-        .pf-save-bar { display: flex; justify-content: flex-end; gap: 10px; padding-top: 16px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.07); }
-        .btn-cancel { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; color: rgba(255,255,255,0.45); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .btn-save { padding: 10px 24px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .btn-save:hover:not(:disabled) { background: #e60000; }
-        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        .cir-toggle { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .cir-toggle:hover { border-color: rgba(255,255,255,0.12); }
-        .cir-toggle.activo { border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.06); }
-        .cir-label { font-size: 13px; color: rgba(255,255,255,0.7); flex: 1; }
-        .cir-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; }
-        .cir-badge.on { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #818cf8; }
-        .cir-badge.off { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); }
-        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
-        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
-        .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
-        @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .rep-tier-label.oro { background: rgba(180,140,40,0.12); color: rgba(180,140,40,0.8); }
+        .rep-tier-label.especial { background: var(--gfi-red-soft); color: var(--gfi-red); }
+        .sus-plan { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-md); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .sus-plan-nombre { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: var(--gfi-text-primary); }
+        .sus-plan-precio { font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--gfi-red); font-variant-numeric: tabular-nums; }
+        .sus-plan-sub { font-size: 11px; color: var(--gfi-text-secondary); margin-top: 2px; }
+        .pf-save-bar { display: flex; justify-content: flex-end; gap: 10px; padding-top: 16px; margin-top: 4px; border-top: 1px solid var(--gfi-border-subtle); }
+        .btn-cancel { padding: 10px 20px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .btn-cancel:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-primary); }
+        .btn-save { padding: 10px 24px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-md); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; box-shadow: var(--gfi-shadow-red); transition: var(--gfi-transition); }
+        .btn-save:hover:not(:disabled) { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
+        .btn-save:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        .cir-toggle { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); cursor: pointer; transition: var(--gfi-transition); }
+        .cir-toggle:hover { border-color: var(--gfi-border-bright); }
+        .cir-toggle.activo { border-color: var(--gfi-red-border); background: var(--gfi-red-soft); }
+        .cir-label { font-size: 13px; color: var(--gfi-text-secondary); flex: 1; }
+        .cir-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; font-family: var(--font-display); }
+        .cir-badge.on { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
+        .cir-badge.off { background: rgba(255,255,255,0.04); border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); }
+        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-fade-in 0.3s ease; }
+        .toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(16,185,129,0.35); color: var(--gfi-green-text); }
+        .toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
           .pf-wrap { flex-direction: column; }
@@ -472,11 +473,13 @@ export default function PerfilPage() {
             {perfil.matricula && <div className="pf-avatar-mat">Mat. {perfil.matricula}</div>}
             <div className="pf-avatar-tipo">{perfil.tipo === "master" ? "★ Máster" : perfil.tipo === "admin" ? "⚙ Admin" : "Corredor"}</div>
             {perfil.estado && (
-              <div style={{ marginTop: 6, fontSize: 10, color: perfil.estado === "activo" ? "#22c55e" : "#ff4444", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em" }}>
-                {perfil.estado === "activo" ? "✓ Activo" : perfil.estado}
+              <div style={{ marginTop: 8 }}>
+                <span className={`gfi-badge gfi-badge--dot ${perfil.estado === "activo" ? "gfi-badge--green" : "gfi-badge--red"}`}>
+                  {perfil.estado === "activo" ? "Activo" : perfil.estado}
+                </span>
               </div>
             )}
-            <div style={{ marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
+            <div style={{ marginTop: 8, fontSize: 10, color: "var(--gfi-text-muted)", fontFamily: "var(--font-body)" }}>
               Desde {formatFecha(perfil.created_at)}
             </div>
           </div>
@@ -520,31 +523,31 @@ export default function PerfilPage() {
                   {perfil.matricula && (
                     <div style={{ marginTop: 8 }}>
                       {cocirSyncState === "idle" && (
-                        <button onClick={sincronizarCOCIR} style={{ background: "none", border: "1px solid rgba(99,102,241,0.4)", borderRadius: 6, color: "#818cf8", fontSize: 11, fontWeight: 700, padding: "5px 12px", cursor: "pointer", fontFamily: "Inter,sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
-                          <span>🔄</span> Sincronizar con COCIR
+                        <button onClick={sincronizarCOCIR} style={{ background: "var(--gfi-red-soft)", border: "1px solid var(--gfi-red-border)", borderRadius: "var(--gfi-radius-md)", color: "var(--gfi-red)", fontSize: 11, fontWeight: 700, padding: "5px 12px", cursor: "pointer", fontFamily: "var(--font-display)", display: "flex", alignItems: "center", gap: 6, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                          <span>↻</span> Sincronizar con COCIR
                         </button>
                       )}
                       {cocirSyncState === "loading" && (
                         <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontStyle: "italic" }}>Consultando COCIR…</span>
                       )}
                       {cocirSyncError && (
-                        <span style={{ fontSize: 11, color: "#f87171" }}>{cocirSyncError}</span>
+                        <span style={{ fontSize: 11, color: "var(--gfi-red)" }}>{cocirSyncError}</span>
                       )}
                       {cocirSyncState === "preview" && cocirSyncData && (
-                        <div style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 8, padding: "10px 14px", marginTop: 4 }}>
-                          <div style={{ fontSize: 10, fontWeight: 700, color: "#818cf8", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", marginBottom: 8 }}>DATOS EN COCIR</div>
+                        <div style={{ background: "var(--gfi-bg-elevated)", border: "1px solid var(--gfi-red-border)", borderRadius: "var(--gfi-radius-md)", padding: "10px 14px", marginTop: 4 }}>
+                          <div style={{ fontSize: 9, fontWeight: 700, color: "var(--gfi-red)", fontFamily: "var(--font-display)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 8 }}>Datos en COCIR</div>
                           {[
                             { label: "Teléfono", val: cocirSyncData.telefono },
                             { label: "Email", val: cocirSyncData.email },
                             { label: "Inmobiliaria", val: cocirSyncData.inmobiliaria },
                           ].filter(f => f.val).map(f => (
-                            <div key={f.label} style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", marginBottom: 3 }}>
-                              <span style={{ color: "rgba(255,255,255,0.4)", width: 80, display: "inline-block" }}>{f.label}:</span> {f.val}
+                            <div key={f.label} style={{ fontSize: 12, color: "var(--gfi-text-primary)", marginBottom: 3 }}>
+                              <span style={{ color: "var(--gfi-text-secondary)", width: 80, display: "inline-block" }}>{f.label}:</span> {f.val}
                             </div>
                           ))}
                           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                            <button onClick={aplicarCOCIR} style={{ padding: "5px 14px", background: "#6366f1", border: "none", borderRadius: 6, color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "Montserrat,sans-serif" }}>Aplicar campos vacíos</button>
-                            <button onClick={() => { setCocirSyncState("idle"); setCocirSyncData(null); }} style={{ padding: "5px 10px", background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.4)", fontSize: 11, cursor: "pointer" }}>Cancelar</button>
+                            <button onClick={aplicarCOCIR} style={{ padding: "5px 14px", background: "var(--gfi-red-gradient)", border: "none", borderRadius: "var(--gfi-radius-md)", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-display)", letterSpacing: "0.06em", textTransform: "uppercase" }}>Aplicar campos vacíos</button>
+                            <button onClick={() => { setCocirSyncState("idle"); setCocirSyncData(null); }} style={{ padding: "5px 10px", background: "none", border: "1px solid var(--gfi-border)", borderRadius: "var(--gfi-radius-md)", color: "var(--gfi-text-secondary)", fontSize: 11, cursor: "pointer" }}>Cancelar</button>
                           </div>
                         </div>
                       )}
@@ -597,17 +600,18 @@ export default function PerfilPage() {
                         style={{
                           padding: "7px 18px",
                           borderRadius: 20,
-                          border: `1px solid ${perfil.celular_mostrar === op ? "#cc0000" : "rgba(255,255,255,0.12)"}`,
-                          background: perfil.celular_mostrar === op ? "rgba(200,0,0,0.1)" : "transparent",
-                          color: perfil.celular_mostrar === op ? "#fff" : "rgba(255,255,255,0.4)",
-                          fontFamily: "'Montserrat',sans-serif",
+                          border: `1px solid ${perfil.celular_mostrar === op ? "var(--gfi-red)" : "var(--gfi-border)"}`,
+                          background: perfil.celular_mostrar === op ? "var(--gfi-red-soft)" : "transparent",
+                          color: perfil.celular_mostrar === op ? "var(--gfi-text-primary)" : "var(--gfi-text-secondary)",
+                          fontFamily: "var(--font-display)",
                           fontSize: 11,
                           fontWeight: 700,
                           cursor: "pointer",
                           textTransform: "capitalize",
+                          letterSpacing: "0.06em",
                         }}
                       >
-                        {op === "personal" ? "📱 Personal" : "🏢 Oficina"}
+                        {op === "personal" ? "Personal" : "Oficina"}
                       </button>
                     ))}
                   </div>
@@ -642,7 +646,7 @@ export default function PerfilPage() {
               <div className="pf-section-sub">Tu presencia profesional en la red GFI® — más datos = más visibilidad</div>
 
               {/* Inmobiliaria */}
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12, marginTop: 4, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="pf-subsection-title" style={{ marginTop: 4 }}>
                 Datos de la inmobiliaria
               </div>
               <div className="pf-grid">
@@ -695,7 +699,7 @@ export default function PerfilPage() {
               </div>
 
               {/* Presencia digital */}
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12, marginTop: 24, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="pf-subsection-title" style={{ marginTop: 24 }}>
                 Presencia digital y redes sociales
               </div>
               <div className="pf-grid">
@@ -738,7 +742,7 @@ export default function PerfilPage() {
               </div>
 
               {/* Formación y asociaciones */}
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 12, marginTop: 24, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="pf-subsection-title" style={{ marginTop: 24 }}>
                 Formación y trayectoria
               </div>
               <div className="pf-grid">
@@ -781,7 +785,7 @@ export default function PerfilPage() {
               <div className="pf-section-sub">Tu tarjeta profesional y QR para compartir con clientes</div>
 
               {/* Preview tarjeta */}
-              <div style={{ background: "#0a0a0a", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 12, padding: "20px 24px", marginBottom: 16, maxWidth: 380 }}>
+              <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-red-border)", borderRadius: "var(--gfi-radius-lg)", padding: "20px 24px", marginBottom: 16, maxWidth: 380 }}>
                 <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 14 }}>
                   {perfil.foto_url ? (
                     <img src={perfil.foto_url} alt="Foto" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover" }} />
@@ -859,7 +863,7 @@ export default function PerfilPage() {
 
               {/* Canal push */}
               <div style={{ marginBottom: 20 }}>
-                <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>
+                <div className="pf-subsection-title" style={{ marginBottom: 10 }}>
                   Canal push (navegador)
                 </div>
                 <div className={`push-status${pushActivo ? " activo" : ""}`}>
@@ -883,7 +887,7 @@ export default function PerfilPage() {
 
               {/* Canales */}
               <div style={{ marginBottom: 20 }}>
-                <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>
+                <div className="pf-subsection-title" style={{ marginBottom: 10 }}>
                   Canales activos
                 </div>
                 <div className="notif-canal">
@@ -904,11 +908,11 @@ export default function PerfilPage() {
               </div>
 
               {/* Modo silencioso */}
-              <div style={{ background: perfil.modo_silencioso ? "rgba(239,68,68,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${perfil.modo_silencioso ? "#ef444433" : "#ffffff11"}`, borderRadius: 10, padding: "14px 16px", marginBottom: 20 }}>
+              <div style={{ background: perfil.modo_silencioso ? "var(--gfi-red-soft)" : "var(--gfi-bg-secondary)", border: `1px solid ${perfil.modo_silencioso ? "var(--gfi-red-border)" : "var(--gfi-border)"}`, borderRadius: "var(--gfi-radius-md)", padding: "14px 16px", marginBottom: 20 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: perfil.modo_silencioso ? 12 : 0 }}>
                   <div>
-                    <div style={{ fontWeight: 600, color: perfil.modo_silencioso ? "#ef4444" : "#f8fafc", fontSize: 14 }}>🔕 Modo silencioso</div>
-                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 2 }}>Pausá todas las notificaciones temporalmente</div>
+                    <div style={{ fontWeight: 600, color: perfil.modo_silencioso ? "var(--gfi-red)" : "var(--gfi-text-primary)", fontSize: 14 }}>Modo silencioso</div>
+                    <div style={{ color: "var(--gfi-text-secondary)", fontSize: 12, marginTop: 2 }}>Pausá todas las notificaciones temporalmente</div>
                   </div>
                   <button className={`toggle-btn ${perfil.modo_silencioso ? "on" : "off"}`} onClick={() => set("modo_silencioso", !perfil.modo_silencioso)}>
                     <div className="toggle-knob" />
@@ -916,15 +920,15 @@ export default function PerfilPage() {
                 </div>
                 {perfil.modo_silencioso && (
                   <div>
-                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 6 }}>Silencioso hasta:</div>
+                    <div style={{ color: "var(--gfi-text-secondary)", fontSize: 12, marginBottom: 6 }}>Silencioso hasta:</div>
                     <input type="datetime-local" value={perfil.silencioso_hasta?.slice(0, 16) ?? ""} onChange={e => set("silencioso_hasta", e.target.value || null)}
-                      style={{ background: "#1e293b", color: "#f8fafc", border: "1px solid #334155", borderRadius: 8, padding: "7px 12px", fontSize: 13, width: "100%", boxSizing: "border-box" }} />
+                      className="pf-input" />
                   </div>
                 )}
               </div>
 
               {/* Tipos de notificación */}
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>
+              <div className="pf-subsection-title" style={{ marginBottom: 10 }}>
                 Qué querés recibir
               </div>
               {[
@@ -962,7 +966,7 @@ export default function PerfilPage() {
               <div className="pf-section-title">🔒 <span>Seguridad</span></div>
               <div className="pf-section-sub">Contraseña y configuración de acceso</div>
 
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)", marginBottom: 14 }}>
+              <div className="pf-subsection-title" style={{ marginBottom: 14, fontSize: 10 }}>
                 Cambiar contraseña
               </div>
               <div className="pf-grid">
@@ -987,7 +991,7 @@ export default function PerfilPage() {
 
               <div className="seg-divider" />
 
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)", marginBottom: 14 }}>
+              <div className="pf-subsection-title" style={{ marginBottom: 14, fontSize: 10 }}>
                 Información de cuenta
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -997,23 +1001,23 @@ export default function PerfilPage() {
                   { label: "Miembro desde", val: formatFecha(perfil.created_at) },
                   { label: "Sesión única", val: "1 dispositivo activo a la vez" },
                 ].map((item, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 4, border: "1px solid rgba(255,255,255,0.07)" }}>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{item.label}</span>
-                    <span style={{ fontSize: 12, color: "#fff", fontWeight: 600 }}>{item.val}</span>
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "var(--gfi-bg-secondary)", borderRadius: "var(--gfi-radius-sm)", border: "1px solid var(--gfi-border)" }}>
+                    <span style={{ fontSize: 12, color: "var(--gfi-text-secondary)" }}>{item.label}</span>
+                    <span style={{ fontSize: 12, color: "var(--gfi-text-primary)", fontWeight: 600 }}>{item.val}</span>
                   </div>
                 ))}
                 {/* 2FA */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 4, border: `1px solid ${perfil.mfa_habilitado ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "var(--gfi-bg-secondary)", borderRadius: "var(--gfi-radius-sm)", border: `1px solid ${perfil.mfa_habilitado ? "rgba(16,185,129,0.3)" : "var(--gfi-red-border)"}` }}>
                   <div>
                     <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>2FA — Doble autenticación</span>
                     {!perfil.mfa_habilitado && (
-                      <div style={{ fontSize: 10, color: "#f87171", marginTop: 2 }}>No configurado — requerido para corredores GFI®</div>
+                      <div style={{ fontSize: 10, color: "var(--gfi-red)", marginTop: 2 }}>No configurado — requerido para corredores GFI®</div>
                     )}
                   </div>
                   {perfil.mfa_habilitado ? (
-                    <span style={{ fontSize: 11, color: "#4ade80", fontWeight: 700, background: "rgba(34,197,94,0.1)", padding: "3px 8px", borderRadius: 4 }}>✓ Activo</span>
+                    <span className="gfi-badge gfi-badge--green">✓ Activo</span>
                   ) : (
-                    <a href="/configurar-2fa" style={{ fontSize: 11, color: "#fff", fontWeight: 700, background: "#2563eb", padding: "4px 10px", borderRadius: 4, textDecoration: "none" }}>
+                    <a href="/configurar-2fa" style={{ fontSize: 11, color: "#fff", fontWeight: 700, background: "var(--gfi-red-gradient)", padding: "5px 12px", borderRadius: "var(--gfi-radius-md)", textDecoration: "none", fontFamily: "var(--font-display)", letterSpacing: "0.06em", textTransform: "uppercase", boxShadow: "var(--gfi-shadow-red)" }}>
                       Configurar →
                     </a>
                   )}

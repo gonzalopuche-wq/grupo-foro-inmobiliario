@@ -245,10 +245,20 @@ ${resultado.recomendacion}`
           * { color: #111 !important; background: transparent !important; border-color: #e0e0e0 !important; box-shadow: none !important; }
           a { color: #1a56db !important; }
         }
+        .tas-label { display: block; font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gfi-text-secondary); margin-bottom: 5px; }
+        .tas-input { width: 100%; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); padding: 8px 10px; font-size: 13px; font-family: var(--font-body); box-sizing: border-box; outline: none; transition: var(--gfi-transition); }
+        .tas-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .tas-input::placeholder { color: var(--gfi-text-muted); }
+        .tas-select { width: 100%; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); padding: 8px 10px; font-size: 13px; font-family: var(--font-body); outline: none; }
+        .tas-select option { background: var(--gfi-bg-panel); }
+        .tas-select:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .tas-textarea { width: 100%; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); padding: 8px 10px; font-size: 13px; font-family: var(--font-body); resize: vertical; box-sizing: border-box; outline: none; transition: var(--gfi-transition); }
+        .tas-textarea:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .tas-textarea::placeholder { color: var(--gfi-text-muted); }
       `}</style>
 
       {toast && (
-        <div style={{ position: 'fixed', bottom: 24, right: 24, background: '#111', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, zIndex: 999 }}>
+        <div style={{ position: 'fixed', bottom: 24, right: 24, background: 'var(--gfi-bg-elevated)', border: '1px solid var(--gfi-border)', color: 'var(--gfi-text-primary)', padding: '10px 20px', borderRadius: 'var(--gfi-radius-md)', fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 600, zIndex: 999, boxShadow: 'var(--gfi-shadow-md)' }}>
           {toast}
         </div>
       )}
@@ -256,13 +266,13 @@ ${resultado.recomendacion}`
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>Módulo IA</div>
-          <h1 style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>Tasador IA</h1>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
-            Tasaciones instantáneas con inteligencia artificial · {historial.length} en historial
+          <div className="gfi-section-title" style={{ marginBottom: 6, fontSize: 9 }}>Módulo IA</div>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800, color: 'var(--gfi-text-primary)', margin: 0 }}>Tasador <span style={{ color: 'var(--gfi-red)' }}>IA</span></h1>
+          <p style={{ fontSize: 12, color: 'var(--gfi-text-secondary)', marginTop: 4 }}>
+            Tasaciones instantáneas con inteligencia artificial · <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--gfi-red)' }}>{historial.length}</span> en historial
           </p>
         </div>
-        <button className="no-print" onClick={() => setMostrandoHistorial(h => !h)} style={{ padding: '9px 18px', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+        <button className="no-print gfi-btn gfi-btn--secondary" onClick={() => setMostrandoHistorial(h => !h)} style={{ borderRadius: 'var(--gfi-radius-md)' }}>
           {mostrandoHistorial ? '← Volver' : '📋 Historial'}
         </button>
       </div>
@@ -306,20 +316,20 @@ ${resultado.recomendacion}`
         <div style={{ display: 'grid', gridTemplateColumns: resultado ? '1fr 1fr' : '1fr', gap: 20 }}>
 
           {/* Formulario */}
-          <div className="no-print" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 20 }}>
-            <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Datos de la propiedad</div>
+          <div className="no-print gfi-card">
+            <div className="gfi-section-title" style={{ marginBottom: 16 }}>Datos de la propiedad</div>
 
             {/* Tipo y operación */}
             <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Tipo</label>
-                <select value={form.tipo} onChange={e => setF('tipo', e.target.value)} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit' }}>
+                <label className="tas-label">Tipo</label>
+                <select value={form.tipo} onChange={e => setF('tipo', e.target.value)} className="tas-select">
                   {TIPOS_PROPIEDAD.map(t => <option key={t} value={t} style={{ background: '#141414' }}>{t}</option>)}
                 </select>
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Operación</label>
-                <select value={form.operacion} onChange={e => setF('operacion', e.target.value)} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit' }}>
+                <label className="tas-label">Operación</label>
+                <select value={form.operacion} onChange={e => setF('operacion', e.target.value)} className="tas-select">
                   {OPERACIONES.map(o => <option key={o} value={o} style={{ background: '#141414' }}>{o}</option>)}
                 </select>
               </div>
@@ -327,23 +337,23 @@ ${resultado.recomendacion}`
 
             {/* Dirección y barrio */}
             <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Barrio / Zona *</label>
-              <input value={form.barrio} onChange={e => setF('barrio', e.target.value)} placeholder="Ej: Alberdi, Fisherton, Centro..." style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              <label className="tas-label">Barrio / Zona *</label>
+              <input value={form.barrio} onChange={e => setF('barrio', e.target.value)} placeholder="Ej: Alberdi, Fisherton, Centro..." className="tas-input" />
             </div>
             <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Dirección (opcional)</label>
-              <input value={form.direccion} onChange={e => setF('direccion', e.target.value)} placeholder="Ej: Av. Pellegrini 1200" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              <label className="tas-label">Dirección (opcional)</label>
+              <input value={form.direccion} onChange={e => setF('direccion', e.target.value)} placeholder="Ej: Av. Pellegrini 1200" className="tas-input" />
             </div>
 
             {/* Superficies */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
               <div>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Sup. cubierta m² *</label>
-                <input type="number" value={form.sup_cubierta} onChange={e => setF('sup_cubierta', e.target.value)} placeholder="65" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                <label className="tas-label">Sup. cubierta m² *</label>
+                <input type="number" value={form.sup_cubierta} onChange={e => setF('sup_cubierta', e.target.value)} placeholder="65" className="tas-input" />
               </div>
               <div>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Sup. total m²</label>
-                <input type="number" value={form.sup_total} onChange={e => setF('sup_total', e.target.value)} placeholder="80" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                <label className="tas-label">Sup. total m²</label>
+                <input type="number" value={form.sup_total} onChange={e => setF('sup_total', e.target.value)} placeholder="80" className="tas-input" />
               </div>
             </div>
 
@@ -355,8 +365,8 @@ ${resultado.recomendacion}`
                 { key: 'banos', label: 'Baños', ph: '1' },
               ].map(f => (
                 <div key={f.key}>
-                  <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>{f.label}</label>
-                  <input type="number" value={(form as any)[f.key]} onChange={e => setF(f.key, e.target.value)} placeholder={f.ph} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                  <label className="tas-label">{f.label}</label>
+                  <input type="number" value={(form as any)[f.key]} onChange={e => setF(f.key, e.target.value)} placeholder={f.ph} className="tas-input" />
                 </div>
               ))}
             </div>
@@ -364,18 +374,18 @@ ${resultado.recomendacion}`
             {/* Antigüedad, estado, piso */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
               <div>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Antigüedad (años)</label>
-                <input type="number" value={form.antiguedad} onChange={e => setF('antiguedad', e.target.value)} placeholder="10" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                <label className="tas-label">Antigüedad (años)</label>
+                <input type="number" value={form.antiguedad} onChange={e => setF('antiguedad', e.target.value)} placeholder="10" className="tas-input" />
               </div>
               <div>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Estado</label>
-                <select value={form.estado} onChange={e => setF('estado', e.target.value)} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit' }}>
+                <label className="tas-label">Estado</label>
+                <select value={form.estado} onChange={e => setF('estado', e.target.value)} className="tas-select">
                   {ESTADOS_CONSERVACION.map(e => <option key={e} value={e} style={{ background: '#141414' }}>{e}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Piso</label>
-                <input value={form.piso} onChange={e => setF('piso', e.target.value)} placeholder="3° A" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                <label className="tas-label">Piso</label>
+                <input value={form.piso} onChange={e => setF('piso', e.target.value)} placeholder="3° A" className="tas-input" />
               </div>
             </div>
 
@@ -386,13 +396,13 @@ ${resultado.recomendacion}`
             </div>
 
             <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Amenities</label>
-              <input value={form.amenities} onChange={e => setF('amenities', e.target.value)} placeholder="Ej: Pileta, gym, laundry..." style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              <label className="tas-label">Amenities</label>
+              <input value={form.amenities} onChange={e => setF('amenities', e.target.value)} placeholder="Ej: Pileta, gym, laundry..." className="tas-input" />
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }}>Observaciones</label>
-              <textarea value={form.observaciones} onChange={e => setF('observaciones', e.target.value)} placeholder="Vistas, reformas, particularidades del inmueble..." rows={2} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: '#fff', padding: '8px 10px', fontSize: 13, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
+              <label className="tas-label">Observaciones</label>
+              <textarea value={form.observaciones} onChange={e => setF('observaciones', e.target.value)} placeholder="Vistas, reformas, particularidades del inmueble..." rows={2} className="tas-textarea" />
             </div>
 
             {/* Selector de red */}
@@ -400,7 +410,7 @@ ${resultado.recomendacion}`
               <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 7 }}>Buscar comparables en</label>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {REDES.map(r => (
-                  <button key={r.value} onClick={() => setF('red', r.value)} style={{ padding: '6px 12px', borderRadius: 6, fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, cursor: 'pointer', border: form.red === r.value ? '1px solid rgba(204,0,0,0.5)' : '1px solid rgba(255,255,255,0.1)', background: form.red === r.value ? 'rgba(204,0,0,0.15)' : 'rgba(255,255,255,0.04)', color: form.red === r.value ? '#cc0000' : 'rgba(255,255,255,0.5)' }}>
+                  <button key={r.value} onClick={() => setF('red', r.value)} className={`gfi-filter-chip${form.red === r.value ? ' active' : ''}`}>
                     {r.label}
                   </button>
                 ))}
@@ -412,9 +422,10 @@ ${resultado.recomendacion}`
             <button
               onClick={tasar}
               disabled={tasando}
-              style={{ width: '100%', padding: '12px', background: tasando ? 'rgba(204,0,0,0.5)' : '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 14, fontWeight: 800, cursor: tasando ? 'not-allowed' : 'pointer', letterSpacing: '0.06em' }}
+              className="gfi-btn gfi-btn--primary"
+              style={{ width: '100%', padding: '12px', fontSize: 13, justifyContent: 'center' }}
             >
-              {tasando ? '🤖 Analizando con IA...' : '🏠 Tasar con IA'}
+              {tasando ? 'Analizando con IA...' : 'Tasar con IA'}
             </button>
             {tasando && (
               <div style={{ marginTop: 10, fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
@@ -428,8 +439,8 @@ ${resultado.recomendacion}`
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
               {/* Valores */}
-              <div style={{ background: 'rgba(204,0,0,0.06)', border: '1px solid rgba(204,0,0,0.2)', borderRadius: 12, padding: 20 }}>
-                <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, color: 'rgba(204,0,0,0.6)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>Valuación estimada</div>
+              <div className="gfi-card gfi-card--red-top" style={{ padding: 20 }}>
+                <div className="gfi-section-title" style={{ marginBottom: 12 }}>Valuación estimada</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   {[
                     { label: 'Valor sugerido', val: `USD ${resultado.valor_sugerido.toLocaleString('es-AR')}`, highlight: true },
@@ -437,23 +448,23 @@ ${resultado.recomendacion}`
                     { label: 'Rango mínimo', val: `USD ${resultado.valor_min.toLocaleString('es-AR')}`, highlight: false },
                     { label: 'Rango máximo', val: `USD ${resultado.valor_max.toLocaleString('es-AR')}`, highlight: false },
                   ].map(s => (
-                    <div key={s.label} style={{ padding: '12px', background: s.highlight ? 'rgba(204,0,0,0.1)' : 'rgba(255,255,255,0.03)', borderRadius: 8, border: s.highlight ? '1px solid rgba(204,0,0,0.25)' : '1px solid rgba(255,255,255,0.06)' }}>
-                      <div style={{ fontSize: s.highlight ? 20 : 15, fontWeight: 800, color: s.highlight ? '#cc0000' : '#fff', fontFamily: 'Montserrat,sans-serif' }}>{s.val}</div>
-                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat,sans-serif', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>{s.label}</div>
+                    <div key={s.label} style={{ padding: '12px', background: s.highlight ? 'var(--gfi-red-soft)' : 'var(--gfi-bg-secondary)', borderRadius: 'var(--gfi-radius-md)', border: s.highlight ? '1px solid var(--gfi-red-border)' : '1px solid var(--gfi-border)' }}>
+                      <div style={{ fontSize: s.highlight ? 20 : 15, fontWeight: 800, color: s.highlight ? 'var(--gfi-red)' : 'var(--gfi-text-primary)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{s.val}</div>
+                      <div style={{ fontSize: 9, color: 'var(--gfi-text-muted)', fontFamily: 'var(--font-display)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: 4 }}>{s.label}</div>
                     </div>
                   ))}
                 </div>
                 {resultado.alquiler_estimado && (
-                  <div style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#22c55e' }}>Alquiler estimado: ARS {resultado.alquiler_estimado.toLocaleString('es-AR')}/mes</span>
+                  <div style={{ marginTop: 10, padding: '10px 14px', background: 'var(--gfi-green-soft)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--gfi-radius-md)' }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--gfi-green-text)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>Alquiler estimado: ARS {resultado.alquiler_estimado.toLocaleString('es-AR')}/mes</span>
                   </div>
                 )}
               </div>
 
               {/* Análisis */}
-              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: 16 }}>
-                <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>Análisis de mercado</div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, margin: 0 }}>{resultado.analisis}</p>
+              <div className="gfi-card" style={{ padding: 16 }}>
+                <div className="gfi-section-title" style={{ marginBottom: 8 }}>Análisis de mercado</div>
+                <p style={{ fontSize: 13, color: 'var(--gfi-text-secondary)', lineHeight: 1.7, margin: 0 }}>{resultado.analisis}</p>
               </div>
 
               {/* Factores */}
