@@ -358,8 +358,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ width: 32, height: 32, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+    <div style={{ minHeight: "100vh", background: "#080a0c", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+      <div style={{ width: 36, height: 36, border: "2px solid rgba(204,0,0,0.2)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite", boxShadow: "0 0 20px rgba(204,0,0,0.15)" }} />
+      <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "#4a5568" }}>GFI® Cargando</div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
@@ -477,57 +478,243 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
-        body { margin: 0; background: #0a0a0a; }
+        body { margin: 0; background: #080a0c; }
+
+        /* ── Layout wrap ── */
         .layout-wrap { display: flex; min-height: 100vh; }
-        .sidebar { width: 220px; flex-shrink: 0; background: rgba(6,6,6,0.98); border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 50; transition: transform 0.25s; }
-        .sidebar-logo { padding: 18px 20px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .sidebar-logo-txt { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 800; color: #fff; letter-spacing: 0.05em; }
+
+        /* ── Sidebar ── */
+        .sidebar {
+          width: 240px; flex-shrink: 0;
+          background: linear-gradient(180deg, #080a0c 0%, #0c1018 60%, #0f1219 100%);
+          border-right: 1px solid #252a35;
+          display: flex; flex-direction: column;
+          position: fixed; top: 0; left: 0; height: 100vh;
+          z-index: 50; transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* Logo area */
+        .sidebar-logo {
+          padding: 16px 18px 0;
+          display: flex; align-items: center; justify-content: center;
+          flex-direction: column;
+        }
+        .sidebar-logo-separator {
+          width: calc(100% - 36px); height: 1px; margin: 12px 18px 0;
+          background: linear-gradient(90deg, #cc0000 0%, rgba(204,0,0,0.2) 50%, transparent 100%);
+        }
+        .sidebar-logo-txt { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 900; color: #f0f4f8; letter-spacing: 0.06em; }
         .sidebar-logo-txt span { color: #cc0000; }
-        .sidebar-logo-sub { font-size: 9px; color: rgba(255,255,255,0.25); margin-top: 2px; font-family: 'Montserrat',sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
-        .sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
+        .sidebar-logo-sub { font-size: 8px; color: #4a5568; margin-top: 1px; font-family: 'Montserrat',sans-serif; letter-spacing: 0.18em; text-transform: uppercase; }
+
+        /* Nav */
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0 4px; }
         .sidebar-nav::-webkit-scrollbar { width: 2px; }
-        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
-        .sidebar-section-label { padding: 10px 20px 4px; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.38); font-family: 'Montserrat',sans-serif; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: rgba(255,255,255,0.88); font-size: 13px; font-family: 'Inter',sans-serif; font-weight: 500; text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; }
-        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.07); border-left-color: rgba(255,255,255,0.15); }
-        .nav-item.active { color: #fff; background: rgba(200,0,0,0.10); border-left-color: #cc0000; font-weight: 600; }
-        .nav-item-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
-        .sidebar-rol-badge { margin: 0 16px 8px; padding: 4px 10px; border-radius: 10px; font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.2); color: rgba(255,165,0,0.7); }
-        .sidebar-perfil { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; }
-        .sidebar-avatar { width: 32px; height: 32px; border-radius: 8px; background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; color: #cc0000; flex-shrink: 0; overflow: hidden; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(204,0,0,0.3); border-radius: 1px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+
+        .sidebar-section-label {
+          padding: 12px 18px 4px;
+          font-size: 8px; font-weight: 700; letter-spacing: 0.20em;
+          text-transform: uppercase; color: #4a5568;
+          font-family: 'Montserrat',sans-serif;
+        }
+
+        /* Nav item */
+        .nav-item {
+          display: flex; align-items: center; gap: 10px;
+          padding: 8px 18px 8px 15px;
+          color: #8892a4;
+          font-size: 12.5px; font-family: 'Inter',sans-serif; font-weight: 500;
+          text-decoration: none;
+          transition: all 0.15s;
+          border-left: 3px solid transparent;
+          position: relative;
+        }
+        .nav-item:hover {
+          color: #f0f4f8;
+          background: rgba(255,255,255,0.04);
+          border-left-color: #252a35;
+        }
+        .nav-item:hover .nav-item-text { transform: translateX(2px); }
+        .nav-item.active {
+          color: #f0f4f8;
+          background: rgba(204,0,0,0.10);
+          border-left-color: #cc0000;
+          font-weight: 600;
+          box-shadow: inset 4px 0 12px rgba(204,0,0,0.08);
+        }
+        .nav-item-icon {
+          display: flex; align-items: center; justify-content: center;
+          width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0;
+          font-size: 14px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid #252a35;
+          transition: all 0.15s;
+        }
+        .nav-item.active .nav-item-icon {
+          background: rgba(204,0,0,0.15);
+          border-color: rgba(204,0,0,0.30);
+        }
+        .nav-item:hover .nav-item-icon { background: rgba(255,255,255,0.07); }
+        .nav-item-text { transition: transform 0.15s; }
+
+        /* Role badge */
+        .sidebar-rol-badge {
+          margin: 4px 14px 8px;
+          padding: 4px 12px; border-radius: 20px;
+          font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700;
+          letter-spacing: 0.14em; text-transform: uppercase; text-align: center;
+          background: rgba(196,74,0,0.10); border: 1px solid rgba(196,74,0,0.25);
+          color: #c44a00;
+        }
+
+        /* User profile */
+        .sidebar-perfil {
+          padding: 12px 14px;
+          border-top: 1px solid #252a35;
+          display: flex; align-items: center; gap: 10px;
+          background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+        }
+        .sidebar-avatar {
+          width: 34px; height: 34px; border-radius: 8px;
+          background: rgba(204,0,0,0.12); border: 2px solid rgba(204,0,0,0.30);
+          display: flex; align-items: center; justify-content: center;
+          font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800;
+          color: #cc0000; flex-shrink: 0; overflow: hidden;
+          box-shadow: 0 0 12px rgba(204,0,0,0.15);
+        }
         .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .sidebar-perfil-info { flex: 1; min-width: 0; }
-        .sidebar-perfil-nombre { font-size: 12px; font-weight: 600; color: #fff; font-family: 'Inter',sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .sidebar-perfil-mat { font-size: 10px; color: rgba(255,255,255,0.3); }
-        .sidebar-logout { padding: 4px 6px; background: none; border: none; color: rgba(255,255,255,0.25); cursor: pointer; font-size: 14px; transition: color 0.15s; }
-        .sidebar-logout:hover { color: #cc0000; }
-        .main-content { margin-left: 220px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 44px; }
-        .topbar { display: none; height: 54px; background: rgba(5,5,5,0.98); border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0 14px; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 40; backdrop-filter: blur(8px); }
-        .topbar-logo { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; flex: 1; text-align: center; letter-spacing: 0.04em; }
+        .sidebar-perfil-nombre { font-size: 12px; font-weight: 600; color: #f0f4f8; font-family: 'Inter',sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-perfil-mat { font-size: 9px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; letter-spacing: 0.05em; }
+        .sidebar-logout {
+          padding: 6px 7px; background: none; border: 1px solid #252a35;
+          border-radius: 6px; color: #4a5568; cursor: pointer; font-size: 14px;
+          transition: all 0.15s; flex-shrink: 0;
+        }
+        .sidebar-logout:hover { color: #cc0000; border-color: rgba(204,0,0,0.3); background: rgba(204,0,0,0.08); }
+
+        /* Main content */
+        .main-content { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 44px; }
+
+        /* Topbar — mobile */
+        .topbar {
+          display: none; height: 56px;
+          background: rgba(8,10,12,0.88);
+          border-bottom: 1px solid #1c2030;
+          padding: 0 14px; align-items: center; gap: 12px;
+          position: sticky; top: 0; z-index: 40;
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+        }
+        .topbar::after {
+          content: '';
+          position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+          background: linear-gradient(90deg, #cc0000 0%, transparent 40%);
+        }
+        .topbar-logo {
+          font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 900;
+          color: #f0f4f8; flex: 1; text-align: center; letter-spacing: 0.05em;
+          text-shadow: 0 0 20px rgba(204,0,0,0.3);
+        }
         .topbar-logo span { color: #cc0000; }
-        .topbar-menu-btn { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.65); font-size: 18px; cursor: pointer; padding: 5px 9px; line-height: 1; flex-shrink: 0; transition: all 0.15s; }
-        .topbar-menu-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
+        .topbar-menu-btn {
+          background: none; border: 1px solid #252a35; border-radius: 7px;
+          color: #8892a4; font-size: 18px; cursor: pointer; padding: 5px 9px;
+          line-height: 1; flex-shrink: 0; transition: all 0.15s;
+        }
+        .topbar-menu-btn:hover { border-color: #cc0000; color: #f0f4f8; }
+
+        /* Page content */
         .page-content { flex: 1; padding: 24px 28px; }
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 45; }
-        .nav-item-row .nav-open-win { opacity: 0.28; }
+
+        /* Overlay */
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 45; backdrop-filter: blur(4px); }
+        .sidebar-overlay.visible { display: block; }
+
+        /* Open-in-window button */
+        .nav-item-row .nav-open-win { opacity: 0; }
         .nav-item-row:hover .nav-open-win { opacity: 1 !important; }
-        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,5,5,0.98); border-top: 1px solid rgba(255,255,255,0.07); z-index: 50; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
-        .bottom-nav-inner { display: flex; height: 62px; align-items: stretch; padding-bottom: env(safe-area-inset-bottom, 0px); }
-        .bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: none; color: rgba(255,255,255,0.32); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.03em; cursor: pointer; text-decoration: none; transition: color 0.15s; position: relative; -webkit-tap-highlight-color: transparent; padding: 0; min-height: 44px; }
+
+        /* Bottom nav — mobile island */
+        .bottom-nav {
+          display: none; position: fixed; bottom: 0; left: 0; right: 0;
+          z-index: 50; padding: 0 8px 0;
+          padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        .bottom-nav-inner {
+          display: flex; height: 64px; align-items: stretch;
+          background: #111318;
+          border: 1px solid #252a35;
+          border-bottom: none;
+          border-radius: 16px 16px 0 0;
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          overflow: hidden;
+          box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+        }
+        .bnav-item {
+          flex: 1; display: flex; flex-direction: column; align-items: center;
+          justify-content: center; gap: 3px;
+          background: none; border: none; color: #4a5568;
+          font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700;
+          letter-spacing: 0.05em; cursor: pointer; text-decoration: none;
+          transition: all 0.15s; position: relative;
+          -webkit-tap-highlight-color: transparent; padding: 0; min-height: 44px;
+        }
         .bnav-item.active { color: #cc0000; }
-        .bnav-icon { font-size: 22px; line-height: 1; display: block; }
-        .bnav-badge { position: absolute; top: 6px; right: calc(50% - 20px); background: #ef4444; color: #fff; font-size: 8px; font-weight: 800; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; font-family: 'Inter',sans-serif; }
-        .topbar-bell { position: relative; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.65); font-size: 18px; text-decoration: none; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
-        .topbar-bell-badge { position: absolute; top: 3px; right: 3px; background: #ef4444; color: #fff; font-size: 7px; font-weight: 800; min-width: 13px; height: 13px; border-radius: 7px; display: flex; align-items: center; justify-content: center; padding: 0 2px; font-family: 'Inter',sans-serif; }
+        .bnav-item.active::after {
+          content: '';
+          position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+          width: 20px; height: 2px; border-radius: 2px; background: #cc0000;
+          box-shadow: 0 0 8px rgba(204,0,0,0.6);
+        }
+        .bnav-icon { font-size: 20px; line-height: 1; display: block; }
+        .bnav-badge {
+          position: absolute; top: 8px; right: calc(50% - 18px);
+          background: #cc0000; color: #fff; font-size: 7px; font-weight: 800;
+          min-width: 14px; height: 14px; border-radius: 7px;
+          display: flex; align-items: center; justify-content: center;
+          padding: 0 3px; font-family: 'Inter',sans-serif;
+          box-shadow: 0 2px 6px rgba(204,0,0,0.4);
+        }
+
+        /* Topbar bell */
+        .topbar-bell {
+          position: relative; display: flex; align-items: center; justify-content: center;
+          width: 38px; height: 38px; background: none;
+          border: 1px solid #252a35; border-radius: 7px;
+          color: #8892a4; font-size: 18px; text-decoration: none;
+          flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+          transition: all 0.15s;
+        }
+        .topbar-bell:hover { border-color: rgba(204,0,0,0.4); color: #f0f4f8; }
+        .topbar-bell-badge {
+          position: absolute; top: 2px; right: 2px;
+          background: #cc0000; color: #fff; font-size: 7px; font-weight: 800;
+          min-width: 13px; height: 13px; border-radius: 7px;
+          display: flex; align-items: center; justify-content: center;
+          padding: 0 2px; font-family: 'Inter',sans-serif;
+        }
+
+        /* Badge pills in nav */
+        .nav-badge {
+          margin-left: auto; padding: 1px 6px; border-radius: 10px;
+          font-size: 8px; font-weight: 800; font-family: 'Inter',sans-serif;
+          line-height: 16px; min-width: 16px; text-align: center; flex-shrink: 0;
+        }
+        .nav-badge--red { background: #cc0000; color: #fff; box-shadow: 0 1px 4px rgba(204,0,0,0.4); }
+        .nav-badge--orange { background: rgba(196,74,0,0.85); color: #fff; }
+
         @media (max-width: 900px) {
           .sidebar { transform: translateX(-100%); }
-          .sidebar.abierto { transform: translateX(0); }
+          .sidebar.abierto { transform: translateX(0); box-shadow: 4px 0 40px rgba(0,0,0,0.7); }
           .main-content { margin-left: 0; }
           .topbar { display: flex; }
-          .sidebar-overlay.visible { display: block; }
-          .page-content { padding: 14px 14px calc(74px + env(safe-area-inset-bottom, 0px)); }
+          .page-content { padding: 14px 14px calc(80px + env(safe-area-inset-bottom, 0px)); }
           .bottom-nav { display: block; }
         }
       `}</style>
@@ -536,9 +723,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         <div className={`sidebar-overlay${menuAbierto ? " visible" : ""}`} onClick={() => setMenuAbierto(false)} />
 
         <aside className={`sidebar${menuAbierto ? " abierto" : ""}`}>
-          <div className="sidebar-logo" style={{padding:"12px 16px 10px",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div className="sidebar-logo">
             <img src="/logo_gfi.png" alt="GFI® Grupo Foro Inmobiliario"
-              style={{width:"100%",maxWidth:160,height:"auto",objectFit:"contain",filter:"brightness(1.15) contrast(1.1)"}}
+              style={{width:"100%",maxWidth:168,height:"auto",objectFit:"contain",filter:"brightness(1.2) contrast(1.05)"}}
               onError={e=>{
                 const el = e.target as HTMLImageElement;
                 el.style.display="none";
@@ -551,6 +738,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               <div className="sidebar-logo-sub">Grupo Foro Inmobiliario</div>
             </div>
           </div>
+          <div className="sidebar-logo-separator" />
 
           <BusquedaGlobal />
 
@@ -568,19 +756,19 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   style={{ flex: 1 }}
                 >
                   <span className="nav-item-icon">{item.icon}</span>
-                  {item.label}
+                  <span className="nav-item-text">{item.label}</span>
                   {item.href === "/mi-web" && leadsNoLeidos > 0 && (
-                    <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                    <span className="nav-badge nav-badge--red">
                       {leadsNoLeidos > 99 ? "99+" : leadsNoLeidos}
                     </span>
                   )}
                   {item.href === "/notificaciones" && notifsNoLeidas > 0 && (
-                    <span style={{ marginLeft: "auto", background: "#ef4444", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                    <span className="nav-badge nav-badge--red">
                       {notifsNoLeidas > 99 ? "99+" : notifsNoLeidas}
                     </span>
                   )}
                   {item.href === "/crm" && crmPendientes > 0 && (
-                    <span style={{ marginLeft: "auto", background: "#f59e0b", color: "#000", fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 10, lineHeight: "16px", minWidth: 16, textAlign: "center" }}>
+                    <span className="nav-badge nav-badge--orange">
                       {crmPendientes > 99 ? "99+" : crmPendientes}
                     </span>
                   )}
@@ -590,10 +778,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   onClick={() => openWindow(item.label, item.icon, item.href)}
                   title={`Abrir ${item.label} en ventana flotante`}
                   style={{
-                    position: "absolute", right: 4,
-                    width: 18, height: 18, borderRadius: 3,
-                    background: "rgba(255,255,255,0.07)", border: "none",
-                    color: "rgba(255,255,255,0.4)", cursor: "pointer",
+                    position: "absolute", right: 6,
+                    width: 20, height: 20, borderRadius: 4,
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid #252a35",
+                    color: "#8892a4", cursor: "pointer",
                     fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "opacity 0.15s",
                     flexShrink: 0,
@@ -615,7 +804,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     onClick={() => setMenuAbierto(false)}
                   >
                     <span className="nav-item-icon">{item.icon}</span>
-                    {item.label}
+                    <span className="nav-item-text">{item.label}</span>
                   </Link>
                 ))}
               </>
@@ -653,17 +842,17 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
           {suscripcionWarning === "gracia" && (
-            <div style={{ background: "rgba(234,179,8,0.1)", borderBottom: "1px solid rgba(234,179,8,0.25)", padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#eab308", fontFamily: "'Inter',sans-serif" }}>
-                ⚠️ Tu suscripción venció. Tenés período de gracia activo — realizá el pago para mantener el acceso.
+            <div style={{ background: "rgba(196,74,0,0.08)", borderBottom: "1px solid rgba(196,74,0,0.20)", padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <span style={{ fontSize: 12, color: "#f97316", fontFamily: "'Inter',sans-serif" }}>
+                Tu suscripción venció. Período de gracia activo — realizá el pago para mantener el acceso.
               </span>
-              <a href="/suscripcion" style={{ flexShrink: 0, background: "#eab308", color: "#000", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", padding: "5px 14px", borderRadius: 4, textDecoration: "none" }}>Pagar ahora</a>
+              <a href="/suscripcion" style={{ flexShrink: 0, background: "rgba(196,74,0,0.85)", color: "#fff", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, letterSpacing: "0.10em", textTransform: "uppercase", padding: "5px 14px", borderRadius: 5, textDecoration: "none" }}>Pagar ahora</a>
             </div>
           )}
           {suscripcionWarning === "pendiente" && (
-            <div style={{ background: "rgba(59,130,246,0.08)", borderBottom: "1px solid rgba(59,130,246,0.2)", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#60a5fa", fontFamily: "'Inter',sans-serif" }}>
-                ⏳ Tu pago está siendo verificado. El acceso se mantiene mientras el equipo GFI confirma la transferencia.
+            <div style={{ background: "rgba(10,37,64,0.60)", borderBottom: "1px solid rgba(30,74,122,0.30)", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 12, color: "#60a5fa", fontFamily: "'Inter',sans-serif" }}>
+                Tu pago está siendo verificado. El acceso se mantiene mientras el equipo GFI confirma la transferencia.
               </span>
             </div>
           )}

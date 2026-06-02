@@ -120,31 +120,129 @@ export default function IAChatFlotante() {
   return (
     <>
       <style>{`
-        .gfi-chat-btn { position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: #cc0000; border: none; cursor: pointer; z-index: 9000; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 4px 20px rgba(204,0,0,0.4); transition: transform 0.2s, box-shadow 0.2s; }
-        .gfi-chat-btn:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(204,0,0,0.5); }
-        .gfi-chat-window { position: fixed; bottom: 88px; right: 24px; width: 340px; max-height: 520px; background: #141414; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; z-index: 9000; display: flex; flex-direction: column; box-shadow: 0 8px 40px rgba(0,0,0,0.5); animation: chatSlideIn 0.25s ease; }
-        @keyframes chatSlideIn { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: none; } }
-        .gfi-chat-header { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; }
-        .gfi-chat-body { flex: 1; overflow-y: auto; padding: 14px 14px 8px; display: flex; flex-direction: column; gap: 10px; min-height: 200px; max-height: 340px; }
-        .gfi-msg { max-width: 85%; padding: 9px 13px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
-        .gfi-msg-user { background: rgba(204,0,0,0.15); border: 1px solid rgba(204,0,0,0.2); color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
-        .gfi-msg-ia { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); align-self: flex-start; border-bottom-left-radius: 3px; }
-        .gfi-chat-input-row { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; gap: 8px; align-items: center; }
-        .gfi-chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; padding: 8px 12px; font-size: 13px; font-family: inherit; outline: none; }
-        .gfi-chat-input:focus { border-color: rgba(204,0,0,0.4); }
-        .gfi-chat-send { width: 34px; height: 34px; border-radius: 8px; background: #cc0000; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; opacity: 1; transition: opacity 0.15s; }
-        .gfi-chat-send:disabled { opacity: 0.4; cursor: default; }
+        /* ── Chat Flotante GFI® ── */
+        .gfi-chat-btn {
+          position: fixed; bottom: 24px; right: 24px;
+          width: 54px; height: 54px; border-radius: 50%;
+          background: linear-gradient(135deg, #cc0000 0%, #e8002d 100%);
+          border: none; cursor: pointer; z-index: 9000;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 22px;
+          box-shadow: 0 4px 20px rgba(204,0,0,0.45), 0 0 0 0 rgba(204,0,0,0.3);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .gfi-chat-btn:hover {
+          transform: scale(1.08) translateY(-2px);
+          box-shadow: 0 8px 32px rgba(204,0,0,0.60), 0 0 0 8px rgba(204,0,0,0.08);
+        }
+
+        /* Window */
+        .gfi-chat-window {
+          position: fixed; bottom: 92px; right: 24px;
+          width: 348px; max-height: 540px;
+          background: #0f1219;
+          border: 1px solid #252a35;
+          border-top: 1px solid rgba(204,0,0,0.25);
+          border-radius: 14px;
+          z-index: 9000; display: flex; flex-direction: column;
+          box-shadow: 0 16px 56px rgba(0,0,0,0.70), 0 0 0 1px rgba(255,255,255,0.03) inset;
+          animation: chatSlideIn 0.22s cubic-bezier(0.4,0,0.2,1);
+          overflow: hidden;
+        }
+        @keyframes chatSlideIn {
+          from { opacity: 0; transform: translateY(14px) scale(0.96); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Header */
+        .gfi-chat-header {
+          padding: 14px 16px;
+          border-bottom: 1px solid #1c2030;
+          display: flex; align-items: center; justify-content: space-between;
+          background: linear-gradient(90deg, rgba(204,0,0,0.07) 0%, transparent 60%);
+          flex-shrink: 0;
+        }
+
+        /* Messages body */
+        .gfi-chat-body {
+          flex: 1; overflow-y: auto; padding: 14px 12px 8px;
+          display: flex; flex-direction: column; gap: 8px;
+          min-height: 200px; max-height: 360px;
+          scrollbar-width: thin; scrollbar-color: rgba(204,0,0,0.3) transparent;
+        }
+        .gfi-chat-body::-webkit-scrollbar { width: 3px; }
+        .gfi-chat-body::-webkit-scrollbar-thumb { background: rgba(204,0,0,0.3); border-radius: 2px; }
+
+        /* Messages */
+        .gfi-msg {
+          max-width: 86%; padding: 9px 13px;
+          border-radius: 10px; font-size: 13px; line-height: 1.55;
+          font-family: 'Inter', sans-serif;
+        }
+        .gfi-msg-user {
+          background: rgba(204,0,0,0.14);
+          border: 1px solid rgba(204,0,0,0.25);
+          color: #f0f4f8;
+          align-self: flex-end;
+          border-bottom-right-radius: 3px;
+        }
+        .gfi-msg-ia {
+          background: #161b24;
+          border: 1px solid #252a35;
+          color: #8892a4;
+          align-self: flex-start;
+          border-bottom-left-radius: 3px;
+        }
+        .gfi-msg-ia strong { color: #f0f4f8; }
+
+        /* Input row */
+        .gfi-chat-input-row {
+          padding: 10px 12px;
+          border-top: 1px solid #1c2030;
+          display: flex; gap: 8px; align-items: center;
+          background: #0d1017;
+          flex-shrink: 0;
+        }
+        .gfi-chat-input {
+          flex: 1; background: #111318;
+          border: 1px solid #252a35; border-radius: 8px;
+          color: #f0f4f8; padding: 9px 12px;
+          font-size: 13px; font-family: 'Inter', sans-serif;
+          outline: none; transition: border-color 0.15s;
+        }
+        .gfi-chat-input:focus {
+          border-color: rgba(204,0,0,0.5);
+          box-shadow: 0 0 0 3px rgba(204,0,0,0.10);
+        }
+        .gfi-chat-input::placeholder { color: #4a5568; }
+        .gfi-chat-send {
+          width: 36px; height: 36px; border-radius: 8px;
+          background: linear-gradient(135deg, #cc0000 0%, #e8002d 100%);
+          border: none; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 14px; flex-shrink: 0;
+          transition: all 0.15s;
+          box-shadow: 0 2px 8px rgba(204,0,0,0.35);
+        }
+        .gfi-chat-send:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 4px 14px rgba(204,0,0,0.50); }
+        .gfi-chat-send:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
+
+        /* Typing */
         .gfi-typing { display: flex; gap: 4px; align-items: center; padding: 4px 2px; }
-        .gfi-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.4); animation: gfiDot 1.2s infinite; }
+        .gfi-dot { width: 6px; height: 6px; border-radius: 50%; background: #4a5568; animation: gfiDot 1.2s infinite; }
         .gfi-dot:nth-child(2) { animation-delay: 0.2s; }
         .gfi-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes gfiDot { 0%,80%,100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.1); } }
-        @media (max-width: 480px) { .gfi-chat-window { width: calc(100vw - 32px); right: 16px; bottom: 80px; } .gfi-chat-btn { right: 16px; bottom: 16px; } }
+
+        @media (max-width: 480px) {
+          .gfi-chat-window { width: calc(100vw - 24px); right: 12px; bottom: 84px; }
+          .gfi-chat-btn { right: 16px; bottom: 78px; }
+        }
       `}</style>
 
       {/* Botón flotante */}
       <button className="gfi-chat-btn" onClick={() => setAbierto(a => !a)} title="Asistente IA GFI">
-        {abierto ? '✕' : '🤖'}
+        {abierto ? '✕' : '◈'}
       </button>
 
       {/* Ventana de chat */}
@@ -153,19 +251,38 @@ export default function IAChatFlotante() {
           {/* Header */}
           <div className="gfi-chat-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(204,0,0,0.15)', border: '1px solid rgba(204,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🤖</div>
+              <div style={{
+                width: 34, height: 34, borderRadius: 8,
+                background: 'linear-gradient(135deg, rgba(204,0,0,0.20) 0%, rgba(204,0,0,0.08) 100%)',
+                border: '1px solid rgba(204,0,0,0.35)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 18, boxShadow: '0 0 12px rgba(204,0,0,0.20)',
+              }}>◈</div>
               <div>
-                <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, color: '#fff' }}>Asistente GFI®</div>
-                <div style={{ fontSize: 10, color: '#22c55e', fontFamily: 'Montserrat,sans-serif', fontWeight: 600 }}>● En línea</div>
+                <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 13, fontWeight: 800, color: '#f0f4f8', letterSpacing: '0.04em' }}>Asistente GFI®</div>
+                <div style={{ fontSize: 9, color: '#10b981', fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: '0.10em', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 5px #10b981', display: 'inline-block' }} />
+                  EN LÍNEA
+                </div>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
               {mensajes.length > 1 && (
-                <button onClick={limpiar} title="Limpiar conversación" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: 'rgba(255,255,255,0.35)', fontSize: 11, padding: '4px 8px', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
+                <button onClick={limpiar} title="Limpiar conversación" style={{
+                  background: 'transparent', border: '1px solid #252a35',
+                  borderRadius: 6, color: '#8892a4', fontSize: 10,
+                  padding: '4px 10px', cursor: 'pointer',
+                  fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+                  letterSpacing: '0.06em', textTransform: 'uppercase', transition: 'all 0.15s',
+                }}>
                   Limpiar
                 </button>
               )}
-              <button onClick={() => setAbierto(false)} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: 4 }}>✕</button>
+              <button onClick={() => setAbierto(false)} style={{
+                background: 'transparent', border: '1px solid #252a35',
+                borderRadius: 6, color: '#4a5568', fontSize: 16,
+                cursor: 'pointer', lineHeight: 1, padding: '4px 8px', transition: 'all 0.15s',
+              }}>✕</button>
             </div>
           </div>
 
