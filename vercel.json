@@ -77,10 +77,6 @@
       "schedule": "0 22 * * *"
     },
     {
-      "path": "/api/cron/ajustes-alquiler",
-      "schedule": "0 9 * * *"
-    },
-    {
       "path": "/api/cron/alertas-seguimiento",
       "schedule": "0 8 * * *"
     },
