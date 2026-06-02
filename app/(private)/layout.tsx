@@ -53,6 +53,7 @@ const NAV_CORREDOR = [
   { href: "/observatorio", label: "Observatorio", icon: "🔭" },
   { href: "/alertas-mercado", label: "Alertas Mercado", icon: "🔔" },
   { href: "/cursos", label: "Cursos", icon: "🎓" },
+  { href: "/credencial", label: "Credencial Digital", icon: "🪪" },
 ];
 
 // ── Nav colaborador (funcional a comercialización) ─────────────────────────
