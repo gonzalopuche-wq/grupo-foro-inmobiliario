@@ -16,6 +16,14 @@ interface Clima {
   presion: number; visibilidad: number; nubes: number;
   windDeg: number; precipitacion: number; codIcono: number;
 }
+interface PronosticoItem {
+  hora: string; // "14:00"
+  temp: number;
+  icon: string; // código OWM como "02d"
+  desc: string;
+  precipitacion: number;
+  codIcono: number;
+}
 interface HistItem { periodo: string; valor: number; }
 interface Acum { mensual: number | null; trimestral: number | null; cuatrimestral: number | null; semestral: number | null; }
 interface Grupo {
@@ -69,6 +77,7 @@ export default function DashboardPage() {
   const [clima, setClima] = useState<Clima | null>(null);
   const [climaLoading, setClimaLoading] = useState(true);
   const [climaError, setClimaError] = useState(false);
+  const [pronostico, setPronostico] = useState<PronosticoItem[]>([]);
   const [mostrarCiudadInput, setMostrarCiudadInput] = useState(false);
   const [ciudadInput, setCiudadInput] = useState("");
   const [dolar, setDolar] = useState<Dolar | null>(null);
@@ -134,6 +143,23 @@ export default function DashboardPage() {
     precipitacion: Math.round(((d.rain?.["1h"] ?? d.snow?.["1h"] ?? 0)) * 10) / 10,
   });
 
+  const fetchPronostico = async (lat: number, lon: number) => {
+    try {
+      const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric&lang=es&cnt=8`);
+      const d = await r.json();
+      if (!d.list) return;
+      const items: PronosticoItem[] = d.list.slice(0, 6).map((item: any) => ({
+        hora: new Date(item.dt * 1000).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false }),
+        temp: Math.round(item.main.temp),
+        icon: item.weather?.[0]?.icon ?? "01d",
+        desc: item.weather?.[0]?.description ?? "",
+        precipitacion: Math.round(((item.rain?.["3h"] ?? item.snow?.["3h"] ?? 0)) * 10) / 10,
+        codIcono: item.weather?.[0]?.id ?? 800,
+      }));
+      setPronostico(items);
+    } catch { /* silencioso */ }
+  };
+
   const fetchClimaPorCoords = async (lat: number, lon: number, gpsActivo: boolean) => {
     setClimaLoading(true); setClimaError(false);
     try {
@@ -141,6 +167,7 @@ export default function DashboardPage() {
       const d = await r.json();
       if (d.cod && d.cod !== 200) throw new Error(d.message);
       setClima(parseClima(d, lat, lon, gpsActivo));
+      await fetchPronostico(lat, lon);
     } catch { setClimaError(true); }
     setClimaLoading(false);
   };
@@ -155,6 +182,7 @@ export default function DashboardPage() {
       if (d.cod && d.cod !== 200) throw new Error(d.message);
       setClima(parseClima(d, d.coord?.lat ?? 0, d.coord?.lon ?? 0, false, ciudad));
       localStorage.setItem("gfi_ciudad_clima", ciudad);
+      await fetchPronostico(d.coord?.lat ?? 0, d.coord?.lon ?? 0);
       setMostrarCiudadInput(false); setCiudadInput("");
     } catch { setClimaError(true); }
     setClimaLoading(false);
@@ -175,7 +203,7 @@ export default function DashboardPage() {
 
   // Reloj — useEffect propio para que el cleanup funcione correctamente
   useEffect(() => {
-    const tick = () => setHora(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }));
+    const tick = () => setHora(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false }));
     tick();
     const t = setInterval(tick, 1000);
     return () => clearInterval(t);
@@ -524,6 +552,13 @@ export default function DashboardPage() {
         .db-ciudad-input:focus { border-color: var(--db-red); }
         .db-ciudad-input::placeholder { color: var(--db-txt3); }
         .db-ciudad-btn { padding: 7px 12px; background: var(--db-red); border: none; border-radius: 5px; color: #fff; font-size: 13px; cursor: pointer; font-weight: 700; }
+        .db-clima-forecast { display: flex; overflow-x: auto; gap: 0; border-top: 1px solid rgba(255,255,255,0.07); scrollbar-width: none; }
+        .db-clima-forecast::-webkit-scrollbar { display: none; }
+        .db-clima-fitem { flex: 0 0 auto; min-width: 56px; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; gap: 1px; border-right: 1px solid rgba(255,255,255,0.05); }
+        .db-clima-fitem:last-child { border-right: none; }
+        .db-clima-fhora { font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 0.05em; }
+        .db-clima-ftemp { font-size: 12px; font-family: 'Montserrat',sans-serif; font-weight: 800; color: #fff; }
+        .db-clima-frain { font-size: 8px; color: #7dd3fc; font-family: 'Montserrat',sans-serif; font-weight: 700; }
 
         /* ── Accesos rápidos ── */
         .db-accesos { margin-bottom: 20px; }
@@ -832,7 +867,7 @@ export default function DashboardPage() {
                   <span className="db-clima-hora">{hora}</span>
                 </div>
                 <div className="db-clima-centro">
-                  <span className="db-clima-emoji">{climaEmoji(clima.codIcono, clima.icon)}</span>
+                  <img src={`https://openweathermap.org/img/wn/${clima.icon}@2x.png`} alt={climaDesc} style={{width:64,height:64,display:"block",margin:"0 auto 2px",filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.4))"}}/>
                   <div className="db-clima-temp" style={{color:tc}}>{clima.temp}°<span style={{fontSize:18,fontWeight:400,opacity:0.5}}>C</span></div>
                   <div className="db-clima-desc">{climaDesc}</div>
                   <div className="db-clima-minmax">
@@ -858,6 +893,18 @@ export default function DashboardPage() {
                     <span className="db-clima-stat-label">{clima.precipitacion > 0 ? "🌧 Lluvia" : "☁️ Nubos."}</span>
                   </div>
                 </div>
+                {pronostico.length > 0 && (
+                  <div className="db-clima-forecast">
+                    {pronostico.map((item, i) => (
+                      <div key={i} className="db-clima-fitem">
+                        <span className="db-clima-fhora">{item.hora}</span>
+                        <img src={`https://openweathermap.org/img/wn/${item.icon}.png`} alt={item.desc} style={{width:28,height:28}}/>
+                        <span className="db-clima-ftemp">{item.temp}°</span>
+                        {item.precipitacion > 0 && <span className="db-clima-frain">{item.precipitacion}mm</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             );
           })())}
