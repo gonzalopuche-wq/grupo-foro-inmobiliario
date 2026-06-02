@@ -288,8 +288,8 @@ ${resultado.recomendacion}`
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {historial.map(t => (
-                <div key={t.id} onClick={() => setVerDetalle(t)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(204,0,0,0.1)', border: '1px solid rgba(204,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>🏠</div>
+                <div key={t.id} onClick={() => setVerDetalle(t)} className="gfi-card" style={{ padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 'var(--gfi-radius-md)', background: 'var(--gfi-red-soft)', border: '1px solid var(--gfi-red-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🏠</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 3 }}>
                       {t.datos_propiedad?.tipo} · {t.datos_propiedad?.barrio}
@@ -299,10 +299,10 @@ ${resultado.recomendacion}`
                     </div>
                   </div>
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: '#cc0000', fontFamily: 'Montserrat,sans-serif' }}>
+                    <div className="gfi-price-usd" style={{ fontSize: 16 }}>
                       USD {t.resultado?.valor_sugerido?.toLocaleString('es-AR')}
                     </div>
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>
+                    <div style={{ fontSize: 10, color: 'var(--gfi-text-muted)', marginTop: 2 }}>
                       {new Date(t.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </div>
                   </div>
@@ -469,19 +469,19 @@ ${resultado.recomendacion}`
 
               {/* Factores */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <div style={{ background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10, padding: 14 }}>
-                  <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: '#22c55e', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>Positivos</div>
+                <div style={{ background: 'var(--gfi-green-soft)', border: '1px solid rgba(16,185,129,0.18)', borderRadius: 'var(--gfi-radius-md)', padding: 14 }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 9, fontWeight: 700, color: 'var(--gfi-green-text)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>Positivos</div>
                   {resultado.factores_positivos.map((f, i) => (
-                    <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginBottom: 5, paddingLeft: 14, position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: 0, color: '#22c55e' }}>+</span>{f}
+                    <div key={i} style={{ fontSize: 12, color: 'var(--gfi-text-secondary)', marginBottom: 5, paddingLeft: 14, position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: 0, color: 'var(--gfi-green-text)' }}>+</span>{f}
                     </div>
                   ))}
                 </div>
-                <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 10, padding: 14 }}>
-                  <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: '#ef4444', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>Negativos</div>
+                <div style={{ background: 'var(--gfi-red-soft)', border: '1px solid var(--gfi-red-border)', borderRadius: 'var(--gfi-radius-md)', padding: 14 }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 9, fontWeight: 700, color: 'var(--gfi-red)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>Negativos</div>
                   {resultado.factores_negativos.map((f, i) => (
-                    <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginBottom: 5, paddingLeft: 14, position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: 0, color: '#ef4444' }}>−</span>{f}
+                    <div key={i} style={{ fontSize: 12, color: 'var(--gfi-text-secondary)', marginBottom: 5, paddingLeft: 14, position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: 0, color: 'var(--gfi-red)' }}>−</span>{f}
                     </div>
                   ))}
                 </div>
@@ -489,11 +489,11 @@ ${resultado.recomendacion}`
 
               {/* Justificación del valor — hoy */}
               {resultado.justificacion_valor_hoy && (
-                <div style={{ background: 'rgba(234,179,8,0.06)', border: '1px solid rgba(234,179,8,0.2)', borderRadius: 10, padding: 14 }}>
-                  <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(234,179,8,0.8)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
-                    ⚖ Justificación del valor · hoy
+                <div style={{ background: 'var(--gfi-orange-soft)', border: '1px solid var(--gfi-orange-border)', borderRadius: 'var(--gfi-radius-md)', padding: 14 }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 9, fontWeight: 700, color: '#f97316', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
+                    Justificacion del valor · hoy
                   </div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, margin: 0 }}>{resultado.justificacion_valor_hoy}</p>
+                  <p style={{ fontSize: 13, color: 'var(--gfi-text-primary)', lineHeight: 1.6, margin: 0 }}>{resultado.justificacion_valor_hoy}</p>
                 </div>
               )}
 
@@ -550,18 +550,18 @@ ${resultado.recomendacion}`
               )}
 
               {/* Recomendación */}
-              <div style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 10, padding: 14 }}>
-                <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Recomendación</div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>{resultado.recomendacion}</p>
+              <div style={{ background: 'var(--gfi-bg-elevated)', border: '1px solid var(--gfi-border)', borderRadius: 'var(--gfi-radius-md)', padding: 14, borderLeft: '3px solid var(--gfi-red)' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 9, fontWeight: 700, color: 'var(--gfi-red)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Recomendacion</div>
+                <p style={{ fontSize: 13, color: 'var(--gfi-text-secondary)', lineHeight: 1.6, margin: 0 }}>{resultado.recomendacion}</p>
               </div>
 
               {/* Acciones */}
               <div className="no-print" style={{ display: 'flex', gap: 8 }}>
-                <button onClick={copiarResultado} style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
-                  📋 Copiar tasación
+                <button onClick={copiarResultado} className="gfi-btn gfi-btn--secondary" style={{ flex: 1, justifyContent: 'center' }}>
+                  Copiar tasacion
                 </button>
-                <button onClick={exportarPDF} style={{ flex: 1, padding: '10px', background: 'rgba(204,0,0,0.08)', border: '1px solid rgba(204,0,0,0.25)', borderRadius: 8, color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
-                  📄 Exportar PDF
+                <button onClick={exportarPDF} className="gfi-btn gfi-btn--ghost" style={{ flex: 1, justifyContent: 'center' }}>
+                  Exportar PDF
                 </button>
               </div>
 
@@ -576,7 +576,7 @@ ${resultado.recomendacion}`
       {/* Modal detalle historial */}
       {verDetalle && (
         <div onClick={e => { if (e.target === e.currentTarget) setVerDetalle(null) }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 24, width: '100%', maxWidth: 540, maxHeight: '85vh', overflowY: 'auto' }}>
+          <div style={{ background: 'var(--gfi-bg-panel)', border: '1px solid var(--gfi-border)', borderRadius: 'var(--gfi-radius-xl)', padding: 24, width: '100%', maxWidth: 540, maxHeight: '85vh', overflowY: 'auto', boxShadow: 'var(--gfi-shadow-lg)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
               <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>
                 {verDetalle.datos_propiedad?.tipo} · {verDetalle.datos_propiedad?.barrio}

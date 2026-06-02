@@ -194,102 +194,97 @@ export default function BibliotecaPage() {
   };
 
   const nivelColor = (nivel: string) => {
-    if (nivel === "Inicial") return { bg: "rgba(34,197,94,0.1)", border: "rgba(34,197,94,0.25)", color: "#22c55e" };
-    if (nivel === "Intermedio") return { bg: "rgba(234,179,8,0.1)", border: "rgba(234,179,8,0.25)", color: "#eab308" };
-    return { bg: "rgba(200,0,0,0.1)", border: "rgba(200,0,0,0.25)", color: "#ff6666" };
+    if (nivel === "Inicial") return { bg: "rgba(10,61,46,0.4)", border: "rgba(16,185,129,0.25)", color: "var(--gfi-green-text)" };
+    if (nivel === "Intermedio") return { bg: "var(--gfi-orange-soft)", border: "var(--gfi-orange-border)", color: "#f97316" };
+    return { bg: "var(--gfi-red-soft)", border: "var(--gfi-red-border)", color: "var(--gfi-red)" };
   };
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .bib-wrap { display: flex; flex-direction: column; gap: 20px; }
         .bib-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .bib-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .bib-titulo span { color: #cc0000; }
-        .bib-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+        .bib-titulo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--gfi-text-primary); }
+        .bib-titulo span { color: var(--gfi-red); }
+        .bib-sub { font-size: 13px; color: var(--gfi-text-secondary); margin-top: 4px; }
         .bib-header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .bib-stats { display: flex; gap: 10px; }
-        .bib-stat { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 8px 14px; text-align: center; }
-        .bib-stat-val { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #cc0000; }
-        .bib-stat-label { font-size: 9px; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; text-transform: uppercase; letter-spacing: 0.1em; }
-        .bib-btn-subir { padding: 10px 20px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
-        .bib-btn-subir:hover { background: #e60000; }
+        .bib-stat { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 8px 16px; text-align: center; }
+        .bib-stat-val { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--gfi-red); font-variant-numeric: tabular-nums; }
+        .bib-stat-label { font-size: 9px; color: var(--gfi-text-muted); font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
+        .bib-btn-subir { padding: 10px 20px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-md); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; box-shadow: var(--gfi-shadow-red); transition: var(--gfi-transition); }
+        .bib-btn-subir:hover { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
 
-        /* Aviso subir y ganar */
-        .bib-aviso { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(200,0,0,0.05); border: 1px solid rgba(200,0,0,0.15); border-radius: 6px; }
+        .bib-aviso { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-md); }
         .bib-aviso-icon { font-size: 20px; flex-shrink: 0; }
-        .bib-aviso-txt { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.5; }
-        .bib-aviso-txt strong { color: #cc0000; }
+        .bib-aviso-txt { font-size: 12px; color: var(--gfi-text-secondary); line-height: 1.5; }
+        .bib-aviso-txt strong { color: var(--gfi-red); }
 
-        /* Filtros */
         .bib-filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .bib-search { flex: 1; min-width: 200px; padding: 9px 12px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
-        .bib-search:focus { border-color: rgba(200,0,0,0.4); }
-        .bib-search::placeholder { color: rgba(255,255,255,0.2); }
-        .bib-select { padding: 9px 10px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.6); font-size: 12px; outline: none; font-family: 'Inter',sans-serif; cursor: pointer; }
-        .bib-count { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; }
+        .bib-search { flex: 1; min-width: 200px; padding: 9px 12px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); transition: var(--gfi-transition); }
+        .bib-search:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .bib-search::placeholder { color: var(--gfi-text-muted); }
+        .bib-select { padding: 9px 10px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-secondary); font-size: 12px; outline: none; font-family: var(--font-body); cursor: pointer; transition: var(--gfi-transition); }
+        .bib-select:focus { border-color: var(--gfi-red); }
+        .bib-count { font-size: 11px; color: var(--gfi-text-muted); white-space: nowrap; font-family: var(--font-mono); }
 
-        /* Grid documentos */
         .bib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-        .bib-card { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.2s; }
-        .bib-card:hover { border-color: rgba(200,0,0,0.2); }
+        .bib-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; transition: var(--gfi-transition); position: relative; overflow: hidden; }
+        .bib-card::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, rgba(255,255,255,0.012) 0%, transparent 60%); pointer-events: none; }
+        .bib-card:hover { border-color: var(--gfi-red-border); box-shadow: var(--gfi-shadow-md); }
         .bib-card-top { display: flex; gap: 12px; align-items: flex-start; }
         .bib-card-icon { font-size: 28px; flex-shrink: 0; line-height: 1; }
         .bib-card-info { flex: 1; min-width: 0; }
-        .bib-card-titulo { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 4px; }
-        .bib-card-desc { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .bib-card-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--gfi-text-primary); line-height: 1.3; margin-bottom: 4px; }
+        .bib-card-desc { font-size: 11px; color: var(--gfi-text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .bib-card-badges { display: flex; gap: 5px; flex-wrap: wrap; }
-        .bib-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; }
-        .bib-badge-cat { background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); color: #cc0000; }
-        .bib-badge-gfi { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25); color: #818cf8; }
-        .bib-badge-com { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
+        .bib-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; }
+        .bib-badge-cat { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
+        .bib-badge-gfi { background: rgba(255,255,255,0.06); border: 1px solid var(--gfi-border); color: var(--gfi-text-secondary); }
+        .bib-badge-com { background: rgba(255,255,255,0.04); border: 1px solid var(--gfi-border-subtle); color: var(--gfi-text-muted); }
         .bib-card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-        .bib-card-meta { font-size: 10px; color: rgba(255,255,255,0.25); display: flex; gap: 10px; flex-wrap: wrap; }
-        .bib-btn-dl { display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); border-radius: 3px; color: #cc0000; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-        .bib-btn-dl:hover { background: rgba(200,0,0,0.2); border-color: #cc0000; color: #fff; }
+        .bib-card-meta { font-size: 10px; color: var(--gfi-text-muted); display: flex; gap: 10px; flex-wrap: wrap; font-family: var(--font-mono); }
+        .bib-btn-dl { display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-md); color: var(--gfi-red); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .bib-btn-dl:hover { background: rgba(204,0,0,0.18); border-color: var(--gfi-red); color: #fff; }
 
-        /* Empty */
-        .bib-empty { padding: 64px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; }
+        .bib-empty { padding: 64px; text-align: center; color: var(--gfi-text-muted); font-size: 13px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); }
         .bib-spinner { display: flex; align-items: center; justify-content: center; padding: 64px; }
-        .bib-spin { width: 28px; height: 28px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .bib-spin { width: 28px; height: 28px; border: 2px solid var(--gfi-red-soft); border-top-color: var(--gfi-red); border-radius: 50%; animation: gfi-spin 0.7s linear infinite; }
 
-        /* Modal */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 400; padding: 20px; }
-        .modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.25); border-radius: 6px; padding: 28px 30px; width: 100%; max-width: 560px; position: relative; max-height: 92vh; overflow-y: auto; }
-        .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,transparent,#cc0000,transparent); border-radius: 6px 6px 0 0; }
-        .modal-titulo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 6px; }
-        .modal-titulo span { color: #cc0000; }
-        .modal-sub { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
+        .modal { background: var(--gfi-bg-panel); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-lg); padding: 28px 30px; width: 100%; max-width: 560px; position: relative; max-height: 92vh; overflow-y: auto; box-shadow: var(--gfi-shadow-lg); }
+        .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gfi-red), transparent); border-radius: var(--gfi-radius-lg) var(--gfi-radius-lg) 0 0; }
+        .modal-titulo { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--gfi-text-primary); margin-bottom: 6px; }
+        .modal-titulo span { color: var(--gfi-red); }
+        .modal-sub { font-size: 12px; color: var(--gfi-text-secondary); margin-bottom: 20px; }
         .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
-        .field label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
-        .field input, .field select, .field textarea { padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; width: 100%; }
-        .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(200,0,0,0.4); }
-        .field input::placeholder, .field textarea::placeholder { color: rgba(255,255,255,0.2); }
-        .field select { background: #0f0f0f; }
+        .field label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-muted); }
+        .field input, .field select, .field textarea { padding: 9px 12px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); transition: var(--gfi-transition); width: 100%; }
+        .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-soft); }
+        .field input::placeholder, .field textarea::placeholder { color: var(--gfi-text-muted); }
+        .field select { background: var(--gfi-bg-input); }
         .field textarea { resize: vertical; min-height: 80px; }
         .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .file-drop { border: 2px dashed rgba(255,255,255,0.12); border-radius: 6px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
-        .file-drop:hover { border-color: rgba(200,0,0,0.35); }
-        .file-drop.tiene { border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.04); }
-        .file-drop-txt { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 6px; }
-        .file-drop-nombre { font-size: 12px; color: #22c55e; font-weight: 600; margin-top: 6px; }
-        .file-tipos { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 4px; }
+        .file-drop { border: 2px dashed var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 24px; text-align: center; cursor: pointer; transition: var(--gfi-transition); }
+        .file-drop:hover { border-color: var(--gfi-red-border); }
+        .file-drop.tiene { border-color: rgba(16,185,129,0.35); background: var(--gfi-green-soft); }
+        .file-drop-txt { font-size: 13px; color: var(--gfi-text-secondary); margin-top: 6px; }
+        .file-drop-nombre { font-size: 12px; color: var(--gfi-green-text); font-weight: 600; margin-top: 6px; }
+        .file-tipos { font-size: 10px; color: var(--gfi-text-muted); margin-top: 4px; }
         .progreso-wrap { margin: 12px 0; }
-        .progreso-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
-        .progreso-fill { height: 100%; background: #cc0000; border-radius: 2px; transition: width 0.3s; }
-        .progreso-txt { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; text-align: right; }
-        .modal-nota { font-size: 11px; color: rgba(255,255,255,0.25); line-height: 1.6; padding: 10px 12px; background: rgba(255,255,255,0.03); border-radius: 4px; border: 1px solid rgba(255,255,255,0.07); margin-bottom: 16px; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
-        .btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; color: rgba(255,255,255,0.45); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .btn-save { padding: 9px 22px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .btn-save:hover:not(:disabled) { background: #e60000; }
-        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; max-width: 360px; line-height: 1.4; }
-        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
-        .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
-        @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .progreso-bar { height: 4px; background: var(--gfi-border); border-radius: 2px; overflow: hidden; }
+        .progreso-fill { height: 100%; background: var(--gfi-red); border-radius: 2px; transition: width 0.3s; }
+        .progreso-txt { font-size: 11px; color: var(--gfi-text-secondary); margin-top: 4px; text-align: right; }
+        .modal-nota { font-size: 11px; color: var(--gfi-text-secondary); line-height: 1.6; padding: 10px 12px; background: var(--gfi-bg-secondary); border-radius: var(--gfi-radius-md); border: 1px solid var(--gfi-border); margin-bottom: 16px; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px; border-top: 1px solid var(--gfi-border-subtle); }
+        .btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .btn-cancel:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-primary); }
+        .btn-save { padding: 9px 22px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-md); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; box-shadow: var(--gfi-shadow-red); transition: var(--gfi-transition); }
+        .btn-save:hover:not(:disabled) { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
+        .btn-save:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-fade-in 0.3s ease; max-width: 360px; line-height: 1.4; }
+        .toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(16,185,129,0.35); color: var(--gfi-green-text); }
+        .toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
         @media(max-width:600px) { .bib-grid { grid-template-columns: 1fr; } .field-grid { grid-template-columns: 1fr; } }
       `}</style>
 
@@ -311,8 +306,8 @@ export default function BibliotecaPage() {
                 <div className="bib-stat-label">Descargas</div>
               </div>
             </div>
-            <Link href="/biblioteca/drive" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "rgba(255,255,255,0.6)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap" }}>
-              📁 Google Drive
+            <Link href="/biblioteca/drive" className="gfi-btn gfi-btn--secondary">
+              Google Drive
             </Link>
             <button className="bib-btn-subir" onClick={() => setMostrarForm(true)}>
               ↑ Subir documento
