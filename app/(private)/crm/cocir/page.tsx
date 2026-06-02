@@ -300,70 +300,79 @@ export default function COCIRPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .cc-wrap { max-width: 900px; display: flex; flex-direction: column; gap: 20px; font-family: 'Inter',sans-serif; }
-        .cc-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .cc-titulo span { color: #cc0000; }
-        .cc-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
-        /* KPIs */
+        .cc-wrap { max-width: 900px; display: flex; flex-direction: column; gap: 20px; font-family: var(--font-body); }
+        /* Header */
+        .cc-titulo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--gfi-text-primary); letter-spacing: -0.02em; }
+        .cc-titulo span { color: var(--gfi-red); }
+        .cc-sub { font-size: 13px; color: var(--gfi-text-secondary); margin-top: 3px; }
+        /* KPI cards — using gfi-card pattern */
         .cc-kpis { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; }
-        .cc-kpi { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 13px 15px; }
-        .cc-kpi-val { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
-        .cc-kpi-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-top: 3px; font-family: 'Montserrat',sans-serif; }
-        /* Tabs */
-        .cc-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .cc-tab { padding: 10px 18px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
-        .cc-tab.on { color: #fff; border-bottom-color: #cc0000; }
+        .cc-kpi { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); padding: 14px 16px; position: relative; overflow: hidden; transition: var(--gfi-transition); }
+        .cc-kpi:hover { border-color: var(--gfi-border-bright); box-shadow: var(--gfi-shadow-sm); }
+        .cc-kpi::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg, rgba(255,255,255,0.012) 0%, transparent 60%); pointer-events:none; }
+        .cc-kpi-val { font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--gfi-text-primary); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+        .cc-kpi-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-top: 4px; font-family: var(--font-display); }
+        /* Tabs with red active indicator */
+        .cc-tabs { display: flex; border-bottom: 1px solid var(--gfi-border); gap: 2px; }
+        .cc-tab { padding: 10px 18px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: var(--gfi-transition); }
+        .cc-tab:hover { color: var(--gfi-text-secondary); }
+        .cc-tab.on { color: var(--gfi-text-primary); border-bottom-color: var(--gfi-red); }
         /* Card */
-        .cc-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 18px 20px; }
+        .cc-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); padding: 18px 20px; }
         /* Input */
-        .cc-input { width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #fff; font-family: 'Inter',sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
-        .cc-input:focus { border-color: rgba(204,0,0,0.4); }
-        .cc-input::placeholder { color: rgba(255,255,255,0.2); }
-        /* Tabla */
+        .cc-input { width: 100%; padding: 11px 14px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-family: var(--font-body); font-size: 13px; outline: none; transition: var(--gfi-transition); box-sizing: border-box; }
+        .cc-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-glow); }
+        .cc-input::placeholder { color: var(--gfi-text-muted); }
+        /* Table — gfi-table pattern */
         .cc-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .cc-tabla th { padding: 8px 10px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .cc-tabla td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+        .cc-tabla th { padding: 10px 12px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); border-bottom: 1px solid var(--gfi-border); white-space: nowrap; }
+        .cc-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.1s; }
+        .cc-tabla tbody tr:nth-child(even) { background: rgba(255,255,255,0.012); }
+        .cc-tabla td { padding: 10px 12px; border-bottom: 1px solid var(--gfi-border-subtle); vertical-align: middle; color: var(--gfi-text-secondary); }
+        .cc-tabla tbody tr:hover { background: rgba(204,0,0,0.04); }
+        .cc-tabla tbody tr:hover td { color: var(--gfi-text-primary); }
         /* Badge */
-        .cc-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; }
-        /* Checkbox */
-        .cc-cb-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; cursor: pointer; transition: background 0.15s; }
-        .cc-cb-row:hover { background: rgba(255,255,255,0.06); }
-        .cc-cb-row input { accent-color: #cc0000; width: 15px; height: 15px; cursor: pointer; }
-        /* Button */
-        .cc-btn { padding: 11px 22px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; border: none; transition: all 0.15s; }
-        .cc-btn-primary { background: #cc0000; color: #fff; }
-        .cc-btn-primary:hover { background: #e00; }
-        .cc-btn-primary:disabled { background: rgba(204,0,0,0.3); cursor: not-allowed; }
+        .cc-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.06em; }
+        /* Checkbox rows */
+        .cc-cb-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); cursor: pointer; transition: var(--gfi-transition); }
+        .cc-cb-row:hover { background: var(--gfi-bg-hover); border-color: var(--gfi-border-bright); }
+        .cc-cb-row input { accent-color: var(--gfi-red); width: 15px; height: 15px; cursor: pointer; }
+        /* Buttons — using gfi-btn pattern */
+        .cc-btn { padding: 10px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid transparent; transition: var(--gfi-transition); display: inline-flex; align-items: center; gap: 6px; }
+        .cc-btn-primary { background: var(--gfi-red-gradient); color: #fff; border-color: transparent; box-shadow: var(--gfi-shadow-red); }
+        .cc-btn-primary:hover { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
+        .cc-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
         /* Spinner */
-        .cc-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
+        .cc-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.15); border-top-color: var(--gfi-red); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; flex-shrink: 0; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        /* Resultado sync */
-        .cc-sync-stat { background: rgba(255,255,255,0.04); border-radius: 6px; padding: 12px 16px; text-align: center; }
-        .cc-sync-stat-val { font-family: 'Montserrat',sans-serif; font-size: 28px; font-weight: 800; }
-        .cc-sync-stat-label { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 3px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-        /* Phone status */
+        /* Sync result cards */
+        .cc-sync-stat { background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 14px 16px; text-align: center; }
+        .cc-sync-stat-val { font-family: var(--font-display); font-size: 28px; font-weight: 900; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+        .cc-sync-stat-label { font-size: 9px; color: var(--gfi-text-muted); margin-top: 4px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; }
+        /* Phone status filters */
         .cc-phone-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-        .cc-phone-pill { padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: all 0.15s; }
-        .cc-phone-pill:hover { background: rgba(255,255,255,0.07); color: #fff; }
-        .cc-phone-pill.on { background: rgba(204,0,0,0.12); border-color: rgba(204,0,0,0.4); color: #ff4444; }
-        .cc-phone-pill.ok.on { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.35); color: #22c55e; }
-        .cc-phone-pill.diferente.on { background: rgba(234,179,8,0.1); border-color: rgba(234,179,8,0.35); color: #eab308; }
-        .cc-phone-pill.sin-padron.on { background: rgba(100,116,139,0.12); border-color: rgba(100,116,139,0.35); color: #64748b; }
-        .cc-phone-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.1s; }
-        .cc-phone-row:hover { background: rgba(255,255,255,0.02); }
-        .cc-phone-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: rgba(255,255,255,0.08); flex-shrink: 0; }
-        .cc-phone-name { font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; color: #fff; }
-        .cc-phone-mat { font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; color: #cc0000; }
-        .cc-phone-tel { font-size: 11px; color: rgba(255,255,255,0.6); font-family: 'Montserrat',sans-serif; }
-        .cc-phone-cocir { font-size: 11px; color: #22c55e; font-family: 'Montserrat',sans-serif; font-weight: 600; }
-        .cc-phone-missing { font-size: 11px; color: rgba(255,255,255,0.2); font-style: italic; }
-        .cc-phone-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; }
-        .cc-sync-btn { padding: 5px 12px; border-radius: 4px; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-        .cc-sync-btn:hover { background: rgba(34,197,94,0.2); }
+        .cc-phone-pill { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: var(--gfi-transition); }
+        .cc-phone-pill:hover { background: var(--gfi-bg-hover); color: var(--gfi-text-primary); border-color: var(--gfi-border-bright); }
+        .cc-phone-pill.on { background: var(--gfi-red-soft); border-color: var(--gfi-red-border); color: var(--gfi-red); }
+        .cc-phone-pill.ok.on { background: rgba(10,61,46,0.4); border-color: rgba(16,185,129,0.3); color: var(--gfi-green-text); }
+        .cc-phone-pill.diferente.on { background: rgba(196,74,0,0.12); border-color: var(--gfi-orange-border); color: #f97316; }
+        .cc-phone-pill.sin-padron.on { background: rgba(255,255,255,0.05); border-color: var(--gfi-border-bright); color: var(--gfi-text-secondary); }
+        /* Phone rows */
+        .cc-phone-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.1s; }
+        .cc-phone-row:hover { background: rgba(204,0,0,0.03); }
+        .cc-phone-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); flex-shrink: 0; }
+        .cc-phone-name { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--gfi-text-primary); }
+        .cc-phone-mat { font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--gfi-red); letter-spacing: 0.04em; }
+        .cc-phone-tel { font-size: 11px; color: var(--gfi-text-secondary); font-family: var(--font-mono); }
+        .cc-phone-cocir { font-size: 11px; color: var(--gfi-green-text); font-family: var(--font-mono); font-weight: 600; }
+        .cc-phone-missing { font-size: 11px; color: var(--gfi-text-muted); font-style: italic; font-family: var(--font-body); }
+        .cc-phone-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-family: var(--font-display); font-size: 9px; font-weight: 700; }
+        /* Sync action buttons */
+        .cc-sync-btn { padding: 5px 13px; border-radius: var(--gfi-radius-md); background: rgba(10,61,46,0.4); border: 1px solid rgba(16,185,129,0.3); color: var(--gfi-green-text); font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; transition: var(--gfi-transition); white-space: nowrap; }
+        .cc-sync-btn:hover { background: rgba(10,61,46,0.6); border-color: rgba(16,185,129,0.5); }
         .cc-sync-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .cc-sync-done { padding: 5px 12px; border-radius: 4px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: rgba(34,197,94,0.6); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; }
-        .cc-phone-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
+        .cc-sync-done { padding: 5px 13px; border-radius: var(--gfi-radius-md); background: rgba(10,61,46,0.2); border: 1px solid rgba(16,185,129,0.2); color: rgba(16,185,129,0.5); font-family: var(--font-display); font-size: 10px; font-weight: 700; }
+        .cc-phone-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
         @media (max-width: 700px) {
           .cc-kpis { grid-template-columns: repeat(3,1fr); }
           .cc-phone-kpis { grid-template-columns: repeat(2,1fr); }
@@ -474,7 +483,7 @@ export default function COCIRPage() {
             )}
             {resultados.length > 0 && (
               <div className="cc-card" style={{ padding: 0, overflow: "hidden" }}>
-                <table className="cc-tabla">
+                <table className="gfi-table">
                   <thead>
                     <tr>
                       <th>Matrícula</th>
@@ -490,8 +499,8 @@ export default function COCIRPage() {
                   <tbody>
                     {resultados.map(r => (
                       <tr key={r.matricula} style={{ cursor: "pointer" }} onClick={() => setContacto(r)}>
-                        <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#cc0000" }}>{r.matricula}</td>
-                        <td style={{ color: "#fff", fontWeight: 600, fontFamily: "Montserrat,sans-serif", fontSize: 12 }}>
+                        <td style={{ fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--gfi-red)", letterSpacing: "0.04em" }}>{r.matricula}</td>
+                        <td style={{ color: "var(--gfi-text-primary)", fontWeight: 600, fontFamily: "var(--font-display)", fontSize: 12 }}>
                           {[r.apellido, r.nombre].filter(Boolean).join(", ") || "—"}
                         </td>
                         <td>
@@ -499,23 +508,23 @@ export default function COCIRPage() {
                             {r.estado ?? "—"}
                           </span>
                         </td>
-                        <td style={{ color: "rgba(255,255,255,0.55)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
+                        <td style={{ color: "var(--gfi-text-secondary)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
                         <td>
                           {r.telefono
-                            ? <span style={{color:"rgba(255,255,255,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:600,fontSize:11}}>{r.telefono}</span>
-                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                            ? <span style={{color:"var(--gfi-text-secondary)",fontFamily:"var(--font-mono)",fontSize:11}}>{r.telefono}</span>
+                            : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
                         </td>
                         <td>
                           {r.celular
-                            ? <a href={`https://wa.me/${r.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:12}}>{r.celular}</a>
-                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                            ? <a href={`https://wa.me/${r.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"var(--font-mono)",fontSize:12}}>{r.celular}</a>
+                            : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
                         </td>
                         <td>
                           {r.email
                             ? <a href={`mailto:${r.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:11,wordBreak:"break-all"}}>{r.email}</a>
-                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                            : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
                         </td>
-                        <td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{r.localidad || "—"}</td>
+                        <td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{r.localidad || "—"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -815,19 +824,19 @@ export default function COCIRPage() {
           onClick={() => setContacto(null)}
         >
           <div
-            style={{ background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"28px 24px",maxWidth:480,width:"100%",display:"flex",flexDirection:"column",gap:16 }}
+            style={{ background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border)",borderRadius:"var(--gfi-radius-xl)",padding:"28px 24px",maxWidth:480,width:"100%",display:"flex",flexDirection:"column",gap:16,boxShadow:"var(--gfi-shadow-lg)" }}
             onClick={e => e.stopPropagation()}
           >
             <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
               <div>
-                <div style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:18,color:"#fff"}}>
+                <div style={{fontFamily:"var(--font-display)",fontWeight:800,fontSize:18,color:"var(--gfi-text-primary)",letterSpacing:"-0.01em"}}>
                   {[contacto.apellido, contacto.nombre].filter(Boolean).join(", ") || "—"}
                 </div>
-                <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,color:"#cc0000",fontWeight:700,marginTop:3}}>
+                <div style={{fontFamily:"var(--font-mono)",fontSize:11,color:"var(--gfi-red)",fontWeight:600,marginTop:4,letterSpacing:"0.04em"}}>
                   Matrícula {contacto.matricula}
                 </div>
               </div>
-              <button onClick={() => setContacto(null)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:22,cursor:"pointer",lineHeight:1,padding:0}}>×</button>
+              <button onClick={() => setContacto(null)} style={{background:"none",border:"none",color:"var(--gfi-text-muted)",fontSize:22,cursor:"pointer",lineHeight:1,padding:0}}>×</button>
             </div>
             {contacto.estado && (
               <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 10px",borderRadius:20,background:`${estadoColor(contacto.estado)}18`,border:`1px solid ${estadoColor(contacto.estado)}40`,alignSelf:"flex-start"}}>
@@ -900,43 +909,43 @@ function PadronMuestra({ onSelect }: { onSelect: (r: PadronEntry) => void }) {
 
   return (
     <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+      <table className="gfi-table" style={{ minWidth: 700 }}>
         <thead>
           <tr>
             {["Matrícula", "Apellido y Nombre", "Estado", "Inmobiliaria", "Teléfono", "Celular", "Email", "Localidad"].map(h => (
-              <th key={h} style={{ padding: "7px 10px", textAlign: "left", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>{h}</th>
+              <th key={h}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {filas.map(r => (
             <tr key={r.matricula} style={{ cursor: "pointer" }} onClick={() => onSelect(r)}>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#cc0000" }}>{r.matricula}</td>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: "#fff", fontWeight: 600, fontFamily: "Montserrat,sans-serif", fontSize: 12 }}>
+              <td style={{ fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--gfi-red)", letterSpacing: "0.04em" }}>{r.matricula}</td>
+              <td style={{ color: "var(--gfi-text-primary)", fontWeight: 600, fontFamily: "var(--font-display)", fontSize: 12 }}>
                 {[r.apellido, r.nombre].filter(Boolean).join(", ") || "—"}
               </td>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                <span style={{ display: "inline-block", padding: "2px 7px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, background: `${estadoColor(r.estado)}18`, color: estadoColor(r.estado), border: `1px solid ${estadoColor(r.estado)}35` }}>
+              <td>
+                <span style={{ display: "inline-flex", alignItems: "center", padding: "2px 8px", borderRadius: 10, fontFamily: "var(--font-display)", fontSize: 9, fontWeight: 700, background: `${estadoColor(r.estado)}18`, color: estadoColor(r.estado), border: `1px solid ${estadoColor(r.estado)}35` }}>
                   {r.estado ?? "—"}
                 </span>
               </td>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+              <td style={{ color: "var(--gfi-text-secondary)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
+              <td>
                 {r.telefono
-                  ? <span style={{color:"rgba(255,255,255,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:600,fontSize:11}}>{r.telefono}</span>
-                  : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                  ? <span style={{color:"var(--gfi-text-secondary)",fontFamily:"var(--font-mono)",fontSize:11}}>{r.telefono}</span>
+                  : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
               </td>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+              <td>
                 {r.celular
-                  ? <a href={`https://wa.me/${r.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:11}}>{r.celular}</a>
-                  : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                  ? <a href={`https://wa.me/${r.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"var(--font-mono)",fontSize:11}}>{r.celular}</a>
+                  : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
               </td>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+              <td>
                 {r.email
                   ? <a href={`mailto:${r.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:11,wordBreak:"break-all"}}>{r.email}</a>
-                  : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                  : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
               </td>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{r.localidad || "—"}</td>
+              <td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{r.localidad || "—"}</td>
             </tr>
           ))}
         </tbody>

@@ -258,57 +258,64 @@ export default function PadronGFIPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .pad-wrap { display: flex; flex-direction: column; gap: 20px; }
-        .pad-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .pad-titulo span { color: #cc0000; }
-        .pad-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+        /* Header */
+        .pad-titulo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--gfi-text-primary); letter-spacing: -0.02em; }
+        .pad-titulo span { color: var(--gfi-red); }
+        .pad-sub { font-size: 13px; color: var(--gfi-text-secondary); margin-top: 4px; font-family: var(--font-body); }
+        /* Source tabs */
         .pad-fuentes { display: flex; gap: 8px; flex-wrap: wrap; }
-        .pad-fuente-btn { padding: 9px 20px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); background: rgba(14,14,14,0.9); color: rgba(255,255,255,0.4); }
-        .pad-fuente-btn:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
-        .pad-fuente-btn.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
-        .pad-statsbar { display: flex; align-items: center; gap: 20px; padding: 12px 18px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; flex-wrap: wrap; }
+        .pad-fuente-btn { padding: 8px 18px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-secondary); }
+        .pad-fuente-btn:hover { border-color: var(--gfi-red-border); color: var(--gfi-text-primary); background: var(--gfi-red-soft); }
+        .pad-fuente-btn.activo { border-color: var(--gfi-red); color: var(--gfi-text-primary); background: var(--gfi-red-soft); box-shadow: 0 0 0 1px var(--gfi-red-border); }
+        /* Stats bar — reusing gfi-card layout */
+        .pad-statsbar { display: flex; align-items: center; gap: 20px; padding: 14px 20px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); flex-wrap: wrap; position: relative; overflow: hidden; }
+        .pad-statsbar::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(204,0,0,0.05) 60%, transparent 100%); }
         .pad-stat { display: flex; flex-direction: column; gap: 2px; }
-        .pad-stat-val { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; line-height: 1; }
-        .pad-stat-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; }
-        .pad-stat-sep { width: 1px; height: 36px; background: rgba(255,255,255,0.08); }
+        .pad-stat-val { font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--gfi-text-primary); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+        .pad-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-muted); font-family: var(--font-display); margin-top: 2px; }
+        .pad-stat-sep { width: 1px; height: 36px; background: var(--gfi-border); }
+        /* Search / filter bar */
         .pad-buscador { display: flex; gap: 10px; align-items: center; }
         .pad-search-wrap { flex: 1; position: relative; }
-        .pad-search-ico { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 14px; color: rgba(255,255,255,0.25); }
-        .pad-input { width: 100%; padding: 11px 14px 11px 38px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; color: #fff; font-size: 14px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; }
-        .pad-input:focus { border-color: rgba(200,0,0,0.5); }
-        .pad-input::placeholder { color: rgba(255,255,255,0.18); }
-        .pad-count { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; }
-        .pad-tabla-wrap { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+        .pad-search-ico { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--gfi-text-muted); pointer-events: none; }
+        .pad-input { width: 100%; padding: 11px 14px 11px 40px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); font-size: 13px; outline: none; font-family: var(--font-body); transition: var(--gfi-transition); }
+        .pad-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px var(--gfi-red-glow); }
+        .pad-input::placeholder { color: var(--gfi-text-muted); }
+        .pad-count { font-size: 11px; color: var(--gfi-text-muted); white-space: nowrap; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+        /* Table wrapper */
+        .pad-tabla-wrap { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
         .pad-tabla { width: 100%; border-collapse: collapse; min-width: 680px; }
-        .pad-tabla thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .pad-tabla th { padding: 11px 14px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
-        .pad-tabla tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+        .pad-tabla thead tr { background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--gfi-border); }
+        .pad-tabla th { padding: 11px 14px; text-align: left; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-muted); white-space: nowrap; }
+        .pad-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.12s; }
         .pad-tabla tbody tr:last-child { border-bottom: none; }
-        .pad-tabla tbody tr:hover { background: rgba(255,255,255,0.02); }
-        .pad-tabla tbody tr.clickable:hover { background: rgba(200,0,0,0.04); cursor: pointer; }
-        .pad-tabla td { padding: 12px 14px; font-size: 12px; color: rgba(255,255,255,0.7); vertical-align: middle; }
-        .pad-nombre { font-weight: 600; color: #fff; font-size: 13px; }
-        .pad-mat { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; font-family: 'Montserrat',sans-serif; }
-        .pad-avatar { width: 32px; height: 32px; border-radius: 6px; background: rgba(200,0,0,0.12); border: 1px solid rgba(200,0,0,0.2); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; color: #cc0000; overflow: hidden; flex-shrink: 0; }
+        .pad-tabla tbody tr:nth-child(even) { background: rgba(255,255,255,0.012); }
+        .pad-tabla tbody tr:hover { background: rgba(204,0,0,0.025); }
+        .pad-tabla tbody tr.clickable:hover { background: rgba(204,0,0,0.05); cursor: pointer; }
+        .pad-tabla td { padding: 12px 14px; font-size: 12px; color: var(--gfi-text-secondary); vertical-align: middle; }
+        .pad-nombre { font-weight: 600; color: var(--gfi-text-primary); font-size: 13px; font-family: var(--font-body); }
+        .pad-mat { font-size: 10px; color: var(--gfi-text-muted); margin-top: 2px; font-family: var(--font-mono); font-weight: 500; }
+        .pad-avatar { width: 34px; height: 34px; border-radius: var(--gfi-radius-md); background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 800; color: var(--gfi-red); overflow: hidden; flex-shrink: 0; }
         .pad-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .pad-estado-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-        .pad-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 10px; }
-        .pad-empty { padding: 64px 32px; text-align: center; color: rgba(255,255,255,0.2); font-size: 14px; font-style: italic; }
+        .pad-estado-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; }
+        .pad-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; }
+        .pad-empty { padding: 64px 32px; text-align: center; color: var(--gfi-text-muted); font-size: 14px; font-style: italic; font-family: var(--font-body); }
         .pad-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px; gap: 16px; }
-        .pad-spin { width: 28px; height: 28px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        .pad-loading-txt { font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
+        .pad-spin { width: 28px; height: 28px; border: 2px solid var(--gfi-red-soft); border-top-color: var(--gfi-red); border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .pad-loading-txt { font-size: 12px; color: var(--gfi-text-muted); font-family: var(--font-body); }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .pad-paginacion { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; gap: 8px; }
-        .pad-pag-btn { padding: 6px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
-        .pad-pag-btn:hover:not(:disabled) { border-color: rgba(200,0,0,0.4); color: #fff; }
+        /* Pagination — ghost buttons */
+        .pad-paginacion { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--gfi-border); flex-wrap: wrap; gap: 8px; }
+        .pad-pag-btn { padding: 7px 16px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .pad-pag-btn:hover:not(:disabled) { border-color: var(--gfi-red-border); color: var(--gfi-red); background: var(--gfi-red-soft); }
         .pad-pag-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .pad-pag-info { font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
-        .pad-contact-btn { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; transition: opacity 0.15s; }
+        .pad-pag-info { font-size: 11px; color: var(--gfi-text-muted); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+        .pad-contact-btn { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; transition: var(--gfi-transition); }
         .pad-contact-btn:hover { opacity: 0.8; }
         .pad-tabla th.sortable { cursor: pointer; user-select: none; }
-        .pad-tabla th.sortable:hover { color: rgba(255,255,255,0.65); }
-        .pad-tabla th.sort-activo { color: #cc0000 !important; }
+        .pad-tabla th.sortable:hover { color: var(--gfi-text-secondary); }
+        .pad-tabla th.sort-activo { color: var(--gfi-red) !important; }
         @media (max-width: 700px) {
           .pad-tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
           .pad-tabla { min-width: 700px; }
@@ -510,8 +517,8 @@ export default function PadronGFIPage() {
                       </td>
                       <td>
                         {r.matricula
-                          ? <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:12}}>{r.matricula}</span>
-                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                          ? <span style={{fontFamily:"var(--font-mono)",fontWeight:600,fontSize:12,color:"var(--gfi-red)",letterSpacing:"0.02em"}}>{r.matricula}</span>
+                          : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
                       </td>
                       <td style={{color:"rgba(255,255,255,0.6)"}}>
                         {r.inmobiliaria || <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
@@ -584,21 +591,21 @@ export default function PadronGFIPage() {
           onClick={() => setContactoSeleccionado(null)}
         >
           <div
-            style={{ background:"#111",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"28px 24px",maxWidth:480,width:"100%",display:"flex",flexDirection:"column",gap:16 }}
+            style={{ background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border)",borderRadius:"var(--gfi-radius-xl)",padding:"28px 24px",maxWidth:480,width:"100%",display:"flex",flexDirection:"column",gap:16,boxShadow:"var(--gfi-shadow-lg)" }}
             onClick={e => e.stopPropagation()}
           >
             <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
               <div>
-                <div style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:18,color:"#fff"}}>
+                <div style={{fontFamily:"var(--font-display)",fontWeight:800,fontSize:18,color:"var(--gfi-text-primary)",letterSpacing:"-0.01em"}}>
                   {[contactoSeleccionado.apellido, contactoSeleccionado.nombre].filter(Boolean).join(", ") || "—"}
                 </div>
                 {contactoSeleccionado.matricula && (
-                  <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,color:"#cc0000",fontWeight:700,marginTop:3}}>
+                  <div style={{fontFamily:"var(--font-mono)",fontSize:11,color:"var(--gfi-red)",fontWeight:600,marginTop:4,letterSpacing:"0.04em"}}>
                     Matrícula {contactoSeleccionado.matricula}
                   </div>
                 )}
               </div>
-              <button onClick={() => setContactoSeleccionado(null)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:22,cursor:"pointer",lineHeight:1,padding:0}}>×</button>
+              <button onClick={() => setContactoSeleccionado(null)} style={{background:"none",border:"none",color:"var(--gfi-text-muted)",fontSize:22,cursor:"pointer",lineHeight:1,padding:0}}>×</button>
             </div>
 
             {contactoSeleccionado.estadoCOCIR && (
